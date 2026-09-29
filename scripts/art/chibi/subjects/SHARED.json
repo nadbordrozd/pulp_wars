@@ -1,0 +1,7 @@
+{
+  "faction": "SHARED",
+  "note": "Faction-neutral subjects (terrain and resources). Factions never change terrain; the terrain recipe class also omits the faction layer.",
+  "subjects": {
+    "TERRAIN:GRASS": "Subject: a wide flat meadow of short lawn grass seen from directly above, one even calm mid-green base colour with small darker grass tufts scattered evenly and sparsely all over, nothing else."
+  }
+}

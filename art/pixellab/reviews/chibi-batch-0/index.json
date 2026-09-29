@@ -1,0 +1,300 @@
+{
+  "batch": "0",
+  "bead": "pulp_wars-67q.2",
+  "title": "Pipeline dry run: fixtures only, no PixelLab calls",
+  "dryRun": true,
+  "faction": "ORIGINAL",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-dry-grass",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "dry-grass-field-a",
+      "master": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/terrain/chibi-dry-grass.png",
+        "sha256": "27af8694e135f39c7f102d403baae29098be93e6a1376e3d57f5a5dc1b1ab36a",
+        "pixelSha256": "72f1d90baeabf28a8ebb322b484512066688092e1ab93ce52a2e73902cdad1eb",
+        "width": 80,
+        "height": 80
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "seamless-crop",
+        "crop": {
+          "left": 33,
+          "top": 39,
+          "width": 80,
+          "height": 80,
+          "seamCost": 1.438
+        }
+      }
+    },
+    {
+      "id": "chibi-dry-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "dry-city-a-edit",
+      "master": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/settlements/chibi-dry-city-1.png",
+        "sha256": "66b526198400b53d9b00069fbb9ae03c425a81d39fe909a393aa09922d07449e",
+        "pixelSha256": "a6a57b00a78de0660afba1dcc9bbed051fec50d21bc67227f02cb8a60111fa2d",
+        "width": 72,
+        "height": 72
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 13,
+        "groundShare": 0.0608,
+        "footprintWidthShare": 0.8302,
+        "suspect": false
+      },
+      "mask": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/settlements/chibi-dry-city-1.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2518,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-dry-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "status": "MASK_REJECTED",
+      "recipe": "dry-fighter-a",
+      "master": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/units/chibi-dry-fighter.png",
+        "sha256": "0ea481abc9bcd6d405062ee3be8ff0926828ab8e30378042d9373dce26821c01",
+        "pixelSha256": "a8879c840b703887b0ae680178a6eaa7fe9ddb23248235606abf222cfc8bbe41",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.1069,
+        "footprintWidthShare": 0.6296,
+        "suspect": false
+      },
+      "mask": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/units/chibi-dry-fighter.mask.png",
+        "source": "AUTO",
+        "coverage": 0.1053,
+        "coverageOnTarget": false,
+        "qa": "FAIL",
+        "failures": [
+          "RED_BROWN_MATERIAL",
+          "COVERAGE_LOW"
+        ],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-dry-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "dry-marksman-a",
+      "master": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/units/chibi-dry-marksman.png",
+        "sha256": "afba072c12d1e12fcbced19b696576bdf61da9c44c8a22acbbcd8a1d3cd64dc1",
+        "pixelSha256": "b25d9786afcc73f38b3a75a2d9d11e0caa87be8cfe0e909ed06ff22cdd72e999",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 12,
+        "groundShare": 0.0588,
+        "footprintWidthShare": 0.6364,
+        "suspect": false
+      },
+      "mask": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/units/chibi-dry-marksman.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.3691,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": [
+          "RED_BROWN_MATERIAL"
+        ]
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-0/sheet-1x.png",
+      "width": 1042,
+      "height": 780,
+      "sha256": "91119740136630f61ff49de4934fc276f3c2a55b71613900d9e7c48d49fd0865"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-0/sheet-x4.png",
+      "width": 2370,
+      "height": 2028,
+      "sha256": "260cf412c1b3ae9402f26a94cf4d9652215d58119c35287383816d424d0b62cd"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-0/phone-mock.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "8348e09704a40af75cc9fbba6b0593ada094cd2db3bcc0d045ec0a28fc7e6bac"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-0/desktop-mock.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4d876dcbbb407bc35d12a3734f53e8a4fd60be702b7b8d2028258d2c4b2b0f33"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-0/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fea893d4b836333ab4a6227356d09977f247568067982e7a646865ea37163ed7"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-0/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e521173f6b8005f83c903a41a45111477270c2595406e48931fbb2cc6c1eec76"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-0/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "514cb962f76e6e362f1aee36038d38f197da5ffb3da61c9e9c5621820b2fb765"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-0/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "2a7564e6dee1484a1d5dad6f201b4b08dc8ecded2db9df3ce6cbc842effb86f9"
+    }
+  ],
+  "captures": {
+    "note": "Dry-run fixtures are never registered in src/assets/chibi-art-manifest.ts, so these captures show the ?art=chibi runtime (80 px cell, discrete zoom) with whatever chibi rasters are registered today and legacy fallback art for the rest.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-0/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-0/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-0/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-0/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-0/phone-links.md"
+}

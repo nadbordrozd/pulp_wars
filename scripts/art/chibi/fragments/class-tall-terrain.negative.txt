@@ -1,0 +1,1 @@
+ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red

@@ -1,0 +1,36 @@
+{
+  "id": "dry-city-a-edit",
+  "jobId": "dry-run-dry-city-a-edit",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "0",
+    "asset": "chibi-dry-city-1",
+    "subject": "CITY:1",
+    "faction": "ORIGINAL",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 67203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "scripts/art/chibi/fragments/edit-remove-ground.txt",
+        "text": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the subject, so the buildings stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the subject, so the buildings stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the subject, so the buildings stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the subject, so the buildings stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+    "source": {
+      "recipe": "dry-city-a",
+      "candidate": 0,
+      "sha256": "d246ba4e7f30915844c0b2e04b67148af6d3d69745a242df828eac36cdae76b3"
+    }
+  }
+}

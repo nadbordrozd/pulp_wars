@@ -1,0 +1,1 @@
+Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient.

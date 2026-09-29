@@ -1,0 +1,9 @@
+{
+  "faction": "ORIGINAL",
+  "note": "Subject layer (layer 5) for the ORIGINAL (Human) faction. Keys are runtime art subjects from src/assets/chibi-art-v7.ts. Batch beads add and refine subjects here; the roster notes in docs/art/factions/ORIGINAL.md give each role's distinguishing silhouette.",
+  "subjects": {
+    "UNIT:FIGHTER": "Subject: Fighter, a basic sword warrior: rounded steel helmet with a big red crest, oversized short sword held up in the right hand, round wooden shield in plain warm brown on the left arm, bright red tunic covering the torso, grey-brown boots.",
+    "UNIT:MARKSMAN": "Subject: Marksman, a basic archer: bright red pointed hood, big tall wooden longbow held upright in the left hand with the string visible, quiver of arrows on the back, bright red tunic, grey-brown boots, no shield, no sword, no helmet; clearly different from a sword fighter.",
+    "CITY:1": "Subject: a small level-1 town: four chunky timber-and-plaster cottages with bright red roofs huddled around one round grey stone keep tower with a big red banner flag on top, a short stone ring wall in front."
+  }
+}

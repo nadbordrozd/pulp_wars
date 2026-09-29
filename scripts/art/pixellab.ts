@@ -29,6 +29,7 @@ import {
   saveSubmissionReceipt,
 } from "./pixellab-recovery";
 import { resolveUnitFitOffset } from "./unit-fit-offset";
+import { validateChibiProduction } from "./chibi/pipeline";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
 type Stage = "sample" | "batch";
@@ -680,8 +681,14 @@ async function main(): Promise<void> {
   if (command === "validate") {
     await validateOutputs(source, generated);
     await syncRuntime(source, generated);
+    // Chibi batch manifests, fragments, fixtures, records and masks (67q.2).
+    const chibiProblems = await validateChibiProduction(ROOT);
+    if (chibiProblems.length > 0)
+      throw new Error(
+        `Chibi pipeline is invalid:\n${chibiProblems.join("\n")}`,
+      );
     console.log(
-      "PixelLab source, generated manifest, and accepted outputs are valid.",
+      "PixelLab source, generated manifest, accepted outputs, and chibi pipeline manifests are valid.",
     );
     return;
   }

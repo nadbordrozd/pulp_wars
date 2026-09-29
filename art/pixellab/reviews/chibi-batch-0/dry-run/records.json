@@ -1,0 +1,789 @@
+{
+  "schemaVersion": 1,
+  "batch": "0",
+  "recipes": {
+    "dry-city-a": {
+      "id": "dry-city-a",
+      "asset": "chibi-dry-city-1",
+      "jobId": "dry-run-dry-city-a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "0",
+        "asset": "chibi-dry-city-1",
+        "subject": "CITY:1",
+        "faction": "ORIGINAL",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 67202,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: a small level-1 town: four chunky timber-and-plaster cottages with bright red roofs huddled around one round grey stone keep tower with a big red banner flag on top, a short stone ring wall in front."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: a small level-1 town: four chunky timber-and-plaster cottages with bright red roofs huddled around one round grey stone keep tower with a big red banner flag on top, a short stone ring wall in front.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: a small level-1 town: four chunky timber-and-plaster cottages with bright red roofs huddled around one round grey stone keep tower with a big red banner flag on top, a short stone ring wall in front. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd."
+      },
+      "submittedAt": "dry-run",
+      "fixture": {
+        "path": "art/explorations/tile80-study-2026-09/raw/bold-chibi-city-a.png",
+        "provenance": "tile-80 test (pulp_wars-305) bold-chibi-city-a, create-image-pixen seed 30515"
+      },
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/reviews/chibi-batch-0/dry-run/raw/dry-city-a.png",
+      "rawSheetSha256": "d246ba4e7f30915844c0b2e04b67148af6d3d69745a242df828eac36cdae76b3",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.3656,
+          "footprintWidthShare": 0.9649,
+          "suspect": true
+        }
+      ],
+      "completedAt": "dry-run",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Pedestal: round soil disc under the ring wall; run the ground-removal edit.",
+        "reviewedAt": "dry-run"
+      }
+    },
+    "dry-city-a-edit": {
+      "id": "dry-city-a-edit",
+      "asset": "chibi-dry-city-1",
+      "jobId": "dry-run-dry-city-a-edit",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "0",
+        "asset": "chibi-dry-city-1",
+        "subject": "CITY:1",
+        "faction": "ORIGINAL",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 67203,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "scripts/art/chibi/fragments/edit-remove-ground.txt",
+            "text": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the subject, so the buildings stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the subject, so the buildings stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the subject, so the buildings stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+        "editInstruction": "Remove all ground: erase the grass plate, soil slab, round disc or platform under the subject, so the buildings stand directly on a transparent background with nothing at all under them. Keep the buildings, red roofs, red flag, grey stone, outline and art style exactly the same.",
+        "source": {
+          "recipe": "dry-city-a",
+          "candidate": 0,
+          "sha256": "d246ba4e7f30915844c0b2e04b67148af6d3d69745a242df828eac36cdae76b3"
+        }
+      },
+      "submittedAt": "dry-run",
+      "fixture": {
+        "path": "art/explorations/tile80-study-2026-09/raw/bold-chibi-city-g.png",
+        "provenance": "tile-80 test (pulp_wars-305) bold-chibi-city-g, edit-image-pixen of bold-chibi-city-a, seed 30543"
+      },
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/reviews/chibi-batch-0/dry-run/raw/dry-city-a-edit.png",
+      "rawSheetSha256": "2d9b14da84fb19718930c6d02422ce6358257e434bb7fc65352d7c7f70f829f1",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0608,
+          "footprintWidthShare": 0.8302,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0698,
+          "footprintWidthShare": 0.8302,
+          "suspect": false
+        }
+      ],
+      "completedAt": "dry-run",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Fixture: the disc is gone; tower, red roofs and ring wall stand on transparency.",
+        "reviewedAt": "dry-run"
+      }
+    },
+    "dry-fighter-a": {
+      "id": "dry-fighter-a",
+      "asset": "chibi-dry-fighter",
+      "jobId": "dry-run-dry-fighter-a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "0",
+        "asset": "chibi-dry-fighter",
+        "subject": "UNIT:FIGHTER",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 67204,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Fighter, a basic sword warrior: rounded steel helmet with a big red crest, oversized short sword held up in the right hand, round wooden shield in plain warm brown on the left arm, bright red tunic covering the torso, grey-brown boots."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Fighter, a basic sword warrior: rounded steel helmet with a big red crest, oversized short sword held up in the right hand, round wooden shield in plain warm brown on the left arm, bright red tunic covering the torso, grey-brown boots.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Fighter, a basic sword warrior: rounded steel helmet with a big red crest, oversized short sword held up in the right hand, round wooden shield in plain warm brown on the left arm, bright red tunic covering the torso, grey-brown boots. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd."
+      },
+      "submittedAt": "dry-run",
+      "fixture": {
+        "path": "art/explorations/tile80-study-2026-09/raw/bold-chibi-fighter-a.png",
+        "provenance": "tile-80 test (pulp_wars-305) bold-chibi-fighter-a, create-image-pixen seed 30511"
+      },
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/reviews/chibi-batch-0/dry-run/raw/dry-fighter-a.png",
+      "rawSheetSha256": "0ea481abc9bcd6d405062ee3be8ff0926828ab8e30378042d9373dce26821c01",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.1069,
+          "footprintWidthShare": 0.6296,
+          "suspect": false
+        }
+      ],
+      "completedAt": "dry-run",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Fixture: the art passes review, so mask QA alone must refuse it.",
+        "reviewedAt": "dry-run"
+      }
+    },
+    "dry-grass-field-a": {
+      "id": "dry-grass-field-a",
+      "asset": "chibi-dry-grass",
+      "jobId": "dry-run-dry-grass-field-a",
+      "request": {
+        "endpoint": "create-image-pixflux",
+        "model": "create-image-pixflux",
+        "batch": "0",
+        "asset": "chibi-dry-grass",
+        "subject": "TERRAIN:GRASS",
+        "faction": "ORIGINAL",
+        "recipeClass": "terrain",
+        "requestSize": {
+          "width": 160,
+          "height": 160
+        },
+        "seed": 67201,
+        "noBackground": false,
+        "options": {
+          "shading": "flat shading",
+          "detail": "low detail",
+          "view": "high top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+            "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-terrain.txt + scripts/art/chibi/fragments/class-terrain.negative.txt",
+            "text": "Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image.",
+            "negative": "border, frame, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a wide flat meadow of short lawn grass seen from directly above, one even calm mid-green base colour with small darker grass tufts scattered evenly and sparsely all over, nothing else."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: a wide flat meadow of short lawn grass seen from directly above, one even calm mid-green base colour with small darker grass tufts scattered evenly and sparsely all over, nothing else.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: a wide flat meadow of short lawn grass seen from directly above, one even calm mid-green base colour with small darker grass tufts scattered evenly and sparsely all over, nothing else. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated."
+      },
+      "submittedAt": "dry-run",
+      "fixture": {
+        "path": "art/explorations/tile80-study-2026-09/raw/flat-shaded-field-a.png",
+        "provenance": "tile-80 test (pulp_wars-305) flat-shaded-field-a, create-image-pixflux seed 30531"
+      },
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 160,
+        "height": 160
+      },
+      "rawSheet": "art/pixellab/reviews/chibi-batch-0/dry-run/raw/dry-grass-field-a.png",
+      "rawSheetSha256": "c0b4027afe579e33071f3beec41e7f96d6106f11b80e003a604386c44d11e722",
+      "completedAt": "dry-run",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Fixture: flat-shaded meadow; the seamless crop must be opaque and the 3x3 repeat seam-free.",
+        "reviewedAt": "dry-run"
+      }
+    },
+    "dry-marksman-a": {
+      "id": "dry-marksman-a",
+      "asset": "chibi-dry-marksman",
+      "jobId": "dry-run-dry-marksman-a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "0",
+        "asset": "chibi-dry-marksman",
+        "subject": "UNIT:MARKSMAN",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 67205,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Marksman, a basic archer: bright red pointed hood, big tall wooden longbow held upright in the left hand with the string visible, quiver of arrows on the back, bright red tunic, grey-brown boots, no shield, no sword, no helmet; clearly different from a sword fighter."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Marksman, a basic archer: bright red pointed hood, big tall wooden longbow held upright in the left hand with the string visible, quiver of arrows on the back, bright red tunic, grey-brown boots, no shield, no sword, no helmet; clearly different from a sword fighter.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Marksman, a basic archer: bright red pointed hood, big tall wooden longbow held upright in the left hand with the string visible, quiver of arrows on the back, bright red tunic, grey-brown boots, no shield, no sword, no helmet; clearly different from a sword fighter. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd."
+      },
+      "submittedAt": "dry-run",
+      "fixture": {
+        "path": "art/explorations/tile80-study-2026-09/raw/bold-chibi-marksman-a.png",
+        "provenance": "tile-80 test (pulp_wars-305) bold-chibi-marksman-a, create-image-pixen seed 30513"
+      },
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/reviews/chibi-batch-0/dry-run/raw/dry-marksman-a.png",
+      "rawSheetSha256": "afba072c12d1e12fcbced19b696576bdf61da9c44c8a22acbbcd8a1d3cd64dc1",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0588,
+          "footprintWidthShare": 0.6364,
+          "suspect": false
+        }
+      ],
+      "completedAt": "dry-run",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Fixture: hood, tunic and bow read at 1:1; accepted through the mask override.",
+        "reviewedAt": "dry-run"
+      }
+    }
+  },
+  "assets": {
+    "chibi-dry-city-1": {
+      "id": "chibi-dry-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "dry-city-a-edit",
+      "candidate": 0,
+      "candidateSha256": "66b526198400b53d9b00069fbb9ae03c425a81d39fe909a393aa09922d07449e",
+      "master": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/settlements/chibi-dry-city-1.png",
+        "sha256": "66b526198400b53d9b00069fbb9ae03c425a81d39fe909a393aa09922d07449e",
+        "pixelSha256": "a6a57b00a78de0660afba1dcc9bbed051fec50d21bc67227f02cb8a60111fa2d",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 13,
+        "groundShare": 0.0608,
+        "footprintWidthShare": 0.8302,
+        "suspect": false
+      },
+      "mask": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/settlements/chibi-dry-city-1.mask.png",
+        "sha256": "3353915a9af9f9155452ef6d8ca5887eec7d11640df88003768a252f35dec9a6",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 0,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1950,
+          "ownerPixels": 491,
+          "coverage": 0.2518,
+          "coverageOnTarget": true,
+          "redBrownPixels": 8,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Fixture: the disc is gone; tower, red roofs and ring wall stand on transparency.",
+      "acceptedAt": "dry-run"
+    },
+    "chibi-dry-fighter": {
+      "id": "chibi-dry-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "status": "MASK_REJECTED",
+      "recipe": "dry-fighter-a",
+      "candidate": 0,
+      "candidateSha256": "0ea481abc9bcd6d405062ee3be8ff0926828ab8e30378042d9373dce26821c01",
+      "master": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/units/chibi-dry-fighter.png",
+        "sha256": "0ea481abc9bcd6d405062ee3be8ff0926828ab8e30378042d9373dce26821c01",
+        "pixelSha256": "a8879c840b703887b0ae680178a6eaa7fe9ddb23248235606abf222cfc8bbe41",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.1069,
+        "footprintWidthShare": 0.6296,
+        "suspect": false
+      },
+      "mask": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/units/chibi-dry-fighter.mask.png",
+        "sha256": "0619ee75c7bc9dc8f9e6ec64dabdcee4480c1dfaf9d6012ad930217c7b913542",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 0,
+        "qa": {
+          "status": "FAIL",
+          "opaquePixels": 2289,
+          "ownerPixels": 241,
+          "coverage": 0.1053,
+          "coverageOnTarget": false,
+          "redBrownPixels": 284,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [
+            {
+              "code": "RED_BROWN_MATERIAL",
+              "detail": "284 red-brown pixels (12.4% of opaque) next to the key colour; use browns that are clearly not red"
+            },
+            {
+              "code": "COVERAGE_LOW",
+              "detail": "owner coverage 10.5% is below 15%"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Fixture: the art passes review, so mask QA alone must refuse it.",
+      "acceptedAt": "dry-run"
+    },
+    "chibi-dry-grass": {
+      "id": "chibi-dry-grass",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "dry-grass-field-a",
+      "candidate": 0,
+      "candidateSha256": "c0b4027afe579e33071f3beec41e7f96d6106f11b80e003a604386c44d11e722",
+      "master": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/terrain/chibi-dry-grass.png",
+        "sha256": "27af8694e135f39c7f102d403baae29098be93e6a1376e3d57f5a5dc1b1ab36a",
+        "pixelSha256": "72f1d90baeabf28a8ebb322b484512066688092e1ab93ce52a2e73902cdad1eb",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "seamless-crop",
+        "crop": {
+          "left": 33,
+          "top": 39,
+          "width": 80,
+          "height": 80,
+          "seamCost": 1.438
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Fixture: flat-shaded meadow; the seamless crop must be opaque and the 3x3 repeat seam-free.",
+      "acceptedAt": "dry-run"
+    },
+    "chibi-dry-marksman": {
+      "id": "chibi-dry-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "dry-marksman-a",
+      "candidate": 0,
+      "candidateSha256": "afba072c12d1e12fcbced19b696576bdf61da9c44c8a22acbbcd8a1d3cd64dc1",
+      "master": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/units/chibi-dry-marksman.png",
+        "sha256": "afba072c12d1e12fcbced19b696576bdf61da9c44c8a22acbbcd8a1d3cd64dc1",
+        "pixelSha256": "b25d9786afcc73f38b3a75a2d9d11e0caa87be8cfe0e909ed06ff22cdd72e999",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 12,
+        "groundShare": 0.0588,
+        "footprintWidthShare": 0.6364,
+        "suspect": false
+      },
+      "mask": {
+        "path": "art/pixellab/reviews/chibi-batch-0/dry-run/assets/units/chibi-dry-marksman.mask.png",
+        "sha256": "deeb6c72a4786302489f00ba3a8ab437c95a953891f4c0a3871fbcb9dccf5f60",
+        "source": "OVERRIDE",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "override": {
+          "path": "scripts/art/chibi/fixtures/chibi-dry-marksman.mask-override.png",
+          "sha256": "deeb6c72a4786302489f00ba3a8ab437c95a953891f4c0a3871fbcb9dccf5f60",
+          "reason": "Dry-run fixture for the override path: the automatic mask plus the pale pink highlight on the hood (key hue, saturation 0.51), which the strict extraction leaves out. RED_BROWN_MATERIAL is waived only to exercise the waiver; the tile-80 bow and boots are red-brown and production batch 1 must regenerate them.",
+          "waive": [
+            "RED_BROWN_MATERIAL"
+          ]
+        },
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1661,
+          "ownerPixels": 613,
+          "coverage": 0.3691,
+          "coverageOnTarget": true,
+          "redBrownPixels": 278,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": [
+            {
+              "code": "RED_BROWN_MATERIAL",
+              "detail": "278 red-brown pixels (16.7% of opaque) next to the key colour; use browns that are clearly not red",
+              "waived": true
+            }
+          ]
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Fixture: hood, tunic and bow read at 1:1; accepted through the mask override.",
+      "acceptedAt": "dry-run"
+    }
+  }
+}

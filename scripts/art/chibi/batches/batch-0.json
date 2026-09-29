@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "batch": "0",
+  "title": "Pipeline dry run: fixtures only, no PixelLab calls",
+  "bead": "pulp_wars-67q.2",
+  "faction": "ORIGINAL",
+  "dryRun": true,
+  "assets": [
+    {
+      "id": "chibi-dry-grass",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": { "width": 80, "height": 80 }
+    },
+    {
+      "id": "chibi-dry-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": { "width": 72, "height": 72 }
+    },
+    {
+      "id": "chibi-dry-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": { "width": 56, "height": 80 }
+    },
+    {
+      "id": "chibi-dry-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": { "width": 56, "height": 80 },
+      "maskOverride": {
+        "path": "scripts/art/chibi/fixtures/chibi-dry-marksman.mask-override.png",
+        "masterPixelSha256": "b25d9786afcc73f38b3a75a2d9d11e0caa87be8cfe0e909ed06ff22cdd72e999",
+        "reason": "Dry-run fixture for the override path: the automatic mask plus the pale pink highlight on the hood (key hue, saturation 0.51), which the strict extraction leaves out. RED_BROWN_MATERIAL is waived only to exercise the waiver; the tile-80 bow and boots are red-brown and production batch 1 must regenerate them.",
+        "waive": ["RED_BROWN_MATERIAL"]
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "dry-grass-field-a",
+      "asset": "chibi-dry-grass",
+      "endpoint": "create-image-pixflux",
+      "seed": 67201,
+      "requestSize": { "width": 160, "height": 160 },
+      "notes": "Terrain recipe: a 160x160 field and a deterministic seamless 80x80 crop.",
+      "fixture": {
+        "path": "art/explorations/tile80-study-2026-09/raw/flat-shaded-field-a.png",
+        "sha256": "c0b4027afe579e33071f3beec41e7f96d6106f11b80e003a604386c44d11e722",
+        "provenance": "tile-80 test (pulp_wars-305) flat-shaded-field-a, create-image-pixflux seed 30531"
+      },
+      "dryRunReview": {
+        "verdict": "ACCEPT",
+        "candidate": 0,
+        "notes": "Fixture: flat-shaded meadow; the seamless crop must be opaque and the 3x3 repeat seam-free.",
+        "expect": "ACCEPTED"
+      }
+    },
+    {
+      "id": "dry-city-a",
+      "asset": "chibi-dry-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67202,
+      "requestSize": { "width": 72, "height": 72 },
+      "notes": "Settlement recipe, first pass: text-to-image cities come back on a plate.",
+      "fixture": {
+        "path": "art/explorations/tile80-study-2026-09/raw/bold-chibi-city-a.png",
+        "sha256": "d246ba4e7f30915844c0b2e04b67148af6d3d69745a242df828eac36cdae76b3",
+        "provenance": "tile-80 test (pulp_wars-305) bold-chibi-city-a, create-image-pixen seed 30515"
+      },
+      "dryRunReview": {
+        "verdict": "REJECT",
+        "candidate": null,
+        "notes": "Pedestal: round soil disc under the ring wall; run the ground-removal edit."
+      }
+    },
+    {
+      "id": "dry-city-a-edit",
+      "asset": "chibi-dry-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 67203,
+      "requestSize": { "width": 72, "height": 72 },
+      "source": { "recipe": "dry-city-a", "candidate": 0 },
+      "notes": "Settlement recipe, second pass: edit-image-pixen removes all ground.",
+      "fixture": {
+        "path": "art/explorations/tile80-study-2026-09/raw/bold-chibi-city-g.png",
+        "sha256": "2d9b14da84fb19718930c6d02422ce6358257e434bb7fc65352d7c7f70f829f1",
+        "candidateCount": 2,
+        "provenance": "tile-80 test (pulp_wars-305) bold-chibi-city-g, edit-image-pixen of bold-chibi-city-a, seed 30543"
+      },
+      "dryRunReview": {
+        "verdict": "ACCEPT",
+        "candidate": 0,
+        "notes": "Fixture: the disc is gone; tower, red roofs and ring wall stand on transparency.",
+        "expect": "ACCEPTED"
+      }
+    },
+    {
+      "id": "dry-fighter-a",
+      "asset": "chibi-dry-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67204,
+      "requestSize": { "width": 56, "height": 80 },
+      "notes": "Negative control: the tile-80 Fighter's shield, boots and hands are red-brown and its true owner area is small.",
+      "fixture": {
+        "path": "art/explorations/tile80-study-2026-09/raw/bold-chibi-fighter-a.png",
+        "sha256": "0ea481abc9bcd6d405062ee3be8ff0926828ab8e30378042d9373dce26821c01",
+        "provenance": "tile-80 test (pulp_wars-305) bold-chibi-fighter-a, create-image-pixen seed 30511"
+      },
+      "dryRunReview": {
+        "verdict": "ACCEPT",
+        "candidate": 0,
+        "notes": "Fixture: the art passes review, so mask QA alone must refuse it.",
+        "expect": "MASK_REJECTED"
+      }
+    },
+    {
+      "id": "dry-marksman-a",
+      "asset": "chibi-dry-marksman",
+      "endpoint": "create-image-pixen",
+      "seed": 67205,
+      "requestSize": { "width": 56, "height": 80 },
+      "notes": "Override path: accepted only through the checked-in hand-corrected mask.",
+      "fixture": {
+        "path": "art/explorations/tile80-study-2026-09/raw/bold-chibi-marksman-a.png",
+        "sha256": "afba072c12d1e12fcbced19b696576bdf61da9c44c8a22acbbcd8a1d3cd64dc1",
+        "provenance": "tile-80 test (pulp_wars-305) bold-chibi-marksman-a, create-image-pixen seed 30513"
+      },
+      "dryRunReview": {
+        "verdict": "ACCEPT",
+        "candidate": 0,
+        "notes": "Fixture: hood, tunic and bow read at 1:1; accepted through the mask override.",
+        "expect": "ACCEPTED"
+      }
+    }
+  ]
+}
