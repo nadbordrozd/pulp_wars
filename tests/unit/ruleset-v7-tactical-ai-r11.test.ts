@@ -30,6 +30,7 @@ import {
   richV7,
 } from "../fixtures/v7-builders";
 import { withPortV7 } from "../fixtures/v7-naval-builders";
+import { withRevision12DecisionOrdinalsV7 } from "../fixtures/v7-revision12-command-ordinals";
 
 describe("Ruleset 7 revision-11 bounded tactical AI", () => {
   it.each([1, -1] as const)(
@@ -954,6 +955,13 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         beforeDecision = beforeWork.advanceWork(1);
       if (seed === 810) {
         expect(canonicalHash(beforeDecision)).toBe(
+          "4912693864449e24482828b85fb904fea8651c7856e8a7ffcb540bbf80de168a",
+        );
+        // Revision 13 shifts the command-kind ordinals in AI tie-break
+        // tuples (spec section 8); with revision-12 ordinals it is unchanged.
+        expect(
+          canonicalHash(withRevision12DecisionOrdinalsV7(beforeDecision)),
+        ).toBe(
           "294bac761fb6d09e191de6344fb1ddf9e49c4394bd3dff6ab3552433c10c41a7",
         );
       }
@@ -996,10 +1004,16 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           (capturedRoads - 1) -
           preservedRedevelopmentCount(capturedView, capturedCommands),
       );
-      if (seed === 810)
+      if (seed === 810) {
         expect(canonicalHash(capturedDecision)).toBe(
+          "3fdb64862b66e1358d26832e66c531a51af15cdba9a1dc392fc5a2a3f9486d28",
+        );
+        expect(
+          canonicalHash(withRevision12DecisionOrdinalsV7(capturedDecision)),
+        ).toBe(
           "c56f00e419ab99b4532a25f2dc423d4558d80453e561137e30e95f816e9173c1",
         );
+      }
 
       let state = fixture.captured;
       let priorMissing = 9;

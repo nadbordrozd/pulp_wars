@@ -19,6 +19,7 @@ import {
   type PlayerViewV7,
   type PublicPlanningWorkResultV7,
 } from "../../src/engine/index";
+import { withRevision12AiReadyOrdinalsV7 } from "../fixtures/v7-revision12-command-ordinals";
 
 const RETAINED_LAND_VIEW = JSON.parse(
   readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
@@ -67,7 +68,13 @@ describe("ruleset-7 late public query performance", () => {
     expect(canonicalHash(commands.filter(isRetainedLandCommand))).toBe(
       "0b13410860e1df0d398369ce7fb307a2689edfa9dbf5305ab6fe1dfee8abd93b",
     );
-    expect(canonicalHash(queryAiReadyCommandsV7(view))).toBe(
+    const ready = queryAiReadyCommandsV7(view);
+    expect(canonicalHash(ready)).toBe(
+      "cc29e80c1abf4ec7f40e12f9ad9bb8c4c6b1ca57df9cb1e7175fdcca75e9fc92",
+    );
+    // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
+    // (spec section 8); with revision-12 ordinals the value is unchanged.
+    expect(canonicalHash(withRevision12AiReadyOrdinalsV7(ready))).toBe(
       "c4dfc93b78903c1c012e9d7607fea2faa8e4c40edfed9b35f698bf5fcbe7f827",
     );
     expect(
