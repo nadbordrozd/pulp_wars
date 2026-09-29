@@ -25,6 +25,7 @@ import {
   cityUnitCapacityV7,
   rewardCandidatesForLevelV7,
 } from "./economy";
+import { raiseDeadGravesV7 } from "./graves";
 import { applyCommandV7 } from "./reducer";
 import { calculateCombatPreviewV7, undeadCombatEffectsV7 } from "./combat";
 import type { CombatPreviewV7, DomainEventV7 } from "./events";
@@ -499,6 +500,24 @@ function appendPublicUnitCommandsV7(
     )
   )
     candidates.push({ kind: "TEND_WOUNDED", unitId: unit.id });
+  // Revision 13 Grave actions (sections 6.2 and 6.3), offered exactly when
+  // legal from the viewer's explored Graves and visible units.
+  if (
+    !overrun &&
+    primaryReady &&
+    unit.form === "LAND" &&
+    rule.abilities.includes("RAISE_DEAD") &&
+    raiseDeadGravesV7(view.graves, view.units, unit.at).length > 0
+  )
+    candidates.push({ kind: "RAISE_DEAD", unitId: unit.id });
+  if (
+    !overrun &&
+    primaryReady &&
+    unit.form === "LAND" &&
+    rule.abilities.includes("DEVOUR") &&
+    view.graves.some((grave) => same(grave, unit.at))
+  )
+    candidates.push({ kind: "DEVOUR", unitId: unit.id });
   if (overrun) return;
   if (
     !unit.activation.moved &&
@@ -704,6 +723,91 @@ export function queryCombatPreviewV7(
   const targetUnitId = maybeTarget ?? attackerOrTarget;
   if (!publicCommandOfferingAllowedV7(view)) return null;
   return publicCombatPreview(view, attackerId, targetUnitId);
+}
+
+/** Revision 13 Raise Dead preview: the Graves that rise, in (y, x) order. */
+export interface RaiseDeadPreviewV7 {
+  readonly graves: readonly CoordV7[];
+}
+
+/**
+ * Observation-safe exact Raise Dead preview (section 6.2): null unless the
+ * command is offered. A raiser's neighbours are always explored by its
+ * owner, so the preview equals the resolution.
+ */
+export function previewRaiseDeadV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): RaiseDeadPreviewV7 | null;
+export function previewRaiseDeadV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  unitId: UnitId,
+): RaiseDeadPreviewV7 | null;
+export function previewRaiseDeadV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrUnit: PlayerId | UnitId,
+  maybeUnit?: UnitId,
+): RaiseDeadPreviewV7 | null {
+  const view =
+    maybeUnit === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrUnit as PlayerId);
+  const unitId = maybeUnit ?? (viewerOrUnit as UnitId);
+  const unit = offeredGraveActor(view, "RAISE_DEAD", unitId);
+  return unit === null
+    ? null
+    : { graves: raiseDeadGravesV7(view.graves, view.units, unit.at) };
+}
+
+/** Revision 13 Devour preview; `amount` may be 0. */
+export interface DevourPreviewV7 {
+  readonly at: CoordV7;
+  readonly amount: number;
+  readonly hpAfter: number;
+}
+
+/**
+ * Exact Devour preview (section 6.3): null unless the command is offered. The
+ * Ghoul and its tile are its owner's, so the preview equals the resolution.
+ */
+export function previewDevourV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): DevourPreviewV7 | null;
+export function previewDevourV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  unitId: UnitId,
+): DevourPreviewV7 | null;
+export function previewDevourV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrUnit: PlayerId | UnitId,
+  maybeUnit?: UnitId,
+): DevourPreviewV7 | null {
+  const view =
+    maybeUnit === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrUnit as PlayerId);
+  const unitId = maybeUnit ?? (viewerOrUnit as UnitId);
+  const unit = offeredGraveActor(view, "DEVOUR", unitId);
+  return unit === null
+    ? null
+    : { at: unit.at, amount: unit.maxHp - unit.hp, hpAfter: unit.maxHp };
+}
+
+function offeredGraveActor(
+  view: PlayerViewV7,
+  kind: "RAISE_DEAD" | "DEVOUR",
+  unitId: UnitId,
+): PlayerViewV7["units"][number] | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === kind && command.unitId === unitId,
+    )
+  )
+    return null;
+  return view.units.find((unit) => unit.id === unitId) ?? null;
 }
 
 export function estimateCombatV7(

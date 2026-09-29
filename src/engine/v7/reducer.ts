@@ -42,7 +42,12 @@ import {
 } from "./economy";
 import type { DomainEventV7 } from "./events";
 import { calculateCombatPreviewV7, pushedDestinationV7 } from "./combat";
-import { recordCombatDeathV7 } from "./graves";
+import {
+  RAISE_DEAD_SKELETON_HP_V7,
+  raiseDeadGravesV7,
+  recordCombatDeathV7,
+  withoutGravesV7,
+} from "./graves";
 import { recordInfectionV7 } from "./infect";
 import { createInitialMapStateV7 } from "./map";
 import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
@@ -112,6 +117,8 @@ export type RuleErrorCodeV7 =
   | "HEAL_TARGET_NOT_ADJACENT"
   | "HEAL_TARGET_FULL"
   | "RECOVER_NOT_LEGAL"
+  | "RAISE_DEAD_NOT_LEGAL"
+  | "DEVOUR_NOT_LEGAL"
   | "PROMOTION_NOT_ELIGIBLE"
   | "UNIT_ALREADY_HANDLED"
   | "PILLAGE_INVALID_TARGET";
@@ -319,6 +326,10 @@ function applyCommandCoreV7(
     return applyRally(stateInput, state, actor, command.unitId);
   if (command.kind === "TEND_WOUNDED")
     return applyTendWounded(stateInput, state, actor, command.unitId);
+  if (command.kind === "RAISE_DEAD")
+    return applyRaiseDead(stateInput, state, actor, command.unitId);
+  if (command.kind === "DEVOUR")
+    return applyDevour(stateInput, state, actor, command.unitId);
   if (command.kind === "RECOVER")
     return applyRecover(stateInput, state, actor, command.unitId);
   if (command.kind === "PROMOTE")
@@ -2653,6 +2664,220 @@ function applyTendWounded(
       },
     ],
   );
+}
+
+/**
+ * Revision 13 Grave-action legality shared by Raise Dead and Devour: the
+ * actor's own living land unit with the ability that has not used its
+ * primary action (it may have moved).
+ */
+function graveActionActor(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+  ability: "RAISE_DEAD" | "DEVOUR",
+): { readonly unit: UnitStateV7 } | ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const unit = actorCheck.unit;
+  const rule = unitRoleRuleV7(state, unit);
+  if (unit.form !== "LAND" || !rule.abilities.includes(ability))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: unit.role });
+  if (
+    unit.activation.overrunActive ||
+    primaryUsed(unit) ||
+    (unit.activation.moved && !rule.mayUsePrimaryActionAfterMove)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  return { unit };
+}
+
+/**
+ * Economy, reward-settlement, and achievement tail of a Grave action. Risings
+ * count for Muster; Graves and HP never change the live economy.
+ */
+function graveActionTail(
+  staged: GameStateV7,
+  actor: PlayerId,
+  events: DomainEventV7[],
+): GameStateV7 {
+  const economy = recomputeLiveEconomyV7(
+    staged,
+    { board: staged.board, cities: staged.cities, units: staged.units },
+    staged.populationContributions,
+  );
+  events.push(...economyAndGrowth(economy.changes));
+  const settlement = settleCityRewardsV7(
+    {
+      ...staged,
+      cities: economy.cities,
+      populationContributions: economy.populationContributions,
+    },
+    actor,
+  );
+  events.push(...settlement.events);
+  const achievements = evaluateAchievementsV7(settlement.state, actor);
+  events.push(...achievements.events);
+  return achievements.state;
+}
+
+/**
+ * Revision 13 Raise Dead (section 6.2): every eligible adjacent Grave becomes
+ * an exhausted 5-HP Skeleton rising homed to the Necromancer's home city, in
+ * (y, x) order with consecutive unit IDs; capacity may be exceeded.
+ */
+function applyRaiseDead(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  const result = graveActionActor(original, state, actor, unitId, "RAISE_DEAD");
+  if ("accepted" in result) return result;
+  const necromancer = result.unit;
+  const graves = raiseDeadGravesV7(state.graves, state.units, necromancer.at);
+  if (graves.length === 0)
+    return rejected(original, "RAISE_DEAD_NOT_LEGAL", { reason: "NO_GRAVE" });
+  try {
+    const rule = effectiveRoleRuleV7(
+      "FIGHTER",
+      requirePlayer(state, actor).faction,
+    );
+    let nextEntityId = state.nextEntityId;
+    const risen: UnitStateV7[] = [];
+    for (const at of graves) {
+      const allocation = allocateUnitId(nextEntityId);
+      nextEntityId = allocation.nextEntityId;
+      risen.push({
+        id: allocation.id,
+        ownerId: actor,
+        homeCityId: necromancer.homeCityId,
+        role: "FIGHTER",
+        form: "LAND",
+        at: { x: at.x, y: at.y },
+        hp: Math.min(RAISE_DEAD_SKELETON_HP_V7, rule.maxHp),
+        maxHp: rule.maxHp,
+        kills: 0,
+        veteran: false,
+        captureEligible: false,
+        activation: exhaustedActivation(),
+      });
+    }
+    const units = [
+      ...state.units.map((unit) =>
+        unit.id === necromancer.id
+          ? {
+              ...unit,
+              activation: {
+                ...unit.activation,
+                specialActed: true,
+                handled: true,
+              },
+            }
+          : unit,
+      ),
+      ...risen,
+    ];
+    let players = state.players;
+    const revealed: CoordV7[] = [];
+    for (const skeleton of risen) {
+      const visibleState = { ...state, players, units } as GameStateV7;
+      const reveal = revealRadius(
+        visibleState,
+        actor,
+        skeleton.at,
+        unitSightRadiusAtV7(visibleState, skeleton),
+      );
+      players = setExplored(players, actor, reveal.explored);
+      revealed.push(...reveal.revealed);
+    }
+    const events: DomainEventV7[] = [
+      {
+        kind: "DEAD_RAISED",
+        playerId: actor,
+        unitId: necromancer.id,
+        results: risen.map((unit) => ({ unitId: unit.id, at: unit.at })),
+      },
+    ];
+    if (revealed.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: uniqueCoords(revealed),
+      });
+    const staged = graveActionTail(
+      {
+        ...state,
+        nextEntityId,
+        commandIndex: nextSafe(state.commandIndex),
+        players,
+        units,
+        graves: withoutGravesV7(state.graves, graves),
+      },
+      actor,
+      events,
+    );
+    return accepted(checked(staged), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * Revision 13 Devour (section 6.3): a Ghoul on a Grave consumes it and heals
+ * to full; legal at full HP. Terminal: the primary action is spent and the
+ * Ghoul is handled.
+ */
+function applyDevour(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  const result = graveActionActor(original, state, actor, unitId, "DEVOUR");
+  if ("accepted" in result) return result;
+  const ghoul = result.unit;
+  if (!state.graves.some((grave) => same(grave, ghoul.at)))
+    return rejected(original, "DEVOUR_NOT_LEGAL", { reason: "NO_GRAVE" });
+  try {
+    const events: DomainEventV7[] = [
+      {
+        kind: "GRAVE_DEVOURED",
+        playerId: actor,
+        unitId: ghoul.id,
+        at: ghoul.at,
+        amount: ghoul.maxHp - ghoul.hp,
+        hpAfter: ghoul.maxHp,
+      },
+    ];
+    const staged = graveActionTail(
+      {
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        units: state.units.map((unit) =>
+          unit.id === ghoul.id
+            ? {
+                ...unit,
+                hp: unit.maxHp,
+                activation: {
+                  ...unit.activation,
+                  specialActed: true,
+                  handled: true,
+                },
+              }
+            : unit,
+        ),
+        graves: withoutGravesV7(state.graves, [ghoul.at]),
+      },
+      actor,
+      events,
+    );
+    return accepted(checked(staged), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
 }
 
 function applyRecover(

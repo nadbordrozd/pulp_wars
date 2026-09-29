@@ -59,6 +59,11 @@ export type CommandV7 =
       readonly unitId: UnitId;
     }
   | {
+      /** Revision 13 Undead Grave actions (Necromancer, Ghoul). */
+      readonly kind: "RAISE_DEAD" | "DEVOUR";
+      readonly unitId: UnitId;
+    }
+  | {
       readonly kind:
         | "RECOVER"
         | "CAPTURE"
@@ -134,6 +139,8 @@ const TILE_KINDS = new Set<CommandKindV7>([
   "REDEVELOP",
 ]);
 const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
+  "RAISE_DEAD",
+  "DEVOUR",
   "RECOVER",
   "CAPTURE",
   "PROMOTE",

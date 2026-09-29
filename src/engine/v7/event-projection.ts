@@ -40,6 +40,22 @@ export function projectEventsV7(
       )
     )
       visiblyCreatedUnitIds.add(event.unitId);
+    else if (
+      event.kind === "DEAD_RAISED" &&
+      eventVisible(
+        beforeState,
+        afterState,
+        viewerId,
+        event,
+        beforeVisible,
+        afterVisible,
+      )
+    )
+      // Revision 13: Skeletons listed in a projected DEAD_RAISED count as
+      // visibly created, so they get no duplicate UNIT_REVEALED.
+      for (const result of event.results)
+        if (afterVisible.has(result.unitId))
+          visiblyCreatedUnitIds.add(result.unitId);
   const needsReveal = (unitId: UnitId): boolean =>
     !beforeVisible.has(unitId) &&
     afterVisible.has(unitId) &&
@@ -295,6 +311,16 @@ function projectEventPayload(
         ? visible
         : null;
     return { ...event, resourceRestored };
+  }
+  if (event.kind === "DEAD_RAISED") {
+    // Revision 13: only the Skeletons visible to the viewer afterwards.
+    const afterVisible = visibility(after, viewerId);
+    return {
+      ...event,
+      results: event.results.filter((result) =>
+        afterVisible.has(result.unitId),
+      ),
+    };
   }
   if (event.kind === "COMBAT_RESOLVED") {
     const splash = event.preview.splash.filter((entry) => {

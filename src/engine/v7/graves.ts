@@ -47,6 +47,38 @@ export function withGraveV7(
   return [...graves, { x: at.x, y: at.y }].sort(compareCoordsV7);
 }
 
+/** Revision 13 Raise Dead rising HP: a Skeleton rises at 5 HP (section 6.2). */
+export const RAISE_DEAD_SKELETON_HP_V7 = 5;
+
+/**
+ * Revision 13 Raise Dead eligibility (section 6.2): every Grave on the eight
+ * cells adjacent to `at` with no living unit of any owner on it, in the
+ * (y, x) order of the Grave list. There is no cap and no terrain or territory
+ * filter. The public query passes the viewer's Graves and units; a raiser's
+ * neighbours are always explored by its owner, so both agree exactly.
+ */
+export function raiseDeadGravesV7(
+  graves: readonly CoordV7[],
+  units: readonly Pick<UnitStateV7, "at" | "hp">[],
+  at: CoordV7,
+): readonly CoordV7[] {
+  return graves.filter(
+    (grave) =>
+      Math.max(Math.abs(grave.x - at.x), Math.abs(grave.y - at.y)) === 1 &&
+      !units.some((unit) => unit.hp > 0 && sameCoordV7(unit.at, grave)),
+  );
+}
+
+/** Removes the given coordinates from a (y, x)-sorted Grave list. */
+export function withoutGravesV7(
+  graves: readonly CoordV7[],
+  removed: readonly CoordV7[],
+): readonly CoordV7[] {
+  return graves.filter(
+    (grave) => !removed.some((item) => sameCoordV7(item, grave)),
+  );
+}
+
 /**
  * Records one combat death: appends its `UNIT_DIED` event, then its
  * `GRAVE_CREATED` event when a Grave is created, and returns the Grave list

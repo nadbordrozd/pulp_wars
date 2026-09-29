@@ -338,6 +338,29 @@ export type DomainEventV7 =
       }[];
     }
   | {
+      /**
+       * Revision 13 Raise Dead: the raising Necromancer and each new Skeleton
+       * with its former Grave, in (y, x) order with consecutive unit IDs.
+       * A projection keeps only the Skeletons visible to the viewer.
+       */
+      readonly kind: "DEAD_RAISED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly results: readonly {
+        readonly unitId: UnitId;
+        readonly at: CoordV7;
+      }[];
+    }
+  | {
+      /** Revision 13 Devour: `amount` may be 0 (Grave denial at full HP). */
+      readonly kind: "GRAVE_DEVOURED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly amount: number;
+      readonly hpAfter: number;
+    }
+  | {
       readonly kind: "UNIT_PUSHED";
       readonly sourceUnitId: UnitId;
       readonly targetUnitId: UnitId;

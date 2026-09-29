@@ -219,6 +219,8 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   UNITS_RALLIED: ["kind", "captainId", "unitIds"],
   WOUNDED_TENDED: ["kind", "captainId", "results"],
+  DEAD_RAISED: ["kind", "playerId", "unitId", "results"],
+  GRAVE_DEVOURED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
   UNIT_PUSHED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
   UNIT_MOVED: ["kind", "unitId", "path"],
   UNIT_MOVE_INTERRUPTED: ["kind", "unitId", "at", "reason"],
@@ -380,6 +382,11 @@ export function parsePlayerEventEnvelopeV7(
       events.push(projectedRestoration);
       continue;
     }
+    const projectedRaise = parseProjectedDeadRaised(candidate);
+    if (projectedRaise !== null) {
+      events.push(projectedRaise);
+      continue;
+    }
     const presentation = parsePresentationEvent(candidate);
     if (presentation !== null) {
       events.push(presentation);
@@ -438,6 +445,21 @@ function parseProjectedRestorationEvent(input: unknown): PlayerEventV7 | null {
     ),
   });
   return canonical.ok ? (input as PlayerEventV7) : null;
+}
+
+/**
+ * Revision 13: a viewer who sees the Necromancer but none of the raised
+ * Skeletons receives DEAD_RAISED with empty results.
+ */
+function parseProjectedDeadRaised(input: unknown): PlayerEventV7 | null {
+  return hasExactKeysV7(input, FIELDS.DEAD_RAISED) &&
+    input.kind === "DEAD_RAISED" &&
+    id(input.playerId) &&
+    id(input.unitId) &&
+    isDenseArrayV7(input.results) &&
+    input.results.length === 0
+    ? (input as unknown as PlayerEventV7)
+    : null;
 }
 
 function parsePresentationEvent(input: unknown): PlayerEventV7 | null {
@@ -737,6 +759,22 @@ function validPayload(
       return id(e.captainId) && orderedIds(e.unitIds);
     case "WOUNDED_TENDED":
       return id(e.captainId) && tendResults(e.results);
+    case "DEAD_RAISED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        raisedResults(e.results, e.unitId) &&
+        (e.results as readonly unknown[]).length > 0
+      );
+    case "GRAVE_DEVOURED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        nn(e.amount) &&
+        pos(e.hpAfter) &&
+        Number(e.amount) < Number(e.hpAfter)
+      );
     case "UNIT_PUSHED":
       return (
         id(e.sourceUnitId) &&
@@ -1024,6 +1062,31 @@ function tendResults(input: unknown): boolean {
     )
       return false;
     prior = Number(result.unitId);
+  }
+  return true;
+}
+/**
+ * Raise Dead results: new Skeletons in strictly increasing (y, x) Grave order
+ * and strictly increasing unit IDs, none of them the raising Necromancer.
+ * Emptiness is checked by the caller: a projection may filter every entry.
+ */
+function raisedResults(input: unknown, raiserId: unknown): boolean {
+  if (!isDenseArrayV7(input)) return false;
+  let priorId = 0;
+  let prior: { readonly x: number; readonly y: number } | null = null;
+  for (const result of input) {
+    if (!hasExactKeysV7(result, ["at", "unitId"]) || !id(result.unitId))
+      return false;
+    const at = parseCoordV7(result.at);
+    if (
+      at === null ||
+      result.unitId === raiserId ||
+      Number(result.unitId) <= priorId ||
+      (prior !== null && (at.y - prior.y || at.x - prior.x) <= 0)
+    )
+      return false;
+    priorId = Number(result.unitId);
+    prior = at;
   }
   return true;
 }
