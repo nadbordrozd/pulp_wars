@@ -1,5 +1,12 @@
 # Art Direction
 
+> **Approved new direction (2026-09-29).** The user chose the
+> [chibi art direction](CHIBI_ART_DIRECTION.md) for all Ruleset 7 art. It
+> governs every new chibi asset and wins where it disagrees with this file.
+> This file keeps describing the legacy production art until the
+> [chibi migration](CHIBI_MIGRATION_PLAN.md) cuts over. The general PixelLab
+> workflow rules below still apply to chibi work.
+
 This is the canonical shared art direction for Pulp Wars. The artistic direction
 below faithfully reproduces the user-supplied root `art_direction.md`; the root
 file remains unchanged for provenance. Technical class contracts live under
