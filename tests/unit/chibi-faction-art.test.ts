@@ -9,19 +9,27 @@ import {
   type ChibiArtAssetV7,
 } from "../../src/assets/chibi-art-v7";
 import {
+  CHIBI_UNOWNED_OWNER_COLOUR_V7,
   createChibiArtResolverV7,
   resolveChibiWithFallbackV7,
   type ChibiRasterEnvironmentV7,
 } from "../../src/render/canvas/chibi-art-resolver-v7";
+import { RULESET7_PLAYER_COLORS } from "../../src/render/canvas/owner-recolour-v7";
 
-/** Rasters settle at once; a URL containing "broken" fails to load. */
+/**
+ * Rasters settle at once and read back as blank pixels; a URL containing
+ * "broken" fails to load, one containing "unreadable" fails pixel readback.
+ */
 const syncEnvironment: ChibiRasterEnvironmentV7 = {
   loadImage(url, settle) {
     settle(!url.includes("broken"));
     return { url } as unknown as CanvasImageSource;
   },
-  readPixels: () => null,
-  createSurface: () => null,
+  readPixels: (image, width, height) =>
+    (image as unknown as { url: string }).url.includes("unreadable")
+      ? null
+      : new Uint8ClampedArray(width * height * 4),
+  createSurface: () => ({ surface: true }) as unknown as CanvasImageSource,
 };
 
 function unit(
@@ -50,9 +58,11 @@ function resolver(assets: readonly ChibiArtAssetV7[]) {
   });
 }
 
+/** Units always have an owner, so requests carry an owner colour. */
 const request = (subject: ArtSubjectV7) => ({
   subject,
   at: { x: 2, y: 3 },
+  ownerColor: RULESET7_PLAYER_COLORS.TEAL,
   deviceScale: 1,
 });
 
@@ -130,6 +140,36 @@ describe("Faction-aware chibi subjects", () => {
     expect(
       resolveChibiWithFallbackV7(art, request("UNIT:FIGHTER")).factionArt,
     ).toBe(false);
+  });
+
+  it("recolours an owner-less Undead raster to neutral and falls back when its pixels cannot be read", () => {
+    const art = resolver([
+      unit("undead-fighter", "UNIT:UNDEAD:FIGHTER"),
+      unit("human-fighter", "UNIT:FIGHTER"),
+      unit("undead-guard", "UNIT:UNDEAD:GUARD", "/unreadable-guard.png"),
+      unit("human-guard", "UNIT:GUARD"),
+    ]);
+    // No owner colour: the masked Undead raster still resolves, recoloured
+    // to the neutral stone (batch 4), and counts as Undead art.
+    const neutral = resolveChibiWithFallbackV7(art, {
+      subject: "UNIT:UNDEAD:FIGHTER",
+      at: { x: 2, y: 3 },
+      deviceScale: 1,
+    });
+    expect(neutral.factionArt).toBe(true);
+    expect(
+      neutral.resolution.kind === "READY" && neutral.resolution.cacheKey,
+    ).toBe(`chibi:undead-fighter@1#${CHIBI_UNOWNED_OWNER_COLOUR_V7}`);
+    // A recolour that cannot read the Undead raster's pixels is MISSING, so
+    // the Human sprite of the role stands in (with the badge).
+    const unreadable = resolveChibiWithFallbackV7(
+      art,
+      request("UNIT:UNDEAD:GUARD"),
+    );
+    expect(unreadable.factionArt).toBe(false);
+    expect(
+      unreadable.resolution.kind === "READY" && unreadable.resolution.asset.id,
+    ).toBe("human-guard");
   });
 
   it("treats a still-loading Undead raster as Undead art", () => {
