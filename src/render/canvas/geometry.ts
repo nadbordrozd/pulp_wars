@@ -233,6 +233,101 @@ export function centerCameraOn(
   };
 }
 
+/** A screen-space vertical band, in CSS px from the canvas top. */
+export interface ScreenBand {
+  readonly top: number;
+  readonly bottom: number;
+}
+
+/**
+ * Frames a new match at the fitted camera's zoom inside the visible map
+ * region: the full canvas width and the vertical `band` left free by the top
+ * HUD and the (open or reserved) selection dock. Each axis is solved alone:
+ * the `area` (the viewer's explored cells) is centred in the region when it
+ * fits, else the `focus` point (the capital); the camera then slides the
+ * least distance that keeps a board that fits the region wholly inside it,
+ * or leaves no empty off-board margin inside the region when the board is
+ * larger than it. The result only sets the starting camera; pan and zoom
+ * stay unclamped.
+ */
+export function frameCameraOnArea(
+  camera: CameraState,
+  input: {
+    readonly area: WorldBounds | null;
+    readonly focus: Point;
+    readonly board: WorldBounds;
+    readonly viewport: Size;
+    readonly band: ScreenBand;
+  },
+): CameraState {
+  const { area, board, focus, viewport } = input;
+  const band =
+    input.band.bottom - input.band.top >= 1
+      ? input.band
+      : { top: 0, bottom: viewport.height };
+  return {
+    zoom: camera.zoom,
+    offsetX: frameAxisOffset(
+      camera.zoom,
+      0,
+      viewport.width,
+      area === null ? null : [area.left, area.right],
+      focus.x,
+      board.left,
+      board.right,
+    ),
+    offsetY: frameAxisOffset(
+      camera.zoom,
+      band.top,
+      band.bottom,
+      area === null ? null : [area.top, area.bottom],
+      focus.y,
+      board.top,
+      board.bottom,
+    ),
+  };
+}
+
+function frameAxisOffset(
+  zoom: number,
+  regionStart: number,
+  regionEnd: number,
+  area: readonly [number, number] | null,
+  focus: number,
+  boardStart: number,
+  boardEnd: number,
+): number {
+  const region = regionEnd - regionStart;
+  const centre =
+    area !== null && (area[1] - area[0]) * zoom <= region
+      ? (area[0] + area[1]) / 2
+      : focus;
+  const offset = (regionStart + regionEnd) / 2 - centre * zoom;
+  const start = boardStart * zoom + offset;
+  const end = boardEnd * zoom + offset;
+  if (end - start <= region) {
+    if (start < regionStart) return offset + regionStart - start;
+    if (end > regionEnd) return offset - (end - regionEnd);
+    return offset;
+  }
+  if (start > regionStart) return offset - (start - regionStart);
+  if (end < regionEnd) return offset + (regionEnd - end);
+  return offset;
+}
+
+/** World bounds of the listed cells' squares, or null when there are none. */
+export function cellWorldBounds(cells: readonly Coord[]): WorldBounds | null {
+  if (cells.length === 0) return null;
+  const xs = cells.map((cell) => cell.x);
+  const ys = cells.map((cell) => cell.y);
+  return {
+    left: Math.min(...xs) * TILE_WIDTH - TILE_WIDTH / 2,
+    top: Math.min(...ys) * TILE_HEIGHT - TILE_HEIGHT / 2,
+    right: Math.max(...xs) * TILE_WIDTH + TILE_WIDTH / 2,
+    bottom: Math.max(...ys) * TILE_HEIGHT + TILE_HEIGHT / 2,
+  };
+}
+
 export function clampZoom(value: number): number {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
 }

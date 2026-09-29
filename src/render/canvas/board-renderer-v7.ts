@@ -69,8 +69,11 @@ import {
   type ChibiResolutionV7,
 } from "./chibi-art-resolver-v7";
 import {
+  CHIBI_GARRISON_SCALE,
   chibiDestinationRect,
+  chibiGarrisonDestinationRect,
   chibiMasterScale,
+  isWholeScale,
   snapCameraToDevicePixels,
 } from "./chibi-geometry-v7";
 import { RULESET7_PLAYER_COLORS } from "./owner-recolour-v7";
@@ -829,6 +832,20 @@ export function drawBoardV7(input: {
           )
           .map((entry) => coordKey(entry.at)),
   );
+  // CHIBI settlement centres (cities and villages): a unit standing on one
+  // draws smaller in the cell's front-right, so the settlement stays
+  // readable. A unit mid-move (fractional cell) never matches.
+  const settlementCells = new Set(
+    chibiArt === undefined
+      ? []
+      : input.plan.entries
+          .filter(
+            (entry) =>
+              entry.kind === "CITY" ||
+              (entry.kind === "SITE" && entry.artSubject === "SITE:VILLAGE"),
+          )
+          .map((entry) => coordKey(entry.at)),
+  );
   for (const pass of passes)
     for (const entry of input.plan.entries) {
       if (
@@ -1109,6 +1126,10 @@ export function drawBoardV7(input: {
             : chibiReady === null
               ? null
               : chibiReady.image;
+        const garrisoned =
+          chibiReady !== null &&
+          entry.kind === "UNIT" &&
+          settlementCells.has(coordKey(entry.at));
         if (image !== null) {
           let rect =
             chibiReady === null
@@ -1117,12 +1138,19 @@ export function drawBoardV7(input: {
                   camera.zoom,
                   geometryFor(entry),
                 )
-              : chibiDestinationRect(
-                  { x, y },
-                  camera,
-                  chibiReady.asset,
-                  devicePixelRatio,
-                );
+              : garrisoned
+                ? chibiGarrisonDestinationRect(
+                    { x, y },
+                    camera,
+                    chibiReady.asset,
+                    devicePixelRatio,
+                  )
+                : chibiDestinationRect(
+                    { x, y },
+                    camera,
+                    chibiReady.asset,
+                    devicePixelRatio,
+                  );
           let alpha = 1;
           if (entry.kind === "UNIT") {
             const readiness = entry.ready
@@ -1171,7 +1199,16 @@ export function drawBoardV7(input: {
           context.save();
           context.globalAlpha = alpha * sceneAlpha;
           if (chibiReady !== null) {
-            context.imageSmoothingEnabled = chibiReady.smoothing;
+            // A garrisoned unit is smoothed unless its reduced scale still
+            // lands on whole raster pixels (zoom 2 on a DPR 2 screen).
+            context.imageSmoothingEnabled = garrisoned
+              ? !isWholeScale(
+                  (chibiMasterScale(camera) *
+                    CHIBI_GARRISON_SCALE *
+                    devicePixelRatio) /
+                    chibiReady.density,
+                )
+              : chibiReady.smoothing;
             context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
           } else if (entry.sourceCrop === undefined)
             context.drawImage(image, rect.x, rect.y, rect.width, rect.height);

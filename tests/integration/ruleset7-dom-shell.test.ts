@@ -269,6 +269,26 @@ describe("Ruleset 7 DOM shell", () => {
     );
   });
 
+  it("sizes the selection dock against the full viewport width on phones", () => {
+    const css = readFileSync("src/styles/v7.css", "utf8");
+    const dockRule =
+      /\n\.v7-selection-dock \{([\s\S]*?)\n\}/.exec(css)?.[1] ?? "";
+    // A shrink-to-fit box measures its available width from its insets: the
+    // old left: 50% capped the dock at half a 390 px phone and clipped the
+    // stat chips. Inline insets of 0 with auto margins centre it instead.
+    expect(dockRule).toMatch(/\n {2}inset-inline: 0;/);
+    expect(dockRule).toMatch(/\n {2}margin-inline: auto;/);
+    expect(dockRule).toMatch(/\n {2}width: fit-content;/);
+    expect(dockRule).toMatch(/\n {2}max-width: calc\(100% - 1\.2rem\);/);
+    expect(dockRule).not.toMatch(/\n {2}left:/);
+    expect(dockRule).not.toMatch(/translateX/);
+    // Where the stacked dock spans the map, the board host reserves its
+    // height so a new match is framed above it.
+    expect(css).toMatch(
+      /@media \(max-width: 800px\) \{\s*\/\*[\s\S]*?\*\/\s*\.v7-board-host \{\s*scroll-padding-bottom: 16rem;\s*\}/,
+    );
+  });
+
   it("launches the complete board-first shell with semantic public overlays", async () => {
     const app = bootstrapRuleset7App(document, { storage: null });
     expect(document.querySelector("h1")?.textContent).toBe("Pulp Wars");

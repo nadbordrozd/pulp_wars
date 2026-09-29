@@ -13,6 +13,14 @@ import {
 } from "../../src/engine/index";
 import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
+import {
+  boardWorldBounds,
+  cellWorldBounds,
+  fitCamera,
+  frameCameraOnArea,
+  projectGrid,
+  worldToScreen,
+} from "../../src/render/canvas/geometry";
 import type {
   BoardHostCallbacksV7,
   BoardHostModelV7,
@@ -238,15 +246,28 @@ describe("Ruleset 7 Canvas interaction", () => {
     canvas.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
     );
+    // The new match is framed on its explored area in the 800 x 600 host;
+    // there is no HUD or dock to leave out of the visible band.
+    const viewport = { width: 800, height: 600 };
+    const framed = frameCameraOnArea(fitCamera(view.board, viewport), {
+      area: cellWorldBounds(
+        view.board.tiles.filter((tile) => tile.explored).map((tile) => tile.at),
+      ),
+      focus: projectGrid(unit.at),
+      board: boardWorldBounds(view.board.width, view.board.height),
+      viewport,
+      band: { top: 0, bottom: viewport.height },
+    });
+    const tap = worldToScreen(projectGrid(unit.at), framed);
     const down = new MouseEvent("pointerdown", {
       bubbles: true,
-      clientX: 400,
-      clientY: 300,
+      clientX: tap.x,
+      clientY: tap.y,
     });
     const up = new MouseEvent("pointerup", {
       bubbles: true,
-      clientX: 400,
-      clientY: 300,
+      clientX: tap.x,
+      clientY: tap.y,
     });
     for (const event of [down, up]) {
       Object.defineProperty(event, "pointerId", { value: 1 });

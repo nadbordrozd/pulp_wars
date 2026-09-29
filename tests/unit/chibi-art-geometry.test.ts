@@ -11,10 +11,14 @@ import {
 } from "../../src/assets/chibi-art-v7";
 import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
 import {
+  CHIBI_GARRISON_RIGHT,
+  CHIBI_GARRISON_SCALE,
   CHIBI_ZOOM_STEPS,
   adjacentChibiZoomStep,
+  chibiBoardWorldBounds,
   chibiCameraZoom,
   chibiDestinationRect,
+  chibiGarrisonDestinationRect,
   chibiMasterScale,
   chibiRasterForDeviceScale,
   chibiTileCssPx,
@@ -26,6 +30,8 @@ import {
   zoomChibiCameraAt,
 } from "../../src/render/canvas/chibi-geometry-v7";
 import {
+  cellWorldBounds,
+  frameCameraOnArea,
   pickGridTile,
   projectGrid,
   worldToScreen,
@@ -232,6 +238,160 @@ describe("CHIBI anchors and allowed overflow", () => {
     );
     expect(doubled).toEqual({ x: 104, y: -8, width: 192, height: 208 });
     expect(doubled.y + doubled.height).toBe(120 + 80);
+  });
+
+  it("draws a garrisoned unit at 0.75 with its feet on the cell's bottom edge and its right edge at the pip column", () => {
+    for (const step of CHIBI_ZOOM_STEPS) {
+      for (const candidate of [
+        asset(),
+        asset({
+          id: "chibi-test-knight",
+          subject: "UNIT:KNIGHT",
+          assetClass: "LARGE_UNIT",
+          width: 72,
+          height: 88,
+        }),
+        asset({
+          id: "chibi-test-giant",
+          subject: "UNIT:JUGGERNAUT",
+          assetClass: "GIANT_UNIT",
+          width: 88,
+          height: 104,
+        }),
+      ]) {
+        const camera = { offsetX: 0, offsetY: 0, zoom: chibiCameraZoom(step) };
+        const centre = { x: 400, y: 300 };
+        const normal = chibiDestinationRect(centre, camera, candidate, 1);
+        const rect = chibiGarrisonDestinationRect(centre, camera, candidate, 3);
+        expect(CHIBI_GARRISON_SCALE).toBe(0.75);
+        expect(rect.width).toBeCloseTo(normal.width * 0.75);
+        expect(rect.height).toBeCloseTo(normal.height * 0.75);
+        // Same feet line as the full-size unit: the cell's bottom edge.
+        expect(rect.y + rect.height).toBeCloseTo(centre.y + 40 * step, 0);
+        // Right edge on or just inside the pip column, on whole device px.
+        const pipColumn = centre.x + CHIBI_GARRISON_RIGHT * camera.zoom;
+        expect(rect.x + rect.width).toBeLessThanOrEqual(pipColumn + 1e-9);
+        expect(rect.x + rect.width).toBeGreaterThan(pipColumn - 1 / 3);
+        expect(Math.abs(rect.x * 3 - Math.round(rect.x * 3))).toBeLessThan(
+          1e-9,
+        );
+        // The settlement's left side stays uncovered (cell left is -40 x step).
+        expect(rect.x).toBeGreaterThan(centre.x - 40 * step);
+        if (candidate.assetClass === "STANDARD_UNIT")
+          expect(rect.x).toBeGreaterThanOrEqual(centre.x - 14 * step);
+      }
+    }
+  });
+
+  it("frames a new match's explored area in the visible band without empty off-board margins", () => {
+    const board = { width: 11, height: 11 };
+    const bounds = chibiBoardWorldBounds(board);
+    // Explored 5 x 5 around a capital one row below the map's top row.
+    const area = cellWorldBounds(
+      Array.from({ length: 25 }, (_, index) => ({
+        x: 1 + (index % 5),
+        y: 1 + Math.floor(index / 5),
+      })),
+    );
+    expect(area).toEqual({ left: 64, top: 64, right: 704, bottom: 704 });
+    if (area === null) throw new Error("Explored area missing");
+    expect(cellWorldBounds([])).toBeNull();
+    const focus = projectGrid({ x: 3, y: 3 });
+    // Phone: 390 x 844, HUD to 76 px, a 256 px dock reserve at the bottom.
+    const phone = { width: 390, height: 844 };
+    const fitted = fitChibiCamera(board, phone);
+    expect(chibiZoomStepForCamera(fitted)).toBe(0.75);
+    const band = { top: 76, bottom: 844 - 256 };
+    const framed = frameCameraOnArea(fitted, {
+      area,
+      focus,
+      board: bounds,
+      viewport: phone,
+      band,
+    });
+    expect(framed.zoom).toBe(fitted.zoom);
+    // The board is taller than the band, so its top edge (with the chibi
+    // upward overflow) meets the HUD instead of leaving an empty band.
+    expect(framed.offsetY + bounds.top * framed.zoom).toBeCloseTo(band.top);
+    // Every explored cell is inside the visible band above the dock.
+    const topLeft = worldToScreen({ x: area.left, y: area.top }, framed);
+    const bottomRight = worldToScreen(
+      { x: area.right, y: area.bottom },
+      framed,
+    );
+    expect(topLeft.y).toBeGreaterThanOrEqual(band.top);
+    expect(bottomRight.y).toBeLessThanOrEqual(band.bottom);
+    // Horizontally the board is wider than the phone: the area is centred.
+    expect((topLeft.x + bottomRight.x) / 2).toBeCloseTo(phone.width / 2);
+
+    // Mid-map explored area on a huge board: centred in the band exactly.
+    const huge = { width: 25, height: 25 };
+    const midArea = cellWorldBounds([
+      { x: 10, y: 10 },
+      { x: 14, y: 14 },
+    ]);
+    const midFramed = frameCameraOnArea(fitChibiCamera(huge, phone), {
+      area: midArea,
+      focus: projectGrid({ x: 12, y: 12 }),
+      board: chibiBoardWorldBounds(huge),
+      viewport: phone,
+      band,
+    });
+    expect(worldToScreen(projectGrid({ x: 12, y: 12 }), midFramed)).toEqual({
+      x: phone.width / 2,
+      y: (band.top + band.bottom) / 2,
+    });
+
+    // An explored area larger than the band falls back to the focus point.
+    const wide = cellWorldBounds([
+      { x: 0, y: 5 },
+      { x: 24, y: 19 },
+    ]);
+    const focusFramed = frameCameraOnArea(fitChibiCamera(huge, phone), {
+      area: wide,
+      focus: projectGrid({ x: 12, y: 12 }),
+      board: chibiBoardWorldBounds(huge),
+      viewport: phone,
+      band,
+    });
+    expect(worldToScreen(projectGrid({ x: 12, y: 12 }), focusFramed)).toEqual({
+      x: phone.width / 2,
+      y: (band.top + band.bottom) / 2,
+    });
+
+    // Desktop: the 0.75 board fits, so it stays wholly inside the region
+    // with the explored area as close to the centre as that allows.
+    const desktop = { width: 1440, height: 900 };
+    const desktopFramed = frameCameraOnArea(fitChibiCamera(board, desktop), {
+      area,
+      focus,
+      board: bounds,
+      viewport: desktop,
+      band: { top: 76, bottom: 900 },
+    });
+    const boardTop = desktopFramed.offsetY + bounds.top * desktopFramed.zoom;
+    const boardBottom =
+      desktopFramed.offsetY + bounds.bottom * desktopFramed.zoom;
+    expect(boardTop).toBeGreaterThanOrEqual(76);
+    expect(boardBottom).toBeCloseTo(900);
+    const areaCentre = worldToScreen(
+      { x: (area.left + area.right) / 2, y: 0 },
+      desktopFramed,
+    );
+    expect(areaCentre.x).toBeCloseTo(720);
+
+    // A degenerate band (no measurable layout) uses the whole canvas.
+    const whole = frameCameraOnArea(fitChibiCamera(huge, phone), {
+      area: null,
+      focus: projectGrid({ x: 12, y: 12 }),
+      board: chibiBoardWorldBounds(huge),
+      viewport: phone,
+      band: { top: 0, bottom: 0 },
+    });
+    expect(worldToScreen(projectGrid({ x: 12, y: 12 }), whole)).toEqual({
+      x: phone.width / 2,
+      y: phone.height / 2,
+    });
   });
 
   it("rejects canvases and anchors beyond the direction's overflow limits", () => {

@@ -8,8 +8,11 @@ import { unitIsUndeadV7 } from "../undead-presentation-v7";
 import {
   MAX_ZOOM,
   MIN_ZOOM,
+  boardWorldBounds,
+  cellWorldBounds,
   centerCameraOn,
   fitCamera,
+  frameCameraOnArea,
   panCamera,
   pickGridTile,
   projectGrid,
@@ -18,6 +21,7 @@ import {
   zoomCameraAt,
   type CameraState,
   type Point,
+  type ScreenBand,
   type Size,
 } from "./geometry";
 import {
@@ -45,6 +49,7 @@ import {
 } from "./chibi-art-resolver-v7";
 import {
   adjacentChibiZoomStep,
+  chibiBoardWorldBounds,
   chibiTileCssPx,
   chibiZoomStepForCamera,
   fitChibiCamera,
@@ -286,20 +291,29 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const key = `${String(model.matchInstanceId)}:${model.view.board.width}x${model.view.board.height}:${this.#artSet()}`;
     if (this.#boardKey !== key) {
       this.#boardKey = key;
-      this.#camera =
-        this.#artSet() === "CHIBI"
-          ? fitChibiCamera(model.view.board, this.#viewport)
-          : fitCamera(model.view.board, this.#viewport);
+      const chibi = this.#artSet() === "CHIBI";
+      const fitted = chibi
+        ? fitChibiCamera(model.view.board, this.#viewport)
+        : fitCamera(model.view.board, this.#viewport);
       const capital = model.view.cities.find(
         (city) => city.ownerId === model.view.viewer.id && city.isCapital,
       );
       this.#focused = capital?.at ?? model.view.cities[0]?.at ?? { x: 0, y: 0 };
-      if (this.#focused !== null)
-        this.#camera = centerCameraOn(
-          this.#camera,
-          projectGrid(this.#focused),
-          this.#viewport,
-        );
+      // Frame the explored area (the capital's surroundings at creation) in
+      // the map region the HUD and the open or reserved dock leave visible.
+      this.#camera = frameCameraOnArea(fitted, {
+        area: cellWorldBounds(
+          model.view.board.tiles
+            .filter((tile) => tile.explored)
+            .map((tile) => tile.at),
+        ),
+        focus: projectGrid(this.#focused),
+        board: chibi
+          ? chibiBoardWorldBounds(model.view.board)
+          : boardWorldBounds(model.view.board.width, model.view.board.height),
+        viewport: this.#viewport,
+        band: this.#unobscuredBand(true),
+      });
     }
     this.#describe();
     this.#draw();
@@ -1153,6 +1167,51 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#draw();
   };
 
+  /**
+   * The canvas rows not covered by the top HUD or an open selection dock, in
+   * CSS px from the canvas top; the whole canvas when neither is mounted.
+   * With `reserveDock`, a closed dock still reserves the board host's
+   * `scroll-padding-bottom` (set by the stylesheet on layouts where the
+   * full-width dock covers the map), so a new match is framed above where
+   * the dock will open.
+   */
+  #unobscuredBand(reserveDock = false): ScreenBand {
+    const canvas = this.#canvas;
+    if (canvas === null) return { top: 0, bottom: this.#viewport.height };
+    const canvasRect = canvas.getBoundingClientRect();
+    const shell = canvas.closest<HTMLElement>(".v7-app-shell");
+    const hudRect = shell
+      ?.querySelector<HTMLElement>(".v7-match-hud")
+      ?.getBoundingClientRect();
+    const dockRect = shell
+      ?.querySelector<HTMLElement>(".v7-selection-dock")
+      ?.getBoundingClientRect();
+    const host = canvas.parentElement;
+    const reserve =
+      reserveDock && host !== null
+        ? Number.parseFloat(
+            this.#document.defaultView?.getComputedStyle(host)
+              .scrollPaddingBottom ?? "",
+          )
+        : Number.NaN;
+    return {
+      top: Math.max(
+        0,
+        hudRect === undefined || hudRect.bottom <= canvasRect.top
+          ? 0
+          : Math.min(this.#viewport.height, hudRect.bottom - canvasRect.top),
+      ),
+      bottom: Math.min(
+        this.#viewport.height,
+        dockRect !== undefined && dockRect.top < canvasRect.bottom
+          ? Math.max(0, dockRect.top - canvasRect.top)
+          : Number.isFinite(reserve) && reserve > 0
+            ? this.#viewport.height - reserve
+            : this.#viewport.height,
+      ),
+    };
+  }
+
   #keepFocusedOnscreen(): void {
     const canvas = this.#canvas;
     if (this.#focused === null || canvas === null) return;
@@ -1162,26 +1221,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#viewport.width / 4,
       this.#viewport.height / 4,
     );
-    const canvasRect = canvas.getBoundingClientRect();
-    const shell = canvas.closest<HTMLElement>(".v7-app-shell");
-    const hudRect = shell
-      ?.querySelector<HTMLElement>(".v7-match-hud")
-      ?.getBoundingClientRect();
-    const dockRect = shell
-      ?.querySelector<HTMLElement>(".v7-selection-dock")
-      ?.getBoundingClientRect();
-    const unobscuredTop = Math.max(
-      0,
-      hudRect === undefined || hudRect.bottom <= canvasRect.top
-        ? 0
-        : Math.min(this.#viewport.height, hudRect.bottom - canvasRect.top),
-    );
-    const unobscuredBottom = Math.min(
-      this.#viewport.height,
-      dockRect === undefined || dockRect.top >= canvasRect.bottom
-        ? this.#viewport.height
-        : Math.max(0, dockRect.top - canvasRect.top),
-    );
+    const { top: unobscuredTop, bottom: unobscuredBottom } =
+      this.#unobscuredBand();
     const unobscuredHeight = unobscuredBottom - unobscuredTop;
     const verticalInset =
       unobscuredHeight > 0 ? Math.min(margin, unobscuredHeight / 4) : margin;

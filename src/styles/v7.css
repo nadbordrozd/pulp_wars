@@ -516,7 +516,13 @@
   position: absolute;
   z-index: 12;
   bottom: max(0.6rem, env(safe-area-inset-bottom));
-  left: 50%;
+  /*
+   * Centred with inline insets and auto margins, not left: 50% plus a
+   * translate: a shrink-to-fit box measures its available width from its
+   * inset, so left: 50% capped every dock at half the viewport and clipped
+   * the stat chips on phones.
+   */
+  inset-inline: 0;
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr);
   gap: 0.9rem;
@@ -525,12 +531,12 @@
   min-width: min(14rem, calc(100% - 1.2rem));
   max-width: calc(100% - 1.2rem);
   max-height: min(45dvh, calc(100dvh - 8rem));
+  margin-inline: auto;
   padding: 0.6rem 3.4rem 0.6rem 0.75rem;
   border: 1px solid var(--v7-edge);
   border-radius: 18px;
   background: var(--v7-glass-strong);
   box-shadow: var(--v7-shadow);
-  transform: translateX(-50%);
 }
 
 .v7-selection-dock[data-selection-kind="tile"] {
@@ -1719,6 +1725,14 @@
 }
 
 @media (max-width: 800px) {
+  /*
+   * The stacked unit dock (about 16rem tall) spans the map here; the board
+   * host reads this padding to frame a new match above where it opens.
+   */
+  .v7-board-host {
+    scroll-padding-bottom: 16rem;
+  }
+
   .v7-selection-dock,
   .v7-selection-dock[data-selection-kind="tile"] {
     grid-template-columns: auto minmax(0, 1fr);

@@ -849,6 +849,10 @@ to keep every required control reachable. This explicitly replaces the older
   information, and explicit zoom buttons alongside pinch;
 - dialogs fit within the visual viewport, scroll internally, and keep action
   buttons reachable above the on-screen keyboard.
+- a new match frames the explored area around the human capital between the
+  top HUD and the reserved dock height, with no empty off-board band where
+  the board is larger than that region
+  ([camera framing](../architecture/CLIENT_ARCHITECTURE.md));
 - a Large or Huge map starts centered on the human capital at minimum zoom and
   is intentionally explored by pan/zoom; the current visible slice must not
   clip tall unit, mountain, or city sprites at the Canvas edge.

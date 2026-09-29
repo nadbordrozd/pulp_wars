@@ -78,6 +78,17 @@ bar and seat-badge strips; giants are exempt, because every CHIBI overlay
 (HP bar, seat badge, faction badge) is drawn after all pieces and stays
 legible on top of giant art.
 
+**A unit on a settlement centre** (a city or a village, decided in bead
+`pulp_wars-zhn`) is drawn at 0.75 of its normal size in the cell's
+front-right: its canvas bottom stays on the cell's bottom edge and its right
+edge sits at the left edge of the population-pip column. The settlement's
+left side, roofs and upward overflow stay visible, so a garrisoned city
+still reads as a city at zoom 0.75 and 1. The overlay frame does not move
+(HP bar and seat badge in the left strip, pips on the right, crown top
+right). The reduced unit is smoothed unless it still lands on whole device
+pixels. A unit moving off the settlement is drawn at full size, and the
+legacy art set is unchanged.
+
 Rules for resolution:
 
 - **Generate at the display size. Never downscale a big render.** Every

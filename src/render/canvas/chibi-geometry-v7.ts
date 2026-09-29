@@ -179,6 +179,49 @@ export interface ChibiDestinationRectV7 {
 }
 
 /**
+ * A chibi unit standing on a settlement centre (a city or a village) is
+ * drawn at this fraction of its normal size, so the settlement it covers
+ * stays readable (chibi direction section 3).
+ */
+export const CHIBI_GARRISON_SCALE = 0.75;
+/**
+ * The garrisoned unit's right canvas edge, in world units from the cell
+ * centre (128 = one cell): the left edge of the city's population pip
+ * column in the CHIBI overlay frame, so the unit never covers the pips.
+ */
+export const CHIBI_GARRISON_RIGHT = 46;
+
+/**
+ * CSS-pixel destination of a chibi unit on a settlement centre: scaled by
+ * CHIBI_GARRISON_SCALE, its canvas bottom on the cell's bottom edge (where
+ * a bottom-centred unit stands) and its right edge at CHIBI_GARRISON_RIGHT,
+ * so the unit stands in the front-right of the cell and the settlement's
+ * left side, roofs and upward overflow stay visible. The origin snaps to a
+ * whole device pixel like chibiDestinationRect (x rounds down).
+ */
+export function chibiGarrisonDestinationRect(
+  cellCentre: Point,
+  camera: CameraState,
+  asset: ChibiArtAssetV7,
+  devicePixelRatio: number,
+): ChibiDestinationRectV7 {
+  const scale = chibiMasterScale(camera);
+  const width = asset.width * scale * CHIBI_GARRISON_SCALE;
+  const height = asset.height * scale * CHIBI_GARRISON_SCALE;
+  const anchor = chibiAnchorV7(asset);
+  const bottom = cellCentre.y + (asset.height - anchor.y) * scale;
+  const right = cellCentre.x + CHIBI_GARRISON_RIGHT * camera.zoom;
+  const ratio = devicePixelRatio > 0 ? devicePixelRatio : 1;
+  return {
+    // Floor, so snapping never pushes the unit into the pip column.
+    x: Math.floor((right - width) * ratio) / ratio,
+    y: Math.round((bottom - height) * ratio) / ratio,
+    width,
+    height,
+  };
+}
+
+/**
  * CSS-pixel destination of a chibi master: the anchor lands on the cell
  * centre, the size is master x step, and the origin snaps to a whole device
  * pixel so integer scales stay nearest-neighbour exact.

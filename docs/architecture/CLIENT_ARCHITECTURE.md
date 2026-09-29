@@ -877,6 +877,19 @@ Large and Huge boards start at minimum zoom centered on the human capital when
 the whole board cannot fit. Pan, wheel/pinch, keyboard and explicit zoom
 controls remain camera-only and must retain tall-sprite overhang.
 
+A new match (and an art-set switch) frames the camera at the fitted zoom in
+the visible map region: the canvas width by the band between the top HUD's
+bottom and the open dock's top. With no dock open, compact layouts (800 CSS
+px and narrower) reserve the stacked dock's height, published as the board
+host's `scroll-padding-bottom`, so the start view sits above where the dock
+opens. On each axis the viewer's explored cells are centred when they fit
+the region, else the capital; the camera then slides the least distance
+that keeps a board that fits wholly inside the region, or leaves no empty
+off-board margin in the region when the board is larger
+(`frameCameraOnArea`). Both art sets frame this way. Framing only sets the
+starting camera: opening a dock never moves it, and pan and zoom stay
+unclamped.
+
 Canvas 2D responsibilities:
 
 - camera pan/zoom, device-pixel-ratio backing size, grid projection, stable draw
@@ -1109,6 +1122,12 @@ CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
   device scales use nearest-neighbour from the master or from a manifest
   x2/x3 variant that divides the scale. Fractional scales, such as step
   0.75 on a DPR 2 screen, draw the master smoothed.
+- A unit standing on a city or village centre draws through
+  `chibiGarrisonDestinationRect`: 0.75 x its normal size, canvas bottom on
+  the cell's bottom edge, right edge at the population-pip column (46 world
+  units right of the centre), so the settlement stays readable under it
+  ([chibi direction](../art/CHIBI_ART_DIRECTION.md#3-geometry-and-resolution)).
+  The overlay frame is unchanged; LEGACY draws units on cities as before.
 - Tall terrain draws its owning cell in the ground pass, below Roads, and
   its upward overflow in the row-major foreground pass. Cities, units and
   buildings draw in the foreground pass, so upward and side overflow cover

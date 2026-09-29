@@ -19,7 +19,10 @@ import type {
   ChibiBoardArtV7,
   ChibiResolutionV7,
 } from "../../src/render/canvas/chibi-art-resolver-v7";
-import { chibiCameraZoom } from "../../src/render/canvas/chibi-geometry-v7";
+import {
+  chibiCameraZoom,
+  chibiGarrisonDestinationRect,
+} from "../../src/render/canvas/chibi-geometry-v7";
 import { RULESET7_PLAYER_COLORS } from "../../src/render/canvas/owner-recolour-v7";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 
@@ -323,7 +326,7 @@ describe("CHIBI board rendering", () => {
     expect(crownFills({ artSet: "LEGACY", chibiArt: chibi }, true)).toBe(0);
   });
 
-  it("keeps a ready CHIBI unit opaque at 1:1 and frames its overlays outside the figure", () => {
+  it("keeps a ready CHIBI unit opaque at its garrison size and frames its overlays outside the figure", () => {
     const fighter = chibiAsset("UNIT:FIGHTER", "STANDARD_UNIT", 56, 80);
     const city = chibiAsset("CITY:1", "SETTLEMENT", 88, 96);
     const draw = (chibiArt: ChibiBoardArtV7, step: 0.75 | 1) => {
@@ -363,19 +366,22 @@ describe("CHIBI board rendering", () => {
       const unitDraw = images(log).find(
         (call) => (call[1] as { chibi?: string }).chibi === fighter.id,
       );
-      // Anchor (28, 40) on the cell centre, master size times the step.
+      // On the capital: 0.75 x master x step, feet on the cell's bottom
+      // edge, right edge floored inside the pip column (46 world units).
+      const unitRight = centre + 46 * chibiCameraZoom(step);
+      const unitLeft = Math.floor(unitRight - 42 * step);
       expect(unitDraw?.slice(2)).toEqual([
-        centre - 28 * step,
-        centre - 40 * step,
-        56 * step,
-        80 * step,
+        unitLeft,
+        centre + 40 * step - 60 * step,
+        42 * step,
+        60 * step,
       ]);
       const unitIndex = log.indexOf(unitDraw as LogEntry);
       const alphaBefore = log
         .slice(0, unitIndex)
         .filter((call) => call[0] === "set" && call[1] === "globalAlpha");
       expect(alphaBefore.at(-1)?.[2]).toBe(1);
-      // Every overlay rect drawn after the unit stays clear of its 56 px
+      // Every overlay rect drawn after the unit stays clear of its garrison
       // canvas. The capital crown (now drawn after the pieces) is a path in
       // the top-right corner; only its 1.5-unit band is a rect, skipped here.
       const zoom = chibiCameraZoom(step);
@@ -386,9 +392,9 @@ describe("CHIBI board rendering", () => {
         .filter(([, , , height = 0]) => height !== 1.5 * zoom);
       expect(overlays.length).toBeGreaterThanOrEqual(3);
       for (const [left = 0, , width = 0] of overlays)
-        expect(
-          left + width <= centre - 28 * step || left >= centre + 28 * step,
-        ).toBe(true);
+        expect(left + width <= unitLeft || left >= unitLeft + 42 * step).toBe(
+          true,
+        );
     }
     // A legacy-fallback unit in the CHIBI set keeps the legacy pulse.
     const fallback = draw(fakeChibi([]), 1);
@@ -401,6 +407,108 @@ describe("CHIBI board rendering", () => {
       .slice(0, fallbackIndex)
       .filter((call) => call[0] === "set" && call[1] === "globalAlpha");
     expect(Number(fallbackAlpha.at(-1)?.[2])).toBeLessThan(1);
+  });
+
+  it("draws a CHIBI unit on a city or village centre smaller in the front-right and leaves other units and LEGACY unchanged", () => {
+    const fighter = chibiAsset("UNIT:FIGHTER", "STANDARD_UNIT", 56, 80);
+    const city = chibiAsset("CITY:1", "SETTLEMENT", 88, 96);
+    const village = chibiAsset("SITE:VILLAGE", "SETTLEMENT", 80, 88);
+    const unit = (x: number, y: number) =>
+      entry("UNIT", x, y, "unit-original-fighter", "UNIT:FIGHTER", {
+        key: `unit:${x},${y}`,
+        ownerColor: RULESET7_PLAYER_COLORS.TEAL,
+        ownerSeat: 0,
+        hp: 10,
+        maxHp: 10,
+      });
+    const draw = (
+      artSet: "CHIBI" | "LEGACY",
+      step: 1 | 2,
+      devicePixelRatio: number,
+    ) => {
+      const { context, log } = recordingContext();
+      drawBoardV7({
+        context,
+        viewport: { width: 1600, height: 1200 },
+        devicePixelRatio,
+        camera: { offsetX: 40, offsetY: 40, zoom: chibiCameraZoom(step) },
+        plan: plan([
+          entry("CITY", 1, 1, "building-city-1", "CITY:1", { value: 1 }),
+          entry("SITE", 3, 1, "building-village", "SITE:VILLAGE"),
+          unit(1, 1),
+          unit(3, 1),
+          unit(5, 1),
+          // Mid-move off the city: a fractional cell is never garrisoned.
+          unit(1.5, 1),
+        ]),
+        images: legacyImages,
+        artSet,
+        chibiArt: fakeChibi([fighter, city, village]),
+      });
+      return log;
+    };
+    const unitDraws = (log: readonly LogEntry[]) =>
+      log
+        .map((call, index) => ({ call, index }))
+        .filter(
+          ({ call }) =>
+            call[0] === "drawImage" &&
+            ((call[1] as { chibi?: string }).chibi === fighter.id ||
+              (call[1] as { legacy?: string }).legacy ===
+                "unit-original-fighter"),
+        );
+    const smoothingAt = (log: readonly LogEntry[], index: number) =>
+      log
+        .slice(0, index)
+        .filter(
+          (call) => call[0] === "set" && call[1] === "imageSmoothingEnabled",
+        )
+        .at(-1)?.[2];
+
+    const chibi = draw("CHIBI", 1, 1);
+    const [onCity, onVillage, onGrass, moving] = unitDraws(chibi);
+    const zoom = chibiCameraZoom(1);
+    const cellX = (x: number) => 40 + 128 * x * zoom;
+    const cellY = 40 + 128 * zoom;
+    for (const [drawn, x] of [
+      [onCity, 1],
+      [onVillage, 3],
+    ] as const) {
+      // 42 x 60 CSS px, feet on the cell's bottom edge, right edge at the
+      // pip column: the settlement's left side and roofs stay uncovered.
+      expect(drawn?.call.slice(2)).toEqual([
+        Math.floor(cellX(x) + 46 * zoom - 42),
+        cellY + 40 - 60,
+        42,
+        60,
+      ]);
+      // 0.75 on a DPR 1 screen is fractional, so the unit is smoothed.
+      expect(smoothingAt(chibi, drawn?.index ?? 0)).toBe(true);
+    }
+    for (const [drawn, x] of [
+      [onGrass, 5],
+      [moving, 1.5],
+    ] as const) {
+      expect(drawn?.call.slice(2)).toEqual([cellX(x) - 28, cellY - 40, 56, 80]);
+      expect(smoothingAt(chibi, drawn?.index ?? 0)).toBe(false);
+    }
+
+    // Zoom 2 on DPR 2: 0.75 x 2 x 2 = 3 whole device pixels per master pixel.
+    const crisp = draw("CHIBI", 2, 2);
+    const [crispCity] = unitDraws(crisp);
+    expect(crispCity?.call.slice(4)).toEqual([84, 120]);
+    expect(smoothingAt(crisp, crispCity?.index ?? 0)).toBe(false);
+
+    // LEGACY draws a unit on a city exactly like a unit anywhere else.
+    const legacy = unitDraws(draw("LEGACY", 1, 1)).map(({ call }) =>
+      call.slice(2),
+    );
+    const [legacyCity, , legacyGrass] = legacy;
+    expect(legacyCity?.[2]).toBe(legacyGrass?.[2]);
+    expect(legacyCity?.[3]).toBe(legacyGrass?.[3]);
+    expect(Number(legacyGrass?.[0]) - Number(legacyCity?.[0])).toBeCloseTo(
+      4 * 128 * zoom,
+    );
   });
 
   it("puts capital on the plan entry of the viewer's capital only", () => {
@@ -678,9 +786,17 @@ describe("CHIBI board rendering", () => {
         width: asset.width * step,
         height: asset.height * step,
       });
-      // Each ready unit glows around its full 1:1 canvas, never shrunk to 56 px.
+      // Each ready unit glows around its whole drawn canvas, never shrunk to
+      // 56 px: the Knight at 1:1, the Juggernaut garrisoning the city at its
+      // garrison size.
+      const garrison = chibiGarrisonDestinationRect(
+        centre,
+        { offsetX: 40, offsetY: 40, zoom: chibiCameraZoom(step) },
+        juggernaut,
+        1,
+      );
       expect(glowDraws.map((call) => [call[2], call[3]])).toEqual([
-        [`chibi:${juggernaut.id}`, rect(juggernaut, centre)],
+        [`chibi:${juggernaut.id}`, garrison],
         [
           `chibi:${knight.id}`,
           rect(knight, { x: centre.x + cell, y: centre.y }),
@@ -689,7 +805,7 @@ describe("CHIBI board rendering", () => {
       const juggernautDraw = images(log).find(
         (call) => (call[1] as { chibi?: string }).chibi === juggernaut.id,
       );
-      const { x, y, width, height } = rect(juggernaut, centre);
+      const { x, y, width, height } = garrison;
       expect(juggernautDraw?.slice(2)).toEqual([x, y, width, height]);
       // The population pips and capital crown of the garrisoned city come
       // after every unit, so the giant cannot cover them.
@@ -703,8 +819,8 @@ describe("CHIBI board rendering", () => {
         .filter((call) => call[0] === "set" && call[1] === "fillStyle")
         .map((call) => call[2]);
       expect(fills).toContain("#f4c542");
-      // The Fighter's seat badge (row 0) is drawn after the giant (row 1),
-      // whose hammer overflows into the Fighter's cell.
+      // The Fighter's seat badge (row 0) is drawn after every piece, row 1
+      // included, so a giant's upward overflow can never cover it.
       expect(fills).toContain(RULESET7_PLAYER_COLORS.CORAL);
       const fighterBar = after.find(
         (call) =>
