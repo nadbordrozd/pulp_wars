@@ -6,7 +6,8 @@ instructions that gives it its own identity without breaking the shared rules.
 
 The baseline faction is the Human faction, [`ORIGINAL`](ORIGINAL.md). The
 user has named the Undead faction (epic `pulp_wars-vkq`); its fragment is
-bead `pulp_wars-vkq.11` and must follow the rules below.
+bead `pulp_wars-vkq.11` and must follow the rules below. Its draft, awaiting
+user approval, is [`UNDEAD`](UNDEAD.md).
 
 ## How the layers combine
 
