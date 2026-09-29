@@ -30,7 +30,11 @@ export type ChibiRecipeClass =
   | "building"
   | "resource"
   | "terrain"
-  | "tall-terrain";
+  | "tall-terrain"
+  /** Batch 5: owned head-and-shoulders unit portraits for the interface. */
+  | "portrait"
+  /** Batch 5: unowned interface icons (technologies, commands, rewards, HUD). */
+  | "icon";
 
 export type ChibiEndpoint =
   "create-image-pixen" | "create-image-pixflux" | "edit-image-pixen";
@@ -44,7 +48,7 @@ export type ChibiDerivation =
   /** The transparent body is drawn over an accepted ground tile in the bottom cell (tall terrain). */
   | "ground-composite";
 
-export type ChibiCamera = "three-quarter" | "top-down";
+export type ChibiCamera = "three-quarter" | "top-down" | "portrait" | "icon";
 
 export interface ChibiClassRecipe {
   readonly camera: ChibiCamera;
@@ -164,6 +168,43 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     noBackground: true,
     derivation: "ground-composite",
     options: { "create-image-pixen": PIECE_OPTIONS },
+  },
+  // Batch 5 interface art: generated at the 48 x 48 display size of an
+  // action tile, shown 1:1 there and at 1.5x in 72 px cards and dialogs.
+  portrait: {
+    camera: "portrait",
+    factionLayer: true,
+    assetClasses: ["PORTRAIT"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: {
+      "create-image-pixen": {
+        outline: "single color black outline",
+        detail: "low detail",
+        view: "side",
+        direction: "south-east",
+      },
+    },
+  },
+  icon: {
+    camera: "icon",
+    factionLayer: true,
+    // Ships and the Catapult use the icon camera for their whole-object
+    // portraits (a machine has no head and shoulders).
+    assetClasses: ["ICON", "PORTRAIT"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: {
+      "create-image-pixen": {
+        outline: "single color black outline",
+        detail: "low detail",
+        view: "low top-down",
+      },
+    },
   },
 };
 
@@ -376,7 +417,9 @@ function clean(text: string): string {
 export function assetOwned(asset: ChibiAssetSpec): boolean {
   return (
     asset.ownerColour ??
-    (asset.subject.startsWith("UNIT:") || asset.subject.startsWith("CITY:"))
+    (asset.subject.startsWith("UNIT:") ||
+      asset.subject.startsWith("CITY:") ||
+      asset.subject.startsWith("PORTRAIT:"))
   );
 }
 
@@ -654,7 +697,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT):[A-Z_]+$|^UNIT:UNDEAD:[A-Z_]+$|^CITY:[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT):UNDEAD:[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:)?[A-Z_]+$|^CITY:[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;
@@ -732,14 +775,21 @@ export function batchManifestProblems(
       owned &&
       !asset.subject.startsWith("UNIT:") &&
       !asset.subject.startsWith("CITY:") &&
-      !asset.subject.startsWith("IMPROVEMENT:")
+      !asset.subject.startsWith("IMPROVEMENT:") &&
+      !asset.subject.startsWith("PORTRAIT:")
     )
-      problems.push(`${label}: only units, cities and improvements are owned`);
+      problems.push(
+        `${label}: only units, cities, improvements and portraits are owned`,
+      );
     if (
       !owned &&
-      (asset.subject.startsWith("UNIT:") || asset.subject.startsWith("CITY:"))
+      (asset.subject.startsWith("UNIT:") ||
+        asset.subject.startsWith("CITY:") ||
+        asset.subject.startsWith("PORTRAIT:"))
     )
-      problems.push(`${label}: units and cities must carry owner colour`);
+      problems.push(
+        `${label}: units and cities must carry owner colour, as must portraits`,
+      );
     // The runtime contract for the entry this asset will register as.
     for (const problem of chibiAssetProblemsV7({
       id: asset.id,

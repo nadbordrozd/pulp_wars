@@ -1,0 +1,2300 @@
+{
+  "schemaVersion": 1,
+  "batch": "5-undead",
+  "recipes": {
+    "icon-action-devour-a": {
+      "id": "icon-action-devour-a",
+      "asset": "chibi-icon-action-devour",
+      "jobId": "sync-cf57cc6d-151f-4d8f-b807-8989d813773c",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-icon-action-devour",
+        "subject": "ICON:ACTION:DEVOUR",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5309,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: one big ivory bone with a big round bite taken out of it and a few small crumbs, with a few small cold pale blue sparks around it; nothing else in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big ivory bone with a big round bite taken out of it and a few small crumbs, with a few small cold pale blue sparks around it; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big ivory bone with a big round bite taken out of it and a few small crumbs, with a few small cold pale blue sparks around it; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+      },
+      "submittedAt": "2026-09-29T20:01:01.539Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/icon-action-devour-a.png",
+      "rawSheetSha256": "767c959b099457ec6608b4d445f079804b2dbfa675ab995bc572eadffd834afa",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.06,
+          "footprintWidthShare": 0.4545,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T20:01:47.260Z",
+      "usageUsd": 0.008727770196066962,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Devour: a big mossy ivory bone with pale blue sparks; reads as the Ghoul's bone snack at 48 px.",
+        "reviewedAt": "2026-09-29T20:04:29.611Z"
+      }
+    },
+    "icon-action-raise-dead-a": {
+      "id": "icon-action-raise-dead-a",
+      "asset": "chibi-icon-action-raise-dead",
+      "jobId": "sync-d9e7ca72-e068-415e-9b3d-a167761bd2c0",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-icon-action-raise-dead",
+        "subject": "ICON:ACTION:RAISE_DEAD",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5308,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: an ivory skeleton bone hand bursting up out of a small rounded weathered light blue-grey stone grave, with a few small cold pale blue sparks around it; nothing else in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: an ivory skeleton bone hand bursting up out of a small rounded weathered light blue-grey stone grave, with a few small cold pale blue sparks around it; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: an ivory skeleton bone hand bursting up out of a small rounded weathered light blue-grey stone grave, with a few small cold pale blue sparks around it; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+      },
+      "submittedAt": "2026-09-29T20:00:31.171Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/icon-action-raise-dead-a.png",
+      "rawSheetSha256": "a37ed98f5e53764bd43d8e99d72e393262809c1647c082134b3b00051e8609f7",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.3649,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-09-29T20:01:01.537Z",
+      "usageUsd": 0.007815987957848443,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Raise Dead: a bone hand bursting from a small grave mound with pale blue sparks; reads at 48 px on the dark panel.",
+        "reviewedAt": "2026-09-29T20:04:29.086Z"
+      }
+    },
+    "icon-action-undead-rally-a": {
+      "id": "icon-action-undead-rally-a",
+      "asset": "chibi-icon-action-undead-rally",
+      "jobId": "sync-9edde8d5-207e-450a-a5ef-01d3dbc03a6d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-icon-action-undead-rally",
+        "subject": "ICON:ACTION:UNDEAD:RALLY",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5311,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a notched dark slate-grey iron sword pointing up, wrapped in small cold pale blue flames, with a small ivory skull on its crossguard; nothing else in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a notched dark slate-grey iron sword pointing up, wrapped in small cold pale blue flames, with a small ivory skull on its crossguard; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a notched dark slate-grey iron sword pointing up, wrapped in small cold pale blue flames, with a small ivory skull on its crossguard; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+      },
+      "submittedAt": "2026-09-29T20:01:47.264Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/icon-action-undead-rally-a.png",
+      "rawSheetSha256": "68a2addbdb2fbf978f90c5013a74a8bc377822e5f4106e480392162eed24eef2",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.04,
+          "footprintWidthShare": 0.4286,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T20:02:38.126Z",
+      "usageUsd": 0.008423230701022678,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Frenzy: a notched dark iron sword wrapped in cold blue flames with a skull crossguard; distinct from the Human Rally horn.",
+        "reviewedAt": "2026-09-29T20:04:30.132Z"
+      }
+    },
+    "icon-action-wail-a": {
+      "id": "icon-action-wail-a",
+      "asset": "chibi-icon-action-wail",
+      "jobId": "sync-32025e9f-b481-4f0c-b199-4863f8fa373c",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-icon-action-wail",
+        "subject": "ICON:ACTION:WAIL",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5310,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a game interface icon, one object or one tiny scene shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky game icon with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels on a dark panel. The object floats alone on the transparent background: no circle, disc, badge, ring or frame behind it.",
+            "negative": "frame, border, ring, circle background, round badge, disc behind the object, square background, medallion, button, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a small pale ghost-blue ghost face with big dark eyes and a wide round open mouth screaming, with three curved pale blue-white sound rings spreading out from the mouth; solid opaque colours; nothing else in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a game interface icon, one object or one tiny scene shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky game icon with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels on a dark panel. The object floats alone on the transparent background: no circle, disc, badge, ring or frame behind it. Subject: a small pale ghost-blue ghost face with big dark eyes and a wide round open mouth screaming, with three curved pale blue-white sound rings spreading out from the mouth; solid opaque colours; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, border, ring, circle background, round badge, disc behind the object, square background, medallion, button, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a game interface icon, one object or one tiny scene shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky game icon with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels on a dark panel. The object floats alone on the transparent background: no circle, disc, badge, ring or frame behind it. Subject: a small pale ghost-blue ghost face with big dark eyes and a wide round open mouth screaming, with three curved pale blue-white sound rings spreading out from the mouth; solid opaque colours; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, border, ring, circle background, round badge, disc behind the object, square background, medallion, button, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+      },
+      "submittedAt": "2026-09-29T19:49:44.225Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/icon-action-wail-a.png",
+      "rawSheetSha256": "ab18ada36be9b3d85e15029df38e455325a9176bf01f8a86dbe8c0bf689c2583",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6818,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T19:50:31.057Z",
+      "usageUsd": 0.009271108468373618,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The ghost face sits in a round stone badge; icons must float alone.",
+        "reviewedAt": "2026-09-29T20:04:23.533Z"
+      }
+    },
+    "icon-action-wail-b": {
+      "id": "icon-action-wail-b",
+      "asset": "chibi-icon-action-wail",
+      "jobId": "sync-f692469f-c94f-4e99-b87e-e00b8840669f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-icon-action-wail",
+        "subject": "ICON:ACTION:WAIL",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5350,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a small pale ghost-blue ghost face with big dark eyes and a wide round open mouth screaming, with three curved pale blue-white sound rings spreading out from the mouth; solid opaque colours; nothing else in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a small pale ghost-blue ghost face with big dark eyes and a wide round open mouth screaming, with three curved pale blue-white sound rings spreading out from the mouth; solid opaque colours; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a small pale ghost-blue ghost face with big dark eyes and a wide round open mouth screaming, with three curved pale blue-white sound rings spreading out from the mouth; solid opaque colours; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+      },
+      "submittedAt": "2026-09-29T19:55:00.388Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/icon-action-wail-b.png",
+      "rawSheetSha256": "fe50a17bff114c7b3cc6ce278104f54fa122026551edf4f5c04ef580295985f6",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2636,
+          "footprintWidthShare": 0.641,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-09-29T19:55:29.227Z",
+      "usageUsd": 0.00752486605114407,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The ghost has tan teddy-bear ears and limbs; it does not read as a wailing spirit.",
+        "reviewedAt": "2026-09-29T20:04:24.111Z"
+      }
+    },
+    "icon-action-wail-c": {
+      "id": "icon-action-wail-c",
+      "asset": "chibi-icon-action-wail",
+      "jobId": "sync-ac712e90-eb33-4277-860e-2d568ab7f59d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-icon-action-wail",
+        "subject": "ICON:ACTION:WAIL",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5352,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: one round floating ghost head with a short wispy tail, pale ghost-blue, big dark eyes and a wide round open mouth screaming, with three curved pale blue-white sound rings spreading out from the mouth; no ears, no arms, no legs; solid opaque colours; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "ears, arms, legs, bear, teddy, animal"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one round floating ghost head with a short wispy tail, pale ghost-blue, big dark eyes and a wide round open mouth screaming, with three curved pale blue-white sound rings spreading out from the mouth; no ears, no arms, no legs; solid opaque colours; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, ears, arms, legs, bear, teddy, animal",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one round floating ghost head with a short wispy tail, pale ghost-blue, big dark eyes and a wide round open mouth screaming, with three curved pale blue-white sound rings spreading out from the mouth; no ears, no arms, no legs; solid opaque colours; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, ears, arms, legs, bear, teddy, animal."
+      },
+      "submittedAt": "2026-09-29T20:05:09.574Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/icon-action-wail-c.png",
+      "rawSheetSha256": "04f4cd90a39ef7a59d0cbb28e1c4a159ab6e0e31bcb56e14e10cc14165dc87bb",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7949,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T20:05:41.044Z",
+      "usageUsd": 0.007152378055784437,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Wail: a floating ghost head screaming with a wide open mouth and wispy tail; reads at 48 px, distinct from the Banshee portrait.",
+        "reviewedAt": "2026-09-29T20:06:24.124Z"
+      }
+    },
+    "portrait-undead-abomination-a": {
+      "id": "portrait-undead-abomination-a",
+      "asset": "chibi-portrait-undead-abomination",
+      "jobId": "sync-ac093deb-8d92-4ae3-b529-969f2f4b9795",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-portrait-undead-abomination",
+        "subject": "PORTRAIT:UNDEAD:JUGGERNAUT",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5307,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: Abomination portrait, head and shoulders of a chunky cute giant stitched-together brute: a big round head sunk low between enormous shoulders, pale blue-grey patchwork skin with big stitched seams and a few iron bolts, one eye bigger than the other and a goofy underbite grin, and a huge bright red patchwork smock with torn zigzag edges over the massive shoulders; clearly a giant."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Abomination portrait, head and shoulders of a chunky cute giant stitched-together brute: a big round head sunk low between enormous shoulders, pale blue-grey patchwork skin with big stitched seams and a few iron bolts, one eye bigger than the other and a goofy underbite grin, and a huge bright red patchwork smock with torn zigzag edges over the massive shoulders; clearly a giant.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Abomination portrait, head and shoulders of a chunky cute giant stitched-together brute: a big round head sunk low between enormous shoulders, pale blue-grey patchwork skin with big stitched seams and a few iron bolts, one eye bigger than the other and a goofy underbite grin, and a huge bright red patchwork smock with torn zigzag edges over the massive shoulders; clearly a giant. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+      },
+      "submittedAt": "2026-09-29T19:59:54.438Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/portrait-undead-abomination-a.png",
+      "rawSheetSha256": "281b398cf42ae9af8879e630716b85f3cfd1ecca8998658ebe42432e50fdd8bf",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9565,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T20:00:31.170Z",
+      "usageUsd": 0.008252401060528226,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Abomination bust: huge stitched head with mismatched eyes over a red patchwork smock; override keeps the red eyes and cheek out and adds the deep smock shades (21.4%).",
+        "reviewedAt": "2026-09-29T20:19:17.124Z"
+      }
+    },
+    "portrait-undead-banshee-a": {
+      "id": "portrait-undead-banshee-a",
+      "asset": "chibi-portrait-undead-banshee",
+      "jobId": "sync-db7136a8-2a4c-4e8b-8d31-0e12c970c950",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-portrait-undead-banshee",
+        "subject": "PORTRAIT:UNDEAD:MARKSMAN",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5302,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: Banshee portrait, head and shoulders of a chunky cute wailing ghost lady: a huge round pale ghost-blue face with big dark eyes and a wide round open mouth mid-wail, both small pale ghost-blue hands raised beside her cheeks, long flowing ivory-white hair, and a big bright red hooded shroud with torn zigzag edges over the head and shoulders; solid opaque colours."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Banshee portrait, head and shoulders of a chunky cute wailing ghost lady: a huge round pale ghost-blue face with big dark eyes and a wide round open mouth mid-wail, both small pale ghost-blue hands raised beside her cheeks, long flowing ivory-white hair, and a big bright red hooded shroud with torn zigzag edges over the head and shoulders; solid opaque colours.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Banshee portrait, head and shoulders of a chunky cute wailing ghost lady: a huge round pale ghost-blue face with big dark eyes and a wide round open mouth mid-wail, both small pale ghost-blue hands raised beside her cheeks, long flowing ivory-white hair, and a big bright red hooded shroud with torn zigzag edges over the head and shoulders; solid opaque colours. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+      },
+      "submittedAt": "2026-09-29T19:56:20.104Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/portrait-undead-banshee-a.png",
+      "rawSheetSha256": "528e7df6be4776dc87cbc4d893a2e4693e9b0e0f8faa0796e542eb72380e49ba",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0406,
+          "footprintWidthShare": 0.9474,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T19:57:07.448Z",
+      "usageUsd": 0.0091460599899292,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Banshee bust: wailing pale-blue face with raised hands under a red hooded shroud; override adds the deep crimson folds (24.7%).",
+        "reviewedAt": "2026-09-29T20:19:15.983Z"
+      }
+    },
+    "portrait-undead-ghoul-a": {
+      "id": "portrait-undead-ghoul-a",
+      "asset": "chibi-portrait-undead-ghoul",
+      "jobId": "sync-7f7c669a-2e21-44ba-8a50-dd14af6c5576",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-portrait-undead-ghoul",
+        "subject": "PORTRAIT:UNDEAD:RAIDER",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5301,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: Ghoul portrait, head and shoulders of a chunky cute hunched ghoul: a big round bald head with pale blue-grey skin, big round pale blue eyes, pointy ears and a toothy grin, a big bright red ragged hood with torn zigzag edges over the back of the head and shoulders, and one long thin pale blue-grey hand with big ivory claws raised beside the face."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Ghoul portrait, head and shoulders of a chunky cute hunched ghoul: a big round bald head with pale blue-grey skin, big round pale blue eyes, pointy ears and a toothy grin, a big bright red ragged hood with torn zigzag edges over the back of the head and shoulders, and one long thin pale blue-grey hand with big ivory claws raised beside the face.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Ghoul portrait, head and shoulders of a chunky cute hunched ghoul: a big round bald head with pale blue-grey skin, big round pale blue eyes, pointy ears and a toothy grin, a big bright red ragged hood with torn zigzag edges over the back of the head and shoulders, and one long thin pale blue-grey hand with big ivory claws raised beside the face. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+      },
+      "submittedAt": "2026-09-29T19:55:54.515Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/portrait-undead-ghoul-a.png",
+      "rawSheetSha256": "f5ac178bf69ad03a56006f8ee2c87533e3396dbbb7d3a0d2b31fa875820335e7",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5366,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T19:56:20.103Z",
+      "usageUsd": 0.0072821143998040095,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Ghoul bust: pale face and claw hand in a big red ragged hood; the mouth stays out of the auto mask (33.7%); reads at 1:1.",
+        "reviewedAt": "2026-09-29T20:04:25.726Z"
+      }
+    },
+    "portrait-undead-lich-a": {
+      "id": "portrait-undead-lich-a",
+      "asset": "chibi-portrait-undead-lich",
+      "jobId": "sync-fc337175-9e4c-484c-8ca8-1f50e386b720",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-portrait-undead-lich",
+        "subject": "PORTRAIT:UNDEAD:CATAPULT",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5305,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: Lich portrait, head and shoulders of a chunky cute skeleton sorcerer king: a huge round ivory skull head with glowing pale blue eye sockets and a spiky dark slate-grey iron crown, a huge bright red ragged royal robe with a tall stiff collar over the shoulders, and one thin ivory bone hand holding up a round orb of cold pale blue flame beside the skull."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Lich portrait, head and shoulders of a chunky cute skeleton sorcerer king: a huge round ivory skull head with glowing pale blue eye sockets and a spiky dark slate-grey iron crown, a huge bright red ragged royal robe with a tall stiff collar over the shoulders, and one thin ivory bone hand holding up a round orb of cold pale blue flame beside the skull.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Lich portrait, head and shoulders of a chunky cute skeleton sorcerer king: a huge round ivory skull head with glowing pale blue eye sockets and a spiky dark slate-grey iron crown, a huge bright red ragged royal robe with a tall stiff collar over the shoulders, and one thin ivory bone hand holding up a round orb of cold pale blue flame beside the skull. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+      },
+      "submittedAt": "2026-09-29T19:58:34.992Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/portrait-undead-lich-a.png",
+      "rawSheetSha256": "efd848adf4cbd2e19719e7b3219e2a80d06b1888649f99b10d652e72c5a75de1",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T19:59:03.950Z",
+      "usageUsd": 0.007462093565199111,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Lich bust: iron crown on an ivory skull, stiff-collared red robe, blue flame in the bone hand; override adds the deep crimson robe folds (28.4%).",
+        "reviewedAt": "2026-09-29T20:19:16.515Z"
+      }
+    },
+    "portrait-undead-necromancer-a": {
+      "id": "portrait-undead-necromancer-a",
+      "asset": "chibi-portrait-undead-necromancer",
+      "jobId": "sync-a0bea623-1d88-42d6-9cb3-42256025f4df",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-portrait-undead-necromancer",
+        "subject": "PORTRAIT:UNDEAD:CAPTAIN",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5304,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: Necromancer portrait, head and shoulders of a chunky cute old sorcerer: a huge round gaunt pale blue-grey face with glowing pale blue eyes and a long ivory-white beard, a big bright red pointed hood and a bright red ragged robe over the shoulders, and the top of a crooked dark slate-grey iron staff with a small ivory skull holding a cold pale blue flame beside his head."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Necromancer portrait, head and shoulders of a chunky cute old sorcerer: a huge round gaunt pale blue-grey face with glowing pale blue eyes and a long ivory-white beard, a big bright red pointed hood and a bright red ragged robe over the shoulders, and the top of a crooked dark slate-grey iron staff with a small ivory skull holding a cold pale blue flame beside his head.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Necromancer portrait, head and shoulders of a chunky cute old sorcerer: a huge round gaunt pale blue-grey face with glowing pale blue eyes and a long ivory-white beard, a big bright red pointed hood and a bright red ragged robe over the shoulders, and the top of a crooked dark slate-grey iron staff with a small ivory skull holding a cold pale blue flame beside his head. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+      },
+      "submittedAt": "2026-09-29T19:57:41.041Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/portrait-undead-necromancer-a.png",
+      "rawSheetSha256": "6ab7e5bece5780010f1900dc620c8579431418e5022934b8eef85e6033fbe499",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0875,
+          "footprintWidthShare": 0.8837,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T19:58:34.975Z",
+      "usageUsd": 0.010609833425945707,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Necromancer bust: glowing eyes, ivory beard, red hood and robe, skull staff with a blue flame; auto mask 24.9%.",
+        "reviewedAt": "2026-09-29T20:04:26.864Z"
+      }
+    },
+    "portrait-undead-skeleton-a": {
+      "id": "portrait-undead-skeleton-a",
+      "asset": "chibi-portrait-undead-skeleton",
+      "jobId": "sync-04330a54-93c1-45b3-addd-bd809befdd2c",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-portrait-undead-skeleton",
+        "subject": "PORTRAIT:UNDEAD:FIGHTER",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5300,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: Skeleton portrait, head and shoulders of a chunky cute friendly skeleton warrior: a huge round ivory skull head with big dark round eye sockets, tiny pale blue pupils and a wide toothy grin, a dented dark slate-grey iron half-helmet with a big bright red crest, a big bright red ragged tabard with torn zigzag edges over the shoulders and chest, and an oversized notched light grey iron sword raised beside the skull."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Skeleton portrait, head and shoulders of a chunky cute friendly skeleton warrior: a huge round ivory skull head with big dark round eye sockets, tiny pale blue pupils and a wide toothy grin, a dented dark slate-grey iron half-helmet with a big bright red crest, a big bright red ragged tabard with torn zigzag edges over the shoulders and chest, and an oversized notched light grey iron sword raised beside the skull.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Skeleton portrait, head and shoulders of a chunky cute friendly skeleton warrior: a huge round ivory skull head with big dark round eye sockets, tiny pale blue pupils and a wide toothy grin, a dented dark slate-grey iron half-helmet with a big bright red crest, a big bright red ragged tabard with torn zigzag edges over the shoulders and chest, and an oversized notched light grey iron sword raised beside the skull. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+      },
+      "submittedAt": "2026-09-29T19:48:56.911Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/portrait-undead-skeleton-a.png",
+      "rawSheetSha256": "7a9ed8c5c70bab08d3c54d39756799da0f41f1c8db24108d62988d538e94cb3c",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0945,
+          "footprintWidthShare": 0.8696,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T19:49:44.224Z",
+      "usageUsd": 0.008013364950815838,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Skeleton bust: ivory skull, iron half-helmet with red crest, red ragged tabard, notched sword; matches the map Skeleton; override adds the deep crest and hem shades (27.7%).",
+        "reviewedAt": "2026-09-29T20:19:15.358Z"
+      }
+    },
+    "portrait-undead-vampire-a": {
+      "id": "portrait-undead-vampire-a",
+      "asset": "chibi-portrait-undead-vampire",
+      "jobId": "sync-f61ab0ff-0504-45e4-abcf-f39fc76b3edd",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-portrait-undead-vampire",
+        "subject": "PORTRAIT:UNDEAD:KNIGHT",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5306,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: Vampire portrait, head and shoulders of a chunky cute vampire count: a huge round head with pale ghost-blue skin, slicked-back black hair with a widow's peak, big pale blue eyes and two tiny white fangs in a smug grin, a huge bright red high-collared cape with pointed scalloped edges spread behind his shoulders, a cream-white shirt collar."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Vampire portrait, head and shoulders of a chunky cute vampire count: a huge round head with pale ghost-blue skin, slicked-back black hair with a widow's peak, big pale blue eyes and two tiny white fangs in a smug grin, a huge bright red high-collared cape with pointed scalloped edges spread behind his shoulders, a cream-white shirt collar.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Vampire portrait, head and shoulders of a chunky cute vampire count: a huge round head with pale ghost-blue skin, slicked-back black hair with a widow's peak, big pale blue eyes and two tiny white fangs in a smug grin, a huge bright red high-collared cape with pointed scalloped edges spread behind his shoulders, a cream-white shirt collar. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+      },
+      "submittedAt": "2026-09-29T19:59:03.952Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/portrait-undead-vampire-a.png",
+      "rawSheetSha256": "1983de4f5aca50855bb52c2edddc34c6235ada7941e425b58cf5c412e9708559",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0798,
+          "footprintWidthShare": 0.7442,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T19:59:54.436Z",
+      "usageUsd": 0.009072960270775688,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Vampire bust: pale face, widow's peak, fangs and the high red cape collar; auto mask 16.2% on the collar and cape.",
+        "reviewedAt": "2026-09-29T20:04:27.952Z"
+      }
+    },
+    "portrait-undead-zombie-a": {
+      "id": "portrait-undead-zombie-a",
+      "asset": "chibi-portrait-undead-zombie",
+      "jobId": "sync-65d4dcc8-b2cf-4b19-81b3-960eb0551fa6",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-portrait-undead-zombie",
+        "subject": "PORTRAIT:UNDEAD:GUARD",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5303,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: Zombie portrait, head and shoulders of a chunky cute big shambling zombie: a huge round head with pale blue-grey skin, a few stitched seams, sleepy droopy eyes and a small lopsided grin, a tuft of dark slate hair, a big bright red ragged smock with torn zigzag edges over the broad shoulders, and both ivory-bandaged hands stretched forward."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Zombie portrait, head and shoulders of a chunky cute big shambling zombie: a huge round head with pale blue-grey skin, a few stitched seams, sleepy droopy eyes and a small lopsided grin, a tuft of dark slate hair, a big bright red ragged smock with torn zigzag edges over the broad shoulders, and both ivory-bandaged hands stretched forward.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Zombie portrait, head and shoulders of a chunky cute big shambling zombie: a huge round head with pale blue-grey skin, a few stitched seams, sleepy droopy eyes and a small lopsided grin, a tuft of dark slate hair, a big bright red ragged smock with torn zigzag edges over the broad shoulders, and both ivory-bandaged hands stretched forward. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+      },
+      "submittedAt": "2026-09-29T19:57:07.450Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/portrait-undead-zombie-a.png",
+      "rawSheetSha256": "3f9c668de465f2757ad6af2ffe47edd2114cdebeddb6dd85c189572f07887d17",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.625,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T19:57:41.040Z",
+      "usageUsd": 0.008127204709582858,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A small full-body figure in the middle of the frame instead of a head-and-shoulders bust; too small and plain beside the other portraits.",
+        "reviewedAt": "2026-09-29T20:04:24.634Z"
+      }
+    },
+    "portrait-undead-zombie-b": {
+      "id": "portrait-undead-zombie-b",
+      "asset": "chibi-portrait-undead-zombie",
+      "jobId": "sync-6f04284e-b4e5-42c4-97e6-acfb6af1d4c8",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-undead",
+        "asset": "chibi-portrait-undead-zombie",
+        "subject": "PORTRAIT:UNDEAD:GUARD",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5351,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: Zombie portrait, head and shoulders of a chunky cute big shambling zombie: a huge round head with pale blue-grey skin, a few stitched seams, sleepy droopy eyes and a small lopsided grin, a tuft of dark slate hair, a big bright red ragged smock with torn zigzag edges over the broad shoulders, and both ivory-bandaged hands stretched forward."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The head and broad shoulders fill the whole square; no legs.",
+            "negative": "full body, legs, feet"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Zombie portrait, head and shoulders of a chunky cute big shambling zombie: a huge round head with pale blue-grey skin, a few stitched seams, sleepy droopy eyes and a small lopsided grin, a tuft of dark slate hair, a big bright red ragged smock with torn zigzag edges over the broad shoulders, and both ivory-bandaged hands stretched forward. The head and broad shoulders fill the whole square; no legs.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Zombie portrait, head and shoulders of a chunky cute big shambling zombie: a huge round head with pale blue-grey skin, a few stitched seams, sleepy droopy eyes and a small lopsided grin, a tuft of dark slate hair, a big bright red ragged smock with torn zigzag edges over the broad shoulders, and both ivory-bandaged hands stretched forward. The head and broad shoulders fill the whole square; no legs. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+      },
+      "submittedAt": "2026-09-29T20:04:43.016Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-undead/portrait-undead-zombie-b.png",
+      "rawSheetSha256": "33203c091cec790554a4085507c78cf496c6ec49deda5e65a79871e47aacadc2",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0038,
+          "footprintWidthShare": 0.9487,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T20:05:09.572Z",
+      "usageUsd": 0.007135416454739041,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Zombie bust: big pale head with sleepy eyes, red ragged hooded smock, bandaged hands reaching forward; fills the frame like the other busts; auto mask 21.4%.",
+        "reviewedAt": "2026-09-29T20:06:23.509Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-icon-action-devour": {
+      "id": "chibi-icon-action-devour",
+      "subject": "ICON:ACTION:DEVOUR",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-devour-a",
+      "candidate": 0,
+      "candidateSha256": "767c959b099457ec6608b4d445f079804b2dbfa675ab995bc572eadffd834afa",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-devour.png",
+        "sha256": "767c959b099457ec6608b4d445f079804b2dbfa675ab995bc572eadffd834afa",
+        "pixelSha256": "84310cd3d9b9cd482b1c681dcedc5b076416df7c59047b89a34af427b2037dcb",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.06,
+        "footprintWidthShare": 0.4545,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Devour: a big mossy ivory bone with pale blue sparks; reads as the Ghoul's bone snack at 48 px.",
+      "acceptedAt": "2026-09-29T20:04:29.609Z"
+    },
+    "chibi-icon-action-raise-dead": {
+      "id": "chibi-icon-action-raise-dead",
+      "subject": "ICON:ACTION:RAISE_DEAD",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-raise-dead-a",
+      "candidate": 0,
+      "candidateSha256": "a37ed98f5e53764bd43d8e99d72e393262809c1647c082134b3b00051e8609f7",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-raise-dead.png",
+        "sha256": "a37ed98f5e53764bd43d8e99d72e393262809c1647c082134b3b00051e8609f7",
+        "pixelSha256": "f54669f3f01741278784cd5cd5e4efbe2b8ff5d81e588055fce43e79f720277d",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.3649,
+        "footprintWidthShare": 1,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Raise Dead: a bone hand bursting from a small grave mound with pale blue sparks; reads at 48 px on the dark panel.",
+      "acceptedAt": "2026-09-29T20:04:29.085Z"
+    },
+    "chibi-icon-action-undead-rally": {
+      "id": "chibi-icon-action-undead-rally",
+      "subject": "ICON:ACTION:UNDEAD:RALLY",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-undead-rally-a",
+      "candidate": 0,
+      "candidateSha256": "68a2addbdb2fbf978f90c5013a74a8bc377822e5f4106e480392162eed24eef2",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-undead-rally.png",
+        "sha256": "68a2addbdb2fbf978f90c5013a74a8bc377822e5f4106e480392162eed24eef2",
+        "pixelSha256": "e9a0e750e673126a61d243991e134b5ce6da671474d3cf0d03563918a347d4cb",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.04,
+        "footprintWidthShare": 0.4286,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Frenzy: a notched dark iron sword wrapped in cold blue flames with a skull crossguard; distinct from the Human Rally horn.",
+      "acceptedAt": "2026-09-29T20:04:30.131Z"
+    },
+    "chibi-icon-action-wail": {
+      "id": "chibi-icon-action-wail",
+      "subject": "ICON:ACTION:WAIL",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-wail-c",
+      "candidate": 0,
+      "candidateSha256": "04f4cd90a39ef7a59d0cbb28e1c4a159ab6e0e31bcb56e14e10cc14165dc87bb",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-wail.png",
+        "sha256": "04f4cd90a39ef7a59d0cbb28e1c4a159ab6e0e31bcb56e14e10cc14165dc87bb",
+        "pixelSha256": "c9a779acf2059159448574df6bf5accb4eb1d76e29792811b8353b86d7e58b8b",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7949,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Wail: a floating ghost head screaming with a wide open mouth and wispy tail; reads at 48 px, distinct from the Banshee portrait.",
+      "acceptedAt": "2026-09-29T20:06:24.123Z"
+    },
+    "chibi-portrait-undead-abomination": {
+      "id": "chibi-portrait-undead-abomination",
+      "subject": "PORTRAIT:UNDEAD:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-abomination-a",
+      "candidate": 0,
+      "candidateSha256": "281b398cf42ae9af8879e630716b85f3cfd1ecca8998658ebe42432e50fdd8bf",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-abomination.png",
+        "sha256": "281b398cf42ae9af8879e630716b85f3cfd1ecca8998658ebe42432e50fdd8bf",
+        "pixelSha256": "efc195ec02e5ffb12a5122defceb1fe2e9110e7761824c38ed17ece380bb460f",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0,
+        "footprintWidthShare": 0.9565,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-abomination.mask.png",
+        "sha256": "2c66229589a5dc488ee6dc4cb51856a7b9a5a89f8431280ae49ba5d9c20eb3b2",
+        "source": "OVERRIDE",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "override": {
+          "path": "scripts/art/chibi/overrides/chibi-portrait-undead-abomination.mask-override.png",
+          "sha256": "2c66229589a5dc488ee6dc4cb51856a7b9a5a89f8431280ae49ba5d9c20eb3b2",
+          "reason": "The automatic mask minus four components on the face: the red iris of the big left eye (19..26, 15..19), the red rims of the small right eye (38..41, 13..14 and 37..41, 19..20) and a red stitched cheek patch (11..23, 23..31); plus the 75 deep crimson shades of the smock that touch the remaining mask, so the smock recolours whole while the eyes never turn teal or coral. No QA code is waived.",
+          "waive": []
+        },
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1762,
+          "ownerPixels": 377,
+          "coverage": 0.214,
+          "coverageOnTarget": true,
+          "redBrownPixels": 0,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Abomination bust: huge stitched head with mismatched eyes over a red patchwork smock; override keeps the red eyes and cheek out and adds the deep smock shades (21.4%).",
+      "acceptedAt": "2026-09-29T20:19:17.123Z"
+    },
+    "chibi-portrait-undead-banshee": {
+      "id": "chibi-portrait-undead-banshee",
+      "subject": "PORTRAIT:UNDEAD:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-banshee-a",
+      "candidate": 0,
+      "candidateSha256": "528e7df6be4776dc87cbc4d893a2e4693e9b0e0f8faa0796e542eb72380e49ba",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-banshee.png",
+        "sha256": "528e7df6be4776dc87cbc4d893a2e4693e9b0e0f8faa0796e542eb72380e49ba",
+        "pixelSha256": "b7d66e76baf329160bdc3fa22e407a6a268452a547abb453f3d219b8213eb5ac",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0406,
+        "footprintWidthShare": 0.9474,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-banshee.mask.png",
+        "sha256": "9c115f53aa0b3cf219060ad7e99ccdad24bd7a07c5204788b0afb7aa32cbe49d",
+        "source": "OVERRIDE",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "override": {
+          "path": "scripts/art/chibi/overrides/chibi-portrait-undead-banshee.mask-override.png",
+          "sha256": "9c115f53aa0b3cf219060ad7e99ccdad24bd7a07c5204788b0afb7aa32cbe49d",
+          "reason": "The automatic mask plus the 100 deep crimson shades of the hood and shroud that touch it (the keyLike band); without them a Teal Banshee kept dark red folds. No QA code is waived.",
+          "waive": []
+        },
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1359,
+          "ownerPixels": 336,
+          "coverage": 0.2472,
+          "coverageOnTarget": true,
+          "redBrownPixels": 0,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Banshee bust: wailing pale-blue face with raised hands under a red hooded shroud; override adds the deep crimson folds (24.7%).",
+      "acceptedAt": "2026-09-29T20:19:15.976Z"
+    },
+    "chibi-portrait-undead-ghoul": {
+      "id": "chibi-portrait-undead-ghoul",
+      "subject": "PORTRAIT:UNDEAD:RAIDER",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-ghoul-a",
+      "candidate": 0,
+      "candidateSha256": "f5ac178bf69ad03a56006f8ee2c87533e3396dbbb7d3a0d2b31fa875820335e7",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-ghoul.png",
+        "sha256": "f5ac178bf69ad03a56006f8ee2c87533e3396dbbb7d3a0d2b31fa875820335e7",
+        "pixelSha256": "d484f0f407fbe22cd8a0bf2501bce244a48aa06d34a6b467907262764b36f5ee",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.5366,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-ghoul.mask.png",
+        "sha256": "35c754782fe67dacb9acc39e7c9af77c0e9302ca31418872ca8548ab842af477",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 0,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1088,
+          "ownerPixels": 367,
+          "coverage": 0.3373,
+          "coverageOnTarget": true,
+          "redBrownPixels": 0,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Ghoul bust: pale face and claw hand in a big red ragged hood; the mouth stays out of the auto mask (33.7%); reads at 1:1.",
+      "acceptedAt": "2026-09-29T20:04:25.725Z"
+    },
+    "chibi-portrait-undead-lich": {
+      "id": "chibi-portrait-undead-lich",
+      "subject": "PORTRAIT:UNDEAD:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-lich-a",
+      "candidate": 0,
+      "candidateSha256": "efd848adf4cbd2e19719e7b3219e2a80d06b1888649f99b10d652e72c5a75de1",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-lich.png",
+        "sha256": "efd848adf4cbd2e19719e7b3219e2a80d06b1888649f99b10d652e72c5a75de1",
+        "pixelSha256": "b9762f61c8957266a26a584de9e2b62449477028f6178dadc78acd6ec259bfa6",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0,
+        "footprintWidthShare": 0.85,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-lich.mask.png",
+        "sha256": "70116dd412191eaccacb30f1dfcaef7945ae7d66872d25a5366a7eb6029c325c",
+        "source": "OVERRIDE",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "override": {
+          "path": "scripts/art/chibi/overrides/chibi-portrait-undead-lich.mask-override.png",
+          "sha256": "70116dd412191eaccacb30f1dfcaef7945ae7d66872d25a5366a7eb6029c325c",
+          "reason": "The automatic mask plus the 144 deep crimson folds of the royal robe that touch it (the keyLike band); without them a Teal Lich kept dark red folds. No QA code is waived.",
+          "waive": []
+        },
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1199,
+          "ownerPixels": 340,
+          "coverage": 0.2836,
+          "coverageOnTarget": true,
+          "redBrownPixels": 0,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Lich bust: iron crown on an ivory skull, stiff-collared red robe, blue flame in the bone hand; override adds the deep crimson robe folds (28.4%).",
+      "acceptedAt": "2026-09-29T20:19:16.513Z"
+    },
+    "chibi-portrait-undead-necromancer": {
+      "id": "chibi-portrait-undead-necromancer",
+      "subject": "PORTRAIT:UNDEAD:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-necromancer-a",
+      "candidate": 0,
+      "candidateSha256": "6ab7e5bece5780010f1900dc620c8579431418e5022934b8eef85e6033fbe499",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-necromancer.png",
+        "sha256": "6ab7e5bece5780010f1900dc620c8579431418e5022934b8eef85e6033fbe499",
+        "pixelSha256": "be0ce684d1e574ba6d2a0ae56c4c214e77d27b7d06652be1515e5d3ed8e166b6",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0875,
+        "footprintWidthShare": 0.8837,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-necromancer.mask.png",
+        "sha256": "9648f536e0e7c102a9f1a614e5e8ff1022e0ab11c60668c4df488c9a28d2dbb5",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 0,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1304,
+          "ownerPixels": 324,
+          "coverage": 0.2485,
+          "coverageOnTarget": true,
+          "redBrownPixels": 0,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Necromancer bust: glowing eyes, ivory beard, red hood and robe, skull staff with a blue flame; auto mask 24.9%.",
+      "acceptedAt": "2026-09-29T20:04:26.862Z"
+    },
+    "chibi-portrait-undead-skeleton": {
+      "id": "chibi-portrait-undead-skeleton",
+      "subject": "PORTRAIT:UNDEAD:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-skeleton-a",
+      "candidate": 0,
+      "candidateSha256": "7a9ed8c5c70bab08d3c54d39756799da0f41f1c8db24108d62988d538e94cb3c",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-skeleton.png",
+        "sha256": "7a9ed8c5c70bab08d3c54d39756799da0f41f1c8db24108d62988d538e94cb3c",
+        "pixelSha256": "012cb4aba5447b3311514f285944557a59eeefb75aadf08021177f3161db1afe",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0945,
+        "footprintWidthShare": 0.8696,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-skeleton.mask.png",
+        "sha256": "2c6129b15da593f5701e89101f7f64e1c79e1b9377e9cdc1f61f844781fbb33e",
+        "source": "OVERRIDE",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "override": {
+          "path": "scripts/art/chibi/overrides/chibi-portrait-undead-skeleton.mask-override.png",
+          "sha256": "2c6129b15da593f5701e89101f7f64e1c79e1b9377e9cdc1f61f844781fbb33e",
+          "reason": "The automatic mask plus the 38 deeper key-like shades of the crest and tabard hems that touch it (the keyLike band), so no crimson shading stays red for another owner. No QA code is waived.",
+          "waive": []
+        },
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1343,
+          "ownerPixels": 372,
+          "coverage": 0.277,
+          "coverageOnTarget": true,
+          "redBrownPixels": 0,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Skeleton bust: ivory skull, iron half-helmet with red crest, red ragged tabard, notched sword; matches the map Skeleton; override adds the deep crest and hem shades (27.7%).",
+      "acceptedAt": "2026-09-29T20:19:15.356Z"
+    },
+    "chibi-portrait-undead-vampire": {
+      "id": "chibi-portrait-undead-vampire",
+      "subject": "PORTRAIT:UNDEAD:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-vampire-a",
+      "candidate": 0,
+      "candidateSha256": "1983de4f5aca50855bb52c2edddc34c6235ada7941e425b58cf5c412e9708559",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-vampire.png",
+        "sha256": "1983de4f5aca50855bb52c2edddc34c6235ada7941e425b58cf5c412e9708559",
+        "pixelSha256": "b965a0560e894e35159d99f8cc8e856d53d21500cec7f92631d382fc2b5e9c23",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.0798,
+        "footprintWidthShare": 0.7442,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-vampire.mask.png",
+        "sha256": "58b50b86da9ea6beb444840d42d279091c920ce719a4d4cf6ae09c6b2de644bd",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 2,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1193,
+          "ownerPixels": 193,
+          "coverage": 0.1618,
+          "coverageOnTarget": false,
+          "redBrownPixels": 0,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Vampire bust: pale face, widow's peak, fangs and the high red cape collar; auto mask 16.2% on the collar and cape.",
+      "acceptedAt": "2026-09-29T20:04:27.951Z"
+    },
+    "chibi-portrait-undead-zombie": {
+      "id": "chibi-portrait-undead-zombie",
+      "subject": "PORTRAIT:UNDEAD:GUARD",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-zombie-b",
+      "candidate": 0,
+      "candidateSha256": "33203c091cec790554a4085507c78cf496c6ec49deda5e65a79871e47aacadc2",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-zombie.png",
+        "sha256": "33203c091cec790554a4085507c78cf496c6ec49deda5e65a79871e47aacadc2",
+        "pixelSha256": "b6a8a785ad94eaba5bef59d54ad6cc00b7a6ddde3a72e3372fe4455b1e5f42eb",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0038,
+        "footprintWidthShare": 0.9487,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-zombie.mask.png",
+        "sha256": "26d4dafa5950215acaf68fe677eb5058cd6301b383eb3a00bc334f5e047102c6",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 1,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1142,
+          "ownerPixels": 245,
+          "coverage": 0.2145,
+          "coverageOnTarget": true,
+          "redBrownPixels": 0,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Zombie bust: big pale head with sleepy eyes, red ragged hooded smock, bandaged hands reaching forward; fills the frame like the other busts; auto mask 21.4%.",
+      "acceptedAt": "2026-09-29T20:06:23.507Z"
+    }
+  }
+}

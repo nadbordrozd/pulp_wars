@@ -54,7 +54,28 @@ import {
   technologyArtworkLayoutV7,
 } from "./selection-identity-v7";
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
-import type { ArtSetV7 } from "../../assets/chibi-art-v7";
+import {
+  unitArtSubjectV7,
+  type ArtSetV7,
+  type ArtSubjectV7,
+} from "../../assets/chibi-art-v7";
+import {
+  commandSubjectV7,
+  improvementSubjectV7,
+  portraitSubjectV7,
+  rewardSubjectV7,
+  technologySubjectV7,
+} from "../../assets/chibi-ui-art-v7";
+import {
+  CHIBI_DOM_BOXES_V7,
+  browserChibiDomEnvironmentV7,
+  chibiDomImageV7,
+  createChibiDomArtV7,
+  type ChibiDomArtV7,
+  type ChibiDomBoxV7,
+  type ChibiDomEnvironmentV7,
+} from "./chibi-dom-art-v7";
+import { RULESET7_PLAYER_COLORS } from "../canvas/owner-recolour-v7";
 import {
   RESTLESS_EXPLANATION_V7,
   devourPreviewDescriptionV7,
@@ -117,6 +138,8 @@ export interface MountRuleset7AppOptions {
   readonly boardHost?: BoardHostV7;
   /** Presentation-only Ruleset 7 art set; LEGACY when omitted. */
   readonly artSet?: ArtSetV7;
+  /** CHIBI DOM raster seams (tests); the browser's by default. */
+  readonly chibiDomEnvironment?: ChibiDomEnvironmentV7;
   readonly downloadSafeLog?: (source: string, filename: string) => void;
   readonly downloadDebugBundle?: (source: string, filename: string) => void;
   readonly settingsStorage?: StorageAdapter | null;
@@ -169,6 +192,9 @@ export class Ruleset7DomAppView {
   readonly #downloadDebugBundle: (source: string, filename: string) => void;
   readonly #settingsStorage: StorageAdapter | null;
   readonly #artSet: ArtSetV7;
+  /** CHIBI interface art; null in LEGACY, which keeps its markup unchanged. */
+  readonly #chibiDom: ChibiDomArtV7 | null;
+  #chibiRenderQueued = false;
   readonly #undeadSetup: boolean;
   #snapshot: Ruleset7BrowserSnapshot;
   #unsubscribe: (() => void) | null = null;
@@ -241,6 +267,18 @@ export class Ruleset7DomAppView {
       ((source, filename) => downloadJsonFile(documentRoot, source, filename));
     this.#settingsStorage = options.settingsStorage ?? null;
     this.#artSet = options.artSet ?? "LEGACY";
+    this.#chibiDom =
+      this.#artSet === "CHIBI"
+        ? createChibiDomArtV7({
+            environment:
+              options.chibiDomEnvironment ??
+              browserChibiDomEnvironmentV7(documentRoot),
+            onChange: () => this.#queueChibiRender(),
+          })
+        : null;
+    // Every view claims the document's economy icons, so a LEGACY view never
+    // inherits a CHIBI provider left by another view.
+    CHIBI_ECONOMY_ICONS.set(documentRoot, this.#economyIcons);
     this.#undeadSetup = options.undeadSetup === true;
     this.#notice = options.startupNotice ?? "";
     this.#motion =
@@ -286,6 +324,8 @@ export class Ruleset7DomAppView {
   destroy(): void {
     if (this.#destroyed) return;
     this.#destroyed = true;
+    if (CHIBI_ECONOMY_ICONS.get(this.#document) === this.#economyIcons)
+      CHIBI_ECONOMY_ICONS.delete(this.#document);
     this.#document.removeEventListener("keydown", this.#onKeyDown);
     this.#unsubscribe?.();
     this.#unsubscribeAcceptedBoundary?.();
@@ -351,6 +391,77 @@ export class Ruleset7DomAppView {
       }
     }
   };
+
+  /** A CHIBI raster settled: redraw once, after the current task. */
+  #queueChibiRender(): void {
+    if (this.#chibiRenderQueued || this.#destroyed) return;
+    this.#chibiRenderQueued = true;
+    queueMicrotask(() => {
+      this.#chibiRenderQueued = false;
+      this.#render();
+    });
+  }
+
+  /**
+   * CHIBI art for an interface subject, or null to keep the legacy art (the
+   * LEGACY set, or no usable chibi raster). factionArt is true when an
+   * Undead subject drew its own art, which drops the placeholder badge.
+   */
+  #chibiArt(
+    subject: ArtSubjectV7 | null,
+    box: ChibiDomBoxV7,
+    ownerColor?: string,
+    at?: CoordV7,
+  ): {
+    readonly element: HTMLImageElement;
+    readonly factionArt: boolean;
+  } | null {
+    if (this.#chibiDom === null || subject === null) return null;
+    const resolution = this.#chibiDom.resolve({
+      subject,
+      ownerColor,
+      ...(at === undefined ? {} : { at }),
+    });
+    if (resolution.kind === "MISSING") return null;
+    return {
+      element: chibiDomImageV7(this.#document, resolution, box, subject),
+      factionArt: resolution.factionArt,
+    };
+  }
+
+  readonly #economyIcons = (
+    kind: "coin" | "population",
+  ): { readonly url: string; readonly assetId: string } | null => {
+    const resolution = this.#chibiDom?.resolve({
+      subject: kind === "coin" ? "ICON:HUD:COIN" : "ICON:HUD:POPULATION",
+    });
+    return resolution?.kind === "READY"
+      ? { url: resolution.url, assetId: resolution.asset.id }
+      : null;
+  };
+
+  #technologyChibiArt(tech: TechnologyIdV7) {
+    return this.#chibiArt(
+      technologySubjectV7(tech, this.#viewerFaction()),
+      CHIBI_DOM_BOXES_V7.card,
+      this.#viewerColour(),
+    );
+  }
+
+  #playerColour(
+    view: PlayerViewV7,
+    playerId: number | null | undefined,
+  ): string | undefined {
+    const player = view.players.find((entry) => entry.id === playerId);
+    return player === undefined
+      ? undefined
+      : RULESET7_PLAYER_COLORS[player.color];
+  }
+
+  #viewerColour(): string | undefined {
+    const view = this.#snapshot.view;
+    return view === null ? undefined : this.#playerColour(view, view.viewer.id);
+  }
 
   #render(): void {
     if (this.#destroyed) return;
@@ -960,6 +1071,13 @@ export class Ruleset7DomAppView {
       const roleLabel = roleRule.label;
       const undeadUnit = unitIsUndeadV7(view, unit);
       const unitFaction = undeadUnit ? "UNDEAD" : "ORIGINAL";
+      const unitSubject = unitArtSubjectV7({ ...unit, faction: unitFaction });
+      const unitColour = this.#playerColour(view, unit.ownerId);
+      const dockArt = this.#chibiArt(
+        unitSubject,
+        CHIBI_DOM_BOXES_V7.dock,
+        unitColour,
+      );
       dock.append(
         identity(
           this.#document,
@@ -968,7 +1086,8 @@ export class Ruleset7DomAppView {
             : RULESET7_UNIT_ART_IDS[unit.role],
           unit.form === "EMBARKED" ? `${roleLabel} (at sea)` : roleLabel,
           true,
-          undeadUnit,
+          undeadUnit && dockArt?.factionArt !== true,
+          dockArt?.element,
         ),
       );
       if (unit.ownerId !== view.viewer.id) {
@@ -1192,7 +1311,8 @@ export class Ruleset7DomAppView {
           "v7-context-action",
         );
         recover.append(
-          art(this.#document, "ui-action-recover", ""),
+          this.#chibiArt("ICON:ACTION:RECOVER", CHIBI_DOM_BOXES_V7.action)
+            ?.element ?? art(this.#document, "ui-action-recover", ""),
           text(this.#document, "span", "Recover", "v7-action-label"),
         );
         // aria-disabled keeps the explanation reachable by keyboard.
@@ -1224,17 +1344,23 @@ export class Ruleset7DomAppView {
         closeHelp.classList.add("close-button");
         closeHelp.onclick = () => this.#closeUnitHelp();
         const header = el(this.#document, "div", "v7-dialog-header");
+        const helpArt = this.#chibiArt(
+          unitSubject,
+          CHIBI_DOM_BOXES_V7.card,
+          unitColour,
+        );
         header.append(
           undeadArt(
             this.#document,
-            art(
-              this.#document,
-              unit.form === "EMBARKED"
-                ? "unit-shared-embarked-transport"
-                : RULESET7_UNIT_ART_IDS[unit.role],
-              "",
-            ),
-            undeadUnit,
+            helpArt?.element ??
+              art(
+                this.#document,
+                unit.form === "EMBARKED"
+                  ? "unit-shared-embarked-transport"
+                  : RULESET7_UNIT_ART_IDS[unit.role],
+                "",
+              ),
+            undeadUnit && helpArt?.factionArt !== true,
           ),
           text(this.#document, "h2", roleLabel),
         );
@@ -1254,12 +1380,19 @@ export class Ruleset7DomAppView {
       );
       if (city === undefined) return null;
       const owned = city.ownerId === view.viewer.id;
+      const cityTier = Math.max(1, Math.min(3, city.level)) as 1 | 2 | 3;
       dock.append(
         identity(
           this.#document,
-          `building-city-${Math.max(1, Math.min(3, city.level))}`,
+          `building-city-${cityTier}`,
           city.isCapital ? "Capital" : "City",
           true,
+          false,
+          this.#chibiArt(
+            `CITY:${cityTier}`,
+            CHIBI_DOM_BOXES_V7.dock,
+            this.#playerColour(view, city.ownerId),
+          )?.element,
         ),
       );
       const owner = view.players.find((player) => player.id === city.ownerId);
@@ -1415,8 +1548,30 @@ export class Ruleset7DomAppView {
             (tile.resource !== "UNKNOWN_RESOURCE" ? tile.resource : null) ??
             (tile.road ? "ROAD" : tile.terrain),
         );
+        const tileSubject: ArtSubjectV7 =
+          tile.improvement !== null
+            ? improvementSubjectV7(tile.improvement)
+            : tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
+              ? `RESOURCE:${tile.resource}`
+              : `TERRAIN:${tile.terrain}`;
         const summary = el(this.#document, "div", "v7-selection-summary");
-        summary.append(identity(this.#document, asset, name, true));
+        summary.append(
+          identity(
+            this.#document,
+            asset,
+            name,
+            true,
+            false,
+            this.#chibiArt(
+              tileSubject,
+              CHIBI_DOM_BOXES_V7.dock,
+              tile.improvement === null
+                ? undefined
+                : this.#playerColour(view, tile.territoryOwnerId),
+              tile.at,
+            )?.element,
+          ),
+        );
         const details = el(this.#document, "div", "v7-selection-details");
         if (tile.road && name !== "Road")
           details.append(text(this.#document, "p", "Road", "v7-chip"));
@@ -1593,14 +1748,29 @@ export class Ruleset7DomAppView {
         );
       }
       const artId = commandArtIdV7(command);
-      if (artId !== null)
+      const commandArt = this.#chibiArt(
+        commandSubjectV7(command, this.#viewerFaction()),
+        CHIBI_DOM_BOXES_V7.action,
+        this.#viewerColour(),
+      );
+      if (commandArt !== null)
+        action.prepend(
+          undeadArt(
+            this.#document,
+            commandArt.element,
+            command.kind === "TRAIN" &&
+              this.#viewerFaction() === "UNDEAD" &&
+              !commandArt.factionArt,
+          ),
+        );
+      else if (artId !== null)
         action.prepend(
           command.kind === "TRAIN" && this.#viewerFaction() === "UNDEAD"
             ? undeadArt(this.#document, art(this.#document, artId, ""), true)
             : art(this.#document, artId, ""),
         );
       const undeadIcon = UNDEAD_COMMAND_ICONS[command.kind];
-      if (undeadIcon !== undefined)
+      if (undeadIcon !== undefined && commandArt === null)
         action.prepend(
           uiIconV7(this.#document, undeadIcon, "v7-ui-icon v7-command-icon"),
         );
@@ -1886,6 +2056,7 @@ export class Ruleset7DomAppView {
           });
         },
         this.#selectedTech,
+        (tech) => this.#technologyChibiArt(tech)?.element ?? null,
       );
       const option = this.#document.createElement("option");
       option.value = laneId;
@@ -1950,7 +2121,14 @@ export class Ruleset7DomAppView {
                 );
     detail.append(
       close,
-      identity(this.#document, RULESET7_TECH_ART_IDS[node.id], title(node.id)),
+      identity(
+        this.#document,
+        RULESET7_TECH_ART_IDS[node.id],
+        title(node.id),
+        false,
+        false,
+        this.#technologyChibiArt(node.id)?.element,
+      ),
     );
     if (status !== null) detail.append(status);
     if (node.state === "AVAILABLE" && node.cost === 0)
@@ -2035,11 +2213,17 @@ export class Ruleset7DomAppView {
     close.classList.add("close-button");
     close.onclick = () => this.#closeRecruitHelp();
     const header = el(this.#document, "div", "v7-dialog-header");
+    const recruitArt = this.#chibiArt(
+      portraitSubjectV7(role, faction),
+      CHIBI_DOM_BOXES_V7.card,
+      this.#viewerColour(),
+    );
     header.append(
       undeadArt(
         this.#document,
-        art(this.#document, RULESET7_UNIT_ART_IDS[role], ""),
-        faction === "UNDEAD",
+        recruitArt?.element ??
+          art(this.#document, RULESET7_UNIT_ART_IDS[role], ""),
+        faction === "UNDEAD" && recruitArt?.factionArt !== true,
       ),
       text(this.#document, "h2", presentation.label),
       economyChips(this.#document, { cost: rule.cost ?? 0 }),
@@ -2112,7 +2296,11 @@ export class Ruleset7DomAppView {
       const cities = el(this.#document, "span", "v7-leaderboard-stat");
       cities.title = "Cities";
       cities.append(
-        art(this.#document, "building-city-1", ""),
+        this.#chibiArt(
+          "CITY:1",
+          CHIBI_DOM_BOXES_V7.leaderboard,
+          RULESET7_PLAYER_COLORS[entry.color],
+        )?.element ?? art(this.#document, "building-city-1", ""),
         String(entry.cityCount),
         text(this.#document, "span", " cities", "v7-sr-only"),
       );
@@ -2367,12 +2555,18 @@ export class Ruleset7DomAppView {
         `reward-${reward.toLowerCase()}`,
         "v7-reward-action",
       );
+      const rewardArt = this.#chibiArt(
+        rewardSubjectV7(reward, view.viewer.faction),
+        CHIBI_DOM_BOXES_V7.reward,
+        this.#playerColour(view, view.viewer.id),
+      );
       action.append(
         undeadArt(
           this.#document,
-          art(this.#document, rewardArtIdV7(reward), ""),
+          rewardArt?.element ?? art(this.#document, rewardArtIdV7(reward), ""),
           view.viewer.faction === "UNDEAD" &&
-            (reward === "MILITIA" || reward === "JUGGERNAUT"),
+            (reward === "MILITIA" || reward === "JUGGERNAUT") &&
+            rewardArt?.factionArt !== true,
         ),
         text(this.#document, "strong", name),
         text(this.#document, "span", detail, "v7-reward-detail"),
@@ -3082,6 +3276,8 @@ function appendTechNode(
   layout: ReturnType<typeof technologyTreeLayoutV7>[number],
   choose: (node: PublicTechnologyNodeV7) => void,
   selected: TechnologyIdV7 | null,
+  /** CHIBI art for a technology card, or null to keep the legacy art. */
+  chibiArt: (tech: TechnologyIdV7) => HTMLElement | null = () => null,
 ): void {
   const node = el(documentRoot, "div", "v7-tech-node");
   const card = button(
@@ -3093,8 +3289,11 @@ function appendTechNode(
   card.dataset.selected = String(layout.node.id === selected);
   const artFrame = el(documentRoot, "span", "v7-tech-art");
   const assetId = RULESET7_TECH_ART_IDS[layout.node.id];
-  const image = art(documentRoot, assetId, "");
-  const artworkLayout = technologyArtworkLayoutV7(assetId);
+  const chibiImage = chibiArt(layout.node.id);
+  if (chibiImage !== null) artFrame.dataset.artSet = "chibi";
+  const image = chibiImage ?? art(documentRoot, assetId, "");
+  const artworkLayout =
+    chibiImage === null ? technologyArtworkLayoutV7(assetId) : null;
   if (artworkLayout !== null) {
     artFrame.dataset.frameMode = "visible-alpha";
     image.style.left = `${artworkLayout.image.left}px`;
@@ -3149,7 +3348,7 @@ function appendTechNode(
       edge.style.gridColumn = `span ${child.leafCount}`;
       edge.dataset.parentTech = layout.node.id;
       edge.dataset.childTech = child.node.id;
-      appendTechNode(documentRoot, edge, child, choose, selected);
+      appendTechNode(documentRoot, edge, child, choose, selected, chibiArt);
       children.append(edge);
     }
     node.append(children);
@@ -3162,16 +3361,20 @@ function identity(
   label: string,
   normalizePaintedSize = false,
   undead = false,
+  /** CHIBI art already sized for its box; replaces the legacy asset. */
+  chibiImage?: HTMLElement,
 ): HTMLElement {
   const identity = el(documentRoot, "div", "v7-identity");
   const viewport = el(documentRoot, "span", "v7-identity-art");
-  const image = art(documentRoot, assetId, "");
+  if (chibiImage !== undefined) viewport.dataset.artSet = "chibi";
+  const image = chibiImage ?? art(documentRoot, assetId, "");
   const layout =
-    normalizePaintedSize ||
-    assetId === "terrain-square-original-fruit" ||
-    assetId === "terrain-square-original-animal" ||
-    assetId === RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP ||
-    assetId === RULESET7_RESOURCE_ART_IDS.FERTILE_GROUND
+    chibiImage === undefined &&
+    (normalizePaintedSize ||
+      assetId === "terrain-square-original-fruit" ||
+      assetId === "terrain-square-original-animal" ||
+      assetId === RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP ||
+      assetId === RULESET7_RESOURCE_ART_IDS.FERTILE_GROUND)
       ? selectionIdentityArtworkLayoutV7(assetId)
       : null;
   if (layout !== null) {
@@ -3789,12 +3992,33 @@ function text(
   return node;
 }
 
+/**
+ * CHIBI economy icons per document: the mounted CHIBI view registers a
+ * provider, so the many text helpers that inline a coin or population icon
+ * need no art-set parameter. Without a provider (LEGACY) nothing changes.
+ */
+const CHIBI_ECONOMY_ICONS = new WeakMap<
+  Document,
+  (
+    kind: "coin" | "population",
+  ) => { readonly url: string; readonly assetId: string } | null
+>();
+
 function economyIcon(
   documentRoot: Document,
   kind: "coin" | "population",
 ): HTMLImageElement {
   const icon = documentRoot.createElement("img");
   icon.className = "v7-economy-icon";
+  const chibi = CHIBI_ECONOMY_ICONS.get(documentRoot)?.(kind);
+  if (chibi !== null && chibi !== undefined) {
+    icon.src = chibi.url;
+    icon.alt = "";
+    icon.setAttribute("aria-hidden", "true");
+    icon.dataset.artSet = "chibi";
+    icon.dataset.chibiAssetId = chibi.assetId;
+    return icon;
+  }
   icon.src =
     ACCEPTED_ART_URLS[
       kind === "coin" ? "ui-hud-gold-coin-v7" : "ui-hud-population"

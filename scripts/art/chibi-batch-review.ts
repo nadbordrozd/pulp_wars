@@ -63,6 +63,7 @@ import {
   type RgbaRaster,
 } from "./chibi/owner-mask";
 import {
+  listBatches,
   loadBatchManifest,
   loadRecords,
   productionLayout,
@@ -698,6 +699,160 @@ async function sheet(
   await writeImage(file, target, labels);
 }
 
+// ------------------------------------------------------------ interface sheets
+
+/** Interface art (batch 5): portraits and icons, never placed on terrain. */
+function isInterfaceAsset(asset: ReviewAsset): boolean {
+  return (
+    asset.spec.assetClass === "PORTRAIT" || asset.spec.assetClass === "ICON"
+  );
+}
+
+/** Nearest-neighbour at any factor (1.5x is the 72 px card scale). */
+function nearest(raster: RgbaRaster, factor: number): Raster {
+  const width = Math.round(raster.width * factor);
+  const height = Math.round(raster.height * factor);
+  const data = new Uint8Array(width * height * 4);
+  for (let y = 0; y < height; y += 1)
+    for (let x = 0; x < width; x += 1) {
+      const from =
+        (Math.min(raster.height - 1, Math.floor(y / factor)) * raster.width +
+          Math.min(raster.width - 1, Math.floor(x / factor))) *
+        4;
+      data.set(raster.data.subarray(from, from + 4), (y * width + x) * 4);
+    }
+  return { width, height, data };
+}
+
+/** The interface's dark dock panel and a light page, for contrast checks. */
+const UI_DARK = { r: 34, g: 32, b: 48 };
+const UI_LIGHT = { r: 232, g: 226, b: 212 };
+
+/**
+ * Interface art sheet: each portrait or icon on the dark dock panel in the
+ * key colour and for owners A and B, its mask, and on a light page; the 1:1
+ * sheet adds the 1.5x card size and the half size of inline HUD text.
+ */
+async function interfaceSheet(
+  file: string,
+  assets: readonly ReviewAsset[],
+  k: 1 | 4,
+  title: string,
+): Promise<void> {
+  const margin = 20;
+  const labelWidth = 330;
+  const gap = 16;
+  const box = k === 1 ? 80 : 48 * k + 16;
+  const columns =
+    k === 1
+      ? [
+          "key colour",
+          "owner A",
+          "owner B",
+          "1.5x card, owner A",
+          "light page",
+          "0.5x smoothed",
+        ]
+      : ["key colour", "owner A", "owner B", "owner mask", "light page"];
+  const header = 96;
+  const rowHeight = Math.max(box, 110) + gap;
+  const width = margin * 2 + labelWidth + columns.length * (box + gap);
+  const height = header + assets.length * rowHeight + margin;
+  const target = blank(width, height, PAPER);
+  const labels: Label[] = [
+    { x: margin, y: 40, text: title, size: 24, weight: "bold" },
+    {
+      x: margin,
+      y: 66,
+      text:
+        k === 1
+          ? "1:1 DPR 1 masters as the 48 px action tile shows them; 1.5x is the 72 px card; 0.5x is inline HUD text."
+          : "x4 nearest-neighbour. Owner mask: cyan = owner pixels. Owners use the runtime mask recolour.",
+      size: 15,
+      color: "#c8ccd4",
+    },
+  ];
+  columns.forEach((name, index) =>
+    labels.push({
+      x: margin + labelWidth + index * (box + gap),
+      y: header - 8,
+      text: name,
+      size: 14,
+      weight: "bold",
+      color: "#e2b340",
+    }),
+  );
+  for (const [row, asset] of assets.entries()) {
+    const top = header + row * rowHeight;
+    labels.push(
+      { x: margin, y: top + 20, text: asset.spec.id, size: 16, weight: "bold" },
+      {
+        x: margin,
+        y: top + 40,
+        text: `${asset.spec.subject} · ${asset.spec.assetClass}`,
+        size: 13,
+        color: "#c8ccd4",
+      },
+      {
+        x: margin,
+        y: top + 58,
+        text: `${asset.master.width}x${asset.master.height}`,
+        size: 13,
+        color: "#c8ccd4",
+      },
+    );
+    statusLines(asset).forEach((line, index) =>
+      labels.push({
+        x: margin,
+        y: top + 76 + index * 16,
+        text: line,
+        size: 12,
+        color: asset.record.status === "ACCEPTED" ? "#9fdc9f" : "#ff8a80",
+      }),
+    );
+    const owner = (key: Owner): Raster => pieceRaster(asset, key);
+    const cells: {
+      raster: Raster;
+      fill: { r: number; g: number; b: number };
+    }[] =
+      k === 1
+        ? [
+            { raster: asset.master, fill: UI_DARK },
+            { raster: owner("A"), fill: UI_DARK },
+            { raster: owner("B"), fill: UI_DARK },
+            { raster: nearest(owner("A"), 1.5), fill: UI_DARK },
+            { raster: owner("A"), fill: UI_LIGHT },
+            { raster: await smoothed(owner("A"), 0.5), fill: UI_DARK },
+          ]
+        : [
+            { raster: scaled(asset.master, k), fill: UI_DARK },
+            { raster: scaled(owner("A"), k), fill: UI_DARK },
+            { raster: scaled(owner("B"), k), fill: UI_DARK },
+            {
+              raster: scaled(
+                asset.mask === undefined
+                  ? asset.master
+                  : maskOverlay(asset.master, asset.mask),
+                k,
+              ),
+              fill: UI_DARK,
+            },
+            { raster: scaled(owner("A"), k), fill: UI_LIGHT },
+          ];
+    cells.forEach((cell, index) => {
+      const left = margin + labelWidth + index * (box + gap);
+      fillRect(target, { x: left, y: top, width: box, height: box }, cell.fill);
+      draw(
+        target,
+        cell.raster,
+        left + Math.floor((box - cell.raster.width) / 2),
+        top + Math.floor((box - cell.raster.height) / 2),
+      );
+    });
+  }
+  await writeImage(file, target, labels);
+}
+
 // ------------------------------------------------------------ mocks
 
 interface ScenePiece {
@@ -1120,10 +1275,76 @@ async function captureScene(
   return evidence;
 }
 
+/** Interface surfaces of scripts/art/chibi/review-dom-v7.ts (batch 5). */
+const DOM_SCENES = [
+  "HUMAN_UNIT",
+  "UNDEAD_RIVAL_UNIT",
+  "UNDEAD_UNIT",
+  "HUMAN_TRAINING",
+  "UNDEAD_TRAINING",
+  "TECH",
+  "REWARD",
+  "REWARD_ECONOMY",
+  "UNDEAD_REWARD",
+] as const;
+
+/**
+ * Interface captures for batch 5: a real Ruleset7DomAppView with
+ * ?art=chibi over a fixture arena, one surface per scene (unit docks,
+ * training docks, the technology tree, mandatory rewards).
+ */
+async function captureDom(
+  connection: Connection,
+  directory: string,
+  viewport: {
+    readonly name: string;
+    readonly width: number;
+    readonly height: number;
+    readonly dpr: number;
+  },
+): Promise<CaptureEvidence[]> {
+  const evidence: CaptureEvidence[] = [];
+  for (const scene of DOM_SCENES) {
+    await evaluate(
+      connection,
+      `(async () => { const review = await import('/scripts/art/chibi/review-dom-v7.ts'); globalThis.__CHIBI_DOM_REVIEW__?.destroy(); globalThis.__CHIBI_DOM_REVIEW__ = await review.showChibiDomReviewV7(${JSON.stringify(scene)}); return true; })()`,
+    );
+    await waitFor(
+      connection,
+      `document.querySelector('[data-chibi-dom-review] [data-chibi-state="loading"]') === null && Array.from(document.images).every((image) => image.complete)`,
+    );
+    await delay(900);
+    const shot = (await connection.send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: false,
+    })) as { data?: string };
+    if (shot.data === undefined)
+      throw new Error("Chrome returned no screenshot");
+    const file = path.join(
+      directory,
+      `dom-${scene.toLowerCase().replaceAll("_", "-")}-${viewport.name}.png`,
+    );
+    await writeFile(file, Buffer.from(shot.data, "base64"));
+    evidence.push({
+      file: posix(file),
+      viewport: `${viewport.width}x${viewport.height} CSS at DPR ${viewport.dpr} (interface ${scene})`,
+      zoomStep: null,
+      tileCssPx: null,
+      artSet: "CHIBI",
+    });
+  }
+  await evaluate(
+    connection,
+    `(() => { globalThis.__CHIBI_DOM_REVIEW__?.destroy(); delete globalThis.__CHIBI_DOM_REVIEW__; return true; })()`,
+  );
+  return evidence;
+}
+
 async function captureInGame(
   directory: string,
   baseUrl: string,
   sceneSubjects: readonly string[] | null,
+  interfaceBatch = false,
 ): Promise<CaptureEvidence[]> {
   const chrome = process.env.CHROME_PATH;
   if (chrome === undefined || chrome === "")
@@ -1271,6 +1492,8 @@ async function captureInGame(
             sceneSubjects,
           )),
         );
+      if (interfaceBatch)
+        evidence.push(...(await captureDom(connection, directory, viewport)));
     }
     connection.close();
   } finally {
@@ -1324,6 +1547,21 @@ async function main(): Promise<void> {
   if (assetRecords.length === 0)
     throw new Error(`batch ${batch} has no accepted assets to review`);
   const assets = await loadReviewAssets(manifest, assetRecords);
+  // Batch 5 is split by faction (batch-5.json, batch-5-undead.json): the
+  // review of batch N also shows its faction companions N-<name>.
+  if (!dryRun)
+    for (const companion of await listBatches(ROOT)) {
+      if (!companion.startsWith(`${batch}-`)) continue;
+      const other = await loadBatchManifest(ROOT, companion);
+      const otherRecords = await loadRecords(
+        productionLayout(ROOT, companion),
+        companion,
+      );
+      assets.push(
+        ...(await loadReviewAssets(other, Object.values(otherRecords.assets))),
+      );
+    }
+  const interfaceBatch = assets.every(isInterfaceAsset);
   const ownTerrain = assets.filter(
     (asset) => isTerrainTile(asset) && asset.record.status === "ACCEPTED",
   );
@@ -1338,41 +1576,60 @@ async function main(): Promise<void> {
     outputs.push(file);
     return file;
   };
-  await sheet(
-    out("sheet-1x.png"),
-    assets,
-    terrain,
-    1,
-    `${label}: sprites at 1:1`,
-  );
-  await sheet(
-    out("sheet-x4.png"),
-    assets,
-    terrain,
-    4,
-    `${label}: sprites at x4`,
-  );
+  if (interfaceBatch) {
+    await interfaceSheet(
+      out("sheet-1x.png"),
+      assets,
+      1,
+      `${label}: interface art at 1:1`,
+    );
+    await interfaceSheet(
+      out("sheet-x4.png"),
+      assets,
+      4,
+      `${label}: interface art at x4`,
+    );
+  } else {
+    await sheet(
+      out("sheet-1x.png"),
+      assets,
+      terrain,
+      1,
+      `${label}: sprites at 1:1`,
+    );
+    await sheet(
+      out("sheet-x4.png"),
+      assets,
+      terrain,
+      4,
+      `${label}: sprites at x4`,
+    );
+  }
   // Mocks show only what could ship; mask-rejected art stays on the sheets.
   const sceneAssets = [
     ...context,
     ...assets.filter((asset) => asset.record.status === "ACCEPTED"),
   ];
-  await mock(out("phone-mock.png"), sceneAssets, {
-    width: 1170,
-    height: 2532,
-    dpr: 3,
-    originX: -35,
-    title: `${label}: phone, 390x844 CSS at DPR 3`,
-    scale: "Tile 80 CSS = 240 px; sprites x3 nearest; 1 image px = 1 device px",
-  });
-  await mock(out("desktop-mock.png"), sceneAssets, {
-    width: 1440,
-    height: 900,
-    dpr: 1,
-    originX: 400,
-    title: `${label}: desktop, 1440x900 at DPR 1`,
-    scale: "Tile 80 px; sprites 1:1 DPR 1 masters",
-  });
+  // Interface art is reviewed in the real DOM instead of on a map mock.
+  if (!interfaceBatch) {
+    await mock(out("phone-mock.png"), sceneAssets, {
+      width: 1170,
+      height: 2532,
+      dpr: 3,
+      originX: -35,
+      title: `${label}: phone, 390x844 CSS at DPR 3`,
+      scale:
+        "Tile 80 CSS = 240 px; sprites x3 nearest; 1 image px = 1 device px",
+    });
+    await mock(out("desktop-mock.png"), sceneAssets, {
+      width: 1440,
+      height: 900,
+      dpr: 1,
+      originX: 400,
+      title: `${label}: desktop, 1440x900 at DPR 1`,
+      scale: "Tile 80 px; sprites 1:1 DPR 1 masters",
+    });
+  }
   let captures: CaptureEvidence[] = [];
   let captureNote: string;
   if (process.argv.includes("--skip-capture"))
@@ -1387,7 +1644,7 @@ async function main(): Promise<void> {
         given ?? `http://localhost:${port}/`,
         // Batch 3 onwards places pieces a fresh game never shows: production
         // batches add the synthetic scene of their map subjects.
-        dryRun || Number(batch) < 3
+        dryRun || Number(batch) < 3 || interfaceBatch
           ? null
           : [
               ...new Set(
@@ -1400,6 +1657,7 @@ async function main(): Promise<void> {
                   .map((asset) => asset.spec.subject),
               ),
             ],
+        interfaceBatch,
       );
     } finally {
       if (server !== undefined) stopDevServer(server);
@@ -1447,9 +1705,17 @@ async function main(): Promise<void> {
       .map(linkFor)
       .filter((line): line is string => line !== null),
     "",
+    ...DOM_SCENES.map((scene) =>
+      linkFor(`dom-${scene.toLowerCase().replaceAll("_", "-")}-phone.png`),
+    ).filter((line): line is string => line !== null),
+    "",
     "## Desktop and sprite sheets",
     "",
     ...[
+      ...DOM_SCENES.map(
+        (scene) =>
+          `dom-${scene.toLowerCase().replaceAll("_", "-")}-desktop.png`,
+      ),
       "desktop-mock.png",
       "ingame-desktop-zoom-1.png",
       "ingame-desktop-zoom-0.75.png",

@@ -99,6 +99,12 @@ This guides the subject lines; it is not sent to PixelLab.
   are the only glow, and always small.
 - **Settlements:** shared with the Humans (see
   [Cities and villages](#cities-and-villages)).
+- **Portraits and icons (batch 5, bead `pulp_wars-67q.11`):** each
+  `PORTRAIT:UNDEAD:<ROLE>` line in `scripts/art/chibi/subjects/UNDEAD.json`
+  repeats its unit's head, owner garment and signature item as a
+  head-and-shoulders bust; the Undead command icons (Raise Dead, Devour,
+  Wail and Frenzy, `ICON:ACTION:UNDEAD:RALLY`) use the same bone, iron and
+  pale blue flame vocabulary.
 
 ## Subject lines
 

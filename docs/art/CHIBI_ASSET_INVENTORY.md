@@ -108,9 +108,12 @@ raster (and in LEGACY) the code-drawn marker stays. Prompts and recipes:
 ## Interface rasters (DOM)
 
 These are all drawn with `<img class="v7-art-frame">` from
-`ACCEPTED_ART_URLS`. The `?art=chibi` switch does not reach the DOM today
-(flag 9), so every row stays legacy until batch 5 adds a DOM art-set hook.
-Display sizes are CSS px at UI scale 1.
+`ACCEPTED_ART_URLS` in LEGACY. Batch 5 added the DOM art-set hook (flag 9),
+so with `?art=chibi` each row asks for a chibi subject first; see
+[Batch 5: the interface in CHIBI](#batch-5-the-interface-in-chibi). Display
+sizes are CSS px at UI scale 1. (LEGACY's selection dock and unit help show
+the unit's map sprite, not its portrait; LEGACY portraits appear only in
+rewards and on technology cards.)
 
 | Use                                        | Legacy art today                                                                                                                                                                                                                                                                                                                                                        | Display size                                                    | Batch | Notes                                                                                                                                                     |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -128,6 +131,69 @@ Display sizes are CSS px at UI scale 1.
 | ----------------------- | ------------------------------------------ | ----- | ----- | ------------------------------------------------------------------------------------- |
 | HUD and dock glyphs     | `ui-icons-v7.ts` (SVG paths, currentColor) | 15    | 5     | Follow the theme and high contrast. Flag 11.                                          |
 | Tactical status symbols | `ruleset7-tactical-ui-symbols.ts`          | 20    | 5     | Includes achievements, Field Defense, Port status, blackout and concealment. Flag 11. |
+
+## Batch 5: the interface in CHIBI
+
+Bead `pulp_wars-67q.11`. Records: `scripts/art/chibi/records/batch-5.json`
+(ORIGINAL) and `batch-5-undead.json` (UNDEAD); masters under
+`public/assets/chibi/portraits/` and `public/assets/chibi/icons/`.
+
+**The DOM hook.** [`chibi-dom-art-v7.ts`](../../src/render/dom/chibi-dom-art-v7.ts)
+resolves a subject through the canvas resolver (same registry, same
+faction fallback, same mask recolour and neutral stone for masked art
+without an owner), trims the raster to its painted pixels and returns a
+data URL. The app view asks for a subject wherever it drew legacy art and
+keeps the legacy `<img>` unchanged when the subject has no usable raster;
+LEGACY builds no hook at all, so its markup is unchanged. Images are sized
+in rem to a whole or half step of the master (1:1 in 48 px tiles, 1.5x in
+72 px cards, which lands on whole device pixels at DPR 2); art too big for
+its box is fitted and smoothed. The coin and population icons that the text
+helpers inline everywhere come from a per-document provider the CHIBI view
+registers.
+
+| Interface use                       | CHIBI subject                                                                                                                 | Owner colour            |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| Selection dock and unit help (unit) | the unit's map subject (`UNIT:<ROLE>`, `UNIT:UNDEAD:<ROLE>`, embarked transport)                                              | the unit's owner        |
+| Selection dock (city, tile)         | `CITY:<level>`; the improvement, resource or terrain map subject (a Mine is its mined mountain)                               | city or territory owner |
+| Train buttons, recruit help         | `PORTRAIT:<ROLE>`, `PORTRAIT:UNDEAD:<ROLE>` for an Undead viewer's land roles                                                 | the viewer              |
+| Technology cards and detail         | `CHIBI_TECH_ART_SUBJECTS_V7` in [`chibi-ui-art-v7.ts`](../../src/assets/chibi-ui-art-v7.ts)                                   | the viewer              |
+| Command and action buttons          | `ICON:ACTION:<KIND>` (Frenzy: `ICON:ACTION:UNDEAD:RALLY`); build and harvest commands their map subject; Capture the Village  | the viewer              |
+| City rewards                        | `ICON:REWARD:*`, `ICON:HUD:COIN` (Stockpile, Treasury), `ICON:HUD:POPULATION` (Boom), faction portraits (Militia, Juggernaut) | the viewer              |
+| Leaderboard city count              | `CITY:1`                                                                                                                      | that player             |
+| Inline and HUD coin and population  | `ICON:HUD:COIN`, `ICON:HUD:POPULATION`                                                                                        | none                    |
+
+Undead portraits and Frenzy fall back to the Human art (with the skull
+badge on units, as on the map) while they have no raster; with their own
+art the badge is dropped.
+
+**Technology cards.** Where LEGACY reuses a map sprite, CHIBI reuses the
+chibi map sprite (Gathering the Fruit bush, Farming the Farm, Chivalry the
+Knight, Naval Engineering the Battleship, and so on; an Undead viewer's
+Chivalry and Drill show the Vampire and Zombie). Portrait and action reuse
+follows LEGACY too: Administration the Captain portrait, Scouting the
+Raider, Marksmanship the Marksman, Planning the Expand reward, Raiding
+Pillage, Explosives Blast Mountain, Roads Build Road. Fieldcraft,
+Fortification and Navigation have dedicated icons: LEGACY's Navigation is
+a flat deep-water tile, no icon. Engineering shows the Workshop it unlocks,
+because the chibi Mountain carries its grass tile and reads as a map square
+on a card.
+
+**Portraits are dedicated rasters, not map-sprite crops.** The map units
+are 56 x 80 to 88 x 104 and would shrink to about 0.6x (smoothed) in a
+48 px train tile. The portraits are 48 x 48 head-and-shoulders busts of
+the same designs (headgear, owner garment and signature item), so a tile
+shows them 1:1 and a 72 px card 1.5x. The Catapult and both ships are shown
+whole (a machine has no bust). A selected unit on the map keeps its map
+sprite in the dock, as in LEGACY. The embarked transport has no portrait:
+nothing recruits it.
+
+**Vector graphics stay vector (flag 11).** The HUD and dock glyphs
+(`ui-icons-v7.ts`) and the tactical status symbols, including the
+achievement entitlement symbols and the Field Defense command symbol,
+follow the theme and high contrast and read cleanly beside the chibi art,
+so batch 5 keeps them. The achievement notice keeps its trophy glyph and
+the Build Monument commands show the chibi Monument. The End Turn button is
+text, so it has no icon.
 
 ## Legacy IDs not reachable in Ruleset 7
 
@@ -243,13 +309,17 @@ batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
    Selection docks, technology cards, action buttons and rewards keep
    legacy art, including legacy map sprites of chibi subjects. Batch 5 (or
    an earlier runtime bead) needs a DOM art-set hook, or chibi games will
-   show both styles side by side.
+   show both styles side by side. **Batch 5 decision:** a DOM art-set hook
+   with the canvas's per-subject fallback, faction awareness and owner
+   recolour ([Batch 5](#batch-5-the-interface-in-chibi)).
 10. **Ships have no portraits.** Patrol Boat and Battleship use their map
     sprites as portraits; batch 5 should add portraits or keep that reuse on
-    purpose.
+    purpose. **Batch 5 decision:** dedicated 48 x 48 portraits of the whole
+    ship, because the map ships shrink to half size in a 48 px train tile.
 11. **HUD glyphs and tactical symbols are vector.** They already follow the
     theme and high contrast. Batch 5 should decide with the user whether they
-    stay vector (recommended) or become pixel art.
+    stay vector (recommended) or become pixel art. **Batch 5 decision:** they
+    stay vector (the recommendation), pending the batch-5 user review.
 12. **The tile-80 Fighter and Marksman fail the strict mask QA.** Their
     shields, boots and bows are red-brown. Batch 1 must regenerate them with
     "browns that are clearly not red" rather than reuse them.

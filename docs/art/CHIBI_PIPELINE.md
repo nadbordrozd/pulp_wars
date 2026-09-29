@@ -72,6 +72,8 @@ the Human-era owner text they were generated with.
 | `resource`     | Pixen, then optional edit                      | as settlement                                                                                          |
 | `terrain`      | `create-image-pixflux` (flat shading) or Pixen | a field at least 2x the tile; the seamless 80 x 80 window is cropped, optionally inside a `cropRegion` |
 | `tall-terrain` | Pixen, then optional edit                      | the transparent body drawn over an accepted ground tile's bottom cell                                  |
+| `portrait`     | Pixen, `side` view, south-east, low detail     | the candidate: a 48 x 48 head-and-shoulders interface portrait with an owner mask (batch 5)            |
+| `icon`         | Pixen, low top-down, no direction              | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships and the Catapult        |
 
 "Generate at the display size" is enforced: a non-terrain request must
 equal its master canvas. Pixen sizes must be multiples of 4.
@@ -89,6 +91,18 @@ hash and the ground's bytes the recorded ground, and that the body
 composited over the ground reproduces the master pixel for pixel.
 `npm run art:chibi -- bodies --batch N` rewrites a batch's body layers from
 its records (it backfilled batches 1 and 3).
+
+Interface classes (batch 5) have their own camera layers
+(`camera-portrait.txt`, `camera-icon.txt`) and class texts. The icon text
+never says "icon", "badge" or "circle": Pixen answers "icon" with a round
+badge or frame behind the object (three of the first samples), so the
+recipe asks for an "item sprite" that floats alone on transparency.
+Portraits are owned (`PORTRAIT:*` subjects need a mask); icons are not.
+
+A batch is one faction, so batch 5 is split: `batch-5.json` (ORIGINAL:
+Human portraits, ship portraits and every Human or shared icon) and
+`batch-5-undead.json` (UNDEAD: Undead portraits and the Undead command
+icons). The review of batch 5 shows both.
 
 ### Building on earlier batches
 
@@ -190,6 +204,19 @@ rival's on Deep Water). The roster's rival is drawn as Undead, so the skull
 badge and the HP bar and seat badge are checked on every unit class. The
 captures keep the `ingame-scene-*` names; `index.json` labels each as a
 showcase or a roster.
+
+Interface batches (every asset a `PORTRAIT` or `ICON`, batch 5) get
+interface sheets instead: each portrait or icon on the dark dock panel in
+the key colour and for owners A and B, its mask, on a light page, at the
+1.5x card size and at the half size of inline HUD text. The terrain mocks
+are skipped, and the captures add `dom-<scene>-{desktop,phone}.png` from
+[`review-dom-v7.ts`](../../scripts/art/chibi/review-dom-v7.ts): a real
+`Ruleset7DomAppView` with `?art=chibi` over a fixture arena, opened on a
+Human and an Undead unit dock, an Undead rival's dock, Human and Undead
+training docks, the technology tree with a card's detail, and the
+mandatory rewards (Survey and City Wall, Stockpile and Boom, and the
+Undead unit rewards). A review of batch `N` also includes its faction
+companions `N-<name>` (batch 5 includes `5-undead`).
 
 ## Dry run
 

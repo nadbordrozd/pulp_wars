@@ -1,0 +1,170 @@
+import type {
+  CommandV7,
+  FactionIdV7,
+  ImprovementIdV7,
+  RewardIdV7,
+  TechnologyIdV7,
+  UnitRoleIdV7,
+} from "../engine/index";
+import type { ArtSubjectV7, UndeadArtRoleV7 } from "./chibi-art-v7";
+
+/**
+ * CHIBI art subjects of the Ruleset 7 interface (bead pulp_wars-67q.11).
+ * The DOM asks for these through src/render/dom/chibi-dom-art-v7.ts; any
+ * subject without a registered raster keeps its legacy art (the IDs in
+ * ruleset7-ui-art.ts), exactly as the canvas falls back per subject.
+ *
+ * Portraits (`PORTRAIT:*`) are head-and-shoulders busts for the 48 px
+ * recruitment tiles and the recruitment-flavoured cards (train buttons,
+ * recruit help, the Militia and Juggernaut rewards, the Administration,
+ * Scouting and Marksmanship technologies). A selected unit on the map keeps
+ * its map sprite in the dock, as in LEGACY.
+ */
+
+const NAVAL_ROLES: readonly UnitRoleIdV7[] = ["PATROL_BOAT", "BATTLESHIP"];
+
+/** The portrait of a role for a faction: Undead land roles have their own. */
+export function portraitSubjectV7(
+  role: UnitRoleIdV7,
+  faction: FactionIdV7,
+): ArtSubjectV7 {
+  return faction === "UNDEAD" && !NAVAL_ROLES.includes(role)
+    ? `PORTRAIT:UNDEAD:${role as UndeadArtRoleV7}`
+    : `PORTRAIT:${role}`;
+}
+
+/** Map subject of an improvement; a Mine is drawn as its mined mountain. */
+export function improvementSubjectV7(
+  improvement: ImprovementIdV7,
+): ArtSubjectV7 {
+  return improvement === "MINE"
+    ? "TERRAIN:MINED_MOUNTAIN"
+    : `IMPROVEMENT:${improvement}`;
+}
+
+/**
+ * Technology card art. Where LEGACY reuses a map sprite, CHIBI reuses the
+ * chibi map sprite of the same subject; where LEGACY reuses a portrait or an
+ * action or reward icon, CHIBI reuses the chibi one. Fieldcraft,
+ * Fortification and Navigation have dedicated icons (Navigation's legacy
+ * art is a flat deep-water tile, which is no icon). Engineering shows the
+ * Workshop it unlocks: the chibi Mountain carries its own grass tile and
+ * reads as a map square on a card.
+ */
+export const CHIBI_TECH_ART_SUBJECTS_V7 = {
+  GATHERING: "RESOURCE:FRUIT",
+  FARMING: "IMPROVEMENT:FARM",
+  MILLING: "IMPROVEMENT:WINDMILL",
+  ADMINISTRATION: "PORTRAIT:CAPTAIN",
+  PLANNING: "ICON:REWARD:EXPAND",
+  HUNTING: "RESOURCE:GAME",
+  FORESTRY: "IMPROVEMENT:LUMBER_CAMP",
+  SAWMILLING: "IMPROVEMENT:SAWMILL",
+  MARKSMANSHIP: "PORTRAIT:MARKSMAN",
+  FIELDCRAFT: "ICON:TECH:FIELDCRAFT",
+  SCOUTING: "PORTRAIT:RAIDER",
+  ROADS: "ICON:ACTION:BUILD_ROAD",
+  COMMERCE: "IMPROVEMENT:MARKET",
+  RAIDING: "ICON:ACTION:PILLAGE",
+  CHIVALRY: "UNIT:KNIGHT",
+  DRILL: "UNIT:GUARD",
+  ENGINEERING: "IMPROVEMENT:WORKSHOP",
+  METALLURGY: "IMPROVEMENT:FORGE",
+  FORTIFICATION: "ICON:TECH:FORTIFICATION",
+  EXPLOSIVES: "ICON:ACTION:BLAST_MOUNTAIN",
+  SHORECRAFT: "IMPROVEMENT:PORT",
+  NAVIGATION: "ICON:TECH:NAVIGATION",
+  NAVAL_ENGINEERING: "UNIT:BATTLESHIP",
+} as const satisfies Readonly<Record<TechnologyIdV7, ArtSubjectV7>>;
+
+/**
+ * Technology art for a viewer's faction: the units and portraits a
+ * technology shows follow the faction (an Undead Drill shows the Zombie).
+ */
+export function technologySubjectV7(
+  tech: TechnologyIdV7,
+  faction: FactionIdV7,
+): ArtSubjectV7 {
+  const subject: ArtSubjectV7 = CHIBI_TECH_ART_SUBJECTS_V7[tech];
+  if (faction !== "UNDEAD") return subject;
+  if (subject.startsWith("PORTRAIT:"))
+    return portraitSubjectV7(
+      subject.slice("PORTRAIT:".length) as UnitRoleIdV7,
+      faction,
+    );
+  if (subject === "UNIT:KNIGHT" || subject === "UNIT:GUARD")
+    return `UNIT:UNDEAD:${subject.slice("UNIT:".length) as UndeadArtRoleV7}`;
+  return subject;
+}
+
+const RESOURCE_COMMANDS: Partial<Record<CommandV7["kind"], ArtSubjectV7>> = {
+  HARVEST_FRUIT: "RESOURCE:FRUIT",
+  HUNT_GAME: "RESOURCE:GAME",
+  HARVEST_FISH: "RESOURCE:FISH",
+  GATHER_PEARLS: "RESOURCE:PEARLS",
+  CAPTURE: "SITE:VILLAGE",
+  DISEMBARK: "UNIT:EMBARKED_TRANSPORT",
+  LAND_GRANT: "ICON:REWARD:EXPAND",
+  BUILD_MONUMENT: "IMPROVEMENT:MONUMENT",
+};
+
+/**
+ * Art of a command button, or null for commands drawn without art (Move and
+ * Attack are map-targeted; Field Defense keeps its vector tactical symbol).
+ * Build commands show the chibi building, harvests the chibi resource,
+ * training the faction's portrait, and the Undead Rally is Frenzy.
+ */
+export function commandSubjectV7(
+  command: CommandV7,
+  faction: FactionIdV7,
+): ArtSubjectV7 | null {
+  switch (command.kind) {
+    case "MOVE":
+    case "ATTACK":
+    case "BUILD_FIELD_DEFENSE":
+      return null;
+    case "RESEARCH":
+      return technologySubjectV7(command.tech, faction);
+    case "TRAIN":
+    case "TRAIN_NAVAL":
+      return portraitSubjectV7(command.role, faction);
+    case "CHOOSE_CITY_REWARD":
+      return rewardSubjectV7(command.reward, faction);
+    case "RALLY":
+      return faction === "UNDEAD"
+        ? "ICON:ACTION:UNDEAD:RALLY"
+        : "ICON:ACTION:RALLY";
+    default:
+      break;
+  }
+  const mapped = RESOURCE_COMMANDS[command.kind];
+  if (mapped !== undefined) return mapped;
+  if (command.kind.startsWith("BUILD_") && command.kind !== "BUILD_ROAD")
+    return improvementSubjectV7(
+      command.kind.slice("BUILD_".length) as ImprovementIdV7,
+    );
+  return `ICON:ACTION:${command.kind}`;
+}
+
+/** City-reward art; the unit rewards show the viewer faction's portrait. */
+export function rewardSubjectV7(
+  reward: RewardIdV7,
+  faction: FactionIdV7,
+): ArtSubjectV7 {
+  switch (reward) {
+    case "SURVEY":
+      return "ICON:REWARD:SURVEY";
+    case "WALLS":
+      return "ICON:REWARD:WALLS";
+    case "STOCKPILE":
+    case "TREASURY":
+    case "TREASURY_8":
+      return "ICON:HUD:COIN";
+    case "BOOM":
+      return "ICON:HUD:POPULATION";
+    case "MILITIA":
+      return portraitSubjectV7("FIGHTER", faction);
+    case "JUGGERNAUT":
+      return portraitSubjectV7("JUGGERNAUT", faction);
+  }
+}

@@ -64,6 +64,8 @@ All sizes are CSS pixels at zoom 1, which is the normal play view.
 | City, village                   | up to 96 x 104           | Bottom-centred; side overflow up to 8 px each side, upward overflow up to 24 px; fills the tile                       |
 | Building or improvement         | up to 80 x 88            | Bottom-centred; upward overflow up to 8 px                                                                            |
 | Resource                        | about 40 x 40 to 48 x 48 | Centred; visibly smaller and calmer than a unit                                                                       |
+| Interface portrait              | 48 x 48                  | Interface only (DOM); owned, with a mask; head and shoulders (ships and the Catapult whole)                           |
+| Interface icon                  | 48 x 48 (HUD 32 x 32)    | Interface only (DOM); unowned; one item floating on transparency, no badge or frame                                   |
 
 Ships use the unit classes (decided in bead `pulp_wars-67q.9`): the Patrol
 Boat and the embarked transport are large units (72 x 88 and 72 x 72, since
@@ -132,7 +134,17 @@ Rules for resolution:
 - **Resources:** smaller and less saturated than units, recognisable by shape
   (fruit bush, grain tuft, deer or boar, ore crystals, fish, pearls).
 - **UI icons and portraits:** keep the same outline and palette language, and
-  judge them at their real UI size.
+  judge them at their real UI size. They are generated at 48 x 48, the
+  action tile, and shown 1:1 there and at 1.5x (whole device pixels on DPR 2)
+  in 72 px cards and dialogs; the HUD coin and population icons are 32 x 32
+  and are smoothed down to inline text size. Portraits are head-and-shoulders
+  busts of the map piece (same headgear, owner garment and signature item)
+  with an owner mask; ships and the Catapult are shown whole. Icons are one
+  item floating on transparency: Pixen draws a round badge or frame behind
+  anything it is told is an "icon", so the recipe calls it an item sprite.
+  HUD and dock glyphs and the tactical status symbols stay vector (they
+  follow the theme and high contrast); see the
+  [inventory, flag 11](CHIBI_ASSET_INVENTORY.md#flags-the-plan-did-not-foresee).
 
 ## 6. Factions
 

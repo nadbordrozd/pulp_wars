@@ -1,0 +1,895 @@
+{
+  "schemaVersion": 1,
+  "batch": "5",
+  "title": "Chibi batch 5: interface portraits and icons (Human and shared)",
+  "bead": "pulp_wars-67q.11",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-portrait-fighter",
+      "subject": "PORTRAIT:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-fighter.mask-override.png",
+        "masterPixelSha256": "f2579b2d7108a6fe5992a1037fa5e90de6cf82fe24b31cd73266079209a1e4ac",
+        "reason": "The automatic mask minus five small components of at most 5 pixels: the red mouth (24..27, 27..28), a cheek edge (31, 21..25), a chin shade (29..30, 30..32) and two red-brown glove pixels by the sword hilt (32..33, 38..39 and 38, 38..41); plus the 76 deeper key-like shades of the crest and tunic that touch the mask, so no crimson shading stays behind in another owner colour. RED_BROWN_MATERIAL is waived: the sword grip and glove are a warm tan that reads as leather, reviewed at 1:1 and x4; it never takes the owner colour.",
+        "waive": ["RED_BROWN_MATERIAL"]
+      }
+    },
+    {
+      "id": "chibi-portrait-raider",
+      "subject": "PORTRAIT:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-raider.mask-override.png",
+        "masterPixelSha256": "beec8c37a6da51d83cb04729e70e1eff93221324d8d1c3fe8dd413a1083f4610",
+        "reason": "The automatic mask plus the 144 deep crimson shades of the riding cloak that touch it (the keyLike band); the automatic band took only the bright hood, so a Teal Raider kept a dark red cloak. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-portrait-marksman",
+      "subject": "PORTRAIT:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-marksman.mask-override.png",
+        "masterPixelSha256": "5c2d3a2195abbce6a0ef075bfe70d0f6916512cd43e995d6bbe02909faa55d34",
+        "reason": "The automatic mask minus one 6-pixel component at (26..29, 27..28): the red mouth, which would turn teal or coral on the face. The red sleeve pixels by the bow hand stay. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-portrait-guard",
+      "subject": "PORTRAIT:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-guard.mask-override.png",
+        "masterPixelSha256": "5c9ee5d683cc95691537f8ad936c4fca9c8884b25c87858929d5efc819db2bc2",
+        "reason": "The automatic mask unchanged. COVERAGE_LOW is waived: the Guard's owner colour is his big tower shield (13.6% of the 48 px bust, where the helmeted head takes much of the frame), which reads clearly in both owner colours at 1:1 and x4.",
+        "waive": ["COVERAGE_LOW"]
+      }
+    },
+    {
+      "id": "chibi-portrait-captain",
+      "subject": "PORTRAIT:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-catapult",
+      "subject": "PORTRAIT:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-knight",
+      "subject": "PORTRAIT:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-knight.mask-override.png",
+        "masterPixelSha256": "a1a8880cba2ccdc0a7ed5266e21425a9f95787380629eaadf350843554f49325",
+        "reason": "The automatic mask unchanged (plume, cape, scarf and surcoat). RED_BROWN_MATERIAL is waived: the face shading, lance shaft and a few dark plume and cape fringe pixels sit in the warm red-brown band, reviewed at 1:1 and x4; they read as shadow in every owner colour and never take the owner colour.",
+        "waive": ["RED_BROWN_MATERIAL"]
+      }
+    },
+    {
+      "id": "chibi-portrait-juggernaut",
+      "subject": "PORTRAIT:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-juggernaut.mask-override.png",
+        "masterPixelSha256": "dca069299c3edfeccae830042fcd305ac65bbf7f23d38f03f7c2052507df3f17",
+        "reason": "The automatic mask unchanged. COVERAGE_LOW is waived: the Juggernaut's owner colour is his big tabard (12.3% of the bust, where the steel helmet, pauldrons and hammer fill the frame); it reads clearly in both owner colours at 1:1 and x4.",
+        "waive": ["COVERAGE_LOW"]
+      }
+    },
+    {
+      "id": "chibi-portrait-patrol-boat",
+      "subject": "PORTRAIT:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-battleship",
+      "subject": "PORTRAIT:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-tech-fieldcraft",
+      "subject": "ICON:TECH:FIELDCRAFT",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-tech-fortification",
+      "subject": "ICON:TECH:FORTIFICATION",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-tech-navigation",
+      "subject": "ICON:TECH:NAVIGATION",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-tend-wounded",
+      "subject": "ICON:ACTION:TEND_WOUNDED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-recover",
+      "subject": "ICON:ACTION:RECOVER",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-promote",
+      "subject": "ICON:ACTION:PROMOTE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-pillage",
+      "subject": "ICON:ACTION:PILLAGE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-disband",
+      "subject": "ICON:ACTION:DISBAND",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-wait",
+      "subject": "ICON:ACTION:WAIT",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-clear-forest",
+      "subject": "ICON:ACTION:CLEAR_FOREST",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-replant-forest",
+      "subject": "ICON:ACTION:REPLANT_FOREST",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-cultivate-forest",
+      "subject": "ICON:ACTION:CULTIVATE_FOREST",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-blast-mountain",
+      "subject": "ICON:ACTION:BLAST_MOUNTAIN",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-redevelop",
+      "subject": "ICON:ACTION:REDEVELOP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-rally",
+      "subject": "ICON:ACTION:RALLY",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-build-road",
+      "subject": "ICON:ACTION:BUILD_ROAD",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-reward-survey",
+      "subject": "ICON:REWARD:SURVEY",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-reward-walls",
+      "subject": "ICON:REWARD:WALLS",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-reward-expand",
+      "subject": "ICON:REWARD:EXPAND",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-hud-coin",
+      "subject": "ICON:HUD:COIN",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "id": "chibi-icon-hud-population",
+      "subject": "ICON:HUD:POPULATION",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 32,
+        "height": 32
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "portrait-fighter-a",
+      "asset": "chibi-portrait-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 5100,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-raider-a",
+      "asset": "chibi-portrait-raider",
+      "endpoint": "create-image-pixen",
+      "seed": 5101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-marksman-a",
+      "asset": "chibi-portrait-marksman",
+      "endpoint": "create-image-pixen",
+      "seed": 5102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-guard-a",
+      "asset": "chibi-portrait-guard",
+      "endpoint": "create-image-pixen",
+      "seed": 5103,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-captain-a",
+      "asset": "chibi-portrait-captain",
+      "endpoint": "create-image-pixen",
+      "seed": 5104,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-catapult-a",
+      "asset": "chibi-portrait-catapult",
+      "endpoint": "create-image-pixen",
+      "seed": 5105,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-knight-a",
+      "asset": "chibi-portrait-knight",
+      "endpoint": "create-image-pixen",
+      "seed": 5106,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-juggernaut-a",
+      "asset": "chibi-portrait-juggernaut",
+      "endpoint": "create-image-pixen",
+      "seed": 5107,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-patrol-boat-a",
+      "asset": "chibi-portrait-patrol-boat",
+      "endpoint": "create-image-pixen",
+      "seed": 5108,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-battleship-a",
+      "asset": "chibi-portrait-battleship",
+      "endpoint": "create-image-pixen",
+      "seed": 5109,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-tech-fieldcraft-a",
+      "asset": "chibi-icon-tech-fieldcraft",
+      "endpoint": "create-image-pixen",
+      "seed": 5110,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-tech-fortification-a",
+      "asset": "chibi-icon-tech-fortification",
+      "endpoint": "create-image-pixen",
+      "seed": 5111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-tech-navigation-a",
+      "asset": "chibi-icon-tech-navigation",
+      "endpoint": "create-image-pixen",
+      "seed": 5112,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-tend-wounded-a",
+      "asset": "chibi-icon-action-tend-wounded",
+      "endpoint": "create-image-pixen",
+      "seed": 5113,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-recover-a",
+      "asset": "chibi-icon-action-recover",
+      "endpoint": "create-image-pixen",
+      "seed": 5114,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-promote-a",
+      "asset": "chibi-icon-action-promote",
+      "endpoint": "create-image-pixen",
+      "seed": 5115,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-pillage-a",
+      "asset": "chibi-icon-action-pillage",
+      "endpoint": "create-image-pixen",
+      "seed": 5116,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-disband-a",
+      "asset": "chibi-icon-action-disband",
+      "endpoint": "create-image-pixen",
+      "seed": 5117,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-wait-a",
+      "asset": "chibi-icon-action-wait",
+      "endpoint": "create-image-pixen",
+      "seed": 5118,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-clear-forest-a",
+      "asset": "chibi-icon-action-clear-forest",
+      "endpoint": "create-image-pixen",
+      "seed": 5119,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-replant-forest-a",
+      "asset": "chibi-icon-action-replant-forest",
+      "endpoint": "create-image-pixen",
+      "seed": 5120,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-cultivate-forest-a",
+      "asset": "chibi-icon-action-cultivate-forest",
+      "endpoint": "create-image-pixen",
+      "seed": 5121,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-blast-mountain-a",
+      "asset": "chibi-icon-action-blast-mountain",
+      "endpoint": "create-image-pixen",
+      "seed": 5122,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-redevelop-a",
+      "asset": "chibi-icon-action-redevelop",
+      "endpoint": "create-image-pixen",
+      "seed": 5123,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-rally-a",
+      "asset": "chibi-icon-action-rally",
+      "endpoint": "create-image-pixen",
+      "seed": 5124,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-build-road-a",
+      "asset": "chibi-icon-action-build-road",
+      "endpoint": "create-image-pixen",
+      "seed": 5125,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-reward-survey-a",
+      "asset": "chibi-icon-reward-survey",
+      "endpoint": "create-image-pixen",
+      "seed": 5126,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-reward-walls-a",
+      "asset": "chibi-icon-reward-walls",
+      "endpoint": "create-image-pixen",
+      "seed": 5127,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-reward-expand-a",
+      "asset": "chibi-icon-reward-expand",
+      "endpoint": "create-image-pixen",
+      "seed": 5128,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-hud-coin-a",
+      "asset": "chibi-icon-hud-coin",
+      "endpoint": "create-image-pixen",
+      "seed": 5129,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "id": "icon-hud-population-a",
+      "asset": "chibi-icon-hud-population",
+      "endpoint": "create-image-pixen",
+      "seed": 5130,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "id": "icon-action-pillage-b",
+      "asset": "chibi-icon-action-pillage",
+      "endpoint": "create-image-pixen",
+      "seed": 5200,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "pillage-a drew a dark round badge behind the hammer; the icon class text now forbids a circle, disc or ring."
+    },
+    {
+      "id": "icon-action-pillage-c",
+      "asset": "chibi-icon-action-pillage",
+      "endpoint": "create-image-pixen",
+      "seed": 5201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, character, figure, hat",
+      "notes": "pillage-b drew a figure on a grass plate; the subject line now names only the hammer and the broken plank, and the icon class text says item sprite instead of icon."
+    },
+    {
+      "id": "icon-reward-survey-b",
+      "asset": "chibi-icon-reward-survey",
+      "endpoint": "create-image-pixen",
+      "seed": 5202,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "survey-a drew a round badge frame behind the map; the icon class and camera texts now describe an item sprite."
+    },
+    {
+      "id": "portrait-captain-b",
+      "asset": "chibi-portrait-captain",
+      "endpoint": "create-image-pixen",
+      "seed": 5203,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "dark red, crimson, maroon",
+      "notes": "captain-a used deep crimson (4.4% owner area, red-brown); the subject line now asks for solid bright red."
+    },
+    {
+      "id": "portrait-captain-c",
+      "asset": "chibi-portrait-captain",
+      "endpoint": "create-image-pixen",
+      "seed": 5204,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "black hat, wide brim, tricorne, pirate hat, dark red, crimson, maroon",
+      "notes": "captain-b wore a black wide-brimmed hat close to a tricorne and unlike the map Captain's red cap; the subject now asks for a red beret."
+    },
+    {
+      "id": "portrait-raider-b",
+      "asset": "chibi-portrait-raider",
+      "endpoint": "create-image-pixen",
+      "seed": 5205,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The character floats alone on the transparent background.",
+      "negativeAddendum": "square frame, card, panel, window, tile behind the character, background",
+      "notes": "raider-a drew the bust on a square cream panel with a frame; the negative addendum forbids a panel or frame behind the character."
+    },
+    {
+      "id": "portrait-battleship-b",
+      "asset": "chibi-portrait-battleship",
+      "endpoint": "create-image-pixen",
+      "seed": 5206,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The hull is pale straw-yellow birch wood with light steel-grey rails, never brown.",
+      "negativeAddendum": "brown hull, dark wood, red-brown wood, mahogany",
+      "notes": "battleship-a had a red-brown hull that the owner mask sat inside (MASK_EMBEDDED_IN_RED_BROWN); the addendum asks for a pale straw-yellow birch hull."
+    },
+    {
+      "id": "icon-tech-fortification-b",
+      "asset": "chibi-icon-tech-fortification",
+      "endpoint": "create-image-pixen",
+      "seed": 5207,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, feet, boots, legs",
+      "notes": "fortification-a added feet and clutter under the stakes; the subject line now names a plain three-stake fence with a hanging shield."
+    },
+    {
+      "id": "icon-action-disband-b",
+      "asset": "chibi-icon-action-disband",
+      "endpoint": "create-image-pixen",
+      "seed": 5208,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, character, face",
+      "notes": "disband-a drew a faceless little soldier; the subject is now the helmet and tunic hung on a peg."
+    },
+    {
+      "id": "icon-action-replant-forest-b",
+      "asset": "chibi-icon-action-replant-forest",
+      "endpoint": "create-image-pixen",
+      "seed": 5209,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass tile, soil slab, ground block",
+      "notes": "replant-forest-a stood on a grass tile slab with cluttered tools; the subject is now a potted sapling and a trowel."
+    },
+    {
+      "id": "icon-action-cultivate-forest-b",
+      "asset": "chibi-icon-action-cultivate-forest",
+      "endpoint": "create-image-pixen",
+      "seed": 5210,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "top hat, hat, person, face",
+      "notes": "cultivate-forest-a put a top hat on the stump; the subject is now a sickle over a wheat bundle and a log."
+    },
+    {
+      "id": "icon-hud-population-b",
+      "asset": "chibi-icon-hud-population",
+      "endpoint": "create-image-pixen",
+      "seed": 5211,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "negativeAddendum": "top hat, wings, crowd, many faces",
+      "notes": "population-a crowded four faces with a top hat and wings into 32 px; the subject is now two big villager heads."
+    },
+    {
+      "id": "portrait-raider-c",
+      "asset": "chibi-portrait-raider",
+      "endpoint": "create-image-pixen",
+      "seed": 5212,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "orange skin, pony, horse, frame, panel, full body, legs",
+      "notes": "raider-b was a small full figure with orange skin; the subject now asks for a light-skinned bust filling the square, without the pony."
+    },
+    {
+      "id": "icon-action-disband-c",
+      "asset": "chibi-icon-action-disband",
+      "endpoint": "create-image-pixen",
+      "seed": 5213,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "beard, face, person, peg, tunic",
+      "notes": "disband-b read as a bearded head (the tunic under the helmet); the subject is now a helmet and sword laid down."
+    },
+    {
+      "id": "icon-action-cultivate-forest-c",
+      "asset": "chibi-icon-action-cultivate-forest",
+      "endpoint": "create-image-pixen",
+      "seed": 5214,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "top hat, hat, sheep, animal, person, face, log",
+      "notes": "cultivate-forest-b grew a top hat and a sheep again; the subject is now a tied wheat bundle and a sickle."
+    },
+    {
+      "id": "icon-hud-population-c",
+      "asset": "chibi-icon-hud-population",
+      "endpoint": "create-image-pixen",
+      "seed": 5215,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "negativeAddendum": "round frame, badge, circle, border, ring, two people, crowd",
+      "notes": "population-b sat in a round badge frame; the subject is now one villager head and shoulders floating alone."
+    },
+    {
+      "id": "icon-action-disband-d",
+      "asset": "chibi-icon-action-disband",
+      "endpoint": "create-image-pixen",
+      "seed": 5216,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "face, eyes, snout, hood, person, sword",
+      "notes": "disband-c drew a pig-faced helmet in a maroon hood; the subject is now an empty helmet lying on its side with a bundle."
+    },
+    {
+      "id": "icon-hud-population-d",
+      "asset": "chibi-icon-hud-population",
+      "endpoint": "create-image-pixen",
+      "seed": 5217,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "negativeAddendum": "hat, top hat, cap, body, full figure, frame, badge, circle",
+      "notes": "population-c drew a small full figure in a top hat; the subject is now one round face, head only."
+    },
+    {
+      "id": "portrait-knight-b",
+      "asset": "chibi-portrait-knight",
+      "endpoint": "create-image-pixen",
+      "seed": 5218,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The plume, cape and surcoat are one flat bright red with a slightly darker red shade, never orange.",
+      "negativeAddendum": "orange, orange-red shading, red-brown, gold trim",
+      "notes": "knight-a shades its cape and surcoat with orange-red outside the key band, so a Teal Knight keeps orange-red folds; the addendum asks for flat key-red cloth."
+    }
+  ]
+}

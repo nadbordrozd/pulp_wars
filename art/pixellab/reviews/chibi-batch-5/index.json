@@ -1,0 +1,1946 @@
+{
+  "batch": "5",
+  "bead": "pulp_wars-67q.11",
+  "title": "Chibi batch 5: interface portraits and icons (Human and shared)",
+  "dryRun": false,
+  "faction": "ORIGINAL",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-portrait-fighter",
+      "subject": "PORTRAIT:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-fighter-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-fighter.png",
+        "sha256": "e1d6f860d60b482b1e93b32f200c59a0de2a57b265412122c0ce58f15dcb9b03",
+        "pixelSha256": "f2579b2d7108a6fe5992a1037fa5e90de6cf82fe24b31cd73266079209a1e4ac",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.034,
+        "footprintWidthShare": 0.881,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-fighter.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.2289,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": [
+          "RED_BROWN_MATERIAL"
+        ]
+      }
+    },
+    {
+      "id": "chibi-portrait-raider",
+      "subject": "PORTRAIT:RAIDER",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-raider-c",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-raider.png",
+        "sha256": "a9a910a50716d2015ffaac4ff6aa45cc4bc370d16ef4f57161b98178910b8edc",
+        "pixelSha256": "beec8c37a6da51d83cb04729e70e1eff93221324d8d1c3fe8dd413a1083f4610",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.0881,
+        "footprintWidthShare": 0.775,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-raider.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.2774,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-marksman",
+      "subject": "PORTRAIT:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-marksman-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-marksman.png",
+        "sha256": "a6390c6f4f579a65ccae5045270805ea51e320664c55b73f0faa62b9cef94ea5",
+        "pixelSha256": "5c2d3a2195abbce6a0ef075bfe70d0f6916512cd43e995d6bbe02909faa55d34",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.2755,
+        "footprintWidthShare": 0.85,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-marksman.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.438,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-guard",
+      "subject": "PORTRAIT:GUARD",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-guard-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-guard.png",
+        "sha256": "b03e3eef348e36396d6fe5ba5e47934c51b3140ab9c3702a23265ddc4eb01afd",
+        "pixelSha256": "5c9ee5d683cc95691537f8ad936c4fca9c8884b25c87858929d5efc819db2bc2",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0096,
+        "footprintWidthShare": 0.8824,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-guard.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.136,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": [
+          "COVERAGE_LOW"
+        ]
+      }
+    },
+    {
+      "id": "chibi-portrait-captain",
+      "subject": "PORTRAIT:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-captain-c",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-captain.png",
+        "sha256": "f6abef8fd5521e93901a8ffe284602201039249ec676b8191517f1af4acf17b0",
+        "pixelSha256": "d6ced02747b273f9397e87e00f1ab877d4658af24e7c57bb325abb70a3817f54",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0809,
+        "footprintWidthShare": 0.7273,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-captain.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3621,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-catapult",
+      "subject": "PORTRAIT:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-catapult-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-catapult.png",
+        "sha256": "531f8ba98a11222bfa8cd57f9aa42f3b86d6186f2d646a70261c8a5efd575133",
+        "pixelSha256": "02fc331f42c4996fd641ae465514c8845448677022a02f937530aa756da19082",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.075,
+        "footprintWidthShare": 0.5676,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-catapult.mask.png",
+        "source": "AUTO",
+        "coverage": 0.1652,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-knight",
+      "subject": "PORTRAIT:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-knight-b",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-knight.png",
+        "sha256": "2e6f0e0665c33c0363fc9c7524570170b970625234fa6cb587bfd71dd4dddc07",
+        "pixelSha256": "a1a8880cba2ccdc0a7ed5266e21425a9f95787380629eaadf350843554f49325",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0265,
+        "footprintWidthShare": 0.7805,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-knight.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.2352,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": [
+          "RED_BROWN_MATERIAL"
+        ]
+      }
+    },
+    {
+      "id": "chibi-portrait-juggernaut",
+      "subject": "PORTRAIT:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-juggernaut-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-juggernaut.png",
+        "sha256": "9f65beb0ff0c1627e1010781b837941f981f690050bbfe196f5714f3bcb962a2",
+        "pixelSha256": "dca069299c3edfeccae830042fcd305ac65bbf7f23d38f03f7c2052507df3f17",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.2076,
+        "footprintWidthShare": 0.9149,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-juggernaut.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.1233,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": [
+          "COVERAGE_LOW"
+        ]
+      }
+    },
+    {
+      "id": "chibi-portrait-patrol-boat",
+      "subject": "PORTRAIT:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-patrol-boat-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-patrol-boat.png",
+        "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12",
+        "pixelSha256": "1f5d9c54d353889bd7c1c7873a697f107b68e40190573aa941cd489a38bd2243",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.2093,
+        "footprintWidthShare": 0.9355,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-patrol-boat.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3942,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-battleship",
+      "subject": "PORTRAIT:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-battleship-b",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-battleship.png",
+        "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58",
+        "pixelSha256": "cd03326ddea93264df8533adaa636cab9f89da195d657082161af9245827051d",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.3524,
+        "footprintWidthShare": 0.8235,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-battleship.mask.png",
+        "source": "AUTO",
+        "coverage": 0.4017,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-icon-tech-fieldcraft",
+      "subject": "ICON:TECH:FIELDCRAFT",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-fieldcraft-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-tech-fieldcraft.png",
+        "sha256": "a461e5b9be4e68a059de8e847a3606120873cbb3c94479827f426a4b95d291c8",
+        "pixelSha256": "97a3544c7c32a6395ebd10dc1cb8bc1a195cb9a478bd4a907f60dc78e6c35a23",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0192,
+        "footprintWidthShare": 0.9189,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-tech-fortification",
+      "subject": "ICON:TECH:FORTIFICATION",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-fortification-b",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-tech-fortification.png",
+        "sha256": "3f8057a1addde9d1e08abd27fe4346cfd4f6165535670766a9a972085bc321e0",
+        "pixelSha256": "7e586ee0936f5c8f232dbe9a782a790b76b3a255f09a16443f2ca9c2b2af748f",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6563,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-tech-navigation",
+      "subject": "ICON:TECH:NAVIGATION",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-navigation-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-tech-navigation.png",
+        "sha256": "5dbd8f5ea9692011ce6df9e9db68524e58b7a0d6d7132acd2971013981d959da",
+        "pixelSha256": "9f001fe1a80dbbc2c7fc4dd580880830e8e13538b9dd4e29293ea1f5e9c3592f",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.2245,
+        "footprintWidthShare": 0.7647,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-tend-wounded",
+      "subject": "ICON:ACTION:TEND_WOUNDED",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-tend-wounded-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-tend-wounded.png",
+        "sha256": "e3aa7f09bd2959e8126efd90870211c80a77c9e4bc0267aa26f49668ddfea5df",
+        "pixelSha256": "73fe8ea105591887d23ecb615f6aa433ac84f101607f708fe35d375e8b8d0b86",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0.0385,
+        "footprintWidthShare": 0.9167,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-recover",
+      "subject": "ICON:ACTION:RECOVER",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-recover-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-recover.png",
+        "sha256": "eca65a1bc28bcbff170fb23f40eca0a56290b9829d25efc61ab3fe705846c3a4",
+        "pixelSha256": "23174351e2a7aa60b9b9405688944068f5ee4c60c0b11d120595d5fa6e6b8ae2",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.301,
+        "footprintWidthShare": 0.75,
+        "suspect": true
+      }
+    },
+    {
+      "id": "chibi-icon-action-promote",
+      "subject": "ICON:ACTION:PROMOTE",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-promote-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-promote.png",
+        "sha256": "8813414862f3713e6fa80a6873615e7b9e4683d6fccf2dbb417e1fe22546240c",
+        "pixelSha256": "64da6546d4472923ba2d058ff174ce6473492430127a5bbfa6f31e4589782895",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.1083,
+        "footprintWidthShare": 1,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-pillage",
+      "subject": "ICON:ACTION:PILLAGE",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-pillage-c",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-pillage.png",
+        "sha256": "d14df5aed9a186e956c63fbd390a5be1cbd6bdbdf59d2cef804285ac8c0c4288",
+        "pixelSha256": "66ae9a571eada76eef470f971303473b64ca84bc6bc2c3300b504b46a7d3827a",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.6121,
+        "footprintWidthShare": 0.7179,
+        "suspect": true
+      }
+    },
+    {
+      "id": "chibi-icon-action-disband",
+      "subject": "ICON:ACTION:DISBAND",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-disband-d",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-disband.png",
+        "sha256": "1b69d3b39c82b1fc93d9f338fb8ef85ad7714abdfad85e1fd7d8a0788981d13e",
+        "pixelSha256": "bea4910e50452b716d84bc65dd5db69f5f7b7877761f1a96092e931144893d83",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.1781,
+        "footprintWidthShare": 0.6957,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-wait",
+      "subject": "ICON:ACTION:WAIT",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-wait-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-wait.png",
+        "sha256": "7a7736b4bdf1f33ca935474570707e659178c5935ce13e966cd1e4e5edbc8617",
+        "pixelSha256": "8dca12f393098796200ee64b541d19a544a3fdef63d9ca657a605ab5398458da",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.1098,
+        "footprintWidthShare": 1,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-clear-forest",
+      "subject": "ICON:ACTION:CLEAR_FOREST",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-clear-forest-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-clear-forest.png",
+        "sha256": "be9371eaa34b8aef2974dc2594e4365eec43901e0db12d902ab2f0f1c9288db6",
+        "pixelSha256": "ac2f91b5ba393e446c80b21cf173ecc5673eceda5e3e57ce1287abdd876c9ebe",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0142,
+        "footprintWidthShare": 0.6176,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-replant-forest",
+      "subject": "ICON:ACTION:REPLANT_FOREST",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-replant-forest-b",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-replant-forest.png",
+        "sha256": "a13e3ac69f72c1cce5e1f61e4b17530dde71f7e743751c08d9f3ef8273753572",
+        "pixelSha256": "1d37898adc26b2b8bd8d1e7079633b26612d53959dbc94b823ccd9262e41f7ce",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.44,
+        "footprintWidthShare": 1,
+        "suspect": true
+      }
+    },
+    {
+      "id": "chibi-icon-action-cultivate-forest",
+      "subject": "ICON:ACTION:CULTIVATE_FOREST",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-cultivate-forest-c",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-cultivate-forest.png",
+        "sha256": "006df0f5583e219df21adf6a7e7b79932d5012bb6de7ce3844d365748a207410",
+        "pixelSha256": "4368ec2e99af0a0fef142981cbe0686b2607599c9484b2770cfa6908400500b1",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.223,
+        "footprintWidthShare": 0.6744,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-blast-mountain",
+      "subject": "ICON:ACTION:BLAST_MOUNTAIN",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-blast-mountain-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-blast-mountain.png",
+        "sha256": "9f261d729a7ce6a0f7b396b17d0cb44c12a72e7749d937dc90e87eb14a003ad9",
+        "pixelSha256": "17944feba5214e9c8a50bd6c71b08d5b7893c2111caf0a773b1906c8ce0a9f8d",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.1702,
+        "footprintWidthShare": 0.7561,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-redevelop",
+      "subject": "ICON:ACTION:REDEVELOP",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-redevelop-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-redevelop.png",
+        "sha256": "45666ce918acc572661b23a589580030bbda646705c57149fe4a60aab394bd65",
+        "pixelSha256": "89bbe299b1b95e3444752931f135c1edeaaa7016c098115e1ff531c4b64c72b4",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.5729,
+        "footprintWidthShare": 0.7222,
+        "suspect": true
+      }
+    },
+    {
+      "id": "chibi-icon-action-rally",
+      "subject": "ICON:ACTION:RALLY",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-rally-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-rally.png",
+        "sha256": "4992261c4e824f5857741a82c9b2855c922fa3e89e4060ffab5318e7e2239941",
+        "pixelSha256": "3e6f85c88f589210c9ea97570e9f3dc26dee0d33271180242cf58b452654887f",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0.0411,
+        "footprintWidthShare": 0.4222,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-build-road",
+      "subject": "ICON:ACTION:BUILD_ROAD",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-build-road-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-build-road.png",
+        "sha256": "a4117a7026f3e3925bdc2734930619bdb6a3526c12275004bc8cc7efd063ee3f",
+        "pixelSha256": "4b796760edbf2f4fddb2a9ae28dbf172620401c3081ce8844c2fd48fb769e518",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6154,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-reward-survey",
+      "subject": "ICON:REWARD:SURVEY",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-reward-survey-b",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-reward-survey.png",
+        "sha256": "29dfb1384d4c4cbbf3f924e8e5c6afc98a47dc5d5bd68d91839d1c3e0a136721",
+        "pixelSha256": "0ee07444b8fe1c71fc898a0c7b4289e057aff354503f9311de77c7a25b670a37",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0.0725,
+        "footprintWidthShare": 0.475,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-reward-walls",
+      "subject": "ICON:REWARD:WALLS",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-reward-walls-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-reward-walls.png",
+        "sha256": "cd2f9c6975254ca46946c5262d207a07e9750213a66cbde84d0cd83c22ab59d7",
+        "pixelSha256": "27ab6d17d647022438b48a1a829f26221d13ef0ddf5bd8583d504d2a6ca8566d",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.1456,
+        "footprintWidthShare": 0.7647,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-reward-expand",
+      "subject": "ICON:REWARD:EXPAND",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-reward-expand-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-reward-expand.png",
+        "sha256": "8a4ee89e9b640f83491f7de7c27684fe146fc2e6ec871fa7d6897f27f83744d0",
+        "pixelSha256": "aa02d76e76fa5200f8ecbb4834eb0689b8d057f769330c3c3bcdb043ecc2a677",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0787,
+        "footprintWidthShare": 0.6552,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-hud-coin",
+      "subject": "ICON:HUD:COIN",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-hud-coin-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-hud-coin.png",
+        "sha256": "6b332366f8ea389d18785b50f7805b4657d25545a1056f7300efe716f8b1ffd8",
+        "pixelSha256": "c2a6fd09c2b054185740723b6ed42cf2e8ecf9a71968648d89c244ed06086e46",
+        "width": 32,
+        "height": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 16
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 5,
+        "groundShare": 0.129,
+        "footprintWidthShare": 0.6923,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-hud-population",
+      "subject": "ICON:HUD:POPULATION",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-hud-population-d",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-hud-population.png",
+        "sha256": "e21ddbee5712ae73361e1a803c15a14164f53c470887a254d3871e3cf3556a26",
+        "pixelSha256": "f5096ebfe24cc10c7cb455cedc7b6a62c8fa32266947e63cca832ac06e82868e",
+        "width": 32,
+        "height": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 16
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7857,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-skeleton",
+      "subject": "PORTRAIT:UNDEAD:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-skeleton-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-skeleton.png",
+        "sha256": "7a9ed8c5c70bab08d3c54d39756799da0f41f1c8db24108d62988d538e94cb3c",
+        "pixelSha256": "012cb4aba5447b3311514f285944557a59eeefb75aadf08021177f3161db1afe",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0945,
+        "footprintWidthShare": 0.8696,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-skeleton.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.277,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-ghoul",
+      "subject": "PORTRAIT:UNDEAD:RAIDER",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-ghoul-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-ghoul.png",
+        "sha256": "f5ac178bf69ad03a56006f8ee2c87533e3396dbbb7d3a0d2b31fa875820335e7",
+        "pixelSha256": "d484f0f407fbe22cd8a0bf2501bce244a48aa06d34a6b467907262764b36f5ee",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.5366,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-ghoul.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3373,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-banshee",
+      "subject": "PORTRAIT:UNDEAD:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-banshee-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-banshee.png",
+        "sha256": "528e7df6be4776dc87cbc4d893a2e4693e9b0e0f8faa0796e542eb72380e49ba",
+        "pixelSha256": "b7d66e76baf329160bdc3fa22e407a6a268452a547abb453f3d219b8213eb5ac",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0406,
+        "footprintWidthShare": 0.9474,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-banshee.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.2472,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-zombie",
+      "subject": "PORTRAIT:UNDEAD:GUARD",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-zombie-b",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-zombie.png",
+        "sha256": "33203c091cec790554a4085507c78cf496c6ec49deda5e65a79871e47aacadc2",
+        "pixelSha256": "b6a8a785ad94eaba5bef59d54ad6cc00b7a6ddde3a72e3372fe4455b1e5f42eb",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0038,
+        "footprintWidthShare": 0.9487,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-zombie.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2145,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-necromancer",
+      "subject": "PORTRAIT:UNDEAD:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-necromancer-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-necromancer.png",
+        "sha256": "6ab7e5bece5780010f1900dc620c8579431418e5022934b8eef85e6033fbe499",
+        "pixelSha256": "be0ce684d1e574ba6d2a0ae56c4c214e77d27b7d06652be1515e5d3ed8e166b6",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0875,
+        "footprintWidthShare": 0.8837,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-necromancer.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2485,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-lich",
+      "subject": "PORTRAIT:UNDEAD:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-lich-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-lich.png",
+        "sha256": "efd848adf4cbd2e19719e7b3219e2a80d06b1888649f99b10d652e72c5a75de1",
+        "pixelSha256": "b9762f61c8957266a26a584de9e2b62449477028f6178dadc78acd6ec259bfa6",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0,
+        "footprintWidthShare": 0.85,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-lich.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.2836,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-vampire",
+      "subject": "PORTRAIT:UNDEAD:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-vampire-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-vampire.png",
+        "sha256": "1983de4f5aca50855bb52c2edddc34c6235ada7941e425b58cf5c412e9708559",
+        "pixelSha256": "b965a0560e894e35159d99f8cc8e856d53d21500cec7f92631d382fc2b5e9c23",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.0798,
+        "footprintWidthShare": 0.7442,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-vampire.mask.png",
+        "source": "AUTO",
+        "coverage": 0.1618,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-abomination",
+      "subject": "PORTRAIT:UNDEAD:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-undead-abomination-a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-abomination.png",
+        "sha256": "281b398cf42ae9af8879e630716b85f3cfd1ecca8998658ebe42432e50fdd8bf",
+        "pixelSha256": "efc195ec02e5ffb12a5122defceb1fe2e9110e7761824c38ed17ece380bb460f",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0,
+        "footprintWidthShare": 0.9565,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/portraits/chibi-portrait-undead-abomination.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.214,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-icon-action-raise-dead",
+      "subject": "ICON:ACTION:RAISE_DEAD",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-raise-dead-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-raise-dead.png",
+        "sha256": "a37ed98f5e53764bd43d8e99d72e393262809c1647c082134b3b00051e8609f7",
+        "pixelSha256": "f54669f3f01741278784cd5cd5e4efbe2b8ff5d81e588055fce43e79f720277d",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.3649,
+        "footprintWidthShare": 1,
+        "suspect": true
+      }
+    },
+    {
+      "id": "chibi-icon-action-devour",
+      "subject": "ICON:ACTION:DEVOUR",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-devour-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-devour.png",
+        "sha256": "767c959b099457ec6608b4d445f079804b2dbfa675ab995bc572eadffd834afa",
+        "pixelSha256": "84310cd3d9b9cd482b1c681dcedc5b076416df7c59047b89a34af427b2037dcb",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.06,
+        "footprintWidthShare": 0.4545,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-wail",
+      "subject": "ICON:ACTION:WAIL",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-wail-c",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-wail.png",
+        "sha256": "04f4cd90a39ef7a59d0cbb28e1c4a159ab6e0e31bcb56e14e10cc14165dc87bb",
+        "pixelSha256": "c9a779acf2059159448574df6bf5accb4eb1d76e29792811b8353b86d7e58b8b",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7949,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-icon-action-undead-rally",
+      "subject": "ICON:ACTION:UNDEAD:RALLY",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-undead-rally-a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-undead-rally.png",
+        "sha256": "68a2addbdb2fbf978f90c5013a74a8bc377822e5f4106e480392162eed24eef2",
+        "pixelSha256": "e9a0e750e673126a61d243991e134b5ce6da671474d3cf0d03563918a347d4cb",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.04,
+        "footprintWidthShare": 0.4286,
+        "suspect": false
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/sheet-1x.png",
+      "width": 946,
+      "height": 5534,
+      "sha256": "abd280d92dbcffd0c8073968cb0197e95eb7820fb86de253755e347c2ed9dc0c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/sheet-x4.png",
+      "width": 1490,
+      "height": 9748,
+      "sha256": "f45ef09ac744d0873de2ef7d7531962b7504468939ebe921301752a0a3a033aa"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3056db987c9e601ac0bd68df7d946da63736684dd75b70d7caaa42dd8a3c92da"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3894a23d48bcfc10fef86bf759dfea61be59b819bf395a673b01255bbba043f4"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-human-unit-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "63e92bf7dcfb3cf119a235ff4ece1c813b1db45177656304ee78f1fbe14bb901"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-rival-unit-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9ab2a6c527dcda8045f5bc043fbda0ce8a70032ac1bc294a11d90725c2d6895a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-unit-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4727725adb43c4c2c991c05b8334600a2b82b12dab8164b646dcad2f4d26d755"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-human-training-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4d75d787574ecff5f67e773f526065ff1c6d6d56a0826a5de9309b088fe284aa"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-training-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4626f702b53c77c656252440e15c0a5f9a47b3d98b0658d2b46cfce57d388409"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-tech-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e3a16335258ed3fbc92b72761c563ed843238da3b82cc8f96947104feb89f323"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-reward-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "dc00a2c911095bce69325f4ca0656440ac7ad4ee7e45da1681bf0abac761a7d1"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-reward-economy-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "62744b541965ee45ebf926060342eccb0616d5ddd99f29577eddd1510b015041"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-reward-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b6eae86b39bd4c97d7a9c6d7c8e46ee49493d486a3a10808c6e676d25d1ff56f"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "82b51771d985b83a67928e3bfe8f45fc453fdb632714f280b310e3e5b318ef1c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "d808cec1935e7997854b386daff1041e674f4f817dfc27e4a6311cf9ae44303b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-human-unit-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "f93d43abbfa4ebc4f5f8014910bd2e21232a1ced9e8891468885da48b6a7f177"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-rival-unit-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "552b6f699cb697e210059d3b52cc86e255701950c12faa38bf039a9bdf3d2ca3"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-unit-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "62994fbbde0f94c04148a083748a573dbe11f883a21bf312642e369965b6d593"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-human-training-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "4f8e45c56c7e040bdfe9a2efaaf473cbb53accae5a76c8e8fc499ab6554999bd"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-training-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "99644d6c26182ec6af0a3d2c381fe44a1cff6a8d5ac8a8e60baaa15371534225"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-tech-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "4beb9f8eab1a4d3f944be8a5000ea38fccdd5bdc532d02bbed50d2cbaaf21afb"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-reward-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "1ed8e9cf96ae6805b39ed1a1774204da5ba4ea6617c8dc1f68c9dfd234b321ae"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-reward-economy-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "c9c2b80a9211f58ad23a1ded7f71e5a808ade43fbdf72223e6b1c1fe6de03254"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-reward-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "5c2548dc265ea9803a39dd12bb959fe66e8632a41cf1e2e03785ea74d6b5eb8a"
+    }
+  ],
+  "captures": {
+    "note": "Captured from the running game with ?art=chibi; subjects without a registered chibi raster still draw their legacy art.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-human-unit-desktop.png",
+        "viewport": "1440x900 CSS at DPR 1 (interface HUMAN_UNIT)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-rival-unit-desktop.png",
+        "viewport": "1440x900 CSS at DPR 1 (interface UNDEAD_RIVAL_UNIT)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-unit-desktop.png",
+        "viewport": "1440x900 CSS at DPR 1 (interface UNDEAD_UNIT)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-human-training-desktop.png",
+        "viewport": "1440x900 CSS at DPR 1 (interface HUMAN_TRAINING)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-training-desktop.png",
+        "viewport": "1440x900 CSS at DPR 1 (interface UNDEAD_TRAINING)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-tech-desktop.png",
+        "viewport": "1440x900 CSS at DPR 1 (interface TECH)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-reward-desktop.png",
+        "viewport": "1440x900 CSS at DPR 1 (interface REWARD)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-reward-economy-desktop.png",
+        "viewport": "1440x900 CSS at DPR 1 (interface REWARD_ECONOMY)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-reward-desktop.png",
+        "viewport": "1440x900 CSS at DPR 1 (interface UNDEAD_REWARD)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-human-unit-phone.png",
+        "viewport": "390x844 CSS at DPR 3 (interface HUMAN_UNIT)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-rival-unit-phone.png",
+        "viewport": "390x844 CSS at DPR 3 (interface UNDEAD_RIVAL_UNIT)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-unit-phone.png",
+        "viewport": "390x844 CSS at DPR 3 (interface UNDEAD_UNIT)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-human-training-phone.png",
+        "viewport": "390x844 CSS at DPR 3 (interface HUMAN_TRAINING)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-training-phone.png",
+        "viewport": "390x844 CSS at DPR 3 (interface UNDEAD_TRAINING)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-tech-phone.png",
+        "viewport": "390x844 CSS at DPR 3 (interface TECH)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-reward-phone.png",
+        "viewport": "390x844 CSS at DPR 3 (interface REWARD)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-reward-economy-phone.png",
+        "viewport": "390x844 CSS at DPR 3 (interface REWARD_ECONOMY)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-5/dom-undead-reward-phone.png",
+        "viewport": "390x844 CSS at DPR 3 (interface UNDEAD_REWARD)",
+        "zoomStep": null,
+        "tileCssPx": null,
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-5/phone-links.md"
+}

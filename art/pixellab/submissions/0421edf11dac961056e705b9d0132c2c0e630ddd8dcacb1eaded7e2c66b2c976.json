@@ -1,0 +1,62 @@
+{
+  "id": "portrait-catapult-a",
+  "jobId": "sync-32714830-95f9-4285-a165-d0d80f368565",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "5",
+    "asset": "chibi-portrait-catapult",
+    "subject": "PORTRAIT:CATAPULT",
+    "faction": "ORIGINAL",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5105,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-icon.txt",
+        "text": "Camera: a game interface icon, one object or one tiny scene shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+        "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+        "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+        "text": "Class: one bold chunky game icon with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels on a dark panel. The object floats alone on the transparent background: no circle, disc, badge, ring or frame behind it.",
+        "negative": "frame, border, ring, circle background, round badge, disc behind the object, square background, medallion, button, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+        "text": "Subject: Catapult, a chunky cute wooden siege catapult shown whole: a pale yellow-tan wooden frame with light steel bands on four chunky wheels, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth draped over the frame and a bright red pennant on top; no crew; simple shapes and very few details."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a game interface icon, one object or one tiny scene shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky game icon with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels on a dark panel. The object floats alone on the transparent background: no circle, disc, badge, ring or frame behind it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Catapult, a chunky cute wooden siege catapult shown whole: a pale yellow-tan wooden frame with light steel bands on four chunky wheels, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth draped over the frame and a bright red pennant on top; no crew; simple shapes and very few details.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, border, ring, circle background, round badge, disc behind the object, square background, medallion, button, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a game interface icon, one object or one tiny scene shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky game icon with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels on a dark panel. The object floats alone on the transparent background: no circle, disc, badge, ring or frame behind it. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Catapult, a chunky cute wooden siege catapult shown whole: a pale yellow-tan wooden frame with light steel bands on four chunky wheels, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth draped over the frame and a bright red pennant on top; no crew; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, border, ring, circle background, round badge, disc behind the object, square background, medallion, button, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+  }
+}

@@ -191,7 +191,7 @@ export async function loadFragments(root: string): Promise<FragmentLibrary> {
   for (const name of Object.keys(CHIBI_CLASS_RECIPES) as ChibiRecipeClass[])
     classes[name] = await fragmentFile(root, `class-${name}`, true);
   const camera = {} as Record<ChibiCamera, Fragment>;
-  for (const name of ["three-quarter", "top-down"] as const)
+  for (const name of ["three-quarter", "top-down", "portrait", "icon"] as const)
     camera[name] = await fragmentFile(root, `camera-${name}`, false);
   const subjects: Record<string, Record<string, string>> = {};
   for (const file of (
@@ -943,6 +943,8 @@ const CLASS_DIRECTORY: Readonly<Record<string, string>> = {
   SETTLEMENT: "settlements",
   BUILDING: "buildings",
   RESOURCE: "resources",
+  PORTRAIT: "portraits",
+  ICON: "icons",
 };
 
 export function masterPaths(

@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "batch": "5-undead",
+  "title": "Chibi batch 5: Undead interface portraits and command icons",
+  "bead": "pulp_wars-67q.11",
+  "faction": "UNDEAD",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-portrait-undead-skeleton",
+      "subject": "PORTRAIT:UNDEAD:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-undead-skeleton.mask-override.png",
+        "masterPixelSha256": "012cb4aba5447b3311514f285944557a59eeefb75aadf08021177f3161db1afe",
+        "reason": "The automatic mask plus the 38 deeper key-like shades of the crest and tabard hems that touch it (the keyLike band), so no crimson shading stays red for another owner. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-ghoul",
+      "subject": "PORTRAIT:UNDEAD:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-banshee",
+      "subject": "PORTRAIT:UNDEAD:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-undead-banshee.mask-override.png",
+        "masterPixelSha256": "b7d66e76baf329160bdc3fa22e407a6a268452a547abb453f3d219b8213eb5ac",
+        "reason": "The automatic mask plus the 100 deep crimson shades of the hood and shroud that touch it (the keyLike band); without them a Teal Banshee kept dark red folds. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-zombie",
+      "subject": "PORTRAIT:UNDEAD:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-necromancer",
+      "subject": "PORTRAIT:UNDEAD:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-lich",
+      "subject": "PORTRAIT:UNDEAD:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-undead-lich.mask-override.png",
+        "masterPixelSha256": "b9762f61c8957266a26a584de9e2b62449477028f6178dadc78acd6ec259bfa6",
+        "reason": "The automatic mask plus the 144 deep crimson folds of the royal robe that touch it (the keyLike band); without them a Teal Lich kept dark red folds. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-vampire",
+      "subject": "PORTRAIT:UNDEAD:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-undead-abomination",
+      "subject": "PORTRAIT:UNDEAD:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-undead-abomination.mask-override.png",
+        "masterPixelSha256": "efc195ec02e5ffb12a5122defceb1fe2e9110e7761824c38ed17ece380bb460f",
+        "reason": "The automatic mask minus four components on the face: the red iris of the big left eye (19..26, 15..19), the red rims of the small right eye (38..41, 13..14 and 37..41, 19..20) and a red stitched cheek patch (11..23, 23..31); plus the 75 deep crimson shades of the smock that touch the remaining mask, so the smock recolours whole while the eyes never turn teal or coral. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-icon-action-raise-dead",
+      "subject": "ICON:ACTION:RAISE_DEAD",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-devour",
+      "subject": "ICON:ACTION:DEVOUR",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-wail",
+      "subject": "ICON:ACTION:WAIL",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-undead-rally",
+      "subject": "ICON:ACTION:UNDEAD:RALLY",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "portrait-undead-skeleton-a",
+      "asset": "chibi-portrait-undead-skeleton",
+      "endpoint": "create-image-pixen",
+      "seed": 5300,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-undead-ghoul-a",
+      "asset": "chibi-portrait-undead-ghoul",
+      "endpoint": "create-image-pixen",
+      "seed": 5301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-undead-banshee-a",
+      "asset": "chibi-portrait-undead-banshee",
+      "endpoint": "create-image-pixen",
+      "seed": 5302,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-undead-zombie-a",
+      "asset": "chibi-portrait-undead-zombie",
+      "endpoint": "create-image-pixen",
+      "seed": 5303,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-undead-necromancer-a",
+      "asset": "chibi-portrait-undead-necromancer",
+      "endpoint": "create-image-pixen",
+      "seed": 5304,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-undead-lich-a",
+      "asset": "chibi-portrait-undead-lich",
+      "endpoint": "create-image-pixen",
+      "seed": 5305,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-undead-vampire-a",
+      "asset": "chibi-portrait-undead-vampire",
+      "endpoint": "create-image-pixen",
+      "seed": 5306,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "portrait-undead-abomination-a",
+      "asset": "chibi-portrait-undead-abomination",
+      "endpoint": "create-image-pixen",
+      "seed": 5307,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-raise-dead-a",
+      "asset": "chibi-icon-action-raise-dead",
+      "endpoint": "create-image-pixen",
+      "seed": 5308,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-devour-a",
+      "asset": "chibi-icon-action-devour",
+      "endpoint": "create-image-pixen",
+      "seed": 5309,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-wail-a",
+      "asset": "chibi-icon-action-wail",
+      "endpoint": "create-image-pixen",
+      "seed": 5310,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-undead-rally-a",
+      "asset": "chibi-icon-action-undead-rally",
+      "endpoint": "create-image-pixen",
+      "seed": 5311,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-action-wail-b",
+      "asset": "chibi-icon-action-wail",
+      "endpoint": "create-image-pixen",
+      "seed": 5350,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "wail-a drew a round stone badge behind the ghost; the icon class and camera texts now describe an item sprite."
+    },
+    {
+      "id": "portrait-undead-zombie-b",
+      "asset": "chibi-portrait-undead-zombie",
+      "endpoint": "create-image-pixen",
+      "seed": 5351,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The head and broad shoulders fill the whole square; no legs.",
+      "negativeAddendum": "full body, legs, feet",
+      "notes": "zombie-a drew a small full-body figure in the middle of the frame instead of a bust; the addendum asks for head and shoulders filling the square."
+    },
+    {
+      "id": "icon-action-wail-c",
+      "asset": "chibi-icon-action-wail",
+      "endpoint": "create-image-pixen",
+      "seed": 5352,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "ears, arms, legs, bear, teddy, animal",
+      "notes": "wail-b grew tan teddy-bear ears and limbs; the subject line now names a floating ghost head with no ears, arms or legs."
+    }
+  ]
+}

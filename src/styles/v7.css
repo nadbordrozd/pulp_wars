@@ -1944,3 +1944,37 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/*
+ * CHIBI interface art (?art=chibi, bead pulp_wars-67q.11). Each image is
+ * trimmed to its painted pixels and sized inline to a whole or half step of
+ * its DPR 1 master (1:1 in 48 px tiles, 1.5x in 72 px cards), so upscales
+ * stay pixel-crisp; art too big for its box is fitted and smoothed.
+ */
+.v7-art-frame.v7-chibi-art {
+  flex: none;
+  max-width: none;
+  max-height: none;
+  object-fit: fill;
+  image-rendering: pixelated;
+}
+
+.v7-art-frame.v7-chibi-art[data-chibi-smooth="true"] {
+  image-rendering: auto;
+}
+
+/* The chibi dock art keeps the legacy footprint (112 x 130 at 0.64). */
+.v7-selection-dock .v7-identity-art[data-art-set="chibi"] {
+  width: 4.5rem;
+  height: 5.125rem;
+  margin: 0;
+  transform: none;
+}
+
+.v7-identity-art[data-art-set="chibi"] > .v7-undead-badge {
+  top: 0;
+  left: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0.12rem;
+}

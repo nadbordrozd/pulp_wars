@@ -1,7 +1,9 @@
 import type {
+  CommandV7,
   FactionIdV7,
   ImprovementIdV7,
   ResourceIdV7,
+  TechnologyIdV7,
   TerrainIdV7,
   UnitRoleIdV7,
 } from "../engine/index";
@@ -27,7 +29,26 @@ export type ArtSubjectV7 =
   | "SITE:VILLAGE"
   | "TREASURE"
   /** Revision 13: the unowned Grave marker left by a fallen land unit. */
-  | "GRAVE";
+  | "GRAVE"
+  | UiArtSubjectV7;
+
+/**
+ * Interface (DOM) subjects, batch 5 (bead pulp_wars-67q.11). The board never
+ * asks for them; the DOM art hook (src/render/dom/chibi-dom-art-v7.ts) does.
+ * `PORTRAIT:<ROLE>` is a head-and-shoulders unit portrait (train buttons,
+ * rewards, technology cards); `PORTRAIT:UNDEAD:<ROLE>` is the Undead one.
+ * `ICON:*` are unowned icons: dedicated technology icons, command and action
+ * icons (`ICON:ACTION:UNDEAD:RALLY` is the Undead Frenzy), city rewards and
+ * the HUD economy icons.
+ */
+export type UiArtSubjectV7 =
+  | `PORTRAIT:${UnitRoleIdV7}`
+  | `PORTRAIT:UNDEAD:${UndeadArtRoleV7}`
+  | `ICON:TECH:${TechnologyIdV7}`
+  | `ICON:ACTION:${CommandV7["kind"]}`
+  | "ICON:ACTION:UNDEAD:RALLY"
+  | `ICON:REWARD:${"SURVEY" | "WALLS" | "EXPAND"}`
+  | `ICON:HUD:${"COIN" | "POPULATION"}`;
 
 /**
  * Roles with their own Undead art (docs/art/factions/UNDEAD.md). Patrol
@@ -62,13 +83,14 @@ export function unitArtSubjectV7(unit: {
 /**
  * The subject whose art stands in while a faction subject has no usable
  * raster: `UNIT:UNDEAD:<ROLE>` falls back to the Human `UNIT:<ROLE>` (drawn
- * with the Undead badge). Every other subject has no fallback.
+ * with the Undead badge), and likewise `PORTRAIT:UNDEAD:<ROLE>` and
+ * `ICON:ACTION:UNDEAD:RALLY`. Every other subject has no fallback.
  */
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
 ): ArtSubjectV7 | null {
-  return subject.startsWith("UNIT:UNDEAD:")
-    ? (`UNIT:${subject.slice("UNIT:UNDEAD:".length)}` as ArtSubjectV7)
+  return subject.includes(":UNDEAD:")
+    ? (subject.replace(":UNDEAD:", ":") as ArtSubjectV7)
     : null;
 }
 
@@ -80,7 +102,11 @@ export type ChibiAssetClassV7 =
   | "GIANT_UNIT"
   | "SETTLEMENT"
   | "BUILDING"
-  | "RESOURCE";
+  | "RESOURCE"
+  /** Interface portrait (DOM only), owned: 48 x 48, centred. */
+  | "PORTRAIT"
+  /** Interface icon (DOM only), unowned: up to 48 x 48, centred. */
+  | "ICON";
 
 export interface ChibiPointV7 {
   readonly x: number;
@@ -199,6 +225,20 @@ export const CHIBI_CLASS_GEOMETRY_V7 = {
     maxSideOverflow: 0,
     maxUpOverflow: 0,
   },
+  PORTRAIT: {
+    maxWidth: 48,
+    maxHeight: 48,
+    placement: "CENTRE",
+    maxSideOverflow: 0,
+    maxUpOverflow: 0,
+  },
+  ICON: {
+    maxWidth: 48,
+    maxHeight: 48,
+    placement: "CENTRE",
+    maxSideOverflow: 0,
+    maxUpOverflow: 0,
+  },
 } as const satisfies Readonly<Record<ChibiAssetClassV7, ChibiClassGeometryV7>>;
 
 export interface ChibiOverflowV7 {
@@ -228,7 +268,7 @@ export function chibiOverflowV7(asset: ChibiArtAssetV7): ChibiOverflowV7 {
   };
 }
 
-const OWNED_SUBJECT_PREFIXES = ["UNIT:", "CITY:"] as const;
+const OWNED_SUBJECT_PREFIXES = ["UNIT:", "CITY:", "PORTRAIT:"] as const;
 
 function allowedClasses(subject: ArtSubjectV7): readonly ChibiAssetClassV7[] {
   if (
@@ -244,6 +284,8 @@ function allowedClasses(subject: ArtSubjectV7): readonly ChibiAssetClassV7[] {
     return ["STANDARD_UNIT", "LARGE_UNIT", "GIANT_UNIT"];
   if (subject.startsWith("CITY:") || subject === "SITE:VILLAGE")
     return ["SETTLEMENT"];
+  if (subject.startsWith("PORTRAIT:")) return ["PORTRAIT"];
+  if (subject.startsWith("ICON:")) return ["ICON"];
   return ["RESOURCE", "BUILDING"];
 }
 

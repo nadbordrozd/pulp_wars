@@ -1,0 +1,63 @@
+{
+  "id": "portrait-undead-necromancer-a",
+  "jobId": "sync-a0bea623-1d88-42d6-9cb3-42256025f4df",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "5-undead",
+    "asset": "chibi-portrait-undead-necromancer",
+    "subject": "PORTRAIT:UNDEAD:CAPTAIN",
+    "faction": "UNDEAD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5304,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+        "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+        "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/UNDEAD.json",
+        "text": "Subject: Necromancer portrait, head and shoulders of a chunky cute old sorcerer: a huge round gaunt pale blue-grey face with glowing pale blue eyes and a long ivory-white beard, a big bright red pointed hood and a bright red ragged robe over the shoulders, and the top of a crooked dark slate-grey iron staff with a small ivory skull holding a cold pale blue flame beside his head."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Necromancer portrait, head and shoulders of a chunky cute old sorcerer: a huge round gaunt pale blue-grey face with glowing pale blue eyes and a long ivory-white beard, a big bright red pointed hood and a bright red ragged robe over the shoulders, and the top of a crooked dark slate-grey iron staff with a small ivory skull holding a cold pale blue flame beside his head.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Necromancer portrait, head and shoulders of a chunky cute old sorcerer: a huge round gaunt pale blue-grey face with glowing pale blue eyes and a long ivory-white beard, a big bright red pointed hood and a bright red ragged robe over the shoulders, and the top of a crooked dark slate-grey iron staff with a small ivory skull holding a cold pale blue flame beside his head. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+  }
+}
