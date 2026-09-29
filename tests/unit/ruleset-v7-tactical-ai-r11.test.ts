@@ -955,7 +955,7 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         beforeDecision = beforeWork.advanceWork(1);
       if (seed === 810) {
         expect(canonicalHash(beforeDecision)).toBe(
-          "4912693864449e24482828b85fb904fea8651c7856e8a7ffcb540bbf80de168a",
+          "7ee4a23c678746728e96f7fec06ba0e58730ae68a1479855e80414633c19800f",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); with revision-12 ordinals it is unchanged.
@@ -1006,7 +1006,7 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
       );
       if (seed === 810) {
         expect(canonicalHash(capturedDecision)).toBe(
-          "3fdb64862b66e1358d26832e66c531a51af15cdba9a1dc392fc5a2a3f9486d28",
+          "68d818e9119d1b7a991438a32b16bdf5fcec16512d8d6eec6307adb35460b7aa",
         );
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(capturedDecision)),

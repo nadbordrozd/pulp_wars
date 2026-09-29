@@ -266,7 +266,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const basicView = viewForV7(basic.state, basic.state.humanPlayerId);
     const basicChoice = chooseNormalCommandV7(basicView);
     expect(canonicalHash(basicChoice)).toBe(
-      "66e28b1b98b16b8194b51ebdf6160fd1aded69430aa428b4eaad76836ea9de71",
+      "580c9ac8a3cb64666017a2f3f928a62beb762d7b321b44cbd4a825ec19c0fe22",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
@@ -704,7 +704,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     });
     expect(sliced.candidates).toHaveLength(28);
     expect(canonicalHash(sliced)).toBe(
-      "1bb827d86cfc3c196a94ad31c74b9ef3bd4d55a015595152b053ec4388cb5728",
+      "5c881651b464d3015786c45232d63880473df3c83031bbe199bc600996bbe1b3",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
@@ -733,7 +733,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       revision4Commands.has(JSON.stringify(candidate.command)),
     );
     expect(canonicalHash(revision4Candidates)).toBe(
-      "36d07e711e394baa9961cba9184e6129e36bd199d4d2c419b460dc34643b04a9",
+      "08cd64533b1f50d2c665ad255d7ffa88de3982db5862c7002d0f637c377b2b39",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),

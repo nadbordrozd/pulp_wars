@@ -70,7 +70,7 @@ describe("ruleset-7 late public query performance", () => {
     );
     const ready = queryAiReadyCommandsV7(view);
     expect(canonicalHash(ready)).toBe(
-      "cc29e80c1abf4ec7f40e12f9ad9bb8c4c6b1ca57df9cb1e7175fdcca75e9fc92",
+      "6fde8da6cf3560bd7deef30acb5a59758455b7df442c50b5c83923f9de6e4190",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
