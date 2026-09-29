@@ -28,6 +28,7 @@
     "scripts/browser-smoke-v6.ts",
     "scripts/browser-smoke-v6-contract.ts",
     "scripts/browser-smoke-v7.ts",
+    "scripts/ruleset7-undead-balance-matrix.ts",
     "vite.config.ts",
     "eslint.config.js"
   ]

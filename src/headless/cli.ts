@@ -10,7 +10,7 @@ import {
 import type { AiModeV6, FactionIdV6, MatchSetupV6 } from "../engine/v6/types";
 import type { ReplayFileV6 } from "../engine/v6/replay";
 import type { ReplayFileV7 } from "../engine/v7/replay";
-import type { MapTypeV7, MatchSetupV7 } from "../engine/v7/types";
+import type { FactionIdV7, MapTypeV7, MatchSetupV7 } from "../engine/v7/types";
 import { headless } from "./index";
 import {
   V6_MATCH_MAX_COMMANDS_DEFAULT,
@@ -80,7 +80,9 @@ async function runV7Match(): Promise<void> {
 }
 
 async function runV7Batch(): Promise<void> {
-  if (args.includes("--factions")) factionsArgV7(uniqueBatchAiCount());
+  const factions = args.includes("--factions")
+    ? factionsArgV7(uniqueBatchAiCount())
+    : null;
   const result = await headlessV7.runAiBatch({
     seeds: commaNumbers("--seeds", "0,1,2,3,4,5,6,7"),
     aiCounts: batchAiCounts(),
@@ -91,6 +93,7 @@ async function runV7Batch(): Promise<void> {
       ? {}
       : { boardSize: boardSizeArg(1) }),
     mapTypes: mapTypesArg(),
+    ...(factions === null ? {} : { factions }),
   });
   process.stdout.write(`${canonicalJson(result)}\n`);
 }
@@ -307,16 +310,26 @@ function factionsArgV6(aiCount: 1 | 2 | 3): readonly FactionIdV6[] {
     : Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
 }
 
-function factionsArgV7(aiCount: 1 | 2 | 3): readonly "ORIGINAL"[] {
+/**
+ * Ruleset 7 seat-ordered factions: `original` (alias `human`) or `undead`,
+ * case-insensitive, exactly one value per seat (seat 0 first).
+ */
+function factionsArgV7(aiCount: 1 | 2 | 3): readonly FactionIdV7[] {
   if (!args.includes("--factions"))
     return Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
   const values = stringArg("--factions", "").split(",");
-  if (
-    values.length !== aiCount + 1 ||
-    values.some((value) => value !== "original")
-  )
-    throw new Error("ruleset 7 factions must be original for every seat");
-  return values.map(() => "ORIGINAL" as const);
+  if (values.length !== aiCount + 1)
+    throw new Error(
+      `ruleset 7 --factions must contain exactly ${aiCount + 1} seat values`,
+    );
+  return values.map((value): FactionIdV7 => {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "original" || normalized === "human") return "ORIGINAL";
+    if (normalized === "undead") return "UNDEAD";
+    throw new Error(
+      "ruleset 7 --factions values must be original (human) or undead",
+    );
+  });
 }
 
 function factionsArgV5(

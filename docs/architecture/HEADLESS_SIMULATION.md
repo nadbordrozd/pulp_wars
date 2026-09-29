@@ -13,6 +13,42 @@ compatibility boundary. The revision-2 records below (including their
 `pulp-wars-poc-7r6` command examples, which the current CLI rejects) and
 revision-3 references remain historical.
 
+## Ruleset-7 revision-13 factions and Undead telemetry
+
+Revision 13 match and batch commands accept a seat-ordered `--factions` list
+with exactly `aiCount + 1` values, seat 0 first. Values are `original` (alias
+`human`) or `undead`, case-insensitive; omission means all Human. A batch
+with `--factions` needs exactly one `--ai-counts` value, and each batch entry
+records its `factions`.
+
+```bash
+npm run headless -- match --ruleset pulp-wars-poc-7r13 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
+npm run headless -- batch --ruleset pulp-wars-poc-7r13 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
+```
+
+Every v7 result adds, beside the mechanical-role inventories:
+
+- `factionsBySeat` and `factionRoles[faction]` with trained, training Coins,
+  damage, kills, losses, and captures per mechanical role, credited to the
+  owner's faction of the unit that trained, dealt, died, or captured;
+- role and faction damage/kills that include retaliation, Lich and
+  Battleship splash, and Wail (previously only primary attack damage counted);
+- `capacity.overcapacityStatesByFaction` and `maximumOvercapacity` (largest
+  assigned-minus-capacity excess at an active-player turn boundary); and
+- `undead`: Wail uses, targets, zero-damage targets, damage, and kills;
+  splash hits/damage/kills (all splash) and Lich splash damage/kills; Infect
+  conversions split by attack and retaliation and by hostile city or village
+  center, plus captures by a Zombie that rose on a center; Raise Dead uses,
+  Skeletons raised, and the largest single raise; Devours, Devour healing, and
+  full-HP denials; Lifesteal heals and HP; Graves created, maximum open at a
+  turn boundary, and remaining at the end; raised-Skeleton kills, losses, and
+  captures; and Disbands (with refunded Coins) of raised Skeletons and of any
+  rising.
+
+The Human-vs-Undead balance matrix (`pulp_wars-vkq.10`) is
+`npm run balance:ruleset7-undead`; its parameters, output, and results are in
+[the Undead balance report](../validation/RULESET_7_UNDEAD_BALANCE.md).
+
 ## Ruleset-7 revision-2 historical implementation contract
 
 The commands, identifiers, inventory counts, and checked matrix below describe

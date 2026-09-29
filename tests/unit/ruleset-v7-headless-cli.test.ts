@@ -71,11 +71,88 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
         "--max-commands",
         "1",
       ),
-    ).toThrow(/ruleset 7 factions must be original/);
+    ).toThrow(
+      /ruleset 7 --factions values must be original \(human\) or undead/,
+    );
+    expect(() =>
+      runCli(
+        "match",
+        "--ruleset",
+        "pulp-wars-poc-7r13",
+        "--factions",
+        "undead",
+        "--max-commands",
+        "1",
+      ),
+    ).toThrow(/ruleset 7 --factions must contain exactly 2 seat values/);
     expect(() =>
       runCli("match", "--ruleset", "pulp-wars-poc-7", "--max-commands", "1"),
     ).toThrow(/pulp-wars-poc-7r13/);
   }, 15_000);
+
+  it("accepts seat-ordered Human and Undead factions in match and batch modes", () => {
+    const common = [
+      "--ruleset",
+      "pulp-wars-poc-7r13",
+      "--max-commands",
+      "1",
+      "--max-rounds",
+      "5",
+    ] as const;
+    const match = runCli<{
+      readonly metrics: {
+        readonly setupHash: string;
+        readonly factionsBySeat: readonly string[];
+      };
+    }>("match", ...common, "--factions", "ORIGINAL,Undead");
+    expect(match.metrics.factionsBySeat).toEqual(["ORIGINAL", "UNDEAD"]);
+    const alias = runCli<{
+      readonly metrics: { readonly setupHash: string };
+    }>("match", ...common, "--factions", "human,undead");
+    expect(alias.metrics.setupHash).toBe(match.metrics.setupHash);
+    const human = runCli<{
+      readonly metrics: { readonly setupHash: string };
+    }>("match", ...common);
+    expect(human.metrics.setupHash).not.toBe(match.metrics.setupHash);
+
+    const batch = runCli<{
+      readonly entries: readonly {
+        readonly factions: readonly string[];
+        readonly metrics: { readonly factionsBySeat: readonly string[] };
+      }[];
+    }>(
+      "batch",
+      ...common,
+      "--seeds",
+      "0",
+      "--ai-counts",
+      "3",
+      "--factions",
+      "undead,original,undead,original",
+    );
+    expect(batch.entries).toHaveLength(1);
+    expect(batch.entries[0]?.factions).toEqual([
+      "UNDEAD",
+      "ORIGINAL",
+      "UNDEAD",
+      "ORIGINAL",
+    ]);
+    expect(batch.entries[0]?.metrics.factionsBySeat).toEqual(
+      batch.entries[0]?.factions,
+    );
+    expect(() =>
+      runCli(
+        "batch",
+        ...common,
+        "--seeds",
+        "0",
+        "--ai-counts",
+        "1,2",
+        "--factions",
+        "undead,original",
+      ),
+    ).toThrow(/--factions with batch requires exactly one --ai-counts value/);
+  }, 30_000);
 
   it("defaults to Continents and accepts all map types in match and batch modes", () => {
     const common = [

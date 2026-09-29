@@ -42,6 +42,7 @@ import { spatialContributionAtV7 } from "../engine/v7/spatial-economy";
 import {
   COMMAND_KIND_ORDER_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
+  FACTION_IDS_V7,
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
   REWARD_IDS_V7,
@@ -49,6 +50,7 @@ import {
   UNIT_ROLE_IDS_V7,
   type AiCountV7,
   type BoardSizeV7,
+  type FactionIdV7,
   type GameStateV7,
   type ImprovementIdV7,
   type MatchOutcomeV7,
@@ -127,7 +129,11 @@ export interface HeadlessMetricsV7 {
   };
   readonly capacity: {
     fortificationAdoptions: number;
+    /** Active-player turn-boundary samples of a city over its capacity. */
     overcapacityStates: number;
+    readonly overcapacityStatesByFaction: Record<FactionIdV7, number>;
+    /** Largest assigned-minus-capacity excess seen at a turn boundary. */
+    maximumOvercapacity: number;
   };
   readonly achievements: {
     readonly progressMaximum: Record<
@@ -157,6 +163,14 @@ export interface HeadlessMetricsV7 {
     /** Integer survivors per 1,000 training Coins. */
     readonly survivorsPerThousandCoins: Record<UnitRoleIdV7, number>;
   };
+  /** Seat-ordered faction of every player (revision 13). */
+  readonly factionsBySeat: readonly FactionIdV7[];
+  /**
+   * Per-faction role inventories. Damage and kills include Wail, splash, and
+   * retaliation, credited to the dealing unit's owner's faction.
+   */
+  readonly factionRoles: Record<FactionIdV7, FactionRoleMetricsV7>;
+  readonly undead: UndeadMetricsV7;
   readonly knightOverrun: {
     chainsStarted: number;
     attacks: number;
@@ -197,6 +211,64 @@ export interface HeadlessMetricsV7 {
   stalls: number;
   commandCapHits: number;
   roundCapHits: number;
+}
+
+export interface FactionRoleMetricsV7 {
+  readonly trained: Record<UnitRoleIdV7, number>;
+  readonly trainingCoins: Record<UnitRoleIdV7, number>;
+  readonly damage: Record<UnitRoleIdV7, number>;
+  readonly kills: Record<UnitRoleIdV7, number>;
+  readonly losses: Record<UnitRoleIdV7, number>;
+  readonly captures: Record<UnitRoleIdV7, number>;
+}
+
+/**
+ * Revision-13 Undead ability telemetry. Counts are events or event fields;
+ * `gravesMaximum` is a turn-boundary sample and `gravesRemaining` is final.
+ */
+export interface UndeadMetricsV7 {
+  wailUses: number;
+  wailTargets: number;
+  wailZeroDamageTargets: number;
+  wailDamage: number;
+  wailKills: number;
+  /** Lich and Battleship splash entries, damage, and deaths. */
+  splashHits: number;
+  splashDamage: number;
+  splashKills: number;
+  lichSplashDamage: number;
+  lichSplashKills: number;
+  infections: number;
+  infectionsOnAttack: number;
+  infectionsOnRetaliation: number;
+  /** Infect risings on a city center owned by another player. */
+  infectionsOnCityCenters: number;
+  /** Infect risings on a village center. */
+  infectionsOnVillageCenters: number;
+  /** Captures made by a Zombie that rose on a settlement center. */
+  centerRisingCaptures: number;
+  raiseDeadUses: number;
+  skeletonsRaised: number;
+  maximumSkeletonsPerRaise: number;
+  devours: number;
+  devourHealing: number;
+  /** Devours at full HP (amount 0): pure Grave denial. */
+  devourDenials: number;
+  lifestealHeals: number;
+  lifestealHealing: number;
+  gravesCreated: number;
+  gravesMaximum: number;
+  gravesRemaining: number;
+  /** Kills (any cause) scored by Skeletons that Raise Dead created. */
+  raisedSkeletonKills: number;
+  raisedSkeletonLosses: number;
+  raisedSkeletonCaptures: number;
+  /** Raise Dead then Disband: the refund of a free rising. */
+  raisedSkeletonsDisbanded: number;
+  raisedSkeletonDisbandCoins: number;
+  /** Any rising (Raise Dead Skeleton or Infect Zombie) later disbanded. */
+  risingsDisbanded: number;
+  risingDisbandCoins: number;
 }
 
 export interface AiMatchOptionsV7 {
@@ -245,6 +317,8 @@ export interface AiBatchOptionsV7 {
   readonly modes?: readonly MatchSetupV7["aiMode"][];
   readonly mapTypes?: readonly MatchSetupV7["mapType"][];
   readonly boardSize?: BoardSizeV7;
+  /** Seat-ordered factions; its length must be `aiCount + 1` for every count. */
+  readonly factions?: readonly FactionIdV7[];
   readonly maxCommands?: number;
   readonly maxRounds?: number;
 }
@@ -254,6 +328,7 @@ export interface AiBatchEntryV7 {
   readonly aiCount: AiCountV7;
   readonly aiMode: MatchSetupV7["aiMode"];
   readonly mapType: MatchSetupV7["mapType"];
+  readonly factions: readonly FactionIdV7[];
   readonly outcome: MatchOutcomeV7 | null;
   readonly termination: AiMatchTerminationV7;
   readonly rounds: number;
@@ -605,6 +680,7 @@ function finalizeMetricsV7(
               metrics.roles.trainingCoins[role],
           );
   }
+  metrics.undead.gravesRemaining = state.graves.length;
   metrics.commandHash = canonicalHash(commands);
   metrics.eventHash = canonicalHash(events);
   metrics.checkpointHash = canonicalHash(checkpoints);
@@ -622,6 +698,10 @@ export async function runAiBatchV7(
   if (modes.length === 0) throw new RangeError("modes cannot be empty");
   const mapTypes = options.mapTypes ?? (["CONTINENTS"] as const);
   if (mapTypes.length === 0) throw new RangeError("mapTypes cannot be empty");
+  if (options.factions !== undefined)
+    for (const aiCount of options.aiCounts)
+      if (options.factions.length !== aiCount + 1)
+        throw new RangeError("factions must have one entry per seat");
   const entries: AiBatchEntryV7[] = [];
   for (const mapType of mapTypes)
     for (const aiMode of modes)
@@ -632,6 +712,9 @@ export async function runAiBatchV7(
           throw new RangeError("boardSize is too small for aiCount");
         for (const seed of options.seeds) {
           await new Promise<void>((resolve) => setTimeout(resolve, 0));
+          const factions =
+            options.factions ??
+            Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
           const result = runAiMatchInternalV7(
             {
               rulesetId: "pulp-wars-poc-7r13",
@@ -643,10 +726,7 @@ export async function runAiBatchV7(
               aiDifficulty: "NORMAL",
               aiMode,
               humanColor: "CORAL",
-              factions: Array.from(
-                { length: aiCount + 1 },
-                () => "ORIGINAL" as const,
-              ),
+              factions,
               mapType,
             },
             {
@@ -664,6 +744,7 @@ export async function runAiBatchV7(
             aiCount,
             aiMode,
             mapType,
+            factions,
             outcome: result.outcome,
             termination: result.termination,
             rounds: result.rounds,
@@ -712,6 +793,9 @@ interface TelemetryStateV7 {
   readonly healingSinceCatapultShot: Map<UnitId, number>;
   readonly catapultSetupUnits: Set<UnitId>;
   readonly restoredSites: Set<string>;
+  readonly raisedSkeletons: Set<UnitId>;
+  readonly risings: Set<UnitId>;
+  readonly centerRisings: Set<UnitId>;
 }
 
 function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
@@ -723,6 +807,9 @@ function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
     healingSinceCatapultShot: new Map(),
     catapultSetupUnits: new Set(),
     restoredSites: new Set(),
+    raisedSkeletons: new Set(),
+    risings: new Set(),
+    centerRisings: new Set(),
   };
 }
 
@@ -780,6 +867,8 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
     capacity: {
       fortificationAdoptions: 0,
       overcapacityStates: 0,
+      overcapacityStatesByFaction: zeroRecord(FACTION_IDS_V7),
+      maximumOvercapacity: 0,
     },
     achievements: {
       progressMaximum: { EXPLORER: 0, ENGINEER: 0, MUSTER: 0 },
@@ -801,6 +890,56 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       trainingCoins: zeroRecord(UNIT_ROLE_IDS_V7),
       survivors: zeroRecord(UNIT_ROLE_IDS_V7),
       survivorsPerThousandCoins: zeroRecord(UNIT_ROLE_IDS_V7),
+    },
+    factionsBySeat: [...state.setup.factions],
+    factionRoles: Object.fromEntries(
+      FACTION_IDS_V7.map((faction) => [
+        faction,
+        {
+          trained: zeroRecord(UNIT_ROLE_IDS_V7),
+          trainingCoins: zeroRecord(UNIT_ROLE_IDS_V7),
+          damage: zeroRecord(UNIT_ROLE_IDS_V7),
+          kills: zeroRecord(UNIT_ROLE_IDS_V7),
+          losses: zeroRecord(UNIT_ROLE_IDS_V7),
+          captures: zeroRecord(UNIT_ROLE_IDS_V7),
+        },
+      ]),
+    ) as Record<FactionIdV7, FactionRoleMetricsV7>,
+    undead: {
+      wailUses: 0,
+      wailTargets: 0,
+      wailZeroDamageTargets: 0,
+      wailDamage: 0,
+      wailKills: 0,
+      splashHits: 0,
+      splashDamage: 0,
+      splashKills: 0,
+      lichSplashDamage: 0,
+      lichSplashKills: 0,
+      infections: 0,
+      infectionsOnAttack: 0,
+      infectionsOnRetaliation: 0,
+      infectionsOnCityCenters: 0,
+      infectionsOnVillageCenters: 0,
+      centerRisingCaptures: 0,
+      raiseDeadUses: 0,
+      skeletonsRaised: 0,
+      maximumSkeletonsPerRaise: 0,
+      devours: 0,
+      devourHealing: 0,
+      devourDenials: 0,
+      lifestealHeals: 0,
+      lifestealHealing: 0,
+      gravesCreated: 0,
+      gravesMaximum: state.graves.length,
+      gravesRemaining: 0,
+      raisedSkeletonKills: 0,
+      raisedSkeletonLosses: 0,
+      raisedSkeletonCaptures: 0,
+      raisedSkeletonsDisbanded: 0,
+      raisedSkeletonDisbandCoins: 0,
+      risingsDisbanded: 0,
+      risingDisbandCoins: 0,
     },
     knightOverrun: {
       chainsStarted: 0,
@@ -888,8 +1027,16 @@ function recordCommandAndEventsV7(
   }
   if (command.kind === "MOVE" && actorUnit?.role === "CATAPULT")
     telemetry.catapultSetupUnits.add(actorUnit.id);
-  if (command.kind === "CAPTURE" && actorUnit !== undefined)
+  if (command.kind === "CAPTURE" && actorUnit !== undefined) {
     metrics.roles.captures[actorUnit.role] += 1;
+    metrics.factionRoles[ownerFaction(before, actorUnit.ownerId)].captures[
+      actorUnit.role
+    ] += 1;
+    if (telemetry.raisedSkeletons.has(actorUnit.id))
+      metrics.undead.raisedSkeletonCaptures += 1;
+    if (telemetry.centerRisings.has(actorUnit.id))
+      metrics.undead.centerRisingCaptures += 1;
+  }
   recordEventsV7(before, after, events, metrics, telemetry);
   if (command.kind === "END_TURN") {
     for (const [unitId, chain] of telemetry.knightOverrunChains) {
@@ -1016,6 +1163,14 @@ function recordEventsV7(
     if (event.kind === "UNIT_DISBANDED") {
       metrics.economy.coinsEarned += event.coinDelta;
       metrics.economy.disbandCoins += event.coinDelta;
+      if (telemetry.risings.has(event.unitId)) {
+        metrics.undead.risingsDisbanded += 1;
+        metrics.undead.risingDisbandCoins += event.coinDelta;
+      }
+      if (telemetry.raisedSkeletons.has(event.unitId)) {
+        metrics.undead.raisedSkeletonsDisbanded += 1;
+        metrics.undead.raisedSkeletonDisbandCoins += event.coinDelta;
+      }
     }
     if (event.kind === "CITY_REWARD_CHOSEN") {
       metrics.rewards[event.reward] += 1;
@@ -1029,6 +1184,9 @@ function recordEventsV7(
       metrics.roles.trained[event.role] += 1;
       metrics.economy.coinsSpent += event.cost;
       metrics.roles.trainingCoins[event.role] += event.cost;
+      const faction = ownerFaction(after, event.playerId);
+      metrics.factionRoles[faction].trained[event.role] += 1;
+      metrics.factionRoles[faction].trainingCoins[event.role] += event.cost;
     }
     if (event.kind === "COMBAT_RESOLVED") {
       const preview = event.preview;
@@ -1036,8 +1194,36 @@ function recordEventsV7(
         (unit) => unit.id === preview.attackerId,
       );
       if (attacker !== undefined) {
-        metrics.roles.damage[attacker.role] += preview.damageToDefender;
-        if (preview.defenderDies) metrics.roles.kills[attacker.role] += 1;
+        const splashDamage = sum(preview.splash.map((entry) => entry.damage));
+        const splashKills = preview.splash.filter((entry) => entry.dies).length;
+        creditDamage(
+          before,
+          metrics,
+          telemetry,
+          attacker,
+          preview.damageToDefender + splashDamage,
+          Number(preview.defenderDies) + splashKills,
+        );
+        metrics.undead.splashHits += preview.splash.length;
+        metrics.undead.splashDamage += splashDamage;
+        metrics.undead.splashKills += splashKills;
+        if (
+          attacker.role === "CATAPULT" &&
+          ownerFaction(before, attacker.ownerId) === "UNDEAD"
+        ) {
+          metrics.undead.lichSplashDamage += splashDamage;
+          metrics.undead.lichSplashKills += splashKills;
+        }
+        const heal = preview.attackerHeal + preview.defenderHeal;
+        if (heal > 0) {
+          metrics.undead.lifestealHeals +=
+            Number(preview.attackerHeal > 0) + Number(preview.defenderHeal > 0);
+          metrics.undead.lifestealHealing += heal;
+        }
+        metrics.undead.infectionsOnAttack += Number(preview.defenderInfected);
+        metrics.undead.infectionsOnRetaliation += Number(
+          preview.attackerInfected,
+        );
         if (attacker.role === "KNIGHT") {
           metrics.knightOverrun.attacks += 1;
           metrics.knightOverrun.retaliations += Number(preview.retaliation);
@@ -1073,10 +1259,58 @@ function recordEventsV7(
       const defender = before.units.find(
         (unit) => unit.id === preview.targetUnitId,
       );
-      if (defender !== undefined && preview.damageToAttacker > 0) {
-        metrics.roles.damage[defender.role] += preview.damageToAttacker;
-        if (preview.attackerDies) metrics.roles.kills[defender.role] += 1;
+      if (defender !== undefined && preview.damageToAttacker > 0)
+        creditDamage(
+          before,
+          metrics,
+          telemetry,
+          defender,
+          preview.damageToAttacker,
+          Number(preview.attackerDies),
+        );
+    }
+    if (event.kind === "WAIL_RESOLVED") {
+      const banshee = before.units.find((unit) => unit.id === event.unitId);
+      const damage = sum(event.results.map((entry) => entry.damage));
+      const kills = event.results.filter((entry) => entry.dies).length;
+      metrics.undead.wailUses += 1;
+      metrics.undead.wailTargets += event.results.length;
+      metrics.undead.wailZeroDamageTargets += event.results.filter(
+        (entry) => entry.damage === 0,
+      ).length;
+      metrics.undead.wailDamage += damage;
+      metrics.undead.wailKills += kills;
+      if (banshee !== undefined)
+        creditDamage(before, metrics, telemetry, banshee, damage, kills);
+    }
+    if (event.kind === "UNIT_INFECTED") {
+      metrics.undead.infections += 1;
+      telemetry.risings.add(event.unitId);
+      const tile = before.board.tiles.find((item) => same(item.at, event.at));
+      const city = before.cities.find((item) => same(item.at, event.at));
+      const hostileCity = city !== undefined && city.ownerId !== event.playerId;
+      const village = city === undefined && tile?.site === "VILLAGE";
+      metrics.undead.infectionsOnCityCenters += Number(hostileCity);
+      metrics.undead.infectionsOnVillageCenters += Number(village);
+      if (hostileCity || village) telemetry.centerRisings.add(event.unitId);
+    }
+    if (event.kind === "GRAVE_CREATED") metrics.undead.gravesCreated += 1;
+    if (event.kind === "DEAD_RAISED") {
+      metrics.undead.raiseDeadUses += 1;
+      metrics.undead.skeletonsRaised += event.results.length;
+      metrics.undead.maximumSkeletonsPerRaise = Math.max(
+        metrics.undead.maximumSkeletonsPerRaise,
+        event.results.length,
+      );
+      for (const result of event.results) {
+        telemetry.raisedSkeletons.add(result.unitId);
+        telemetry.risings.add(result.unitId);
       }
+    }
+    if (event.kind === "GRAVE_DEVOURED") {
+      metrics.undead.devours += 1;
+      metrics.undead.devourHealing += event.amount;
+      metrics.undead.devourDenials += Number(event.amount === 0);
     }
     if (
       event.kind === "UNIT_DIED" ||
@@ -1085,7 +1319,14 @@ function recordEventsV7(
       const removedUnitId =
         event.kind === "UNIT_DIED" ? event.unitId : event.displacedUnitId;
       const unit = before.units.find((item) => item.id === removedUnitId);
-      if (unit !== undefined) metrics.roles.losses[unit.role] += 1;
+      if (unit !== undefined) {
+        metrics.roles.losses[unit.role] += 1;
+        metrics.factionRoles[ownerFaction(before, unit.ownerId)].losses[
+          unit.role
+        ] += 1;
+      }
+      if (telemetry.raisedSkeletons.has(removedUnitId))
+        metrics.undead.raisedSkeletonLosses += 1;
       telemetry.catapultShotTargets.delete(removedUnitId);
       telemetry.healingSinceCatapultShot.delete(removedUnitId);
       telemetry.catapultSetupUnits.delete(removedUnitId);
@@ -1162,8 +1403,18 @@ function recordSnapshotV7(
     )) {
       if (city.population < 0)
         metrics.economy.negativePopulationLoss += -city.population;
-      if (assignedUnitCountV7(state, city.id) > cityUnitCapacityV7(state, city))
+      const excess =
+        assignedUnitCountV7(state, city.id) - cityUnitCapacityV7(state, city);
+      if (excess > 0) {
         metrics.capacity.overcapacityStates += 1;
+        metrics.capacity.overcapacityStatesByFaction[
+          ownerFaction(state, city.ownerId)
+        ] += 1;
+        metrics.capacity.maximumOvercapacity = Math.max(
+          metrics.capacity.maximumOvercapacity,
+          excess,
+        );
+      }
       if (cityIsBesieged(state, city.id))
         metrics.catapult.siegeTurnBoundaries += 1;
     }
@@ -1186,6 +1437,10 @@ function recordSnapshotV7(
       );
     }
   }
+  metrics.undead.gravesMaximum = Math.max(
+    metrics.undead.gravesMaximum,
+    state.graves.length,
+  );
   metrics.achievements.monumentPopulation =
     state.board.tiles.filter((tile) => tile.improvement === "MONUMENT").length *
     3;
@@ -1355,6 +1610,31 @@ function recordMonumentOwnershipChange(
   ).length;
   if (count > 0 && beforeOwner !== afterOwner)
     metrics.achievements.monumentTransfers += count;
+}
+
+function ownerFaction(state: GameStateV7, playerId: PlayerId): FactionIdV7 {
+  return (
+    state.players.find((player) => player.id === playerId)?.faction ??
+    "ORIGINAL"
+  );
+}
+
+/** Credit damage and kills (including Wail, splash, and retaliation). */
+function creditDamage(
+  before: GameStateV7,
+  metrics: HeadlessMetricsV7,
+  telemetry: TelemetryStateV7,
+  dealer: GameStateV7["units"][number],
+  damage: number,
+  kills: number,
+): void {
+  const faction = metrics.factionRoles[ownerFaction(before, dealer.ownerId)];
+  metrics.roles.damage[dealer.role] += damage;
+  metrics.roles.kills[dealer.role] += kills;
+  faction.damage[dealer.role] += damage;
+  faction.kills[dealer.role] += kills;
+  if (telemetry.raisedSkeletons.has(dealer.id))
+    metrics.undead.raisedSkeletonKills += kills;
 }
 
 function cityIsBesieged(state: GameStateV7, cityId: number): boolean {
