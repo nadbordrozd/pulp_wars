@@ -1,0 +1,36 @@
+{
+  "id": "city-1-a-recolour",
+  "jobId": "bbb1a986-7e26-4ea8-9611-3ee3a1db4e3d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "faction-dry-run-materials-motifs-only",
+    "asset": "chibi-test-clockwork-city-1",
+    "subject": "CITY:1",
+    "faction": "TEST-CLOCKWORK",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 67904,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour every brown, rust and dark red-brown part, including the dark edges of the domes and the bands at the bottom of the workshops, to dark slate-grey. Keep the red domes and red flag solid bright red with darker red shading, keep the clock tower, workshops, outline and art style exactly the same, with nothing under the town."
+      }
+    ],
+    "prompt": "Recolour every brown, rust and dark red-brown part, including the dark edges of the domes and the bands at the bottom of the workshops, to dark slate-grey. Keep the red domes and red flag solid bright red with darker red shading, keep the clock tower, workshops, outline and art style exactly the same, with nothing under the town.",
+    "negativePrompt": "",
+    "description": "Recolour every brown, rust and dark red-brown part, including the dark edges of the domes and the bands at the bottom of the workshops, to dark slate-grey. Keep the red domes and red flag solid bright red with darker red shading, keep the clock tower, workshops, outline and art style exactly the same, with nothing under the town.",
+    "editInstruction": "Recolour every brown, rust and dark red-brown part, including the dark edges of the domes and the bands at the bottom of the workshops, to dark slate-grey. Keep the red domes and red flag solid bright red with darker red shading, keep the clock tower, workshops, outline and art style exactly the same, with nothing under the town.",
+    "source": {
+      "recipe": "city-1-a-edit",
+      "candidate": 0,
+      "sha256": "c11b65d3e71954ed7fb98c2f0a3201037cd915d7974248586207909f1a9d398c"
+    }
+  }
+}

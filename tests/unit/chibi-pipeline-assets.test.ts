@@ -1,4 +1,11 @@
-import { cp, mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import {
+  cp,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
@@ -21,10 +28,14 @@ import {
   type RgbaRaster,
 } from "../../scripts/art/chibi/owner-mask";
 import {
+  explorationDirectory,
+  explorationLayout,
   factionDocumentBlock,
   loadBatchManifest,
+  loadExploration,
   loadFragments,
   loadRecords,
+  productionFactionProblems,
   productionLayout,
   readRaster,
   registryEntry,
@@ -648,6 +659,151 @@ describe("chibi dry run", () => {
       if (previousKey !== undefined) process.env.PIXELLAB_API_KEY = previousKey;
     }
   }, 60_000);
+});
+
+describe("chibi exploration runs (faction-layer dry run)", () => {
+  const RUN = "art/explorations/faction-layer-dry-run";
+  const ARMS = [
+    "bodies-in-fragment",
+    "materials-only",
+    "materials-motifs-only",
+  ] as const;
+
+  it("keeps exploration runs under art/explorations", () => {
+    expect(explorationDirectory(`${RUN}/materials-motifs-only/`)).toBe(
+      `${RUN}/materials-motifs-only`,
+    );
+    for (const outside of [
+      "docs/art/factions",
+      "public/assets/chibi",
+      "art/pixellab/submissions",
+      "art/explorations/../../public",
+      "art/explorations",
+    ])
+      expect(() => explorationDirectory(outside), outside).toThrow(
+        /art\/explorations/,
+      );
+    const layout = explorationLayout(ROOT, `${RUN}/materials-motifs-only`);
+    for (const directory of [
+      layout.records,
+      layout.raw,
+      layout.submissions,
+      layout.masters,
+    ])
+      expect(
+        path
+          .relative(ROOT, directory)
+          .startsWith(`${RUN}/materials-motifs-only`),
+      ).toBe(true);
+  });
+
+  it("adds a TEST- faction for the run without making it a production faction", async () => {
+    const production = await loadFragments(ROOT);
+    expect(production.factions["TEST-CLOCKWORK"]).toBeUndefined();
+    expect(productionFactionProblems(Object.keys(production.factions))).toEqual(
+      [],
+    );
+    expect(productionFactionProblems(["ORIGINAL", "TEST-CLOCKWORK"])).toEqual([
+      expect.stringContaining("TEST-CLOCKWORK"),
+    ]);
+    const run = await loadExploration(ROOT, `${RUN}/materials-motifs-only`);
+    expect(run.manifest.faction).toBe("TEST-CLOCKWORK");
+    expect(batchManifestProblems(run.manifest, run.fragments)).toEqual([]);
+    const batch1 = await loadBatchManifest(ROOT, "1");
+    const human = batch1.assets.find((asset) => asset.id === "chibi-fighter");
+    const robot = run.manifest.assets.find(
+      (asset) => asset.subject === "UNIT:FIGHTER",
+    );
+    if (human === undefined || robot === undefined)
+      throw new Error("fighter assets missing");
+    // Same class, canvas and geometry as the accepted Human Fighter.
+    expect(robot.canvas).toEqual(human.canvas);
+    expect(robot.assetClass).toBe(human.assetClass);
+    const humanPrompt = layeredPrompt(run.fragments, batch1, human, {});
+    const robotPrompt = layeredPrompt(run.fragments, run.manifest, robot, {});
+    const changed = humanPrompt.layers
+      .map((layer, index) => [layer, robotPrompt.layers[index]] as const)
+      .filter(([a, b]) => a.text !== b?.text)
+      .map(([layer]) => layer.layer);
+    expect(changed).toEqual(["faction", "subject"]);
+    expect(robotPrompt.layers[2]?.source).toContain(
+      `${RUN}/materials-motifs-only/faction.md#prompt-fragment`,
+    );
+    expect(robotPrompt.layers[5]?.source).toBe(
+      `${RUN}/materials-motifs-only/subjects.json`,
+    );
+  });
+
+  it("refuses production factions and non-TEST ids in an exploration run", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "chibi-exploration-"));
+    try {
+      for (const directory of [
+        "scripts/art/chibi/fragments",
+        "scripts/art/chibi/subjects",
+        "docs/art/factions",
+        `${RUN}/materials-motifs-only`,
+      ])
+        await cp(path.join(ROOT, directory), path.join(root, directory), {
+          recursive: true,
+        });
+      const file = path.join(root, RUN, "materials-motifs-only", "batch.json");
+      const manifest = JSON.parse(await readFile(file, "utf8")) as {
+        faction: string;
+      };
+      for (const faction of ["ORIGINAL", "CLOCKWORK"]) {
+        await writeFile(file, JSON.stringify({ ...manifest, faction }));
+        await expect(
+          loadExploration(root, `${RUN}/materials-motifs-only`),
+        ).rejects.toThrow(/TEST-<NAME>/);
+      }
+      // A TEST- faction checked into docs/art/factions is refused twice:
+      // the run will not shadow it and art:validate flags it.
+      await writeFile(file, JSON.stringify(manifest));
+      await cp(
+        path.join(root, RUN, "materials-motifs-only", "faction.md"),
+        path.join(root, "docs/art/factions/TEST-CLOCKWORK.md"),
+      );
+      await expect(
+        loadExploration(root, `${RUN}/materials-motifs-only`),
+      ).rejects.toThrow(/is a production faction/);
+      const leaked = await loadFragments(root);
+      expect(productionFactionProblems(Object.keys(leaked.factions))).toEqual([
+        expect.stringContaining("TEST-CLOCKWORK"),
+      ]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("stores every dry-run output, receipt and record inside the run, never registered", async () => {
+    const registered = new Set(CHIBI_ART_ASSETS_V7.map((entry) => entry.id));
+    for (const arm of ARMS) {
+      const directory = `${RUN}/${arm}`;
+      const run = await loadExploration(ROOT, directory);
+      const records = await loadRecords(
+        explorationLayout(ROOT, directory),
+        run.manifest.batch,
+      );
+      const recipes = Object.values(records.recipes);
+      expect(recipes.length, arm).toBeGreaterThan(0);
+      expect(
+        (await readdir(path.join(ROOT, directory, "submissions"))).length,
+        arm,
+      ).toBe(recipes.length);
+      for (const record of recipes) {
+        expect(
+          record.rawSheet?.startsWith(`${directory}/raw/`),
+          record.id,
+        ).toBe(true);
+        expect(record.request.faction).toBe("TEST-CLOCKWORK");
+      }
+      for (const asset of Object.values(records.assets)) {
+        expect(registered.has(asset.id), asset.id).toBe(false);
+        expect(asset.master.path.startsWith(`${directory}/assets/`)).toBe(true);
+        expect(asset.mask?.path.startsWith(`${directory}/assets/`)).toBe(true);
+      }
+    }
+  });
 });
 
 describe("chibi runtime registry", () => {

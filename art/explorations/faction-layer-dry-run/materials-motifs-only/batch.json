@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "batch": "faction-dry-run-materials-motifs-only",
+  "title": "Faction-layer dry run, arm C (recommended): TEST-CLOCKWORK fragment with materials and motifs only, no figures or buildings (exploration, never registered)",
+  "bead": "pulp_wars-tt3.1",
+  "faction": "TEST-CLOCKWORK",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-test-clockwork-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": { "width": 56, "height": 80 }
+    },
+    {
+      "id": "chibi-test-clockwork-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": { "width": 56, "height": 80 }
+    },
+    {
+      "id": "chibi-test-clockwork-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": { "width": 88, "height": 96 }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "fighter-a",
+      "asset": "chibi-test-clockwork-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67911,
+      "requestSize": { "width": 56, "height": 80 },
+      "notes": "Same seed and subject as the materials-only arm's fighter-a; only the faction fragment differs."
+    },
+    {
+      "id": "marksman-a",
+      "asset": "chibi-test-clockwork-marksman",
+      "endpoint": "create-image-pixen",
+      "seed": 67921,
+      "requestSize": { "width": 56, "height": 80 },
+      "notes": "Same seed and subject as the materials-only arm's marksman-a, which drew a clock tower beside the robot."
+    },
+    {
+      "id": "city-1-a",
+      "asset": "chibi-test-clockwork-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67901,
+      "requestSize": { "width": 88, "height": 96 },
+      "notes": "Same seed and subject as city-1-a of the other arms; the architecture now comes from the subject line only."
+    },
+    {
+      "id": "city-1-a-edit",
+      "asset": "chibi-test-clockwork-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 67903,
+      "requestSize": { "width": 88, "height": 96 },
+      "source": { "recipe": "city-1-a", "candidate": 0 },
+      "editInstruction": "Remove all ground: erase the grass and soil slab and the brown fence under the town, so the workshops stand directly on a transparent background with nothing at all under them. Keep the clock tower, domed workshops, red domes, red flag, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of city-1-a (clockwork town on a grass and soil slab), as batch 1 does for every city."
+    },
+    {
+      "id": "fighter-b",
+      "asset": "chibi-test-clockwork-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67912,
+      "requestSize": { "width": 56, "height": 80 },
+      "promptAddendum": "Every metal part is shaded with darker blue-grey, never brown: dark slate-grey feet, legs and joints, a pale grey steel shield. The big bright red chest plate and red helmet dome cover about a third of the robot.",
+      "negativeAddendum": "brown boots, brown leather, bronze, rust, dark brown shading, red-brown",
+      "notes": "fighter-a failed mask QA: 10.4% red-brown (dark rust-brown legs, feet and rivets) and 11.8% owner area. The addendum is the wording a faction fragment needs for metal factions."
+    },
+    {
+      "id": "marksman-b",
+      "asset": "chibi-test-clockwork-marksman",
+      "endpoint": "create-image-pixen",
+      "seed": 67922,
+      "requestSize": { "width": 56, "height": 80 },
+      "promptAddendum": "Every metal part is shaded with darker blue-grey, never brown: dark slate-grey feet, legs and joints, and a dark slate-grey crossbow stock.",
+      "negativeAddendum": "brown boots, brown leather, bronze, rust, dark brown shading, red-brown, wooden stock",
+      "notes": "marksman-a failed mask QA: 5.3% red-brown (rust-brown boots and crossbow stock)."
+    },
+    {
+      "id": "city-1-a-recolour",
+      "asset": "chibi-test-clockwork-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 67904,
+      "requestSize": { "width": 88, "height": 96 },
+      "source": { "recipe": "city-1-a-edit", "candidate": 0 },
+      "editInstruction": "Recolour every brown, rust and dark red-brown part, including the dark edges of the domes and the bands at the bottom of the workshops, to dark slate-grey. Keep the red domes and red flag solid bright red with darker red shading, keep the clock tower, workshops, outline and art style exactly the same, with nothing under the town.",
+      "notes": "city-1-a-edit failed mask QA only on red-brown material (7.0%: dark rust shades at the dome edges and workshop bottoms)."
+    },
+    {
+      "id": "fighter-c",
+      "asset": "chibi-test-clockwork-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67913,
+      "requestSize": { "width": 56, "height": 80 },
+      "promptAddendum": "The whole barrel-shaped tin body is painted bright red enamel, like a red tin toy, so red is its largest colour; the head, arms and legs are dark blue-grey metal shaded with darker blue-grey, never brown, and the shield is pale grey steel.",
+      "negativeAddendum": "brown boots, brown leather, bronze, rust, dark brown shading, red-brown",
+      "notes": "fighter-b cleared the red-brown but covered only 12.8% in owner red (a red cap and a small chest plate on a metal robot): put the owner colour on the body itself."
+    }
+  ]
+}

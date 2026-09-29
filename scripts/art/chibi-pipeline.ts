@@ -11,6 +11,12 @@
  *   npm run art:chibi -- registry --batch N
  *   npm run art:chibi -- dry-run --batch 0
  *
+ * Every command except `registry` and `dry-run` also takes
+ * `--exploration art/explorations/<run>` in place of `--batch N`: an
+ * exploration run (for example a TEST- faction) that keeps its manifest,
+ * faction document, subjects, records, receipts and outputs in that
+ * directory and never registers anything.
+ *
  * Only `generate` calls PixelLab. The key is read from PIXELLAB_API_KEY and
  * is never printed. See docs/art/CHIBI_PIPELINE.md.
  */
@@ -24,7 +30,9 @@ import { runDryRun } from "./chibi/dry-run";
 import {
   acceptRecipe,
   assertValidManifest,
+  explorationLayout,
   loadBatchManifest,
+  loadExploration,
   loadFragments,
   loadRecords,
   pixelLabProvider,
@@ -49,19 +57,31 @@ function required(name: string): string {
   return value;
 }
 
-async function productionContext(
-  batch: string,
-  withProvider: boolean,
-): Promise<PipelineContext> {
-  const manifest = await loadBatchManifest(ROOT, batch);
-  if (manifest.dryRun)
-    throw new Error(`batch ${batch} is a fixture dry run; use dry-run`);
-  const fragments = await loadFragments(ROOT);
+/** A production batch (--batch N) or an exploration run (--exploration DIR). */
+async function runContext(withProvider: boolean): Promise<PipelineContext> {
+  const exploration = option("--exploration");
+  let run: Pick<PipelineContext, "manifest" | "fragments" | "layout">;
+  if (exploration !== undefined && !exploration.startsWith("--")) {
+    const loaded = await loadExploration(ROOT, exploration);
+    run = {
+      manifest: loaded.manifest,
+      fragments: loaded.fragments,
+      layout: explorationLayout(ROOT, loaded.directory),
+    };
+  } else {
+    const batch = required("--batch");
+    const manifest = await loadBatchManifest(ROOT, batch);
+    if (manifest.dryRun)
+      throw new Error(`batch ${batch} is a fixture dry run; use dry-run`);
+    run = {
+      manifest,
+      fragments: await loadFragments(ROOT),
+      layout: productionLayout(ROOT, batch),
+    };
+  }
   const context: PipelineContext = {
     root: ROOT,
-    manifest,
-    fragments,
-    layout: productionLayout(ROOT, batch),
+    ...run,
     provider: withProvider
       ? pixelLabProvider()
       : {
@@ -90,14 +110,23 @@ async function main(): Promise<void> {
     return;
   }
   if (command === "plan" || command === "prompts") {
-    const batch = required("--batch");
-    const manifest = await loadBatchManifest(ROOT, batch);
-    const fragments = await loadFragments(ROOT);
-    const problems = batchManifestProblems(manifest, fragments, batch);
-    if (problems.length > 0) throw new Error(problems.join("\n"));
-    const records = manifest.dryRun
-      ? undefined
-      : await loadRecords(productionLayout(ROOT, batch), batch);
+    let manifest;
+    let fragments;
+    let records;
+    if (option("--exploration") === undefined) {
+      const batch = required("--batch");
+      manifest = await loadBatchManifest(ROOT, batch);
+      fragments = await loadFragments(ROOT);
+      const problems = batchManifestProblems(manifest, fragments, batch);
+      if (problems.length > 0) throw new Error(problems.join("\n"));
+      records = manifest.dryRun
+        ? undefined
+        : await loadRecords(productionLayout(ROOT, batch), batch);
+    } else {
+      const context = await runContext(false);
+      ({ manifest, fragments } = context);
+      records = await loadRecords(context.layout, manifest.batch);
+    }
     const only = option("--id");
     for (const recipe of manifest.recipes) {
       if (only !== undefined && recipe.id !== only) continue;
@@ -121,13 +150,13 @@ async function main(): Promise<void> {
     return;
   }
   if (command === "generate") {
-    const context = await productionContext(required("--batch"), true);
+    const context = await runContext(true);
     const ids = required("--ids").split(",").filter(Boolean);
     for (const id of ids) await generateRecipe(context, id);
     return;
   }
   if (command === "accept") {
-    const context = await productionContext(required("--batch"), false);
+    const context = await runContext(false);
     await acceptRecipe(
       context,
       required("--id"),
@@ -145,13 +174,15 @@ async function main(): Promise<void> {
     return;
   }
   if (command === "reject") {
-    const context = await productionContext(required("--batch"), false);
+    const context = await runContext(false);
     await rejectRecipe(context, required("--id"), required("--notes"));
     return;
   }
   if (command === "registry") {
     const batch = required("--batch");
-    const context = await productionContext(batch, false);
+    if (option("--exploration") !== undefined)
+      throw new Error("exploration runs are never registered");
+    const context = await runContext(false);
     const records = await loadRecords(context.layout, batch);
     for (const record of Object.values(records.assets))
       if (record.status === "ACCEPTED")
@@ -161,7 +192,7 @@ async function main(): Promise<void> {
     return;
   }
   console.log(
-    "Usage: chibi-pipeline.ts plan|prompts --batch N [--id R] | generate --batch N --ids a,b | accept --batch N --id R --candidate K --notes TEXT --native-pass --enlarged-pass --owners-pass --no-plate-pass --camera-pass | reject --batch N --id R --notes TEXT | registry --batch N | dry-run --batch 0",
+    "Usage: chibi-pipeline.ts plan|prompts --batch N [--id R] | generate --batch N --ids a,b | accept --batch N --id R --candidate K --notes TEXT --native-pass --enlarged-pass --owners-pass --no-plate-pass --camera-pass | reject --batch N --id R --notes TEXT | registry --batch N | dry-run --batch 0; --exploration art/explorations/<run> replaces --batch N except for registry and dry-run",
   );
 }
 

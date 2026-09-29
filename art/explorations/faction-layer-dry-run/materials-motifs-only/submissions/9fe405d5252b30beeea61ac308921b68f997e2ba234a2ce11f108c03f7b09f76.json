@@ -1,0 +1,63 @@
+{
+  "id": "fighter-a",
+  "jobId": "sync-5a45b369-57d2-49f7-ab2f-cc386a9295b0",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "faction-dry-run-materials-motifs-only",
+    "asset": "chibi-test-clockwork-fighter",
+    "subject": "UNIT:FIGHTER",
+    "faction": "TEST-CLOCKWORK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 67911,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/faction-layer-dry-run/materials-motifs-only/faction.md#prompt-fragment + art/explorations/faction-layer-dry-run/materials-motifs-only/faction.md#negative-fragment",
+        "text": "Faction: TEST clockwork, a wind-up tin-toy world. Everything is made of riveted dark blue-grey gunmetal plates and ivory-white enamel panels, with a few small brass rivets and gear teeth, small round glass portholes and little wind-up keys as details.",
+        "negative": "wood, timber, thatch, straw, plaster, cottage, stone keep, copper, rust, orange, magic glow, gun, rifle, pistol"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/faction-layer-dry-run/materials-motifs-only/subjects.json",
+        "text": "Subject: Fighter, a chunky cute wind-up tin robot with a huge round tin-can head about half of the figure's height and a tiny boxy body: dark blue-grey gunmetal head with one big round glass porthole eye and no human face, a bright red enamel helmet dome and a big bright red enamel chest plate, an oversized ivory-white spanner wrench held up in the right hand like a club, a big round dark gunmetal shield shaped like a cog wheel on the left arm, a brass wind-up key on the back, short stubby gunmetal legs; simple shapes and very few details."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: TEST clockwork, a wind-up tin-toy world. Everything is made of riveted dark blue-grey gunmetal plates and ivory-white enamel panels, with a few small brass rivets and gear teeth, small round glass portholes and little wind-up keys as details. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Fighter, a chunky cute wind-up tin robot with a huge round tin-can head about half of the figure's height and a tiny boxy body: dark blue-grey gunmetal head with one big round glass porthole eye and no human face, a bright red enamel helmet dome and a big bright red enamel chest plate, an oversized ivory-white spanner wrench held up in the right hand like a club, a big round dark gunmetal shield shaped like a cog wheel on the left arm, a brass wind-up key on the back, short stubby gunmetal legs; simple shapes and very few details.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, wood, timber, thatch, straw, plaster, cottage, stone keep, copper, rust, orange, magic glow, gun, rifle, pistol, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: TEST clockwork, a wind-up tin-toy world. Everything is made of riveted dark blue-grey gunmetal plates and ivory-white enamel panels, with a few small brass rivets and gear teeth, small round glass portholes and little wind-up keys as details. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Fighter, a chunky cute wind-up tin robot with a huge round tin-can head about half of the figure's height and a tiny boxy body: dark blue-grey gunmetal head with one big round glass porthole eye and no human face, a bright red enamel helmet dome and a big bright red enamel chest plate, an oversized ivory-white spanner wrench held up in the right hand like a club, a big round dark gunmetal shield shaped like a cog wheel on the left arm, a brass wind-up key on the back, short stubby gunmetal legs; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, wood, timber, thatch, straw, plaster, cottage, stone keep, copper, rust, orange, magic glow, gun, rifle, pistol, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd."
+  }
+}

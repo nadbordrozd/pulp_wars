@@ -74,7 +74,14 @@ export const CHIBI_PATHS = {
   publicRoot: "public",
   masters: "public/assets/chibi",
   reviews: "art/pixellab/reviews",
+  explorations: "art/explorations",
 } as const;
+
+/**
+ * Throwaway factions for exploration runs (for example the faction-layer dry
+ * run): never a production faction, never under docs/art/factions.
+ */
+export const TEST_FACTION_PATTERN = /^TEST-[A-Z0-9-]+$/;
 
 export function sha256(bytes: Uint8Array): string {
   return createHash("sha256").update(bytes).digest("hex");
@@ -153,19 +160,30 @@ async function factionFragments(
       continue;
     if (file === "README.md") continue;
     const markdown = await readFile(path.join(directory, file), "utf8");
-    const text = factionDocumentBlock(markdown, "Prompt fragment");
-    if (text === null) continue;
-    const source = posix(path.join(CHIBI_PATHS.factions, file));
-    const negative = factionDocumentBlock(markdown, "Negative fragment");
-    result[file.replace(/\.md$/, "")] = {
-      source: `${source}#prompt-fragment`,
-      text,
-      ...(negative === null
-        ? {}
-        : { negativeSource: `${source}#negative-fragment`, negative }),
-    };
+    const fragment = factionDocumentFragment(
+      markdown,
+      posix(path.join(CHIBI_PATHS.factions, file)),
+    );
+    if (fragment !== null) result[file.replace(/\.md$/, "")] = fragment;
   }
   return result;
+}
+
+/** Layer 3 of a faction document: its prompt and negative fragment blocks. */
+export function factionDocumentFragment(
+  markdown: string,
+  source: string,
+): Fragment | null {
+  const text = factionDocumentBlock(markdown, "Prompt fragment");
+  if (text === null) return null;
+  const negative = factionDocumentBlock(markdown, "Negative fragment");
+  return {
+    source: `${source}#prompt-fragment`,
+    text,
+    ...(negative === null
+      ? {}
+      : { negativeSource: `${source}#negative-fragment`, negative }),
+  };
 }
 
 export async function loadFragments(root: string): Promise<FragmentLibrary> {
@@ -348,6 +366,101 @@ export function dryRunLayout(root: string, batch: string): PipelineLayout {
     raw: path.join(base, "raw"),
     submissions: path.join(base, "submissions"),
     masters: path.join(base, "assets"),
+  };
+}
+
+/**
+ * Exploration runs keep their manifest (`batch.json`), throwaway faction
+ * document (`faction.md`), subject texts (`subjects.json`), records,
+ * receipts, raw candidates and masters together in one directory under
+ * art/explorations/. Nothing there is production art or registered.
+ */
+export function explorationLayout(
+  root: string,
+  directory: string,
+): PipelineLayout {
+  const base = path.join(root, explorationDirectory(directory));
+  return {
+    root,
+    records: path.join(base, "records.json"),
+    raw: path.join(base, "raw"),
+    submissions: path.join(base, "submissions"),
+    masters: path.join(base, "assets"),
+  };
+}
+
+/** The repository-relative exploration directory, or an error. */
+export function explorationDirectory(directory: string): string {
+  const relative = posix(path.normalize(directory)).replace(/\/$/, "");
+  if (
+    !relative.startsWith(`${CHIBI_PATHS.explorations}/`) ||
+    relative.split("/").includes("..")
+  )
+    throw new Error(
+      `exploration runs must live under ${CHIBI_PATHS.explorations}/, not ${directory}`,
+    );
+  return relative;
+}
+
+/**
+ * The manifest and fragment library of an exploration run: the production
+ * fragments plus the run's TEST- faction and its subject texts. The faction
+ * must not exist in docs/art/factions, so a test faction can never be
+ * mistaken for, or shadow, a real one.
+ */
+export async function loadExploration(
+  root: string,
+  directory: string,
+): Promise<{
+  readonly directory: string;
+  readonly manifest: ChibiBatchManifest;
+  readonly fragments: FragmentLibrary;
+}> {
+  const relative = explorationDirectory(directory);
+  const manifest = JSON.parse(
+    await readFile(path.join(root, relative, "batch.json"), "utf8"),
+  ) as ChibiBatchManifest;
+  if (manifest.dryRun)
+    throw new Error(`${relative}: exploration runs are not fixture dry runs`);
+  if (!TEST_FACTION_PATTERN.test(manifest.faction))
+    throw new Error(
+      `${relative}: exploration faction ${JSON.stringify(manifest.faction)} must be TEST-<NAME>`,
+    );
+  const production = await loadFragments(root);
+  if (production.factions[manifest.faction] !== undefined)
+    throw new Error(
+      `${relative}: faction ${manifest.faction} is a production faction`,
+    );
+  const factionSource = `${relative}/faction.md`;
+  const fragment = factionDocumentFragment(
+    await readFile(path.join(root, factionSource), "utf8"),
+    factionSource,
+  );
+  if (fragment === null)
+    throw new Error(`${factionSource} has no "Prompt fragment" text block`);
+  const subjectsSource = `${relative}/subjects.json`;
+  const subjects = JSON.parse(
+    await readFile(path.join(root, subjectsSource), "utf8"),
+  ) as { faction: string; subjects: Record<string, string> };
+  if (subjects.faction !== manifest.faction)
+    throw new Error(
+      `${subjectsSource} is for ${subjects.faction}, not ${manifest.faction}`,
+    );
+  return {
+    directory: relative,
+    manifest,
+    fragments: {
+      ...production,
+      factions: { ...production.factions, [manifest.faction]: fragment },
+      subjects: {
+        ...production.subjects,
+        [manifest.faction]: subjects.subjects,
+      },
+      subjectSources: {
+        ...production.subjectSources,
+        [manifest.faction]: subjectsSource,
+      },
+    },
   };
 }
 
@@ -1099,12 +1212,25 @@ export async function verifyAssetRecord(
   return problems;
 }
 
+/** A TEST- faction under docs/art/factions is a mistake: it is not real. */
+export function productionFactionProblems(
+  factions: readonly string[],
+): string[] {
+  return factions
+    .filter((faction) => TEST_FACTION_PATTERN.test(faction))
+    .map(
+      (faction) =>
+        `docs/art/factions/${faction}.md: TEST- factions belong in an exploration run under art/explorations/`,
+    );
+}
+
 /** Static checks run by `npm run art:validate`. */
 export async function validateChibiProduction(root: string): Promise<string[]> {
   const problems: string[] = [];
   const fragments = await loadFragments(root);
   if (fragments.factions.ORIGINAL === undefined)
     problems.push("docs/art/factions/ORIGINAL.md has no prompt fragment");
+  problems.push(...productionFactionProblems(Object.keys(fragments.factions)));
   for (const batch of await listBatches(root)) {
     const manifest = await loadBatchManifest(root, batch);
     const manifestProblems = batchManifestProblems(manifest, fragments, batch);

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "batch": "faction-dry-run-materials-only",
+  "title": "Faction-layer dry run, arm B: TEST-CLOCKWORK fragment with materials and architecture only (exploration, never registered)",
+  "bead": "pulp_wars-tt3.1",
+  "faction": "TEST-CLOCKWORK",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-test-clockwork-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": { "width": 56, "height": 80 }
+    },
+    {
+      "id": "chibi-test-clockwork-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": { "width": 56, "height": 80 }
+    },
+    {
+      "id": "chibi-test-clockwork-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": { "width": 88, "height": 96 }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "fighter-a",
+      "asset": "chibi-test-clockwork-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67911,
+      "requestSize": { "width": 56, "height": 80 },
+      "notes": "Batch-1 unit geometry; only layers 3 and 5 differ from the Human Fighter."
+    },
+    {
+      "id": "marksman-a",
+      "asset": "chibi-test-clockwork-marksman",
+      "endpoint": "create-image-pixen",
+      "seed": 67921,
+      "requestSize": { "width": 56, "height": 80 }
+    },
+    {
+      "id": "city-1-a",
+      "asset": "chibi-test-clockwork-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67901,
+      "requestSize": { "width": 88, "height": 96 },
+      "notes": "Same seed, subject and negatives as the bodies-in-fragment arm; only the faction fragment differs."
+    },
+    {
+      "id": "city-1-b",
+      "asset": "chibi-test-clockwork-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67902,
+      "requestSize": { "width": 88, "height": 96 },
+      "notes": "Second seed of city-1-a."
+    }
+  ]
+}

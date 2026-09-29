@@ -1,0 +1,36 @@
+{
+  "id": "city-1-a-edit",
+  "jobId": "d74d5b9d-f62c-4b06-be37-515f235a0787",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "faction-dry-run-materials-motifs-only",
+    "asset": "chibi-test-clockwork-city-1",
+    "subject": "CITY:1",
+    "faction": "TEST-CLOCKWORK",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 67903,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and soil slab and the brown fence under the town, so the workshops stand directly on a transparent background with nothing at all under them. Keep the clock tower, domed workshops, red domes, red flag, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and soil slab and the brown fence under the town, so the workshops stand directly on a transparent background with nothing at all under them. Keep the clock tower, domed workshops, red domes, red flag, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and soil slab and the brown fence under the town, so the workshops stand directly on a transparent background with nothing at all under them. Keep the clock tower, domed workshops, red domes, red flag, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and soil slab and the brown fence under the town, so the workshops stand directly on a transparent background with nothing at all under them. Keep the clock tower, domed workshops, red domes, red flag, outline and art style exactly the same.",
+    "source": {
+      "recipe": "city-1-a",
+      "candidate": 0,
+      "sha256": "609392d9f3db263d22a7b6dfc714b8b1836db530d7411559c2ae5184305e7da7"
+    }
+  }
+}

@@ -1,0 +1,334 @@
+{
+  "bead": "pulp_wars-tt3.1",
+  "note": "Exploration only: TEST-CLOCKWORK is a throwaway faction and nothing here is registered.",
+  "reference": "scripts/art/chibi/records/batch-1.json",
+  "test": "art/explorations/faction-layer-dry-run/materials-motifs-only/records.json",
+  "pairs": [
+    {
+      "role": "Fighter",
+      "human": {
+        "id": "chibi-fighter",
+        "recipe": "fighter-h-edit",
+        "status": "ACCEPTED",
+        "master": "public/assets/chibi/units/chibi-fighter.png",
+        "canvas": {
+          "width": 56,
+          "height": 80
+        },
+        "box": {
+          "left": 3,
+          "top": 3,
+          "width": 51,
+          "height": 72
+        },
+        "fill": {
+          "width": 0.911,
+          "height": 0.9,
+          "tileWidth": 0.637,
+          "tileHeight": 0.9
+        },
+        "opaquePixels": 2286,
+        "outline": {
+          "darkEdgeShare": 0.738,
+          "medianWidthPx": 1
+        },
+        "plate": {
+          "bandRows": 14,
+          "groundShare": 0.1137,
+          "footprintWidthShare": 0.7255,
+          "suspect": false
+        },
+        "mask": {
+          "coverage": 0.2148,
+          "status": "PASS",
+          "redBrownPixels": 14,
+          "failures": []
+        }
+      },
+      "test": {
+        "id": "chibi-test-clockwork-fighter",
+        "recipe": "fighter-b",
+        "status": "MASK_REJECTED",
+        "master": "art/explorations/faction-layer-dry-run/materials-motifs-only/assets/units/chibi-test-clockwork-fighter.png",
+        "canvas": {
+          "width": 56,
+          "height": 80
+        },
+        "box": {
+          "left": 1,
+          "top": 8,
+          "width": 54,
+          "height": 64
+        },
+        "fill": {
+          "width": 0.964,
+          "height": 0.8,
+          "tileWidth": 0.675,
+          "tileHeight": 0.8
+        },
+        "opaquePixels": 2295,
+        "outline": {
+          "darkEdgeShare": 0.987,
+          "medianWidthPx": 1
+        },
+        "plate": {
+          "bandRows": 13,
+          "groundShare": 0.0027,
+          "footprintWidthShare": 0.7963,
+          "suspect": false
+        },
+        "mask": {
+          "coverage": 0.1277,
+          "status": "FAIL",
+          "redBrownPixels": 0,
+          "failures": [
+            "COVERAGE_LOW"
+          ]
+        }
+      }
+    },
+    {
+      "role": "Marksman",
+      "human": {
+        "id": "chibi-marksman",
+        "recipe": "marksman-c",
+        "status": "ACCEPTED",
+        "master": "public/assets/chibi/units/chibi-marksman.png",
+        "canvas": {
+          "width": 56,
+          "height": 80
+        },
+        "box": {
+          "left": 0,
+          "top": 6,
+          "width": 55,
+          "height": 70
+        },
+        "fill": {
+          "width": 0.982,
+          "height": 0.875,
+          "tileWidth": 0.688,
+          "tileHeight": 0.875
+        },
+        "opaquePixels": 2375,
+        "outline": {
+          "darkEdgeShare": 0.931,
+          "medianWidthPx": 1
+        },
+        "plate": {
+          "bandRows": 14,
+          "groundShare": 0.1369,
+          "footprintWidthShare": 0.6364,
+          "suspect": false
+        },
+        "mask": {
+          "coverage": 0.3339,
+          "status": "PASS",
+          "redBrownPixels": 31,
+          "failures": []
+        }
+      },
+      "test": {
+        "id": "chibi-test-clockwork-marksman",
+        "recipe": "marksman-b",
+        "status": "MASK_REJECTED",
+        "master": "art/explorations/faction-layer-dry-run/materials-motifs-only/assets/units/chibi-test-clockwork-marksman.png",
+        "canvas": {
+          "width": 56,
+          "height": 80
+        },
+        "box": {
+          "left": 5,
+          "top": 1,
+          "width": 43,
+          "height": 78
+        },
+        "fill": {
+          "width": 0.768,
+          "height": 0.975,
+          "tileWidth": 0.537,
+          "tileHeight": 0.975
+        },
+        "opaquePixels": 2175,
+        "outline": {
+          "darkEdgeShare": 0.818,
+          "medianWidthPx": 1
+        },
+        "plate": {
+          "bandRows": 16,
+          "groundShare": 0.1542,
+          "footprintWidthShare": 0.8372,
+          "suspect": false
+        },
+        "mask": {
+          "coverage": 0.1025,
+          "status": "FAIL",
+          "redBrownPixels": 9,
+          "failures": [
+            "COVERAGE_LOW"
+          ]
+        }
+      }
+    },
+    {
+      "role": "City 1",
+      "human": {
+        "id": "chibi-city-1",
+        "recipe": "city-1-d-grow",
+        "status": "ACCEPTED",
+        "master": "public/assets/chibi/settlements/chibi-city-1.png",
+        "canvas": {
+          "width": 88,
+          "height": 96
+        },
+        "box": {
+          "left": 10,
+          "top": 8,
+          "width": 65,
+          "height": 82
+        },
+        "fill": {
+          "width": 0.739,
+          "height": 0.854,
+          "tileWidth": 0.813,
+          "tileHeight": 1.025
+        },
+        "opaquePixels": 2635,
+        "outline": {
+          "darkEdgeShare": 0.905,
+          "medianWidthPx": 1
+        },
+        "plate": {
+          "bandRows": 16,
+          "groundShare": 0.2633,
+          "footprintWidthShare": 0.5385,
+          "suspect": false
+        },
+        "mask": {
+          "coverage": 0.3518,
+          "status": "PASS",
+          "redBrownPixels": 14,
+          "failures": []
+        }
+      },
+      "test": {
+        "id": "chibi-test-clockwork-city-1",
+        "recipe": "city-1-a-recolour",
+        "status": "ACCEPTED",
+        "master": "art/explorations/faction-layer-dry-run/materials-motifs-only/assets/settlements/chibi-test-clockwork-city-1.png",
+        "canvas": {
+          "width": 88,
+          "height": 96
+        },
+        "box": {
+          "left": 14,
+          "top": 6,
+          "width": 56,
+          "height": 75
+        },
+        "fill": {
+          "width": 0.636,
+          "height": 0.781,
+          "tileWidth": 0.7,
+          "tileHeight": 0.938
+        },
+        "opaquePixels": 2528,
+        "outline": {
+          "darkEdgeShare": 0.949,
+          "medianWidthPx": 1
+        },
+        "plate": {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        "mask": {
+          "coverage": 0.2991,
+          "status": "PASS",
+          "redBrownPixels": 36,
+          "failures": []
+        }
+      }
+    }
+  ],
+  "arms": [
+    {
+      "arm": "A bodies in fragment",
+      "recipe": "city-1-a",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "A bodies in fragment",
+      "recipe": "city-1-b",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "B materials + architecture",
+      "recipe": "city-1-a",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "B materials + architecture",
+      "recipe": "city-1-b",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "B materials + architecture",
+      "recipe": "fighter-a",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "B materials + architecture",
+      "recipe": "marksman-a",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "C materials and motifs only",
+      "recipe": "city-1-a",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "C materials and motifs only",
+      "recipe": "city-1-a-edit [0]",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "C materials and motifs only",
+      "recipe": "city-1-a-recolour [0]",
+      "verdict": "ACCEPTED, mask QA PASS"
+    },
+    {
+      "arm": "C materials and motifs only",
+      "recipe": "fighter-a",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "C materials and motifs only",
+      "recipe": "fighter-b",
+      "verdict": "art ok, MASK_REJECTED (COVERAGE_LOW)"
+    },
+    {
+      "arm": "C materials and motifs only",
+      "recipe": "fighter-c",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "C materials and motifs only",
+      "recipe": "marksman-a",
+      "verdict": "REJECTED"
+    },
+    {
+      "arm": "C materials and motifs only",
+      "recipe": "marksman-b",
+      "verdict": "art ok, MASK_REJECTED (COVERAGE_LOW)"
+    }
+  ],
+  "outputs": [
+    "comparison-1x.png",
+    "comparison-x4.png",
+    "zoom-0.75.png",
+    "zoom-0.75-dpr2.png",
+    "arms-x4.png"
+  ]
+}

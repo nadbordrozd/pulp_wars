@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "batch": "faction-dry-run-bodies-in-fragment",
+  "recipes": {
+    "city-1-a": {
+      "id": "city-1-a",
+      "asset": "chibi-test-clockwork-city-1",
+      "jobId": "sync-56be4367-bd96-4628-8156-a1d97e94a3fc",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "faction-dry-run-bodies-in-fragment",
+        "asset": "chibi-test-clockwork-city-1",
+        "subject": "CITY:1",
+        "faction": "TEST-CLOCKWORK",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 67901,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/faction-layer-dry-run/bodies-in-fragment/faction.md#prompt-fragment + art/explorations/faction-layer-dry-run/bodies-in-fragment/faction.md#negative-fragment",
+            "text": "Faction: TEST clockwork wind-up tin soldiers; boxy chunky automaton bodies of riveted dark blue-grey gunmetal with a round glass porthole eye instead of a face, ivory-white enamel panels, small brass rivets and gear teeth and a big wind-up key on the back; towns of drum-shaped riveted iron workshops with domed roofs, a clock tower with a big white clock face, pipes and short chimney stacks.",
+            "negative": "wood, timber, thatch, straw, plaster, cottage, stone keep, copper, rust, orange, magic glow, gun, rifle, pistol"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/faction-layer-dry-run/bodies-in-fragment/subjects.json",
+            "text": "Subject: a small level-1 clockwork town: one short round dark gunmetal clock tower with a big white clock face, a bright red enamel dome roof and a big red banner flag, and three chunky drum-shaped iron workshops with ivory-white walls and solid bright red enamel dome roofs pressed around its foot, one short chimney stack; no wall; wide and chunky, filling the whole width of the image. Buildings only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: TEST clockwork wind-up tin soldiers; boxy chunky automaton bodies of riveted dark blue-grey gunmetal with a round glass porthole eye instead of a face, ivory-white enamel panels, small brass rivets and gear teeth and a big wind-up key on the back; towns of drum-shaped riveted iron workshops with domed roofs, a clock tower with a big white clock face, pipes and short chimney stacks. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: a small level-1 clockwork town: one short round dark gunmetal clock tower with a big white clock face, a bright red enamel dome roof and a big red banner flag, and three chunky drum-shaped iron workshops with ivory-white walls and solid bright red enamel dome roofs pressed around its foot, one short chimney stack; no wall; wide and chunky, filling the whole width of the image. Buildings only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, wood, timber, thatch, straw, plaster, cottage, stone keep, copper, rust, orange, magic glow, gun, rifle, pistol, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: TEST clockwork wind-up tin soldiers; boxy chunky automaton bodies of riveted dark blue-grey gunmetal with a round glass porthole eye instead of a face, ivory-white enamel panels, small brass rivets and gear teeth and a big wind-up key on the back; towns of drum-shaped riveted iron workshops with domed roofs, a clock tower with a big white clock face, pipes and short chimney stacks. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: a small level-1 clockwork town: one short round dark gunmetal clock tower with a big white clock face, a bright red enamel dome roof and a big red banner flag, and three chunky drum-shaped iron workshops with ivory-white walls and solid bright red enamel dome roofs pressed around its foot, one short chimney stack; no wall; wide and chunky, filling the whole width of the image. Buildings only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, wood, timber, thatch, straw, plaster, cottage, stone keep, copper, rust, orange, magic glow, gun, rifle, pistol, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd."
+      },
+      "submittedAt": "2026-09-29T13:46:14.482Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/explorations/faction-layer-dry-run/bodies-in-fragment/raw/city-1-a.png",
+      "rawSheetSha256": "bb8733b7121253b599278e15638c2afbfde40e15048f07c2d2e8128cd7b45fa8",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.206,
+          "footprintWidthShare": 0.8906,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:47:42.506Z",
+      "usageUsd": 0.014624627219306099,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Control arm: the fragment's body words turned the clock tower into a robot (clock-face eye, white shoulder plates, red fists at its sides, a wind-up key) standing among the workshops; also on a soil slab.",
+        "reviewedAt": "2026-09-29T14:01:18.227Z"
+      }
+    },
+    "city-1-b": {
+      "id": "city-1-b",
+      "asset": "chibi-test-clockwork-city-1",
+      "jobId": "sync-d60def16-25e4-4997-b665-09c99463473d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "faction-dry-run-bodies-in-fragment",
+        "asset": "chibi-test-clockwork-city-1",
+        "subject": "CITY:1",
+        "faction": "TEST-CLOCKWORK",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 67902,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/faction-layer-dry-run/bodies-in-fragment/faction.md#prompt-fragment + art/explorations/faction-layer-dry-run/bodies-in-fragment/faction.md#negative-fragment",
+            "text": "Faction: TEST clockwork wind-up tin soldiers; boxy chunky automaton bodies of riveted dark blue-grey gunmetal with a round glass porthole eye instead of a face, ivory-white enamel panels, small brass rivets and gear teeth and a big wind-up key on the back; towns of drum-shaped riveted iron workshops with domed roofs, a clock tower with a big white clock face, pipes and short chimney stacks.",
+            "negative": "wood, timber, thatch, straw, plaster, cottage, stone keep, copper, rust, orange, magic glow, gun, rifle, pistol"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/faction-layer-dry-run/bodies-in-fragment/subjects.json",
+            "text": "Subject: a small level-1 clockwork town: one short round dark gunmetal clock tower with a big white clock face, a bright red enamel dome roof and a big red banner flag, and three chunky drum-shaped iron workshops with ivory-white walls and solid bright red enamel dome roofs pressed around its foot, one short chimney stack; no wall; wide and chunky, filling the whole width of the image. Buildings only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: TEST clockwork wind-up tin soldiers; boxy chunky automaton bodies of riveted dark blue-grey gunmetal with a round glass porthole eye instead of a face, ivory-white enamel panels, small brass rivets and gear teeth and a big wind-up key on the back; towns of drum-shaped riveted iron workshops with domed roofs, a clock tower with a big white clock face, pipes and short chimney stacks. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: a small level-1 clockwork town: one short round dark gunmetal clock tower with a big white clock face, a bright red enamel dome roof and a big red banner flag, and three chunky drum-shaped iron workshops with ivory-white walls and solid bright red enamel dome roofs pressed around its foot, one short chimney stack; no wall; wide and chunky, filling the whole width of the image. Buildings only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, wood, timber, thatch, straw, plaster, cottage, stone keep, copper, rust, orange, magic glow, gun, rifle, pistol, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: TEST clockwork wind-up tin soldiers; boxy chunky automaton bodies of riveted dark blue-grey gunmetal with a round glass porthole eye instead of a face, ivory-white enamel panels, small brass rivets and gear teeth and a big wind-up key on the back; towns of drum-shaped riveted iron workshops with domed roofs, a clock tower with a big white clock face, pipes and short chimney stacks. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: a small level-1 clockwork town: one short round dark gunmetal clock tower with a big white clock face, a bright red enamel dome roof and a big red banner flag, and three chunky drum-shaped iron workshops with ivory-white walls and solid bright red enamel dome roofs pressed around its foot, one short chimney stack; no wall; wide and chunky, filling the whole width of the image. Buildings only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, wood, timber, thatch, straw, plaster, cottage, stone keep, copper, rust, orange, magic glow, gun, rifle, pistol, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd."
+      },
+      "submittedAt": "2026-09-29T13:49:34.098Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/explorations/faction-layer-dry-run/bodies-in-fragment/raw/city-1-b.png",
+      "rawSheetSha256": "f8d3958efed13adf35c21d66100bd8840a61d2cc15515bb38ff16706bcb6dd78",
+      "plateHints": [
+        {
+          "bandRows": 18,
+          "groundShare": 0.3096,
+          "footprintWidthShare": 0.8734,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-09-29T13:50:38.497Z",
+      "usageUsd": 0.010590216663148667,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Control arm: no separate figure, but the tower grew a body-style wind-up key and the town sits on a grass and soil slab.",
+        "reviewedAt": "2026-09-29T14:01:18.412Z"
+      }
+    }
+  },
+  "assets": {}
+}

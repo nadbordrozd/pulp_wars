@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "batch": "faction-dry-run-bodies-in-fragment",
+  "title": "Faction-layer dry run, arm A (control): TEST-CLOCKWORK fragment that names bodies, City only (exploration, never registered)",
+  "bead": "pulp_wars-tt3.1",
+  "faction": "TEST-CLOCKWORK",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-test-clockwork-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": { "width": 88, "height": 96 }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "city-1-a",
+      "asset": "chibi-test-clockwork-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67901,
+      "requestSize": { "width": 88, "height": 96 },
+      "notes": "Same seed, subject and negatives as the materials-only arm; only the faction fragment differs."
+    },
+    {
+      "id": "city-1-b",
+      "asset": "chibi-test-clockwork-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67902,
+      "requestSize": { "width": 88, "height": 96 },
+      "notes": "Second seed of city-1-a."
+    }
+  ]
+}

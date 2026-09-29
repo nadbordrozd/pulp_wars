@@ -1,0 +1,9 @@
+{
+  "faction": "TEST-CLOCKWORK",
+  "note": "Subject layer (layer 5) of the throwaway TEST-CLOCKWORK faction (bead pulp_wars-tt3.1). Exploration only; the body language lives here, not in the faction fragment.",
+  "subjects": {
+    "UNIT:FIGHTER": "Subject: Fighter, a chunky cute wind-up tin robot with a huge round tin-can head about half of the figure's height and a tiny boxy body: dark blue-grey gunmetal head with one big round glass porthole eye and no human face, a bright red enamel helmet dome and a big bright red enamel chest plate, an oversized ivory-white spanner wrench held up in the right hand like a club, a big round dark gunmetal shield shaped like a cog wheel on the left arm, a brass wind-up key on the back, short stubby gunmetal legs; simple shapes and very few details.",
+    "UNIT:MARKSMAN": "Subject: Marksman, a tall slim wind-up tin robot with a very big round tin-can head (about half of the figure's height): one big round glass porthole eye and no human face, a tall bright red enamel cone hat, a long bright red enamel coat-shaped body shell down to the knees, a big dark gunmetal crossbow with ivory-white limbs held level in both hands, a brass wind-up key on the back, short stubby gunmetal legs; no shield, no wrench; clearly different from a club fighter.",
+    "CITY:1": "Subject: a small level-1 clockwork town: one short round dark gunmetal clock tower with a big white clock face, a bright red enamel dome roof and a big red banner flag, and three chunky drum-shaped iron workshops with ivory-white walls and solid bright red enamel dome roofs pressed around its foot, one short chimney stack; no wall; wide and chunky, filling the whole width of the image. Buildings only."
+  }
+}

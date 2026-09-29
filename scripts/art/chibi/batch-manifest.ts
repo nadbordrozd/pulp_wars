@@ -306,6 +306,11 @@ export interface FragmentLibrary {
   readonly factions: Readonly<Record<string, Fragment>>;
   /** Subject texts by faction id (plus SHARED) and subject. */
   readonly subjects: Readonly<Record<string, Readonly<Record<string, string>>>>;
+  /**
+   * Where a faction's subject texts come from when it is not
+   * scripts/art/chibi/subjects/<faction>.json (exploration runs).
+   */
+  readonly subjectSources?: Readonly<Record<string, string>>;
 }
 
 export interface Fragment {
@@ -354,7 +359,12 @@ export function subjectText(
 ): { readonly source: string; readonly text: string } | null {
   const own = fragments.subjects[faction]?.[subject];
   if (own !== undefined)
-    return { source: `scripts/art/chibi/subjects/${faction}.json`, text: own };
+    return {
+      source:
+        fragments.subjectSources?.[faction] ??
+        `scripts/art/chibi/subjects/${faction}.json`,
+      text: own,
+    };
   const shared = fragments.subjects.SHARED?.[subject];
   return shared === undefined
     ? null

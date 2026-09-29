@@ -135,3 +135,23 @@ expected outcomes: the tile-80 Fighter's mask is rejected (red-brown shield,
 10.5% owner area), and the Marksman passes only through its checked-in
 override. Its outputs stay in `art/pixellab/reviews/chibi-batch-0/dry-run/`
 and are never registered.
+
+## Exploration runs
+
+An exploration run calls PixelLab through the same layering, but keeps
+everything in one directory under `art/explorations/` and never registers
+anything. `plan`, `prompts`, `generate`, `accept` and `reject` take
+`--exploration <dir>` in place of `--batch N`:
+
+```sh
+npm run art:chibi -- prompts --exploration art/explorations/faction-layer-dry-run/materials-motifs-only
+npm run art:chibi -- generate --exploration art/explorations/faction-layer-dry-run/materials-motifs-only --ids fighter-a
+```
+
+The directory holds `batch.json` (a batch manifest), `faction.md` (a
+faction document whose id must be `TEST-<NAME>`), `subjects.json`, and the
+run's `records.json`, `submissions/`, `raw/` and `assets/`. A `TEST-`
+faction is refused if it also exists in `docs/art/factions`, and
+`art:validate` rejects any `TEST-` faction there. The faction-layer dry run
+([factions README](factions/README.md#dry-run-test-clockwork-bead-pulp_wars-tt31))
+is the first exploration run.
