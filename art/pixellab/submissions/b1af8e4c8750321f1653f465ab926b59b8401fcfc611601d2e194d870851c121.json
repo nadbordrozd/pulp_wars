@@ -1,0 +1,36 @@
+{
+  "id": "abomination-b-edit-3",
+  "jobId": "69c5f0c4-b75c-448e-aabb-b0e8ec6afe96",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-abomination",
+    "subject": "UNIT:UNDEAD:JUGGERNAUT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 13806,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the small blue flames around him and bring both arms in closer to his body, so he is a little narrower with empty transparent space at the left and right edges of the image. Keep the stitched pale blue-grey face, the iron shoulder plates, the blue-grey fists in manacles with broken chains, the red smock, colours, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the small blue flames around him and bring both arms in closer to his body, so he is a little narrower with empty transparent space at the left and right edges of the image. Keep the stitched pale blue-grey face, the iron shoulder plates, the blue-grey fists in manacles with broken chains, the red smock, colours, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the small blue flames around him and bring both arms in closer to his body, so he is a little narrower with empty transparent space at the left and right edges of the image. Keep the stitched pale blue-grey face, the iron shoulder plates, the blue-grey fists in manacles with broken chains, the red smock, colours, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the small blue flames around him and bring both arms in closer to his body, so he is a little narrower with empty transparent space at the left and right edges of the image. Keep the stitched pale blue-grey face, the iron shoulder plates, the blue-grey fists in manacles with broken chains, the red smock, colours, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "abomination-b-edit-2",
+      "candidate": 1,
+      "sha256": "ad983b8642bdf5366f5a69afc580641a2e9fca3445b13c7c9202ae1fb30575ec"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "necromancer-a-edit-2",
+  "jobId": "7f74b1d1-b438-4ee0-b19a-17494e6bdfa1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-necromancer",
+    "subject": "UNIT:UNDEAD:CAPTAIN",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 13503,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the beard and eyebrows pure white shaded with light cool grey, with no beige or tan. Keep every other pixel, the red pointed hood and red ragged robe, the pale blue face with glowing eyes, the iron skull staff with its blue flame, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the beard and eyebrows pure white shaded with light cool grey, with no beige or tan. Keep every other pixel, the red pointed hood and red ragged robe, the pale blue face with glowing eyes, the iron skull staff with its blue flame, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the beard and eyebrows pure white shaded with light cool grey, with no beige or tan. Keep every other pixel, the red pointed hood and red ragged robe, the pale blue face with glowing eyes, the iron skull staff with its blue flame, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the beard and eyebrows pure white shaded with light cool grey, with no beige or tan. Keep every other pixel, the red pointed hood and red ragged robe, the pale blue face with glowing eyes, the iron skull staff with its blue flame, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "necromancer-a-edit",
+      "candidate": 1,
+      "sha256": "d2410fb2d45189090321c4e8991c3978259beaa7a62782acc72bf950e78d1eec"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "lich-c-edit-b-2",
+  "jobId": "b0f7a171-f1ee-4ee7-8dea-df999c5edbac",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-lich",
+    "subject": "UNIT:UNDEAD:CATAPULT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 13611,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the dark purple and dark crimson inner lining of the robe and the belt dark slate grey, and the skull, arms and bony feet cool ivory white shaded with cool light grey, with no tan, beige, purple or crimson. Keep the bright red outer robe exactly the same red, the spiky iron crown, the glowing pale blue orb above it, the raised fists, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the dark purple and dark crimson inner lining of the robe and the belt dark slate grey, and the skull, arms and bony feet cool ivory white shaded with cool light grey, with no tan, beige, purple or crimson. Keep the bright red outer robe exactly the same red, the spiky iron crown, the glowing pale blue orb above it, the raised fists, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the dark purple and dark crimson inner lining of the robe and the belt dark slate grey, and the skull, arms and bony feet cool ivory white shaded with cool light grey, with no tan, beige, purple or crimson. Keep the bright red outer robe exactly the same red, the spiky iron crown, the glowing pale blue orb above it, the raised fists, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the dark purple and dark crimson inner lining of the robe and the belt dark slate grey, and the skull, arms and bony feet cool ivory white shaded with cool light grey, with no tan, beige, purple or crimson. Keep the bright red outer robe exactly the same red, the spiky iron crown, the glowing pale blue orb above it, the raised fists, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "lich-c-edit-b",
+      "candidate": 1,
+      "sha256": "132b50739f34d4cbeaadfe2efe9d3a837d31e72b4466dbe9d7ca081f2135d4e6"
+    }
+  }
+}

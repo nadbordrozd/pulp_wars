@@ -1,0 +1,36 @@
+{
+  "id": "lich-c-edit-2",
+  "jobId": "1473aaed-6e55-4020-a7e0-587c915e062f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-lich",
+    "subject": "UNIT:UNDEAD:CATAPULT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 13607,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the whole orange-red robe and its orange edges pure bright red (#d8262c) shaded only with darker pure red, the purple inner lining dark slate grey, and the skull and bony arms cool ivory white shaded with cool grey, with no orange, tan or brown anywhere. Keep the spiky iron crown, the pale blue flame above it, the raised fists, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the whole orange-red robe and its orange edges pure bright red (#d8262c) shaded only with darker pure red, the purple inner lining dark slate grey, and the skull and bony arms cool ivory white shaded with cool grey, with no orange, tan or brown anywhere. Keep the spiky iron crown, the pale blue flame above it, the raised fists, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the whole orange-red robe and its orange edges pure bright red (#d8262c) shaded only with darker pure red, the purple inner lining dark slate grey, and the skull and bony arms cool ivory white shaded with cool grey, with no orange, tan or brown anywhere. Keep the spiky iron crown, the pale blue flame above it, the raised fists, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the whole orange-red robe and its orange edges pure bright red (#d8262c) shaded only with darker pure red, the purple inner lining dark slate grey, and the skull and bony arms cool ivory white shaded with cool grey, with no orange, tan or brown anywhere. Keep the spiky iron crown, the pale blue flame above it, the raised fists, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "lich-c-edit",
+      "candidate": 1,
+      "sha256": "2a51618fbc51305de9fa2093aed4a6bf152c705b7403996a914390faa8b6b653"
+    }
+  }
+}

@@ -404,6 +404,98 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
       "assets/chibi/units/chibi-embarked-transport.mask.png",
     ),
   },
+  // Undead (pulp_wars-vkq.12): UNIT:UNDEAD:<ROLE> units and the Grave marker.
+  {
+    id: "chibi-undead-skeleton",
+    subject: "UNIT:UNDEAD:FIGHTER",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-undead-skeleton.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-undead-skeleton.mask.png",
+    ),
+  },
+  {
+    id: "chibi-undead-ghoul",
+    subject: "UNIT:UNDEAD:RAIDER",
+    assetClass: "LARGE_UNIT",
+    width: 72,
+    height: 88,
+    url: chibiArtUrl("assets/chibi/units/chibi-undead-ghoul.png"),
+    // 4 px right of the default so the cloak tip and front claw clear the
+    // HP bar and seat badge.
+    anchor: { x: 32, y: 48 },
+    ownerMaskUrl: chibiArtUrl("assets/chibi/units/chibi-undead-ghoul.mask.png"),
+  },
+  {
+    id: "chibi-undead-banshee",
+    subject: "UNIT:UNDEAD:MARKSMAN",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-undead-banshee.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-undead-banshee.mask.png",
+    ),
+  },
+  {
+    id: "chibi-undead-zombie",
+    subject: "UNIT:UNDEAD:GUARD",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-undead-zombie.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-undead-zombie.mask.png",
+    ),
+  },
+  {
+    id: "chibi-undead-necromancer",
+    subject: "UNIT:UNDEAD:CAPTAIN",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-undead-necromancer.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-undead-necromancer.mask.png",
+    ),
+  },
+  {
+    id: "chibi-undead-lich",
+    subject: "UNIT:UNDEAD:CATAPULT",
+    assetClass: "LARGE_UNIT",
+    width: 72,
+    height: 88,
+    url: chibiArtUrl("assets/chibi/units/chibi-undead-lich.png"),
+    // 7 px right of the default so the wide robe hem clears the seat badge.
+    anchor: { x: 29, y: 48 },
+    ownerMaskUrl: chibiArtUrl("assets/chibi/units/chibi-undead-lich.mask.png"),
+  },
+  {
+    id: "chibi-undead-vampire",
+    subject: "UNIT:UNDEAD:KNIGHT",
+    assetClass: "LARGE_UNIT",
+    width: 72,
+    height: 88,
+    url: chibiArtUrl("assets/chibi/units/chibi-undead-vampire.png"),
+    // 3 px right of the default so the left cape wing clears the HP bar.
+    anchor: { x: 33, y: 48 },
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-undead-vampire.mask.png",
+    ),
+  },
+  // chibi-undead-abomination is accepted art but not registered: its left
+  // arm crosses the CHIBI HP bar strip (see batch-undead records), so the
+  // Abomination keeps the Human Juggernaut sprite plus the Undead badge.
+  {
+    id: "chibi-grave",
+    subject: "GRAVE",
+    assetClass: "RESOURCE",
+    width: 40,
+    height: 40,
+    url: chibiArtUrl("assets/chibi/resources/chibi-grave.png"),
+  },
 ];
 
 export function chibiArtUrl(path: string): string {

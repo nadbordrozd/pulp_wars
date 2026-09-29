@@ -1,0 +1,36 @@
+{
+  "id": "zombie-d-edit",
+  "jobId": "42d10644-b195-40f2-a636-e6d5a7ddea9f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-zombie",
+    "subject": "UNIT:UNDEAD:GUARD",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 13407,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make his head a round fleshy face with pale blue-grey skin, a small nose, a stitched scar and droopy half-closed eyes instead of a skull, and his arms pale blue-grey skin with ivory bandaged hands. Keep the dark hair, the big red ragged smock, the arms stretched forward, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make his head a round fleshy face with pale blue-grey skin, a small nose, a stitched scar and droopy half-closed eyes instead of a skull, and his arms pale blue-grey skin with ivory bandaged hands. Keep the dark hair, the big red ragged smock, the arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make his head a round fleshy face with pale blue-grey skin, a small nose, a stitched scar and droopy half-closed eyes instead of a skull, and his arms pale blue-grey skin with ivory bandaged hands. Keep the dark hair, the big red ragged smock, the arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make his head a round fleshy face with pale blue-grey skin, a small nose, a stitched scar and droopy half-closed eyes instead of a skull, and his arms pale blue-grey skin with ivory bandaged hands. Keep the dark hair, the big red ragged smock, the arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "zombie-d",
+      "candidate": 0,
+      "sha256": "df61deb2dc191863df3366b902b3737f6cfde0b6b3ff1e653e92e8a59890d713"
+    }
+  }
+}

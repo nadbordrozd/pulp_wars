@@ -1,0 +1,846 @@
+{
+  "schemaVersion": 1,
+  "batch": "undead",
+  "title": "Undead art: the eight Undead units and the Grave marker",
+  "bead": "pulp_wars-vkq.12",
+  "faction": "UNDEAD",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-undead-skeleton",
+      "subject": "UNIT:UNDEAD:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-undead-banshee",
+      "subject": "UNIT:UNDEAD:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-undead-ghoul",
+      "subject": "UNIT:UNDEAD:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-undead-zombie",
+      "subject": "UNIT:UNDEAD:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-undead-necromancer",
+      "subject": "UNIT:UNDEAD:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-undead-lich",
+      "subject": "UNIT:UNDEAD:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 29,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-undead-vampire",
+      "subject": "UNIT:UNDEAD:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 33,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-undead-abomination",
+      "subject": "UNIT:UNDEAD:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      }
+    },
+    {
+      "id": "chibi-grave",
+      "subject": "GRAVE",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "skeleton-a",
+      "asset": "chibi-undead-skeleton",
+      "endpoint": "create-image-pixen",
+      "seed": 13101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The grin is a row of small ivory teeth with dark gaps, never a red mouth. The helmet, sword and shield are grey iron, never brown.",
+      "negativeAddendum": "bow, quiver, arrows, cape, wooden shield, brown shield, red shield, red mouth, red eyes, flesh, skin"
+    },
+    {
+      "id": "banshee-a",
+      "asset": "chibi-undead-banshee",
+      "endpoint": "create-image-pixen",
+      "seed": 13201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "She floats with no feet: the tip of her gown's tail takes the place of the feet and touches the bottom of the image. The inside of her open mouth is dark grey, never red.",
+      "negativeAddendum": "feet, legs, shoes, boots, bow, quiver, arrows, red mouth, pink mouth, red lips"
+    },
+    {
+      "id": "ghoul-a",
+      "asset": "chibi-undead-ghoul",
+      "endpoint": "create-image-pixen",
+      "seed": 13301,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The grin is dark with tiny white teeth, never a red mouth. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "horse, pony, mount, rider, weapon, axe, sword, standing upright, green skin, red mouth, red eyes, tan bone, brown straps, orange"
+    },
+    {
+      "id": "zombie-a",
+      "asset": "chibi-undead-zombie",
+      "endpoint": "create-image-pixen",
+      "seed": 13401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The mouth is a tiny dark line, not red. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "sword, spear, shield, weapon, green skin, red mouth, red eyes, brown shoes, tan bone, brown straps, orange"
+    },
+    {
+      "id": "necromancer-a",
+      "asset": "chibi-undead-necromancer",
+      "endpoint": "create-image-pixen",
+      "seed": 13501,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The mouth is a tiny dark line under the beard, not red. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "shield, helmet, sword, wooden staff, brown staff, purple magic, green flame, red mouth, tan bone, brown straps, orange"
+    },
+    {
+      "id": "lich-a",
+      "asset": "chibi-undead-lich",
+      "endpoint": "create-image-pixen",
+      "seed": 13601,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The grin is a row of small ivory teeth, never a red mouth. The orb is pale blue-white, never cyan. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "catapult, machine, wheels, wooden frame, red orb, green flame, red mouth, red eyes, tan bone, brown straps, orange"
+    },
+    {
+      "id": "vampire-a",
+      "asset": "chibi-undead-vampire",
+      "endpoint": "create-image-pixen",
+      "seed": 13701,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The mouth is a small dark line with two tiny white fangs, never red lips and no blood. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "horse, mount, lance, bat creature, blood, red eyes, red lips, red mouth, tan bone, brown straps, orange"
+    },
+    {
+      "id": "abomination-a",
+      "asset": "chibi-undead-abomination",
+      "endpoint": "create-image-pixen",
+      "seed": 13801,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The mouth is a small dark underbite grin with two tiny white teeth, never red. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "sword, hammer, weapon, shield, helmet, armour, green skin, horns, red mouth, red eyes, tan bone, brown straps, orange"
+    },
+    {
+      "id": "grave-a",
+      "asset": "chibi-grave",
+      "endpoint": "create-image-pixen",
+      "seed": 13901,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "person, character, skeleton, hand, coffin, red"
+    },
+    {
+      "id": "skeleton-a-edit",
+      "asset": "chibi-undead-skeleton",
+      "endpoint": "edit-image-pixen",
+      "seed": 13102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "skeleton-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the wrist wraps, belt, shin wraps and boots dark slate grey iron and the feet ivory bone, so nothing is brown. Make the bright red ragged tabard bigger so it covers his chest, belly and hips down to the knees with torn zigzag hems. Keep the skull face, the grey iron helmet with its red crest, the sword, the round iron shield with the skull, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+      "notes": "skeleton-a has the right design (grinning skull, iron half-helmet with red crest, notched sword, iron skull shield) but brown wrist wraps, belt and boots and only 15.5% owner area."
+    },
+    {
+      "id": "banshee-b",
+      "asset": "chibi-undead-banshee",
+      "endpoint": "create-image-pixen",
+      "seed": 13202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Everything below her head is one big flat bright red hooded gown shaped like a teardrop that narrows into a single wispy pointed tail; no legs, feet, trousers or boots show under it. The red is shaded only with a darker pure red, never brown. She floats with no feet: the tip of her gown's tail takes the place of the feet and touches the bottom of the image. The inside of her open mouth is dark grey, never red.",
+      "negativeAddendum": "feet, legs, shoes, boots, trousers, belt, bow, quiver, arrows, red mouth, pink mouth, red lips, dark red-brown shading",
+      "notes": "banshee-a stands on legs in dark boots, reads as a hooded girl, and her hood is shaded red-brown (12.8% red-brown material)."
+    },
+    {
+      "id": "banshee-c",
+      "asset": "chibi-undead-banshee",
+      "endpoint": "create-image-pixen",
+      "seed": 13203,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Everything below her head is one big flat bright red hooded gown shaped like a teardrop that narrows into a single wispy pointed tail; no legs, feet, trousers or boots show under it. The red is shaded only with a darker pure red, never brown. She floats with no feet: the tip of her gown's tail takes the place of the feet and touches the bottom of the image. The inside of her open mouth is dark grey, never red.",
+      "negativeAddendum": "feet, legs, shoes, boots, trousers, belt, bow, quiver, arrows, red mouth, pink mouth, red lips, dark red-brown shading",
+      "notes": "Second seed of banshee-b's wording."
+    },
+    {
+      "id": "skeleton-a-edit-2",
+      "asset": "chibi-undead-skeleton",
+      "endpoint": "edit-image-pixen",
+      "seed": 13103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "skeleton-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the skull, the bone hands and the bone feet a cool pale ivory white shaded with cool light grey, with no tan, yellow or brown, and make the thin belt dark slate grey. Keep the red crest and red ragged tabard, the grey iron helmet, sword and skull shield, the blue flame, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+      "notes": "skeleton-a-edit candidate 0 is right apart from tan-brown bone shading and a thin brown belt (5% brown pixels); the Undead palette shades bone with cool grey, never brown."
+    },
+    {
+      "id": "banshee-c-edit",
+      "asset": "chibi-undead-banshee",
+      "endpoint": "edit-image-pixen",
+      "seed": 13204,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "banshee-c",
+        "candidate": 0
+      },
+      "editInstruction": "Remove her legs, feet and the thing in her left hand: below the waist her bright red gown narrows into one long wispy pointed tail whose tip touches the bottom of the image. Raise both small pale blue hands beside her cheeks. Make the belt bright red like the gown and the inside of her mouth dark grey. Keep her face, hair, red hood, outline and art style exactly the same, on a transparent background.",
+      "notes": "banshee-c has the best face and hood so far but stands on bony legs, holds an orange object and has a brown belt and an orange mouth."
+    },
+    {
+      "id": "banshee-d",
+      "asset": "chibi-undead-banshee",
+      "endpoint": "create-image-pixen",
+      "seed": 13205,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Her body is shaped like a classic cartoon ghost: her big round head in the red hood flows straight into a wide bright red gown that tapers into one wavy pointed tail curling to the side at the bottom, like a comma; nothing but the tail is below the gown. Her two little pale blue hands come out of the sleeves and press against her cheeks; she holds nothing. The red is shaded only with a darker pure red, never brown. The tail's tip touches the bottom of the image. The inside of her open mouth is dark grey, never red.",
+      "negativeAddendum": "feet, legs, skeleton feet, shoes, boots, trousers, belt, holding objects, torch, lantern, bow, quiver, arrows, red mouth, pink mouth, red lips, orange, dark red-brown shading",
+      "notes": "banshee-b floats but is dark and skull-like and holds a black object; banshee-c stands on legs. Stronger ghost-shape wording."
+    },
+    {
+      "id": "ghoul-b",
+      "asset": "chibi-undead-ghoul",
+      "endpoint": "create-image-pixen",
+      "seed": 13302,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He is crouched down on all fours like a running dog, his back horizontal and his head in front at the same height as his back; both clawed hands and both feet are flat on the ground in a row at the bottom of the image. He holds nothing: no weapon, no axe, no blade. The red hooded cloak covers his head and drapes over his back like a blanket. The grin is dark with tiny white teeth, never a red mouth. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "standing upright, two legs, weapon, axe, sword, blade, scythe, horse, pony, mount, rider, green skin, red mouth, red eyes, tan bone, brown straps, orange",
+      "notes": "ghoul-a stood upright with a big axe, brown straps and a red-brown hood edge (4.1% red-brown)."
+    },
+    {
+      "id": "ghoul-c",
+      "asset": "chibi-undead-ghoul",
+      "endpoint": "create-image-pixen",
+      "seed": 13303,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He is crouched down on all fours like a running dog, his back horizontal and his head in front at the same height as his back; both clawed hands and both feet are flat on the ground in a row at the bottom of the image. He holds nothing: no weapon, no axe, no blade. The red hooded cloak covers his head and drapes over his back like a blanket. The grin is dark with tiny white teeth, never a red mouth. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "standing upright, two legs, weapon, axe, sword, blade, scythe, horse, pony, mount, rider, green skin, red mouth, red eyes, tan bone, brown straps, orange",
+      "notes": "Second seed of ghoul-b's wording."
+    },
+    {
+      "id": "zombie-b",
+      "asset": "chibi-undead-zombie",
+      "endpoint": "create-image-pixen",
+      "seed": 13402,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "He holds nothing: both empty arms are stretched straight forward in front of him at shoulder height like a sleepwalker, with big ivory bandaged hands. His face is a round pale blue-grey face with droopy half-closed eyes, not a skull. The bright red ragged smock is big and covers his chest, belly and legs down to the shins. The mouth is a tiny dark line, not red. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "club, stick, bat, sword, spear, shield, weapon, skull face, long hair, green skin, red mouth, red eyes, brown shoes, tan bone, brown straps, orange",
+      "notes": "zombie-a held a wooden club, had a skull face and long hair, and 13.4% owner area."
+    },
+    {
+      "id": "zombie-c",
+      "asset": "chibi-undead-zombie",
+      "endpoint": "create-image-pixen",
+      "seed": 13403,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "He holds nothing: both empty arms are stretched straight forward in front of him at shoulder height like a sleepwalker, with big ivory bandaged hands. His face is a round pale blue-grey face with droopy half-closed eyes, not a skull. The bright red ragged smock is big and covers his chest, belly and legs down to the shins. The mouth is a tiny dark line, not red. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "club, stick, bat, sword, spear, shield, weapon, skull face, long hair, green skin, red mouth, red eyes, brown shoes, tan bone, brown straps, orange",
+      "notes": "Second seed of zombie-b's wording."
+    },
+    {
+      "id": "necromancer-a-edit",
+      "asset": "chibi-undead-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 13502,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "necromancer-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the beard and eyebrows cool ivory white shaded with cool light grey, and the wrappings on the staff and the belt dark slate grey, with no brown or tan. Keep the red pointed hood and red ragged robe, the gaunt pale blue face with glowing eyes, the iron staff with its skull and blue flame, the sparks, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+      "notes": "necromancer-a is the right design (red pointed hood and ragged robe, beard, skull staff with a blue flame) but the beard is shaded warm tan and the staff wraps are olive-brown."
+    },
+    {
+      "id": "lich-b",
+      "asset": "chibi-undead-lich",
+      "endpoint": "create-image-pixen",
+      "seed": 13602,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He holds no staff, no torch and no weapon: both thin bony arms are raised high and hold a big round ball of pale blue flame above his crown. His whole body is covered by the huge bright red robe from the collar down to the ground, spreading wide on both sides like a bell. The grin is a row of small ivory teeth, never a red mouth. The orb is pale blue-white, never cyan. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "staff, torch, wooden pole, sword, armour, catapult, machine, wheels, green flame, red orb, red mouth, red eyes, tan bone, brown straps, orange",
+      "notes": "lich-a held a wooden torch (red-brown pole, 3.5%) instead of an orb overhead and wore dark armour under a cape rather than a robe."
+    },
+    {
+      "id": "lich-c",
+      "asset": "chibi-undead-lich",
+      "endpoint": "create-image-pixen",
+      "seed": 13603,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He holds no staff, no torch and no weapon: both thin bony arms are raised high and hold a big round ball of pale blue flame above his crown. His whole body is covered by the huge bright red robe from the collar down to the ground, spreading wide on both sides like a bell. The grin is a row of small ivory teeth, never a red mouth. The orb is pale blue-white, never cyan. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "staff, torch, wooden pole, sword, armour, catapult, machine, wheels, green flame, red orb, red mouth, red eyes, tan bone, brown straps, orange",
+      "notes": "Second seed of lich-b's wording."
+    },
+    {
+      "id": "vampire-a-edit",
+      "asset": "chibi-undead-vampire",
+      "endpoint": "edit-image-pixen",
+      "seed": 13702,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "vampire-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the orange clasp, the buttons and the sword's crossguard light grey iron, and the gloves, cuffs and boots dark slate grey with no brown or green. Keep the pale face, the black hair, the red bat-wing cape and red coat, the grey rapier, the blue flames, pose, outline and art style exactly the same, on a transparent background with nothing under his boots.",
+      "notes": "vampire-a is the right design (black widow's-peak hair, fangs, red bat-wing cape and coat, rapier) but has an orange clasp, a tan crossguard and brown-green cuffs."
+    },
+    {
+      "id": "abomination-b",
+      "asset": "chibi-undead-abomination",
+      "endpoint": "create-image-pixen",
+      "seed": 13802,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "His face is a round pale blue-grey face with stitches, one big and one small eye and a goofy underbite, not a skull. He holds nothing: both huge fists hang empty, one arm much bigger than the other, each wrist in a dark iron manacle with a short broken chain. He wears no armour: only the huge bright red patchwork smock with torn zigzag hems covering his barrel belly and legs down to his knees. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "skull face, sword, cleaver, hammer, axe, weapon, shield, helmet, armour, pauldrons, green skin, horns, red mouth, red eyes, brown boots, tan bone, brown straps, orange",
+      "notes": "abomination-a had a skull face, a big cleaver, steel pauldrons, brown boots and 6.9% owner area."
+    },
+    {
+      "id": "abomination-c",
+      "asset": "chibi-undead-abomination",
+      "endpoint": "create-image-pixen",
+      "seed": 13803,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "His face is a round pale blue-grey face with stitches, one big and one small eye and a goofy underbite, not a skull. He holds nothing: both huge fists hang empty, one arm much bigger than the other, each wrist in a dark iron manacle with a short broken chain. He wears no armour: only the huge bright red patchwork smock with torn zigzag hems covering his barrel belly and legs down to his knees. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "skull face, sword, cleaver, hammer, axe, weapon, shield, helmet, armour, pauldrons, green skin, horns, red mouth, red eyes, brown boots, tan bone, brown straps, orange",
+      "notes": "Second seed of abomination-b's wording."
+    },
+    {
+      "id": "grave-b",
+      "asset": "chibi-grave",
+      "endpoint": "create-image-pixen",
+      "seed": 13902,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "The headstone is the whole subject and fills most of the image height; it stands directly on the empty transparent background with no grass, soil or ground patch under it, only a tiny tuft of moss touching one side of its foot. The engraved skull is small and simple.",
+      "negativeAddendum": "person, character, skeleton, hand, coffin, red, grass patch, ground, soil, mound, dirt, base, platform, ghost face",
+      "notes": "grave-a is small (18 x 21 px) on a green grass patch, and its big skull reads as a ghost face."
+    },
+    {
+      "id": "grave-c",
+      "asset": "chibi-grave",
+      "endpoint": "create-image-pixen",
+      "seed": 13903,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "The headstone is the whole subject and fills most of the image height; it stands directly on the empty transparent background with no grass, soil or ground patch under it, only a tiny tuft of moss touching one side of its foot. The engraved skull is small and simple.",
+      "negativeAddendum": "person, character, skeleton, hand, coffin, red, grass patch, ground, soil, mound, dirt, base, platform, ghost face",
+      "notes": "Second seed of grave-b's wording."
+    },
+    {
+      "id": "ghoul-d",
+      "asset": "chibi-undead-ghoul",
+      "endpoint": "create-image-pixen",
+      "seed": 13304,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He crawls on his hands and knees like a big hungry cat, his body stretched out long and low from left to right, his round bald head with pale blue-grey skin and pointy ears at the front, his back and hips under the red hooded cloak behind it. Both clawed hands and both knees and feet touch the bottom of the image. He holds nothing. His head is a fleshy face with a small nose, not a skull. The grin is dark with tiny white teeth, never a red mouth. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "standing, upright, two legs, skull face, armour, weapon, axe, sword, blade, scythe, canister, horse, pony, mount, rider, green skin, red mouth, red eyes, tan bone, brown straps, orange",
+      "notes": "ghoul-b crouches on two legs with a skull face and brown boots; ghoul-c carried an iron canister and was red-brown. Crawling wording."
+    },
+    {
+      "id": "ghoul-e",
+      "asset": "chibi-undead-ghoul",
+      "endpoint": "create-image-pixen",
+      "seed": 13305,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He crawls on his hands and knees like a big hungry cat, his body stretched out long and low from left to right, his round bald head with pale blue-grey skin and pointy ears at the front, his back and hips under the red hooded cloak behind it. Both clawed hands and both knees and feet touch the bottom of the image. He holds nothing. His head is a fleshy face with a small nose, not a skull. The grin is dark with tiny white teeth, never a red mouth. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "standing, upright, two legs, skull face, armour, weapon, axe, sword, blade, scythe, canister, horse, pony, mount, rider, green skin, red mouth, red eyes, tan bone, brown straps, orange",
+      "notes": "Second seed of ghoul-d's wording."
+    },
+    {
+      "id": "ghoul-b-edit",
+      "asset": "chibi-undead-ghoul",
+      "endpoint": "edit-image-pixen",
+      "seed": 13306,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "ghoul-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make his face and hands pale blue-grey skin with a small nose and pointy ears instead of bone, and make the boots, belt and straps dark slate grey with no brown. Keep the big red hood and ragged cloak, the crouching pose, the ivory claws, the blue flames, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+      "notes": "ghoul-b is a low crouching hooded ghoul with claws (27.8% owner area) but its head is a skull and its boots and belt are brown."
+    },
+    {
+      "id": "zombie-d",
+      "asset": "chibi-undead-zombie",
+      "endpoint": "create-image-pixen",
+      "seed": 13404,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Both of his empty hands reach straight out in front of him toward the lower right, fingers spread, like a sleepwalker; he holds no stick, club, tool or weapon. His head is a big round fleshy face with pale blue-grey skin, a small nose, a stitched scar and droopy half-closed eyes, not a skull and not bone. The big bright red ragged smock covers his chest, belly and legs down to the shins. The mouth is a tiny dark line, not red. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "skull, skull face, bone head, stick, club, staff, hammer, pick, tool, sword, spear, shield, weapon, long hair, green skin, red mouth, red eyes, brown shoes, tan bone, brown straps, orange",
+      "notes": "zombie-b held an iron pick and zombie-c a stick; both had skull faces. Stronger empty-hands, fleshy-face wording."
+    },
+    {
+      "id": "zombie-e",
+      "asset": "chibi-undead-zombie",
+      "endpoint": "create-image-pixen",
+      "seed": 13405,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Both of his empty hands reach straight out in front of him toward the lower right, fingers spread, like a sleepwalker; he holds no stick, club, tool or weapon. His head is a big round fleshy face with pale blue-grey skin, a small nose, a stitched scar and droopy half-closed eyes, not a skull and not bone. The big bright red ragged smock covers his chest, belly and legs down to the shins. The mouth is a tiny dark line, not red. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "skull, skull face, bone head, stick, club, staff, hammer, pick, tool, sword, spear, shield, weapon, long hair, green skin, red mouth, red eyes, brown shoes, tan bone, brown straps, orange",
+      "notes": "Second seed of zombie-d's wording."
+    },
+    {
+      "id": "lich-c-edit",
+      "asset": "chibi-undead-lich",
+      "endpoint": "edit-image-pixen",
+      "seed": 13604,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "lich-c",
+        "candidate": 0
+      },
+      "editInstruction": "Replace the wooden pole and the dark iron ball with one big round ball of pale blue-white flame held between his raised bony hands above his crown. Make the purple lining and the orange edges of the robe bright red like the rest of the robe. Keep the crowned skull, the raised arms, the red robe, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+      "notes": "lich-c has the right silhouette (crowned skull, arms raised over the head, wide red robe) but holds a brown wooden pole with a dark ball, and the robe has purple lining and orange edges (mask bleed)."
+    },
+    {
+      "id": "vampire-a-edit-2",
+      "asset": "chibi-undead-vampire",
+      "endpoint": "edit-image-pixen",
+      "seed": 13703,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "vampire-a-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Recolour the small orange buckle on his chest and the orange crossguard of his sword light grey, and the brown cuffs and boot tops dark slate grey. Keep every other pixel, the pale face, black hair, red bat-wing cape and red coat, the rapier, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "vampire-a-edit left the orange chest buckle and crossguard and brown cuffs (about 40 orange and brown pixels)."
+    },
+    {
+      "id": "necromancer-a-edit-2",
+      "asset": "chibi-undead-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 13503,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "necromancer-a-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Recolour the beard and eyebrows pure white shaded with light cool grey, with no beige or tan. Keep every other pixel, the red pointed hood and red ragged robe, the pale blue face with glowing eyes, the iron skull staff with its blue flame, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "necromancer-a-edit kept the warm beige beard (#c2b793 shaded #8d8068)."
+    },
+    {
+      "id": "abomination-b-edit",
+      "asset": "chibi-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 13804,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "abomination-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make his face and bald head pale blue-grey skin with a nose, big stitched seams, one eye bigger than the other and a goofy underbite, instead of a skull. Make the bright red smock much bigger so it covers his belly and legs down to his knees with torn zigzag hems, and make the belt dark slate grey. Keep the iron shoulder plates, the manacles with broken chains, the big fists, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "abomination-b is the right giant (head sunk between iron shoulders, manacles with broken chains, big fists) but has a skull face, a brown belt and only 15.2% owner area."
+    },
+    {
+      "id": "grave-c-edit",
+      "asset": "chibi-grave",
+      "endpoint": "edit-image-pixen",
+      "seed": 13904,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "grave-c",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the brown soil patch under the headstone so it stands directly on a transparent background with only a tiny tuft of grey-green moss at one side of its foot. Make the engraved skull pale ivory white with cool grey shading. Keep the rounded blue-grey headstone, outline and art style exactly the same.",
+      "notes": "grave-c is the right headstone (rounded blue-grey stone, engraved skull) but stands on a brown soil patch and its skull is tan."
+    },
+    {
+      "id": "ghoul-b-edit-2",
+      "asset": "chibi-undead-ghoul",
+      "endpoint": "edit-image-pixen",
+      "seed": 13307,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "ghoul-b-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Give him big round pale blue eyes and a wide dark grin with tiny white teeth, and make him lean far forward onto all fours with both clawed hands on the ground in front of his feet. Keep the big red hood and ragged cloak, the pale blue-grey face with pointy ears, the grey clothes, outline and art style exactly the same, on a transparent background with nothing under him.",
+      "notes": "ghoul-b-edit has a fleshy pale blue-grey face and a big red hood (30% owner area) but a blank face and a crouch on two legs rather than all fours."
+    },
+    {
+      "id": "zombie-e-edit",
+      "asset": "chibi-undead-zombie",
+      "endpoint": "edit-image-pixen",
+      "seed": 13406,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "zombie-e",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour all of his skin (face, ears, neck and arms) pale blue-grey and his hands ivory-white bandages, with no tan, orange or brown, and add two small dark stitched seams on his face. Keep the droopy eyes, the dark hair, the big red ragged smock, the arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "zombie-e is the right sleepwalker (empty arms stretched forward, fleshy face, red ragged smock, 19% owner area) but its skin is warm tan, so it reads as a Human."
+    },
+    {
+      "id": "zombie-d-edit",
+      "asset": "chibi-undead-zombie",
+      "endpoint": "edit-image-pixen",
+      "seed": 13407,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "zombie-d",
+        "candidate": 0
+      },
+      "editInstruction": "Make his head a round fleshy face with pale blue-grey skin, a small nose, a stitched scar and droopy half-closed eyes instead of a skull, and his arms pale blue-grey skin with ivory bandaged hands. Keep the dark hair, the big red ragged smock, the arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "zombie-d has the arms-forward sleepwalker pose and a red ragged smock but a skull face and bone arms."
+    },
+    {
+      "id": "lich-d",
+      "asset": "chibi-undead-lich",
+      "endpoint": "create-image-pixen",
+      "seed": 13605,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He wears no hat and holds no staff, torch or weapon: his thin bony arms are raised above his head and his two bony hands cup one big round glowing ball of pale blue-white flame between them, high above his spiky iron crown. The huge bright red royal robe is the biggest part of the image: it covers him from the tall stiff collar down to the ground and spreads out wide on both sides like a bell, with torn zigzag hems. The grin is a row of small ivory teeth, never a red mouth. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "hat, wizard hat, staff, torch, pole, wooden stick, sword, armour, purple, catapult, machine, wheels, green flame, red orb, red mouth, red eyes, tan bone, brown straps, orange",
+      "notes": "lich-b wore a red wizard hat and held a wooden torch staff; lich-c held a wooden pole and dark ball, and its edit turned the robe orange-red. Orb-between-hands, bell-robe wording."
+    },
+    {
+      "id": "lich-e",
+      "asset": "chibi-undead-lich",
+      "endpoint": "create-image-pixen",
+      "seed": 13606,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He wears no hat and holds no staff, torch or weapon: his thin bony arms are raised above his head and his two bony hands cup one big round glowing ball of pale blue-white flame between them, high above his spiky iron crown. The huge bright red royal robe is the biggest part of the image: it covers him from the tall stiff collar down to the ground and spreads out wide on both sides like a bell, with torn zigzag hems. The grin is a row of small ivory teeth, never a red mouth. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "hat, wizard hat, staff, torch, pole, wooden stick, sword, armour, purple, catapult, machine, wheels, green flame, red orb, red mouth, red eyes, tan bone, brown straps, orange",
+      "notes": "Second seed of lich-d's wording."
+    },
+    {
+      "id": "lich-c-edit-2",
+      "asset": "chibi-undead-lich",
+      "endpoint": "edit-image-pixen",
+      "seed": 13607,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "lich-c-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Recolour the whole orange-red robe and its orange edges pure bright red (#d8262c) shaded only with darker pure red, the purple inner lining dark slate grey, and the skull and bony arms cool ivory white shaded with cool grey, with no orange, tan or brown anywhere. Keep the spiky iron crown, the pale blue flame above it, the raised fists, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "lich-c-edit has the right silhouette (crowned skull, both fists raised holding a pale blue flame above the crown, wide robe) but the robe turned orange-red with orange edges and purple lining (mask QA fails, 6% owner area), and the bone is tan."
+    },
+    {
+      "id": "zombie-d-edit-2",
+      "asset": "chibi-undead-zombie",
+      "endpoint": "edit-image-pixen",
+      "seed": 13408,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "zombie-d-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Make the bright red ragged smock bigger so it covers his chest, belly and legs down to the shins with torn zigzag hems, make the trousers dark slate grey with no brown, and remove the two blue flames from his head. Keep the pale blue-grey face with droopy eyes and stitches, the dark hair, the bandaged arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "zombie-d-edit is the right zombie (pale blue-grey stitched face, droopy eyes, bandaged arms stretched forward) but has only 15.7% owner area, dark brown trousers (4% brown) and two flames like horns on his head."
+    },
+    {
+      "id": "abomination-b-edit-2",
+      "asset": "chibi-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 13805,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "abomination-b-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Recolour his hands, fists and bare arms pale blue-grey like his face, with no tan or beige. Keep the stitched pale blue-grey face, the iron shoulder plates, the manacles and broken chains, the red smock, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "abomination-b-edit is the right giant (stitched pale blue-grey face, odd eyes, underbite, iron manacles with broken chains, red patchwork smock, 22.9% owner area) but its fists and arms are warm tan skin."
+    },
+    {
+      "id": "lich-c-edit-b",
+      "asset": "chibi-undead-lich",
+      "endpoint": "edit-image-pixen",
+      "seed": 13608,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "lich-c",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the wooden pole, and make the dark ball he holds up between his raised bony hands a glowing pale blue-white orb with small pale blue flames. Make the purple lining of the robe bright red like the rest of the robe. Keep the bright red robe colour, the crowned skull, the raised arms, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "lich-c-edit and lich-c-edit-2 drifted the robe to orange-red; this edit starts again from lich-c, whose robe is the key red."
+    },
+    {
+      "id": "lich-f",
+      "asset": "chibi-undead-lich",
+      "endpoint": "create-image-pixen",
+      "seed": 13609,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "His signature tool is one big round glowing ball of pale blue-white light that he holds up high above his crown with both bony hands; he holds nothing else: no sword, no staff, no torch. His robe is flat pure bright red shaded only with darker pure red and covers him from the tall collar to the ground, wide like a bell. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "sword, blade, weapon, staff, torch, pole, stick, hat, armour, orange robe, purple, catapult, wheels, green flame, red orb, red mouth, red eyes, tan bone, brown straps, orange",
+      "notes": "lich-d held a big sword and lich-e a torch in armour; the class fragment's signature-tool line is answered with the orb itself."
+    },
+    {
+      "id": "lich-g",
+      "asset": "chibi-undead-lich",
+      "endpoint": "create-image-pixen",
+      "seed": 13610,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "His signature tool is one big round glowing ball of pale blue-white light that he holds up high above his crown with both bony hands; he holds nothing else: no sword, no staff, no torch. His robe is flat pure bright red shaded only with darker pure red and covers him from the tall collar to the ground, wide like a bell. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+      "negativeAddendum": "sword, blade, weapon, staff, torch, pole, stick, hat, armour, orange robe, purple, catapult, wheels, green flame, red orb, red mouth, red eyes, tan bone, brown straps, orange",
+      "notes": "Second seed of lich-f's wording."
+    },
+    {
+      "id": "lich-c-edit-b-2",
+      "asset": "chibi-undead-lich",
+      "endpoint": "edit-image-pixen",
+      "seed": 13611,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "lich-c-edit-b",
+        "candidate": 1
+      },
+      "editInstruction": "Recolour the dark purple and dark crimson inner lining of the robe and the belt dark slate grey, and the skull, arms and bony feet cool ivory white shaded with cool light grey, with no tan, beige, purple or crimson. Keep the bright red outer robe exactly the same red, the spiky iron crown, the glowing pale blue orb above it, the raised fists, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "lich-c-edit-b is the approved silhouette (crowned skull, both fists raised under a glowing pale blue orb, red robe spreading on both sides, 20.9% owner area) but its inner lining is dark purple and crimson that stays unrecoloured for other owners, and the bone is tan."
+    },
+    {
+      "id": "lich-c-edit-b-3",
+      "asset": "chibi-undead-lich",
+      "endpoint": "edit-image-pixen",
+      "seed": 13612,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "lich-c-edit-b",
+        "candidate": 1
+      },
+      "editInstruction": "Make the dark purple inside of the robe the same bright red as the outside of the robe. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "lich-c-edit-b-2 changed nothing; a single-focus instruction for the purple and crimson lining only."
+    },
+    {
+      "id": "abomination-b-edit-3",
+      "asset": "chibi-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 13806,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "abomination-b-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Remove the small blue flames around him and bring both arms in closer to his body, so he is a little narrower with empty transparent space at the left and right edges of the image. Keep the stitched pale blue-grey face, the iron shoulder plates, the blue-grey fists in manacles with broken chains, the red smock, colours, outline and art style exactly the same, on a transparent background.",
+      "notes": "abomination-b-edit-2 is accepted art but 82 px wide: its left arm reaches the CHIBI HP bar strip, and a giant's anchor cannot move (4 px side overflow limit)."
+    },
+    {
+      "id": "abomination-b-edit-4",
+      "asset": "chibi-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 13807,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "abomination-b-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Move his left arm (on the left side of the image) in against his belly so his left fist, manacle and broken chain sit in front of the red smock, and remove the blue flames on the left side, leaving the left edge of the image empty below the shoulder plate. Keep the stitched pale blue-grey face, the iron shoulder plates, the right arm, the manacles with broken chains, colours, outline and art style exactly the same, on a transparent background.",
+      "notes": "abomination-b-edit-3 lost the chains and stayed as wide; the left arm and flames of abomination-b-edit-2 are what reach the CHIBI HP bar strip."
+    }
+  ]
+}

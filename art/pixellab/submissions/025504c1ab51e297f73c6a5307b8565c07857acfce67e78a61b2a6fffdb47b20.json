@@ -1,0 +1,36 @@
+{
+  "id": "grave-c-edit",
+  "jobId": "07a97174-7edf-402e-bc7d-9e7e6af6a26d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-grave",
+    "subject": "GRAVE",
+    "faction": "UNDEAD",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 13904,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the brown soil patch under the headstone so it stands directly on a transparent background with only a tiny tuft of grey-green moss at one side of its foot. Make the engraved skull pale ivory white with cool grey shading. Keep the rounded blue-grey headstone, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the brown soil patch under the headstone so it stands directly on a transparent background with only a tiny tuft of grey-green moss at one side of its foot. Make the engraved skull pale ivory white with cool grey shading. Keep the rounded blue-grey headstone, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the brown soil patch under the headstone so it stands directly on a transparent background with only a tiny tuft of grey-green moss at one side of its foot. Make the engraved skull pale ivory white with cool grey shading. Keep the rounded blue-grey headstone, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the brown soil patch under the headstone so it stands directly on a transparent background with only a tiny tuft of grey-green moss at one side of its foot. Make the engraved skull pale ivory white with cool grey shading. Keep the rounded blue-grey headstone, outline and art style exactly the same.",
+    "source": {
+      "recipe": "grave-c",
+      "candidate": 0,
+      "sha256": "b9b5ef5ae049588670374566a97a7c1f9c78311dc9c2f6ac7f064e9ce3ceea30"
+    }
+  }
+}

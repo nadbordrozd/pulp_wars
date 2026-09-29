@@ -1,0 +1,504 @@
+{
+  "batch": "undead",
+  "bead": "pulp_wars-vkq.12",
+  "title": "Undead art: the eight Undead units and the Grave marker",
+  "dryRun": false,
+  "faction": "UNDEAD",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-undead-skeleton",
+      "subject": "UNIT:UNDEAD:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "skeleton-a-edit-2",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-undead-skeleton.png",
+        "sha256": "74e4e714eec986191738a66c5adf39e9536f78e65ff2aa2c7be7829945ed3705",
+        "pixelSha256": "bd1d6cef0a24cf243a81dd5408104bf81d45b7ba1859a079c1a70e6207312b01",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0.0139,
+        "footprintWidthShare": 0.7059,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-undead-skeleton.mask.png",
+        "source": "AUTO",
+        "coverage": 0.1866,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-undead-banshee",
+      "subject": "UNIT:UNDEAD:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "banshee-c-edit",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-undead-banshee.png",
+        "sha256": "ded038b3d2d4f170265f50e895b3b550ece8ac9878937768ed7a5adf97b8f07f",
+        "pixelSha256": "2092900e53cdbd0a674469efd16c8e411c6f7485fec7b921a061ad23e8e1a556",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0,
+        "footprintWidthShare": 0.4286,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-undead-banshee.mask.png",
+        "source": "AUTO",
+        "coverage": 0.4284,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-undead-ghoul",
+      "subject": "UNIT:UNDEAD:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "ghoul-b-edit-2",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-undead-ghoul.png",
+        "sha256": "3732dbd11c602e8f7ee84bd0c2e8c5b725fc9405e264d63b865cf6ef50be49a3",
+        "pixelSha256": "14e620c3c24bf79654a0fc90b6fc2283c278b59a34a09c471c5171f250fb1e70",
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0,
+        "footprintWidthShare": 0.8636,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-undead-ghoul.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2978,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-undead-zombie",
+      "subject": "UNIT:UNDEAD:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "zombie-d-edit-2",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-undead-zombie.png",
+        "sha256": "23af706cdaddbcdf5df8e9df2181fb74f5cd87d528623f6e70ed2c3235a361c6",
+        "pixelSha256": "d675245fe49f8ea76ae02e17025d5bb55d864bd531c579c8bf4ffcad6d68a25b",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6667,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-undead-zombie.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2215,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-undead-necromancer",
+      "subject": "UNIT:UNDEAD:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "necromancer-a-edit-2",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-undead-necromancer.png",
+        "sha256": "9f379bb8af6b071bc297d066bec98863d88666e1b783748228358e31ade3c313",
+        "pixelSha256": "33165d71dce4dcf2bab9c4613dcc8252751120efd79edbc09f0732ef851972ed",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6981,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-undead-necromancer.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2249,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-undead-lich",
+      "subject": "UNIT:UNDEAD:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "lich-c-edit-b-3",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-undead-lich.png",
+        "sha256": "77c888e207e838e9bcffd83b2d4882275bb8d22d10ddfd9223953cf1acb1255e",
+        "pixelSha256": "3a7e586ed15bd49401f30f2b71e3b3384f4bdf7bf4c65f5ebe0e9d7f0da61b32",
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 29,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 3,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 17,
+        "groundShare": 0.1577,
+        "footprintWidthShare": 0.9219,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-undead-lich.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2654,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-undead-vampire",
+      "subject": "UNIT:UNDEAD:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "vampire-a-edit-2",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-undead-vampire.png",
+        "sha256": "0bc9c748135e39c49c1885b3368200ced143b12752493749e54955cc07d520fb",
+        "pixelSha256": "17b9d1cf96e808bc98df76e44ca805fcc730ede0574bda3f5d5a85190f59ac35",
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 33,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7761,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-undead-vampire.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2427,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-undead-abomination",
+      "subject": "UNIT:UNDEAD:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "abomination-b-edit-2",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-undead-abomination.png",
+        "sha256": "ad983b8642bdf5366f5a69afc580641a2e9fca3445b13c7c9202ae1fb30575ec",
+        "pixelSha256": "f0ae6417a49731ae0397d5a3fc58be4537f5a2ba9734a4b05ba150ae0de54aca",
+        "width": 88,
+        "height": 104
+      },
+      "anchor": {
+        "x": 44,
+        "y": 64
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 24,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 17,
+        "groundShare": 0,
+        "footprintWidthShare": 0.9634,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-undead-abomination.mask.png",
+        "source": "AUTO",
+        "coverage": 0.229,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-grave",
+      "subject": "GRAVE",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "grave-c-edit",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-grave.png",
+        "sha256": "5f5f3ab9a6d2f6eeeac6fda1211f39e6af778b08c2fd5df2ec125b4ac3122283",
+        "pixelSha256": "f9beec2004d2ed56718efe9e14979daa96398b6c483b5b36713ef708eafa04b1",
+        "width": 40,
+        "height": 40
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 5,
+        "groundShare": 0,
+        "footprintWidthShare": 0.8636,
+        "suspect": false
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/sheet-1x.png",
+      "width": 1042,
+      "height": 1268,
+      "sha256": "a95e353d7755704eced06511b6e7e244186631e0341db96e5d635f1305180d12"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/sheet-x4.png",
+      "width": 2370,
+      "height": 4292,
+      "sha256": "c9825b59f0676b1ec83054652c438910b745a0321e4ae2e809e7b7b1be8c6dab"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/phone-mock.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "78e69233733f57b739227d6c2e69bd67c8a8d9d75c3e8a36f624217f9427f4ed"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/desktop-mock.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2b2990db81e1c8e6b715cbaffa30b10a37074cac4f8dd80a0e408322e980002d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1a3216daa4bd46a977a082dab4545f5a4a6f168bd11648fc7fc88a46c3fd9817"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "774a93308598b06d970e53786dadd91b47db26b3f16cf35b9aa4ca861c5b7727"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "d2d3ba1c4b7b253c2345ea99ea415e7e7fc8db8bcf73ed95ab2e296e23665181"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "e73f5faee170fbb42932e3cce21901d68a2e5993d3072550029caee3ebdb4f20"
+    }
+  ],
+  "captures": {
+    "note": "Captured from the running game with ?art=chibi; subjects without a registered chibi raster still draw their legacy art.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-undead/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-undead/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-undead/phone-links.md"
+}

@@ -81,6 +81,17 @@ row is one art subject in `chibi-art-v7.ts`.
 Improvements are drawn with their territory owner's colour available, so a
 batch may give them an owner area; decide per batch (flag 8).
 
+**Undead subjects (revision 13, bead `pulp_wars-vkq.12`).** An Undead land
+unit asks for `UNIT:UNDEAD:<ROLE>` (Skeleton `FIGHTER`, Ghoul `RAIDER`,
+Banshee `MARKSMAN`, Zombie `GUARD`, Necromancer `CAPTAIN`, Lich `CATAPULT`,
+Vampire `KNIGHT`, Abomination `JUGGERNAUT`) with the canvas, class and mask
+of the Human role above, and falls back to the Human `UNIT:<ROLE>` sprite
+plus the Undead badge while it has no usable raster. Undead Patrol Boats,
+Battleships and embarked transports always use the Human subjects. `GRAVE`
+is the unowned Grave marker: RESOURCE, 40 x 40, centred, no mask; without a
+raster (and in LEGACY) the code-drawn marker stays. Prompts and recipes:
+[UNDEAD.md](factions/UNDEAD.md) and `scripts/art/chibi/batches/batch-undead.json`.
+
 ## Map overlays drawn in code (no raster today)
 
 | Overlay                                                   | Drawn by                                         | Plan batch     | Notes                                                                                 |

@@ -1,0 +1,36 @@
+{
+  "id": "abomination-b-edit-2",
+  "jobId": "04e692ec-b901-4272-a1ed-81d3912fd487",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-abomination",
+    "subject": "UNIT:UNDEAD:JUGGERNAUT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 13805,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour his hands, fists and bare arms pale blue-grey like his face, with no tan or beige. Keep the stitched pale blue-grey face, the iron shoulder plates, the manacles and broken chains, the red smock, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour his hands, fists and bare arms pale blue-grey like his face, with no tan or beige. Keep the stitched pale blue-grey face, the iron shoulder plates, the manacles and broken chains, the red smock, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour his hands, fists and bare arms pale blue-grey like his face, with no tan or beige. Keep the stitched pale blue-grey face, the iron shoulder plates, the manacles and broken chains, the red smock, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour his hands, fists and bare arms pale blue-grey like his face, with no tan or beige. Keep the stitched pale blue-grey face, the iron shoulder plates, the manacles and broken chains, the red smock, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "abomination-b-edit",
+      "candidate": 1,
+      "sha256": "e0961b846f0bc2181cc0a46046db7d2a4ca3bbabcd1fd25395507e85d7f7a590"
+    }
+  }
+}

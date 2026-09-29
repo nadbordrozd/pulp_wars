@@ -1,0 +1,36 @@
+{
+  "id": "zombie-d-edit-2",
+  "jobId": "b6f2f97b-2ef2-43d2-9643-2fa777817d68",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-zombie",
+    "subject": "UNIT:UNDEAD:GUARD",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 13408,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the bright red ragged smock bigger so it covers his chest, belly and legs down to the shins with torn zigzag hems, make the trousers dark slate grey with no brown, and remove the two blue flames from his head. Keep the pale blue-grey face with droopy eyes and stitches, the dark hair, the bandaged arms stretched forward, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the bright red ragged smock bigger so it covers his chest, belly and legs down to the shins with torn zigzag hems, make the trousers dark slate grey with no brown, and remove the two blue flames from his head. Keep the pale blue-grey face with droopy eyes and stitches, the dark hair, the bandaged arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the bright red ragged smock bigger so it covers his chest, belly and legs down to the shins with torn zigzag hems, make the trousers dark slate grey with no brown, and remove the two blue flames from his head. Keep the pale blue-grey face with droopy eyes and stitches, the dark hair, the bandaged arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the bright red ragged smock bigger so it covers his chest, belly and legs down to the shins with torn zigzag hems, make the trousers dark slate grey with no brown, and remove the two blue flames from his head. Keep the pale blue-grey face with droopy eyes and stitches, the dark hair, the bandaged arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "zombie-d-edit",
+      "candidate": 1,
+      "sha256": "bcc9f08b33a8b26f62785e87de27e9ca914bc24ca66a439f7e4fa5913bfa2e10"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "lich-c-edit-b",
+  "jobId": "af2b2f75-799a-418b-bb54-842e86d7e2c5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-lich",
+    "subject": "UNIT:UNDEAD:CATAPULT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 13608,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the wooden pole, and make the dark ball he holds up between his raised bony hands a glowing pale blue-white orb with small pale blue flames. Make the purple lining of the robe bright red like the rest of the robe. Keep the bright red robe colour, the crowned skull, the raised arms, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the wooden pole, and make the dark ball he holds up between his raised bony hands a glowing pale blue-white orb with small pale blue flames. Make the purple lining of the robe bright red like the rest of the robe. Keep the bright red robe colour, the crowned skull, the raised arms, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the wooden pole, and make the dark ball he holds up between his raised bony hands a glowing pale blue-white orb with small pale blue flames. Make the purple lining of the robe bright red like the rest of the robe. Keep the bright red robe colour, the crowned skull, the raised arms, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the wooden pole, and make the dark ball he holds up between his raised bony hands a glowing pale blue-white orb with small pale blue flames. Make the purple lining of the robe bright red like the rest of the robe. Keep the bright red robe colour, the crowned skull, the raised arms, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "lich-c",
+      "candidate": 0,
+      "sha256": "6152c94c3c41afe9bffa4fcd4df1190b34d21afcc506c5c2ac5cedbb545a950f"
+    }
+  }
+}

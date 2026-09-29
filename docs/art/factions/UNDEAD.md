@@ -105,8 +105,12 @@ This guides the subject lines; it is not sent to PixelLab.
 Approved lines for `scripts/art/chibi/subjects/UNDEAD.json`, written like the
 Human lines in `scripts/art/chibi/subjects/ORIGINAL.json`. Each unit line
 carries the full body language and puts the owner colour on a garment that
-covers the torso and legs. Keys are the mechanical role subjects; the
-canvas classes follow the [asset inventory](../CHIBI_ASSET_INVENTORY.md).
+covers the torso and legs. Each line names its mechanical role; in the JSON
+file it is keyed by the runtime subject `UNIT:UNDEAD:<ROLE>` (for example
+`UNIT:UNDEAD:FIGHTER` for the Skeleton), which the renderer asks for first
+and replaces with the Human `UNIT:<ROLE>` sprite plus the Undead badge while
+no Undead raster is registered. The canvas classes follow the
+[asset inventory](../CHIBI_ASSET_INVENTORY.md).
 
 **Skeleton** (`UNIT:FIGHTER`, standard unit 56 x 80):
 

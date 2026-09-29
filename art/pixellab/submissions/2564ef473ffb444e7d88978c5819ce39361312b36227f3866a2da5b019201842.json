@@ -1,0 +1,36 @@
+{
+  "id": "lich-c-edit",
+  "jobId": "57992580-7bbf-415b-a34e-039e5842c508",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-lich",
+    "subject": "UNIT:UNDEAD:CATAPULT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 13604,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Replace the wooden pole and the dark iron ball with one big round ball of pale blue-white flame held between his raised bony hands above his crown. Make the purple lining and the orange edges of the robe bright red like the rest of the robe. Keep the crowned skull, the raised arms, the red robe, pose, outline and art style exactly the same, on a transparent background with nothing under his feet."
+      }
+    ],
+    "prompt": "Replace the wooden pole and the dark iron ball with one big round ball of pale blue-white flame held between his raised bony hands above his crown. Make the purple lining and the orange edges of the robe bright red like the rest of the robe. Keep the crowned skull, the raised arms, the red robe, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "negativePrompt": "",
+    "description": "Replace the wooden pole and the dark iron ball with one big round ball of pale blue-white flame held between his raised bony hands above his crown. Make the purple lining and the orange edges of the robe bright red like the rest of the robe. Keep the crowned skull, the raised arms, the red robe, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "editInstruction": "Replace the wooden pole and the dark iron ball with one big round ball of pale blue-white flame held between his raised bony hands above his crown. Make the purple lining and the orange edges of the robe bright red like the rest of the robe. Keep the crowned skull, the raised arms, the red robe, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "source": {
+      "recipe": "lich-c",
+      "candidate": 0,
+      "sha256": "6152c94c3c41afe9bffa4fcd4df1190b34d21afcc506c5c2ac5cedbb545a950f"
+    }
+  }
+}

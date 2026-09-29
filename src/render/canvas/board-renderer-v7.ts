@@ -61,10 +61,12 @@ import { selectionJumpOffsetCssPx } from "./selection-jump-presentation";
 import { RULESET7_TACTICAL_UI_SYMBOL_BY_ID } from "../../assets/ruleset7-tactical-ui-symbols";
 import { tacticalAttachmentsV7 } from "../tactical-presentation-v7";
 import type { ArtSetV7, ArtSubjectV7 } from "../../assets/chibi-art-v7";
-import { chibiOverflowV7 } from "../../assets/chibi-art-v7";
-import type {
-  ChibiBoardArtV7,
-  ChibiResolutionV7,
+import { chibiOverflowV7, unitArtSubjectV7 } from "../../assets/chibi-art-v7";
+import {
+  resolveChibiWithFallbackV7,
+  type ChibiBoardArtV7,
+  type ChibiEntryResolutionV7,
+  type ChibiResolutionV7,
 } from "./chibi-art-resolver-v7";
 import {
   chibiDestinationRect,
@@ -168,7 +170,10 @@ export interface BoardRenderPlanEntryV7 {
   readonly coveredByImprovement?: boolean;
   /** CITY only: the owner's capital (marked by a crown in the CHIBI art set). */
   readonly capital?: boolean;
-  /** UNIT only: an Undead-owned unit, drawn with the Undead faction badge. */
+  /**
+   * UNIT only: an Undead-owned unit. It is drawn with the Undead faction
+   * badge unless the CHIBI art set shows its own Undead raster.
+   */
   readonly faction?: "UNDEAD";
   /** ABILITY_AREA / ABILITY_TARGET: the previewed ability. */
   readonly abilityStyle?: AbilityPreviewStyleV7;
@@ -369,10 +374,12 @@ export function buildBoardRenderPlanV7(
       kind: "GRAVE",
       layer: 4.5,
       at,
+      artSubject: "GRAVE",
       label: "Grave",
     });
   for (const unit of view.units) {
-    const undead = playerFactionV7(view, unit.ownerId) === "UNDEAD";
+    const faction = playerFactionV7(view, unit.ownerId);
+    const undead = faction === "UNDEAD";
     const undeadLabel = undead ? unitRoleRuleV7(view, unit).label : null;
     entries.push({
       key: `unit:${unit.id}`,
@@ -387,10 +394,9 @@ export function buildBoardRenderPlanV7(
         unit.form === "EMBARKED"
           ? "unit-shared-embarked-transport"
           : RULESET7_UNIT_ART_IDS[unit.role],
-      artSubject:
-        unit.form === "EMBARKED"
-          ? "UNIT:EMBARKED_TRANSPORT"
-          : `UNIT:${unit.role}`,
+      // Undead land units ask for their own art first (UNIT:UNDEAD:<ROLE>);
+      // without it the renderer falls back to the Human sprite plus badge.
+      artSubject: unitArtSubjectV7({ ...unit, faction }),
       label:
         unit.form === "EMBARKED"
           ? `Embarked Transport · ${undeadLabel ?? title(unit.role)} passenger`
@@ -768,17 +774,20 @@ export function drawBoardV7(input: {
     chibiArt === undefined
       ? input.camera
       : snapCameraToDevicePixels(input.camera, devicePixelRatio);
-  const resolveChibi = (
+  const resolveChibiEntry = (
     entry: BoardRenderPlanEntryV7,
-  ): ChibiResolutionV7 | null =>
+  ): ChibiEntryResolutionV7 | null =>
     chibiArt === undefined || entry.artSubject === undefined
       ? null
-      : chibiArt.resolve({
+      : resolveChibiWithFallbackV7(chibiArt, {
           subject: entry.artSubject,
           at: entry.at,
           ownerColor: entry.ownerColor,
           deviceScale: chibiMasterScale(camera) * devicePixelRatio,
         });
+  const resolveChibi = (
+    entry: BoardRenderPlanEntryV7,
+  ): ChibiResolutionV7 | null => resolveChibiEntry(entry)?.resolution ?? null;
   const sceneAlpha = input.sceneAlpha ?? 1;
   context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
   if (input.clear !== false) {
@@ -933,13 +942,35 @@ export function drawBoardV7(input: {
         continue;
       }
       if (entry.kind === "GRAVE") {
-        drawGraveMarkerV7(
-          context,
-          x,
-          y,
-          camera.zoom,
-          input.highContrast ?? false,
-        );
+        // CHIBI draws the registered Grave raster (nothing while it loads);
+        // LEGACY and a missing raster keep the code-drawn marker.
+        const chibi = resolveChibi(entry);
+        if (chibi?.kind === "READY") {
+          const rect = chibiDestinationRect(
+            { x, y },
+            camera,
+            chibi.asset,
+            devicePixelRatio,
+          );
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          context.imageSmoothingEnabled = chibi.smoothing;
+          context.drawImage(
+            chibi.image,
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height,
+          );
+          context.restore();
+        } else if (chibi === null || chibi.kind === "MISSING")
+          drawGraveMarkerV7(
+            context,
+            x,
+            y,
+            camera.zoom,
+            input.highContrast ?? false,
+          );
         continue;
       }
       if (entry.kind === "STATUS") {
@@ -1021,8 +1052,12 @@ export function drawBoardV7(input: {
       // A unit or city drawn with (or loading) a registered chibi raster uses
       // the chibi overlay frame; legacy fallbacks keep the legacy overlays.
       let chibiPiece = false;
+      // An Undead unit shown with its own Undead raster needs no badge.
+      let factionArt = false;
       if (entry.assetId !== undefined) {
-        const chibi = resolveChibi(entry);
+        const resolved = resolveChibiEntry(entry);
+        const chibi = resolved?.resolution ?? null;
+        factionArt = resolved?.factionArt ?? false;
         const chibiReady = chibi?.kind === "READY" ? chibi : null;
         chibiPiece = chibi !== null && chibi.kind !== "MISSING";
         const image =
@@ -1144,7 +1179,7 @@ export function drawBoardV7(input: {
             y + (badge.top + 14) * camera.zoom,
           );
         }
-        if (entry.kind === "UNIT" && entry.faction === "UNDEAD")
+        if (entry.kind === "UNIT" && entry.faction === "UNDEAD" && !factionArt)
           drawUndeadBadgeV7(context, x, y, camera.zoom, chibiPiece);
         if (entry.kind === "CITY" && entry.capital === true && chibiPiece)
           drawCapitalCrownV7(context, x, y, camera.zoom);

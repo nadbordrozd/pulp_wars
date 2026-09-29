@@ -1,0 +1,36 @@
+{
+  "id": "vampire-a-edit-2",
+  "jobId": "921a01de-2d80-4ef0-bada-a0ac51fe9028",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-vampire",
+    "subject": "UNIT:UNDEAD:KNIGHT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 13703,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the small orange buckle on his chest and the orange crossguard of his sword light grey, and the brown cuffs and boot tops dark slate grey. Keep every other pixel, the pale face, black hair, red bat-wing cape and red coat, the rapier, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the small orange buckle on his chest and the orange crossguard of his sword light grey, and the brown cuffs and boot tops dark slate grey. Keep every other pixel, the pale face, black hair, red bat-wing cape and red coat, the rapier, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the small orange buckle on his chest and the orange crossguard of his sword light grey, and the brown cuffs and boot tops dark slate grey. Keep every other pixel, the pale face, black hair, red bat-wing cape and red coat, the rapier, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the small orange buckle on his chest and the orange crossguard of his sword light grey, and the brown cuffs and boot tops dark slate grey. Keep every other pixel, the pale face, black hair, red bat-wing cape and red coat, the rapier, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "vampire-a-edit",
+      "candidate": 1,
+      "sha256": "305b2dbb28033f3ce5f345cbac244e19dd08cee0b4660ca33bb9e7c3a53d01c0"
+    }
+  }
+}

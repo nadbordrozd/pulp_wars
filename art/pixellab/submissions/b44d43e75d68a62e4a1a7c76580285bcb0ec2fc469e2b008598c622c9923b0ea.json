@@ -1,0 +1,36 @@
+{
+  "id": "zombie-e-edit",
+  "jobId": "1360b9f0-8a03-4c5b-8c1e-daccdce10bc1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-zombie",
+    "subject": "UNIT:UNDEAD:GUARD",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 13406,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour all of his skin (face, ears, neck and arms) pale blue-grey and his hands ivory-white bandages, with no tan, orange or brown, and add two small dark stitched seams on his face. Keep the droopy eyes, the dark hair, the big red ragged smock, the arms stretched forward, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour all of his skin (face, ears, neck and arms) pale blue-grey and his hands ivory-white bandages, with no tan, orange or brown, and add two small dark stitched seams on his face. Keep the droopy eyes, the dark hair, the big red ragged smock, the arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour all of his skin (face, ears, neck and arms) pale blue-grey and his hands ivory-white bandages, with no tan, orange or brown, and add two small dark stitched seams on his face. Keep the droopy eyes, the dark hair, the big red ragged smock, the arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour all of his skin (face, ears, neck and arms) pale blue-grey and his hands ivory-white bandages, with no tan, orange or brown, and add two small dark stitched seams on his face. Keep the droopy eyes, the dark hair, the big red ragged smock, the arms stretched forward, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "zombie-e",
+      "candidate": 0,
+      "sha256": "bbbf8227d1b4dde977b1f9d06b6ec6bba42fab926c7f5396dd53848653710c5e"
+    }
+  }
+}

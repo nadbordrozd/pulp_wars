@@ -1,0 +1,69 @@
+{
+  "id": "ghoul-e",
+  "jobId": "sync-c3ce93be-6bd6-4629-a56b-15e3bec4c22d",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-ghoul",
+    "subject": "UNIT:UNDEAD:RAIDER",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 13305,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+        "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+        "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/UNDEAD.json",
+        "text": "Subject: Ghoul, a chunky cute hunched ghoul loping forward on all fours, wide and low, filling the whole width of the image: a big round bald head about half of the body's height with pale blue-grey skin, big round pale blue eyes, pointy ears and a toothy grin, a big bright red ragged hooded cloak with torn zigzag hems over the head, back and hips, trailing behind, long thin pale blue-grey arms ending in big ivory claws, bony pale blue-grey legs and feet; no weapon, no mount; simple shapes and very few details; the hands and feet are the lowest thing in the image; clearly a fast crouching runner, not an upright soldier."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "He crawls on his hands and knees like a big hungry cat, his body stretched out long and low from left to right, his round bald head with pale blue-grey skin and pointy ears at the front, his back and hips under the red hooded cloak behind it. Both clawed hands and both knees and feet touch the bottom of the image. He holds nothing. His head is a fleshy face with a small nose, not a skull. The grin is dark with tiny white teeth, never a red mouth. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+        "negative": "standing, upright, two legs, skull face, armour, weapon, axe, sword, blade, scythe, canister, horse, pony, mount, rider, green skin, red mouth, red eyes, tan bone, brown straps, orange"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Ghoul, a chunky cute hunched ghoul loping forward on all fours, wide and low, filling the whole width of the image: a big round bald head about half of the body's height with pale blue-grey skin, big round pale blue eyes, pointy ears and a toothy grin, a big bright red ragged hooded cloak with torn zigzag hems over the head, back and hips, trailing behind, long thin pale blue-grey arms ending in big ivory claws, bony pale blue-grey legs and feet; no weapon, no mount; simple shapes and very few details; the hands and feet are the lowest thing in the image; clearly a fast crouching runner, not an upright soldier. He crawls on his hands and knees like a big hungry cat, his body stretched out long and low from left to right, his round bald head with pale blue-grey skin and pointy ears at the front, his back and hips under the red hooded cloak behind it. Both clawed hands and both knees and feet touch the bottom of the image. He holds nothing. His head is a fleshy face with a small nose, not a skull. The grin is dark with tiny white teeth, never a red mouth. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, standing, upright, two legs, skull face, armour, weapon, axe, sword, blade, scythe, canister, horse, pony, mount, rider, green skin, red mouth, red eyes, tan bone, brown straps, orange",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Ghoul, a chunky cute hunched ghoul loping forward on all fours, wide and low, filling the whole width of the image: a big round bald head about half of the body's height with pale blue-grey skin, big round pale blue eyes, pointy ears and a toothy grin, a big bright red ragged hooded cloak with torn zigzag hems over the head, back and hips, trailing behind, long thin pale blue-grey arms ending in big ivory claws, bony pale blue-grey legs and feet; no weapon, no mount; simple shapes and very few details; the hands and feet are the lowest thing in the image; clearly a fast crouching runner, not an upright soldier. He crawls on his hands and knees like a big hungry cat, his body stretched out long and low from left to right, his round bald head with pale blue-grey skin and pointy ears at the front, his back and hips under the red hooded cloak behind it. Both clawed hands and both knees and feet touch the bottom of the image. He holds nothing. His head is a fleshy face with a small nose, not a skull. The grin is dark with tiny white teeth, never a red mouth. Every strap, belt, wrap, shoe and boot is dark slate grey, and bone, teeth and claws are cool ivory white shaded with cool grey, never tan or brown. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, standing, upright, two legs, skull face, armour, weapon, axe, sword, blade, scythe, canister, horse, pony, mount, rider, green skin, red mouth, red eyes, tan bone, brown straps, orange."
+  }
+}

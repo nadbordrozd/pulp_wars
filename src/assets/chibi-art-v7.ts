@@ -1,4 +1,5 @@
 import type {
+  FactionIdV7,
   ImprovementIdV7,
   ResourceIdV7,
   TerrainIdV7,
@@ -21,9 +22,55 @@ export type ArtSubjectV7 =
   | `RESOURCE:${ResourceIdV7}`
   | `IMPROVEMENT:${ImprovementIdV7}`
   | `UNIT:${UnitRoleIdV7 | "EMBARKED_TRANSPORT"}`
+  | `UNIT:UNDEAD:${UndeadArtRoleV7}`
   | `CITY:${1 | 2 | 3}`
   | "SITE:VILLAGE"
-  | "TREASURE";
+  | "TREASURE"
+  /** Revision 13: the unowned Grave marker left by a fallen land unit. */
+  | "GRAVE";
+
+/**
+ * Roles with their own Undead art (docs/art/factions/UNDEAD.md). Patrol
+ * Boat and Battleship reuse the Human ship art, so they have no Undead
+ * subject.
+ */
+export type UndeadArtRoleV7 = Exclude<
+  UnitRoleIdV7,
+  "PATROL_BOAT" | "BATTLESHIP"
+>;
+
+const SHARED_ART_ROLES_V7: readonly UnitRoleIdV7[] = [
+  "PATROL_BOAT",
+  "BATTLESHIP",
+];
+
+/**
+ * The art subject of a unit on the map: the embarked transport, the
+ * owner faction's own art for the role, or the shared (Human) art.
+ */
+export function unitArtSubjectV7(unit: {
+  readonly role: UnitRoleIdV7;
+  readonly form: "LAND" | "EMBARKED" | "NAVAL";
+  readonly faction: FactionIdV7;
+}): ArtSubjectV7 {
+  if (unit.form === "EMBARKED") return "UNIT:EMBARKED_TRANSPORT";
+  if (unit.faction === "UNDEAD" && !SHARED_ART_ROLES_V7.includes(unit.role))
+    return `UNIT:UNDEAD:${unit.role as UndeadArtRoleV7}`;
+  return `UNIT:${unit.role}`;
+}
+
+/**
+ * The subject whose art stands in while a faction subject has no usable
+ * raster: `UNIT:UNDEAD:<ROLE>` falls back to the Human `UNIT:<ROLE>` (drawn
+ * with the Undead badge). Every other subject has no fallback.
+ */
+export function chibiFallbackSubjectV7(
+  subject: ArtSubjectV7,
+): ArtSubjectV7 | null {
+  return subject.startsWith("UNIT:UNDEAD:")
+    ? (`UNIT:${subject.slice("UNIT:UNDEAD:".length)}` as ArtSubjectV7)
+    : null;
+}
 
 export type ChibiAssetClassV7 =
   | "TERRAIN"

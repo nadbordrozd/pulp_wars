@@ -1,0 +1,36 @@
+{
+  "id": "ghoul-b-edit",
+  "jobId": "2e1371ac-d1d0-4a5d-a7a4-accd0b24b353",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-ghoul",
+    "subject": "UNIT:UNDEAD:RAIDER",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 13306,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make his face and hands pale blue-grey skin with a small nose and pointy ears instead of bone, and make the boots, belt and straps dark slate grey with no brown. Keep the big red hood and ragged cloak, the crouching pose, the ivory claws, the blue flames, outline and art style exactly the same, on a transparent background with nothing under his feet."
+      }
+    ],
+    "prompt": "Make his face and hands pale blue-grey skin with a small nose and pointy ears instead of bone, and make the boots, belt and straps dark slate grey with no brown. Keep the big red hood and ragged cloak, the crouching pose, the ivory claws, the blue flames, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "negativePrompt": "",
+    "description": "Make his face and hands pale blue-grey skin with a small nose and pointy ears instead of bone, and make the boots, belt and straps dark slate grey with no brown. Keep the big red hood and ragged cloak, the crouching pose, the ivory claws, the blue flames, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "editInstruction": "Make his face and hands pale blue-grey skin with a small nose and pointy ears instead of bone, and make the boots, belt and straps dark slate grey with no brown. Keep the big red hood and ragged cloak, the crouching pose, the ivory claws, the blue flames, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "source": {
+      "recipe": "ghoul-b",
+      "candidate": 0,
+      "sha256": "dec68a143cd19145f039af552279f1640324f095c37be86dacb8772bbb8e3bfd"
+    }
+  }
+}

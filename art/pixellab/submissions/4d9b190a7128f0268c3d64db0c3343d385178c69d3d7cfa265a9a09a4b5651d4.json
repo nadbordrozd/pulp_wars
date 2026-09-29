@@ -1,0 +1,36 @@
+{
+  "id": "necromancer-a-edit",
+  "jobId": "b6589f88-3794-4cd7-ad04-665a14dd5a41",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-necromancer",
+    "subject": "UNIT:UNDEAD:CAPTAIN",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 13502,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the beard and eyebrows cool ivory white shaded with cool light grey, and the wrappings on the staff and the belt dark slate grey, with no brown or tan. Keep the red pointed hood and red ragged robe, the gaunt pale blue face with glowing eyes, the iron staff with its skull and blue flame, the sparks, pose, outline and art style exactly the same, on a transparent background with nothing under his feet."
+      }
+    ],
+    "prompt": "Make the beard and eyebrows cool ivory white shaded with cool light grey, and the wrappings on the staff and the belt dark slate grey, with no brown or tan. Keep the red pointed hood and red ragged robe, the gaunt pale blue face with glowing eyes, the iron staff with its skull and blue flame, the sparks, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "negativePrompt": "",
+    "description": "Make the beard and eyebrows cool ivory white shaded with cool light grey, and the wrappings on the staff and the belt dark slate grey, with no brown or tan. Keep the red pointed hood and red ragged robe, the gaunt pale blue face with glowing eyes, the iron staff with its skull and blue flame, the sparks, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "editInstruction": "Make the beard and eyebrows cool ivory white shaded with cool light grey, and the wrappings on the staff and the belt dark slate grey, with no brown or tan. Keep the red pointed hood and red ragged robe, the gaunt pale blue face with glowing eyes, the iron staff with its skull and blue flame, the sparks, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "source": {
+      "recipe": "necromancer-a",
+      "candidate": 0,
+      "sha256": "947ff604aec6701d0a1fa3f30abd5ae719be1dd6f041dd92e318b8711b64c3fb"
+    }
+  }
+}

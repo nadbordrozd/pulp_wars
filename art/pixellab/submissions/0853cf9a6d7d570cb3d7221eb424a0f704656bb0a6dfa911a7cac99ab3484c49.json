@@ -1,0 +1,36 @@
+{
+  "id": "ghoul-b-edit-2",
+  "jobId": "2be85982-a715-4f0c-b81c-8ddca6da0575",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-ghoul",
+    "subject": "UNIT:UNDEAD:RAIDER",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 13307,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Give him big round pale blue eyes and a wide dark grin with tiny white teeth, and make him lean far forward onto all fours with both clawed hands on the ground in front of his feet. Keep the big red hood and ragged cloak, the pale blue-grey face with pointy ears, the grey clothes, outline and art style exactly the same, on a transparent background with nothing under him."
+      }
+    ],
+    "prompt": "Give him big round pale blue eyes and a wide dark grin with tiny white teeth, and make him lean far forward onto all fours with both clawed hands on the ground in front of his feet. Keep the big red hood and ragged cloak, the pale blue-grey face with pointy ears, the grey clothes, outline and art style exactly the same, on a transparent background with nothing under him.",
+    "negativePrompt": "",
+    "description": "Give him big round pale blue eyes and a wide dark grin with tiny white teeth, and make him lean far forward onto all fours with both clawed hands on the ground in front of his feet. Keep the big red hood and ragged cloak, the pale blue-grey face with pointy ears, the grey clothes, outline and art style exactly the same, on a transparent background with nothing under him.",
+    "editInstruction": "Give him big round pale blue eyes and a wide dark grin with tiny white teeth, and make him lean far forward onto all fours with both clawed hands on the ground in front of his feet. Keep the big red hood and ragged cloak, the pale blue-grey face with pointy ears, the grey clothes, outline and art style exactly the same, on a transparent background with nothing under him.",
+    "source": {
+      "recipe": "ghoul-b-edit",
+      "candidate": 1,
+      "sha256": "e1649ae1cbe79628e8ebd32d7f32ca616b58226b868d8d78a55b3ab675abb397"
+    }
+  }
+}

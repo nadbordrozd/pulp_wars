@@ -654,7 +654,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT):[A-Z_]+$|^CITY:[123]$|^SITE:VILLAGE$|^TREASURE$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT):[A-Z_]+$|^UNIT:UNDEAD:[A-Z_]+$|^CITY:[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;

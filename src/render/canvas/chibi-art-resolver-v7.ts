@@ -1,5 +1,6 @@
 import {
   buildChibiArtRegistryV7,
+  chibiFallbackSubjectV7,
   chibiVariantV7,
   type ArtSubjectV7,
   type ChibiArtAssetV7,
@@ -43,6 +44,36 @@ export interface ChibiArtRequestV7 {
 
 export interface ChibiBoardArtV7 {
   resolve(request: ChibiArtRequestV7): ChibiResolutionV7;
+}
+
+export interface ChibiEntryResolutionV7 {
+  readonly resolution: ChibiResolutionV7;
+  /**
+   * True when a faction subject (for example `UNIT:UNDEAD:FIGHTER`) resolved
+   * to its own raster (ready or still loading). False for a stand-in: the
+   * shared subject's raster, or the legacy asset.
+   */
+  readonly factionArt: boolean;
+}
+
+/**
+ * Resolves a subject and, when a faction subject has no usable raster
+ * (none registered, or its load failed), its shared stand-in subject from
+ * chibiFallbackSubjectV7: an Undead unit without Undead art draws the Human
+ * sprite of its role.
+ */
+export function resolveChibiWithFallbackV7(
+  art: ChibiBoardArtV7,
+  request: ChibiArtRequestV7,
+): ChibiEntryResolutionV7 {
+  const own = art.resolve(request);
+  const fallback = chibiFallbackSubjectV7(request.subject);
+  if (fallback === null) return { resolution: own, factionArt: false };
+  if (own.kind !== "MISSING") return { resolution: own, factionArt: true };
+  return {
+    resolution: art.resolve({ ...request, subject: fallback }),
+    factionArt: false,
+  };
 }
 
 /** Browser seams, injectable so the loading and recolour cache are testable. */

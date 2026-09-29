@@ -1,0 +1,36 @@
+{
+  "id": "banshee-c-edit",
+  "jobId": "62a7e5bd-63e6-4847-8bfd-19400e608c88",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-banshee",
+    "subject": "UNIT:UNDEAD:MARKSMAN",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 13204,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove her legs, feet and the thing in her left hand: below the waist her bright red gown narrows into one long wispy pointed tail whose tip touches the bottom of the image. Raise both small pale blue hands beside her cheeks. Make the belt bright red like the gown and the inside of her mouth dark grey. Keep her face, hair, red hood, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove her legs, feet and the thing in her left hand: below the waist her bright red gown narrows into one long wispy pointed tail whose tip touches the bottom of the image. Raise both small pale blue hands beside her cheeks. Make the belt bright red like the gown and the inside of her mouth dark grey. Keep her face, hair, red hood, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove her legs, feet and the thing in her left hand: below the waist her bright red gown narrows into one long wispy pointed tail whose tip touches the bottom of the image. Raise both small pale blue hands beside her cheeks. Make the belt bright red like the gown and the inside of her mouth dark grey. Keep her face, hair, red hood, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove her legs, feet and the thing in her left hand: below the waist her bright red gown narrows into one long wispy pointed tail whose tip touches the bottom of the image. Raise both small pale blue hands beside her cheeks. Make the belt bright red like the gown and the inside of her mouth dark grey. Keep her face, hair, red hood, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "banshee-c",
+      "candidate": 0,
+      "sha256": "1e4cf749cf66bbd4ecd9ae0994656cd8ed86415e7a48dd1523d5bcce9b946fe0"
+    }
+  }
+}

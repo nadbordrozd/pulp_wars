@@ -1,0 +1,36 @@
+{
+  "id": "vampire-a-edit",
+  "jobId": "6babcf8d-5138-43d1-80c4-4b905da5f407",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-vampire",
+    "subject": "UNIT:UNDEAD:KNIGHT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 13702,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the orange clasp, the buttons and the sword's crossguard light grey iron, and the gloves, cuffs and boots dark slate grey with no brown or green. Keep the pale face, the black hair, the red bat-wing cape and red coat, the grey rapier, the blue flames, pose, outline and art style exactly the same, on a transparent background with nothing under his boots."
+      }
+    ],
+    "prompt": "Make the orange clasp, the buttons and the sword's crossguard light grey iron, and the gloves, cuffs and boots dark slate grey with no brown or green. Keep the pale face, the black hair, the red bat-wing cape and red coat, the grey rapier, the blue flames, pose, outline and art style exactly the same, on a transparent background with nothing under his boots.",
+    "negativePrompt": "",
+    "description": "Make the orange clasp, the buttons and the sword's crossguard light grey iron, and the gloves, cuffs and boots dark slate grey with no brown or green. Keep the pale face, the black hair, the red bat-wing cape and red coat, the grey rapier, the blue flames, pose, outline and art style exactly the same, on a transparent background with nothing under his boots.",
+    "editInstruction": "Make the orange clasp, the buttons and the sword's crossguard light grey iron, and the gloves, cuffs and boots dark slate grey with no brown or green. Keep the pale face, the black hair, the red bat-wing cape and red coat, the grey rapier, the blue flames, pose, outline and art style exactly the same, on a transparent background with nothing under his boots.",
+    "source": {
+      "recipe": "vampire-a",
+      "candidate": 0,
+      "sha256": "ded3d13f499c92cee07784aba048292582e01ed8a532082a2cb7b8d0e4da00a0"
+    }
+  }
+}

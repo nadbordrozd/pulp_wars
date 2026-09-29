@@ -1,0 +1,36 @@
+{
+  "id": "skeleton-a-edit-2",
+  "jobId": "bcd57f41-b0e7-4824-9f7d-f2d0f741f971",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-skeleton",
+    "subject": "UNIT:UNDEAD:FIGHTER",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 13103,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the skull, the bone hands and the bone feet a cool pale ivory white shaded with cool light grey, with no tan, yellow or brown, and make the thin belt dark slate grey. Keep the red crest and red ragged tabard, the grey iron helmet, sword and skull shield, the blue flame, pose, outline and art style exactly the same, on a transparent background with nothing under his feet."
+      }
+    ],
+    "prompt": "Recolour the skull, the bone hands and the bone feet a cool pale ivory white shaded with cool light grey, with no tan, yellow or brown, and make the thin belt dark slate grey. Keep the red crest and red ragged tabard, the grey iron helmet, sword and skull shield, the blue flame, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "negativePrompt": "",
+    "description": "Recolour the skull, the bone hands and the bone feet a cool pale ivory white shaded with cool light grey, with no tan, yellow or brown, and make the thin belt dark slate grey. Keep the red crest and red ragged tabard, the grey iron helmet, sword and skull shield, the blue flame, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "editInstruction": "Recolour the skull, the bone hands and the bone feet a cool pale ivory white shaded with cool light grey, with no tan, yellow or brown, and make the thin belt dark slate grey. Keep the red crest and red ragged tabard, the grey iron helmet, sword and skull shield, the blue flame, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "source": {
+      "recipe": "skeleton-a-edit",
+      "candidate": 0,
+      "sha256": "825793c03465760665763906e805de0ed6cba877f29c7ae14ab7e653054f4d96"
+    }
+  }
+}

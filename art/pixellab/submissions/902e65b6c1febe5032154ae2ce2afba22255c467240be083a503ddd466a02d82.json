@@ -1,0 +1,36 @@
+{
+  "id": "abomination-b-edit",
+  "jobId": "6e2baf99-df9c-4464-a827-bbb5c60398de",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-abomination",
+    "subject": "UNIT:UNDEAD:JUGGERNAUT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 13804,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make his face and bald head pale blue-grey skin with a nose, big stitched seams, one eye bigger than the other and a goofy underbite, instead of a skull. Make the bright red smock much bigger so it covers his belly and legs down to his knees with torn zigzag hems, and make the belt dark slate grey. Keep the iron shoulder plates, the manacles with broken chains, the big fists, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make his face and bald head pale blue-grey skin with a nose, big stitched seams, one eye bigger than the other and a goofy underbite, instead of a skull. Make the bright red smock much bigger so it covers his belly and legs down to his knees with torn zigzag hems, and make the belt dark slate grey. Keep the iron shoulder plates, the manacles with broken chains, the big fists, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make his face and bald head pale blue-grey skin with a nose, big stitched seams, one eye bigger than the other and a goofy underbite, instead of a skull. Make the bright red smock much bigger so it covers his belly and legs down to his knees with torn zigzag hems, and make the belt dark slate grey. Keep the iron shoulder plates, the manacles with broken chains, the big fists, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make his face and bald head pale blue-grey skin with a nose, big stitched seams, one eye bigger than the other and a goofy underbite, instead of a skull. Make the bright red smock much bigger so it covers his belly and legs down to his knees with torn zigzag hems, and make the belt dark slate grey. Keep the iron shoulder plates, the manacles with broken chains, the big fists, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "abomination-b",
+      "candidate": 0,
+      "sha256": "4753b32abf60cffc65043c54802a35eef61b56426b110674950a388082dc5127"
+    }
+  }
+}

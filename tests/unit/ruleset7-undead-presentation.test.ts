@@ -20,6 +20,9 @@ import {
   type BoardRenderPlanEntryV7,
   type BoardRenderPlanV7,
 } from "../../src/render/canvas/board-renderer-v7";
+import type { ArtSubjectV7 } from "../../src/assets/chibi-art-v7";
+import type { ChibiBoardArtV7 } from "../../src/render/canvas/chibi-art-resolver-v7";
+import { CHIBI_WORLD_SCALE } from "../../src/render/canvas/chibi-geometry-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
 import { UNDEAD_BADGE_FRAME_V7 } from "../../src/render/canvas/undead-canvas-v7";
 import { tacticalAttachmentsV7 } from "../../src/render/tactical-presentation-v7";
@@ -82,13 +85,16 @@ describe("Revision 13 Undead presentation", () => {
         "Zombie",
       ].sort(),
     );
-    // Undead units keep the Human placeholder sprite of the same role.
+    // Undead units keep the Human legacy sprite of the same role and ask the
+    // CHIBI art set for their own Undead subject first.
     const banshee = unitEntryAt(plan, UNDEAD_SHOWCASE_V7.banshee);
     const humanMarksman = unitEntryAt(plan, UNDEAD_SHOWCASE_V7.lichSplash[1]);
     expect(banshee.assetId).toBe(humanMarksman.assetId);
-    expect(banshee.artSubject).toBe("UNIT:MARKSMAN");
+    expect(banshee.artSubject).toBe("UNIT:UNDEAD:MARKSMAN");
+    expect(humanMarksman.artSubject).toBe("UNIT:MARKSMAN");
     expect(humanMarksman.faction).toBeUndefined();
     expect(humanMarksman.label).toBe("Marksman");
+    expect(graves.every((entry) => entry.artSubject === "GRAVE")).toBe(true);
   });
 
   it("previews the Wail radius and exact per-target damage for a selected Banshee", () => {
@@ -250,28 +256,14 @@ describe("Revision 13 Undead presentation", () => {
         plan,
         images: { resolve: () => ({}) as CanvasImageSource },
         artSet,
-        // CHIBI units resolve a registered raster, so they use the chibi
-        // overlay frame; everything else falls back to legacy art.
-        chibiArt: {
-          resolve: (request) =>
-            request.subject.startsWith("UNIT:")
-              ? {
-                  kind: "READY",
-                  asset: {
-                    id: `fixture-${request.subject}`,
-                    subject: request.subject,
-                    assetClass: "STANDARD_UNIT",
-                    width: 56,
-                    height: 56,
-                    url: "/fixture.png",
-                  },
-                  image: {} as CanvasImageSource,
-                  density: 1,
-                  smoothing: false,
-                  cacheKey: request.subject,
-                }
-              : { kind: "MISSING" },
-        },
+        // CHIBI Human units resolve a registered raster, so they use the
+        // chibi overlay frame. No Undead raster is registered, so Undead
+        // units fall back to the Human sprite of their role (with the badge),
+        // and the Grave keeps its code-drawn marker.
+        chibiArt: fixtureChibiArt(
+          (subject) =>
+            subject.startsWith("UNIT:") && !subject.startsWith("UNIT:UNDEAD:"),
+        ),
       });
       // The Grave mound is an ellipse centred just below its cell centre.
       expect(
@@ -296,7 +288,113 @@ describe("Revision 13 Undead presentation", () => {
             call[3] === frame.size / 2,
         ),
       ).toBe(true);
+      if (artSet === "CHIBI")
+        expect(drawnSubjects(log)).toContain("UNIT:MARKSMAN");
     }
+  });
+
+  it("draws registered Undead rasters without the badge and the chibi Grave", () => {
+    const state = undeadShowcaseFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const plan = buildBoardRenderPlanV7(view, [], NO_SELECTION);
+    const camera = { offsetX: 64, offsetY: 64, zoom: 1 };
+    const undeadUnits = plan.entries.filter(
+      (entry) => entry.kind === "UNIT" && entry.faction === "UNDEAD",
+    );
+    const badgeCentres = (log: readonly (readonly unknown[])[]) =>
+      undeadUnits.filter((entry) =>
+        log.some(
+          (call) =>
+            call[0] === "arc" &&
+            call[1] ===
+              64 +
+                entry.at.x * 128 +
+                UNDEAD_BADGE_FRAME_V7.chibi.left +
+                UNDEAD_BADGE_FRAME_V7.chibi.size / 2 &&
+            call[2] ===
+              64 +
+                entry.at.y * 128 +
+                UNDEAD_BADGE_FRAME_V7.chibi.top +
+                UNDEAD_BADGE_FRAME_V7.chibi.size / 2,
+        ),
+      );
+    const draw = (
+      ready: (subject: string) => boolean,
+      loading: (subject: string) => boolean = () => false,
+    ) => {
+      const { context, log } = recordingContext();
+      drawBoardV7({
+        context,
+        viewport: { width: 1600, height: 1600 },
+        devicePixelRatio: 1,
+        camera,
+        plan,
+        images: { resolve: () => ({}) as CanvasImageSource },
+        artSet: "CHIBI",
+        chibiArt: fixtureChibiArt(ready, loading),
+      });
+      return log;
+    };
+    // Every Undead raster and the Grave are registered.
+    const all = draw(
+      (subject) => subject.startsWith("UNIT:") || subject === "GRAVE",
+    );
+    expect(badgeCentres(all)).toEqual([]);
+    const subjects = drawnSubjects(all);
+    for (const entry of undeadUnits)
+      expect(subjects).toContain(entry.artSubject);
+    // Undead units never draw the Human sprite of their role in its place.
+    expect(subjects).not.toContain("UNIT:CAPTAIN");
+    expect(subjects).toContain("UNIT:FIGHTER");
+    // The Grave raster is centred on its cell; no code-drawn mound.
+    expect(subjects.filter((subject) => subject === "GRAVE")).toHaveLength(
+      view.graves.length,
+    );
+    expect(all.some((call) => call[0] === "ellipse")).toBe(false);
+    const grave = UNDEAD_SHOWCASE_V7.looseGrave;
+    expect(
+      all.some(
+        (call) =>
+          call[0] === "drawImage" &&
+          (call[1] as { subject?: string }).subject === "GRAVE" &&
+          call[2] === 64 + grave.x * 128 - 20 * CHIBI_SCALE &&
+          call[3] === 64 + grave.y * 128 - 20 * CHIBI_SCALE &&
+          call[4] === 40 * CHIBI_SCALE,
+      ),
+    ).toBe(true);
+    // A loading Undead raster still means Undead art: no stand-in, no badge.
+    const loading = draw(
+      (subject) =>
+        subject.startsWith("UNIT:") && subject !== "UNIT:UNDEAD:MARKSMAN",
+      (subject) => subject === "UNIT:UNDEAD:MARKSMAN" || subject === "GRAVE",
+    );
+    expect(badgeCentres(loading)).toEqual([]);
+    // Only the Human Marksman draws the Human Marksman sprite.
+    expect(
+      drawnSubjects(loading).filter((subject) => subject === "UNIT:MARKSMAN"),
+    ).toHaveLength(
+      plan.entries.filter((entry) => entry.artSubject === "UNIT:MARKSMAN")
+        .length,
+    );
+    expect(drawnSubjects(loading)).not.toContain("UNIT:UNDEAD:MARKSMAN");
+    expect(loading.some((call) => call[0] === "ellipse")).toBe(false);
+    // Only some Undead rasters registered: the rest keep the Human sprite
+    // and the badge.
+    const partial = draw(
+      (subject) =>
+        subject === "UNIT:UNDEAD:FIGHTER" ||
+        (subject.startsWith("UNIT:") && !subject.startsWith("UNIT:UNDEAD:")),
+    );
+    expect(
+      badgeCentres(partial)
+        .map((entry) => entry.label)
+        .sort(),
+    ).toEqual(
+      undeadUnits
+        .filter((entry) => entry.artSubject !== "UNIT:UNDEAD:FIGHTER")
+        .map((entry) => entry.label)
+        .sort(),
+    );
   });
 
   it("plans Wail, Raise Dead, Devour, Infect and Grave animations and notices", () => {
@@ -512,6 +610,50 @@ function recordingContext(): {
     },
   );
   return { context: context as CanvasRenderingContext2D, log };
+}
+
+/** Chibi master pixels per world unit at zoom 1 (128-unit cells, 80 px tiles). */
+const CHIBI_SCALE = 1 / CHIBI_WORLD_SCALE;
+
+/**
+ * A CHIBI art fake: `ready` subjects resolve to an image tagged with the
+ * subject (units 56 x 80, the Grave a 40 x 40 resource), `loading` ones are
+ * still loading, and everything else is MISSING.
+ */
+function fixtureChibiArt(
+  ready: (subject: ArtSubjectV7) => boolean,
+  loading: (subject: ArtSubjectV7) => boolean = () => false,
+): ChibiBoardArtV7 {
+  return {
+    resolve: (request) => {
+      if (loading(request.subject)) return { kind: "LOADING" };
+      if (!ready(request.subject)) return { kind: "MISSING" };
+      const grave = request.subject === "GRAVE";
+      return {
+        kind: "READY",
+        asset: {
+          id: `fixture-${request.subject}`,
+          subject: request.subject,
+          assetClass: grave ? "RESOURCE" : "STANDARD_UNIT",
+          width: grave ? 40 : 56,
+          height: grave ? 40 : 80,
+          url: "/fixture.png",
+        },
+        image: { subject: request.subject } as unknown as CanvasImageSource,
+        density: 1,
+        smoothing: false,
+        cacheKey: request.subject,
+      };
+    },
+  };
+}
+
+/** Subjects of every fixture chibi image drawn, in draw order. */
+function drawnSubjects(log: readonly (readonly unknown[])[]): string[] {
+  return log
+    .filter((call) => call[0] === "drawImage")
+    .map((call) => (call[1] as { subject?: string }).subject)
+    .filter((subject): subject is string => subject !== undefined);
 }
 
 function same(left: CoordV7, right: CoordV7): boolean {

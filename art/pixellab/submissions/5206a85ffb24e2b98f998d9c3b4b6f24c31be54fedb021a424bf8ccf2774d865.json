@@ -1,0 +1,36 @@
+{
+  "id": "abomination-b-edit-4",
+  "jobId": "c75be877-6351-4d6c-bc88-fc4bab9938d0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-abomination",
+    "subject": "UNIT:UNDEAD:JUGGERNAUT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 13807,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Move his left arm (on the left side of the image) in against his belly so his left fist, manacle and broken chain sit in front of the red smock, and remove the blue flames on the left side, leaving the left edge of the image empty below the shoulder plate. Keep the stitched pale blue-grey face, the iron shoulder plates, the right arm, the manacles with broken chains, colours, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Move his left arm (on the left side of the image) in against his belly so his left fist, manacle and broken chain sit in front of the red smock, and remove the blue flames on the left side, leaving the left edge of the image empty below the shoulder plate. Keep the stitched pale blue-grey face, the iron shoulder plates, the right arm, the manacles with broken chains, colours, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Move his left arm (on the left side of the image) in against his belly so his left fist, manacle and broken chain sit in front of the red smock, and remove the blue flames on the left side, leaving the left edge of the image empty below the shoulder plate. Keep the stitched pale blue-grey face, the iron shoulder plates, the right arm, the manacles with broken chains, colours, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Move his left arm (on the left side of the image) in against his belly so his left fist, manacle and broken chain sit in front of the red smock, and remove the blue flames on the left side, leaving the left edge of the image empty below the shoulder plate. Keep the stitched pale blue-grey face, the iron shoulder plates, the right arm, the manacles with broken chains, colours, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "abomination-b-edit-2",
+      "candidate": 1,
+      "sha256": "ad983b8642bdf5366f5a69afc580641a2e9fca3445b13c7c9202ae1fb30575ec"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "skeleton-a-edit",
+  "jobId": "a0e77fac-6e4a-4432-93f5-219c18bb322d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-skeleton",
+    "subject": "UNIT:UNDEAD:FIGHTER",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 13102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the wrist wraps, belt, shin wraps and boots dark slate grey iron and the feet ivory bone, so nothing is brown. Make the bright red ragged tabard bigger so it covers his chest, belly and hips down to the knees with torn zigzag hems. Keep the skull face, the grey iron helmet with its red crest, the sword, the round iron shield with the skull, pose, outline and art style exactly the same, on a transparent background with nothing under his feet."
+      }
+    ],
+    "prompt": "Make the wrist wraps, belt, shin wraps and boots dark slate grey iron and the feet ivory bone, so nothing is brown. Make the bright red ragged tabard bigger so it covers his chest, belly and hips down to the knees with torn zigzag hems. Keep the skull face, the grey iron helmet with its red crest, the sword, the round iron shield with the skull, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "negativePrompt": "",
+    "description": "Make the wrist wraps, belt, shin wraps and boots dark slate grey iron and the feet ivory bone, so nothing is brown. Make the bright red ragged tabard bigger so it covers his chest, belly and hips down to the knees with torn zigzag hems. Keep the skull face, the grey iron helmet with its red crest, the sword, the round iron shield with the skull, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "editInstruction": "Make the wrist wraps, belt, shin wraps and boots dark slate grey iron and the feet ivory bone, so nothing is brown. Make the bright red ragged tabard bigger so it covers his chest, belly and hips down to the knees with torn zigzag hems. Keep the skull face, the grey iron helmet with its red crest, the sword, the round iron shield with the skull, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "source": {
+      "recipe": "skeleton-a",
+      "candidate": 0,
+      "sha256": "9c9639d0f49a87f38d06a9c523b57fbe251d060ac8de1376fd604b0c5abaf45d"
+    }
+  }
+}

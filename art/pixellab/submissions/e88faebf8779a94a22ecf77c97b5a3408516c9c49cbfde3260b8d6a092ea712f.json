@@ -1,0 +1,36 @@
+{
+  "id": "lich-c-edit-b-3",
+  "jobId": "1979947b-b188-44cb-881f-a76a23c46982",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead",
+    "asset": "chibi-undead-lich",
+    "subject": "UNIT:UNDEAD:CATAPULT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 13612,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the dark purple inside of the robe the same bright red as the outside of the robe. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the dark purple inside of the robe the same bright red as the outside of the robe. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the dark purple inside of the robe the same bright red as the outside of the robe. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the dark purple inside of the robe the same bright red as the outside of the robe. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "lich-c-edit-b",
+      "candidate": 1,
+      "sha256": "132b50739f34d4cbeaadfe2efe9d3a837d31e72b4466dbe9d7ca081f2135d4e6"
+    }
+  }
+}
