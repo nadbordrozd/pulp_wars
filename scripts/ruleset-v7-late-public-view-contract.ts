@@ -161,6 +161,8 @@ export function upgradeRetainedPublicViewV7(
       seaRoutes: [],
       recoverableNavalUnitIds: [],
     },
+    // Revision 13: the retained all-Human match has no Graves.
+    graves: [],
   };
 }
 import {

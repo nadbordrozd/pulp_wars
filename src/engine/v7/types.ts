@@ -197,6 +197,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_WAITED",
   "UNIT_PROMOTED",
   "UNIT_DIED",
+  "GRAVE_CREATED",
   "CITY_CAPTURED",
   "TREASURE_CAPTURED",
   "PLAYER_ELIMINATED",
@@ -413,6 +414,11 @@ export interface GameStateV7 {
   readonly populationContributions: readonly PopulationContributionV7[];
   readonly units: readonly UnitStateV7[];
   readonly treasureChests: readonly CoordV7[];
+  /**
+   * Revision 13 Grave markers, sorted by (y, x) without duplicates. Always
+   * empty in a match whose setup has no UNDEAD seat.
+   */
+  readonly graves: readonly CoordV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }

@@ -4,6 +4,7 @@ import {
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TECHNOLOGY_BRANCH_IDS_V7,
   effectiveRoleRuleV7,
+  factionRulesV7,
   factionTreeV7,
   technologyCapabilitiesV7,
   unitRoleMechanicsV7,
@@ -504,6 +505,7 @@ function appendPublicUnitCommandsV7(
     !primaryUsedForQuery(unit) &&
     unit.hp < unit.maxHp &&
     unit.form !== "EMBARKED" &&
+    !publicRestlessOutsideOwnTerritory(view, unit) &&
     (unit.form !== "NAVAL" ||
       [tileAtView(view, unit.at), ...adjacentPublicTiles(view, unit.at)].some(
         (tile) =>
@@ -3617,6 +3619,21 @@ function asView(
   if (viewerId === undefined)
     throw new RangeError("A viewer is required for authoritative state");
   return viewForV7(input, viewerId);
+}
+
+/**
+ * Revision 13 Restless: an own land-form unit of a Restless faction outside
+ * its owner's territory cannot Recover. Own units stand on explored tiles, so
+ * the public territory owner is exact.
+ */
+function publicRestlessOutsideOwnTerritory(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): boolean {
+  if (unit.form !== "LAND" || !factionRulesV7(view.viewer.faction).restless)
+    return false;
+  const tile = tileAtView(view, unit.at);
+  return tile?.explored !== true || tile.territoryOwnerId !== unit.ownerId;
 }
 
 function tileAtView(view: PlayerViewV7, at: CoordV7) {

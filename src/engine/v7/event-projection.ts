@@ -206,6 +206,10 @@ function eventVisible(
       return event.playerId === viewerId;
     case "FIELD_DEFENSE_DESTROYED":
       return coordVisible(before, after, viewerId, event.at);
+    case "GRAVE_CREATED":
+      // Revision 13: a Grave is projected exactly to viewers who explored its
+      // tile before or after the command, so a hidden kill reveals nothing.
+      return coordVisible(before, after, viewerId, event.at);
     case "PLAYER_ELIMINATED":
     case "MATCH_ENDED":
     case "CITY_CAPTURED":

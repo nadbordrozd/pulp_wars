@@ -1655,6 +1655,7 @@ export function createInitialMapStateV7(
     populationContributions: [],
     units: entities.units,
     treasureChests: generated.map.treasureChests,
+    graves: [],
     pendingChoices: [],
     outcome: null,
   });

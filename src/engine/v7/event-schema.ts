@@ -240,6 +240,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNIT_WAITED: ["kind", "playerId", "unitId"],
   UNIT_PROMOTED: ["kind", "unitId", "maxHp"],
   UNIT_DIED: ["kind", "unitId", "cause"],
+  GRAVE_CREATED: ["kind", "at"],
   CITY_CAPTURED: ["kind", "cityId", "from", "to"],
   TREASURE_CAPTURED: [
     "kind",
@@ -784,6 +785,8 @@ function validPayload(
           e.cause as string,
         )
       );
+    case "GRAVE_CREATED":
+      return parseCoordV7(e.at) !== null;
     case "CITY_CAPTURED":
       return id(e.cityId) && (e.from === null || id(e.from)) && id(e.to);
     case "TREASURE_CAPTURED":

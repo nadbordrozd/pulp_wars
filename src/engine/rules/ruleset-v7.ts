@@ -964,6 +964,40 @@ export function factionTreeIdV7(faction: FactionIdV7): FactionTreeIdV7 {
   return factionTreeV7(faction).id;
 }
 
+/** Revision 13 faction-wide rules that are not role rules. */
+export interface FactionRulesV7 {
+  /**
+   * Restless: land-form units recover only in their owner's territory
+   * (explicit Recover is illegal elsewhere; idle recovery is 0 there).
+   */
+  readonly restless: boolean;
+}
+
+export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
+  deepFreeze({
+    ORIGINAL: { restless: false },
+    UNDEAD: { restless: true },
+  });
+
+export function factionRulesV7(faction: FactionIdV7): FactionRulesV7 {
+  const rules = Object.hasOwn(FACTION_RULES_V7, faction)
+    ? FACTION_RULES_V7[faction]
+    : undefined;
+  if (rules === undefined)
+    throw new RangeError(`Unknown v7 faction: ${String(faction)}`);
+  return rules;
+}
+
+/**
+ * Revision 13: Graves exist exactly in matches whose setup includes an UNDEAD
+ * seat. The property is fixed at setup and survives Undead elimination.
+ */
+export function gravesEnabledV7(setup: {
+  readonly factions: readonly FactionIdV7[];
+}): boolean {
+  return setup.factions.includes("UNDEAD");
+}
+
 export const RULESET_7 = deepFreeze({
   id: RULESET_7_ID,
   version: 7 as const,

@@ -212,6 +212,8 @@ export interface PlayerViewV7 {
   readonly unitStats: readonly PublicUnitStatsV7[];
   readonly naval: PublicNavalFactsV7;
   readonly treasureChests: readonly CoordV7[];
+  /** Revision 13: the viewer-explored subset of the canonical Graves. */
+  readonly graves: readonly CoordV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -590,6 +592,7 @@ export function viewForV7(
     treasureChests: state.treasureChests.filter((chest) =>
       explored.has(key(chest)),
     ),
+    graves: state.graves.filter((grave) => explored.has(key(grave))),
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
         (city) => city.id === choice.cityId && city.ownerId === viewerId,

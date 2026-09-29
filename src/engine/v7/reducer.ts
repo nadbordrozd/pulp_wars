@@ -7,6 +7,8 @@ import {
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   effectiveRoleRuleV7,
+  factionRulesV7,
+  playerFactionV7,
   technologyCapabilitiesV7,
   unitRoleRuleV7,
   isResourceRevealedV7,
@@ -40,6 +42,7 @@ import {
 } from "./economy";
 import type { DomainEventV7 } from "./events";
 import { calculateCombatPreviewV7, pushedDestinationV7 } from "./combat";
+import { recordCombatDeathV7 } from "./graves";
 import { createInitialMapStateV7 } from "./map";
 import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
 import { isUnitVisibleToPlayerV7 } from "./observation";
@@ -2370,21 +2373,29 @@ function applyAttack(
         at: defender.at,
         reason: defenseReason,
       });
+    // Revision 13 section 6.8 step 7: each death in order (defender, splash
+    // in (y, x, id) order, attacker) may leave a Grave on its death tile
+    // before the attacker advances onto it.
+    let graves = state.graves;
     if (preview.defenderDies)
-      events.push({ kind: "UNIT_DIED", unitId: defender.id, cause: "ATTACK" });
+      graves = recordCombatDeathV7(state, graves, defender, "ATTACK", events);
     for (const splash of preview.splash)
       if (splash.dies)
-        events.push({
-          kind: "UNIT_DIED",
-          unitId: splash.unitId,
-          cause: "SPLASH",
-        });
+        graves = recordCombatDeathV7(
+          state,
+          graves,
+          requireValue(state.units.find((unit) => unit.id === splash.unitId)),
+          "SPLASH",
+          events,
+        );
     if (preview.attackerDies)
-      events.push({
-        kind: "UNIT_DIED",
-        unitId: attacker.id,
-        cause: "RETALIATION",
-      });
+      graves = recordCombatDeathV7(
+        state,
+        graves,
+        attacker,
+        "RETALIATION",
+        events,
+      );
     if (preview.advances)
       events.push({
         kind: "UNIT_MOVED",
@@ -2440,6 +2451,7 @@ function applyAttack(
         players,
         cities: economy.cities,
         units,
+        graves,
         populationContributions: economy.populationContributions,
       },
       actor,
@@ -2615,6 +2627,8 @@ function applyRecover(
     return rejected(original, "RECOVER_NOT_LEGAL", { reason: "FULL_HP" });
   if (unit.form === "EMBARKED")
     return rejected(original, "RECOVER_NOT_LEGAL", { reason: "EMBARKED" });
+  if (restlessOutsideOwnTerritory(state, unit))
+    return rejected(original, "RECOVER_NOT_LEGAL", { reason: "RESTLESS" });
   if (
     unit.form === "NAVAL" &&
     ![unit.at, ...adjacentCoords(state, unit.at)].some((at) =>
@@ -3321,7 +3335,10 @@ function recoverIdleUnits(
         unit.hp > 0 &&
         unit.hp < unit.maxHp &&
         !unit.activation.moved &&
-        !primaryUsed(unit),
+        !primaryUsed(unit) &&
+        // Revision 13 Restless: no idle recovery and no event outside own
+        // territory.
+        !restlessOutsideOwnTerritory(state, unit),
     )
     .sort((a, b) => a.id - b.id)
     .map((unit) => {
@@ -3358,10 +3375,29 @@ function recoveryAmount(state: GameStateV7, unit: UnitStateV7): number {
       ? 4
       : 0;
   if (unit.form === "EMBARKED") return 0;
+  if (inOwnTerritory(state, unit)) return 4;
+  return restlessOutsideOwnTerritory(state, unit) ? 0 : 2;
+}
+
+function inOwnTerritory(state: GameStateV7, unit: UnitStateV7): boolean {
   const tile = tileAtV7(state.board, unit.at);
   const city = state.cities.find((item) => item.id === tile?.territoryCityId);
-  const friendly = city?.ownerId === unit.ownerId;
-  return friendly ? 4 : 2;
+  return city?.ownerId === unit.ownerId;
+}
+
+/**
+ * Revision 13 Restless: a land-form unit of a Restless faction (Undead)
+ * recovers only in its owner's territory.
+ */
+function restlessOutsideOwnTerritory(
+  state: GameStateV7,
+  unit: UnitStateV7,
+): boolean {
+  return (
+    unit.form === "LAND" &&
+    factionRulesV7(playerFactionV7(state, unit.ownerId)).restless &&
+    !inOwnTerritory(state, unit)
+  );
 }
 
 function adjacentCoords(

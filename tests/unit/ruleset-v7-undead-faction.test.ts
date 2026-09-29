@@ -1461,10 +1461,19 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
         mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
       };
       const result = runAiMatchV7(setup, { maxRounds: baseline.maxRounds });
-      const normalize = (value: unknown): unknown =>
-        JSON.parse(
-          JSON.stringify(value).replaceAll(RULESET_7_ID, "IDENTITY"),
+      // Revision 13 adds the neutral `graves: []` field to state and view;
+      // parity is defined apart from identity and neutral values.
+      const humanView = viewForV7(result.state, result.state.humanPlayerId);
+      expect(result.state.graves).toEqual([]);
+      expect(humanView.graves).toEqual([]);
+      expect(result.metrics.eventsByKind.GRAVE_CREATED).toBe(0);
+      const normalize = (value: unknown): unknown => {
+        const { graves: _graves, ...rest } = value as { graves: unknown };
+        void _graves;
+        return JSON.parse(
+          JSON.stringify(rest).replaceAll(RULESET_7_ID, "IDENTITY"),
         ) as unknown;
+      };
       expect({
         acceptedCommands: result.acceptedCommands,
         rounds: result.rounds,
@@ -1474,9 +1483,7 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
         commandHash: result.metrics.commandHash,
         eventHash: result.metrics.eventHash,
         normalizedFinalStateHash: canonicalHash(normalize(result.state)),
-        normalizedHumanViewHash: canonicalHash(
-          normalize(viewForV7(result.state, result.state.humanPlayerId)),
-        ),
+        normalizedHumanViewHash: canonicalHash(normalize(humanView)),
         normalizedHumanCommandsHash: canonicalHash(
           queryPlayerCommandsV7(result.state, result.state.humanPlayerId),
         ),

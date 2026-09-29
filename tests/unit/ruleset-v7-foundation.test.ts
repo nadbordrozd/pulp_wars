@@ -79,7 +79,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
     expect(COMMAND_KIND_ORDER_V7).toHaveLength(39);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(56);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(57);
     expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 3)).toEqual([
       "TURN_STARTED",
       "WINDMILL_HEALING_RESOLVED",

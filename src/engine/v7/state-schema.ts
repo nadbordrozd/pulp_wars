@@ -1,6 +1,10 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
 import type { PlayerId } from "../model/ids";
-import { effectiveRoleRuleV7, factionTreeIdV7 } from "../rules/ruleset-v7";
+import {
+  effectiveRoleRuleV7,
+  factionTreeIdV7,
+  gravesEnabledV7,
+} from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
   BIOME_IDS_V7,
@@ -61,6 +65,7 @@ const STATE_KEYS = [
   "board",
   "cities",
   "commandIndex",
+  "graves",
   "humanPlayerId",
   "nextEntityId",
   "outcome",
@@ -116,6 +121,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const contributions = parseContributions(input.populationContributions);
   const units = players === null ? null : parseUnits(input.units, players);
   const treasureChests = parseSortedCoords(input.treasureChests);
+  const graves = parseSortedCoords(input.graves);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -129,6 +135,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     contributions === null ||
     units === null ||
     treasureChests === null ||
+    graves === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -156,6 +163,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       contributions,
       units,
       treasureChests,
+      graves,
       choices,
       outcome,
       humanPlayerId,
@@ -183,6 +191,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     populationContributions: contributions,
     units,
     treasureChests,
+    graves,
     pendingChoices: choices,
     outcome,
   };
@@ -865,6 +874,7 @@ interface CrossInput {
   contributions: readonly PopulationContributionV7[];
   units: readonly UnitStateV7[];
   treasureChests: readonly CoordV7[];
+  graves: readonly CoordV7[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
@@ -882,6 +892,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     contributions,
     units,
     treasureChests,
+    graves,
     choices,
     outcome,
   } = value;
@@ -1054,6 +1065,19 @@ function validateCrossReferences(value: CrossInput): boolean {
       tile.resource !== null ||
       tile.improvement !== null ||
       units.some((unit) => sameCoordV7(unit.at, chest))
+    )
+      return false;
+  }
+  // Revision 13 Graves exist only in matches with an Undead seat and only on
+  // land tiles that are not settlement sites or treasure chests.
+  if (graves.length > 0 && !gravesEnabledV7(value.setup)) return false;
+  for (const grave of graves) {
+    const tile = tileAt(board, grave);
+    if (
+      tile === undefined ||
+      tile.biome === null ||
+      tile.site !== null ||
+      treasureChests.some((chest) => sameCoordV7(chest, grave))
     )
       return false;
   }

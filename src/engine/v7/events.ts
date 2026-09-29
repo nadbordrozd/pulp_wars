@@ -393,6 +393,7 @@ export type DomainEventV7 =
       readonly unitId: UnitId;
       readonly cause: "ATTACK" | "SPLASH" | "RETALIATION" | "ELIMINATION";
     }
+  | { readonly kind: "GRAVE_CREATED"; readonly at: CoordV7 }
   | {
       readonly kind: "CITY_CAPTURED";
       readonly cityId: CityId;
