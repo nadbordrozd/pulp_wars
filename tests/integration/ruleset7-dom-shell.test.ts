@@ -206,7 +206,8 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("coalesces human movement notifications and installs the board before rebuilding the HUD", async () => {
     const source = new Ruleset7BrowserController();
-    const launched = await source.launch(setupV7(1541));
+    // Seed 1543: the human moves first on its revision-14 map.
+    const launched = await source.launch(setupV7(1543));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const host = new CapturingBoardHost();
     let finishSlide: (() => void) | undefined;

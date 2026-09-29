@@ -47,16 +47,16 @@ import {
 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 revision-12 identity", () => {
-  it("keeps rejecting r11 after the r13 identity and cleans every obsolete Ruleset-7 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r13");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r13.current");
+  it("keeps rejecting r11 after the r14 identity and cleans every obsolete Ruleset-7 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r14");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r14.current");
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r12.current",
+      "pulpWars.save.v7r13.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
 
     const state = initialV7();
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r13");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r14");
     expect(
       parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r11" }),
     ).toBeNull();
@@ -951,7 +951,9 @@ describe("ruleset-7 revision-12 Raider Escape", () => {
   });
 
   it("round-trips a natural escape through replay and save", () => {
-    const setup = setupV7(3);
+    // Revision 14 maps differ (one more village); seed 13 shows a natural
+    // escape within the same command cap (seed 3 did on revision-13 maps).
+    const setup = setupV7(13);
     const natural = runAiMatchV7(setup, { maxRounds: 40, maxCommands: 110 });
     const index = natural.commandLog.findIndex((entry) =>
       entry.events.some(

@@ -29,7 +29,9 @@ export function projectEventsV7(
         event.kind === "NAVAL_UNIT_TRAINED" ||
         event.kind === "UNIT_REWARD_GRANTED" ||
         // Revision 13: a Zombie rising in a projected UNIT_INFECTED.
-        event.kind === "UNIT_INFECTED") &&
+        event.kind === "UNIT_INFECTED" ||
+        // Revision 14: a Zombie rising in a projected BITTEN_UNIT_RISEN.
+        event.kind === "BITTEN_UNIT_RISEN") &&
       eventVisible(
         beforeState,
         afterState,
@@ -64,7 +66,42 @@ export function projectEventsV7(
   const concealed = new Set<UnitId>();
   const projected: PlayerEventV7[] = [];
 
+  const ownedBeforeOrAfter = (unitId: UnitId): boolean =>
+    beforeState.units.find((unit) => unit.id === unitId)?.ownerId ===
+      viewerId ||
+    afterState.units.find((unit) => unit.id === unitId)?.ownerId === viewerId;
   for (const event of events) {
+    // Revision 14 afflictions: each entry is projected to a viewer that owns
+    // its unit or sees it (before the command for damage, before or after for
+    // spread and clearing); an event with no remaining entry is dropped.
+    if (event.kind === "PLAGUE_DAMAGED") {
+      const results = event.results.filter(
+        (entry) =>
+          ownedBeforeOrAfter(entry.unitId) || beforeVisible.has(entry.unitId),
+      );
+      if (results.length > 0) projected.push({ ...event, results });
+      continue;
+    }
+    if (event.kind === "PLAGUE_SPREAD") {
+      const results = event.results.filter(
+        (entry) =>
+          ownedBeforeOrAfter(entry.unitId) ||
+          beforeVisible.has(entry.unitId) ||
+          afterVisible.has(entry.unitId),
+      );
+      if (results.length > 0) projected.push({ ...event, results });
+      continue;
+    }
+    if (event.kind === "PLAGUE_CLEARED") {
+      const unitIds = event.unitIds.filter(
+        (unitId) =>
+          ownedBeforeOrAfter(unitId) ||
+          beforeVisible.has(unitId) ||
+          afterVisible.has(unitId),
+      );
+      if (unitIds.length > 0) projected.push({ ...event, unitIds });
+      continue;
+    }
     if (event.kind === "WINDMILL_HEALING_RESOLVED") {
       if (event.playerId === viewerId) projected.push(event);
       else if (coordVisible(afterState, afterState, viewerId, event.at)) {
@@ -310,7 +347,10 @@ function projectEventPayload(
           populationAdded: 3,
         };
   }
-  if (event.kind === "UNIT_INFECTED" && event.playerId !== viewerId)
+  if (
+    (event.kind === "UNIT_INFECTED" || event.kind === "BITTEN_UNIT_RISEN") &&
+    event.playerId !== viewerId
+  )
     // A unit's home city is owner-private, exactly as in the public view.
     return { ...event, homeCityId: null };
   if (event.kind === "FOREST_CULTIVATED") {
@@ -356,7 +396,19 @@ function projectEventPayload(
         visibility(before, viewerId).has(entry.unitId)
       );
     });
-    event = { ...event, preview: { ...event.preview, splash } };
+    // Revision 14: Plague is listed only for the target and kept splash.
+    const kept = new Set([
+      event.preview.targetUnitId,
+      ...splash.map((entry) => entry.unitId),
+    ]);
+    event = {
+      ...event,
+      preview: {
+        ...event.preview,
+        splash,
+        plagued: event.preview.plagued.filter((unitId) => kept.has(unitId)),
+      },
+    };
   }
   if (event.kind !== "COMBAT_RESOLVED" || event.preview.push !== "BLOCKED")
     return event;

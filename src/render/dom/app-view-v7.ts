@@ -3421,7 +3421,7 @@ function setupFrom(draft: DraftV7, undeadSetup: boolean): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r13",
+    rulesetId: "pulp-wars-poc-7r14",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,

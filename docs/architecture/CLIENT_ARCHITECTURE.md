@@ -2,10 +2,13 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r13` (autosave
-`pulpWars.save.v7r13.current`), whose rules are described by
+The current client runs `pulp-wars-poc-7r14` (autosave
+`pulpWars.save.v7r14.current`), whose rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) plus the in-progress
-[revision-13 Undead overlay](../product/RULESET_7_REVISION_13_UNDEAD.md). The
+[revision-13 Undead overlay](../product/RULESET_7_REVISION_13_UNDEAD.md) and
+[revision-14 balance overlay](../product/RULESET_7_REVISION_14_BALANCE.md)
+(Plague, Bitten, and the income, village, Vampire, and Lich changes; its UI
+surfaces follow in `pulp_wars-vkq.19`). The
 engine registers the Undead faction per seat. The setup UI offers a faction
 per seat only behind the `?undead=1` development flag, which the bootstrap
 reads (`src/app/undead-flag-v7.ts`) and never persists; saves with Undead

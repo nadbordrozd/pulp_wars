@@ -167,7 +167,8 @@ describe("ruleset-7 public movement bounds", () => {
         ),
       },
     };
-    expect(marketIncomeForCityV7(marketState, city)).toBe(2);
+    // Revision 14 (E2): a lone Market pays 1 even with Commerce.
+    expect(marketIncomeForCityV7(marketState, city)).toBe(1);
     const cut = {
       ...state,
       board: {

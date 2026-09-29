@@ -32,6 +32,7 @@ import {
   isCityBesiegedV7,
   isActivePortV7,
   combinedNetworkCityIdsV7,
+  marketCoinsV7,
   marketIncomeForCityV7,
   playerIncomeV7,
   recomputeLiveEconomyV7,
@@ -49,7 +50,19 @@ import {
   withoutGravesV7,
 } from "./graves";
 import { recordInfectionV7 } from "./infect";
-import { createInitialMapStateV7 } from "./map";
+import {
+  biteOfV7,
+  plagueClearedEventsV7,
+  prunedAfflictionsV7,
+  recordBittenRisingV7,
+  withBittenV7,
+  withPlaguedV7,
+} from "./afflictions";
+import { resolveStartTurnPlagueV7 } from "./plague";
+import {
+  createInitialMapStateV7,
+  type CreateInitialMapStateResultV7,
+} from "./map";
 import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { parseGameStateV7 } from "./state-schema";
@@ -123,7 +136,8 @@ export type RuleErrorCodeV7 =
   | "PROMOTION_NOT_ELIGIBLE"
   | "UNIT_ALREADY_HANDLED"
   | "PILLAGE_INVALID_TARGET"
-  | "WAIL_NOT_LEGAL";
+  | "WAIL_NOT_LEGAL"
+  | "DISBAND_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -188,7 +202,17 @@ export function isAcceptedStateCertificateV7(state: GameStateV7): boolean {
 export function createPlayableGameV7(
   setup: MatchSetupV7,
 ): CreatePlayableGameResultV7 {
-  const created = createInitialMapStateV7(setup);
+  return createPlayableGameFromMapStateV7(createInitialMapStateV7(setup));
+}
+
+/**
+ * Starts the first turn on an already generated initial map state; used by
+ * {@link createPlayableGameV7} and, for parity fixtures, with a map from
+ * `createInitialMapStateWithVillageCountV7`.
+ */
+export function createPlayableGameFromMapStateV7(
+  created: CreateInitialMapStateResultV7,
+): CreatePlayableGameResultV7 {
   if (!created.ok) return created;
   const activeId = created.state.turnOrder[created.state.activeSeatIndex];
   const player = created.state.players.find((item) => item.id === activeId);
@@ -218,13 +242,15 @@ export function applyCommandV7(
 ): ApplyCommandResultV7 {
   const result = applyCommandCoreV7(stateInput, actor, input);
   if (!result.accepted) return result;
-  if (!navalFactsMayChangeV7(input)) return result;
+  const naval = navalFactsMayChangeV7(input)
+    ? navalTransitionEventsV7(stateInput, result.state)
+    : [];
+  // Revision 14 section 3.5: a Lich that left the board cures its Plague.
+  const cleared = plagueClearedEventsV7(stateInput, result.state);
+  if (!navalFactsMayChangeV7(input) && cleared.length === 0) return result;
   return {
     ...result,
-    events: [
-      ...result.events,
-      ...navalTransitionEventsV7(stateInput, result.state),
-    ],
+    events: [...result.events, ...naval, ...cleared],
   };
 }
 
@@ -721,9 +747,7 @@ function applySpatial(
     const next = checked(achievements.state);
     const marketIncome =
       rule.improvement === "MARKET"
-        ? Math.min(4, evaluation.marketIncome) *
-          technologyCapabilitiesV7(player.researchedTechs, player.faction)
-            .marketIncomeMultiplier
+        ? marketCoinsV7(evaluation.marketIncome)
         : evaluation.marketIncome;
     return accepted(next, [
       {
@@ -2417,27 +2441,59 @@ function applyAttack(
       risings.push(rising);
       units = [...units, rising];
     };
-    if (preview.defenderInfected) infect(attacker, defender, "ATTACK");
-    else if (preview.defenderDies)
-      graves = recordCombatDeathV7(state, graves, defender, "ATTACK", events);
-    for (const splash of preview.splash)
-      if (splash.dies)
-        graves = recordCombatDeathV7(
-          state,
-          graves,
-          requireValue(state.units.find((unit) => unit.id === splash.unitId)),
-          "SPLASH",
-          events,
-        );
-    if (preview.attackerInfected) infect(defender, attacker, "RETALIATION");
-    else if (preview.attackerDies)
-      graves = recordCombatDeathV7(
+    // Revision 14 section 4.3: a bitten land-form victim that Infect did not
+    // convert rises as its biter's Zombie instead of leaving a Grave.
+    const died = (
+      victim: UnitStateV7,
+      cause: "ATTACK" | "SPLASH" | "RETALIATION",
+    ): void => {
+      const bite = biteOfV7(state, victim.id);
+      if (bite === undefined || victim.form !== "LAND") {
+        graves = recordCombatDeathV7(state, graves, victim, cause, events);
+        return;
+      }
+      const allocation = allocateUnitId(nextEntityId);
+      nextEntityId = allocation.nextEntityId;
+      const rising = recordBittenRisingV7(
         state,
-        graves,
-        attacker,
-        "RETALIATION",
+        bite,
+        victim,
+        cause,
+        allocation.id,
+        exhaustedActivation(),
         events,
       );
+      risings.push(rising);
+      units = [...units, rising];
+    };
+    if (preview.defenderInfected) infect(attacker, defender, "ATTACK");
+    else if (preview.defenderDies) died(defender, "ATTACK");
+    for (const splash of preview.splash)
+      if (splash.dies)
+        died(
+          requireValue(state.units.find((unit) => unit.id === splash.unitId)),
+          "SPLASH",
+        );
+    if (preview.attackerInfected) infect(defender, attacker, "RETALIATION");
+    else if (preview.attackerDies) died(attacker, "RETALIATION");
+    // Revision 14 sections 3.1 and 4.1: Plague and bites on the survivors.
+    const plagued = withPlaguedV7(
+      state.plagued,
+      preview.plagued.map((unitId) => ({ unitId, sourceUnitId: attacker.id })),
+    );
+    let bitten = state.bitten;
+    if (preview.defenderBitten)
+      bitten = withBittenV7(bitten, {
+        unitId: defender.id,
+        biterPlayerId: attacker.ownerId,
+        biterUnitId: attacker.id,
+      });
+    if (preview.attackerBitten)
+      bitten = withBittenV7(bitten, {
+        unitId: attacker.id,
+        biterPlayerId: defender.ownerId,
+        biterUnitId: defender.id,
+      });
     if (preview.advances)
       events.push({
         kind: "UNIT_MOVED",
@@ -2512,6 +2568,8 @@ function applyAttack(
         cities: economy.cities,
         units,
         graves,
+        plagued,
+        bitten,
         populationContributions: economy.populationContributions,
       },
       actor,
@@ -2616,6 +2674,10 @@ function applyTendWounded(
     return rejected(original, "INTEGER_OVERFLOW");
   const result = supportCaptain(original, state, actor, unitId, "TEND_WOUNDED");
   if ("accepted" in result) return result;
+  // Revision 14 section 5: Tend Wounded also cures Plague and Bitten, so a
+  // plagued or bitten unit is a target even at full HP.
+  const plaguedIds = new Set(state.plagued.map((entry) => entry.unitId));
+  const bittenIds = new Set(state.bitten.map((entry) => entry.unitId));
   const targets = state.units
     .filter(
       (unit) =>
@@ -2623,7 +2685,9 @@ function applyTendWounded(
         unit.ownerId === actor &&
         unit.form === "LAND" &&
         unit.id !== result.captain.id &&
-        unit.hp < unit.maxHp &&
+        (unit.hp < unit.maxHp ||
+          plaguedIds.has(unit.id) ||
+          bittenIds.has(unit.id)) &&
         !unit.activation.tendedThisTurn &&
         chebyshev(result.captain.at, unit.at) === 1,
     )
@@ -2638,6 +2702,8 @@ function applyTendWounded(
     checked({
       ...state,
       commandIndex: nextSafe(state.commandIndex),
+      plagued: state.plagued.filter((entry) => !amounts.has(entry.unitId)),
+      bitten: state.bitten.filter((entry) => !amounts.has(entry.unitId)),
       units: state.units.map((unit) =>
         unit.id === result.captain.id
           ? {
@@ -2665,6 +2731,8 @@ function applyTendWounded(
           unitId: unit.id,
           amount: amounts.get(unit.id) ?? 0,
           hpAfter: unit.hp + (amounts.get(unit.id) ?? 0),
+          curedPlague: plaguedIds.has(unit.id),
+          curedBitten: bittenIds.has(unit.id),
         })),
       },
     ],
@@ -3194,6 +3262,11 @@ function applyDisband(
     });
   if (primaryUsed(actorCheck.unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  // Revision 14 sections 3.6 and 4.5: afflicted units cannot Disband.
+  if (state.plagued.some((entry) => entry.unitId === unitId))
+    return rejected(original, "DISBAND_NOT_LEGAL", { reason: "PLAGUED" });
+  if (state.bitten.some((entry) => entry.unitId === unitId))
+    return rejected(original, "DISBAND_NOT_LEGAL", { reason: "BITTEN" });
   const refund = Math.floor(rule.cost / 2);
   try {
     const coins = player.coins + refund;
@@ -3507,7 +3580,9 @@ function applyEndTurn(
       },
       nextPlayer.id,
     );
-    const started = startTurnEconomyV7(advanced, nextPlayer, false);
+    const started = startTurnEconomyV7(advanced, nextPlayer, false, (next) =>
+      resolveStartTurnPlagueV7(next, nextPlayer.id),
+    );
     const turnStarted = started.events[0];
     if (turnStarted === undefined) throw new RangeError("INVALID_STATE");
     const settlement = settleCityRewardsV7(started.state, nextPlayer.id);
@@ -3604,7 +3679,7 @@ function applyWail(
     const damage = new Map(
       targets.map((entry) => [entry.unitId, entry.damage] as const),
     );
-    const units = state.units
+    let units = state.units
       .map((unit) =>
         unit.id === banshee.id
           ? {
@@ -3631,15 +3706,50 @@ function applyWail(
       },
     ];
     let graves = state.graves;
-    for (const entry of targets)
-      if (entry.dies)
-        graves = recordCombatDeathV7(
-          state,
-          graves,
-          requireValue(state.units.find((unit) => unit.id === entry.unitId)),
-          "WAIL",
-          events,
-        );
+    let nextEntityId = state.nextEntityId;
+    const risings: UnitStateV7[] = [];
+    for (const entry of targets) {
+      if (!entry.dies) continue;
+      const victim = requireValue(
+        state.units.find((unit) => unit.id === entry.unitId),
+      );
+      // Revision 14 section 4.3: a bitten land-form victim rises instead.
+      const bite = biteOfV7(state, victim.id);
+      if (bite === undefined || victim.form !== "LAND") {
+        graves = recordCombatDeathV7(state, graves, victim, "WAIL", events);
+        continue;
+      }
+      const allocation = allocateUnitId(nextEntityId);
+      nextEntityId = allocation.nextEntityId;
+      const rising = recordBittenRisingV7(
+        state,
+        bite,
+        victim,
+        "WAIL",
+        allocation.id,
+        exhaustedActivation(),
+        events,
+      );
+      risings.push(rising);
+      units = [...units, rising];
+    }
+    let players = state.players;
+    for (const risen of risings) {
+      const risenState = { ...state, players, units } as GameStateV7;
+      const reveal = revealRadius(
+        risenState,
+        risen.ownerId,
+        risen.at,
+        unitSightRadiusAtV7(risenState, risen),
+      );
+      players = setExplored(players, risen.ownerId, reveal.explored);
+      if (reveal.revealed.length)
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: risen.ownerId,
+          tiles: reveal.revealed,
+        });
+    }
     const economy = recomputeLiveEconomyV7(
       state,
       { board: state.board, cities: state.cities, units },
@@ -3650,6 +3760,8 @@ function applyWail(
       {
         ...state,
         commandIndex: nextSafe(state.commandIndex),
+        nextEntityId,
+        players,
         cities: economy.cities,
         units,
         graves,
@@ -4220,7 +4332,8 @@ function isExplored(player: PlayerStateV7, at: CoordV7): boolean {
 }
 function checked(state: GameStateV7): GameStateV7 {
   checkedOutputValidationCountV7 += 1;
-  const result = parseGameStateV7(state);
+  // Revision 14: drop afflictions of departed units, sources, and biters.
+  const result = parseGameStateV7(prunedAfflictionsV7(state));
   if (result === null) throw new RangeError("INVALID_STATE");
   return result;
 }

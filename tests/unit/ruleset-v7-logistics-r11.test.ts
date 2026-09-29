@@ -817,7 +817,7 @@ describe("Ruleset 7 revision 11 city logistics", () => {
     ).toEqual([]);
   });
 
-  it("adds reversible Roads population before Commerce and doubles Markets with Commerce", () => {
+  it("adds reversible Roads population before Commerce and keeps Markets undoubled with Commerce", () => {
     const generated = exploredAllV7(initialV7(11_005));
     const actor = generated.humanPlayerId;
     const capital = required(
@@ -1071,7 +1071,7 @@ describe("Ruleset 7 revision 11 city logistics", () => {
     };
     expect(
       marketIncomeForCityV7(marketState, marketCity),
-    ).toBeGreaterThanOrEqual(2);
+    ).toBeGreaterThanOrEqual(1);
     const withoutCommerce = {
       ...marketState,
       players: marketState.players.map((player) =>
@@ -1085,8 +1085,9 @@ describe("Ruleset 7 revision 11 city logistics", () => {
           : player,
       ),
     };
+    // Revision 14 (E2): Commerce no longer doubles Market income.
     expect(marketIncomeForCityV7(marketState, marketCity)).toBe(
-      marketIncomeForCityV7(withoutCommerce, marketCity) * 2,
+      marketIncomeForCityV7(withoutCommerce, marketCity),
     );
   });
 
@@ -1157,8 +1158,8 @@ describe("Ruleset 7 revision 11 city logistics", () => {
   });
 
   it("publishes the exact revision-11 identity", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r13");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r13.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r14");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r14.current");
   });
 });
 

@@ -29,6 +29,8 @@ import {
 
 const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   TURN_STARTED: ["kind", "playerId", "coins"],
+  PLAGUE_DAMAGED: ["kind", "playerId", "results"],
+  PLAGUE_SPREAD: ["kind", "playerId", "results"],
   WINDMILL_HEALING_RESOLVED: ["kind", "playerId", "cityId", "at", "results"],
   INCOME_AWARDED: ["kind", "playerId", "totalCoins", "cities"],
   INCOME_PREVIEWED: ["kind", "playerId", "totalCoins", "cities"],
@@ -252,7 +254,16 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "at",
     "homeCityId",
   ],
+  BITTEN_UNIT_RISEN: [
+    "kind",
+    "playerId",
+    "victimUnitId",
+    "unitId",
+    "at",
+    "homeCityId",
+  ],
   GRAVE_CREATED: ["kind", "at"],
+  PLAGUE_CLEARED: ["kind", "unitIds"],
   CITY_CAPTURED: ["kind", "cityId", "from", "to"],
   TREASURE_CAPTURED: [
     "kind",
@@ -530,6 +541,17 @@ function validPayload(
   switch (kind) {
     case "TURN_STARTED":
       return id(e.playerId) && nn(e.coins);
+    case "PLAGUE_DAMAGED":
+      return (
+        id(e.playerId) &&
+        splashEntries(e.results, false) &&
+        (e.results as readonly { damage: number }[]).length > 0 &&
+        (e.results as readonly { damage: number }[]).every(
+          (entry) => entry.damage <= 2,
+        )
+      );
+    case "PLAGUE_SPREAD":
+      return id(e.playerId) && spreadResults(e.results);
     case "WINDMILL_HEALING_RESOLVED":
       return (
         id(e.playerId) &&
@@ -855,9 +877,14 @@ function validPayload(
     case "UNIT_DIED":
       return (
         id(e.unitId) &&
-        ["ATTACK", "SPLASH", "RETALIATION", "ELIMINATION", "WAIL"].includes(
-          e.cause as string,
-        )
+        [
+          "ATTACK",
+          "SPLASH",
+          "RETALIATION",
+          "ELIMINATION",
+          "WAIL",
+          "PLAGUE",
+        ].includes(e.cause as string)
       );
     case "UNIT_INFECTED":
       return (
@@ -869,8 +896,19 @@ function validPayload(
         parseCoordV7(e.at) !== null &&
         (e.homeCityId === null || id(e.homeCityId))
       );
+    case "BITTEN_UNIT_RISEN":
+      return (
+        id(e.playerId) &&
+        id(e.victimUnitId) &&
+        id(e.unitId) &&
+        e.victimUnitId !== e.unitId &&
+        parseCoordV7(e.at) !== null &&
+        (e.homeCityId === null || id(e.homeCityId))
+      );
     case "GRAVE_CREATED":
       return parseCoordV7(e.at) !== null;
+    case "PLAGUE_CLEARED":
+      return orderedIds(e.unitIds);
     case "CITY_CAPTURED":
       return id(e.cityId) && (e.from === null || id(e.from)) && id(e.to);
     case "TREASURE_CAPTURED":
@@ -889,6 +927,11 @@ function combat(input: unknown): boolean {
       "attackerHeal",
       "attackerId",
       "attackerInfected",
+      "attackerBitten",
+      "attackerBittenRises",
+      "defenderBitten",
+      "defenderBittenRises",
+      "plagued",
       "breachApplied",
       "chargeApplied",
       "inspiredApplied",
@@ -948,6 +991,25 @@ function combat(input: unknown): boolean {
     (!input.attackerInfected || input.attackerDies === true) &&
     (!input.defenderInfected || input.defenderDies === true) &&
     (!input.defenderInfected || input.advances === false) &&
+    // Revision 14: bites mark survivors; a bitten death rises (no advance);
+    // Plague marks distinct survivors only.
+    [
+      input.attackerBitten,
+      input.defenderBitten,
+      input.attackerBittenRises,
+      input.defenderBittenRises,
+    ].every((item) => typeof item === "boolean") &&
+    (!input.attackerBitten || input.attackerDies === false) &&
+    (!input.defenderBitten || input.defenderDies === false) &&
+    (!input.attackerBittenRises ||
+      (input.attackerDies === true && input.attackerInfected === false)) &&
+    (!input.defenderBittenRises ||
+      (input.defenderDies === true &&
+        input.defenderInfected === false &&
+        input.advances === false)) &&
+    uniqueIds(input.plagued) &&
+    (!(input.plagued as readonly unknown[]).includes(input.targetUnitId) ||
+      input.defenderDies === false) &&
     splash(input.splash) &&
     [
       input.chargeApplied,
@@ -968,7 +1030,7 @@ function combat(input: unknown): boolean {
       input.push as string,
     ) &&
     (input.noRetaliationReason === null ||
-      ["DEFENDER_DIED", "OUT_OF_RANGE"].includes(
+      ["DEFENDER_DIED", "OUT_OF_RANGE", "UNANSWERED"].includes(
         input.noRetaliationReason as string,
       ))
   );
@@ -1076,6 +1138,37 @@ function sortedCoords(input: unknown): boolean {
     return true;
   });
 }
+/** Distinct unit IDs in any order; may be empty. */
+function uniqueIds(input: unknown): boolean {
+  return (
+    isDenseArrayV7(input) &&
+    input.every(id) &&
+    new Set(input).size === input.length
+  );
+}
+/** Revision 14 spread entries: non-empty, sorted by (y, x, id), unique. */
+function spreadResults(input: unknown): boolean {
+  if (!isDenseArrayV7(input) || input.length === 0) return false;
+  let previous: { x: number; y: number; unitId: number } | null = null;
+  for (const entry of input) {
+    if (!hasExactKeysV7(entry, ["at", "unitId"]) || !id(entry.unitId))
+      return false;
+    const at = parseCoordV7(entry.at);
+    if (at === null) return false;
+    const current = { ...at, unitId: entry.unitId as number };
+    if (
+      previous !== null &&
+      (current.y < previous.y ||
+        (current.y === previous.y && current.x < previous.x) ||
+        (current.y === previous.y &&
+          current.x === previous.x &&
+          current.unitId <= previous.unitId))
+    )
+      return false;
+    previous = current;
+  }
+  return true;
+}
 function orderedIds(input: unknown): boolean {
   if (!isDenseArrayV7(input) || input.length === 0) return false;
   return input.every(
@@ -1083,15 +1176,28 @@ function orderedIds(input: unknown): boolean {
       id(value) && (index === 0 || Number(input[index - 1]) < Number(value)),
   );
 }
+/**
+ * Tend results: revision 14 may tend a full-HP unit (amount 0) only when it
+ * cures Plague or Bitten.
+ */
 function tendResults(input: unknown): boolean {
   if (!isDenseArrayV7(input) || input.length === 0) return false;
   let prior = 0;
   for (const result of input) {
     if (
-      !hasExactKeysV7(result, ["amount", "hpAfter", "unitId"]) ||
+      !hasExactKeysV7(result, [
+        "amount",
+        "curedBitten",
+        "curedPlague",
+        "hpAfter",
+        "unitId",
+      ]) ||
       !id(result.unitId) ||
-      !pos(result.amount) ||
+      !nn(result.amount) ||
       Number(result.amount) > 2 ||
+      typeof result.curedPlague !== "boolean" ||
+      typeof result.curedBitten !== "boolean" ||
+      (result.amount === 0 && !result.curedPlague && !result.curedBitten) ||
       !pos(result.hpAfter) ||
       Number(result.unitId) <= prior
     )

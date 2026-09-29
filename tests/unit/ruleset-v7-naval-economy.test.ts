@@ -506,12 +506,13 @@ describe("ruleset-7 naval economy", () => {
         base.cities.find((city) => city.id === cityCId) ?? cityC,
       ),
     ).toBe(2);
-    expect(marketIncomeForCityV7(base, cityD)).toBe(2);
+    // Revision 14 (E2): a lone Market pays 1 even with Commerce.
+    expect(marketIncomeForCityV7(base, cityD)).toBe(1);
     expect(
       viewForV7(base, base.humanPlayerId).improvementValues.find(
         (value) => value.improvement === "MARKET",
       ),
-    ).toMatchObject({ level: 2, measure: "COIN_INCOME" });
+    ).toMatchObject({ level: 1, measure: "COIN_INCOME" });
 
     const transitOccupied = {
       ...base,

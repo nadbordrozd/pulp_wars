@@ -809,7 +809,15 @@ describe("ruleset-7 observation safety and Concealment", () => {
         {
           kind: "WOUNDED_TENDED",
           captainId: enemy.id,
-          results: [{ unitId: enemy.id, amount: 1, hpAfter: enemy.hp - 1 }],
+          results: [
+            {
+              unitId: enemy.id,
+              amount: 1,
+              hpAfter: enemy.hp - 1,
+              curedPlague: false,
+              curedBitten: false,
+            },
+          ],
         },
       ]).events,
     ).toEqual([]);

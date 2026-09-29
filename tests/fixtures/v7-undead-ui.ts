@@ -3,7 +3,6 @@ import {
   TECHNOLOGY_IDS_V7,
   appendReplayCommandV7,
   applyCommandV7,
-  createInitialMapStateV7,
   createPlayableGameV7,
   createReplayV7,
   effectiveRoleRuleV7,
@@ -20,6 +19,7 @@ import {
 } from "../../src/engine/index";
 import { createSaveEnvelopeV7 } from "../../src/persistence/index";
 import { checkedV7 } from "./v7-builders";
+import { createRevision13MapStateV7 } from "./v7-revision13-map";
 
 /**
  * Revision 13 Undead UI fixtures on the seed-2 DRY_LAND 11x11 board (the
@@ -73,7 +73,7 @@ export function undeadUiArenaV7(
   graves: readonly CoordV7[] = [],
   factions: readonly FactionIdV7[] = ["UNDEAD", "ORIGINAL"],
 ): GameStateV7 {
-  const created = createInitialMapStateV7(undeadUiSetupV7(factions));
+  const created = createRevision13MapStateV7(undeadUiSetupV7(factions));
   if (!created.ok) throw new Error(created.error.code);
   const base = created.state;
   const player = (seat: number) => {

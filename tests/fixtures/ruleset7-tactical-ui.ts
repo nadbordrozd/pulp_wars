@@ -1,5 +1,4 @@
 import {
-  createInitialMapStateV7,
   queryPlayerCommandsV7,
   TECHNOLOGY_IDS_V7,
   unitId,
@@ -10,6 +9,7 @@ import {
   type UnitStateV7,
 } from "../../src/engine/index";
 import { checkedV7, setupV7 } from "./v7-builders";
+import { createRevision13MapStateV7 } from "./v7-revision13-map";
 
 const READY: UnitStateV7["activation"] = {
   moved: false,
@@ -109,7 +109,7 @@ export function raiderEscapePublicFixtureV7(): TacticalPublicFixtureV7 {
 }
 
 function tacticalBase(seed: number, aiCount: 1 | 2 | 3 = 1): GameStateV7 {
-  const created = createInitialMapStateV7(setupV7(seed, aiCount));
+  const created = createRevision13MapStateV7(setupV7(seed, aiCount));
   if (!created.ok) throw new Error(created.error.code);
   const state = created.state;
   return checkedV7({

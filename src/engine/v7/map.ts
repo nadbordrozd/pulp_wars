@@ -117,9 +117,16 @@ interface Candidate {
   readonly navalPlacementFailed: boolean;
 }
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
-const STANDARD: Readonly<Record<AiCountV7, number>> = { 1: 3, 2: 4, 3: 6 };
-const LARGE: Readonly<Record<AiCountV7, number>> = { 1: 13, 2: 12, 3: 11 };
-const HUGE: Readonly<Record<AiCountV7, number>> = { 1: 20, 2: 19, 3: 18 };
+// Revision 14 (VL): one more neutral village in every setup than revision 13
+// (3/4/6, 13/12/11, 20/19/18), except two Archipelago setups that keep their
+// revision-13 count because the extra village fails map acceptance: 11 x 11
+// one-AI (3; 20% of seeds fail with 4) and 16 x 16 three-AI (6; 0.7% of seeds
+// 0-999 fail with 7).
+const STANDARD: Readonly<Record<AiCountV7, number>> = { 1: 4, 2: 5, 3: 7 };
+const LARGE: Readonly<Record<AiCountV7, number>> = { 1: 14, 2: 13, 3: 12 };
+const HUGE: Readonly<Record<AiCountV7, number>> = { 1: 21, 2: 20, 3: 19 };
+const SMALL_ARCHIPELAGO_VILLAGES_V7 = 3;
+const CROWDED_ARCHIPELAGO_VILLAGES_V7 = 6;
 
 export function regionCountV7(width: number, height: number): number {
   return Math.max(3, Math.floor((width * height + 32) / 64));
@@ -170,14 +177,38 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
   const setup = parseMatchSetupV7(input);
   if (setup === null)
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  return generateMapWithVillageCountV7(setup, villageCount(setup));
+}
+
+/**
+ * Parity and fixture support only; no rule path calls it. The revision-14
+ * generator with an explicit neutral-village count. With the revision-13
+ * count of a setup (3/4/6, 13/12/11, or 20/19/18) it reproduces that
+ * revision's board, treasures, and turn order byte for byte, which lets tests
+ * hold a map fixed while the rules change.
+ */
+export function generateInitialMapWithVillageCountV7(
+  input: unknown,
+  villages: number,
+): GenerateMapResultV7 {
+  const setup = parseMatchSetupV7(input);
+  if (setup === null || !Number.isSafeInteger(villages) || villages < 0)
+    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  return generateMapWithVillageCountV7(setup, villages);
+}
+
+function generateMapWithVillageCountV7(
+  setup: MatchSetupV7,
+  villages: number,
+): GenerateMapResultV7 {
   let random = randomState(setup.seed);
   let lastFailure: MapInvariantCodeV7 = "TILE_LAYOUT";
   const attempts: MapGenerationAttemptV7[] = [];
   for (let attempt = 1; attempt <= 256; attempt += 1) {
     const initialRandomState = random.state;
-    const candidate = generateCandidate(setup, random);
+    const candidate = generateCandidate(setup, random, villages);
     random = candidate.random;
-    const failures = validate(candidate, setup);
+    const failures = validate(candidate, setup, villages);
     attempts.push({
       attempt,
       initialRandomState,
@@ -250,6 +281,7 @@ export function mapGenerationFailureV7(
 function generateCandidate(
   setup: MatchSetupV7,
   initial: RandomStateV7,
+  villageTotal: number,
 ): Candidate {
   let random = initial;
   const topologyDraws = new Map<string, number>();
@@ -292,7 +324,7 @@ function generateCandidate(
     .sort(compareCoords);
   const villageShuffle = shuffle(candidates, random);
   random = villageShuffle.random;
-  const villages = villageShuffle.values.slice(0, villageCount(setup));
+  const villages = villageShuffle.values.slice(0, villageTotal);
   let assignment =
     setup.mapType === "DRY_LAND"
       ? shuffle(capitals, random)
@@ -631,9 +663,10 @@ export function applySettlementFloorsV7(
 function validate(
   candidate: Candidate,
   setup: MatchSetupV7,
+  villageTotal: number,
 ): MapInvariantCodeV7[] {
   if (setup.mapType !== "DRY_LAND")
-    return validateNavalCandidate(candidate, setup);
+    return validateNavalCandidate(candidate, setup, villageTotal);
   const board = candidate.board;
   const failures: MapInvariantCodeV7[] = [];
   const capitals = board.tiles.filter((tile) => tile.site === "CAPITAL");
@@ -648,10 +681,7 @@ function validate(
     )
   )
     failures.push("TILE_LAYOUT");
-  if (
-    capitals.length !== setup.aiCount + 1 ||
-    villages.length !== villageCount(setup)
-  )
+  if (capitals.length !== setup.aiCount + 1 || villages.length !== villageTotal)
     failures.push("SETTLEMENT_COUNT");
   if (
     settlements.some(
@@ -1132,6 +1162,7 @@ function smallLakeCell(at: CoordV7, variant: number): boolean {
 function validateNavalCandidate(
   candidate: Candidate,
   setup: MatchSetupV7,
+  villageTotal: number,
 ): MapInvariantCodeV7[] {
   const board = candidate.board;
   const failures: MapInvariantCodeV7[] = [];
@@ -1173,7 +1204,7 @@ function validateNavalCandidate(
     board.tiles.filter((tile) => tile.site === "CAPITAL").length !==
       setup.aiCount + 1 ||
     board.tiles.filter((tile) => tile.site === "VILLAGE").length !==
-      villageCount(setup)
+      villageTotal
   )
     failures.push("SETTLEMENT_COUNT");
   if (pairTooClose([...candidate.capitals, ...candidate.villages], 3))
@@ -1622,7 +1653,31 @@ export function createInitialMapStateV7(
   const setup = parseMatchSetupV7(input);
   if (setup === null)
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
-  const generated = generateInitialMapV7(setup);
+  return initialMapStateFromV7(setup, generateInitialMapV7(setup));
+}
+
+/**
+ * Parity and fixture support only (see
+ * {@link generateInitialMapWithVillageCountV7}): the initial map state of a
+ * setup generated with an explicit neutral-village count.
+ */
+export function createInitialMapStateWithVillageCountV7(
+  input: unknown,
+  villages: number,
+): CreateInitialMapStateResultV7 {
+  const setup = parseMatchSetupV7(input);
+  if (setup === null)
+    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  return initialMapStateFromV7(
+    setup,
+    generateInitialMapWithVillageCountV7(setup, villages),
+  );
+}
+
+function initialMapStateFromV7(
+  setup: MatchSetupV7,
+  generated: GenerateMapResultV7,
+): CreateInitialMapStateResultV7 {
   if (!generated.ok) return generated;
   const players = createPlayers(setup);
   const entities = createEntities(players, generated.map.capitalAssignments);
@@ -1656,6 +1711,8 @@ export function createInitialMapStateV7(
     units: entities.units,
     treasureChests: generated.map.treasureChests,
     graves: [],
+    plagued: [],
+    bitten: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -1778,7 +1835,20 @@ export function canonicalMapRandomHashV7(
   });
 }
 
+/** Revision 14 neutral village count (current rules section 2.2). */
+export function villageCountV7(setup: MatchSetupV7): number {
+  return villageCount(setup);
+}
+
 function villageCount(setup: MatchSetupV7): number {
+  if (setup.mapType === "ARCHIPELAGO" && setup.width === 11)
+    return SMALL_ARCHIPELAGO_VILLAGES_V7;
+  if (
+    setup.mapType === "ARCHIPELAGO" &&
+    setup.width === 16 &&
+    setup.aiCount === 3
+  )
+    return CROWDED_ARCHIPELAGO_VILLAGES_V7;
   return setup.width === 25
     ? HUGE[setup.aiCount]
     : setup.width === 20

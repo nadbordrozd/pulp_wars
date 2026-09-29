@@ -250,8 +250,20 @@ describe("Ruleset 7 public presentation", () => {
           kind: "WOUNDED_TENDED" as const,
           captainId: actor.id,
           results: [
-            { unitId: recipient.id, amount: 2, hpAfter: recipient.hp },
-            { unitId: 9_998 as typeof recipient.id, amount: 2, hpAfter: 4 },
+            {
+              unitId: recipient.id,
+              amount: 2,
+              hpAfter: recipient.hp,
+              curedPlague: false,
+              curedBitten: false,
+            },
+            {
+              unitId: 9_998 as typeof recipient.id,
+              amount: 2,
+              hpAfter: 4,
+              curedPlague: false,
+              curedBitten: false,
+            },
           ],
         },
       ],

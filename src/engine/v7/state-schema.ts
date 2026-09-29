@@ -19,6 +19,7 @@ import {
   type BoardStateV7,
   type AchievementEntitlementV7,
   type AchievementIdV7,
+  type BittenStatusV7,
   type CityRewardRecordV7,
   type CityStateV7,
   type CoordV7,
@@ -28,6 +29,7 @@ import {
   type MatchOutcomeV7,
   type MatchSetupV7,
   type PendingChoiceV7,
+  type PlagueStatusV7,
   type PlayerStateV7,
   type PopulationContributionSourceV7,
   type PopulationContributionV7,
@@ -62,6 +64,7 @@ import {
 
 const STATE_KEYS = [
   "activeSeatIndex",
+  "bitten",
   "board",
   "cities",
   "commandIndex",
@@ -70,6 +73,7 @@ const STATE_KEYS = [
   "nextEntityId",
   "outcome",
   "pendingChoices",
+  "plagued",
   "players",
   "populationContributions",
   "random",
@@ -122,6 +126,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const units = players === null ? null : parseUnits(input.units, players);
   const treasureChests = parseSortedCoords(input.treasureChests);
   const graves = parseSortedCoords(input.graves);
+  const plagued = parsePlagued(input.plagued);
+  const bitten = parseBitten(input.bitten);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -136,6 +142,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     units === null ||
     treasureChests === null ||
     graves === null ||
+    plagued === null ||
+    bitten === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -164,6 +172,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       units,
       treasureChests,
       graves,
+      plagued,
+      bitten,
       choices,
       outcome,
       humanPlayerId,
@@ -192,6 +202,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     units,
     treasureChests,
     graves,
+    plagued,
+    bitten,
     pendingChoices: choices,
     outcome,
   };
@@ -839,6 +851,49 @@ function parseOutcome(input: unknown): MatchOutcomeV7 | null | undefined {
   return undefined;
 }
 
+/** Revision 14 Plague entries, strictly ascending by unit ID. */
+function parsePlagued(input: unknown): readonly PlagueStatusV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: PlagueStatusV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["sourceUnitId", "unitId"])) return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    const sourceUnitId = parseUnitIdV7(candidate.sourceUnitId);
+    if (
+      unitId === null ||
+      sourceUnitId === null ||
+      unitId === sourceUnitId ||
+      (values.length > 0 && (values.at(-1) as PlagueStatusV7).unitId >= unitId)
+    )
+      return null;
+    values.push({ unitId, sourceUnitId });
+  }
+  return values;
+}
+
+/** Revision 14 Bitten entries, strictly ascending by unit ID. */
+function parseBitten(input: unknown): readonly BittenStatusV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: BittenStatusV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["biterPlayerId", "biterUnitId", "unitId"]))
+      return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    const biterPlayerId = parsePlayerIdV7(candidate.biterPlayerId);
+    const biterUnitId = parseUnitIdV7(candidate.biterUnitId);
+    if (
+      unitId === null ||
+      biterPlayerId === null ||
+      biterUnitId === null ||
+      unitId === biterUnitId ||
+      (values.length > 0 && (values.at(-1) as BittenStatusV7).unitId >= unitId)
+    )
+      return null;
+    values.push({ unitId, biterPlayerId, biterUnitId });
+  }
+  return values;
+}
+
 function parseSortedCoords(input: unknown): readonly CoordV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: CoordV7[] = [];
@@ -875,6 +930,8 @@ interface CrossInput {
   units: readonly UnitStateV7[];
   treasureChests: readonly CoordV7[];
   graves: readonly CoordV7[];
+  plagued: readonly PlagueStatusV7[];
+  bitten: readonly BittenStatusV7[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
@@ -893,6 +950,8 @@ function validateCrossReferences(value: CrossInput): boolean {
     units,
     treasureChests,
     graves,
+    plagued,
+    bitten,
     choices,
     outcome,
   } = value;
@@ -1078,6 +1137,47 @@ function validateCrossReferences(value: CrossInput): boolean {
       tile.biome === null ||
       tile.site !== null ||
       treasureChests.some((chest) => sameCoordV7(chest, grave))
+    )
+      return false;
+  }
+  // Revision 14 afflictions exist only in matches with an Undead seat, only
+  // on living units on the board, with a living source Lich and an active
+  // Undead biter player.
+  if (
+    (plagued.length > 0 || bitten.length > 0) &&
+    !gravesEnabledV7(value.setup)
+  )
+    return false;
+  const unitById = new Map(units.map((unit) => [unit.id, unit]));
+  const living = (unit: UnitStateV7 | undefined): boolean =>
+    unit !== undefined &&
+    unit.hp > 0 &&
+    playerById.get(unit.ownerId)?.faction !== "UNDEAD";
+  for (const entry of plagued) {
+    const source = unitById.get(entry.sourceUnitId);
+    const sourceFaction =
+      source === undefined
+        ? undefined
+        : playerById.get(source.ownerId)?.faction;
+    if (
+      !living(unitById.get(entry.unitId)) ||
+      source === undefined ||
+      source.hp <= 0 ||
+      sourceFaction !== "UNDEAD" ||
+      !effectiveRoleRuleV7(source.role, sourceFaction).abilities.includes(
+        "PLAGUE",
+      )
+    )
+      return false;
+  }
+  for (const entry of bitten) {
+    const biter = playerById.get(entry.biterPlayerId);
+    if (
+      !living(unitById.get(entry.unitId)) ||
+      biter === undefined ||
+      biter.status !== "ACTIVE" ||
+      biter.faction !== "UNDEAD" ||
+      entry.biterUnitId >= value.nextEntityId
     )
       return false;
   }

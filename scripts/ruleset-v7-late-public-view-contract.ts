@@ -74,10 +74,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r13",
+    rulesetId: "pulp-wars-poc-7r14",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r13",
+      rulesetId: "pulp-wars-poc-7r14",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     },
@@ -163,6 +163,9 @@ export function upgradeRetainedPublicViewV7(
     },
     // Revision 13: the retained all-Human match has no Graves.
     graves: [],
+    // Revision 14: nor any Plague or Bitten status.
+    plagued: [],
+    bitten: [],
   };
 }
 import {

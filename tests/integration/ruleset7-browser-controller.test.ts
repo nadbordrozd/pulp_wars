@@ -113,7 +113,9 @@ describe("Ruleset 7 browser controller", () => {
       }
       if (snapshot.ai.active) clock += 3;
     });
-    const launched = await controller.launch(setupV7(0, 3));
+    // Seed 3: the human moves last on its revision-14 map (seed 0 did on
+    // revision 13), so three AI turns run first.
+    const launched = await controller.launch(setupV7(3, 3));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const progress = controller.progressAiTurns();
     await waitUntil(() => scheduler.activeCount() === 1);
@@ -146,7 +148,8 @@ describe("Ruleset 7 browser controller", () => {
     ).toBe(true);
     expect(result).not.toHaveProperty("commands");
     expect(result).not.toHaveProperty("stateHash");
-    expect(policyViewerIds).toEqual([4, 3, 2]);
+    // The seed-3 turn order runs the three AI seats as players 2, 4, 3.
+    expect(policyViewerIds).toEqual([2, 4, 3]);
     expect(
       publicSnapshots
         .filter((snapshot) => snapshot.view !== null)
@@ -404,7 +407,8 @@ describe("Ruleset 7 browser controller", () => {
       storage: new WriteFailingStorage(),
       persistenceNow: () => "2026-09-08T12:00:00.000Z",
     });
-    const launched = await controller.launch(setupV7(42, 1));
+    // Seed 43: the human moves first on its revision-14 map.
+    const launched = await controller.launch(setupV7(43, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     expect(controller.snapshot()).toMatchObject({
       phase: "ACTIVE",
@@ -420,7 +424,8 @@ describe("Ruleset 7 browser controller", () => {
   it("keeps the match active when menu persistence fails and allows a safe retry", async () => {
     const storage = new ToggleWriteStorage();
     const controller = new Ruleset7BrowserController({ storage });
-    const launched = await controller.launch(setupV7(42, 1));
+    // Seed 43: the human moves first on its revision-14 map.
+    const launched = await controller.launch(setupV7(43, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     await dispatchKind(controller, "WAIT");
     const commandIndex = requireView(controller.snapshot()).commandIndex;

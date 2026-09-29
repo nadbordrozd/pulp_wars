@@ -8,7 +8,6 @@ import {
   applyCommandV7,
   calculateCombatPreviewV7,
   canonicalHash,
-  createInitialMapStateV7,
   createPlayableGameV7,
   createReplayV7,
   effectiveRoleRuleV7,
@@ -43,6 +42,7 @@ import { chooseNormalTurnCommandV7 } from "../../src/ai/v7";
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
 import { checkedV7 } from "../fixtures/v7-builders";
+import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 
 // Seed-2 DRY_LAND boards (factions never change the board):
 // - two seats (11x11): human capital (8, 8), enemy capital (2, 8) with
@@ -256,6 +256,7 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
           damage: 0,
           dies: false,
           leavesGrave: false,
+          bittenRises: false,
         },
       ],
     });
@@ -786,9 +787,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
   }, 60_000);
 
   it("round-trips Lich splash from ordinary Normal AI play", () => {
-    // Seed 3 fields a Lich that splashes within 45 rounds of Normal play
-    // (pulp_wars-vkq.9 changed Undead play, so the seed-2 game did not).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 3), {
+    // Seed 11 fields a Lich that splashes within 45 rounds of Normal play on
+    // revision-14 maps (seed 3 did on revision-13 maps).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 11), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);
@@ -1082,7 +1083,7 @@ function arena(
   pieces: readonly Piece[],
   options: ArenaOptions = {},
 ): GameStateV7 {
-  const created = createInitialMapStateV7(
+  const created = createRevision13MapStateV7(
     setupWith(factions, 2, options.aiMode),
   );
   if (!created.ok) throw new Error(created.error.code);

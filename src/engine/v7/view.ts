@@ -6,6 +6,7 @@ import {
   combinedNetworkRoadKeysV7,
   isActivePortV7,
   landTradeCityIdsV7,
+  marketCoinsV7,
   seaTradeCityIdsV7,
 } from "./economy";
 import { isResourceRevealedV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
@@ -214,8 +215,27 @@ export interface PlayerViewV7 {
   readonly treasureChests: readonly CoordV7[];
   /** Revision 13: the viewer-explored subset of the canonical Graves. */
   readonly graves: readonly CoordV7[];
+  /**
+   * Revision 14: the Plague status of every unit in `units`, sorted by unit
+   * ID. The source Lich is named only when the viewer can see it.
+   */
+  readonly plagued: readonly PublicPlagueStatusV7[];
+  /** Revision 14: the Bitten status of every unit in `units`, by unit ID. */
+  readonly bitten: readonly PublicBittenStatusV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/** Revision 14 public Plague status of a visible unit. */
+export interface PublicPlagueStatusV7 {
+  readonly unitId: UnitId;
+  readonly sourceUnitId: UnitId | null;
+}
+
+/** Revision 14 public Bitten status: whose Zombie the unit would rise as. */
+export interface PublicBittenStatusV7 {
+  readonly unitId: UnitId;
+  readonly biterPlayerId: PlayerId;
 }
 
 export interface PublicNavalFactsV7 {
@@ -370,6 +390,7 @@ export function viewForV7(
   const visibleUnits = state.units.filter((unit) =>
     isUnitVisibleToPlayerV7(state, viewerId, unit),
   );
+  const visibleUnitIds = new Set(visibleUnits.map((unit) => unit.id));
   const publicUnits = visibleUnits.map((unit): PublicUnitV7 => {
     return {
       id: unit.id,
@@ -454,8 +475,7 @@ export function viewForV7(
           improvement: tile.improvement,
           level:
             tile.improvement === "MARKET"
-              ? Math.min(4, evaluation.marketIncome) *
-                (viewer.researchedTechs.includes("COMMERCE") ? 2 : 1)
+              ? marketCoinsV7(evaluation.marketIncome)
               : (population?.amount ?? 0),
           measure: tile.improvement === "MARKET" ? "COIN_INCOME" : "POPULATION",
           contributingTiles: evaluation.contributingTiles.filter((at) =>
@@ -593,6 +613,21 @@ export function viewForV7(
       explored.has(key(chest)),
     ),
     graves: state.graves.filter((grave) => explored.has(key(grave))),
+    // Revision 14 statuses are public on every visible unit.
+    plagued: state.plagued
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({
+        unitId: entry.unitId,
+        sourceUnitId: visibleUnitIds.has(entry.sourceUnitId)
+          ? entry.sourceUnitId
+          : null,
+      })),
+    bitten: state.bitten
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({
+        unitId: entry.unitId,
+        biterPlayerId: entry.biterPlayerId,
+      })),
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
         (city) => city.id === choice.cityId && city.ownerId === viewerId,

@@ -5,8 +5,8 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r13" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r13.current" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r14" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r14.current" as const;
 export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL", "UNDEAD"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
@@ -149,6 +149,8 @@ export const CARDINAL_DIRECTION_ORDER_V7 = Object.freeze([
 ] as const);
 export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "TURN_STARTED",
+  "PLAGUE_DAMAGED",
+  "PLAGUE_SPREAD",
   "WINDMILL_HEALING_RESOLVED",
   "INCOME_AWARDED",
   "INCOME_PREVIEWED",
@@ -205,6 +207,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_DIED",
   "UNIT_INFECTED",
   "GRAVE_CREATED",
+  "BITTEN_UNIT_RISEN",
+  "PLAGUE_CLEARED",
   "CITY_CAPTURED",
   "TREASURE_CAPTURED",
   "PLAYER_ELIMINATED",
@@ -426,6 +430,32 @@ export interface GameStateV7 {
    * empty in a match whose setup has no UNDEAD seat.
    */
   readonly graves: readonly CoordV7[];
+  /**
+   * Revision 14 Plague: one entry per plagued unit, sorted by `unitId`. Always
+   * empty in a match whose setup has no UNDEAD seat.
+   */
+  readonly plagued: readonly PlagueStatusV7[];
+  /**
+   * Revision 14 Bitten: one entry per bitten unit, sorted by `unitId`. Always
+   * empty in a match whose setup has no UNDEAD seat.
+   */
+  readonly bitten: readonly BittenStatusV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/** Revision 14: a living unit plagued by the Lich `sourceUnitId`. */
+export interface PlagueStatusV7 {
+  readonly unitId: UnitId;
+  readonly sourceUnitId: UnitId;
+}
+
+/**
+ * Revision 14: a living unit last damaged by the Zombie `biterUnitId` of
+ * `biterPlayerId`. The Zombie may have died since; it only homes the rising.
+ */
+export interface BittenStatusV7 {
+  readonly unitId: UnitId;
+  readonly biterPlayerId: PlayerId;
+  readonly biterUnitId: UnitId;
 }

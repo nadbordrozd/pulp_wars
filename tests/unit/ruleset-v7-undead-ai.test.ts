@@ -13,7 +13,6 @@ import {
   TECHNOLOGY_IDS_V7,
   applyCommandV7,
   canonicalHash,
-  createInitialMapStateV7,
   createPlayableGameV7,
   effectiveRoleRuleV7,
   queryCombatPreviewV7,
@@ -31,6 +30,7 @@ import {
 } from "../../src/engine/index";
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { checkedV7 } from "../fixtures/v7-builders";
+import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 
 // Seed-2 DRY_LAND two-seat board (11 x 11; factions never change the board):
 // seat 0 capital (8, 8) with territory x 7-9, y 7-9; seat 1 capital (2, 8)
@@ -606,7 +606,7 @@ function arena(
   pieces: readonly Piece[],
   options: ArenaOptions = {},
 ): GameStateV7 {
-  const created = createInitialMapStateV7(setupWith(factions));
+  const created = createRevision13MapStateV7(setupWith(factions));
   if (!created.ok) throw new Error(created.error.code);
   const base = created.state;
   const size = base.board.width;

@@ -77,7 +77,8 @@ describe("Ruleset 7 safe and omniscient exports", () => {
 function setup(): MatchSetupV7 {
   return {
     rulesetId: RULESET_7_ID,
-    seed: 42,
+    // The human moves first on this seed's revision-14 map.
+    seed: 43,
     width: 11,
     height: 11,
     aiCount: 1,

@@ -33,6 +33,8 @@ export interface WailPreviewV7 {
   readonly attack2: number;
   readonly targets: readonly (WailTargetV7 & {
     readonly leavesGrave: boolean;
+    /** Revision 14: the death rises as the biter's Zombie (no Grave). */
+    readonly bittenRises: boolean;
   })[];
 }
 

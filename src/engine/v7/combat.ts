@@ -4,6 +4,7 @@ import {
   unitRoleRuleV7,
   type EffectiveRoleRuleV7,
 } from "../rules/ruleset-v7";
+import { afflictionCombatEffectsV7 } from "./afflictions";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
 import type { CombatPreviewV7 } from "./events";
 import { tileAtV7 } from "./spatial-economy";
@@ -111,8 +112,12 @@ export function calculateCombatPreviewV7(
   );
   const damageToDefender = Math.min(defender.hp, rawDefenderDamage);
   const defenderDies = damageToDefender >= defender.hp;
+  // Revision 14 (V1): an UNANSWERED attacker (the Vampire) draws no
+  // retaliation.
+  const unanswered = attackerRule.abilities.includes("UNANSWERED");
   const retaliates =
     !defenderDies &&
+    !unanswered &&
     defender.form !== "EMBARKED" &&
     defenderRule.abilities.includes("ATTACK") &&
     defenderRule.attack2 > 0 &&
@@ -122,20 +127,6 @@ export function calculateCombatPreviewV7(
     ? Math.min(attacker.hp, rawAttackerDamage)
     : 0;
   const attackerDies = damageToAttacker >= attacker.hp;
-  const advances =
-    defenderDies &&
-    !attackerDies &&
-    distance === 1 &&
-    attackerMechanics.advancesAfterKill &&
-    attacker.form === "LAND" &&
-    defender.form === "LAND";
-  const push = pushState(
-    state,
-    attacker,
-    defender,
-    !defenderDies && distance === 1,
-  );
-  const nextAttacks = attacker.activation.attacksUsed + 1;
   const splash = attackerMechanics.splash
     ? state.units
         .filter(
@@ -164,6 +155,38 @@ export function calculateCombatPreviewV7(
           };
         })
     : [];
+  // Revision 14 Plague and Bitten (sections 3.1, 4.1, and 4.2).
+  const afflictions = afflictionCombatEffectsV7({
+    roster: state,
+    attacker,
+    defender,
+    attackerRule,
+    defenderRule,
+    damageToDefender,
+    damageToAttacker,
+    attackerDies,
+    defenderDies,
+    splash,
+    splashOwner: (unitId) =>
+      state.units.find((unit) => unit.id === unitId)?.ownerId,
+    plaguedUnitIds: new Set(state.plagued.map((entry) => entry.unitId)),
+    bittenUnitIds: new Set(state.bitten.map((entry) => entry.unitId)),
+  });
+  const advances =
+    defenderDies &&
+    !afflictions.defenderBittenRises &&
+    !attackerDies &&
+    distance === 1 &&
+    attackerMechanics.advancesAfterKill &&
+    attacker.form === "LAND" &&
+    defender.form === "LAND";
+  const push = pushState(
+    state,
+    attacker,
+    defender,
+    !defenderDies && distance === 1,
+  );
+  const nextAttacks = attacker.activation.attacksUsed + 1;
   const undead = undeadCombatEffectsV7({
     attacker,
     defender,
@@ -197,7 +220,9 @@ export function calculateCombatPreviewV7(
       ? "DEFENDER_DIED"
       : retaliates
         ? null
-        : "OUT_OF_RANGE",
+        : unanswered
+          ? "UNANSWERED"
+          : "OUT_OF_RANGE",
     advances,
     push,
     attacksUsed: nextAttacks,
@@ -210,6 +235,7 @@ export function calculateCombatPreviewV7(
       !attackerDies,
     splash,
     ...undead,
+    ...afflictions,
   };
 }
 

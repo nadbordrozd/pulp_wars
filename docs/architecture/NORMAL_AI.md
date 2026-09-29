@@ -3,8 +3,10 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r13`. Role facts resolve through the owner's
+previews under `pulp-wars-poc-7r14`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics are summarized below.
+The revision-14 Plague, Bitten, Tend cures, and unanswered Vampire attacks
+are not yet valued by the policy (`pulp_wars-vkq.18`).
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening

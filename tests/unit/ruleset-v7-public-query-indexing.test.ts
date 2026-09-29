@@ -21,14 +21,22 @@ const retained = upgradeRetainedPublicViewV7(
     readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
   ) as PlayerViewV7,
 );
-const captured300 = (
-  JSON.parse(
-    readFileSync(
-      "tests/fixtures/ruleset-v7-public-planning-command-300.json",
-      "utf8",
-    ),
-  ) as { readonly view: PlayerViewV7 }
-).view;
+// The captured revision-11 view predates the revision-13/14 neutral fields.
+const captured300: PlayerViewV7 = {
+  ...(
+    JSON.parse(
+      readFileSync(
+        "tests/fixtures/ruleset-v7-public-planning-command-300.json",
+        "utf8",
+      ),
+    ) as {
+      readonly view: Omit<PlayerViewV7, "graves" | "plagued" | "bitten">;
+    }
+  ).view,
+  graves: [],
+  plagued: [],
+  bitten: [],
+};
 
 describe("ruleset-7 exact public query indexing", () => {
   it("bounds repeated public-fact reads on the captured late view", () => {
@@ -41,8 +49,10 @@ describe("ruleset-7 exact public query indexing", () => {
     const reads = measured.reads();
     expect(reads.tileReads).toBeLessThan(6_000);
     expect(reads.unitReads).toBeLessThan(500);
+    // The view hash includes the neutral `graves`, `plagued`, and `bitten`
+    // fields added to the captured revision-11 view above.
     expect(canonicalHash(measured.view)).toBe(
-      "d09eaac69ae3e3cf586dd29f9dfa64105273b515af3fa2f8524a66af4b78f68f",
+      "219eb246742a56b1fe0f739004dd139e99eb19f6816e049aa0816f9552375d03",
     );
 
     const planned = drain(measured.view, commands, 113);

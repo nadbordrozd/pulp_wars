@@ -1,7 +1,6 @@
 import {
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
-  createInitialMapStateV7,
   parseGameStateV7,
   type CoordV7,
   type GameStateV7,
@@ -9,6 +8,7 @@ import {
   type PlayerStateV7,
   type TileStateV7,
 } from "../../src/engine/index";
+import { revision13MapStateV7 } from "./v7-revision13-map";
 
 export function setupV7(seed = 71, aiCount: 1 | 2 | 3 = 1): MatchSetupV7 {
   const size = aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16;
@@ -27,9 +27,16 @@ export function setupV7(seed = 71, aiCount: 1 | 2 | 3 = 1): MatchSetupV7 {
   };
 }
 
+/**
+ * The board these rule fixtures were written against: the revision-13 map of
+ * the setup (revision 14 added a neutral village to generated maps; the
+ * map-generation tests cover the revision-14 counts).
+ */
 export function initialV7(seed = 71, aiCount: 1 | 2 | 3 = 1): GameStateV7 {
-  const created = createInitialMapStateV7(setupV7(seed, aiCount));
-  if (!created.ok) throw new Error(created.error.code);
+  const created = {
+    ok: true as const,
+    state: revision13MapStateV7(setupV7(seed, aiCount)),
+  };
   const humanTurnIndex = created.state.turnOrder.indexOf(
     created.state.humanPlayerId,
   );

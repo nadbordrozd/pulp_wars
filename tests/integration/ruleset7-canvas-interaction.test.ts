@@ -416,7 +416,8 @@ describe("Ruleset 7 Canvas interaction", () => {
     mapType.dispatchEvent(new Event("change", { bubbles: true }));
     const seed = document.querySelector<HTMLInputElement>("#v7-seed");
     if (seed === null) throw new Error("seed missing");
-    seed.value = "7";
+    // Seed 1: the human moves first with two Fruit by its revision-14 capital.
+    seed.value = "1";
     document
       .querySelector<HTMLButtonElement>('[data-action="launch"]')
       ?.click();

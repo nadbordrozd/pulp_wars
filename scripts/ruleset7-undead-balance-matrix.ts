@@ -1,5 +1,6 @@
 /**
- * Ruleset 7 revision-13 Human-vs-Undead balance matrix (`pulp_wars-vkq.10`).
+ * Ruleset 7 Human-vs-Undead balance matrix (`pulp_wars-vkq.10`), run on the
+ * current identity (revision 14 adds Plague and Bitten counters).
  *
  * Runs deterministic headless Normal-vs-Normal matches for Human-vs-Undead in
  * both seat orders, Undead mirror, and Human mirror across map types and
@@ -223,7 +224,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r13",
+    rulesetId: "pulp-wars-poc-7r14",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: cell.seed,
     width: cell.size,
@@ -751,7 +752,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r13",
+          rulesetId: "pulp-wars-poc-7r14",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -971,7 +972,10 @@ export function summarize(entries: readonly MatrixEntry[]) {
     return Object.fromEntries(
       keys.map((key) => [
         key,
-        key === "maximumSkeletonsPerRaise" || key === "gravesMaximum"
+        key === "maximumSkeletonsPerRaise" ||
+        key === "gravesMaximum" ||
+        key === "plaguedMaximum" ||
+        key === "bittenMaximum"
           ? Math.max(0, ...group.map((entry) => entry.undead[key]))
           : sum(group.map((entry) => entry.undead[key])),
       ]),
@@ -1145,6 +1149,13 @@ export function summarize(entries: readonly MatrixEntry[]) {
         gamesWithCenterRisingCapture: undeadGames.filter(
           (entry) => entry.undead.centerRisingCaptures > 0,
         ).length,
+        // Revision 14 afflictions.
+        gamesWithPlague: undeadGames.filter(
+          (entry) => entry.undead.plagueApplications > 0,
+        ).length,
+        gamesWithBittenRising: undeadGames.filter(
+          (entry) => entry.undead.bittenRisings > 0,
+        ).length,
         undeadGames: undeadGames.length,
       },
       factions: {
@@ -1231,6 +1242,9 @@ function markdown(summary: ReturnType<typeof summarize>): string {
     `Undead win (mixed 1v1): ${pct(summary.duel.undeadWinMixed)}`,
     `Undead moves first: ${pct(summary.duel.undeadWinUndeadMovesFirst)}`,
     `Human moves first: ${pct(summary.duel.undeadWinHumanMovesFirst)}`,
+    "",
+    `Plague (mixed): ${summary.duel.abilities.mixed.plagueApplications ?? 0} applied, ${summary.duel.abilities.mixed.plagueSpreads ?? 0} spread, ${summary.duel.abilities.mixed.plagueDamage ?? 0} damage, ${summary.duel.abilities.mixed.plagueDeaths ?? 0} deaths, ${summary.duel.abilities.mixed.plagueCleared ?? 0} cleared, ${summary.duel.abilities.mixed.plagueCures ?? 0} cured; games with Plague ${summary.duel.abilities.gamesWithPlague}/${summary.duel.abilities.undeadGames}`,
+    `Bitten (mixed): ${summary.duel.abilities.mixed.bites ?? 0} bites, ${summary.duel.abilities.mixed.bittenRisings ?? 0} risings, ${summary.duel.abilities.mixed.bittenCures ?? 0} cured; games with a Bitten rising ${summary.duel.abilities.gamesWithBittenRising}/${summary.duel.abilities.undeadGames}; unanswered attacks ${summary.duel.abilities.mixed.unansweredAttacks ?? 0}`,
     "",
     "| Pairing | Games | Undead win | Seat-0 win | First mover win | Rounds mean/median/p90 | Cap rate |",
     "| --- | ---: | --- | --- | --- | --- | ---: |",

@@ -19,15 +19,22 @@ const retained = upgradeRetainedPublicViewV7(
     readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
   ) as PlayerViewV7,
 );
-const captured = (commandIndex: 300 | 425) =>
-  (
+// The captured revision-11 views predate the revision-13/14 neutral fields.
+const captured = (commandIndex: 300 | 425): PlayerViewV7 => ({
+  ...(
     JSON.parse(
       readFileSync(
         `tests/fixtures/ruleset-v7-public-planning-command-${commandIndex}.json`,
         "utf8",
       ),
-    ) as { readonly view: PlayerViewV7 }
-  ).view;
+    ) as {
+      readonly view: Omit<PlayerViewV7, "graves" | "plagued" | "bitten">;
+    }
+  ).view,
+  graves: [],
+  plagued: [],
+  bitten: [],
+});
 
 describe("ruleset-7 exact public-planning performance", () => {
   const frozenCases = [
@@ -117,8 +124,10 @@ describe("ruleset-7 exact public-planning performance", () => {
     expect(result.operations).toBe(
       28_474 + publicPlanningFactScanOperations(view),
     );
+    // Revision 14 (E2): Commerce no longer doubles the Market values in the
+    // plan (with E2 reverted the revision-13 value 09abc6aa… returns).
     expect(canonicalHash(result.result)).toBe(
-      "09abc6aa7680f29f60834686313a69ca747986342568d5f6a7797d9759f23841",
+      "9032dd0c4bedee8ff282496835db5a85946717d0344b81e894336793b444014a",
     );
   });
 

@@ -5,7 +5,6 @@ import {
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   applyCommandV7,
-  createInitialMapStateV7,
   effectiveRoleRuleV7,
   unitId,
   type CommandV7,
@@ -25,6 +24,7 @@ import {
   type HeadlessMetricsV7,
 } from "../../src/headless/v7";
 import { checkedV7 } from "../fixtures/v7-builders";
+import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 
 const READY: UnitStateV7["activation"] = {
   moved: false,
@@ -135,8 +135,8 @@ describe("ruleset-7 revision-13 headless Undead telemetry", () => {
   });
 
   it("reconciles role damage with every combat, splash, and Wail event in an AI match", () => {
-    // Seed 3 fields Lich splashes within 45 rounds (see the area-attack tests).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 3), {
+    // Seed 11 fields Lich splashes within 45 rounds (see the area-attack tests).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 11), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);
@@ -309,7 +309,7 @@ function arena(
   pieces: readonly Piece[],
   options: { readonly graves?: readonly CoordV7[] } = {},
 ): GameStateV7 {
-  const created = createInitialMapStateV7(setupWith(factions));
+  const created = createRevision13MapStateV7(setupWith(factions));
   if (!created.ok) throw new Error(created.error.code);
   const base = created.state;
   const player = (seat: number) => {

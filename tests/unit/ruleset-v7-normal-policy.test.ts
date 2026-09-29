@@ -266,13 +266,15 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const basic = usefulBasicRedevelopmentState();
     const basicView = viewForV7(basic.state, basic.state.humanPlayerId);
     const basicChoice = chooseNormalCommandV7(basicView);
+    // Revision 14 (E2) changes the Market values the candidate scores use;
+    // with E2 reverted the revision-13 values 580c9ac8… and 7b8d235c… return.
     expect(canonicalHash(basicChoice)).toBe(
-      "580c9ac8a3cb64666017a2f3f928a62beb762d7b321b44cbd4a825ec19c0fe22",
+      "407e3b45ff98de5e69269c79dfe7ac74915b1c48ea1bf91a24b581e2fbe03ddd",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
-    // (spec section 8); with revision-12 ordinals the value is unchanged.
+    // (spec section 8); this is the value with revision-12 ordinals.
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(basicChoice))).toBe(
-      "7b8d235c149ad378959d951ab0737651e1a85b50b28593386debacd3b17eabe3",
+      "2355bb8282e72067119c87b60b8c9eddf5202c925fd19fcd7fd5709532373e7a",
     );
     const basicCommands = queryPlayerCommandsV7(basicView);
     const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
@@ -751,7 +753,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r13");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r14");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

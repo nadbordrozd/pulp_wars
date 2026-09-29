@@ -8,7 +8,6 @@ import {
   appendReplayCommandV7,
   applyCommandV7,
   canonicalHash,
-  createInitialMapStateV7,
   createPlayableGameV7,
   createReplayV7,
   effectiveRoleRuleV7,
@@ -40,6 +39,7 @@ import {
 } from "../../src/engine/index";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
 import { checkedV7 } from "../fixtures/v7-builders";
+import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 
 // Seed-2 DRY_LAND boards (factions never change the board):
 // - two seats (11x11): human capital (8, 8) with territory x 7-9, y 7-9;
@@ -1182,7 +1182,7 @@ describe("ruleset-7 revision-13 Grave actions: schema, Human parity, and persist
 });
 
 /**
- * A deterministic scripted seed-2 Undead-vs-Undead match from a real start:
+ * A deterministic scripted seed-1 Undead-vs-Undead match from a real start:
  * the human researches toward the goal's unit, trains it, and walks it to a
  * Grave left by the opening Skeleton fight, until the goal command is
  * accepted. It depends only on the rules, never on the Normal AI.
@@ -1193,7 +1193,8 @@ function scriptedUndeadMatch(goal: "RAISE_DEAD" | "DEVOUR"): {
   readonly events: readonly DomainEventV7[];
   readonly replay: ReplayFileV7;
 } {
-  const setup = setupWith(["UNDEAD", "UNDEAD"]);
+  // Seed 1 on revision-14 maps (seed 2 on revision-13 maps).
+  const setup = setupWith(["UNDEAD", "UNDEAD"], 1);
   const plan =
     goal === "RAISE_DEAD"
       ? { techs: ["GATHERING", "ADMINISTRATION"], role: "CAPTAIN" }
@@ -1344,7 +1345,7 @@ function initialExplored(
   factions: readonly FactionIdV7[],
   seat: number,
 ): CoordV7[] {
-  const created = createInitialMapStateV7(setupWith(factions));
+  const created = createRevision13MapStateV7(setupWith(factions));
   if (!created.ok) throw new Error(created.error.code);
   return [
     ...required(created.state.players.find((player) => player.seat === seat))
@@ -1362,7 +1363,7 @@ function arena(
   pieces: readonly Piece[],
   options: ArenaOptions = {},
 ): GameStateV7 {
-  const created = createInitialMapStateV7(
+  const created = createRevision13MapStateV7(
     setupWith(factions, 2, options.aiMode),
   );
   if (!created.ok) throw new Error(created.error.code);

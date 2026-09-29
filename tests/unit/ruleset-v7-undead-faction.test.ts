@@ -59,6 +59,10 @@ import {
 } from "../../src/persistence/index";
 import { technologyEffectGroupsV7 } from "../../src/render/dom/app-view-v7";
 import { allTechsV7, checkedV7, exploredAllV7 } from "../fixtures/v7-builders";
+import {
+  createRevision13MapStateV7,
+  revision13PlayableGameV7,
+} from "../fixtures/v7-revision13-map";
 
 const READY: UnitStateV7["activation"] = {
   moved: false,
@@ -76,9 +80,9 @@ const READY: UnitStateV7["activation"] = {
 };
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
-  it("pins the r13 identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r13");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r13.current");
+  it("pins the r14 identity, frozen faction and tree orders, and bindings", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r14");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r14.current");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL", "UNDEAD"]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -99,23 +103,23 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r12 and preserves the r13 save", () => {
+  it("cleans obsolete keys through v7r13 and preserves the r14 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r12.current",
+      "pulpWars.save.v7r13.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(12);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(13);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
-      ["pulpWars.save.v7r11.current", "r11"],
       ["pulpWars.save.v7r12.current", "r12"],
-      [SAVE_STORAGE_KEY_V7, "r13"],
+      ["pulpWars.save.v7r13.current", "r13"],
+      [SAVE_STORAGE_KEY_V7, "r14"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
     expect(cleanupObsoleteRuleset7Saves(storage)).toEqual({
       removedKeys: [
-        "pulpWars.save.v7r11.current",
         "pulpWars.save.v7r12.current",
+        "pulpWars.save.v7r13.current",
       ],
       removedCount: 2,
       warning: null,
@@ -441,7 +445,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         1,
         "DRILL",
         false,
-        ["ATTACK", "CAPTURE", "INFECT"],
+        ["ATTACK", "CAPTURE", "INFECT", "BITE"],
       ],
       CAPTAIN: [
         "Necromancer",
@@ -461,7 +465,8 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         "Lich",
         8,
         10,
-        5,
+        // Revision 14 (L2): Attack 3.
+        6,
         2,
         1,
         3,
@@ -469,7 +474,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         1,
         "SAWMILLING",
         false,
-        ["ATTACK"],
+        ["ATTACK", "PLAGUE"],
       ],
       KNIGHT: [
         "Vampire",
@@ -483,7 +488,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         1,
         "CHIVALRY",
         true,
-        ["ATTACK", "LIFESTEAL"],
+        ["ATTACK", "LIFESTEAL", "UNANSWERED"],
       ],
       JUGGERNAUT: [
         "Abomination",
@@ -1148,13 +1153,14 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
     expect(
       queryCombatPreviewV7(state, state.humanPlayerId, lich.id, far.id),
     ).toMatchObject({
-      attack2: 5,
+      // Revision 14 (L2): Attack 3.
+      attack2: 6,
       minimumRange: 2,
       maximumRange: 3,
       advances: false,
       // Revision 13 section 6.7: the Guard next to the primary target is
       // splashed for max(1, ceil(primary damage / 2)).
-      splash: [{ unitId: near.id, at: near.at, damage: 3, dies: false }],
+      splash: [{ unitId: near.id, at: near.at, damage: 4, dies: false }],
     });
     expect(
       applyCommandV7(state, state.humanPlayerId, {
@@ -1391,6 +1397,10 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
 describe("ruleset-7 all-Human parity with revision 12", () => {
   // Digests of fixed-seed all-Human headless matches recorded from the
   // revision-12 code (commit 3dddcdd) with the ruleset identity normalized.
+  // Revision 13 reproduced them unchanged. Revision 14 changes all-Human play
+  // only through the village table (VL) and income (E2); these matches start
+  // on their revision-13 boards and never reach the E2 caps, so they still
+  // reproduce the revision-12 digests exactly.
   const BASELINE = [
     {
       seed: 7,
@@ -1462,7 +1472,10 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
         mapType: baseline.mapType,
         mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
       };
-      const result = runAiMatchV7(setup, { maxRounds: baseline.maxRounds });
+      const result = runAiMatchV7(setup, {
+        maxRounds: baseline.maxRounds,
+        initialGame: revision13PlayableGameV7(setup),
+      });
       // Revision 13 adds the neutral `graves: []` field to state and view;
       // parity is defined apart from identity and neutral values.
       const humanView = viewForV7(result.state, result.state.humanPlayerId);
@@ -1470,15 +1483,47 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
       expect(humanView.graves).toEqual([]);
       expect(result.metrics.eventsByKind.GRAVE_CREATED).toBe(0);
       expect(result.metrics.eventsByKind.UNIT_INFECTED).toBe(0);
+      // Revision 14 afflictions never occur without Undead units.
+      expect(result.state.plagued).toEqual([]);
+      expect(result.state.bitten).toEqual([]);
+      expect(humanView.plagued).toEqual([]);
+      expect(humanView.bitten).toEqual([]);
+      for (const kind of [
+        "PLAGUE_DAMAGED",
+        "PLAGUE_SPREAD",
+        "PLAGUE_CLEARED",
+        "BITTEN_UNIT_RISEN",
+      ] as const)
+        expect(result.metrics.eventsByKind[kind] ?? 0).toBe(0);
       // Revision 13 adds neutral Lifesteal/Infect fields to every combat
       // preview; they must be neutral and are removed before hashing.
+      // Revision 14 adds neutral Plague/Bitten preview fields and Tend cure
+      // flags; they must be neutral and are removed before hashing too.
       const neutralEvents = result.events.map((event) => {
+        if (event.kind === "WOUNDED_TENDED")
+          return {
+            ...event,
+            results: event.results.map(
+              ({ curedPlague, curedBitten, ...rest }) => {
+                expect({ curedPlague, curedBitten }).toEqual({
+                  curedPlague: false,
+                  curedBitten: false,
+                });
+                return rest;
+              },
+            ),
+          };
         if (event.kind !== "COMBAT_RESOLVED") return event;
         const {
           attackerHeal,
           defenderHeal,
           attackerInfected,
           defenderInfected,
+          plagued,
+          attackerBitten,
+          defenderBitten,
+          attackerBittenRises,
+          defenderBittenRises,
           ...preview
         } = event.preview;
         expect({
@@ -1486,11 +1531,21 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
           defenderHeal,
           attackerInfected,
           defenderInfected,
+          plagued,
+          attackerBitten,
+          defenderBitten,
+          attackerBittenRises,
+          defenderBittenRises,
         }).toEqual({
           attackerHeal: 0,
           defenderHeal: 0,
           attackerInfected: false,
           defenderInfected: false,
+          plagued: [],
+          attackerBitten: false,
+          defenderBitten: false,
+          attackerBittenRises: false,
+          defenderBittenRises: false,
         });
         return { ...event, preview };
       });
@@ -1499,8 +1554,15 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
       ).toBe(true);
       expect(result.metrics.eventHash).toBe(canonicalHash(result.events));
       const normalize = (value: unknown): unknown => {
-        const { graves: _graves, ...rest } = value as { graves: unknown };
+        const {
+          graves: _graves,
+          plagued: _plagued,
+          bitten: _bitten,
+          ...rest
+        } = value as { graves: unknown; plagued: unknown; bitten: unknown };
         void _graves;
+        void _plagued;
+        void _bitten;
         return JSON.parse(
           JSON.stringify(rest).replaceAll(RULESET_7_ID, "IDENTITY"),
         ) as unknown;
@@ -1578,7 +1640,7 @@ function setupWith(factions: readonly FactionIdV7[], seed = 2): MatchSetupV7 {
 }
 
 function initialWith(factions: readonly FactionIdV7[], seed = 2): GameStateV7 {
-  const created = createInitialMapStateV7(setupWith(factions, seed));
+  const created = createRevision13MapStateV7(setupWith(factions, seed));
   if (!created.ok) throw new Error(created.error.code);
   const humanTurnIndex = created.state.turnOrder.indexOf(
     created.state.humanPlayerId,

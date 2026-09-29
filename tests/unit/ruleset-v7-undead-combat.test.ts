@@ -10,7 +10,6 @@ import {
   calculateCombatPreviewV7,
   canonicalHash,
   cityUnitCapacityV7,
-  createInitialMapStateV7,
   createPlayableGameV7,
   createReplayV7,
   effectiveRoleRuleV7,
@@ -41,6 +40,7 @@ import {
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
 import { checkedV7 } from "../fixtures/v7-builders";
+import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 
 // Seed-2 DRY_LAND boards (factions never change the board):
 // - two seats (11x11): seat-0 capital (8, 8) with territory x 7-9, y 7-9;
@@ -512,7 +512,7 @@ describe("ruleset-7 revision-13 Infect", () => {
 });
 
 describe("ruleset-7 revision-13 Lifesteal", () => {
-  it("heals an attacking Vampire by the damage it dealt after retaliation", () => {
+  it("heals an attacking Vampire by the damage it dealt, unanswered", () => {
     const state = arena(
       ["UNDEAD", "ORIGINAL"],
       [
@@ -524,16 +524,18 @@ describe("ruleset-7 revision-13 Lifesteal", () => {
     const target = unitAt(state, { x: 3, y: 3 });
     const result = attack(state, { x: 2, y: 3 }, { x: 3, y: 3 });
     const preview = combatPreview(result.events);
-    // 6 HP: deals 6, takes 5 in retaliation, then heals the full 6.
+    // Revision 14 (V1): 6 HP deals 6 and draws no retaliation, then heals
+    // up to its maximum (4 of the 6).
     expect(preview).toMatchObject({
-      retaliation: true,
+      retaliation: false,
+      noRetaliationReason: "UNANSWERED",
       damageToDefender: 6,
-      damageToAttacker: 5,
+      damageToAttacker: 0,
       attackerDies: false,
-      attackerHeal: 6,
+      attackerHeal: 4,
       defenderHeal: 0,
     });
-    expect(unitById(result.state, vampire.id).hp).toBe(7);
+    expect(unitById(result.state, vampire.id).hp).toBe(10);
     expect(unitById(result.state, target.id).hp).toBe(4);
     // There is no separate heal event.
     expect(withoutTail(result.events).map((event) => event.kind)).toEqual([
@@ -610,22 +612,40 @@ describe("ruleset-7 revision-13 Lifesteal", () => {
   });
 
   it("never heals a Vampire that dies in the exchange", () => {
-    const state = arena(
+    // Revision 14 (V1): an attacking Vampire draws no retaliation, so even a
+    // 1-HP Vampire survives its attack; a defending Vampire can still die.
+    const attacking = arena(
       ["UNDEAD", "ORIGINAL"],
       [
         { seat: 0, role: "KNIGHT", at: { x: 2, y: 3 }, hp: 1 },
         { seat: 1, role: "GUARD", at: { x: 3, y: 3 } },
       ],
     );
-    const vampire = unitAt(state, { x: 2, y: 3 });
+    const attacker = unitAt(attacking, { x: 2, y: 3 });
+    const survived = attack(attacking, { x: 2, y: 3 }, { x: 3, y: 3 });
+    expect(combatPreview(survived.events)).toMatchObject({
+      attackerDies: false,
+      damageToAttacker: 0,
+      noRetaliationReason: "UNANSWERED",
+    });
+    expect(unitById(survived.state, attacker.id).hp).toBeGreaterThan(1);
+
+    const state = arena(
+      ["ORIGINAL", "UNDEAD"],
+      [
+        { seat: 0, role: "GUARD", at: { x: 2, y: 3 } },
+        { seat: 1, role: "KNIGHT", at: { x: 3, y: 3 }, hp: 1 },
+      ],
+    );
+    const vampire = unitAt(state, { x: 3, y: 3 });
     const result = attack(state, { x: 2, y: 3 }, { x: 3, y: 3 });
     const preview = combatPreview(result.events);
     expect(preview.damageToDefender).toBeGreaterThan(0);
-    expect(preview).toMatchObject({ attackerDies: true, attackerHeal: 0 });
+    expect(preview).toMatchObject({ defenderDies: true, defenderHeal: 0 });
     expect(result.events).toContainEqual({
       kind: "UNIT_DIED",
       unitId: vampire.id,
-      cause: "RETALIATION",
+      cause: "ATTACK",
     });
     expect(result.state.units.some((unit) => unit.id === vampire.id)).toBe(
       false,
@@ -634,7 +654,7 @@ describe("ruleset-7 revision-13 Lifesteal", () => {
 
   it("adds the Frenzied bonus to the damage dealt and therefore the heal", () => {
     const pieces: readonly Piece[] = [
-      { seat: 0, role: "KNIGHT", at: { x: 2, y: 3 }, hp: 6 },
+      { seat: 0, role: "KNIGHT", at: { x: 2, y: 3 }, hp: 4 },
       { seat: 1, role: "GUARD", at: { x: 3, y: 3 } },
     ];
     const plain = arena(["UNDEAD", "UNDEAD"], pieces);
@@ -645,22 +665,22 @@ describe("ruleset-7 revision-13 Lifesteal", () => {
     });
     const plainResult = attack(plain, { x: 2, y: 3 }, { x: 3, y: 3 });
     const frenziedResult = attack(frenzied, { x: 2, y: 3 }, { x: 3, y: 3 });
-    // Plain: deals 6, takes 5, heals 6. Frenzied: deals 10, takes 4, heals 8
-    // (capped at the maximum from 2 HP).
+    // Revision 14 (V1): no retaliation. From 4 HP, plain deals 5 and heals
+    // 5; Frenzied deals 8 and heals 6 (capped at the maximum).
     expect(combatPreview(plainResult.events)).toMatchObject({
       inspiredApplied: false,
-      damageToDefender: 6,
-      damageToAttacker: 5,
-      attackerHeal: 6,
+      damageToDefender: 5,
+      damageToAttacker: 0,
+      attackerHeal: 5,
     });
     const frenziedPreview = combatPreview(frenziedResult.events);
     expect(frenziedPreview).toMatchObject({
       inspiredApplied: true,
-      damageToDefender: 10,
-      damageToAttacker: 4,
-      attackerHeal: 8,
+      damageToDefender: 8,
+      damageToAttacker: 0,
+      attackerHeal: 6,
     });
-    expect(unitById(plainResult.state, vampire.id).hp).toBe(7);
+    expect(unitById(plainResult.state, vampire.id).hp).toBe(9);
     expect(unitById(frenziedResult.state, vampire.id).hp).toBe(10);
     expectPublicPreviewMatches(
       frenzied,
@@ -822,7 +842,8 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
   });
 
   it("round-trips Infect and Lifesteal through replay, checkpoints, and save", () => {
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 2);
+    // Seed 3 shows Infect and Lifesteal within 20 rounds on revision-14 maps.
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 3);
     const match = runAiMatchV7(setup, { maxRounds: 20 });
     expect(match.errors).toEqual([]);
     expect(match.metrics.eventsByKind.UNIT_INFECTED).toBeGreaterThan(0);
@@ -1110,7 +1131,7 @@ function arena(
   pieces: readonly Piece[],
   options: ArenaOptions = {},
 ): GameStateV7 {
-  const created = createInitialMapStateV7(setupWith(factions));
+  const created = createRevision13MapStateV7(setupWith(factions));
   if (!created.ok) throw new Error(created.error.code);
   const base = created.state;
   const size = base.board.width;

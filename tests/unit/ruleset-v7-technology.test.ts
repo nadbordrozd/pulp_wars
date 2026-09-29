@@ -201,7 +201,8 @@ describe("ruleset-7 technology", () => {
       hostileCaptureSpoilsCoins: 2,
       adjacentStartTurnHealingAmount: 6,
       landRoadPopulationAmount: 1,
-      marketIncomeMultiplier: 2,
+      // Revision 14 (E2): Commerce no longer doubles Market income.
+      marketIncomeMultiplier: 1,
       armsIndustryDiscountCoins: 1,
       landTradeIncomeCoins: 1,
       seaTradeIncomeCoins: 1,

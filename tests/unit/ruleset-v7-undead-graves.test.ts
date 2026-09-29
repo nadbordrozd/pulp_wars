@@ -7,7 +7,6 @@ import {
   appendReplayCommandV7,
   applyCommandV7,
   canonicalHash,
-  createInitialMapStateV7,
   createPlayableGameV7,
   createReplayV7,
   deathCreatesGraveV7,
@@ -39,6 +38,7 @@ import { runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { withPortV7 } from "../fixtures/v7-naval-builders";
+import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 
 // Seed-2 DRY_LAND boards (factions never change the board):
 // - two seats (11x11): human capital (8, 8) with territory x 7-9, y 7-9;
@@ -626,8 +626,9 @@ describe("ruleset-7 revision-13 Graves: state, events, and persistence", () => {
   });
 
   it("round-trips Graves through replay, checkpoints, save, and state hashes", () => {
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 2);
-    // Thirty rounds include a Raise Dead (pulp_wars-vkq.9).
+    // Seed 4: thirty rounds on its revision-14 map include a Raise Dead or
+    // Devour (pulp_wars-vkq.9); seed 2 did on its revision-13 map.
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 4);
     const match = runAiMatchV7(setup, { maxRounds: 30 });
     expect(match.errors).toEqual([]);
     expect(match.state.graves.length).toBeGreaterThan(0);
@@ -1059,7 +1060,7 @@ function setupWith(factions: readonly FactionIdV7[], seed = 2): MatchSetupV7 {
 }
 
 function initialExplored(factions: readonly FactionIdV7[]): CoordV7[] {
-  const created = createInitialMapStateV7(setupWith(factions));
+  const created = createRevision13MapStateV7(setupWith(factions));
   if (!created.ok) throw new Error(created.error.code);
   return [
     ...required(
@@ -1079,7 +1080,7 @@ function arena(
   pieces: readonly Piece[],
   options: ArenaOptions = {},
 ): GameStateV7 {
-  const created = createInitialMapStateV7(setupWith(factions));
+  const created = createRevision13MapStateV7(setupWith(factions));
   if (!created.ok) throw new Error(created.error.code);
   const base = created.state;
   const size = base.board.width;

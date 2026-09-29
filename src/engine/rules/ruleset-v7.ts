@@ -126,13 +126,17 @@ export type UnitRoleAbilityV7 =
   | "OVERRUN"
   | "ESCAPE"
   | "PUSH"
-  // Revision 13 Undead ability identifiers. Their mechanics are delivered by
-  // later revision-13 work; in this registration they are declarations only.
+  // Revision 13 Undead ability identifiers.
   | "RAISE_DEAD"
   | "DEVOUR"
   | "INFECT"
   | "LIFESTEAL"
-  | "WAIL";
+  | "WAIL"
+  // Revision 14: a Lich attack plagues living survivors; Zombie damage bites
+  // living land units; a Vampire attack receives no retaliation.
+  | "PLAGUE"
+  | "BITE"
+  | "UNANSWERED";
 
 export interface EffectiveRoleRuleV7 {
   readonly role: UnitRoleIdV7;
@@ -467,10 +471,8 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     "MOBILITY",
     3,
     ["ROADS"],
-    [
-      { kind: "LAND_TRADE_INCOME", coins: 1 },
-      { kind: "MARKET_INCOME_MULTIPLIER", multiplier: 2 },
-    ],
+    // Revision 14 (E2): Commerce no longer doubles Market income.
+    [{ kind: "LAND_TRADE_INCOME", coins: 1 }],
   ),
   node(
     "RAIDING",
@@ -862,7 +864,7 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "DRILL",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "CAPTURE", "INFECT"],
+    abilities: ["ATTACK", "CAPTURE", "INFECT", "BITE"],
   }),
   CAPTAIN: role({
     role: "CAPTAIN",
@@ -886,7 +888,8 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     tacticalRole: "SIEGE",
     cost: 8,
     maxHp: 10,
-    attack2: 5,
+    // Revision 14 (L2): Attack 3 (was 2.5).
+    attack2: 6,
     defense2: 2,
     move: 1,
     range: 3,
@@ -894,7 +897,7 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK"],
+    abilities: ["ATTACK", "PLAGUE"],
   }),
   KNIGHT: role({
     role: "KNIGHT",
@@ -910,7 +913,7 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "LIFESTEAL"],
+    abilities: ["ATTACK", "LIFESTEAL", "UNANSWERED"],
   }),
   JUGGERNAUT: role({
     ...ORIGINAL_ROLE_RULES_V7.JUGGERNAUT,

@@ -18,6 +18,7 @@ import {
   arePlayersAlliedV7,
   assignedUnitCountV7,
   cityUnitCapacityV7,
+  marketCoinsV7,
   marketIncomeForCityV7,
 } from "../engine/v7/economy";
 import type { DomainEventV7 } from "../engine/v7/events";
@@ -85,7 +86,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r13";
+  readonly rulesetId: "pulp-wars-poc-7r14";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -269,6 +270,30 @@ export interface UndeadMetricsV7 {
   /** Any rising (Raise Dead Skeleton or Infect Zombie) later disbanded. */
   risingsDisbanded: number;
   risingDisbandCoins: number;
+  /** Revision 14: units newly plagued by Lich attacks. */
+  plagueApplications: number;
+  /** Revision 14: units newly plagued by Start Turn spread. */
+  plagueSpreads: number;
+  /** Revision 14: Start Turn Plague damage entries, damage, and deaths. */
+  plagueDamageEntries: number;
+  plagueDamage: number;
+  plagueDeaths: number;
+  /** Revision 14: Plague ended because the source Lich left the board. */
+  plagueCleared: number;
+  /** Revision 14: Tend Wounded cures. */
+  plagueCures: number;
+  bittenCures: number;
+  /** Revision 14: bites recorded by Zombie attacks and retaliation. */
+  bites: number;
+  /** Revision 14: bitten victims that rose as Zombies. */
+  bittenRisings: number;
+  /** Revision 14: most plagued and bitten units at once; left at the end. */
+  plaguedMaximum: number;
+  bittenMaximum: number;
+  plaguedRemaining: number;
+  bittenRemaining: number;
+  /** Revision 14: attacks that drew no retaliation (Vampire). */
+  unansweredAttacks: number;
 }
 
 export interface AiMatchOptionsV7 {
@@ -281,6 +306,15 @@ export interface AiMatchOptionsV7 {
   /** Use the same bounded Normal-policy work loop as the browser controller. */
   readonly policySliceMilliseconds?: number;
   readonly onPolicyWork?: (diagnostic: AiPolicyWorkDiagnosticV7) => void;
+  /**
+   * Parity and fixture support: start from this already created first turn
+   * (for example a revision-13 board) instead of generating one from the
+   * setup. Its state must carry exactly the given setup.
+   */
+  readonly initialGame?: {
+    readonly state: GameStateV7;
+    readonly events: readonly DomainEventV7[];
+  };
 }
 
 export interface AiPolicyWorkDiagnosticV7 {
@@ -474,8 +508,13 @@ function runAiMatchInternalV7(
     throw new RangeError("policySliceMilliseconds must be positive");
   if (maxCommandsPerTurn > NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7)
     throw new RangeError("maxCommandsPerTurn exceeds the Normal v7 limit");
-  const created = createPlayableGameV7(setup);
+  const created =
+    options.initialGame === undefined
+      ? createPlayableGameV7(setup)
+      : { ok: true as const, ...options.initialGame };
   if (!created.ok) throw new Error(`CREATE_REJECTED:${created.error.code}`);
+  if (canonicalJson(created.state.setup) !== canonicalJson(setup))
+    throw new RangeError("initialGame does not match the setup");
   let state = created.state;
   const commands: CommandV7[] = [];
   const events: DomainEventV7[] = [...created.events];
@@ -681,6 +720,8 @@ function finalizeMetricsV7(
           );
   }
   metrics.undead.gravesRemaining = state.graves.length;
+  metrics.undead.plaguedRemaining = state.plagued.length;
+  metrics.undead.bittenRemaining = state.bitten.length;
   metrics.commandHash = canonicalHash(commands);
   metrics.eventHash = canonicalHash(events);
   metrics.checkpointHash = canonicalHash(checkpoints);
@@ -717,7 +758,7 @@ export async function runAiBatchV7(
             Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r13",
+              rulesetId: "pulp-wars-poc-7r14",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -818,7 +859,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r13",
+    rulesetId: "pulp-wars-poc-7r14",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -940,6 +981,21 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       raisedSkeletonDisbandCoins: 0,
       risingsDisbanded: 0,
       risingDisbandCoins: 0,
+      plagueApplications: 0,
+      plagueSpreads: 0,
+      plagueDamageEntries: 0,
+      plagueDamage: 0,
+      plagueDeaths: 0,
+      plagueCleared: 0,
+      plagueCures: 0,
+      bittenCures: 0,
+      bites: 0,
+      bittenRisings: 0,
+      plaguedMaximum: state.plagued.length,
+      bittenMaximum: state.bitten.length,
+      plaguedRemaining: 0,
+      bittenRemaining: 0,
+      unansweredAttacks: 0,
     },
     knightOverrun: {
       chainsStarted: 0,
@@ -1220,6 +1276,12 @@ function recordEventsV7(
             Number(preview.attackerHeal > 0) + Number(preview.defenderHeal > 0);
           metrics.undead.lifestealHealing += heal;
         }
+        metrics.undead.plagueApplications += preview.plagued.length;
+        metrics.undead.bites +=
+          Number(preview.attackerBitten) + Number(preview.defenderBitten);
+        metrics.undead.unansweredAttacks += Number(
+          preview.noRetaliationReason === "UNANSWERED",
+        );
         metrics.undead.infectionsOnAttack += Number(preview.defenderInfected);
         metrics.undead.infectionsOnRetaliation += Number(
           preview.attackerInfected,
@@ -1295,6 +1357,28 @@ function recordEventsV7(
       if (hostileCity || village) telemetry.centerRisings.add(event.unitId);
     }
     if (event.kind === "GRAVE_CREATED") metrics.undead.gravesCreated += 1;
+    if (event.kind === "PLAGUE_DAMAGED") {
+      metrics.undead.plagueDamageEntries += event.results.length;
+      metrics.undead.plagueDamage += sum(
+        event.results.map((entry) => entry.damage),
+      );
+      metrics.undead.plagueDeaths += event.results.filter(
+        (entry) => entry.dies,
+      ).length;
+    }
+    if (event.kind === "PLAGUE_SPREAD")
+      metrics.undead.plagueSpreads += event.results.length;
+    if (event.kind === "PLAGUE_CLEARED")
+      metrics.undead.plagueCleared += event.unitIds.length;
+    if (event.kind === "BITTEN_UNIT_RISEN") {
+      metrics.undead.bittenRisings += 1;
+      telemetry.risings.add(event.unitId);
+    }
+    if (event.kind === "WOUNDED_TENDED")
+      for (const result of event.results) {
+        metrics.undead.plagueCures += Number(result.curedPlague);
+        metrics.undead.bittenCures += Number(result.curedBitten);
+      }
     if (event.kind === "DEAD_RAISED") {
       metrics.undead.raiseDeadUses += 1;
       metrics.undead.skeletonsRaised += event.results.length;
@@ -1421,15 +1505,10 @@ function recordSnapshotV7(
     for (const tile of state.board.tiles) {
       if (tile.improvement === null) continue;
       const value = spatialContributionAtV7(state, tile.at, tile.improvement);
-      const city = state.cities.find(
-        (candidate) => candidate.id === tile.territoryCityId,
-      );
-      const commerce = state.players
-        .find((player) => player.id === city?.ownerId)
-        ?.researchedTechs.includes("COMMERCE");
+      // Revision 14 (E2): Commerce no longer doubles Market income.
       const output =
         tile.improvement === "MARKET"
-          ? Math.min(4, value.marketIncome) * (commerce ? 2 : 1)
+          ? marketCoinsV7(value.marketIncome)
           : value.population;
       increment(
         metrics.improvements.liveOutputHistogram[tile.improvement],
@@ -1440,6 +1519,14 @@ function recordSnapshotV7(
   metrics.undead.gravesMaximum = Math.max(
     metrics.undead.gravesMaximum,
     state.graves.length,
+  );
+  metrics.undead.plaguedMaximum = Math.max(
+    metrics.undead.plaguedMaximum,
+    state.plagued.length,
+  );
+  metrics.undead.bittenMaximum = Math.max(
+    metrics.undead.bittenMaximum,
+    state.bitten.length,
   );
   metrics.achievements.monumentPopulation =
     state.board.tiles.filter((tile) => tile.improvement === "MONUMENT").length *

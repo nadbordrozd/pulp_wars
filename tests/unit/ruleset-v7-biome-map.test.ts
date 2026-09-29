@@ -9,6 +9,7 @@ import {
   canonicalHash,
   cohereTerrainsV7,
   generateInitialMapV7,
+  generateInitialMapWithVillageCountV7,
   mapGenerationFailureV7,
   parseGameStateV7,
   regionCountV7,
@@ -113,7 +114,15 @@ describe("ruleset-7 revision-4 regional biome map", () => {
       canonicalMapRandomHashV7(second.map),
     );
     expect(first.map).toEqual(second.map);
+    // Revision 14 (VL) adds a seventh village to 16 x 16 three-AI maps.
     expect(canonicalMapRandomHashV7(first.map)).toBe(
+      "d5ef48d4a00f69de47a19761ab0b959efe5b0be7186c22670d523310970f862a",
+    );
+    // With the revision-13 count the generator reproduces the revision-13
+    // map exactly: only the village count changed.
+    const revision13 = generateInitialMapWithVillageCountV7(setupV7(0, 3), 6);
+    if (!revision13.ok) throw new Error(revision13.error.code);
+    expect(canonicalMapRandomHashV7(revision13.map)).toBe(
       "3d8bc500d57fa1281bea3dd6d0b2ab38fbcf597d57c99db92058ab80999bda46",
     );
     const dryLandWithoutRevision7FieldDefense = {
@@ -131,7 +140,7 @@ describe("ruleset-7 revision-4 regional biome map", () => {
         treasureChests: first.map.treasureChests,
         random: first.map.random,
       }),
-    ).toBe("35b59252cbfa05ea40713b837db740e891cd220795f3d3d9e67a55ad446afae6");
+    ).toBe("c81433668f13089cc65a4281a3f6b75670a11ee70d31aa2684f0af9c58d0efd6");
     expect(new Set(first.map.board.tiles.map((tile) => tile.biome))).toEqual(
       new Set(BIOME_IDS_V7),
     );
@@ -142,7 +151,7 @@ describe("ruleset-7 revision-4 regional biome map", () => {
       new Set(first.map.board.tiles.flatMap((tile) => tile.resource ?? [])),
     ).toEqual(new Set(RESOURCE_IDS_V7.slice(0, 4)));
     expect(first.map.capitals).toHaveLength(4);
-    expect(first.map.villages).toHaveLength(6);
+    expect(first.map.villages).toHaveLength(7);
     expect([...first.map.turnOrderSeats].sort()).toEqual([0, 1, 2, 3]);
     const settlements = [...first.map.capitals, ...first.map.villages];
     expect(minimumChebyshevSpacing(settlements)).toBeGreaterThanOrEqual(3);
@@ -315,8 +324,12 @@ describe("ruleset-7 revision-4 regional biome map", () => {
     const generated = generateInitialMapV7(setupV7(1, 3));
     expect(generated.ok).toBe(true);
     if (!generated.ok) return;
-    expect(generated.map.attempt).toBe(14);
-    expect(generated.map.attempts).toHaveLength(14);
+    // Revision 14 (VL): the seed-1 16 x 16 three-AI map is accepted on its
+    // eighth candidate (the fourteenth with the revision-13 six villages).
+    expect(generated.map.attempt).toBe(8);
+    expect(generated.map.attempts).toHaveLength(8);
+    const revision13 = generateInitialMapWithVillageCountV7(setupV7(1, 3), 6);
+    expect(revision13.ok && revision13.map.attempt).toBe(14);
     const settlementCount =
       generated.map.capitals.length + generated.map.villages.length;
     for (const [index, attempt] of generated.map.attempts.entries()) {
@@ -328,7 +341,7 @@ describe("ruleset-7 revision-4 regional biome map", () => {
         expect(attempt.initialRandomState).toBe(
           generated.map.attempts[index - 1]?.finalRandomState,
         );
-      expect(attempt.failures.length === 0).toBe(index === 13);
+      expect(attempt.failures.length === 0).toBe(index === 7);
     }
   });
 

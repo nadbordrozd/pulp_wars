@@ -22,11 +22,14 @@ import {
 import { compareCommandsV7, type CommandV7 } from "./commands";
 import {
   assignedUnitCountV7,
+  cityLevelIncomeV7,
   cityUnitCapacityV7,
+  marketCoinsV7,
   rewardCandidatesForLevelV7,
 } from "./economy";
 import { raiseDeadGravesV7 } from "./graves";
 import { applyCommandV7 } from "./reducer";
+import { afflictionCombatEffectsV7 } from "./afflictions";
 import { calculateCombatPreviewV7, undeadCombatEffectsV7 } from "./combat";
 import type { CombatPreviewV7, DomainEventV7 } from "./events";
 import { reachablePlayerMovementPathsV7 } from "./movement";
@@ -504,15 +507,7 @@ function appendPublicUnitCommandsV7(
     primaryReady &&
     unit.form === "LAND" &&
     rule.abilities.includes("TEND_WOUNDED") &&
-    view.units.some(
-      (target) =>
-        target.ownerId === player.id &&
-        target.form === "LAND" &&
-        target.id !== unit.id &&
-        target.hp < target.maxHp &&
-        !target.activation.tendedThisTurn &&
-        chebyshev(unit.at, target.at) === 1,
-    )
+    publicTendTargetsV7(view, unit).length > 0
   )
     candidates.push({ kind: "TEND_WOUNDED", unitId: unit.id });
   // Revision 13 Grave actions (sections 6.2 and 6.3), offered exactly when
@@ -568,11 +563,14 @@ function appendPublicUnitCommandsV7(
     publicHostile(view, player.id, tile.territoryOwnerId)
   )
     candidates.push({ kind: "PILLAGE", unitId: unit.id });
+  // Revision 14: plagued and bitten units cannot Disband.
   if (
     player.researchedTechs.includes("ADMINISTRATION") &&
     !primaryUsedForQuery(unit) &&
     unit.form === "LAND" &&
-    unit.role !== "JUGGERNAUT"
+    unit.role !== "JUGGERNAUT" &&
+    !view.plagued.some((entry) => entry.unitId === unit.id) &&
+    !view.bitten.some((entry) => entry.unitId === unit.id)
   )
     candidates.push({ kind: "DISBAND", unitId: unit.id });
   if (
@@ -590,6 +588,90 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "BUILD_FIELD_DEFENSE", unitId: unit.id });
   if (!unit.activation.handled)
     candidates.push({ kind: "WAIT", unitId: unit.id });
+}
+
+/**
+ * Revision 14 Tend Wounded targets of an own Captain, from the public view:
+ * adjacent own land units, other than the Captain and not tended this turn,
+ * that are damaged, plagued, or bitten. Own units are always visible.
+ */
+function publicTendTargetsV7(
+  view: PlayerViewV7,
+  captain: PlayerViewV7["units"][number],
+): readonly PlayerViewV7["units"][number][] {
+  const plagued = new Set(view.plagued.map((entry) => entry.unitId));
+  const bitten = new Set(view.bitten.map((entry) => entry.unitId));
+  return view.units
+    .filter(
+      (target) =>
+        target.ownerId === captain.ownerId &&
+        target.form === "LAND" &&
+        target.id !== captain.id &&
+        (target.hp < target.maxHp ||
+          plagued.has(target.id) ||
+          bitten.has(target.id)) &&
+        !target.activation.tendedThisTurn &&
+        chebyshev(captain.at, target.at) === 1,
+    )
+    .sort((left, right) => left.id - right.id);
+}
+
+/** Revision 14 Tend Wounded preview: heals and cures, in unit-ID order. */
+export interface TendWoundedPreviewV7 {
+  readonly results: readonly {
+    readonly unitId: UnitId;
+    readonly amount: number;
+    readonly hpAfter: number;
+    readonly curedPlague: boolean;
+    readonly curedBitten: boolean;
+  }[];
+}
+
+/**
+ * Exact Tend Wounded preview: null unless the command is offered. Every
+ * target is an own unit, so the preview equals the resolution.
+ */
+export function previewTendWoundedV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): TendWoundedPreviewV7 | null;
+export function previewTendWoundedV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  unitId: UnitId,
+): TendWoundedPreviewV7 | null;
+export function previewTendWoundedV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrUnit: PlayerId | UnitId,
+  maybeUnit?: UnitId,
+): TendWoundedPreviewV7 | null {
+  const view =
+    maybeUnit === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrUnit as PlayerId);
+  const unitId = maybeUnit ?? (viewerOrUnit as UnitId);
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "TEND_WOUNDED" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const captain = view.units.find((unit) => unit.id === unitId);
+  if (captain === undefined) return null;
+  const plagued = new Set(view.plagued.map((entry) => entry.unitId));
+  const bitten = new Set(view.bitten.map((entry) => entry.unitId));
+  return {
+    results: publicTendTargetsV7(view, captain).map((target) => {
+      const amount = Math.min(2, target.maxHp - target.hp);
+      return {
+        unitId: target.id,
+        amount,
+        hpAfter: target.hp + amount,
+        curedPlague: plagued.has(target.id),
+        curedBitten: bitten.has(target.id),
+      };
+    }),
+  };
 }
 
 function publicActiveOwnedPort(
@@ -751,12 +833,20 @@ export function previewWailV7(
       const unit = view.units.find(
         (candidate) => candidate.id === target.unitId,
       );
+      // Revision 14: a bitten land-form victim rises instead of a Grave.
+      const bittenRises =
+        target.dies &&
+        unit !== undefined &&
+        unit.form === "LAND" &&
+        view.bitten.some((entry) => entry.unitId === target.unitId);
       return {
         ...target,
         leavesGrave:
           target.dies &&
+          !bittenRises &&
           unit !== undefined &&
           publicWailLeavesGraveV7(view, unit),
+        bittenRises,
       };
     }),
   };
@@ -1843,10 +1933,7 @@ function marketForCityV7(graph: PublicEconomyGraphV7, cityId: CityId): number {
     )
     .reduce((total, tile) => {
       const evaluation = spatialContributionAtV7(graph, tile.at, "MARKET");
-      const value =
-        total +
-        Math.min(4, evaluation.marketIncome) *
-          (graph.researchedTechs.includes("COMMERCE") ? 2 : 1);
+      const value = total + marketCoinsV7(evaluation.marketIncome);
       if (!Number.isSafeInteger(value))
         throw new RangeError("INTEGER_OVERFLOW");
       return value;
@@ -2095,7 +2182,7 @@ function publicCityIncomeV7(
   if (publicCityBesieged(view, city.at)) return 0;
   const result = Math.max(
     1,
-    city.level +
+    cityLevelIncomeV7(city.level) +
       (city.isCapital ? 1 : 0) +
       tradeBonuses +
       market +
@@ -2201,8 +2288,7 @@ function economicOutputTransitionsV7(
           : ("POPULATION" as const),
       value:
         tile.improvement === "MARKET"
-          ? Math.min(4, evaluation.marketIncome) *
-            (graph.researchedTechs.includes("COMMERCE") ? 2 : 1)
+          ? marketCoinsV7(evaluation.marketIncome)
           : evaluation.population,
     };
   };
@@ -3626,8 +3712,7 @@ function publicTileGraphOutputV7(
         : contribution.population,
     recurringCoins:
       tile.improvement === "MARKET"
-        ? Math.min(4, contribution.marketIncome) *
-          (graph.researchedTechs.includes("COMMERCE") ? 2 : 1)
+        ? marketCoinsV7(contribution.marketIncome)
         : contribution.marketIncome,
   };
 }
@@ -4223,8 +4308,11 @@ function publicCombatPreview(
     roundHalfUpPublic(attackOnCommon * BigInt(attack2) * 9n, total * 4n),
   );
   const defenderDies = damageToDefender >= target.hp;
+  // Revision 14 (V1): an UNANSWERED attacker draws no retaliation.
+  const unanswered = attackerRule.abilities.includes("UNANSWERED");
   const retaliation =
     !defenderDies &&
+    !unanswered &&
     target.form !== "EMBARKED" &&
     defenderRule.abilities.includes("ATTACK") &&
     defenderRule.attack2 > 0 &&
@@ -4239,8 +4327,54 @@ function publicCombatPreview(
       )
     : 0;
   const attackerDies = damageToAttacker >= attacker.hp;
+  const splash = attackerMechanics.splash
+    ? view.units
+        .filter(
+          (unit) =>
+            unit.hp > 0 &&
+            unit.id !== target.id &&
+            chebyshev(unit.at, target.at) === 1 &&
+            publicHostile(view, attacker.ownerId, unit.ownerId),
+        )
+        .sort(
+          (left, right) =>
+            left.at.y - right.at.y ||
+            left.at.x - right.at.x ||
+            left.id - right.id,
+        )
+        .map((unit) => {
+          const damage = Math.min(
+            unit.hp,
+            Math.max(1, Math.ceil(damageToDefender / 2)),
+          );
+          return {
+            unitId: unit.id,
+            at: unit.at,
+            damage,
+            dies: damage >= unit.hp,
+          };
+        })
+    : [];
+  // Revision 14 Plague and Bitten from the public statuses of visible units.
+  const afflictions = afflictionCombatEffectsV7({
+    roster: view,
+    attacker,
+    defender: target,
+    attackerRule,
+    defenderRule,
+    damageToDefender,
+    damageToAttacker,
+    attackerDies,
+    defenderDies,
+    splash,
+    splashOwner: (unitId) =>
+      view.units.find((unit) => unit.id === unitId)?.ownerId,
+    plaguedUnitIds: new Set(view.plagued.map((entry) => entry.unitId)),
+    bittenUnitIds: new Set(view.bitten.map((entry) => entry.unitId)),
+  });
   const advances =
     defenderDies &&
+    !afflictions.defenderBittenRises &&
     !attackerDies &&
     distance === 1 &&
     attackerMechanics.advancesAfterKill &&
@@ -4288,7 +4422,9 @@ function publicCombatPreview(
       ? "DEFENDER_DIED"
       : retaliation
         ? null
-        : "OUT_OF_RANGE",
+        : unanswered
+          ? "UNANSWERED"
+          : "OUT_OF_RANGE",
     advances,
     push: publicPushState(
       view,
@@ -4304,34 +4440,7 @@ function publicCombatPreview(
       attacker.form === "LAND" &&
       attackerRule.abilities.includes("ESCAPE") &&
       !attackerDies,
-    splash: attackerMechanics.splash
-      ? view.units
-          .filter(
-            (unit) =>
-              unit.hp > 0 &&
-              unit.id !== target.id &&
-              chebyshev(unit.at, target.at) === 1 &&
-              publicHostile(view, attacker.ownerId, unit.ownerId),
-          )
-          .sort(
-            (left, right) =>
-              left.at.y - right.at.y ||
-              left.at.x - right.at.x ||
-              left.id - right.id,
-          )
-          .map((unit) => {
-            const damage = Math.min(
-              unit.hp,
-              Math.max(1, Math.ceil(damageToDefender / 2)),
-            );
-            return {
-              unitId: unit.id,
-              at: unit.at,
-              damage,
-              dies: damage >= unit.hp,
-            };
-          })
-      : [],
+    splash,
     // Revision 13 Lifesteal and Infect from the visible attacker and target.
     ...undeadCombatEffectsV7({
       attacker,
@@ -4343,6 +4452,7 @@ function publicCombatPreview(
       attackerDies,
       defenderDies,
     }),
+    ...afflictions,
   };
 }
 

@@ -167,18 +167,34 @@ export function isCityBesiegedV7(
   );
 }
 
+/**
+ * Revision 14 (E2): the level term of city income is capped at 5; levels 6+
+ * still grant rewards and capacity.
+ */
+export const CITY_LEVEL_INCOME_CAP_V7 = 5;
+
+/** Revision 14 (E2): the level term of a city's income. */
+export function cityLevelIncomeV7(level: number): number {
+  return Math.min(level, CITY_LEVEL_INCOME_CAP_V7);
+}
+
+/**
+ * Revision 14 (E2): one Market pays `min(4, 1 + distinct adjacent families)`
+ * Coins; Commerce no longer doubles it.
+ */
+export function marketCoinsV7(marketIncome: number): number {
+  return Math.min(4, marketIncome);
+}
+
 export function marketIncomeForCityV7(
   state: NetworkStateV7,
   city: CityStateV7,
 ): number {
-  const commerce = state.players
-    .find((player) => player.id === city.ownerId)
-    ?.researchedTechs.includes("COMMERCE");
   let total = 0;
   for (const tile of state.board.tiles)
     if (tile.territoryCityId === city.id && tile.improvement === "MARKET") {
       const evaluation = spatialContributionAtV7(state, tile.at, "MARKET");
-      total += Math.min(4, evaluation.marketIncome) * (commerce ? 2 : 1);
+      total += marketCoinsV7(evaluation.marketIncome);
       if (!Number.isSafeInteger(total))
         throw new RangeError("INTEGER_OVERFLOW");
     }
@@ -292,7 +308,7 @@ export function recomputeLiveEconomyV7(
 export function cityIncomeV7(state: GameStateV7, city: CityStateV7): number {
   if (isCityBesiegedV7(state, city)) return 0;
   const base =
-    city.level +
+    cityLevelIncomeV7(city.level) +
     (city.isCapital ? 1 : 0) +
     (seaTradeCityIdsV7(state, city.ownerId).has(city.id) ? 1 : 0) +
     (landTradeCityIdsV7(state, city.ownerId).has(city.id) ? 1 : 0);
@@ -761,6 +777,14 @@ export function startTurnEconomyV7(
   state: GameStateV7,
   player: PlayerStateV7,
   resetActivation = true,
+  /**
+   * Revision 14: Start Turn Plague, resolved after the reset and before
+   * Windmill healing (its events follow `TURN_STARTED`).
+   */
+  beforeHealing?: (state: GameStateV7) => {
+    readonly state: GameStateV7;
+    readonly events: readonly DomainEventV7[];
+  },
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   const reset: GameStateV7 = {
     ...state,
@@ -792,7 +816,11 @@ export function startTurnEconomyV7(
         : unit,
     ),
   };
-  const healing = resolveWindmillHealingV7(reset, player.id);
+  const afflicted =
+    beforeHealing === undefined
+      ? { state: reset, events: [] }
+      : beforeHealing(reset);
+  const healing = resolveWindmillHealingV7(afflicted.state, player.id);
   const income = playerIncomeV7(healing.state, player.id);
   const coins = player.coins + income.totalCoins;
   if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
@@ -805,6 +833,7 @@ export function startTurnEconomyV7(
     },
     events: [
       { kind: "TURN_STARTED", playerId: player.id, coins },
+      ...afflicted.events,
       ...healing.events,
       {
         kind: "INCOME_AWARDED",

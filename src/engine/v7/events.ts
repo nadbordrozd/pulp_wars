@@ -32,7 +32,12 @@ export interface CombatPreviewV7 {
   readonly defenderDies: boolean;
   readonly attackerDies: boolean;
   readonly retaliation: boolean;
-  readonly noRetaliationReason: "DEFENDER_DIED" | "OUT_OF_RANGE" | null;
+  /**
+   * Revision 14: `UNANSWERED` when the attacker's attacks receive no
+   * retaliation (the Vampire) and the defender survives.
+   */
+  readonly noRetaliationReason:
+    "DEFENDER_DIED" | "OUT_OF_RANGE" | "UNANSWERED" | null;
   readonly advances: boolean;
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
   readonly attacksUsed: number;
@@ -54,6 +59,24 @@ export interface CombatPreviewV7 {
    */
   readonly attackerInfected: boolean;
   readonly defenderInfected: boolean;
+  /**
+   * Revision 14 Plague: the units this Lich attack newly plagues (the
+   * defender first when it qualifies, then splash targets in splash order).
+   * Empty unless the attacker has `PLAGUE` and survives.
+   */
+  readonly plagued: readonly UnitId[];
+  /**
+   * Revision 14 Bitten: the corresponding surviving living land-form unit
+   * took Zombie damage and becomes (or stays) Bitten by the Zombie.
+   */
+  readonly attackerBitten: boolean;
+  readonly defenderBitten: boolean;
+  /**
+   * Revision 14 Bitten: the corresponding death rises as a Zombie of the
+   * recorded biter instead of leaving a Grave (Infect takes precedence).
+   */
+  readonly attackerBittenRises: boolean;
+  readonly defenderBittenRises: boolean;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
@@ -67,6 +90,28 @@ export type DomainEventV7 =
       readonly kind: "TURN_STARTED";
       readonly playerId: PlayerId;
       readonly coins: number;
+    }
+  | {
+      /**
+       * Revision 14 Plague damage at the start of `playerId`'s turn: every
+       * plagued unit it owns, sorted by (y, x, id). Deaths follow as
+       * `UNIT_DIED` cause `PLAGUE`.
+       */
+      readonly kind: "PLAGUE_DAMAGED";
+      readonly playerId: PlayerId;
+      readonly results: readonly CombatSplashEntryV7[];
+    }
+  | {
+      /**
+       * Revision 14 Plague spread at the start of `playerId`'s turn: every
+       * newly plagued unit (of any owner), sorted by (y, x, id).
+       */
+      readonly kind: "PLAGUE_SPREAD";
+      readonly playerId: PlayerId;
+      readonly results: readonly {
+        readonly unitId: UnitId;
+        readonly at: CoordV7;
+      }[];
     }
   | {
       readonly kind: "WINDMILL_HEALING_RESOLVED";
@@ -333,8 +378,13 @@ export type DomainEventV7 =
       readonly captainId: UnitId;
       readonly results: readonly {
         readonly unitId: UnitId;
+        /** 0 to 2; revision 14 may tend a full-HP unit only to cure it. */
         readonly amount: number;
         readonly hpAfter: number;
+        /** Revision 14: the tended unit was plagued and is cured. */
+        readonly curedPlague: boolean;
+        /** Revision 14: the tended unit was bitten and is cured. */
+        readonly curedBitten: boolean;
       }[];
     }
   | {
@@ -438,7 +488,7 @@ export type DomainEventV7 =
       readonly kind: "UNIT_DIED";
       readonly unitId: UnitId;
       readonly cause:
-        "ATTACK" | "SPLASH" | "RETALIATION" | "ELIMINATION" | "WAIL";
+        "ATTACK" | "SPLASH" | "RETALIATION" | "ELIMINATION" | "WAIL" | "PLAGUE";
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */
@@ -450,7 +500,27 @@ export type DomainEventV7 =
       readonly at: CoordV7;
       readonly homeCityId: CityId | null;
     }
+  | {
+      /**
+       * Revision 14: a bitten land-form victim rose as a Zombie of the
+       * player whose Zombie last bit it.
+       */
+      readonly kind: "BITTEN_UNIT_RISEN";
+      readonly playerId: PlayerId;
+      readonly victimUnitId: UnitId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly homeCityId: CityId | null;
+    }
   | { readonly kind: "GRAVE_CREATED"; readonly at: CoordV7 }
+  | {
+      /**
+       * Revision 14: the source Lich died, so every unit it plagued is cured
+       * at once (sorted unit IDs of the surviving plagued units).
+       */
+      readonly kind: "PLAGUE_CLEARED";
+      readonly unitIds: readonly UnitId[];
+    }
   | {
       readonly kind: "CITY_CAPTURED";
       readonly cityId: CityId;

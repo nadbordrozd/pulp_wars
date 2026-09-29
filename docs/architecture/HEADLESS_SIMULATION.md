@@ -5,7 +5,7 @@ Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The headless CLI
-accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r13`
+accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r14`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). The
 [Ruleset-7 revision-4 biome-economy specification](../product/RULESET_7_REVISION_4_BIOME_ECONOMY.md)
 is historical: it introduced the simulation matrix, telemetry, and revision-4
@@ -22,8 +22,8 @@ with `--factions` needs exactly one `--ai-counts` value, and each batch entry
 records its `factions`.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r13 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
-npm run headless -- batch --ruleset pulp-wars-poc-7r13 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
+npm run headless -- match --ruleset pulp-wars-poc-7r14 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
+npm run headless -- batch --ruleset pulp-wars-poc-7r14 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
 ```
 
 Every v7 result adds, beside the mechanical-role inventories:
@@ -44,6 +44,18 @@ Every v7 result adds, beside the mechanical-role inventories:
   turn boundary, and remaining at the end; raised-Skeleton kills, losses, and
   captures; and Disbands (with refunded Coins) of raised Skeletons and of any
   rising.
+- Revision 14 ([overlay](../product/RULESET_7_REVISION_14_BALANCE.md#13-headless-telemetry))
+  adds to `undead`: `plagueApplications` (units newly plagued by Lich
+  attacks), `plagueSpreads`, `plagueDamageEntries`, `plagueDamage`,
+  `plagueDeaths`, `plagueCleared` (source Lich left the board),
+  `plagueCures` and `bittenCures` (Tend Wounded), `bites`, `bittenRisings`,
+  `plaguedMaximum`/`bittenMaximum` (most at once at a turn boundary),
+  `plaguedRemaining`/`bittenRemaining`, and `unansweredAttacks` (Vampire
+  attacks that drew no retaliation). The Market output histogram uses the
+  revision-14 Market value (no Commerce doubling).
+- `runAiMatchV7` accepts `initialGame` (a created first turn whose state
+  carries exactly the setup), which parity tests use to start from a
+  revision-13 board.
 
 The Human-vs-Undead balance matrix (`pulp_wars-vkq.10`) is
 `npm run balance:ruleset7-undead`; its parameters, output, and results are in
