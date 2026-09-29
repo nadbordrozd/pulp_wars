@@ -199,7 +199,11 @@ terrain and resource from these exact tables.
   neutral cell of the centered, board-clipped 5 x 5 footprint to a level-3+
   city and reveals those cells. It requires no siege, no pending reward for the
   city, and at least one claimable cell. Each city ID may be granted once ever,
-  even across ownership changes.
+  even across ownership changes. The rule is canonical: unexplored neutral
+  cells count and are claimed. The public command query offers Land Grant
+  only when an explored footprint cell has no public territory owner (the
+  view hides the city of territory whose center is unexplored, but not its
+  owner), so every offer is accepted and no offer depends on hidden cells.
 - Capture transfers the city's exact current footprint with everything on it.
 
 ### 4.2 Population, growth, and levels

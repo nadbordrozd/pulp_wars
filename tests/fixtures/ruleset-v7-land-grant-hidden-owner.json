@@ -1,0 +1,7005 @@
+{
+  "source": {
+    "bead": "pulp_wars-9jp",
+    "matrix": "balance:ruleset7-undead",
+    "pairing": "UHUH",
+    "mapType": "LAKES",
+    "size": 16,
+    "seed": 1,
+    "rulesetId": "pulp-wars-poc-7r14",
+    "commandIndex": 1510,
+    "round": 38,
+    "actor": 3,
+    "rejectedCommand": { "kind": "LAND_GRANT", "cityId": 39 }
+  },
+  "state": {
+    "schemaVersion": 7,
+    "rulesetId": "pulp-wars-poc-7r14",
+    "setup": {
+      "rulesetId": "pulp-wars-poc-7r14",
+      "seed": 1,
+      "width": 16,
+      "height": 16,
+      "aiCount": 3,
+      "aiDifficulty": "NORMAL",
+      "aiMode": "RIVAL",
+      "humanColor": "CORAL",
+      "factions": ["UNDEAD", "ORIGINAL", "UNDEAD", "ORIGINAL"],
+      "mapType": "LAKES",
+      "mapGenerationRevision": "REGIONAL_BIOMES_NAVAL_V2"
+    },
+    "random": { "algorithm": "MULBERRY32", "version": 1, "state": 505454662 },
+    "humanPlayerId": 1,
+    "nextEntityId": 323,
+    "commandIndex": 1510,
+    "round": 38,
+    "activeSeatIndex": 1,
+    "turnOrder": [4, 3, 2, 1],
+    "board": {
+      "width": 16,
+      "height": 16,
+      "tiles": [
+        {
+          "at": { "x": 0, "y": 0 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 1, "y": 0 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 2, "y": 0 },
+          "biome": "WOODLAND",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": "MINE",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 3, "y": 0 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "FORGE",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 4, "y": 0 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": true,
+          "fieldDefense": true,
+          "site": null,
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 5, "y": 0 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 6, "y": 0 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 7, "y": 0 },
+          "biome": "WOODLAND",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": true,
+          "site": null,
+          "territoryCityId": 39
+        },
+        {
+          "at": { "x": 8, "y": 0 },
+          "biome": "WOODLAND",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": false,
+          "fieldDefense": true,
+          "site": null,
+          "territoryCityId": 39
+        },
+        {
+          "at": { "x": 9, "y": 0 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 39
+        },
+        {
+          "at": { "x": 10, "y": 0 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MONUMENT",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 18
+        },
+        {
+          "at": { "x": 11, "y": 0 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 18
+        },
+        {
+          "at": { "x": 12, "y": 0 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WINDMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 18
+        },
+        {
+          "at": { "x": 13, "y": 0 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 18
+        },
+        {
+          "at": { "x": 14, "y": 0 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 15, "y": 0 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 1 },
+          "biome": "WOODLAND",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 1, "y": 1 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": "CITY",
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 2, "y": 1 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WINDMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 3, "y": 1 },
+          "biome": "WOODLAND",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 4, "y": 1 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "SHIPYARD",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 5, "y": 1 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": true,
+          "site": "CAPITAL",
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 6, "y": 1 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 7, "y": 1 },
+          "biome": "WOODLAND",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 39
+        },
+        {
+          "at": { "x": 8, "y": 1 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": "CITY",
+          "territoryCityId": 39
+        },
+        {
+          "at": { "x": 9, "y": 1 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 39
+        },
+        {
+          "at": { "x": 10, "y": 1 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 18
+        },
+        {
+          "at": { "x": 11, "y": 1 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": "CITY",
+          "territoryCityId": 18
+        },
+        {
+          "at": { "x": 12, "y": 1 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 18
+        },
+        {
+          "at": { "x": 13, "y": 1 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 14, "y": 1 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 15, "y": 1 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 0, "y": 2 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "SAWMILL",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 1, "y": 2 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "SHIPYARD",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 2, "y": 2 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 3, "y": 2 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 4, "y": 2 },
+          "biome": "WOODLAND",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 5, "y": 2 },
+          "biome": "WOODLAND",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": "MINE",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 6, "y": 2 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 7, "y": 2 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "SAWMILL",
+          "road": true,
+          "fieldDefense": true,
+          "site": null,
+          "territoryCityId": 39
+        },
+        {
+          "at": { "x": 8, "y": 2 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 39
+        },
+        {
+          "at": { "x": 9, "y": 2 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 39
+        },
+        {
+          "at": { "x": 10, "y": 2 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "SAWMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 18
+        },
+        {
+          "at": { "x": 11, "y": 2 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 18
+        },
+        {
+          "at": { "x": 12, "y": 2 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 18
+        },
+        {
+          "at": { "x": 13, "y": 2 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 14, "y": 2 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 15, "y": 2 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "SAWMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 0, "y": 3 },
+          "biome": "WOODLAND",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 1, "y": 3 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 2, "y": 3 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 3, "y": 3 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 27
+        },
+        {
+          "at": { "x": 4, "y": 3 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 3
+        },
+        {
+          "at": { "x": 5, "y": 3 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 6, "y": 3 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 7, "y": 3 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": true,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 8, "y": 3 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "SAWMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 9, "y": 3 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MONUMENT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 78
+        },
+        {
+          "at": { "x": 10, "y": 3 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 78
+        },
+        {
+          "at": { "x": 11, "y": 3 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 78
+        },
+        {
+          "at": { "x": 12, "y": 3 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 13, "y": 3 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 14, "y": 3 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": "CAPITAL",
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 15, "y": 3 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 0, "y": 4 },
+          "biome": "WOODLAND",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 1, "y": 4 },
+          "biome": "WOODLAND",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "SAWMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 2, "y": 4 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 3, "y": 4 },
+          "biome": null,
+          "terrain": "DEEP_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 4, "y": 4 },
+          "biome": null,
+          "terrain": "DEEP_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 4 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 6, "y": 4 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "SHIPYARD",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 7, "y": 4 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": true,
+          "site": "CITY",
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 8, "y": 4 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 9, "y": 4 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 78
+        },
+        {
+          "at": { "x": 10, "y": 4 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": "CITY",
+          "territoryCityId": 78
+        },
+        {
+          "at": { "x": 11, "y": 4 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 78
+        },
+        {
+          "at": { "x": 12, "y": 4 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 13, "y": 4 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 14, "y": 4 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WINDMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 15, "y": 4 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 0, "y": 5 },
+          "biome": "WOODLAND",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 1, "y": 5 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "SHIPYARD",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 2, "y": 5 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 3, "y": 5 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 4, "y": 5 },
+          "biome": null,
+          "terrain": "DEEP_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 5 },
+          "biome": null,
+          "terrain": "DEEP_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 6, "y": 5 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 7, "y": 5 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 8, "y": 5 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 9, "y": 5 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 78
+        },
+        {
+          "at": { "x": 10, "y": 5 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WINDMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 78
+        },
+        {
+          "at": { "x": 11, "y": 5 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 78
+        },
+        {
+          "at": { "x": 12, "y": 5 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MONUMENT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 13, "y": 5 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 14, "y": 5 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 15, "y": 5 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 7
+        },
+        {
+          "at": { "x": 0, "y": 6 },
+          "biome": "WOODLAND",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": "MINE",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 1, "y": 6 },
+          "biome": "WOODLAND",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": "CITY",
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 2, "y": 6 },
+          "biome": "WOODLAND",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "MONUMENT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 3, "y": 6 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 4, "y": 6 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 6 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 6, "y": 6 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 7, "y": 6 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 8, "y": 6 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 9, "y": 6 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 83
+        },
+        {
+          "at": { "x": 10, "y": 6 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 78
+        },
+        {
+          "at": { "x": 11, "y": 6 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 12, "y": 6 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WINDMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 13, "y": 6 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": "CITY",
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 14, "y": 6 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 15, "y": 6 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 0, "y": 7 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 1, "y": 7 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 2, "y": 7 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 43
+        },
+        {
+          "at": { "x": 3, "y": 7 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": "MINE",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 4, "y": 7 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 7 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 7 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 7 },
+          "biome": "PLAINS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 7 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 7 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 7 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 11, "y": 7 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 12, "y": 7 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 13, "y": 7 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 14, "y": 7 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "SAWMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 15, "y": 7 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 0, "y": 8 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": "MINE",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 1, "y": 8 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 2, "y": 8 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MONUMENT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 3, "y": 8 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": "MINE",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 4, "y": 8 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 8 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 8 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 8 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 8 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 8 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 8 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 11, "y": 8 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 12, "y": 8 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 13, "y": 8 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 14, "y": 8 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 15, "y": 8 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 51
+        },
+        {
+          "at": { "x": 0, "y": 9 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": "MINE",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 1, "y": 9 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": "CAPITAL",
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 2, "y": 9 },
+          "biome": "HIGHLANDS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 3, "y": 9 },
+          "biome": "HIGHLANDS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 4, "y": 9 },
+          "biome": "HIGHLANDS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 9 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 9 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 9 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 9 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 9 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 9 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 11, "y": 9 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 12, "y": 9 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": "FISH",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 13, "y": 9 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 14, "y": 9 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 15, "y": 9 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 10 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 1, "y": 10 },
+          "biome": "HIGHLANDS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 2, "y": 10 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "SAWMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 3, "y": 10 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": "MINE",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 4, "y": 10 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 10 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 10 },
+          "biome": "HIGHLANDS",
+          "terrain": "FOREST",
+          "resource": "GAME",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 10 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 10 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 10 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 10 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": "GAME",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 11, "y": 10 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": "FISH",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 12, "y": 10 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 13, "y": 10 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 14, "y": 10 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 15, "y": 10 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 11 },
+          "biome": "HIGHLANDS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 1, "y": 11 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": "MINE",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 2, "y": 11 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": "FORGE",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 3, "y": 11 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": "MINE",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 5
+        },
+        {
+          "at": { "x": 4, "y": 11 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 11 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 11 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 11 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 11 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": "GAME",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 11 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": "FISH",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 11 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 11, "y": 11 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 12, "y": 11 },
+          "biome": null,
+          "terrain": "DEEP_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 13, "y": 11 },
+          "biome": null,
+          "terrain": "DEEP_WATER",
+          "resource": "PEARLS",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 14, "y": 11 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 15, "y": 11 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 0, "y": 12 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 12 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 12 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 12 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 12 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 12 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 12 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 12 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 12 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 12 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 12 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": "FISH",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 11, "y": 12 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": "FISH",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 12, "y": 12 },
+          "biome": null,
+          "terrain": "DEEP_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 13, "y": 12 },
+          "biome": null,
+          "terrain": "DEEP_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 14, "y": 12 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 15, "y": 12 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 0, "y": 13 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 13 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 13 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 13 },
+          "biome": "HIGHLANDS",
+          "terrain": "FOREST",
+          "resource": "GAME",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 13 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 13 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 13 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 13 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 13 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 13 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 13 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 11, "y": 13 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 12, "y": 13 },
+          "biome": null,
+          "terrain": "DEEP_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 13, "y": 13 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "SHIPYARD",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 14, "y": 13 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 15, "y": 13 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": "LUMBER_CAMP",
+          "road": true,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 0, "y": 14 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 14 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 14 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 14 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 14 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 14 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 14 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 14 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 14 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FRUIT",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 14 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 14 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 11, "y": 14 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 12, "y": 14 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 13, "y": 14 },
+          "biome": null,
+          "terrain": "SHALLOW_WATER",
+          "resource": null,
+          "improvement": "PORT",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 14, "y": 14 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": "CAPITAL",
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 15, "y": 14 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WORKSHOP",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 0, "y": 15 },
+          "biome": "HIGHLANDS",
+          "terrain": "FOREST",
+          "resource": "GAME",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 1, "y": 15 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 2, "y": 15 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 3, "y": 15 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 4, "y": 15 },
+          "biome": "HIGHLANDS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 5, "y": 15 },
+          "biome": "HIGHLANDS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 6, "y": 15 },
+          "biome": "HIGHLANDS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 7, "y": 15 },
+          "biome": "PLAINS",
+          "terrain": "FOREST",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 8, "y": 15 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 9, "y": 15 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 10, "y": 15 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 11, "y": 15 },
+          "biome": "PLAINS",
+          "terrain": "MOUNTAIN",
+          "resource": "ORE",
+          "improvement": null,
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": null
+        },
+        {
+          "at": { "x": 12, "y": 15 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 13, "y": 15 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "MARKET",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 14, "y": 15 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": "FERTILE_GROUND",
+          "improvement": "FARM",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        },
+        {
+          "at": { "x": 15, "y": 15 },
+          "biome": "PLAINS",
+          "terrain": "GRASS",
+          "resource": null,
+          "improvement": "WINDMILL",
+          "road": false,
+          "fieldDefense": false,
+          "site": null,
+          "territoryCityId": 1
+        }
+      ]
+    },
+    "players": [
+      {
+        "id": 1,
+        "seat": 0,
+        "controller": "HUMAN",
+        "color": "CORAL",
+        "faction": "UNDEAD",
+        "factionTreeId": "UNDEAD_BASELINE_V1",
+        "status": "ACTIVE",
+        "coins": 1,
+        "researchedTechs": [
+          "GATHERING",
+          "FARMING",
+          "MILLING",
+          "ADMINISTRATION",
+          "PLANNING",
+          "HUNTING",
+          "FORESTRY",
+          "SAWMILLING",
+          "MARKSMANSHIP",
+          "FIELDCRAFT",
+          "SCOUTING",
+          "ROADS",
+          "RAIDING",
+          "CHIVALRY",
+          "DRILL",
+          "ENGINEERING",
+          "FORTIFICATION",
+          "SHORECRAFT",
+          "NAVIGATION",
+          "NAVAL_ENGINEERING"
+        ],
+        "explored": [
+          { "x": 6, "y": 0 },
+          { "x": 7, "y": 0 },
+          { "x": 8, "y": 0 },
+          { "x": 9, "y": 0 },
+          { "x": 10, "y": 0 },
+          { "x": 11, "y": 0 },
+          { "x": 12, "y": 0 },
+          { "x": 13, "y": 0 },
+          { "x": 14, "y": 0 },
+          { "x": 6, "y": 1 },
+          { "x": 7, "y": 1 },
+          { "x": 8, "y": 1 },
+          { "x": 9, "y": 1 },
+          { "x": 10, "y": 1 },
+          { "x": 11, "y": 1 },
+          { "x": 12, "y": 1 },
+          { "x": 13, "y": 1 },
+          { "x": 14, "y": 1 },
+          { "x": 15, "y": 1 },
+          { "x": 5, "y": 2 },
+          { "x": 6, "y": 2 },
+          { "x": 7, "y": 2 },
+          { "x": 8, "y": 2 },
+          { "x": 9, "y": 2 },
+          { "x": 10, "y": 2 },
+          { "x": 11, "y": 2 },
+          { "x": 12, "y": 2 },
+          { "x": 13, "y": 2 },
+          { "x": 14, "y": 2 },
+          { "x": 15, "y": 2 },
+          { "x": 5, "y": 3 },
+          { "x": 6, "y": 3 },
+          { "x": 7, "y": 3 },
+          { "x": 8, "y": 3 },
+          { "x": 9, "y": 3 },
+          { "x": 10, "y": 3 },
+          { "x": 11, "y": 3 },
+          { "x": 12, "y": 3 },
+          { "x": 13, "y": 3 },
+          { "x": 14, "y": 3 },
+          { "x": 15, "y": 3 },
+          { "x": 5, "y": 4 },
+          { "x": 6, "y": 4 },
+          { "x": 7, "y": 4 },
+          { "x": 8, "y": 4 },
+          { "x": 9, "y": 4 },
+          { "x": 10, "y": 4 },
+          { "x": 11, "y": 4 },
+          { "x": 12, "y": 4 },
+          { "x": 13, "y": 4 },
+          { "x": 14, "y": 4 },
+          { "x": 15, "y": 4 },
+          { "x": 6, "y": 5 },
+          { "x": 7, "y": 5 },
+          { "x": 8, "y": 5 },
+          { "x": 9, "y": 5 },
+          { "x": 10, "y": 5 },
+          { "x": 11, "y": 5 },
+          { "x": 12, "y": 5 },
+          { "x": 13, "y": 5 },
+          { "x": 14, "y": 5 },
+          { "x": 15, "y": 5 },
+          { "x": 7, "y": 6 },
+          { "x": 8, "y": 6 },
+          { "x": 9, "y": 6 },
+          { "x": 10, "y": 6 },
+          { "x": 11, "y": 6 },
+          { "x": 12, "y": 6 },
+          { "x": 13, "y": 6 },
+          { "x": 14, "y": 6 },
+          { "x": 15, "y": 6 },
+          { "x": 7, "y": 7 },
+          { "x": 8, "y": 7 },
+          { "x": 9, "y": 7 },
+          { "x": 10, "y": 7 },
+          { "x": 11, "y": 7 },
+          { "x": 12, "y": 7 },
+          { "x": 13, "y": 7 },
+          { "x": 14, "y": 7 },
+          { "x": 15, "y": 7 },
+          { "x": 6, "y": 8 },
+          { "x": 7, "y": 8 },
+          { "x": 8, "y": 8 },
+          { "x": 9, "y": 8 },
+          { "x": 10, "y": 8 },
+          { "x": 11, "y": 8 },
+          { "x": 12, "y": 8 },
+          { "x": 13, "y": 8 },
+          { "x": 14, "y": 8 },
+          { "x": 15, "y": 8 },
+          { "x": 6, "y": 9 },
+          { "x": 7, "y": 9 },
+          { "x": 8, "y": 9 },
+          { "x": 9, "y": 9 },
+          { "x": 10, "y": 9 },
+          { "x": 11, "y": 9 },
+          { "x": 12, "y": 9 },
+          { "x": 13, "y": 9 },
+          { "x": 14, "y": 9 },
+          { "x": 15, "y": 9 },
+          { "x": 6, "y": 10 },
+          { "x": 7, "y": 10 },
+          { "x": 8, "y": 10 },
+          { "x": 9, "y": 10 },
+          { "x": 10, "y": 10 },
+          { "x": 11, "y": 10 },
+          { "x": 12, "y": 10 },
+          { "x": 13, "y": 10 },
+          { "x": 14, "y": 10 },
+          { "x": 15, "y": 10 },
+          { "x": 6, "y": 11 },
+          { "x": 7, "y": 11 },
+          { "x": 8, "y": 11 },
+          { "x": 9, "y": 11 },
+          { "x": 10, "y": 11 },
+          { "x": 11, "y": 11 },
+          { "x": 12, "y": 11 },
+          { "x": 13, "y": 11 },
+          { "x": 14, "y": 11 },
+          { "x": 15, "y": 11 },
+          { "x": 6, "y": 12 },
+          { "x": 7, "y": 12 },
+          { "x": 8, "y": 12 },
+          { "x": 9, "y": 12 },
+          { "x": 10, "y": 12 },
+          { "x": 11, "y": 12 },
+          { "x": 12, "y": 12 },
+          { "x": 13, "y": 12 },
+          { "x": 14, "y": 12 },
+          { "x": 15, "y": 12 },
+          { "x": 6, "y": 13 },
+          { "x": 7, "y": 13 },
+          { "x": 8, "y": 13 },
+          { "x": 9, "y": 13 },
+          { "x": 10, "y": 13 },
+          { "x": 11, "y": 13 },
+          { "x": 12, "y": 13 },
+          { "x": 13, "y": 13 },
+          { "x": 14, "y": 13 },
+          { "x": 15, "y": 13 },
+          { "x": 6, "y": 14 },
+          { "x": 7, "y": 14 },
+          { "x": 8, "y": 14 },
+          { "x": 9, "y": 14 },
+          { "x": 10, "y": 14 },
+          { "x": 11, "y": 14 },
+          { "x": 12, "y": 14 },
+          { "x": 13, "y": 14 },
+          { "x": 14, "y": 14 },
+          { "x": 15, "y": 14 },
+          { "x": 9, "y": 15 },
+          { "x": 10, "y": 15 },
+          { "x": 11, "y": 15 },
+          { "x": 12, "y": 15 },
+          { "x": 13, "y": 15 },
+          { "x": 14, "y": 15 },
+          { "x": 15, "y": 15 }
+        ],
+        "spoilsClaimedCityIds": [78],
+        "achievementEntitlements": [
+          { "achievement": "EXPLORER", "unlocked": true, "spent": true },
+          { "achievement": "ENGINEER", "unlocked": false, "spent": false },
+          { "achievement": "MUSTER", "unlocked": true, "spent": true }
+        ],
+        "originalCapitalCityId": 1
+      },
+      {
+        "id": 2,
+        "seat": 1,
+        "controller": "AI",
+        "color": "TEAL",
+        "faction": "ORIGINAL",
+        "factionTreeId": "ORIGINAL_BASELINE_V5",
+        "status": "ELIMINATED",
+        "coins": 4,
+        "researchedTechs": [
+          "GATHERING",
+          "HUNTING",
+          "FORESTRY",
+          "SCOUTING",
+          "DRILL",
+          "SHORECRAFT",
+          "NAVIGATION",
+          "NAVAL_ENGINEERING"
+        ],
+        "explored": [
+          { "x": 0, "y": 0 },
+          { "x": 1, "y": 0 },
+          { "x": 2, "y": 0 },
+          { "x": 3, "y": 0 },
+          { "x": 4, "y": 0 },
+          { "x": 5, "y": 0 },
+          { "x": 6, "y": 0 },
+          { "x": 7, "y": 0 },
+          { "x": 8, "y": 0 },
+          { "x": 9, "y": 0 },
+          { "x": 0, "y": 1 },
+          { "x": 1, "y": 1 },
+          { "x": 2, "y": 1 },
+          { "x": 3, "y": 1 },
+          { "x": 4, "y": 1 },
+          { "x": 5, "y": 1 },
+          { "x": 6, "y": 1 },
+          { "x": 7, "y": 1 },
+          { "x": 8, "y": 1 },
+          { "x": 9, "y": 1 },
+          { "x": 0, "y": 2 },
+          { "x": 1, "y": 2 },
+          { "x": 2, "y": 2 },
+          { "x": 3, "y": 2 },
+          { "x": 4, "y": 2 },
+          { "x": 5, "y": 2 },
+          { "x": 6, "y": 2 },
+          { "x": 7, "y": 2 },
+          { "x": 8, "y": 2 },
+          { "x": 9, "y": 2 },
+          { "x": 0, "y": 3 },
+          { "x": 1, "y": 3 },
+          { "x": 2, "y": 3 },
+          { "x": 3, "y": 3 },
+          { "x": 4, "y": 3 },
+          { "x": 5, "y": 3 },
+          { "x": 6, "y": 3 },
+          { "x": 7, "y": 3 },
+          { "x": 8, "y": 3 },
+          { "x": 9, "y": 3 },
+          { "x": 0, "y": 4 },
+          { "x": 1, "y": 4 },
+          { "x": 2, "y": 4 },
+          { "x": 3, "y": 4 },
+          { "x": 4, "y": 4 },
+          { "x": 5, "y": 4 },
+          { "x": 6, "y": 4 },
+          { "x": 7, "y": 4 },
+          { "x": 8, "y": 4 },
+          { "x": 9, "y": 4 },
+          { "x": 0, "y": 5 },
+          { "x": 1, "y": 5 },
+          { "x": 2, "y": 5 },
+          { "x": 6, "y": 5 },
+          { "x": 7, "y": 5 },
+          { "x": 8, "y": 5 },
+          { "x": 9, "y": 5 },
+          { "x": 0, "y": 6 },
+          { "x": 1, "y": 6 },
+          { "x": 6, "y": 6 },
+          { "x": 7, "y": 6 },
+          { "x": 8, "y": 6 },
+          { "x": 9, "y": 6 }
+        ],
+        "spoilsClaimedCityIds": [],
+        "achievementEntitlements": [
+          { "achievement": "EXPLORER", "unlocked": false, "spent": false },
+          { "achievement": "ENGINEER", "unlocked": false, "spent": false },
+          { "achievement": "MUSTER", "unlocked": false, "spent": false }
+        ],
+        "originalCapitalCityId": 3
+      },
+      {
+        "id": 3,
+        "seat": 2,
+        "controller": "AI",
+        "color": "GOLD",
+        "faction": "UNDEAD",
+        "factionTreeId": "UNDEAD_BASELINE_V1",
+        "status": "ACTIVE",
+        "coins": 63,
+        "researchedTechs": [
+          "GATHERING",
+          "FARMING",
+          "MILLING",
+          "ADMINISTRATION",
+          "PLANNING",
+          "HUNTING",
+          "FORESTRY",
+          "SAWMILLING",
+          "MARKSMANSHIP",
+          "FIELDCRAFT",
+          "SCOUTING",
+          "ROADS",
+          "COMMERCE",
+          "RAIDING",
+          "CHIVALRY",
+          "DRILL",
+          "ENGINEERING",
+          "METALLURGY",
+          "FORTIFICATION",
+          "EXPLOSIVES",
+          "SHORECRAFT",
+          "NAVIGATION",
+          "NAVAL_ENGINEERING"
+        ],
+        "explored": [
+          { "x": 0, "y": 0 },
+          { "x": 1, "y": 0 },
+          { "x": 2, "y": 0 },
+          { "x": 3, "y": 0 },
+          { "x": 4, "y": 0 },
+          { "x": 5, "y": 0 },
+          { "x": 6, "y": 0 },
+          { "x": 7, "y": 0 },
+          { "x": 8, "y": 0 },
+          { "x": 9, "y": 0 },
+          { "x": 10, "y": 0 },
+          { "x": 0, "y": 1 },
+          { "x": 1, "y": 1 },
+          { "x": 2, "y": 1 },
+          { "x": 3, "y": 1 },
+          { "x": 4, "y": 1 },
+          { "x": 5, "y": 1 },
+          { "x": 6, "y": 1 },
+          { "x": 7, "y": 1 },
+          { "x": 8, "y": 1 },
+          { "x": 9, "y": 1 },
+          { "x": 10, "y": 1 },
+          { "x": 0, "y": 2 },
+          { "x": 1, "y": 2 },
+          { "x": 2, "y": 2 },
+          { "x": 3, "y": 2 },
+          { "x": 4, "y": 2 },
+          { "x": 5, "y": 2 },
+          { "x": 6, "y": 2 },
+          { "x": 7, "y": 2 },
+          { "x": 8, "y": 2 },
+          { "x": 9, "y": 2 },
+          { "x": 10, "y": 2 },
+          { "x": 0, "y": 3 },
+          { "x": 1, "y": 3 },
+          { "x": 2, "y": 3 },
+          { "x": 3, "y": 3 },
+          { "x": 4, "y": 3 },
+          { "x": 5, "y": 3 },
+          { "x": 6, "y": 3 },
+          { "x": 7, "y": 3 },
+          { "x": 8, "y": 3 },
+          { "x": 9, "y": 3 },
+          { "x": 0, "y": 4 },
+          { "x": 1, "y": 4 },
+          { "x": 2, "y": 4 },
+          { "x": 3, "y": 4 },
+          { "x": 4, "y": 4 },
+          { "x": 5, "y": 4 },
+          { "x": 6, "y": 4 },
+          { "x": 7, "y": 4 },
+          { "x": 8, "y": 4 },
+          { "x": 9, "y": 4 },
+          { "x": 10, "y": 4 },
+          { "x": 0, "y": 5 },
+          { "x": 1, "y": 5 },
+          { "x": 2, "y": 5 },
+          { "x": 3, "y": 5 },
+          { "x": 4, "y": 5 },
+          { "x": 5, "y": 5 },
+          { "x": 6, "y": 5 },
+          { "x": 7, "y": 5 },
+          { "x": 8, "y": 5 },
+          { "x": 9, "y": 5 },
+          { "x": 10, "y": 5 },
+          { "x": 0, "y": 6 },
+          { "x": 1, "y": 6 },
+          { "x": 2, "y": 6 },
+          { "x": 3, "y": 6 },
+          { "x": 4, "y": 6 },
+          { "x": 5, "y": 6 },
+          { "x": 6, "y": 6 },
+          { "x": 7, "y": 6 },
+          { "x": 8, "y": 6 },
+          { "x": 9, "y": 6 },
+          { "x": 10, "y": 6 },
+          { "x": 0, "y": 7 },
+          { "x": 1, "y": 7 },
+          { "x": 2, "y": 7 },
+          { "x": 3, "y": 7 },
+          { "x": 4, "y": 7 },
+          { "x": 5, "y": 7 },
+          { "x": 6, "y": 7 },
+          { "x": 7, "y": 7 },
+          { "x": 8, "y": 7 },
+          { "x": 0, "y": 8 },
+          { "x": 1, "y": 8 },
+          { "x": 2, "y": 8 },
+          { "x": 3, "y": 8 },
+          { "x": 4, "y": 8 },
+          { "x": 5, "y": 8 },
+          { "x": 6, "y": 8 },
+          { "x": 7, "y": 8 },
+          { "x": 8, "y": 8 },
+          { "x": 0, "y": 9 },
+          { "x": 1, "y": 9 },
+          { "x": 2, "y": 9 },
+          { "x": 3, "y": 9 },
+          { "x": 4, "y": 9 },
+          { "x": 5, "y": 9 },
+          { "x": 6, "y": 9 },
+          { "x": 0, "y": 10 },
+          { "x": 1, "y": 10 },
+          { "x": 2, "y": 10 },
+          { "x": 3, "y": 10 },
+          { "x": 4, "y": 10 },
+          { "x": 5, "y": 10 },
+          { "x": 6, "y": 10 },
+          { "x": 0, "y": 11 },
+          { "x": 1, "y": 11 },
+          { "x": 2, "y": 11 },
+          { "x": 3, "y": 11 },
+          { "x": 4, "y": 11 },
+          { "x": 0, "y": 12 },
+          { "x": 1, "y": 12 },
+          { "x": 2, "y": 12 },
+          { "x": 3, "y": 12 },
+          { "x": 4, "y": 12 }
+        ],
+        "spoilsClaimedCityIds": [3, 27, 39, 83],
+        "achievementEntitlements": [
+          { "achievement": "EXPLORER", "unlocked": true, "spent": true },
+          { "achievement": "ENGINEER", "unlocked": false, "spent": false },
+          { "achievement": "MUSTER", "unlocked": true, "spent": true }
+        ],
+        "originalCapitalCityId": 5
+      },
+      {
+        "id": 4,
+        "seat": 3,
+        "controller": "AI",
+        "color": "VIOLET",
+        "faction": "ORIGINAL",
+        "factionTreeId": "ORIGINAL_BASELINE_V5",
+        "status": "ACTIVE",
+        "coins": 52,
+        "researchedTechs": [
+          "GATHERING",
+          "FARMING",
+          "MILLING",
+          "ADMINISTRATION",
+          "PLANNING",
+          "HUNTING",
+          "FORESTRY",
+          "SAWMILLING",
+          "MARKSMANSHIP",
+          "FIELDCRAFT",
+          "SCOUTING",
+          "ROADS",
+          "COMMERCE",
+          "RAIDING",
+          "CHIVALRY",
+          "DRILL",
+          "ENGINEERING",
+          "METALLURGY",
+          "FORTIFICATION",
+          "EXPLOSIVES",
+          "SHORECRAFT",
+          "NAVIGATION",
+          "NAVAL_ENGINEERING"
+        ],
+        "explored": [
+          { "x": 3, "y": 0 },
+          { "x": 4, "y": 0 },
+          { "x": 5, "y": 0 },
+          { "x": 6, "y": 0 },
+          { "x": 7, "y": 0 },
+          { "x": 8, "y": 0 },
+          { "x": 9, "y": 0 },
+          { "x": 10, "y": 0 },
+          { "x": 11, "y": 0 },
+          { "x": 12, "y": 0 },
+          { "x": 13, "y": 0 },
+          { "x": 14, "y": 0 },
+          { "x": 15, "y": 0 },
+          { "x": 1, "y": 1 },
+          { "x": 2, "y": 1 },
+          { "x": 3, "y": 1 },
+          { "x": 4, "y": 1 },
+          { "x": 5, "y": 1 },
+          { "x": 6, "y": 1 },
+          { "x": 7, "y": 1 },
+          { "x": 8, "y": 1 },
+          { "x": 9, "y": 1 },
+          { "x": 10, "y": 1 },
+          { "x": 11, "y": 1 },
+          { "x": 12, "y": 1 },
+          { "x": 13, "y": 1 },
+          { "x": 14, "y": 1 },
+          { "x": 15, "y": 1 },
+          { "x": 1, "y": 2 },
+          { "x": 2, "y": 2 },
+          { "x": 3, "y": 2 },
+          { "x": 4, "y": 2 },
+          { "x": 5, "y": 2 },
+          { "x": 6, "y": 2 },
+          { "x": 7, "y": 2 },
+          { "x": 8, "y": 2 },
+          { "x": 9, "y": 2 },
+          { "x": 10, "y": 2 },
+          { "x": 11, "y": 2 },
+          { "x": 12, "y": 2 },
+          { "x": 13, "y": 2 },
+          { "x": 14, "y": 2 },
+          { "x": 15, "y": 2 },
+          { "x": 1, "y": 3 },
+          { "x": 2, "y": 3 },
+          { "x": 3, "y": 3 },
+          { "x": 4, "y": 3 },
+          { "x": 5, "y": 3 },
+          { "x": 6, "y": 3 },
+          { "x": 7, "y": 3 },
+          { "x": 8, "y": 3 },
+          { "x": 9, "y": 3 },
+          { "x": 10, "y": 3 },
+          { "x": 11, "y": 3 },
+          { "x": 12, "y": 3 },
+          { "x": 13, "y": 3 },
+          { "x": 14, "y": 3 },
+          { "x": 15, "y": 3 },
+          { "x": 1, "y": 4 },
+          { "x": 2, "y": 4 },
+          { "x": 3, "y": 4 },
+          { "x": 4, "y": 4 },
+          { "x": 5, "y": 4 },
+          { "x": 6, "y": 4 },
+          { "x": 7, "y": 4 },
+          { "x": 8, "y": 4 },
+          { "x": 9, "y": 4 },
+          { "x": 10, "y": 4 },
+          { "x": 11, "y": 4 },
+          { "x": 12, "y": 4 },
+          { "x": 13, "y": 4 },
+          { "x": 14, "y": 4 },
+          { "x": 15, "y": 4 },
+          { "x": 1, "y": 5 },
+          { "x": 2, "y": 5 },
+          { "x": 3, "y": 5 },
+          { "x": 4, "y": 5 },
+          { "x": 5, "y": 5 },
+          { "x": 6, "y": 5 },
+          { "x": 7, "y": 5 },
+          { "x": 8, "y": 5 },
+          { "x": 9, "y": 5 },
+          { "x": 10, "y": 5 },
+          { "x": 11, "y": 5 },
+          { "x": 12, "y": 5 },
+          { "x": 13, "y": 5 },
+          { "x": 14, "y": 5 },
+          { "x": 15, "y": 5 },
+          { "x": 2, "y": 6 },
+          { "x": 3, "y": 6 },
+          { "x": 4, "y": 6 },
+          { "x": 5, "y": 6 },
+          { "x": 6, "y": 6 },
+          { "x": 7, "y": 6 },
+          { "x": 8, "y": 6 },
+          { "x": 9, "y": 6 },
+          { "x": 10, "y": 6 },
+          { "x": 11, "y": 6 },
+          { "x": 4, "y": 7 },
+          { "x": 5, "y": 7 },
+          { "x": 6, "y": 7 },
+          { "x": 7, "y": 7 },
+          { "x": 8, "y": 7 },
+          { "x": 9, "y": 7 },
+          { "x": 10, "y": 7 },
+          { "x": 11, "y": 7 }
+        ],
+        "spoilsClaimedCityIds": [3, 78],
+        "achievementEntitlements": [
+          { "achievement": "EXPLORER", "unlocked": true, "spent": true },
+          { "achievement": "ENGINEER", "unlocked": false, "spent": false },
+          { "achievement": "MUSTER", "unlocked": true, "spent": true }
+        ],
+        "originalCapitalCityId": 7
+      }
+    ],
+    "cities": [
+      {
+        "id": 1,
+        "ownerId": 1,
+        "at": { "x": 14, "y": 14 },
+        "level": 5,
+        "permanentPopulation": 3,
+        "economicPopulation": 16,
+        "population": 5,
+        "isCapital": true,
+        "expanded": false,
+        "landGrantUsed": true,
+        "cityActionAvailable": true,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "STOCKPILE" },
+          { "reachedLevel": 3, "reward": "WALLS" },
+          { "reachedLevel": 4, "reward": "TREASURY_8" },
+          { "reachedLevel": 5, "reward": "TREASURY" }
+        ]
+      },
+      {
+        "id": 3,
+        "ownerId": 3,
+        "at": { "x": 5, "y": 1 },
+        "level": 5,
+        "permanentPopulation": 1,
+        "economicPopulation": 13,
+        "population": 0,
+        "isCapital": true,
+        "expanded": false,
+        "landGrantUsed": true,
+        "cityActionAvailable": true,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "STOCKPILE" },
+          { "reachedLevel": 3, "reward": "MILITIA" },
+          { "reachedLevel": 4, "reward": "TREASURY_8" },
+          { "reachedLevel": 5, "reward": "TREASURY" }
+        ]
+      },
+      {
+        "id": 5,
+        "ownerId": 3,
+        "at": { "x": 1, "y": 9 },
+        "level": 8,
+        "permanentPopulation": 1,
+        "economicPopulation": 35,
+        "population": 1,
+        "isCapital": true,
+        "expanded": false,
+        "landGrantUsed": true,
+        "cityActionAvailable": true,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "SURVEY" },
+          { "reachedLevel": 3, "reward": "WALLS" },
+          { "reachedLevel": 4, "reward": "TREASURY_8" },
+          { "reachedLevel": 5, "reward": "TREASURY" },
+          { "reachedLevel": 6, "reward": "JUGGERNAUT" },
+          { "reachedLevel": 7, "reward": "TREASURY" },
+          { "reachedLevel": 8, "reward": "JUGGERNAUT" }
+        ]
+      },
+      {
+        "id": 7,
+        "ownerId": 4,
+        "at": { "x": 14, "y": 3 },
+        "level": 7,
+        "permanentPopulation": 3,
+        "economicPopulation": 25,
+        "population": 1,
+        "isCapital": true,
+        "expanded": false,
+        "landGrantUsed": true,
+        "cityActionAvailable": true,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "STOCKPILE" },
+          { "reachedLevel": 3, "reward": "WALLS" },
+          { "reachedLevel": 4, "reward": "TREASURY_8" },
+          { "reachedLevel": 5, "reward": "JUGGERNAUT" },
+          { "reachedLevel": 6, "reward": "JUGGERNAUT" },
+          { "reachedLevel": 7, "reward": "TREASURY" }
+        ]
+      },
+      {
+        "id": 18,
+        "ownerId": 4,
+        "at": { "x": 11, "y": 1 },
+        "level": 6,
+        "permanentPopulation": 3,
+        "economicPopulation": 17,
+        "population": 0,
+        "isCapital": false,
+        "expanded": false,
+        "landGrantUsed": true,
+        "cityActionAvailable": true,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "STOCKPILE" },
+          { "reachedLevel": 3, "reward": "WALLS" },
+          { "reachedLevel": 4, "reward": "BOOM" },
+          { "reachedLevel": 5, "reward": "TREASURY" },
+          { "reachedLevel": 6, "reward": "TREASURY" }
+        ]
+      },
+      {
+        "id": 27,
+        "ownerId": 3,
+        "at": { "x": 1, "y": 1 },
+        "level": 6,
+        "permanentPopulation": 4,
+        "economicPopulation": 20,
+        "population": 4,
+        "isCapital": false,
+        "expanded": false,
+        "landGrantUsed": true,
+        "cityActionAvailable": true,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "STOCKPILE" },
+          { "reachedLevel": 3, "reward": "MILITIA" },
+          { "reachedLevel": 4, "reward": "TREASURY_8" },
+          { "reachedLevel": 5, "reward": "JUGGERNAUT" },
+          { "reachedLevel": 6, "reward": "TREASURY" }
+        ]
+      },
+      {
+        "id": 39,
+        "ownerId": 3,
+        "at": { "x": 8, "y": 1 },
+        "level": 6,
+        "permanentPopulation": 5,
+        "economicPopulation": 13,
+        "population": -2,
+        "isCapital": false,
+        "expanded": false,
+        "landGrantUsed": false,
+        "cityActionAvailable": true,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "STOCKPILE" },
+          { "reachedLevel": 3, "reward": "WALLS" },
+          { "reachedLevel": 4, "reward": "BOOM" },
+          { "reachedLevel": 5, "reward": "JUGGERNAUT" },
+          { "reachedLevel": 6, "reward": "JUGGERNAUT" }
+        ]
+      },
+      {
+        "id": 43,
+        "ownerId": 3,
+        "at": { "x": 1, "y": 6 },
+        "level": 6,
+        "permanentPopulation": 3,
+        "economicPopulation": 21,
+        "population": 4,
+        "isCapital": false,
+        "expanded": false,
+        "landGrantUsed": true,
+        "cityActionAvailable": true,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "STOCKPILE" },
+          { "reachedLevel": 3, "reward": "WALLS" },
+          { "reachedLevel": 4, "reward": "TREASURY_8" },
+          { "reachedLevel": 5, "reward": "TREASURY" },
+          { "reachedLevel": 6, "reward": "JUGGERNAUT" }
+        ]
+      },
+      {
+        "id": 51,
+        "ownerId": 1,
+        "at": { "x": 13, "y": 6 },
+        "level": 7,
+        "permanentPopulation": 6,
+        "economicPopulation": 28,
+        "population": 7,
+        "isCapital": false,
+        "expanded": false,
+        "landGrantUsed": true,
+        "cityActionAvailable": true,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "STOCKPILE" },
+          { "reachedLevel": 3, "reward": "WALLS" },
+          { "reachedLevel": 4, "reward": "TREASURY_8" },
+          { "reachedLevel": 5, "reward": "TREASURY" },
+          { "reachedLevel": 6, "reward": "TREASURY" },
+          { "reachedLevel": 7, "reward": "TREASURY" }
+        ]
+      },
+      {
+        "id": 78,
+        "ownerId": 4,
+        "at": { "x": 10, "y": 4 },
+        "level": 5,
+        "permanentPopulation": 2,
+        "economicPopulation": 8,
+        "population": -4,
+        "isCapital": false,
+        "expanded": false,
+        "landGrantUsed": true,
+        "cityActionAvailable": true,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "STOCKPILE" },
+          { "reachedLevel": 3, "reward": "MILITIA" },
+          { "reachedLevel": 4, "reward": "TREASURY_8" },
+          { "reachedLevel": 5, "reward": "JUGGERNAUT" }
+        ]
+      },
+      {
+        "id": 83,
+        "ownerId": 3,
+        "at": { "x": 7, "y": 4 },
+        "level": 6,
+        "permanentPopulation": 8,
+        "economicPopulation": 18,
+        "population": 6,
+        "isCapital": false,
+        "expanded": false,
+        "landGrantUsed": true,
+        "cityActionAvailable": false,
+        "rewards": [
+          { "reachedLevel": 2, "reward": "SURVEY" },
+          { "reachedLevel": 3, "reward": "MILITIA" },
+          { "reachedLevel": 4, "reward": "TREASURY_8" },
+          { "reachedLevel": 5, "reward": "TREASURY" },
+          { "reachedLevel": 6, "reward": "JUGGERNAUT" }
+        ]
+      }
+    ],
+    "populationContributions": [
+      {
+        "id": 9,
+        "cityId": 1,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 13, "y": 15 }
+        }
+      },
+      {
+        "id": 10,
+        "cityId": 7,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 13, "y": 3 }
+        }
+      },
+      {
+        "id": 12,
+        "cityId": 3,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 6, "y": 0 }
+        }
+      },
+      {
+        "id": 14,
+        "cityId": 7,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 15, "y": 3 }
+        }
+      },
+      {
+        "id": 16,
+        "cityId": 3,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 4, "y": 2 }
+        }
+      },
+      {
+        "id": 19,
+        "cityId": 18,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 12, "y": 2 }
+        }
+      },
+      {
+        "id": 21,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "MINE",
+          "at": { "x": 0, "y": 8 }
+        }
+      },
+      {
+        "id": 22,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SHIPYARD",
+          "at": { "x": 13, "y": 13 }
+        }
+      },
+      {
+        "id": 23,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 14, "y": 13 }
+        }
+      },
+      {
+        "id": 24,
+        "cityId": 18,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 11, "y": 0 }
+        }
+      },
+      {
+        "id": 26,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 1, "y": 8 }
+        }
+      },
+      {
+        "id": 28,
+        "cityId": 27,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 0, "y": 2 }
+        }
+      },
+      {
+        "id": 29,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 0, "y": 1 }
+        }
+      },
+      {
+        "id": 33,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 13, "y": 4 }
+        }
+      },
+      {
+        "id": 36,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 13, "y": 14 }
+        }
+      },
+      {
+        "id": 37,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 15, "y": 4 }
+        }
+      },
+      {
+        "id": 40,
+        "cityId": 39,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 9, "y": 0 }
+        }
+      },
+      {
+        "id": 41,
+        "cityId": 39,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 9, "y": 1 }
+        }
+      },
+      {
+        "id": 44,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "MINE",
+          "at": { "x": 0, "y": 9 }
+        }
+      },
+      {
+        "id": 47,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "MINE",
+          "at": { "x": 0, "y": 6 }
+        }
+      },
+      {
+        "id": 48,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 0, "y": 5 }
+        }
+      },
+      {
+        "id": 52,
+        "cityId": 1,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 15, "y": 14 }
+        }
+      },
+      {
+        "id": 53,
+        "cityId": 51,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 12, "y": 5 }
+        }
+      },
+      {
+        "id": 57,
+        "cityId": 51,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 14, "y": 5 }
+        }
+      },
+      {
+        "id": 58,
+        "cityId": 51,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 14, "y": 7 }
+        }
+      },
+      {
+        "id": 66,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SHIPYARD",
+          "at": { "x": 1, "y": 5 }
+        }
+      },
+      {
+        "id": 69,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 2, "y": 5 }
+        }
+      },
+      {
+        "id": 72,
+        "cityId": 27,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FISH",
+          "at": { "x": 1, "y": 2 }
+        }
+      },
+      {
+        "id": 74,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 2, "y": 7 }
+        }
+      },
+      {
+        "id": 75,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SHIPYARD",
+          "at": { "x": 1, "y": 2 }
+        }
+      },
+      {
+        "id": 79,
+        "cityId": 78,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 11, "y": 5 }
+        }
+      },
+      {
+        "id": 81,
+        "cityId": 3,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SHIPYARD",
+          "at": { "x": 4, "y": 1 }
+        }
+      },
+      {
+        "id": 84,
+        "cityId": 83,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 8, "y": 3 }
+        }
+      },
+      {
+        "id": 85,
+        "cityId": 83,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 8, "y": 4 }
+        }
+      },
+      {
+        "id": 86,
+        "cityId": 83,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 8, "y": 5 }
+        }
+      },
+      {
+        "id": 88,
+        "cityId": 3,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 6, "y": 1 }
+        }
+      },
+      {
+        "id": 89,
+        "cityId": 78,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "MONUMENT",
+          "achievement": "EXPLORER",
+          "at": { "x": 9, "y": 3 }
+        }
+      },
+      {
+        "id": 91,
+        "cityId": 39,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 8, "y": 0 }
+        }
+      },
+      {
+        "id": 98,
+        "cityId": 39,
+        "category": "PERMANENT",
+        "amount": 3,
+        "source": {
+          "kind": "CITY_REWARD",
+          "reward": "BOOM",
+          "reachedLevel": 4,
+          "at": { "x": 8, "y": 1 }
+        }
+      },
+      {
+        "id": 101,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 0, "y": 0 }
+        }
+      },
+      {
+        "id": 102,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "MINE",
+          "at": { "x": 2, "y": 0 }
+        }
+      },
+      {
+        "id": 104,
+        "cityId": 3,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 6, "y": 2 }
+        }
+      },
+      {
+        "id": 109,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 13, "y": 5 }
+        }
+      },
+      {
+        "id": 110,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SHIPYARD",
+          "at": { "x": 6, "y": 4 }
+        }
+      },
+      {
+        "id": 114,
+        "cityId": 83,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FISH",
+          "at": { "x": 6, "y": 5 }
+        }
+      },
+      {
+        "id": 116,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "MONUMENT",
+          "achievement": "MUSTER",
+          "at": { "x": 2, "y": 6 }
+        }
+      },
+      {
+        "id": 118,
+        "cityId": 18,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 11, "y": 2 }
+        }
+      },
+      {
+        "id": 119,
+        "cityId": 18,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 12, "y": 1 }
+        }
+      },
+      {
+        "id": 120,
+        "cityId": 18,
+        "category": "PERMANENT",
+        "amount": 3,
+        "source": {
+          "kind": "CITY_REWARD",
+          "reward": "BOOM",
+          "reachedLevel": 4,
+          "at": { "x": 11, "y": 1 }
+        }
+      },
+      {
+        "id": 121,
+        "cityId": 39,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 7, "y": 1 }
+        }
+      },
+      {
+        "id": 122,
+        "cityId": 7,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 15, "y": 2 }
+        }
+      },
+      {
+        "id": 123,
+        "cityId": 18,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "MONUMENT",
+          "achievement": "EXPLORER",
+          "at": { "x": 10, "y": 0 }
+        }
+      },
+      {
+        "id": 126,
+        "cityId": 78,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 9, "y": 4 }
+        }
+      },
+      {
+        "id": 127,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 13, "y": 3 }
+        }
+      },
+      {
+        "id": 128,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 6, "y": 5 }
+        }
+      },
+      {
+        "id": 134,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 14, "y": 6 }
+        }
+      },
+      {
+        "id": 136,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "MONUMENT",
+          "achievement": "EXPLORER",
+          "at": { "x": 2, "y": 8 }
+        }
+      },
+      {
+        "id": 137,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 1, "y": 7 }
+        }
+      },
+      {
+        "id": 139,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 2, "y": 2 }
+        }
+      },
+      {
+        "id": 140,
+        "cityId": 5,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 1, "y": 10 }
+        }
+      },
+      {
+        "id": 142,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 13, "y": 7 }
+        }
+      },
+      {
+        "id": 146,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 1, "y": 10 }
+        }
+      },
+      {
+        "id": 147,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 2, "y": 9 }
+        }
+      },
+      {
+        "id": 151,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 12, "y": 7 }
+        }
+      },
+      {
+        "id": 152,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 14, "y": 15 }
+        }
+      },
+      {
+        "id": 153,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 15, "y": 14 }
+        }
+      },
+      {
+        "id": 155,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "MONUMENT",
+          "achievement": "MUSTER",
+          "at": { "x": 12, "y": 5 }
+        }
+      },
+      {
+        "id": 157,
+        "cityId": 18,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SAWMILL",
+          "at": { "x": 10, "y": 2 }
+        }
+      },
+      {
+        "id": 159,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WINDMILL",
+          "at": { "x": 2, "y": 1 }
+        }
+      },
+      {
+        "id": 164,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WINDMILL",
+          "at": { "x": 14, "y": 4 }
+        }
+      },
+      {
+        "id": 166,
+        "cityId": 18,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WINDMILL",
+          "at": { "x": 12, "y": 0 }
+        }
+      },
+      {
+        "id": 168,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SAWMILL",
+          "at": { "x": 2, "y": 10 }
+        }
+      },
+      {
+        "id": 169,
+        "cityId": 78,
+        "category": "LIVE",
+        "amount": 0,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WINDMILL",
+          "at": { "x": 10, "y": 5 }
+        }
+      },
+      {
+        "id": 172,
+        "cityId": 3,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 5, "y": 0 }
+        }
+      },
+      {
+        "id": 173,
+        "cityId": 3,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 4, "y": 0 }
+        }
+      },
+      {
+        "id": 174,
+        "cityId": 3,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "MINE",
+          "at": { "x": 5, "y": 2 }
+        }
+      },
+      {
+        "id": 175,
+        "cityId": 39,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SAWMILL",
+          "at": { "x": 7, "y": 2 }
+        }
+      },
+      {
+        "id": 178,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SAWMILL",
+          "at": { "x": 0, "y": 2 }
+        }
+      },
+      {
+        "id": 180,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WINDMILL",
+          "at": { "x": 12, "y": 6 }
+        }
+      },
+      {
+        "id": 183,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 14, "y": 2 }
+        }
+      },
+      {
+        "id": 189,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WINDMILL",
+          "at": { "x": 15, "y": 15 }
+        }
+      },
+      {
+        "id": 190,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SAWMILL",
+          "at": { "x": 15, "y": 2 }
+        }
+      },
+      {
+        "id": 191,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 7, "y": 3 }
+        }
+      },
+      {
+        "id": 192,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "WORKSHOP",
+          "at": { "x": 6, "y": 3 }
+        }
+      },
+      {
+        "id": 193,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SAWMILL",
+          "at": { "x": 8, "y": 3 }
+        }
+      },
+      {
+        "id": 195,
+        "cityId": 39,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 9, "y": 2 }
+        }
+      },
+      {
+        "id": 197,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 15, "y": 3 }
+        }
+      },
+      {
+        "id": 198,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 7, "y": 5 }
+        }
+      },
+      {
+        "id": 202,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 5,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SAWMILL",
+          "at": { "x": 14, "y": 7 }
+        }
+      },
+      {
+        "id": 203,
+        "cityId": 78,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 10, "y": 3 }
+        }
+      },
+      {
+        "id": 217,
+        "cityId": 27,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 0, "y": 3 }
+        }
+      },
+      {
+        "id": 219,
+        "cityId": 27,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FISH",
+          "at": { "x": 2, "y": 3 }
+        }
+      },
+      {
+        "id": 221,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 0, "y": 3 }
+        }
+      },
+      {
+        "id": 222,
+        "cityId": 78,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 11, "y": 5 }
+        }
+      },
+      {
+        "id": 224,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 15, "y": 13 }
+        }
+      },
+      {
+        "id": 226,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "MINE",
+          "at": { "x": 3, "y": 7 }
+        }
+      },
+      {
+        "id": 227,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "MINE",
+          "at": { "x": 3, "y": 8 }
+        }
+      },
+      {
+        "id": 229,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "MINE",
+          "at": { "x": 3, "y": 10 }
+        }
+      },
+      {
+        "id": 230,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "MINE",
+          "at": { "x": 1, "y": 11 }
+        }
+      },
+      {
+        "id": 231,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "MINE",
+          "at": { "x": 3, "y": 11 }
+        }
+      },
+      {
+        "id": 232,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 3,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FORGE",
+          "at": { "x": 2, "y": 11 }
+        }
+      },
+      {
+        "id": 233,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 3, "y": 2 }
+        }
+      },
+      {
+        "id": 234,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 1, "y": 3 }
+        }
+      },
+      {
+        "id": 235,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 2, "y": 3 }
+        }
+      },
+      {
+        "id": 236,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 3, "y": 3 }
+        }
+      },
+      {
+        "id": 237,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FORGE",
+          "at": { "x": 3, "y": 0 }
+        }
+      },
+      {
+        "id": 240,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 13, "y": 1 }
+        }
+      },
+      {
+        "id": 242,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 14, "y": 1 }
+        }
+      },
+      {
+        "id": 243,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 15, "y": 1 }
+        }
+      },
+      {
+        "id": 244,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 12, "y": 3 }
+        }
+      },
+      {
+        "id": 247,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 3, "y": 9 }
+        }
+      },
+      {
+        "id": 248,
+        "cityId": 27,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 3, "y": 1 }
+        }
+      },
+      {
+        "id": 249,
+        "cityId": 5,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 0, "y": 11 }
+        }
+      },
+      {
+        "id": 252,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 12, "y": 4 }
+        }
+      },
+      {
+        "id": 253,
+        "cityId": 7,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 15, "y": 5 }
+        }
+      },
+      {
+        "id": 256,
+        "cityId": 43,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FISH",
+          "at": { "x": 3, "y": 5 }
+        }
+      },
+      {
+        "id": 257,
+        "cityId": 43,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 0, "y": 4 }
+        }
+      },
+      {
+        "id": 258,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 0, "y": 4 }
+        }
+      },
+      {
+        "id": 259,
+        "cityId": 43,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 1, "y": 4 }
+        }
+      },
+      {
+        "id": 260,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "SAWMILL",
+          "at": { "x": 1, "y": 4 }
+        }
+      },
+      {
+        "id": 262,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 2, "y": 4 }
+        }
+      },
+      {
+        "id": 263,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 3, "y": 5 }
+        }
+      },
+      {
+        "id": 264,
+        "cityId": 43,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 3, "y": 6 }
+        }
+      },
+      {
+        "id": 268,
+        "cityId": 18,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 13, "y": 0 }
+        }
+      },
+      {
+        "id": 272,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 8, "y": 5 }
+        }
+      },
+      {
+        "id": 273,
+        "cityId": 83,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FISH",
+          "at": { "x": 5, "y": 3 }
+        }
+      },
+      {
+        "id": 274,
+        "cityId": 83,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 8, "y": 6 }
+        }
+      },
+      {
+        "id": 275,
+        "cityId": 83,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 9, "y": 6 }
+        }
+      },
+      {
+        "id": 276,
+        "cityId": 83,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 7, "y": 6 }
+        }
+      },
+      {
+        "id": 277,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 5, "y": 3 }
+        }
+      },
+      {
+        "id": 278,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 5, "y": 4 }
+        }
+      },
+      {
+        "id": 280,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 6, "y": 6 }
+        }
+      },
+      {
+        "id": 281,
+        "cityId": 3,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 4, "y": 3 }
+        }
+      },
+      {
+        "id": 283,
+        "cityId": 1,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FISH",
+          "at": { "x": 14, "y": 12 }
+        }
+      },
+      {
+        "id": 284,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 13, "y": 8 }
+        }
+      },
+      {
+        "id": 285,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 14, "y": 8 }
+        }
+      },
+      {
+        "id": 286,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 15, "y": 8 }
+        }
+      },
+      {
+        "id": 287,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 2,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "FARM",
+          "at": { "x": 12, "y": 15 }
+        }
+      },
+      {
+        "id": 288,
+        "cityId": 51,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HUNT_GAME",
+          "at": { "x": 15, "y": 6 }
+        }
+      },
+      {
+        "id": 289,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 15, "y": 6 }
+        }
+      },
+      {
+        "id": 290,
+        "cityId": 51,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 15, "y": 7 }
+        }
+      },
+      {
+        "id": 291,
+        "cityId": 51,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 11, "y": 8 }
+        }
+      },
+      {
+        "id": 292,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 15, "y": 12 }
+        }
+      },
+      {
+        "id": 293,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 12, "y": 8 }
+        }
+      },
+      {
+        "id": 294,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 12, "y": 14 }
+        }
+      },
+      {
+        "id": 295,
+        "cityId": 39,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 7, "y": 1 }
+        }
+      },
+      {
+        "id": 303,
+        "cityId": 1,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "PORT",
+          "at": { "x": 14, "y": 12 }
+        }
+      },
+      {
+        "id": 304,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 15, "y": 7 }
+        }
+      },
+      {
+        "id": 307,
+        "cityId": 78,
+        "category": "PERMANENT",
+        "amount": 1,
+        "source": {
+          "kind": "RESOURCE_ACTION",
+          "action": "HARVEST_FRUIT",
+          "at": { "x": 10, "y": 6 }
+        }
+      },
+      {
+        "id": 311,
+        "cityId": 39,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 8, "y": 2 }
+        }
+      },
+      {
+        "id": 312,
+        "cityId": 39,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 7, "y": 0 }
+        }
+      },
+      {
+        "id": 313,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 7, "y": 6 }
+        }
+      },
+      {
+        "id": 314,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 8, "y": 6 }
+        }
+      },
+      {
+        "id": 315,
+        "cityId": 83,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 9, "y": 6 }
+        }
+      },
+      {
+        "id": 317,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 11, "y": 6 }
+        }
+      },
+      {
+        "id": 318,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 11, "y": 7 }
+        }
+      },
+      {
+        "id": 319,
+        "cityId": 51,
+        "category": "LIVE",
+        "amount": 1,
+        "source": {
+          "kind": "IMPROVEMENT",
+          "improvement": "LUMBER_CAMP",
+          "at": { "x": 11, "y": 8 }
+        }
+      }
+    ],
+    "units": [
+      {
+        "id": 13,
+        "ownerId": 1,
+        "homeCityId": 1,
+        "role": "FIGHTER",
+        "form": "LAND",
+        "at": { "x": 9, "y": 9 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 34,
+        "ownerId": 3,
+        "homeCityId": 5,
+        "role": "GUARD",
+        "form": "EMBARKED",
+        "at": { "x": 5, "y": 4 },
+        "hp": 7,
+        "maxHp": 20,
+        "kills": 1,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 55,
+        "ownerId": 3,
+        "homeCityId": 5,
+        "role": "GUARD",
+        "form": "EMBARKED",
+        "at": { "x": 6, "y": 1 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 62,
+        "ownerId": 1,
+        "homeCityId": 1,
+        "role": "PATROL_BOAT",
+        "form": "NAVAL",
+        "at": { "x": 10, "y": 9 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 68,
+        "ownerId": 4,
+        "homeCityId": 18,
+        "role": "CAPTAIN",
+        "form": "LAND",
+        "at": { "x": 11, "y": 2 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": true
+        }
+      },
+      {
+        "id": 70,
+        "ownerId": 3,
+        "homeCityId": 43,
+        "role": "GUARD",
+        "form": "EMBARKED",
+        "at": { "x": 4, "y": 1 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 80,
+        "ownerId": 1,
+        "homeCityId": 51,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 10, "y": 7 },
+        "hp": 25,
+        "maxHp": 25,
+        "kills": 3,
+        "veteran": true,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 132,
+        "ownerId": 1,
+        "homeCityId": null,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 9, "y": 7 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 138,
+        "ownerId": 3,
+        "homeCityId": 43,
+        "role": "BATTLESHIP",
+        "form": "NAVAL",
+        "at": { "x": 3, "y": 4 },
+        "hp": 30,
+        "maxHp": 30,
+        "kills": 6,
+        "veteran": true,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 141,
+        "ownerId": 1,
+        "homeCityId": 51,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 9, "y": 8 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 149,
+        "ownerId": 3,
+        "homeCityId": 27,
+        "role": "FIGHTER",
+        "form": "LAND",
+        "at": { "x": 7, "y": 2 },
+        "hp": 6,
+        "maxHp": 10,
+        "kills": 1,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 154,
+        "ownerId": 1,
+        "homeCityId": 51,
+        "role": "CAPTAIN",
+        "form": "LAND",
+        "at": { "x": 12, "y": 5 },
+        "hp": 6,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": true
+        }
+      },
+      {
+        "id": 156,
+        "ownerId": 1,
+        "homeCityId": 1,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 12, "y": 8 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 160,
+        "ownerId": 3,
+        "homeCityId": 5,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 7, "y": 3 },
+        "hp": 7,
+        "maxHp": 20,
+        "kills": 1,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 162,
+        "ownerId": 1,
+        "homeCityId": 51,
+        "role": "FIGHTER",
+        "form": "LAND",
+        "at": { "x": 10, "y": 8 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 165,
+        "ownerId": 4,
+        "homeCityId": 78,
+        "role": "JUGGERNAUT",
+        "form": "LAND",
+        "at": { "x": 10, "y": 4 },
+        "hp": 45,
+        "maxHp": 45,
+        "kills": 3,
+        "veteran": true,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 171,
+        "ownerId": 4,
+        "homeCityId": 7,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 13, "y": 4 },
+        "hp": 13,
+        "maxHp": 15,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 177,
+        "ownerId": 3,
+        "homeCityId": 43,
+        "role": "PATROL_BOAT",
+        "form": "NAVAL",
+        "at": { "x": 5, "y": 3 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 179,
+        "ownerId": 3,
+        "homeCityId": 27,
+        "role": "CAPTAIN",
+        "form": "LAND",
+        "at": { "x": 5, "y": 0 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 181,
+        "ownerId": 1,
+        "homeCityId": 51,
+        "role": "MARKSMAN",
+        "form": "LAND",
+        "at": { "x": 13, "y": 5 },
+        "hp": 8,
+        "maxHp": 8,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": true
+        }
+      },
+      {
+        "id": 185,
+        "ownerId": 3,
+        "homeCityId": 27,
+        "role": "FIGHTER",
+        "form": "EMBARKED",
+        "at": { "x": 4, "y": 3 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 186,
+        "ownerId": 3,
+        "homeCityId": 27,
+        "role": "FIGHTER",
+        "form": "EMBARKED",
+        "at": { "x": 3, "y": 2 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 188,
+        "ownerId": 1,
+        "homeCityId": null,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 8, "y": 8 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 199,
+        "ownerId": 3,
+        "homeCityId": 43,
+        "role": "PATROL_BOAT",
+        "form": "NAVAL",
+        "at": { "x": 5, "y": 6 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 201,
+        "ownerId": 3,
+        "homeCityId": 5,
+        "role": "GUARD",
+        "form": "EMBARKED",
+        "at": { "x": 3, "y": 3 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 207,
+        "ownerId": 3,
+        "homeCityId": 43,
+        "role": "PATROL_BOAT",
+        "form": "NAVAL",
+        "at": { "x": 6, "y": 4 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 210,
+        "ownerId": 3,
+        "homeCityId": 27,
+        "role": "FIGHTER",
+        "form": "LAND",
+        "at": { "x": 4, "y": 0 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 212,
+        "ownerId": 1,
+        "homeCityId": 1,
+        "role": "PATROL_BOAT",
+        "form": "NAVAL",
+        "at": { "x": 12, "y": 9 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 215,
+        "ownerId": 3,
+        "homeCityId": 43,
+        "role": "PATROL_BOAT",
+        "form": "NAVAL",
+        "at": { "x": 4, "y": 4 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 218,
+        "ownerId": 3,
+        "homeCityId": 27,
+        "role": "JUGGERNAUT",
+        "form": "LAND",
+        "at": { "x": 7, "y": 5 },
+        "hp": 40,
+        "maxHp": 40,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 220,
+        "ownerId": 3,
+        "homeCityId": 27,
+        "role": "FIGHTER",
+        "form": "EMBARKED",
+        "at": { "x": 6, "y": 2 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": true,
+          "captured": true,
+          "handled": true,
+          "specialActed": true
+        }
+      },
+      {
+        "id": 223,
+        "ownerId": 1,
+        "homeCityId": null,
+        "role": "JUGGERNAUT",
+        "form": "LAND",
+        "at": { "x": 11, "y": 8 },
+        "hp": 40,
+        "maxHp": 40,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 225,
+        "ownerId": 3,
+        "homeCityId": 3,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 7, "y": 1 },
+        "hp": 12,
+        "maxHp": 20,
+        "kills": 2,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 228,
+        "ownerId": 3,
+        "homeCityId": 5,
+        "role": "JUGGERNAUT",
+        "form": "EMBARKED",
+        "at": { "x": 5, "y": 5 },
+        "hp": 40,
+        "maxHp": 40,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 241,
+        "ownerId": 4,
+        "homeCityId": 7,
+        "role": "JUGGERNAUT",
+        "form": "LAND",
+        "at": { "x": 14, "y": 3 },
+        "hp": 40,
+        "maxHp": 40,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 245,
+        "ownerId": 3,
+        "homeCityId": 3,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 8, "y": 0 },
+        "hp": 17,
+        "maxHp": 20,
+        "kills": 1,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": true
+        }
+      },
+      {
+        "id": 246,
+        "ownerId": 3,
+        "homeCityId": 83,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 8, "y": 4 },
+        "hp": 16,
+        "maxHp": 20,
+        "kills": 1,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 250,
+        "ownerId": 3,
+        "homeCityId": 43,
+        "role": "PATROL_BOAT",
+        "form": "NAVAL",
+        "at": { "x": 4, "y": 5 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 251,
+        "ownerId": 3,
+        "homeCityId": 5,
+        "role": "CATAPULT",
+        "form": "EMBARKED",
+        "at": { "x": 3, "y": 5 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 254,
+        "ownerId": 3,
+        "homeCityId": 3,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 5, "y": 1 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 261,
+        "ownerId": 3,
+        "homeCityId": 43,
+        "role": "JUGGERNAUT",
+        "form": "EMBARKED",
+        "at": { "x": 4, "y": 6 },
+        "hp": 40,
+        "maxHp": 40,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 265,
+        "ownerId": 1,
+        "homeCityId": 1,
+        "role": "BATTLESHIP",
+        "form": "NAVAL",
+        "at": { "x": 9, "y": 11 },
+        "hp": 25,
+        "maxHp": 25,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 2,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 266,
+        "ownerId": 1,
+        "homeCityId": 51,
+        "role": "FIGHTER",
+        "form": "LAND",
+        "at": { "x": 11, "y": 7 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 270,
+        "ownerId": 3,
+        "homeCityId": 3,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 7, "y": 0 },
+        "hp": 10,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 271,
+        "ownerId": 3,
+        "homeCityId": 5,
+        "role": "JUGGERNAUT",
+        "form": "EMBARKED",
+        "at": { "x": 3, "y": 6 },
+        "hp": 40,
+        "maxHp": 40,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 279,
+        "ownerId": 3,
+        "homeCityId": 83,
+        "role": "JUGGERNAUT",
+        "form": "LAND",
+        "at": { "x": 6, "y": 3 },
+        "hp": 40,
+        "maxHp": 40,
+        "kills": 1,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 297,
+        "ownerId": 4,
+        "homeCityId": 18,
+        "role": "MARKSMAN",
+        "form": "LAND",
+        "at": { "x": 10, "y": 1 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 1,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 300,
+        "ownerId": 3,
+        "homeCityId": 83,
+        "role": "PATROL_BOAT",
+        "form": "NAVAL",
+        "at": { "x": 6, "y": 6 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 301,
+        "ownerId": 3,
+        "homeCityId": 5,
+        "role": "MARKSMAN",
+        "form": "EMBARKED",
+        "at": { "x": 2, "y": 7 },
+        "hp": 8,
+        "maxHp": 8,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": true,
+          "captured": true,
+          "handled": true,
+          "specialActed": true
+        }
+      },
+      {
+        "id": 302,
+        "ownerId": 1,
+        "homeCityId": 51,
+        "role": "FIGHTER",
+        "form": "LAND",
+        "at": { "x": 11, "y": 4 },
+        "hp": 5,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": true
+        }
+      },
+      {
+        "id": 305,
+        "ownerId": 1,
+        "homeCityId": 51,
+        "role": "FIGHTER",
+        "form": "LAND",
+        "at": { "x": 12, "y": 7 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 308,
+        "ownerId": 4,
+        "homeCityId": 18,
+        "role": "CATAPULT",
+        "form": "LAND",
+        "at": { "x": 11, "y": 1 },
+        "hp": 10,
+        "maxHp": 10,
+        "kills": 1,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 309,
+        "ownerId": 3,
+        "homeCityId": 83,
+        "role": "GUARD",
+        "form": "EMBARKED",
+        "at": { "x": 6, "y": 5 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": true,
+          "captured": true,
+          "handled": true,
+          "specialActed": true
+        }
+      },
+      {
+        "id": 310,
+        "ownerId": 3,
+        "homeCityId": 5,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 2, "y": 8 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 1,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": true,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 316,
+        "ownerId": 3,
+        "homeCityId": 27,
+        "role": "FIGHTER",
+        "form": "LAND",
+        "at": { "x": 6, "y": 0 },
+        "hp": 5,
+        "maxHp": 10,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": false,
+          "movedPathLength": 0,
+          "attacked": false,
+          "attacksUsed": 0,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": false,
+          "captured": false,
+          "handled": false,
+          "specialActed": false
+        }
+      },
+      {
+        "id": 320,
+        "ownerId": 3,
+        "homeCityId": 3,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 8, "y": 1 },
+        "hp": 10,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 0,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": true,
+          "captured": true,
+          "handled": true,
+          "specialActed": true
+        }
+      },
+      {
+        "id": 321,
+        "ownerId": 3,
+        "homeCityId": 83,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 9, "y": 5 },
+        "hp": 10,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 0,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": true,
+          "captured": true,
+          "handled": true,
+          "specialActed": true
+        }
+      },
+      {
+        "id": 322,
+        "ownerId": 3,
+        "homeCityId": 83,
+        "role": "GUARD",
+        "form": "LAND",
+        "at": { "x": 7, "y": 4 },
+        "hp": 20,
+        "maxHp": 20,
+        "kills": 0,
+        "veteran": false,
+        "captureEligible": false,
+        "activation": {
+          "moved": true,
+          "movedPathLength": 0,
+          "attacked": true,
+          "attacksUsed": 1,
+          "tendedThisTurn": false,
+          "inspired": false,
+          "overrunActive": false,
+          "escapeAvailable": false,
+          "recovered": true,
+          "captured": true,
+          "handled": true,
+          "specialActed": true
+        }
+      }
+    ],
+    "treasureChests": [],
+    "graves": [
+      { "x": 7, "y": 0 },
+      { "x": 8, "y": 0 },
+      { "x": 5, "y": 2 },
+      { "x": 7, "y": 2 },
+      { "x": 8, "y": 2 },
+      { "x": 15, "y": 2 },
+      { "x": 6, "y": 3 },
+      { "x": 7, "y": 3 },
+      { "x": 10, "y": 3 },
+      { "x": 0, "y": 5 },
+      { "x": 8, "y": 5 }
+    ],
+    "plagued": [],
+    "bitten": [{ "unitId": 171, "biterPlayerId": 1, "biterUnitId": 132 }],
+    "pendingChoices": [],
+    "outcome": null
+  }
+}

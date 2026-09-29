@@ -647,6 +647,18 @@ them.
     boards through `createInitialMapStateWithVillageCountV7` (parity and fixture
     support; no rule path calls it) instead of re-deriving every coordinate on
     new maps; natural-play and map tests use real revision-14 maps.
+19. **Land Grant offers read the public owner** (`pulp_wars-9jp`). The view
+    shows an explored cell's territory owner but hides its city ID while that
+    city's center is unexplored. The public query had treated such a cell as
+    neutral and offered Land Grants the reducer rejected (`INVALID_TILE`, zero
+    claimable cells). The query now counts an explored cell only when it has
+    no public owner, which is exact for explored cells. The reducer keeps the
+    canonical rule, so a directly submitted grant whose only neutral cells are
+    unexplored is still accepted (and reveals the claimed cells); the query
+    never offers it, so the UI and Normal AI never probe hidden cells. The
+    first 1,196 commands of the all-Human 16 × 16 Lakes 11 parity
+    match (section 15.3) are unchanged; it now continues past the former error
+    to the 70-round cap. The other four parity matches are unchanged.
 
 ## 18. Concerns and follow-ups
 
@@ -664,5 +676,5 @@ them.
   it, so in long games dozens of units stay plagued (37 at once in one
   sanity game); `pulp_wars-vkq.18` should watch whether that drain is fun or
   merely tedious.
-- **Headless `LAND_GRANT` errors** (`pulp_wars-9jp`) still end a few AI
-  games; they are unrelated to revision 14.
+- **Headless `LAND_GRANT` errors** (`pulp_wars-9jp`) are fixed by decision 19;
+  the sections above record the evidence as it was before that fix.

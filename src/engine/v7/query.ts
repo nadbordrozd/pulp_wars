@@ -366,12 +366,16 @@ function appendPublicCityCommandsV7(
     !city.landGrantUsed &&
     player.coins >= 6 &&
     !view.pendingChoices.some((choice) => choice.cityId === city.id) &&
+    // An explored cell is neutral only when it has no public territory owner:
+    // the view hides the city ID of territory whose city center is still
+    // unexplored, but always shows that territory's owner.
     view.board.tiles.some(
       (tile) =>
         Math.abs(tile.at.x - city.at.x) <= 2 &&
         Math.abs(tile.at.y - city.at.y) <= 2 &&
         tile.explored &&
-        tile.territoryCityId === null,
+        tile.territoryCityId === null &&
+        tile.territoryOwnerId === null,
     )
   )
     candidates.push({ kind: "LAND_GRANT", cityId: city.id });
