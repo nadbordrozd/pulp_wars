@@ -1,0 +1,36 @@
+{
+  "id": "catapult-b-edit",
+  "jobId": "9011ad73-7a82-4e26-8df4-5b91d1c64c14",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "2",
+    "asset": "chibi-catapult",
+    "subject": "UNIT:CATAPULT",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 68404,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the small helmeted man at the back left, so only the one crew man in the red hood remains. Replace the spear blade and the hanging bucket at the end of the throwing arm with a big wooden cup holding a round grey boulder. Drape a bright red cloth over the front of the wooden frame. Keep the four wheels, the pale wooden frame, the red pennant, the crew man, outline and art style exactly the same, on a transparent background with nothing under the wheels."
+      }
+    ],
+    "prompt": "Remove the small helmeted man at the back left, so only the one crew man in the red hood remains. Replace the spear blade and the hanging bucket at the end of the throwing arm with a big wooden cup holding a round grey boulder. Drape a bright red cloth over the front of the wooden frame. Keep the four wheels, the pale wooden frame, the red pennant, the crew man, outline and art style exactly the same, on a transparent background with nothing under the wheels.",
+    "negativePrompt": "",
+    "description": "Remove the small helmeted man at the back left, so only the one crew man in the red hood remains. Replace the spear blade and the hanging bucket at the end of the throwing arm with a big wooden cup holding a round grey boulder. Drape a bright red cloth over the front of the wooden frame. Keep the four wheels, the pale wooden frame, the red pennant, the crew man, outline and art style exactly the same, on a transparent background with nothing under the wheels.",
+    "editInstruction": "Remove the small helmeted man at the back left, so only the one crew man in the red hood remains. Replace the spear blade and the hanging bucket at the end of the throwing arm with a big wooden cup holding a round grey boulder. Drape a bright red cloth over the front of the wooden frame. Keep the four wheels, the pale wooden frame, the red pennant, the crew man, outline and art style exactly the same, on a transparent background with nothing under the wheels.",
+    "source": {
+      "recipe": "catapult-b",
+      "candidate": 0,
+      "sha256": "d0b9241d2496c98d8045f90f1232100a9cdcaf939acea84ce761464130385bcf"
+    }
+  }
+}

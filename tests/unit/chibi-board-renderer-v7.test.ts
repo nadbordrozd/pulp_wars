@@ -1,11 +1,16 @@
+import sharp from "sharp";
 import { describe, expect, it, vi } from "vitest";
 import { queryPlayerCommandsV7, viewForV7 } from "../../src/engine/index";
 import type {
   ArtSubjectV7,
   ChibiArtAssetV7,
 } from "../../src/assets/chibi-art-v7";
+import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
+import { chibiAnchorV7 } from "../../src/assets/chibi-art-v7";
+import type { BoardGlowCacheV7 } from "../../src/render/canvas/glow-cache-v7";
 import {
   buildBoardRenderPlanV7,
+  CHIBI_OVERLAY_FRAME_V7,
   drawBoardV7,
   type BoardRenderPlanEntryV7,
   type BoardRenderPlanV7,
@@ -370,11 +375,15 @@ describe("CHIBI board rendering", () => {
         .slice(0, unitIndex)
         .filter((call) => call[0] === "set" && call[1] === "globalAlpha");
       expect(alphaBefore.at(-1)?.[2]).toBe(1);
-      // Every overlay drawn after the unit stays clear of its 56 px canvas.
+      // Every overlay rect drawn after the unit stays clear of its 56 px
+      // canvas. The capital crown (now drawn after the pieces) is a path in
+      // the top-right corner; only its 1.5-unit band is a rect, skipped here.
+      const zoom = chibiCameraZoom(step);
       const overlays = log
         .slice(unitIndex + 1)
         .filter((call) => call[0] === "fillRect" || call[0] === "strokeRect")
-        .map((call) => call.slice(1) as number[]);
+        .map((call) => call.slice(1) as number[])
+        .filter(([, , , height = 0]) => height !== 1.5 * zoom);
       expect(overlays.length).toBeGreaterThanOrEqual(3);
       for (const [left = 0, , width = 0] of overlays)
         expect(
@@ -488,5 +497,174 @@ describe("CHIBI board rendering", () => {
       // The city overflows 8 px each side and 24 px upward, still after row 0.
       [{ chibi: city.id }, 152, 80, 96, 104],
     ]);
+  });
+  it("keeps every registered chibi unit's opaque pixels clear of its HP bar and seat badge", async () => {
+    // World units (128 = one cell) to CSS px at zoom 1 (80 = one cell).
+    const css = 80 / 128;
+    const { hpBar, seatBadge } = CHIBI_OVERLAY_FRAME_V7;
+    // A 1 px margin covers the badge stroke and fractional edges.
+    const frames = [
+      [hpBar.left, hpBar.top, hpBar.width, hpBar.height],
+      [seatBadge.left, seatBadge.top, seatBadge.size, seatBadge.size],
+    ].map(([left = 0, top = 0, width = 0, height = 0]) => ({
+      left: left * css - 1,
+      top: top * css - 1,
+      right: (left + width) * css + 1,
+      bottom: (top + height) * css + 1,
+    }));
+    const units = CHIBI_ART_ASSETS_V7.filter((asset) =>
+      asset.subject.startsWith("UNIT:"),
+    );
+    expect(units.map((asset) => asset.assetClass)).toEqual(
+      expect.arrayContaining(["STANDARD_UNIT", "LARGE_UNIT", "GIANT_UNIT"]),
+    );
+    for (const asset of units) {
+      const file = `public/${asset.url.replace(/^.*?assets\//, "assets/")}`;
+      const { data, info } = await sharp(file)
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      expect([info.width, info.height]).toEqual([asset.width, asset.height]);
+      const anchor = chibiAnchorV7(asset);
+      const covered: string[] = [];
+      for (let py = 0; py < info.height; py += 1)
+        for (let px = 0; px < info.width; px += 1) {
+          if ((data[(py * info.width + px) * 4 + 3] ?? 0) < 128) continue;
+          const x = px - anchor.x;
+          const y = py - anchor.y;
+          if (
+            frames.some(
+              (frame) =>
+                x + 1 > frame.left &&
+                x < frame.right &&
+                y + 1 > frame.top &&
+                y < frame.bottom,
+            )
+          )
+            covered.push(`${px},${py}`);
+        }
+      expect({ id: asset.id, covered }).toEqual({ id: asset.id, covered: [] });
+    }
+  });
+
+  it("glows large and giant ready units over their whole canvas and draws every piece overlay above them", () => {
+    const knight = chibiAsset("UNIT:KNIGHT", "LARGE_UNIT", 72, 88);
+    const juggernaut = chibiAsset("UNIT:JUGGERNAUT", "GIANT_UNIT", 88, 104);
+    const city = chibiAsset("CITY:3", "SETTLEMENT", 96, 104);
+    const fighter = chibiAsset("UNIT:FIGHTER", "STANDARD_UNIT", 56, 80);
+    for (const step of [1, 0.75] as const) {
+      const glowDraws: unknown[][] = [];
+      const glowCache = {
+        draw: (...args: unknown[]) => glowDraws.push(args),
+      } as unknown as BoardGlowCacheV7;
+      const { context, log } = recordingContext();
+      drawBoardV7({
+        context,
+        viewport: { width: 800, height: 600 },
+        devicePixelRatio: 1,
+        camera: { offsetX: 40, offsetY: 40, zoom: chibiCameraZoom(step) },
+        plan: plan([
+          // Row 0: a Fighter whose overlays the giant below overflows into.
+          entry("UNIT", 1, 0, "unit-original-fighter", "UNIT:FIGHTER", {
+            ownerColor: RULESET7_PLAYER_COLORS.CORAL,
+            ownerSeat: 1,
+            hp: 3,
+            maxHp: 10,
+          }),
+          entry("CITY", 1, 1, "building-city-3", "CITY:3", {
+            value: 3,
+            population: 2,
+            capital: true,
+            ownerColor: RULESET7_PLAYER_COLORS.TEAL,
+            ownerSeat: 0,
+          }),
+          entry("UNIT", 1, 1, "unit-original-juggernaut", "UNIT:JUGGERNAUT", {
+            ownerColor: RULESET7_PLAYER_COLORS.TEAL,
+            ownerSeat: 0,
+            hp: 20,
+            maxHp: 40,
+            ready: true,
+          }),
+          entry("UNIT", 2, 1, "unit-original-knight", "UNIT:KNIGHT", {
+            ownerColor: RULESET7_PLAYER_COLORS.TEAL,
+            ownerSeat: 0,
+            hp: 15,
+            maxHp: 15,
+            ready: true,
+          }),
+        ]),
+        images: legacyImages,
+        artSet: "CHIBI",
+        chibiArt: fakeChibi([knight, juggernaut, city, fighter]),
+        glowCache,
+        readinessElapsedMs: 800,
+      });
+      const cell = 128 * chibiCameraZoom(step);
+      const centre = { x: 40 + cell, y: 40 + cell };
+      const rect = (
+        asset: ChibiArtAssetV7,
+        at: { readonly x: number; readonly y: number },
+      ) => ({
+        x: at.x - (asset.width / 2) * step,
+        y: at.y - (asset.height - 40) * step,
+        width: asset.width * step,
+        height: asset.height * step,
+      });
+      // Each ready unit glows around its full 1:1 canvas, never shrunk to 56 px.
+      expect(glowDraws.map((call) => [call[2], call[3]])).toEqual([
+        [`chibi:${juggernaut.id}`, rect(juggernaut, centre)],
+        [
+          `chibi:${knight.id}`,
+          rect(knight, { x: centre.x + cell, y: centre.y }),
+        ],
+      ]);
+      const juggernautDraw = images(log).find(
+        (call) => (call[1] as { chibi?: string }).chibi === juggernaut.id,
+      );
+      const { x, y, width, height } = rect(juggernaut, centre);
+      expect(juggernautDraw?.slice(2)).toEqual([x, y, width, height]);
+      // The population pips and capital crown of the garrisoned city come
+      // after every unit, so the giant cannot cover them.
+      const lastUnit = log.indexOf(
+        images(log).find(
+          (call) => (call[1] as { chibi?: string }).chibi === knight.id,
+        ) as LogEntry,
+      );
+      const after = log.slice(lastUnit + 1);
+      const fills = after
+        .filter((call) => call[0] === "set" && call[1] === "fillStyle")
+        .map((call) => call[2]);
+      expect(fills).toContain("#f4c542");
+      // The Fighter's seat badge (row 0) is drawn after the giant (row 1),
+      // whose hammer overflows into the Fighter's cell.
+      expect(fills).toContain(RULESET7_PLAYER_COLORS.CORAL);
+      const fighterBar = after.find(
+        (call) =>
+          call[0] === "fillRect" &&
+          call[1] ===
+            centre.x +
+              CHIBI_OVERLAY_FRAME_V7.hpBar.left * chibiCameraZoom(step) &&
+          call[2] ===
+            centre.y -
+              cell +
+              CHIBI_OVERLAY_FRAME_V7.hpBar.top * chibiCameraZoom(step),
+      );
+      expect(fighterBar).toBeDefined();
+      const pipLefts = after
+        .filter(
+          (call) =>
+            call[0] === "fillRect" &&
+            call[3] === 7 * chibiCameraZoom(step) &&
+            call[4] === 7 * chibiCameraZoom(step),
+        )
+        .map((call) => call[1]);
+      expect(pipLefts).toHaveLength(4);
+      for (const left of pipLefts)
+        expect(left).toBe(
+          centre.x +
+            CHIBI_OVERLAY_FRAME_V7.populationColumn.left *
+              chibiCameraZoom(step),
+        );
+    }
   });
 });

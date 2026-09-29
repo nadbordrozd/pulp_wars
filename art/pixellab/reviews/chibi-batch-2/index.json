@@ -1,0 +1,387 @@
+{
+  "batch": "2",
+  "bead": "pulp_wars-67q.5",
+  "title": "Chibi batch 2: Raider, Guard, Captain, Catapult, Knight, Juggernaut",
+  "dryRun": false,
+  "faction": "ORIGINAL",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-raider",
+      "subject": "UNIT:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "raider-a-edit-2",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-raider.png",
+        "sha256": "5fac82147256eafc2d9fd0db22b517bb6a2ecdc850cfed5b2f520c0f481197bc",
+        "pixelSha256": "77818890c4a1d5a5b6f26f4a8c93216635f5020b5122637c1a5352707b7117da",
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.254,
+        "footprintWidthShare": 0.7419,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-raider.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2989,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-guard",
+      "subject": "UNIT:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "guard-a-edit",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-guard.png",
+        "sha256": "a1e785df4c859f01e0fe2578cea95e9c760e4fdb376d196fed2a8f204a882eac",
+        "pixelSha256": "ed3afcd477df695bd345bd5869a60276162f6cd137fefa51ec998a3324016583",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.0172,
+        "footprintWidthShare": 0.7358,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-guard.mask.png",
+        "source": "AUTO",
+        "coverage": 0.191,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-captain",
+      "subject": "UNIT:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "captain-a",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-captain.png",
+        "sha256": "b32f042a4673f596fb9b1e8e6427dc0aedbf365c55a63f1294db7d6323a19046",
+        "pixelSha256": "7eb7f57fe33f16f02efeffcdc0faeacbdb77a0deb52392846d1443828d607ca5",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 13,
+        "groundShare": 0.1138,
+        "footprintWidthShare": 0.5833,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-captain.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3295,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-catapult",
+      "subject": "UNIT:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "catapult-b-edit",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-catapult.png",
+        "sha256": "3cb26689830a1078547f196b53fb7ab2b7d6654db4063d03f634db62f914cbe7",
+        "pixelSha256": "80cf3637ce289e30f9b37b82ba52b3e1e25f875c49ff54c0a6546b3fbc1863bc",
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.1556,
+        "footprintWidthShare": 0.7937,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-catapult.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2342,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-knight",
+      "subject": "UNIT:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "knight-a-edit",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-knight.png",
+        "sha256": "ce7b285004dc863ed8377fe98bc5407792dc4976def9f2e61f54c6e5c0abae0d",
+        "pixelSha256": "d9cb02b3783dced84fb130adf94dcc4780889987f8932ab1a6f57d7eb89a8d9e",
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0.0217,
+        "footprintWidthShare": 0.623,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-knight.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2572,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-juggernaut",
+      "subject": "UNIT:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "juggernaut-b-edit",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-juggernaut.png",
+        "sha256": "f8fa7323cc3bc1f066cf70203199cd66cc71aed2323f03e2a83445ec732559f6",
+        "pixelSha256": "3bcb1847fa0367fcbb0a6dcacf6b9d7970cbf0796d2a4a120303cd9473b6a1af",
+        "width": 88,
+        "height": 104
+      },
+      "anchor": {
+        "x": 44,
+        "y": 64
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 24,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 17,
+        "groundShare": 0,
+        "footprintWidthShare": 0.8158,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-juggernaut.mask.png",
+        "source": "AUTO",
+        "coverage": 0.239,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-2/sheet-1x.png",
+      "width": 1042,
+      "height": 884,
+      "sha256": "e25236d4182938fe4d00ca6b696c27d1513dba9f2c8ff2c55aebb7350a959e03"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-2/sheet-x4.png",
+      "width": 2370,
+      "height": 2900,
+      "sha256": "a5b578d3384b17ddf2d9e83ecdec83295dd7193df760409f22f5ce67f15563c8"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-2/phone-mock.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "2dacc1527732f80d431d9d7417a022a8ffbf8aadded451bbdc0bf1f4dea34036"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-2/desktop-mock.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cdeae1440132c67932ca578beb2cb6b32edce54011f368776c231437d4305197"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-2/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c5927224c14d33cd91b9b82644ebbef405eb8d43819454418c222d8610dc9fa3"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-2/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3d3aef4757c9b8dfe3aea1c6f7cf965baefe32d73f976f6538214eee22e02378"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-2/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "74d97024a18ab5bef127b5d24f531bfb16cd6403e475af9b9980e35719e7ea77"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-2/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "2f86a812cf101c954e56738b233862b7661dd1b6cba438a6596dd17cca86d963"
+    }
+  ],
+  "captures": {
+    "note": "Captured from the running game with ?art=chibi; subjects without a registered chibi raster still draw their legacy art.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-2/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-2/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-2/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-2/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-2/phone-links.md"
+}

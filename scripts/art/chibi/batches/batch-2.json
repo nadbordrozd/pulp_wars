@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "batch": "2",
+  "title": "Chibi batch 2: Raider, Guard, Captain, Catapult, Knight, Juggernaut",
+  "bead": "pulp_wars-67q.5",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-raider",
+      "subject": "UNIT:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-guard",
+      "subject": "UNIT:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-captain",
+      "subject": "UNIT:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-catapult",
+      "subject": "UNIT:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-knight",
+      "subject": "UNIT:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-juggernaut",
+      "subject": "UNIT:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "raider-a",
+      "asset": "chibi-raider",
+      "endpoint": "create-image-pixen",
+      "seed": 68101,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "bow, quiver, arrows, lance, helmet, shield, brown leather, red-brown wood, brown horse, chestnut horse"
+    },
+    {
+      "id": "guard-a",
+      "asset": "chibi-guard",
+      "endpoint": "create-image-pixen",
+      "seed": 68201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "sword, bow, quiver, arrows, round shield, cape, brown leather, red-brown wood, wooden shield"
+    },
+    {
+      "id": "captain-a",
+      "asset": "chibi-captain",
+      "endpoint": "create-image-pixen",
+      "seed": 68301,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "shield, sword in hand, bow, quiver, bicorne, tricorne, top hat, epaulettes, brown leather, red-brown wood"
+    },
+    {
+      "id": "catapult-a",
+      "asset": "chibi-catapult",
+      "endpoint": "create-image-pixen",
+      "seed": 68401,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, horse"
+    },
+    {
+      "id": "knight-a",
+      "asset": "chibi-knight",
+      "endpoint": "create-image-pixen",
+      "seed": 68501,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "bow, quiver, arrows, brown horse, chestnut horse, brown leather, red-brown wood, sword in hand"
+    },
+    {
+      "id": "juggernaut-a",
+      "asset": "chibi-juggernaut",
+      "endpoint": "create-image-pixen",
+      "seed": 68601,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "sword, bow, quiver, shield, cape, brown leather, red-brown wood, horns, monster, orc, green skin"
+    },
+    {
+      "id": "guard-a-edit",
+      "asset": "chibi-guard",
+      "endpoint": "edit-image-pixen",
+      "seed": 68202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "guard-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the spear shaft pale yellow birch wood, the boots, belt and straps dark slate grey, and the gloves light grey. Keep the red tower shield with its steel border, the helmet, face, spear point, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+      "notes": "guard-a is the right design (red tower shield, spear, heavy helmet) but its orange spear shaft and brown boots fail RED_BROWN_MATERIAL (4.1%)."
+    },
+    {
+      "id": "knight-a-edit",
+      "asset": "chibi-knight",
+      "endpoint": "edit-image-pixen",
+      "seed": 68502,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "knight-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the quiver and arrows from the knight's back and remove the grey shadow under the horse, so nothing is drawn under the hooves. Make the bright red cloth barding bigger so it covers the horse's chest, body and rump down to its knees. Keep the white horse, the steel helm with the red plume, the lance, the rider, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "knight-a has the right silhouette (white horse, red barding, plumed helm, lance) but a quiver on the back, a cast shadow under the horse and 17% owner area."
+    },
+    {
+      "id": "raider-b",
+      "asset": "chibi-raider",
+      "endpoint": "create-image-pixen",
+      "seed": 68102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "He wears no helmet: his head is covered only by the big bright red hood, and the red cloak is large and flows behind him. The reins and straps are dark grey. The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "bow, quiver, arrows, lance, helmet, plume, crest, shield, brown leather, red-brown wood, brown horse, chestnut horse, orange straps",
+      "notes": "raider-a wore a plumed helmet (reads like the Knight), 12% owner area and red-brown straps."
+    },
+    {
+      "id": "catapult-b",
+      "asset": "chibi-catapult",
+      "endpoint": "create-image-pixen",
+      "seed": 68402,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The catapult is the big main subject and fills most of the image; the crew man is small, about half as tall as the catapult frame, and stands behind its left side. The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, two people, soldier in front, shield, horse",
+      "notes": "catapult-a drew two big soldiers in front of a small catapult (crew dominates) and 12% owner area."
+    },
+    {
+      "id": "juggernaut-b",
+      "asset": "chibi-juggernaut",
+      "endpoint": "create-image-pixen",
+      "seed": 68602,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "His only weapon is the huge warhammer; the bright red tabard is very large, covering his chest and belly down to his knees, with a short bright red cape on his shoulders. The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "sword, bow, crossbow, quiver, bolts, shield, backpack, house, roof, brown leather, red-brown wood, horns, monster, orc, green skin",
+      "notes": "juggernaut-a carried a crossbow, a shield and a roof-shaped pack, with 9% owner area and red-brown leather."
+    },
+    {
+      "id": "raider-a-edit",
+      "asset": "chibi-raider",
+      "endpoint": "edit-image-pixen",
+      "seed": 68103,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raider-a",
+        "candidate": 0
+      },
+      "editInstruction": "Replace the steel helmet and its plume with a big bright red hood pulled over his head, joined to his big bright red riding cloak, and make the cloak larger so it covers his back and drapes over the pony. Make the reins, straps and gloves dark grey, and draw the mouth as a tiny dark line. Keep the sandy yellow pony, the raised steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+      "notes": "raider-a and raider-b both wore a plumed steel helmet (reads like the Knight) with under 15% owner area; raider-a has the better pony and axe, so it is edited."
+    },
+    {
+      "id": "catapult-c",
+      "asset": "chibi-catapult",
+      "endpoint": "create-image-pixen",
+      "seed": 68403,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The catapult fills most of the image: a sturdy A-shaped wooden frame on four chunky wheels, its long throwing arm pulled back with a big round grey boulder in the cup at its end, a big bright red cloth draped over the frame and a bright red pennant on top. Exactly one small crew man, half as tall as the frame, stands behind it at the left. The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, two people, spear, blade, bucket, well, shield, horse",
+      "notes": "catapult-b reads as a machine but has two crew men, a spear blade on the arm and a hanging bucket that looks like a well crane."
+    },
+    {
+      "id": "juggernaut-b-edit",
+      "asset": "chibi-juggernaut",
+      "endpoint": "edit-image-pixen",
+      "seed": 68603,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "juggernaut-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the bow across his belly and the quiver of arrows on his shoulder. Make his bright red tabard bigger, a plain solid bright red with no emblem, covering his chest and belly down to his knees. Make the belts, gloves and boots dark slate grey and draw the mouth as a tiny dark line. Keep the huge warhammer over his shoulder, the steel helmet, the steel armour, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+      "notes": "juggernaut-b is the right giant with a warhammer, but a bow across the belly and a quiver leak in from the faction layer, and the owner area is 14%."
+    },
+    {
+      "id": "raider-a-edit-2",
+      "asset": "chibi-raider",
+      "endpoint": "edit-image-pixen",
+      "seed": 68104,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raider-a-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Recolour only: make the whole hood and cloak one flat bright red with a slightly darker red shadow, with no orange or scarlet highlight along the hood's edge, and make the dark brown saddle, reins and straps dark slate grey. Keep every shape, the sandy yellow pony, the steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+      "notes": "raider-a-edit has the right hooded rider on a sandy pony, but an orange-scarlet rim on the hood (#ff430a, stays red for owner B) and maroon straps (#5b1f0b) fail strict QA."
+    },
+    {
+      "id": "catapult-b-edit",
+      "asset": "chibi-catapult",
+      "endpoint": "edit-image-pixen",
+      "seed": 68404,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "catapult-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the small helmeted man at the back left, so only the one crew man in the red hood remains. Replace the spear blade and the hanging bucket at the end of the throwing arm with a big wooden cup holding a round grey boulder. Drape a bright red cloth over the front of the wooden frame. Keep the four wheels, the pale wooden frame, the red pennant, the crew man, outline and art style exactly the same, on a transparent background with nothing under the wheels.",
+      "notes": "catapult-b is the best machine so far (big wheeled frame, red pennant, 17.5% owner area) but has a second crew man, a spear blade on the arm and a hanging bucket; catapult-c drew a crossbow and failed QA."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "guard-a-edit",
+  "jobId": "71e130ae-6294-4d37-b53f-894be414dc55",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "2",
+    "asset": "chibi-guard",
+    "subject": "UNIT:GUARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 68202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the spear shaft pale yellow birch wood, the boots, belt and straps dark slate grey, and the gloves light grey. Keep the red tower shield with its steel border, the helmet, face, spear point, pose, outline and art style exactly the same, on a transparent background with nothing under his feet."
+      }
+    ],
+    "prompt": "Make the spear shaft pale yellow birch wood, the boots, belt and straps dark slate grey, and the gloves light grey. Keep the red tower shield with its steel border, the helmet, face, spear point, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "negativePrompt": "",
+    "description": "Make the spear shaft pale yellow birch wood, the boots, belt and straps dark slate grey, and the gloves light grey. Keep the red tower shield with its steel border, the helmet, face, spear point, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "editInstruction": "Make the spear shaft pale yellow birch wood, the boots, belt and straps dark slate grey, and the gloves light grey. Keep the red tower shield with its steel border, the helmet, face, spear point, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "source": {
+      "recipe": "guard-a",
+      "candidate": 0,
+      "sha256": "438f75feb5ed68e5f27e446e0077bb11c5de3bcee97836d293a2c32c1f32372a"
+    }
+  }
+}

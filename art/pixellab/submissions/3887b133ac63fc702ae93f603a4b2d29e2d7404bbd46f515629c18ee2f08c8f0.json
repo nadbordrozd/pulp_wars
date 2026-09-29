@@ -1,0 +1,36 @@
+{
+  "id": "raider-a-edit-2",
+  "jobId": "a6f2407e-7329-46af-a09e-8e203442e473",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "2",
+    "asset": "chibi-raider",
+    "subject": "UNIT:RAIDER",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 68104,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only: make the whole hood and cloak one flat bright red with a slightly darker red shadow, with no orange or scarlet highlight along the hood's edge, and make the dark brown saddle, reins and straps dark slate grey. Keep every shape, the sandy yellow pony, the steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves."
+      }
+    ],
+    "prompt": "Recolour only: make the whole hood and cloak one flat bright red with a slightly darker red shadow, with no orange or scarlet highlight along the hood's edge, and make the dark brown saddle, reins and straps dark slate grey. Keep every shape, the sandy yellow pony, the steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "negativePrompt": "",
+    "description": "Recolour only: make the whole hood and cloak one flat bright red with a slightly darker red shadow, with no orange or scarlet highlight along the hood's edge, and make the dark brown saddle, reins and straps dark slate grey. Keep every shape, the sandy yellow pony, the steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "editInstruction": "Recolour only: make the whole hood and cloak one flat bright red with a slightly darker red shadow, with no orange or scarlet highlight along the hood's edge, and make the dark brown saddle, reins and straps dark slate grey. Keep every shape, the sandy yellow pony, the steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "source": {
+      "recipe": "raider-a-edit",
+      "candidate": 1,
+      "sha256": "555be554e9d1e7617072cf02d4c6013b1551c011bd811cf2a7e60de61be9e363"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "captain-a",
+  "jobId": "sync-c6d8d1d3-a3a7-4d0d-9996-f83ee2d99a63",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "2",
+    "asset": "chibi-captain",
+    "subject": "UNIT:CAPTAIN",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 68301,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+        "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+        "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+        "text": "Subject: Captain, a chunky cute medieval army officer with a very big head (about half of the figure's height) and a tiny sturdy body: a soft round bright red medieval cap with a big white feather, a friendly face with a small moustache, a bright red long coat-tunic with a cream sash, holding a tall pale yellow wooden banner pole upright in the left hand with a big square bright red banner flag flying above his head, and a small cream-white hunting horn on a strap at his hip; dark slate-grey boots; no shield, no helmet, no bow; simple shapes and very few details; clearly a commander with a flag."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The mouth is a tiny dark line, not red.",
+        "negative": "shield, sword in hand, bow, quiver, bicorne, tricorne, top hat, epaulettes, brown leather, red-brown wood"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Captain, a chunky cute medieval army officer with a very big head (about half of the figure's height) and a tiny sturdy body: a soft round bright red medieval cap with a big white feather, a friendly face with a small moustache, a bright red long coat-tunic with a cream sash, holding a tall pale yellow wooden banner pole upright in the left hand with a big square bright red banner flag flying above his head, and a small cream-white hunting horn on a strap at his hip; dark slate-grey boots; no shield, no helmet, no bow; simple shapes and very few details; clearly a commander with a flag. The mouth is a tiny dark line, not red.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, sword in hand, bow, quiver, epaulettes, brown leather, red-brown wood",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Captain, a chunky cute medieval army officer with a very big head (about half of the figure's height) and a tiny sturdy body: a soft round bright red medieval cap with a big white feather, a friendly face with a small moustache, a bright red long coat-tunic with a cream sash, holding a tall pale yellow wooden banner pole upright in the left hand with a big square bright red banner flag flying above his head, and a small cream-white hunting horn on a strap at his hip; dark slate-grey boots; no shield, no helmet, no bow; simple shapes and very few details; clearly a commander with a flag. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, sword in hand, bow, quiver, epaulettes, brown leather, red-brown wood."
+  }
+}

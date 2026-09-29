@@ -1,0 +1,36 @@
+{
+  "id": "juggernaut-b-edit",
+  "jobId": "d689aabf-9347-4d7d-aff4-32ebd26e52ca",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "2",
+    "asset": "chibi-juggernaut",
+    "subject": "UNIT:JUGGERNAUT",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 68603,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the bow across his belly and the quiver of arrows on his shoulder. Make his bright red tabard bigger, a plain solid bright red with no emblem, covering his chest and belly down to his knees. Make the belts, gloves and boots dark slate grey and draw the mouth as a tiny dark line. Keep the huge warhammer over his shoulder, the steel helmet, the steel armour, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet."
+      }
+    ],
+    "prompt": "Remove the bow across his belly and the quiver of arrows on his shoulder. Make his bright red tabard bigger, a plain solid bright red with no emblem, covering his chest and belly down to his knees. Make the belts, gloves and boots dark slate grey and draw the mouth as a tiny dark line. Keep the huge warhammer over his shoulder, the steel helmet, the steel armour, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "negativePrompt": "",
+    "description": "Remove the bow across his belly and the quiver of arrows on his shoulder. Make his bright red tabard bigger, a plain solid bright red with no emblem, covering his chest and belly down to his knees. Make the belts, gloves and boots dark slate grey and draw the mouth as a tiny dark line. Keep the huge warhammer over his shoulder, the steel helmet, the steel armour, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "editInstruction": "Remove the bow across his belly and the quiver of arrows on his shoulder. Make his bright red tabard bigger, a plain solid bright red with no emblem, covering his chest and belly down to his knees. Make the belts, gloves and boots dark slate grey and draw the mouth as a tiny dark line. Keep the huge warhammer over his shoulder, the steel helmet, the steel armour, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "source": {
+      "recipe": "juggernaut-b",
+      "candidate": 0,
+      "sha256": "7ad4cd94f236dd0e7f3985eee6f886b89d53d5664c54d790ae2904eb49588ad8"
+    }
+  }
+}

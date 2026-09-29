@@ -1,0 +1,36 @@
+{
+  "id": "knight-a-edit",
+  "jobId": "98ff9891-61a5-4180-9265-735adcc4910d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "2",
+    "asset": "chibi-knight",
+    "subject": "UNIT:KNIGHT",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 68502,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the quiver and arrows from the knight's back and remove the grey shadow under the horse, so nothing is drawn under the hooves. Make the bright red cloth barding bigger so it covers the horse's chest, body and rump down to its knees. Keep the white horse, the steel helm with the red plume, the lance, the rider, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the quiver and arrows from the knight's back and remove the grey shadow under the horse, so nothing is drawn under the hooves. Make the bright red cloth barding bigger so it covers the horse's chest, body and rump down to its knees. Keep the white horse, the steel helm with the red plume, the lance, the rider, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the quiver and arrows from the knight's back and remove the grey shadow under the horse, so nothing is drawn under the hooves. Make the bright red cloth barding bigger so it covers the horse's chest, body and rump down to its knees. Keep the white horse, the steel helm with the red plume, the lance, the rider, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the quiver and arrows from the knight's back and remove the grey shadow under the horse, so nothing is drawn under the hooves. Make the bright red cloth barding bigger so it covers the horse's chest, body and rump down to its knees. Keep the white horse, the steel helm with the red plume, the lance, the rider, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "knight-a",
+      "candidate": 0,
+      "sha256": "5292c201cbd930e9b95ec8f1841f753a0e3b41e71d2f048d1fdbd4bd0fe5acfa"
+    }
+  }
+}

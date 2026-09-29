@@ -1,0 +1,36 @@
+{
+  "id": "raider-a-edit",
+  "jobId": "1c76692a-f22d-457c-bc1a-96762589d9c9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "2",
+    "asset": "chibi-raider",
+    "subject": "UNIT:RAIDER",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 68103,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Replace the steel helmet and its plume with a big bright red hood pulled over his head, joined to his big bright red riding cloak, and make the cloak larger so it covers his back and drapes over the pony. Make the reins, straps and gloves dark grey, and draw the mouth as a tiny dark line. Keep the sandy yellow pony, the raised steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves."
+      }
+    ],
+    "prompt": "Replace the steel helmet and its plume with a big bright red hood pulled over his head, joined to his big bright red riding cloak, and make the cloak larger so it covers his back and drapes over the pony. Make the reins, straps and gloves dark grey, and draw the mouth as a tiny dark line. Keep the sandy yellow pony, the raised steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "negativePrompt": "",
+    "description": "Replace the steel helmet and its plume with a big bright red hood pulled over his head, joined to his big bright red riding cloak, and make the cloak larger so it covers his back and drapes over the pony. Make the reins, straps and gloves dark grey, and draw the mouth as a tiny dark line. Keep the sandy yellow pony, the raised steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "editInstruction": "Replace the steel helmet and its plume with a big bright red hood pulled over his head, joined to his big bright red riding cloak, and make the cloak larger so it covers his back and drapes over the pony. Make the reins, straps and gloves dark grey, and draw the mouth as a tiny dark line. Keep the sandy yellow pony, the raised steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "source": {
+      "recipe": "raider-a",
+      "candidate": 0,
+      "sha256": "c6e068d494573b16a8b4bb903f16c77c2c40f6e45f484e41143d09b21bde6926"
+    }
+  }
+}

@@ -1,0 +1,1950 @@
+{
+  "schemaVersion": 1,
+  "batch": "2",
+  "recipes": {
+    "captain-a": {
+      "id": "captain-a",
+      "asset": "chibi-captain",
+      "jobId": "sync-c6d8d1d3-a3a7-4d0d-9996-f83ee2d99a63",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "2",
+        "asset": "chibi-captain",
+        "subject": "UNIT:CAPTAIN",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 68301,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Captain, a chunky cute medieval army officer with a very big head (about half of the figure's height) and a tiny sturdy body: a soft round bright red medieval cap with a big white feather, a friendly face with a small moustache, a bright red long coat-tunic with a cream sash, holding a tall pale yellow wooden banner pole upright in the left hand with a big square bright red banner flag flying above his head, and a small cream-white hunting horn on a strap at his hip; dark slate-grey boots; no shield, no helmet, no bow; simple shapes and very few details; clearly a commander with a flag."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The mouth is a tiny dark line, not red.",
+            "negative": "shield, sword in hand, bow, quiver, bicorne, tricorne, top hat, epaulettes, brown leather, red-brown wood"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Captain, a chunky cute medieval army officer with a very big head (about half of the figure's height) and a tiny sturdy body: a soft round bright red medieval cap with a big white feather, a friendly face with a small moustache, a bright red long coat-tunic with a cream sash, holding a tall pale yellow wooden banner pole upright in the left hand with a big square bright red banner flag flying above his head, and a small cream-white hunting horn on a strap at his hip; dark slate-grey boots; no shield, no helmet, no bow; simple shapes and very few details; clearly a commander with a flag. The mouth is a tiny dark line, not red.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, sword in hand, bow, quiver, epaulettes, brown leather, red-brown wood",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Captain, a chunky cute medieval army officer with a very big head (about half of the figure's height) and a tiny sturdy body: a soft round bright red medieval cap with a big white feather, a friendly face with a small moustache, a bright red long coat-tunic with a cream sash, holding a tall pale yellow wooden banner pole upright in the left hand with a big square bright red banner flag flying above his head, and a small cream-white hunting horn on a strap at his hip; dark slate-grey boots; no shield, no helmet, no bow; simple shapes and very few details; clearly a commander with a flag. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, sword in hand, bow, quiver, epaulettes, brown leather, red-brown wood."
+      },
+      "submittedAt": "2026-09-29T13:43:50.547Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/captain-a.png",
+      "rawSheetSha256": "b32f042a4673f596fb9b1e8e6427dc0aedbf365c55a63f1294db7d6323a19046",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.1138,
+          "footprintWidthShare": 0.5833,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:44:39.874Z",
+      "usageUsd": 0.008348730908499824,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Medieval officer: floppy key-red cap with a big white feather over a steel cap, moustache, red coat-tunic, tall pole with a big square key-red banner, horn at the hip; no shield. The banner gives the tallest silhouette of the standard units. 33% owner area, strict QA passes without waivers.",
+        "reviewedAt": "2026-09-29T13:59:52.056Z"
+      }
+    },
+    "catapult-a": {
+      "id": "catapult-a",
+      "asset": "chibi-catapult",
+      "jobId": "sync-8c8bbc1a-5759-48e1-9a1e-b4e91580a0e6",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "2",
+        "asset": "chibi-catapult",
+        "subject": "UNIT:CATAPULT",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 68401,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Catapult, a chunky cute wooden siege catapult (a medieval mangonel) on four chunky wheels, built of pale yellow-tan wood with light steel bands, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth pennant flying from the top of the frame and a bright red cloth draped over the frame, with one small chunky crew man with a very big head in a bright red tunic and a steel cap standing beside it; simple shapes and very few details; the wheels and the crew man's feet are the lowest thing in the image; clearly a war machine, bigger than a soldier."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The mouth is a tiny dark line, not red.",
+            "negative": "cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, horse"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Catapult, a chunky cute wooden siege catapult (a medieval mangonel) on four chunky wheels, built of pale yellow-tan wood with light steel bands, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth pennant flying from the top of the frame and a bright red cloth draped over the frame, with one small chunky crew man with a very big head in a bright red tunic and a steel cap standing beside it; simple shapes and very few details; the wheels and the crew man's feet are the lowest thing in the image; clearly a war machine, bigger than a soldier. The mouth is a tiny dark line, not red.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, horse",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Catapult, a chunky cute wooden siege catapult (a medieval mangonel) on four chunky wheels, built of pale yellow-tan wood with light steel bands, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth pennant flying from the top of the frame and a bright red cloth draped over the frame, with one small chunky crew man with a very big head in a bright red tunic and a steel cap standing beside it; simple shapes and very few details; the wheels and the crew man's feet are the lowest thing in the image; clearly a war machine, bigger than a soldier. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, horse."
+      },
+      "submittedAt": "2026-09-29T13:44:39.876Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/catapult-a.png",
+      "rawSheetSha256": "e0dc7957724d8bed71ef64a72c09057e0cc4d0e1a39fba1f5d0bbe78a26632cc",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.3084,
+          "footprintWidthShare": 0.7619,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-09-29T13:45:25.752Z",
+      "usageUsd": 0.009297670523325603,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Two big soldiers in front of a small catapult: the crew dominates the silhouette; 12.3% owner area (COVERAGE_LOW).",
+        "reviewedAt": "2026-09-29T14:00:04.601Z"
+      }
+    },
+    "catapult-b": {
+      "id": "catapult-b",
+      "asset": "chibi-catapult",
+      "jobId": "sync-df0c7cb4-8c36-41c0-ac60-f421252eb05a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "2",
+        "asset": "chibi-catapult",
+        "subject": "UNIT:CATAPULT",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 68402,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Catapult, a chunky cute wooden siege catapult (a medieval mangonel) on four chunky wheels, built of pale yellow-tan wood with light steel bands, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth pennant flying from the top of the frame and a bright red cloth draped over the frame, with one small chunky crew man with a very big head in a bright red tunic and a steel cap standing beside it; simple shapes and very few details; the wheels and the crew man's feet are the lowest thing in the image; clearly a war machine, bigger than a soldier."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The catapult is the big main subject and fills most of the image; the crew man is small, about half as tall as the catapult frame, and stands behind its left side. The mouth is a tiny dark line, not red.",
+            "negative": "cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, two people, soldier in front, shield, horse"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Catapult, a chunky cute wooden siege catapult (a medieval mangonel) on four chunky wheels, built of pale yellow-tan wood with light steel bands, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth pennant flying from the top of the frame and a bright red cloth draped over the frame, with one small chunky crew man with a very big head in a bright red tunic and a steel cap standing beside it; simple shapes and very few details; the wheels and the crew man's feet are the lowest thing in the image; clearly a war machine, bigger than a soldier. The catapult is the big main subject and fills most of the image; the crew man is small, about half as tall as the catapult frame, and stands behind its left side. The mouth is a tiny dark line, not red.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, two people, soldier in front, shield, horse",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Catapult, a chunky cute wooden siege catapult (a medieval mangonel) on four chunky wheels, built of pale yellow-tan wood with light steel bands, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth pennant flying from the top of the frame and a bright red cloth draped over the frame, with one small chunky crew man with a very big head in a bright red tunic and a steel cap standing beside it; simple shapes and very few details; the wheels and the crew man's feet are the lowest thing in the image; clearly a war machine, bigger than a soldier. The catapult is the big main subject and fills most of the image; the crew man is small, about half as tall as the catapult frame, and stands behind its left side. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, two people, soldier in front, shield, horse."
+      },
+      "submittedAt": "2026-09-29T13:51:03.839Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/catapult-b.png",
+      "rawSheetSha256": "d0b9241d2496c98d8045f90f1232100a9cdcaf939acea84ce761464130385bcf",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.237,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:51:53.880Z",
+      "usageUsd": 0.009391472684012518,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Source only: best machine (wheeled frame, red pennant) but a second crew man, a spear blade on the arm and a hanging bucket like a well crane; catapult-b-edit fixes them.",
+        "reviewedAt": "2026-09-29T14:00:04.771Z"
+      }
+    },
+    "catapult-b-edit": {
+      "id": "catapult-b-edit",
+      "asset": "chibi-catapult",
+      "jobId": "9011ad73-7a82-4e26-8df4-5b91d1c64c14",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "2",
+        "asset": "chibi-catapult",
+        "subject": "UNIT:CATAPULT",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 68404,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the small helmeted man at the back left, so only the one crew man in the red hood remains. Replace the spear blade and the hanging bucket at the end of the throwing arm with a big wooden cup holding a round grey boulder. Drape a bright red cloth over the front of the wooden frame. Keep the four wheels, the pale wooden frame, the red pennant, the crew man, outline and art style exactly the same, on a transparent background with nothing under the wheels."
+          }
+        ],
+        "prompt": "Remove the small helmeted man at the back left, so only the one crew man in the red hood remains. Replace the spear blade and the hanging bucket at the end of the throwing arm with a big wooden cup holding a round grey boulder. Drape a bright red cloth over the front of the wooden frame. Keep the four wheels, the pale wooden frame, the red pennant, the crew man, outline and art style exactly the same, on a transparent background with nothing under the wheels.",
+        "negativePrompt": "",
+        "description": "Remove the small helmeted man at the back left, so only the one crew man in the red hood remains. Replace the spear blade and the hanging bucket at the end of the throwing arm with a big wooden cup holding a round grey boulder. Drape a bright red cloth over the front of the wooden frame. Keep the four wheels, the pale wooden frame, the red pennant, the crew man, outline and art style exactly the same, on a transparent background with nothing under the wheels.",
+        "editInstruction": "Remove the small helmeted man at the back left, so only the one crew man in the red hood remains. Replace the spear blade and the hanging bucket at the end of the throwing arm with a big wooden cup holding a round grey boulder. Drape a bright red cloth over the front of the wooden frame. Keep the four wheels, the pale wooden frame, the red pennant, the crew man, outline and art style exactly the same, on a transparent background with nothing under the wheels.",
+        "source": {
+          "recipe": "catapult-b",
+          "candidate": 0,
+          "sha256": "d0b9241d2496c98d8045f90f1232100a9cdcaf939acea84ce761464130385bcf"
+        }
+      },
+      "submittedAt": "2026-09-29T13:58:12.836Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/catapult-b-edit.png",
+      "rawSheetSha256": "043f8b7f537341852dfeb995d067fcc0e6a7f17c4e8d1170bf8659518a7d2217",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.1579,
+          "footprintWidthShare": 0.7937,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.1556,
+          "footprintWidthShare": 0.7937,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:58:55.351Z",
+      "usageUsd": 0.008695829550425211,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Edit of catapult-b: pale wooden frame on four chunky wheels, throwing arm with a cup and grey boulder, key-red pennant and a red cloth over the front, one hooded crew man riding it. Second crew man, spear blade and hanging bucket removed. 23.4% owner area, strict QA passes without waivers.",
+        "reviewedAt": "2026-09-29T13:59:52.227Z"
+      }
+    },
+    "catapult-c": {
+      "id": "catapult-c",
+      "asset": "chibi-catapult",
+      "jobId": "sync-6913a3d1-5057-4580-bfcb-388c62f5ff28",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "2",
+        "asset": "chibi-catapult",
+        "subject": "UNIT:CATAPULT",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 68403,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Catapult, a chunky cute wooden siege catapult (a medieval mangonel) on four chunky wheels, built of pale yellow-tan wood with light steel bands, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth pennant flying from the top of the frame and a bright red cloth draped over the frame, with one small chunky crew man with a very big head in a bright red tunic and a steel cap standing beside it; simple shapes and very few details; the wheels and the crew man's feet are the lowest thing in the image; clearly a war machine, bigger than a soldier."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The catapult fills most of the image: a sturdy A-shaped wooden frame on four chunky wheels, its long throwing arm pulled back with a big round grey boulder in the cup at its end, a big bright red cloth draped over the frame and a bright red pennant on top. Exactly one small crew man, half as tall as the frame, stands behind it at the left. The mouth is a tiny dark line, not red.",
+            "negative": "cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, two people, spear, blade, bucket, well, shield, horse"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Catapult, a chunky cute wooden siege catapult (a medieval mangonel) on four chunky wheels, built of pale yellow-tan wood with light steel bands, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth pennant flying from the top of the frame and a bright red cloth draped over the frame, with one small chunky crew man with a very big head in a bright red tunic and a steel cap standing beside it; simple shapes and very few details; the wheels and the crew man's feet are the lowest thing in the image; clearly a war machine, bigger than a soldier. The catapult fills most of the image: a sturdy A-shaped wooden frame on four chunky wheels, its long throwing arm pulled back with a big round grey boulder in the cup at its end, a big bright red cloth draped over the frame and a bright red pennant on top. Exactly one small crew man, half as tall as the frame, stands behind it at the left. The mouth is a tiny dark line, not red.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, two people, spear, blade, bucket, well, shield, horse",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Catapult, a chunky cute wooden siege catapult (a medieval mangonel) on four chunky wheels, built of pale yellow-tan wood with light steel bands, its long throwing arm raised with a sling bucket holding a round grey stone, a big bright red cloth pennant flying from the top of the frame and a bright red cloth draped over the frame, with one small chunky crew man with a very big head in a bright red tunic and a steel cap standing beside it; simple shapes and very few details; the wheels and the crew man's feet are the lowest thing in the image; clearly a war machine, bigger than a soldier. The catapult fills most of the image: a sturdy A-shaped wooden frame on four chunky wheels, its long throwing arm pulled back with a big round grey boulder in the cup at its end, a big bright red cloth draped over the frame and a bright red pennant on top. Exactly one small crew man, half as tall as the frame, stands behind it at the left. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, cannon, gunpowder, red-brown wood, dark brown wood, orange wood, second crew member, two people, spear, blade, bucket, well, shield, horse."
+      },
+      "submittedAt": "2026-09-29T13:55:17.238Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/catapult-c.png",
+      "rawSheetSha256": "236c4710ea7f5d28fdd37e2cdd06c49b149e867294f52182a3edb662e36279a5",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.0868,
+          "footprintWidthShare": 0.7813,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:55:56.444Z",
+      "usageUsd": 0.008938246144188776,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Drew a crossbow-like frame with two crew men; 8.4% owner area, red-brown wood (5.8%) and mask bleed.",
+        "reviewedAt": "2026-09-29T14:00:04.938Z"
+      }
+    },
+    "guard-a": {
+      "id": "guard-a",
+      "asset": "chibi-guard",
+      "jobId": "sync-dd58aa33-4987-4375-b13a-43fcf63c282c",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "2",
+        "asset": "chibi-guard",
+        "subject": "UNIT:GUARD",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 68201,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Guard, a chunky cute heavy spearman with a very big head (about half of the figure's height) and a tiny sturdy body in a wide braced stance: a heavy round light steel-grey helmet with a wide brim and a nose guard, a huge tall rectangular tower shield painted solid bright red with a thick light steel border held in front of the body on the left arm, covering him from chin to shins, and a long spear with a pale yellow wooden shaft and a light steel point held upright in the right hand, the point high above the helmet; light grey gloves, dark slate-grey boots; simple shapes and very few details; clearly a wall of shield, not a sword fighter."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The mouth is a tiny dark line, not red.",
+            "negative": "sword, bow, quiver, arrows, round shield, cape, brown leather, red-brown wood, wooden shield"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Guard, a chunky cute heavy spearman with a very big head (about half of the figure's height) and a tiny sturdy body in a wide braced stance: a heavy round light steel-grey helmet with a wide brim and a nose guard, a huge tall rectangular tower shield painted solid bright red with a thick light steel border held in front of the body on the left arm, covering him from chin to shins, and a long spear with a pale yellow wooden shaft and a light steel point held upright in the right hand, the point high above the helmet; light grey gloves, dark slate-grey boots; simple shapes and very few details; clearly a wall of shield, not a sword fighter. The mouth is a tiny dark line, not red.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, sword, bow, quiver, arrows, round shield, cape, brown leather, red-brown wood, wooden shield",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Guard, a chunky cute heavy spearman with a very big head (about half of the figure's height) and a tiny sturdy body in a wide braced stance: a heavy round light steel-grey helmet with a wide brim and a nose guard, a huge tall rectangular tower shield painted solid bright red with a thick light steel border held in front of the body on the left arm, covering him from chin to shins, and a long spear with a pale yellow wooden shaft and a light steel point held upright in the right hand, the point high above the helmet; light grey gloves, dark slate-grey boots; simple shapes and very few details; clearly a wall of shield, not a sword fighter. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, sword, bow, quiver, arrows, round shield, cape, brown leather, red-brown wood, wooden shield."
+      },
+      "submittedAt": "2026-09-29T13:43:20.212Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/guard-a.png",
+      "rawSheetSha256": "438f75feb5ed68e5f27e446e0077bb11c5de3bcee97836d293a2c32c1f32372a",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0934,
+          "footprintWidthShare": 0.7358,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:43:50.546Z",
+      "usageUsd": 0.007875571542316013,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Source only: right design (red tower shield, spear, heavy helmet) but orange spear shaft and brown boots fail RED_BROWN_MATERIAL (4.1%); guard-a-edit fixes them.",
+        "reviewedAt": "2026-09-29T14:00:04.434Z"
+      }
+    },
+    "guard-a-edit": {
+      "id": "guard-a-edit",
+      "asset": "chibi-guard",
+      "jobId": "71e130ae-6294-4d37-b53f-894be414dc55",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "2",
+        "asset": "chibi-guard",
+        "subject": "UNIT:GUARD",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 68202,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the spear shaft pale yellow birch wood, the boots, belt and straps dark slate grey, and the gloves light grey. Keep the red tower shield with its steel border, the helmet, face, spear point, pose, outline and art style exactly the same, on a transparent background with nothing under his feet."
+          }
+        ],
+        "prompt": "Make the spear shaft pale yellow birch wood, the boots, belt and straps dark slate grey, and the gloves light grey. Keep the red tower shield with its steel border, the helmet, face, spear point, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+        "negativePrompt": "",
+        "description": "Make the spear shaft pale yellow birch wood, the boots, belt and straps dark slate grey, and the gloves light grey. Keep the red tower shield with its steel border, the helmet, face, spear point, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+        "editInstruction": "Make the spear shaft pale yellow birch wood, the boots, belt and straps dark slate grey, and the gloves light grey. Keep the red tower shield with its steel border, the helmet, face, spear point, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+        "source": {
+          "recipe": "guard-a",
+          "candidate": 0,
+          "sha256": "438f75feb5ed68e5f27e446e0077bb11c5de3bcee97836d293a2c32c1f32372a"
+        }
+      },
+      "submittedAt": "2026-09-29T13:48:54.788Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/guard-a-edit.png",
+      "rawSheetSha256": "8e9dd1ba6fe96aeb889745e6739e0ab2066d6ab946e27c0d39b00d11749086d5",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0172,
+          "footprintWidthShare": 0.7358,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0172,
+          "footprintWidthShare": 0.7358,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:49:20.679Z",
+      "usageUsd": 0.007177163627412584,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Edit of guard-a: huge key-red tower shield with a steel border, long spear with a pale birch shaft, heavy brimmed steel helmet, grey boots; wide braced stance. Reads as a shield wall next to the Fighter's round shield and sword. 19.1% owner area (just under the 20% target; the shield carries it), strict QA passes without waivers.",
+        "reviewedAt": "2026-09-29T13:59:51.881Z"
+      }
+    },
+    "juggernaut-a": {
+      "id": "juggernaut-a",
+      "asset": "chibi-juggernaut",
+      "jobId": "sync-d10e543a-a070-48ef-a053-7a876fce570c",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "2",
+        "asset": "chibi-juggernaut",
+        "subject": "UNIT:JUGGERNAUT",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 68601,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Juggernaut, a chunky cute giant armoured brute, a huge hulking warrior much wider and taller than a normal soldier, with a big round head in a plain light steel bucket helmet with a visor slit, massive rounded light steel shoulder pauldrons, huge light steel gauntlets, a huge light steel warhammer with a pale yellow wooden handle held in both hands across the body, a big bright red tabard over a barrel chest and belly, chainmail sleeves, thick legs in dark slate-grey boots, wide braced stance; simple shapes and very few details; clearly a giant, not a normal soldier."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The mouth is a tiny dark line, not red.",
+            "negative": "sword, bow, quiver, shield, cape, brown leather, red-brown wood, horns, monster, orc, green skin"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Juggernaut, a chunky cute giant armoured brute, a huge hulking warrior much wider and taller than a normal soldier, with a big round head in a plain light steel bucket helmet with a visor slit, massive rounded light steel shoulder pauldrons, huge light steel gauntlets, a huge light steel warhammer with a pale yellow wooden handle held in both hands across the body, a big bright red tabard over a barrel chest and belly, chainmail sleeves, thick legs in dark slate-grey boots, wide braced stance; simple shapes and very few details; clearly a giant, not a normal soldier. The mouth is a tiny dark line, not red.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, sword, bow, quiver, shield, cape, brown leather, red-brown wood, horns, monster, orc, green skin",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Juggernaut, a chunky cute giant armoured brute, a huge hulking warrior much wider and taller than a normal soldier, with a big round head in a plain light steel bucket helmet with a visor slit, massive rounded light steel shoulder pauldrons, huge light steel gauntlets, a huge light steel warhammer with a pale yellow wooden handle held in both hands across the body, a big bright red tabard over a barrel chest and belly, chainmail sleeves, thick legs in dark slate-grey boots, wide braced stance; simple shapes and very few details; clearly a giant, not a normal soldier. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, sword, bow, quiver, shield, cape, brown leather, red-brown wood, horns, monster, orc, green skin."
+      },
+      "submittedAt": "2026-09-29T13:46:45.147Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/juggernaut-a.png",
+      "rawSheetSha256": "67a46fc1a3d1c618c80bc70fa79342542eada7aec9a3fba98c83d88e6a3f014f",
+      "plateHints": [
+        {
+          "bandRows": 18,
+          "groundShare": 0.1261,
+          "footprintWidthShare": 0.7683,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:47:59.620Z",
+      "usageUsd": 0.012991072707706029,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Carried a crossbow, a red shield and a roof-shaped pack instead of a hammer; 9.2% owner area and red-brown leather (4.2%).",
+        "reviewedAt": "2026-09-29T14:00:05.270Z"
+      }
+    },
+    "juggernaut-b": {
+      "id": "juggernaut-b",
+      "asset": "chibi-juggernaut",
+      "jobId": "sync-d598cb54-8104-4b1e-a1bc-201f3cc89933",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "2",
+        "asset": "chibi-juggernaut",
+        "subject": "UNIT:JUGGERNAUT",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 68602,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Juggernaut, a chunky cute giant armoured brute, a huge hulking warrior much wider and taller than a normal soldier, with a big round head in a plain light steel bucket helmet with a visor slit, massive rounded light steel shoulder pauldrons, huge light steel gauntlets, a huge light steel warhammer with a pale yellow wooden handle held in both hands across the body, a big bright red tabard over a barrel chest and belly, chainmail sleeves, thick legs in dark slate-grey boots, wide braced stance; simple shapes and very few details; clearly a giant, not a normal soldier."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "His only weapon is the huge warhammer; the bright red tabard is very large, covering his chest and belly down to his knees, with a short bright red cape on his shoulders. The mouth is a tiny dark line, not red.",
+            "negative": "sword, bow, crossbow, quiver, bolts, shield, backpack, house, roof, brown leather, red-brown wood, horns, monster, orc, green skin"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Juggernaut, a chunky cute giant armoured brute, a huge hulking warrior much wider and taller than a normal soldier, with a big round head in a plain light steel bucket helmet with a visor slit, massive rounded light steel shoulder pauldrons, huge light steel gauntlets, a huge light steel warhammer with a pale yellow wooden handle held in both hands across the body, a big bright red tabard over a barrel chest and belly, chainmail sleeves, thick legs in dark slate-grey boots, wide braced stance; simple shapes and very few details; clearly a giant, not a normal soldier. His only weapon is the huge warhammer; the bright red tabard is very large, covering his chest and belly down to his knees, with a short bright red cape on his shoulders. The mouth is a tiny dark line, not red.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, sword, bow, crossbow, quiver, bolts, shield, backpack, house, roof, brown leather, red-brown wood, horns, monster, orc, green skin",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Juggernaut, a chunky cute giant armoured brute, a huge hulking warrior much wider and taller than a normal soldier, with a big round head in a plain light steel bucket helmet with a visor slit, massive rounded light steel shoulder pauldrons, huge light steel gauntlets, a huge light steel warhammer with a pale yellow wooden handle held in both hands across the body, a big bright red tabard over a barrel chest and belly, chainmail sleeves, thick legs in dark slate-grey boots, wide braced stance; simple shapes and very few details; clearly a giant, not a normal soldier. His only weapon is the huge warhammer; the bright red tabard is very large, covering his chest and belly down to his knees, with a short bright red cape on his shoulders. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, sword, bow, crossbow, quiver, bolts, shield, backpack, house, roof, brown leather, red-brown wood, horns, monster, orc, green skin."
+      },
+      "submittedAt": "2026-09-29T13:51:53.882Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/juggernaut-b.png",
+      "rawSheetSha256": "7ad4cd94f236dd0e7f3985eee6f886b89d53d5664c54d790ae2904eb49588ad8",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.2427,
+          "footprintWidthShare": 0.7561,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:53:33.594Z",
+      "usageUsd": 0.010004363298416138,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Source only: right giant with a warhammer, but a bow across the belly and a quiver leak in from the faction layer; 14.2% owner area and one embedded mask pixel. juggernaut-b-edit fixes them.",
+        "reviewedAt": "2026-09-29T14:00:05.434Z"
+      }
+    },
+    "juggernaut-b-edit": {
+      "id": "juggernaut-b-edit",
+      "asset": "chibi-juggernaut",
+      "jobId": "d689aabf-9347-4d7d-aff4-32ebd26e52ca",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "2",
+        "asset": "chibi-juggernaut",
+        "subject": "UNIT:JUGGERNAUT",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 68603,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the bow across his belly and the quiver of arrows on his shoulder. Make his bright red tabard bigger, a plain solid bright red with no emblem, covering his chest and belly down to his knees. Make the belts, gloves and boots dark slate grey and draw the mouth as a tiny dark line. Keep the huge warhammer over his shoulder, the steel helmet, the steel armour, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet."
+          }
+        ],
+        "prompt": "Remove the bow across his belly and the quiver of arrows on his shoulder. Make his bright red tabard bigger, a plain solid bright red with no emblem, covering his chest and belly down to his knees. Make the belts, gloves and boots dark slate grey and draw the mouth as a tiny dark line. Keep the huge warhammer over his shoulder, the steel helmet, the steel armour, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+        "negativePrompt": "",
+        "description": "Remove the bow across his belly and the quiver of arrows on his shoulder. Make his bright red tabard bigger, a plain solid bright red with no emblem, covering his chest and belly down to his knees. Make the belts, gloves and boots dark slate grey and draw the mouth as a tiny dark line. Keep the huge warhammer over his shoulder, the steel helmet, the steel armour, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+        "editInstruction": "Remove the bow across his belly and the quiver of arrows on his shoulder. Make his bright red tabard bigger, a plain solid bright red with no emblem, covering his chest and belly down to his knees. Make the belts, gloves and boots dark slate grey and draw the mouth as a tiny dark line. Keep the huge warhammer over his shoulder, the steel helmet, the steel armour, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+        "source": {
+          "recipe": "juggernaut-b",
+          "candidate": 0,
+          "sha256": "7ad4cd94f236dd0e7f3985eee6f886b89d53d5664c54d790ae2904eb49588ad8"
+        }
+      },
+      "submittedAt": "2026-09-29T13:55:56.448Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/juggernaut-b-edit.png",
+      "rawSheetSha256": "573a9ae040a8e8a5b30194c4a72e057f2facb2941e7fbbce12ba227f484167dc",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8158,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8158,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:56:44.877Z",
+      "usageUsd": 0.009615877045525446,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Edit of juggernaut-b: giant brute in steel pauldrons and gauntlets with a huge steel warhammer over his shoulder, big plain key-red tabard to the knees and a short red cape, grey belt and boots. Bow and quiver removed. Clearly the biggest unit. 23.9% owner area, strict QA passes without waivers.",
+        "reviewedAt": "2026-09-29T13:59:52.572Z"
+      }
+    },
+    "knight-a": {
+      "id": "knight-a",
+      "asset": "chibi-knight",
+      "jobId": "sync-22c18b50-54a3-477c-9b3b-34179f113136",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "2",
+        "asset": "chibi-knight",
+        "subject": "UNIT:KNIGHT",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 68501,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Knight, a chunky cute armoured knight with a very big head riding a big sturdy white warhorse seen from the front-right: a round light steel great helm with a visor slit and a big bright red plume, a light steel breastplate over chainmail, a long pale yellow wooden lance with a light steel point held upright and slightly forward, the horse covered in a big bright red cloth barding (caparison) from its neck to its knees with a cream trim, light steel chanfron on the horse's head, dark grey hooves; simple shapes and very few details; the horse's hooves are the lowest thing in the image; clearly a heavy mounted knight, bigger and heavier than a small pony rider."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The mouth is a tiny dark line, not red.",
+            "negative": "bow, quiver, arrows, brown horse, chestnut horse, brown leather, red-brown wood, sword in hand"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Knight, a chunky cute armoured knight with a very big head riding a big sturdy white warhorse seen from the front-right: a round light steel great helm with a visor slit and a big bright red plume, a light steel breastplate over chainmail, a long pale yellow wooden lance with a light steel point held upright and slightly forward, the horse covered in a big bright red cloth barding (caparison) from its neck to its knees with a cream trim, light steel chanfron on the horse's head, dark grey hooves; simple shapes and very few details; the horse's hooves are the lowest thing in the image; clearly a heavy mounted knight, bigger and heavier than a small pony rider. The mouth is a tiny dark line, not red.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, brown horse, chestnut horse, brown leather, red-brown wood, sword in hand",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Knight, a chunky cute armoured knight with a very big head riding a big sturdy white warhorse seen from the front-right: a round light steel great helm with a visor slit and a big bright red plume, a light steel breastplate over chainmail, a long pale yellow wooden lance with a light steel point held upright and slightly forward, the horse covered in a big bright red cloth barding (caparison) from its neck to its knees with a cream trim, light steel chanfron on the horse's head, dark grey hooves; simple shapes and very few details; the horse's hooves are the lowest thing in the image; clearly a heavy mounted knight, bigger and heavier than a small pony rider. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, brown horse, chestnut horse, brown leather, red-brown wood, sword in hand."
+      },
+      "submittedAt": "2026-09-29T13:45:25.753Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/knight-a.png",
+      "rawSheetSha256": "5292c201cbd930e9b95ec8f1841f753a0e3b41e71d2f048d1fdbd4bd0fe5acfa",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6721,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:46:45.145Z",
+      "usageUsd": 0.01206742607222663,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Source only: right silhouette (white horse, red caparison, plumed helm, lance) but a quiver on the back, a grey cast shadow under the horse and 17% owner area; knight-a-edit fixes them.",
+        "reviewedAt": "2026-09-29T14:00:05.103Z"
+      }
+    },
+    "knight-a-edit": {
+      "id": "knight-a-edit",
+      "asset": "chibi-knight",
+      "jobId": "98ff9891-61a5-4180-9265-735adcc4910d",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "2",
+        "asset": "chibi-knight",
+        "subject": "UNIT:KNIGHT",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 68502,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the quiver and arrows from the knight's back and remove the grey shadow under the horse, so nothing is drawn under the hooves. Make the bright red cloth barding bigger so it covers the horse's chest, body and rump down to its knees. Keep the white horse, the steel helm with the red plume, the lance, the rider, pose, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Remove the quiver and arrows from the knight's back and remove the grey shadow under the horse, so nothing is drawn under the hooves. Make the bright red cloth barding bigger so it covers the horse's chest, body and rump down to its knees. Keep the white horse, the steel helm with the red plume, the lance, the rider, pose, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Remove the quiver and arrows from the knight's back and remove the grey shadow under the horse, so nothing is drawn under the hooves. Make the bright red cloth barding bigger so it covers the horse's chest, body and rump down to its knees. Keep the white horse, the steel helm with the red plume, the lance, the rider, pose, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Remove the quiver and arrows from the knight's back and remove the grey shadow under the horse, so nothing is drawn under the hooves. Make the bright red cloth barding bigger so it covers the horse's chest, body and rump down to its knees. Keep the white horse, the steel helm with the red plume, the lance, the rider, pose, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "knight-a",
+          "candidate": 0,
+          "sha256": "5292c201cbd930e9b95ec8f1841f753a0e3b41e71d2f048d1fdbd4bd0fe5acfa"
+        }
+      },
+      "submittedAt": "2026-09-29T13:49:20.683Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/knight-a-edit.png",
+      "rawSheetSha256": "f253bac5c72c61d8e41a66a1215b21fc46cb2e08b919e2c9e93d01838bc2e0e6",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0217,
+          "footprintWidthShare": 0.623,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0031,
+          "footprintWidthShare": 0.623,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:49:51.552Z",
+      "usageUsd": 0.007380593988630507,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Edit of knight-a: plumed steel great helm, breastplate, upright lance, big white warhorse in a key-red caparison with cream trim. Quiver and cast shadow removed. 25.7% owner area, strict QA passes without waivers.",
+        "reviewedAt": "2026-09-29T13:59:52.400Z"
+      }
+    },
+    "raider-a": {
+      "id": "raider-a",
+      "asset": "chibi-raider",
+      "jobId": "sync-b7e6ed8c-bf21-4e14-b83b-5779b26fb6b2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "2",
+        "asset": "chibi-raider",
+        "subject": "UNIT:RAIDER",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 68101,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Raider, a chunky cute light horseman with a very big head (about half of his own height) riding a small round short-legged pony seen from the front-right: the pony is sandy yellow with a cream mane and tail and dark grey hooves; the rider wears a big bright red hooded riding cloak over his head, shoulders and back that drapes over the pony's back, and a bright red saddle blanket; he holds a short light steel hand axe raised in the right hand; no helmet, no shield, no lance. Simple shapes and very few details; the pony's hooves are the lowest thing in the image; clearly a small fast rider, not a knight."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The mouth is a tiny dark line, not red.",
+            "negative": "bow, quiver, arrows, lance, helmet, shield, brown leather, red-brown wood, brown horse, chestnut horse"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Raider, a chunky cute light horseman with a very big head (about half of his own height) riding a small round short-legged pony seen from the front-right: the pony is sandy yellow with a cream mane and tail and dark grey hooves; the rider wears a big bright red hooded riding cloak over his head, shoulders and back that drapes over the pony's back, and a bright red saddle blanket; he holds a short light steel hand axe raised in the right hand; no helmet, no shield, no lance. Simple shapes and very few details; the pony's hooves are the lowest thing in the image; clearly a small fast rider, not a knight. The mouth is a tiny dark line, not red.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, lance, helmet, shield, brown leather, red-brown wood, brown horse, chestnut horse",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Raider, a chunky cute light horseman with a very big head (about half of his own height) riding a small round short-legged pony seen from the front-right: the pony is sandy yellow with a cream mane and tail and dark grey hooves; the rider wears a big bright red hooded riding cloak over his head, shoulders and back that drapes over the pony's back, and a bright red saddle blanket; he holds a short light steel hand axe raised in the right hand; no helmet, no shield, no lance. Simple shapes and very few details; the pony's hooves are the lowest thing in the image; clearly a small fast rider, not a knight. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, lance, helmet, shield, brown leather, red-brown wood, brown horse, chestnut horse."
+      },
+      "submittedAt": "2026-09-29T13:42:20.277Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/raider-a.png",
+      "rawSheetSha256": "c6e068d494573b16a8b4bb903f16c77c2c40f6e45f484e41143d09b21bde6926",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.3045,
+          "footprintWidthShare": 0.7091,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-09-29T13:43:20.211Z",
+      "usageUsd": 0.011065902445051404,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Source only: good sandy pony and raised axe, but a plumed steel helmet (reads like the Knight), a pink mouth, 12% owner area and red-brown straps; raider-a-edit and raider-a-edit-2 fix it.",
+        "reviewedAt": "2026-09-29T14:00:03.937Z"
+      }
+    },
+    "raider-a-edit": {
+      "id": "raider-a-edit",
+      "asset": "chibi-raider",
+      "jobId": "1c76692a-f22d-457c-bc1a-96762589d9c9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "2",
+        "asset": "chibi-raider",
+        "subject": "UNIT:RAIDER",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 68103,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Replace the steel helmet and its plume with a big bright red hood pulled over his head, joined to his big bright red riding cloak, and make the cloak larger so it covers his back and drapes over the pony. Make the reins, straps and gloves dark grey, and draw the mouth as a tiny dark line. Keep the sandy yellow pony, the raised steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves."
+          }
+        ],
+        "prompt": "Replace the steel helmet and its plume with a big bright red hood pulled over his head, joined to his big bright red riding cloak, and make the cloak larger so it covers his back and drapes over the pony. Make the reins, straps and gloves dark grey, and draw the mouth as a tiny dark line. Keep the sandy yellow pony, the raised steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+        "negativePrompt": "",
+        "description": "Replace the steel helmet and its plume with a big bright red hood pulled over his head, joined to his big bright red riding cloak, and make the cloak larger so it covers his back and drapes over the pony. Make the reins, straps and gloves dark grey, and draw the mouth as a tiny dark line. Keep the sandy yellow pony, the raised steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+        "editInstruction": "Replace the steel helmet and its plume with a big bright red hood pulled over his head, joined to his big bright red riding cloak, and make the cloak larger so it covers his back and drapes over the pony. Make the reins, straps and gloves dark grey, and draw the mouth as a tiny dark line. Keep the sandy yellow pony, the raised steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+        "source": {
+          "recipe": "raider-a",
+          "candidate": 0,
+          "sha256": "c6e068d494573b16a8b4bb903f16c77c2c40f6e45f484e41143d09b21bde6926"
+        }
+      },
+      "submittedAt": "2026-09-29T13:54:19.512Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/raider-a-edit.png",
+      "rawSheetSha256": "58843663c2d637adaa47870897fa287a79a88c5850eaae183ef41930cab40e5b",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.2517,
+          "footprintWidthShare": 0.7419,
+          "suspect": true
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.2517,
+          "footprintWidthShare": 0.7419,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-09-29T13:55:17.236Z",
+      "usageUsd": 0.010047612693574695,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Source only: hood and big cloak are right (28% owner area), but an orange-scarlet rim on the hood (#ff430a) stays red for owner B and maroon straps fail strict QA; raider-a-edit-2 recolours them.",
+        "reviewedAt": "2026-09-29T14:00:04.268Z"
+      }
+    },
+    "raider-a-edit-2": {
+      "id": "raider-a-edit-2",
+      "asset": "chibi-raider",
+      "jobId": "a6f2407e-7329-46af-a09e-8e203442e473",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "2",
+        "asset": "chibi-raider",
+        "subject": "UNIT:RAIDER",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 68104,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only: make the whole hood and cloak one flat bright red with a slightly darker red shadow, with no orange or scarlet highlight along the hood's edge, and make the dark brown saddle, reins and straps dark slate grey. Keep every shape, the sandy yellow pony, the steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves."
+          }
+        ],
+        "prompt": "Recolour only: make the whole hood and cloak one flat bright red with a slightly darker red shadow, with no orange or scarlet highlight along the hood's edge, and make the dark brown saddle, reins and straps dark slate grey. Keep every shape, the sandy yellow pony, the steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+        "negativePrompt": "",
+        "description": "Recolour only: make the whole hood and cloak one flat bright red with a slightly darker red shadow, with no orange or scarlet highlight along the hood's edge, and make the dark brown saddle, reins and straps dark slate grey. Keep every shape, the sandy yellow pony, the steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+        "editInstruction": "Recolour only: make the whole hood and cloak one flat bright red with a slightly darker red shadow, with no orange or scarlet highlight along the hood's edge, and make the dark brown saddle, reins and straps dark slate grey. Keep every shape, the sandy yellow pony, the steel axe, the face, pose, outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+        "source": {
+          "recipe": "raider-a-edit",
+          "candidate": 1,
+          "sha256": "555be554e9d1e7617072cf02d4c6013b1551c011bd811cf2a7e60de61be9e363"
+        }
+      },
+      "submittedAt": "2026-09-29T13:57:36.274Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/raider-a-edit-2.png",
+      "rawSheetSha256": "297ebab213e6a2cdbdbf7686e617677d8a1ad130ff3359e9b7d7a58ee683c259",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.254,
+          "footprintWidthShare": 0.7419,
+          "suspect": true
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.2494,
+          "footprintWidthShare": 0.7419,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:58:12.832Z",
+      "usageUsd": 0.008144037670559354,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Recolour edit of raider-a-edit: hooded rider in a big flat key-red hood and cloak on a small sandy-yellow pony, steel hand axe raised; no helmet, so it reads apart from the Knight (plumed helm, white horse, lance) and the Marksman (on foot, longbow). 29.9% owner area, strict QA passes without waivers; hood rim no longer scarlet.",
+        "reviewedAt": "2026-09-29T13:59:51.709Z"
+      }
+    },
+    "raider-b": {
+      "id": "raider-b",
+      "asset": "chibi-raider",
+      "jobId": "sync-b33d6d95-c237-419a-a5d1-648ccb05e3dc",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "2",
+        "asset": "chibi-raider",
+        "subject": "UNIT:RAIDER",
+        "faction": "ORIGINAL",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 68102,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+            "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Raider, a chunky cute light horseman with a very big head (about half of his own height) riding a small round short-legged pony seen from the front-right: the pony is sandy yellow with a cream mane and tail and dark grey hooves; the rider wears a big bright red hooded riding cloak over his head, shoulders and back that drapes over the pony's back, and a bright red saddle blanket; he holds a short light steel hand axe raised in the right hand; no helmet, no shield, no lance. Simple shapes and very few details; the pony's hooves are the lowest thing in the image; clearly a small fast rider, not a knight."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "He wears no helmet: his head is covered only by the big bright red hood, and the red cloak is large and flows behind him. The reins and straps are dark grey. The mouth is a tiny dark line, not red.",
+            "negative": "bow, quiver, arrows, lance, helmet, plume, crest, shield, brown leather, red-brown wood, brown horse, chestnut horse, orange straps"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Raider, a chunky cute light horseman with a very big head (about half of his own height) riding a small round short-legged pony seen from the front-right: the pony is sandy yellow with a cream mane and tail and dark grey hooves; the rider wears a big bright red hooded riding cloak over his head, shoulders and back that drapes over the pony's back, and a bright red saddle blanket; he holds a short light steel hand axe raised in the right hand; no helmet, no shield, no lance. Simple shapes and very few details; the pony's hooves are the lowest thing in the image; clearly a small fast rider, not a knight. He wears no helmet: his head is covered only by the big bright red hood, and the red cloak is large and flows behind him. The reins and straps are dark grey. The mouth is a tiny dark line, not red.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, lance, helmet, plume, crest, shield, brown leather, red-brown wood, brown horse, chestnut horse, orange straps",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Raider, a chunky cute light horseman with a very big head (about half of his own height) riding a small round short-legged pony seen from the front-right: the pony is sandy yellow with a cream mane and tail and dark grey hooves; the rider wears a big bright red hooded riding cloak over his head, shoulders and back that drapes over the pony's back, and a bright red saddle blanket; he holds a short light steel hand axe raised in the right hand; no helmet, no shield, no lance. Simple shapes and very few details; the pony's hooves are the lowest thing in the image; clearly a small fast rider, not a knight. He wears no helmet: his head is covered only by the big bright red hood, and the red cloak is large and flows behind him. The reins and straps are dark grey. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, lance, helmet, plume, crest, shield, brown leather, red-brown wood, brown horse, chestnut horse, orange straps."
+      },
+      "submittedAt": "2026-09-29T13:49:51.552Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-2/raider-b.png",
+      "rawSheetSha256": "9d0424812149ac7af1fe669a98a8cee68bb366861b9211c58a670e05496f0a3a",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.125,
+          "footprintWidthShare": 0.5439,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T13:51:03.838Z",
+      "usageUsd": 0.012544301509857178,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Plumed steel helmet again despite the exclusion, 14.6% owner area (COVERAGE_LOW), busy orange pony.",
+        "reviewedAt": "2026-09-29T14:00:04.103Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-captain": {
+      "id": "chibi-captain",
+      "subject": "UNIT:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "captain-a",
+      "candidate": 0,
+      "candidateSha256": "b32f042a4673f596fb9b1e8e6427dc0aedbf365c55a63f1294db7d6323a19046",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-captain.png",
+        "sha256": "b32f042a4673f596fb9b1e8e6427dc0aedbf365c55a63f1294db7d6323a19046",
+        "pixelSha256": "7eb7f57fe33f16f02efeffcdc0faeacbdb77a0deb52392846d1443828d607ca5",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 13,
+        "groundShare": 0.1138,
+        "footprintWidthShare": 0.5833,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-captain.mask.png",
+        "sha256": "6e2c93f7d970b44a88d07470eb8a9d807b3796fc0153fce340529bb2de3182e0",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 5,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 1918,
+          "ownerPixels": 632,
+          "coverage": 0.3295,
+          "coverageOnTarget": true,
+          "redBrownPixels": 19,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Medieval officer: floppy key-red cap with a big white feather over a steel cap, moustache, red coat-tunic, tall pole with a big square key-red banner, horn at the hip; no shield. The banner gives the tallest silhouette of the standard units. 33% owner area, strict QA passes without waivers.",
+      "acceptedAt": "2026-09-29T13:59:52.055Z"
+    },
+    "chibi-catapult": {
+      "id": "chibi-catapult",
+      "subject": "UNIT:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "catapult-b-edit",
+      "candidate": 1,
+      "candidateSha256": "3cb26689830a1078547f196b53fb7ab2b7d6654db4063d03f634db62f914cbe7",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-catapult.png",
+        "sha256": "3cb26689830a1078547f196b53fb7ab2b7d6654db4063d03f634db62f914cbe7",
+        "pixelSha256": "80cf3637ce289e30f9b37b82ba52b3e1e25f875c49ff54c0a6546b3fbc1863bc",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.1556,
+        "footprintWidthShare": 0.7937,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-catapult.mask.png",
+        "sha256": "36509588f8c6e5a6eb40d8aa57ac3443065c49d7c409feb27b53aff9fbb65b8f",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 4,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 2105,
+          "ownerPixels": 493,
+          "coverage": 0.2342,
+          "coverageOnTarget": true,
+          "redBrownPixels": 6,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Edit of catapult-b: pale wooden frame on four chunky wheels, throwing arm with a cup and grey boulder, key-red pennant and a red cloth over the front, one hooded crew man riding it. Second crew man, spear blade and hanging bucket removed. 23.4% owner area, strict QA passes without waivers.",
+      "acceptedAt": "2026-09-29T13:59:52.226Z"
+    },
+    "chibi-guard": {
+      "id": "chibi-guard",
+      "subject": "UNIT:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "guard-a-edit",
+      "candidate": 0,
+      "candidateSha256": "a1e785df4c859f01e0fe2578cea95e9c760e4fdb376d196fed2a8f204a882eac",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-guard.png",
+        "sha256": "a1e785df4c859f01e0fe2578cea95e9c760e4fdb376d196fed2a8f204a882eac",
+        "pixelSha256": "ed3afcd477df695bd345bd5869a60276162f6cd137fefa51ec998a3324016583",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.0172,
+        "footprintWidthShare": 0.7358,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-guard.mask.png",
+        "sha256": "04e9766fe85d29133aebb87ed064cce80aaaeccb64935411f1c590aa777fddf8",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 4,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 2513,
+          "ownerPixels": 480,
+          "coverage": 0.191,
+          "coverageOnTarget": false,
+          "redBrownPixels": 65,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Edit of guard-a: huge key-red tower shield with a steel border, long spear with a pale birch shaft, heavy brimmed steel helmet, grey boots; wide braced stance. Reads as a shield wall next to the Fighter's round shield and sword. 19.1% owner area (just under the 20% target; the shield carries it), strict QA passes without waivers.",
+      "acceptedAt": "2026-09-29T13:59:51.880Z"
+    },
+    "chibi-juggernaut": {
+      "id": "chibi-juggernaut",
+      "subject": "UNIT:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "juggernaut-b-edit",
+      "candidate": 1,
+      "candidateSha256": "f8fa7323cc3bc1f066cf70203199cd66cc71aed2323f03e2a83445ec732559f6",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-juggernaut.png",
+        "sha256": "f8fa7323cc3bc1f066cf70203199cd66cc71aed2323f03e2a83445ec732559f6",
+        "pixelSha256": "3bcb1847fa0367fcbb0a6dcacf6b9d7970cbf0796d2a4a120303cd9473b6a1af",
+        "width": 88,
+        "height": 104
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 44,
+        "y": 64
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 24,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 17,
+        "groundShare": 0,
+        "footprintWidthShare": 0.8158,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-juggernaut.mask.png",
+        "sha256": "086e186bc78309cfd7afd7d6d878ae2e23b17df45cfa3b9d3a44784b4202381a",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 0,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 3963,
+          "ownerPixels": 947,
+          "coverage": 0.239,
+          "coverageOnTarget": true,
+          "redBrownPixels": 6,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Edit of juggernaut-b: giant brute in steel pauldrons and gauntlets with a huge steel warhammer over his shoulder, big plain key-red tabard to the knees and a short red cape, grey belt and boots. Bow and quiver removed. Clearly the biggest unit. 23.9% owner area, strict QA passes without waivers.",
+      "acceptedAt": "2026-09-29T13:59:52.572Z"
+    },
+    "chibi-knight": {
+      "id": "chibi-knight",
+      "subject": "UNIT:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "knight-a-edit",
+      "candidate": 0,
+      "candidateSha256": "ce7b285004dc863ed8377fe98bc5407792dc4976def9f2e61f54c6e5c0abae0d",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-knight.png",
+        "sha256": "ce7b285004dc863ed8377fe98bc5407792dc4976def9f2e61f54c6e5c0abae0d",
+        "pixelSha256": "d9cb02b3783dced84fb130adf94dcc4780889987f8932ab1a6f57d7eb89a8d9e",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0.0217,
+        "footprintWidthShare": 0.623,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-knight.mask.png",
+        "sha256": "556341cb1003d87b080e1f3c9c9fbdac0d75aac23ff2e5d8c8e904bf0f087268",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 0,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 2488,
+          "ownerPixels": 640,
+          "coverage": 0.2572,
+          "coverageOnTarget": true,
+          "redBrownPixels": 39,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Edit of knight-a: plumed steel great helm, breastplate, upright lance, big white warhorse in a key-red caparison with cream trim. Quiver and cast shadow removed. 25.7% owner area, strict QA passes without waivers.",
+      "acceptedAt": "2026-09-29T13:59:52.399Z"
+    },
+    "chibi-raider": {
+      "id": "chibi-raider",
+      "subject": "UNIT:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "raider-a-edit-2",
+      "candidate": 0,
+      "candidateSha256": "5fac82147256eafc2d9fd0db22b517bb6a2ecdc850cfed5b2f520c0f481197bc",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-raider.png",
+        "sha256": "5fac82147256eafc2d9fd0db22b517bb6a2ecdc850cfed5b2f520c0f481197bc",
+        "pixelSha256": "77818890c4a1d5a5b6f26f4a8c93216635f5020b5122637c1a5352707b7117da",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.254,
+        "footprintWidthShare": 0.7419,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-raider.mask.png",
+        "sha256": "21b4d7c18401c7c92f17b14baa166b5c93ed0f46e05139250b58bd7fc743222f",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 0,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 2666,
+          "ownerPixels": 797,
+          "coverage": 0.2989,
+          "coverageOnTarget": true,
+          "redBrownPixels": 60,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Recolour edit of raider-a-edit: hooded rider in a big flat key-red hood and cloak on a small sandy-yellow pony, steel hand axe raised; no helmet, so it reads apart from the Knight (plumed helm, white horse, lance) and the Marksman (on foot, longbow). 29.9% owner area, strict QA passes without waivers; hood rim no longer scarlet.",
+      "acceptedAt": "2026-09-29T13:59:51.708Z"
+    }
+  }
+}
