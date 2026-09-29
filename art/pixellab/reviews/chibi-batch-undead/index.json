@@ -446,25 +446,49 @@
       "file": "art/pixellab/reviews/chibi-batch-undead/ingame-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "4f63b9134b473c378193d7857c0c5be4c61635f2a5f3d23a37576e63c19f28bb"
+      "sha256": "14ab07f5080db3a6ac416bd8999fa5e6da30c8a93df070bed7d3e87ff2d6b83b"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-undead/ingame-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "8e4f59b6d44e9281a39cda2c02c5f77bbddcdf21de00f00b7840fc11af472ac6"
+      "sha256": "c01060eb0b60584ef30f0c0f0fbb0866343335f097a62c74cc402238a7e2a2fd"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/ingame-scene-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cc95a1966697a9c284da6a4c73843c931d3d36a21d12467fb54cc1f6e37ce17b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/ingame-scene-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "28457549752cd8bb3fefde0874714dc7942f099c8871864e63c785ab72512dee"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "a016b55a67e93e9e8fa8a9d0d935063a7cc67915a492641d7a366bad3a076580"
+      "sha256": "08454ac7da39aad54648286a5f077b0f42f4e85229bded674244bdf2abcee2b9"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "ddea5f4aa0487d5277af146ef01cd63418e41ff7ffd0b20841cfd8bd1d77e9fc"
+      "sha256": "1fa2a9edb8709ccc6f9f8878e866285e51929bb10df47912fbd15abb1d5a96a6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/ingame-scene-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "8df8ea1aa2095a47c6691582c1855bdb27d6c4b8d3c477367ae77449aaf35c34"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-undead/ingame-scene-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "f04562639a5e1dd93a1c966dba0c0e6714d94a79bb72d4193a4dd9fcdeb4488b"
     }
   ],
   "captures": {
@@ -485,6 +509,20 @@
         "artSet": "CHIBI"
       },
       {
+        "file": "art/pixellab/reviews/chibi-batch-undead/ingame-scene-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic roster)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-undead/ingame-scene-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic roster)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
         "file": "art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-1.png",
         "viewport": "390x844 CSS at DPR 3",
         "zoomStep": "1",
@@ -494,6 +532,20 @@
       {
         "file": "art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-0.75.png",
         "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-undead/ingame-scene-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic roster)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-undead/ingame-scene-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic roster)",
         "zoomStep": "0.75",
         "tileCssPx": "60",
         "artSet": "CHIBI"

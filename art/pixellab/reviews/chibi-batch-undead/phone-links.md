@@ -8,12 +8,16 @@ then one device pixel, so sprites appear at their true in-game size.
 - [phone-mock.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/phone-mock.png) (1170x2532)
 - [ingame-phone-zoom-1.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-1.png) (1170x2532)
 - [ingame-phone-zoom-0.75.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/ingame-phone-zoom-0.75.png) (1170x2532)
+- [ingame-scene-phone-zoom-1.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/ingame-scene-phone-zoom-1.png) (1170x2532)
+- [ingame-scene-phone-zoom-0.75.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/ingame-scene-phone-zoom-0.75.png) (1170x2532)
 
 ## Desktop and sprite sheets
 
 - [desktop-mock.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/desktop-mock.png) (1440x900)
 - [ingame-desktop-zoom-1.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/ingame-desktop-zoom-1.png) (1440x900)
 - [ingame-desktop-zoom-0.75.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/ingame-desktop-zoom-0.75.png) (1440x900)
+- [ingame-scene-desktop-zoom-1.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/ingame-scene-desktop-zoom-1.png) (1440x900)
+- [ingame-scene-desktop-zoom-0.75.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/ingame-scene-desktop-zoom-0.75.png) (1440x900)
 - [sheet-1x.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/sheet-1x.png) (1042x1268)
 - [sheet-x4.png](https://raw.githubusercontent.com/nadbordrozd/pulp_wars/main/art/pixellab/reviews/chibi-batch-undead/sheet-x4.png) (2370x4292)
 

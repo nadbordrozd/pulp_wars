@@ -16,7 +16,11 @@
  *   rival, then water pieces (docks on Shallow Water, ships on Shallow Water
  *   for the viewer and Deep Water for the rival), a Fighter per owner beside
  *   the capital for scale. The rival is drawn as Undead, so the skull badge
- *   and the unit overlays are checked on every unit class.
+ *   and the unit overlays are checked on every unit class. Undead subjects
+ *   (`UNIT:UNDEAD:<ROLE>`, pulp_wars-vkq.12) are <ROLE> pieces: the viewer
+ *   is Undead too, so both land rows show the Undead art, an extra Human
+ *   seat owns the scale Fighter, and `GRAVE` places a bare Grave and one
+ *   under the rival's Skeleton in the middle row.
  */
 import type {
   CoordV7,
@@ -39,8 +43,14 @@ interface Cell {
   readonly fortificationLevel?: number;
   readonly treasure?: true;
   readonly unit?: UnitRoleIdV7 | "EMBARKED_TRANSPORT";
-  /** Overrides the showcase's column rule (viewer left of the capital). */
-  readonly owner?: "VIEWER" | "RIVAL";
+  /**
+   * Overrides the showcase's column rule (viewer left of the capital).
+   * HUMAN is an extra Human seat added for Undead rosters (its cells lie in
+   * the viewer's territory).
+   */
+  readonly owner?: "VIEWER" | "RIVAL" | "HUMAN";
+  /** A Grave marker on this cell (Undead rosters). */
+  readonly grave?: true;
 }
 
 type Layout = readonly (readonly Cell[])[];
@@ -179,9 +189,24 @@ export interface ChibiReviewSceneLayoutV7 {
   readonly capital: CoordV7;
   /** ROSTER only: the rival is drawn as Undead. */
   readonly undeadRival: boolean;
+  /**
+   * Undead rosters only: the viewer is Undead too, and an extra Human seat
+   * owns a Fighter for scale.
+   */
+  readonly undeadViewer: boolean;
 }
 
 type Owner = "VIEWER" | "RIVAL";
+
+/**
+ * The unit role of a roster subject: `UNIT:UNDEAD:<ROLE>` is <ROLE> owned by
+ * an Undead seat, `UNIT:<ROLE>` is <ROLE>.
+ */
+function subjectName(subject: string): string {
+  return subject.startsWith("UNIT:UNDEAD:")
+    ? subject.slice("UNIT:UNDEAD:".length)
+    : subject.slice(subject.indexOf(":") + 1);
+}
 
 /** One roster row: the subjects left to right, empty ground around them. */
 function rosterRow(
@@ -202,7 +227,7 @@ function rosterRow(
   return Array.from({ length: ROSTER_COLUMNS }, (_, x): Cell => {
     const subject = subjects[x - start];
     if (subject === undefined) return { terrain: empty, owner };
-    const name = subject.slice(subject.indexOf(":") + 1);
+    const name = subjectName(subject);
     // Docks always stand on Shallow Water; the rival's ships on Deep Water.
     return subject.startsWith("IMPROVEMENT:")
       ? {
@@ -237,15 +262,29 @@ export function chibiReviewSceneLayoutV7(
       layout: SHOWCASE,
       capital: SHOWCASE_CAPITAL,
       undeadRival: false,
+      undeadViewer: false,
     };
   const land = roster.filter((subject) => !WATER_SUBJECTS.has(subject));
   const water = roster.filter((subject) => WATER_SUBJECTS.has(subject));
+  // Undead rosters (pulp_wars-vkq.12): both owners are Undead, so both land
+  // rows show the Undead pieces; the middle row has a Human Fighter (an
+  // extra Human seat) for scale and, when the batch has the Grave, a bare
+  // Grave and one under the rival's Skeleton.
+  const undead = roster.some((subject) => subject.startsWith("UNIT:UNDEAD:"));
+  const graves = undead && subjects.includes("GRAVE");
   const middle = Array.from({ length: ROSTER_COLUMNS }, (_, x): Cell =>
     x === ROSTER_CAPITAL.x - 1
-      ? { terrain: G, owner: "VIEWER", unit: "FIGHTER" }
+      ? { terrain: G, owner: undead ? "HUMAN" : "VIEWER", unit: "FIGHTER" }
       : x === ROSTER_CAPITAL.x + 1
-        ? { terrain: G, owner: "RIVAL", unit: "FIGHTER" }
-        : { terrain: G, owner: x <= ROSTER_CAPITAL.x ? "VIEWER" : "RIVAL" },
+        ? {
+            terrain: G,
+            owner: "RIVAL",
+            unit: "FIGHTER",
+            ...(graves ? { grave: true as const } : {}),
+          }
+        : graves && x === ROSTER_CAPITAL.x - 2
+          ? { terrain: G, owner: "VIEWER", grave: true }
+          : { terrain: G, owner: x <= ROSTER_CAPITAL.x ? "VIEWER" : "RIVAL" },
   );
   return {
     kind: "ROSTER",
@@ -258,6 +297,7 @@ export function chibiReviewSceneLayoutV7(
     ],
     capital: ROSTER_CAPITAL,
     undeadRival: true,
+    undeadViewer: undead,
   };
 }
 
@@ -302,8 +342,27 @@ export function chibiReviewSceneViewV7(
   const cellAt = (at: CoordV7): Cell | undefined =>
     layout[at.y - origin.y]?.[at.x - origin.x];
   // The showcase splits owners by column; roster cells name their owner.
+  // The extra Human seat's cells lie in the viewer's territory.
   const viewerOwns = (cell: Cell, x: number): boolean =>
-    cell.owner === undefined ? x <= capitalCell.x : cell.owner === "VIEWER";
+    cell.owner === undefined
+      ? x <= capitalCell.x
+      : cell.owner === "VIEWER" || cell.owner === "HUMAN";
+  // Undead rosters: an extra Human seat, in a colour no seat uses, owns the
+  // Fighter kept for scale.
+  const usedColors = new Set(live.players.map((player) => player.color));
+  const human = scene.undeadViewer
+    ? {
+        ...rival,
+        id: (Math.max(...live.players.map((player) => player.id)) +
+          1) as typeof rival.id,
+        seat: live.players.length,
+        color:
+          (["GOLD", "VIOLET", "TEAL", "CORAL"] as const).find(
+            (color) => !usedColors.has(color),
+          ) ?? rival.color,
+        faction: "ORIGINAL" as const,
+      }
+    : null;
   const tiles: Tile[] = live.board.tiles.map((tile) => {
     const cell = cellAt(tile.at);
     const viewerSide =
@@ -340,7 +399,12 @@ export function chibiReviewSceneViewV7(
               {
                 ...template,
                 id: (9000 + y * columns + x) as typeof template.id,
-                ownerId: viewerUnit ? viewerId : rival.id,
+                ownerId:
+                  cell.owner === "HUMAN" && human !== null
+                    ? human.id
+                    : viewerUnit
+                      ? viewerId
+                      : rival.id,
                 // One embarked sprite serves every passenger role.
                 role: embarked ? template.role : (cell.unit as UnitRoleIdV7),
                 ...(scene.kind === "ROSTER"
@@ -363,13 +427,17 @@ export function chibiReviewSceneViewV7(
         );
   return {
     ...live,
-    players: scene.undeadRival
-      ? live.players.map((player) =>
-          player.id === rival.id
-            ? { ...player, faction: "UNDEAD" as const }
-            : player,
-        )
-      : live.players,
+    players: [
+      ...(scene.undeadRival
+        ? live.players.map((player) =>
+            player.id === rival.id ||
+            (scene.undeadViewer && player.id === viewerId)
+              ? { ...player, faction: "UNDEAD" as const }
+              : player,
+          )
+        : live.players),
+      ...(human === null ? [] : [human]),
+    ],
     board: { ...live.board, tiles, territoryBorders: [] },
     cities: [{ ...capital, at: capitalAt }],
     units,
@@ -378,7 +446,12 @@ export function chibiReviewSceneViewV7(
         cell.treasure === true ? [{ x: origin.x + x, y: origin.y + y }] : [],
       ),
     ),
-    graves: [],
+    // Sorted by (y, x) like the engine's view.
+    graves: layout.flatMap((row, y) =>
+      row.flatMap((cell, x) =>
+        cell.grave === true ? [{ x: origin.x + x, y: origin.y + y }] : [],
+      ),
+    ),
   };
 }
 
