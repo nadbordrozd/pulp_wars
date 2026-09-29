@@ -9,3 +9,8 @@
 node_modules/
 dist/
 *.tsbuildinfo
+
+# Chibi pipeline record locks and in-flight record writes (pulp_wars-28w)
+.batch-*.lock
+.records.lock
+*.json.*.tmp

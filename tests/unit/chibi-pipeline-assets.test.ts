@@ -1,12 +1,14 @@
 import {
   cp,
+  mkdir,
   mkdtemp,
   readFile,
   readdir,
   rm,
+  utimes,
   writeFile,
 } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { hostname, tmpdir } from "node:os";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
@@ -29,8 +31,12 @@ import {
   type RgbaRaster,
 } from "../../scripts/art/chibi/owner-mask";
 import {
+  acceptRecipe,
+  dryRunLayout,
   explorationDirectory,
   explorationLayout,
+  fixtureProvider,
+  generateRecipe,
   factionDocumentBlock,
   loadBatchManifest,
   loadExploration,
@@ -40,10 +46,15 @@ import {
   productionLayout,
   readRaster,
   pixelSha256,
+  recordsLockPath,
   registryEntry,
+  rejectRecipe,
   sha256,
   tallTerrainLayerPaths,
   validateChibiProduction,
+  withRecordsLock,
+  type GenerationProvider,
+  type PipelineContext,
 } from "../../scripts/art/chibi/pipeline";
 import {
   bestSeamlessWindow,
@@ -784,6 +795,197 @@ describe("chibi dry run", () => {
     } finally {
       if (previousKey !== undefined) process.env.PIXELLAB_API_KEY = previousKey;
     }
+  }, 60_000);
+});
+
+describe("chibi concurrent record writes (pulp_wars-28w)", () => {
+  const temporary: string[] = [];
+  afterAll(async () => {
+    for (const directory of temporary)
+      await rm(directory, { recursive: true, force: true });
+  });
+  const ALL_PASS = {
+    native: true,
+    enlarged: true,
+    owners: true,
+    noPlate: true,
+    camera: true,
+  };
+
+  /** A scratch copy of the batch-0 inputs and a fixture-provider context. */
+  async function scratch(
+    provider?: (inner: GenerationProvider) => GenerationProvider,
+  ): Promise<PipelineContext> {
+    const root = await mkdtemp(path.join(tmpdir(), "chibi-records-race-"));
+    temporary.push(root);
+    for (const directory of [
+      "scripts/art/chibi/fragments",
+      "scripts/art/chibi/subjects",
+      "scripts/art/chibi/batches",
+      "scripts/art/chibi/fixtures",
+      "docs/art/factions",
+      RAW,
+    ])
+      await cp(path.join(ROOT, directory), path.join(root, directory), {
+        recursive: true,
+      });
+    const inner = fixtureProvider(root);
+    return {
+      root,
+      manifest: await loadBatchManifest(root, "0"),
+      fragments: await loadFragments(root),
+      layout: dryRunLayout(root, "0"),
+      provider: provider === undefined ? inner : provider(inner),
+      now: () => "race",
+      log: () => undefined,
+    };
+  }
+
+  /** Runs `during` inside the provider call for one recipe. */
+  function pausing(
+    recipeId: string,
+    during: () => Promise<void>,
+    when: "before-submit" | "after-submit",
+    jobSuffix = "",
+  ): (inner: GenerationProvider) => GenerationProvider {
+    return (inner) => ({
+      kind: inner.kind,
+      async generate(recipe, request, source, submitted, colour) {
+        if (recipe.id !== recipeId)
+          return inner.generate(recipe, request, source, submitted, colour);
+        if (when === "before-submit") await during();
+        const result = await inner.generate(
+          recipe,
+          request,
+          source,
+          async (jobId) => {
+            await submitted(`${jobId}${jobSuffix}`);
+            if (when === "after-submit") await during();
+          },
+          colour,
+        );
+        return { ...result, jobId: `${result.jobId}${jobSuffix}` };
+      },
+    });
+  }
+
+  it("keeps a verdict recorded while generate waits on the provider", async () => {
+    const context: PipelineContext = await scratch(
+      pausing(
+        "dry-city-a",
+        async () => {
+          // Another terminal accepts a finished recipe mid-generation.
+          await acceptRecipe(
+            context,
+            "dry-grass-field-a",
+            0,
+            "Accepted while dry-city-a was generating.",
+            ALL_PASS,
+          );
+        },
+        "after-submit",
+      ),
+    );
+    await generateRecipe(context, "dry-grass-field-a");
+    await generateRecipe(context, "dry-city-a");
+    const records = await loadRecords(context.layout, "0");
+    expect(records.recipes["dry-grass-field-a"]?.review?.verdict).toBe(
+      "ACCEPTED",
+    );
+    expect(records.assets["chibi-dry-grass"]?.status).toBe("ACCEPTED");
+    expect(records.recipes["dry-city-a"]?.rawSheet).toBeDefined();
+    expect(records.recipes["dry-city-a"]?.completedAt).toBe("race");
+    expect(records.recipes["dry-city-a"]?.review).toBeUndefined();
+    await expect(readFile(recordsLockPath(context.layout))).rejects.toThrow();
+  }, 60_000);
+
+  it("keeps every entry when generate, accept and reject run at once", async () => {
+    const context = await scratch();
+    await generateRecipe(context, "dry-grass-field-a");
+    await generateRecipe(context, "dry-city-a");
+    await Promise.all([
+      acceptRecipe(context, "dry-grass-field-a", 0, "Meadow.", ALL_PASS),
+      rejectRecipe(context, "dry-city-a", "Plate under the wall."),
+      generateRecipe(context, "dry-fighter-a"),
+      generateRecipe(context, "dry-marksman-a"),
+    ]);
+    const records = await loadRecords(context.layout, "0");
+    expect(records.recipes["dry-grass-field-a"]?.review?.verdict).toBe(
+      "ACCEPTED",
+    );
+    expect(records.assets["chibi-dry-grass"]?.status).toBe("ACCEPTED");
+    expect(records.recipes["dry-city-a"]?.review?.verdict).toBe("REJECTED");
+    for (const id of ["dry-fighter-a", "dry-marksman-a"])
+      expect(records.recipes[id]?.rawSheet, id).toBeDefined();
+    // Bytes stay the deterministic sorted form.
+    const text = await readFile(context.layout.records, "utf8");
+    expect(Object.keys(records.recipes)).toEqual(
+      Object.keys(records.recipes).sort((a, b) => a.localeCompare(b)),
+    );
+    expect(text).toBe(`${JSON.stringify(records, null, 2)}\n`);
+  }, 60_000);
+
+  it("fails loudly when another run generates the same recipe meanwhile", async () => {
+    const context: PipelineContext = await scratch(
+      pausing(
+        "dry-grass-field-a",
+        async () => {
+          // A second generate of the same recipe finishes first.
+          await generateRecipe(
+            { ...context, provider: fixtureProvider(context.root) },
+            "dry-grass-field-a",
+          );
+        },
+        "before-submit",
+        "-late",
+      ),
+    );
+    await expect(generateRecipe(context, "dry-grass-field-a")).rejects.toThrow(
+      /changed by another chibi pipeline run.*nothing was overwritten/,
+    );
+    const records = await loadRecords(context.layout, "0");
+    const record = records.recipes["dry-grass-field-a"];
+    expect(record?.jobId).toBe("dry-run-dry-grass-field-a");
+    expect(record?.rawSheet).toBeDefined();
+    // The late run's paid job keeps its receipt for recovery.
+    expect((await readdir(context.layout.submissions)).sort()).toHaveLength(2);
+  }, 60_000);
+
+  it("breaks stale record locks and times out on a live one", async () => {
+    const context = await scratch();
+    const lock = recordsLockPath(context.layout);
+    expect(path.basename(lock)).toBe(".records.lock");
+    expect(
+      recordsLockPath(productionLayout(ROOT, "5")).endsWith(
+        "scripts/art/chibi/records/.batch-5.lock",
+      ),
+    ).toBe(true);
+    await mkdir(path.dirname(lock), { recursive: true });
+    // A crashed run on this host.
+    await writeFile(
+      lock,
+      JSON.stringify({ pid: 2_147_483_646, host: hostname(), acquiredAt: "x" }),
+    );
+    expect(await withRecordsLock(context.layout, async () => "ran")).toBe(
+      "ran",
+    );
+    await expect(readFile(lock)).rejects.toThrow();
+    // A live run holds it: wait, then fail naming the lock.
+    await writeFile(
+      lock,
+      JSON.stringify({ pid: process.pid, host: hostname(), acquiredAt: "x" }),
+    );
+    await expect(
+      withRecordsLock(context.layout, async () => "ran", { timeoutMs: 200 }),
+    ).rejects.toThrow(/\.records\.lock is held by another chibi pipeline run/);
+    // A lock older than the stale age is broken whoever holds it.
+    const old = new Date(Date.now() - 60_000);
+    await utimes(lock, old, old);
+    expect(
+      await withRecordsLock(context.layout, async () => "ran", {
+        staleMs: 30_000,
+      }),
+    ).toBe("ran");
   }, 60_000);
 });
 

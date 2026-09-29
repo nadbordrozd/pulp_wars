@@ -173,6 +173,31 @@ and never replaces looking. Review each candidate at 1:1 and x4 before
 accepting. Register only `ACCEPTED` assets; a test checks every registry
 entry against the records.
 
+### Concurrent runs
+
+`accept` and `reject` may run while a long `generate` of the same batch is
+waiting on PixelLab (bead `pulp_wars-28w`). Every records write goes
+through `updateRecords`: it takes the exclusive lock file beside the
+records (`records/.batch-N.lock`; `.records.lock` for dry and exploration
+runs), re-reads the file, changes only its own entries and replaces the
+file atomically, with the same sorted bytes as before. So:
+
+- `generate` writes only its recipe's entry, at submission and at
+  completion, and keeps the verdicts and recipes other runs recorded in
+  the meantime.
+- `accept` and `reject` hold the lock from reading the records to writing
+  them (for `accept` also while it writes the master, mask and body), so
+  two verdicts serialize as if run one after the other.
+- A true conflict fails loudly and writes nothing: `generate` refuses to
+  record a submission when the recipe already has a record (another run
+  generated it meanwhile; the late job's receipt is kept for recovery), or
+  to complete one whose record another run changed.
+
+A live lock is waited for up to 60 s, then the command fails naming the
+lock file. A lock left by a crashed run is broken when its process is gone
+(same host) or when it is older than 10 minutes. Lock files and
+`*.json.<pid>.<uuid>.tmp` write files are git-ignored and never committed.
+
 ## Review evidence
 
 `npm run art:chibi-batch-review -- --batch N` writes to

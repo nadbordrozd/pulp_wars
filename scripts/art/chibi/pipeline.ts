@@ -9,7 +9,17 @@
  * authenticated payload or image bytes.
  */
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
+import {
+  mkdir,
+  open,
+  readdir,
+  readFile,
+  rename,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
+import { hostname } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import sharp from "sharp";
@@ -478,6 +488,11 @@ export async function loadRecords(
   return JSON.parse(await readFile(layout.records, "utf8")) as BatchRecords;
 }
 
+/**
+ * Writes the records file as-is (sorted, two-space JSON). It replaces the
+ * file atomically but takes no lock: pipeline steps write through
+ * `updateRecords`, which merges with whatever another run wrote meanwhile.
+ */
 export async function saveRecords(
   layout: PipelineLayout,
   records: BatchRecords,
@@ -492,7 +507,195 @@ export async function saveRecords(
       Object.entries(records.assets).sort(([a], [b]) => a.localeCompare(b)),
     ),
   };
-  await writeFile(layout.records, `${JSON.stringify(sorted, null, 2)}\n`);
+  // Rename over the file so an unlocked reader never sees a partial write.
+  const temporary = `${layout.records}.${process.pid}.${randomUUID()}.tmp`;
+  await writeFile(temporary, `${JSON.stringify(sorted, null, 2)}\n`);
+  try {
+    await rename(temporary, layout.records);
+  } catch (error) {
+    await rm(temporary, { force: true });
+    throw error;
+  }
+}
+
+/** The lock beside a records file: `records/batch-N.json` -> `records/.batch-N.lock`. */
+export function recordsLockPath(
+  layout: Pick<PipelineLayout, "records">,
+): string {
+  return path.join(
+    path.dirname(layout.records),
+    `.${path.basename(layout.records, ".json")}.lock`,
+  );
+}
+
+export interface RecordsLockOptions {
+  /** How long to wait for another run's lock before failing (default 60 s). */
+  readonly timeoutMs?: number;
+  /** A lock older than this is stale whoever holds it (default 10 min). */
+  readonly staleMs?: number;
+}
+
+const LOCK_TIMEOUT_MS = 60_000;
+const LOCK_STALE_MS = 10 * 60_000;
+const LOCK_RETRY_MS = 50;
+
+interface LockOwner {
+  readonly pid: number;
+  readonly host: string;
+  readonly acquiredAt: string;
+}
+
+function processAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    // EPERM: the process exists but belongs to someone else.
+    return (error as NodeJS.ErrnoException).code === "EPERM";
+  }
+}
+
+/**
+ * Whether an existing lock may be broken: its owner is a dead process on
+ * this host, or it is older than `staleMs`. Returns the text it judged, so
+ * the caller only removes that exact lock.
+ */
+async function staleLock(
+  file: string,
+  staleMs: number,
+): Promise<{ readonly stale: boolean; readonly text: string } | undefined> {
+  let text: string;
+  let age: number;
+  try {
+    [text, age] = await Promise.all([
+      readFile(file, "utf8"),
+      stat(file).then((info) => Date.now() - info.mtimeMs),
+    ]);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+    throw error;
+  }
+  if (age > staleMs) return { stale: true, text };
+  try {
+    const owner = JSON.parse(text) as LockOwner;
+    return {
+      stale:
+        owner.host === hostname() &&
+        Number.isInteger(owner.pid) &&
+        !processAlive(owner.pid),
+      text,
+    };
+  } catch {
+    // Being written right now, or unreadable: wait for it to age out.
+    return { stale: false, text };
+  }
+}
+
+/**
+ * Runs `task` holding the exclusive lock file of a records file, created
+ * with O_EXCL. A lock left by a crashed run is broken when its process is
+ * gone (same host) or it is older than `staleMs`; a live lock is waited
+ * for up to `timeoutMs`, then the run fails naming the lock file.
+ */
+export async function withRecordsLock<T>(
+  layout: Pick<PipelineLayout, "records">,
+  task: () => Promise<T>,
+  options: RecordsLockOptions = {},
+): Promise<T> {
+  const file = recordsLockPath(layout);
+  const timeoutMs = options.timeoutMs ?? LOCK_TIMEOUT_MS;
+  const staleMs = options.staleMs ?? LOCK_STALE_MS;
+  await mkdir(path.dirname(file), { recursive: true });
+  const owner: LockOwner = {
+    pid: process.pid,
+    host: hostname(),
+    acquiredAt: new Date().toISOString(),
+  };
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    try {
+      const handle = await open(file, "wx");
+      try {
+        await handle.writeFile(`${JSON.stringify(owner)}\n`);
+      } finally {
+        await handle.close();
+      }
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    }
+    const existing = await staleLock(file, staleMs);
+    if (existing?.stale === true) {
+      // Remove it only if it is still the lock judged stale.
+      if ((await readFile(file, "utf8").catch(() => null)) === existing.text)
+        await rm(file, { force: true });
+      continue;
+    }
+    if (Date.now() > deadline)
+      throw new Error(
+        `${posix(file)} is held by another chibi pipeline run (${existing?.text.trim() ?? "unknown owner"}); wait for it to finish, or delete the lock if no run is active`,
+      );
+    await new Promise((resolve) => setTimeout(resolve, LOCK_RETRY_MS));
+  }
+  try {
+    return await task();
+  } finally {
+    await rm(file, { force: true });
+  }
+}
+
+/**
+ * The one way pipeline steps write records: under the records lock, it
+ * re-reads the file, lets `change` edit only its own entries in that fresh
+ * copy, and writes the result. Entries written by another run since this
+ * run last read the file (a verdict recorded while `generate` waited on
+ * PixelLab, a recipe completed while `accept` ran) are kept. A throw from
+ * `change` writes nothing.
+ */
+export async function updateRecords<T>(
+  layout: PipelineLayout,
+  batch: string,
+  change: (records: BatchRecords) => Promise<T> | T,
+  options?: RecordsLockOptions,
+): Promise<T> {
+  return withRecordsLock(
+    layout,
+    async () => {
+      const records = await loadRecords(layout, batch);
+      const result = await change(records);
+      await saveRecords(layout, records);
+      return result;
+    },
+    options,
+  );
+}
+
+/** Key-order-independent JSON, to compare a stored entry with an expected one. */
+function canonicalJson(value: unknown): string {
+  return JSON.stringify(value, (_key, nested: unknown) =>
+    typeof nested === "object" && nested !== null && !Array.isArray(nested)
+      ? Object.fromEntries(
+          Object.entries(nested).sort(([a], [b]) => a.localeCompare(b)),
+        )
+      : nested,
+  );
+}
+
+/**
+ * Fails when another run changed the same entry this run is about to
+ * write: the stored entry must still be the one this run started from
+ * (`undefined` when it expects none). Nothing is overwritten.
+ */
+function assertUnchanged(
+  label: string,
+  stored: unknown,
+  expected: unknown,
+  layout: PipelineLayout,
+): void {
+  if (canonicalJson(stored) === canonicalJson(expected)) return;
+  throw new Error(
+    `${label} was changed by another chibi pipeline run while this one was in progress; nothing was overwritten. Check ${posix(path.relative(layout.root, layout.records))} and re-run.`,
+  );
 }
 
 // ---------------------------------------------------------------- rasters
@@ -853,11 +1056,14 @@ export async function generateRecipe(
       );
   }
   const submittedAt = context.now();
+  // The record this run wrote at submission; completion expects it unchanged.
+  let submission: RecipeRecord | undefined;
   const result = await context.provider.generate(
     recipe,
     request,
     sourceImage,
     async (jobId) => {
+      // The receipt is written first, so a paid job survives a conflict below.
       await saveSubmissionReceipt(
         context.layout.submissions,
         recipeId,
@@ -865,7 +1071,7 @@ export async function generateRecipe(
         // Chibi requests carry no style or ground references to recover.
         request as ChibiRequestSnapshot & { readonly styleReference?: never },
       );
-      records.recipes[recipeId] = {
+      const submitted: RecipeRecord = {
         id: recipeId,
         asset: recipe.asset,
         jobId,
@@ -880,11 +1086,22 @@ export async function generateRecipe(
               },
             }),
       };
-      await saveRecords(context.layout, records);
+      await updateRecords(context.layout, context.manifest.batch, (fresh) => {
+        assertUnchanged(
+          `${recipeId} (submitted as job ${jobId}; its receipt is kept)`,
+          fresh.recipes[recipeId],
+          undefined,
+          context.layout,
+        );
+        fresh.recipes[recipeId] = submitted;
+      });
+      submission = submitted;
       context.log(`${recipeId}: submitted job ${jobId}`);
     },
     colorImage,
   );
+  if (submission === undefined) throw new Error(`${recipeId}: no submission`);
+  const previous = submission;
   const stored = await storeCandidates(context, recipeId, result.images);
   const asset = findAsset(context.manifest, recipe.asset);
   const plateHints = CHIBI_CLASS_RECIPES[asset.recipeClass].noBackground
@@ -892,17 +1109,24 @@ export async function generateRecipe(
         result.images.map(async (bytes) => plateCheck(await readRaster(bytes))),
       )
     : undefined;
-  // Written by the submission callback above.
-  const previous = records.recipes[recipeId] as RecipeRecord | undefined;
-  if (previous === undefined) throw new Error(`${recipeId}: no submission`);
-  records.recipes[recipeId] = {
-    ...previous,
-    ...stored,
-    ...(plateHints === undefined ? {} : { plateHints }),
-    completedAt: context.now(),
-    ...(result.usageUsd === undefined ? {} : { usageUsd: result.usageUsd }),
-  };
-  await saveRecords(context.layout, records);
+  const completedAt = context.now();
+  // Only this recipe's entry is written; verdicts and recipes recorded by
+  // other runs while PixelLab worked are merged in from the file.
+  await updateRecords(context.layout, context.manifest.batch, (fresh) => {
+    assertUnchanged(
+      `${recipeId} (job ${previous.jobId})`,
+      fresh.recipes[recipeId],
+      previous,
+      context.layout,
+    );
+    fresh.recipes[recipeId] = {
+      ...previous,
+      ...stored,
+      ...(plateHints === undefined ? {} : { plateHints }),
+      completedAt,
+      ...(result.usageUsd === undefined ? {} : { usageUsd: result.usageUsd }),
+    };
+  });
   const suspects = (plateHints ?? [])
     .map((hint, index) => (hint.suspect ? index : -1))
     .filter((index) => index >= 0);
@@ -917,20 +1141,20 @@ export async function rejectRecipe(
   notes: string,
 ): Promise<void> {
   if (notes.trim().length === 0) throw new Error("A review note is required");
-  const records = await loadRecords(context.layout, context.manifest.batch);
-  const record = records.recipes[recipeId];
-  if (record?.rawSheet === undefined)
-    throw new Error(`${recipeId}: nothing generated to review`);
-  records.recipes[recipeId] = {
-    ...record,
-    review: {
-      verdict: "REJECTED",
-      candidate: null,
-      notes,
-      reviewedAt: context.now(),
-    },
-  };
-  await saveRecords(context.layout, records);
+  await updateRecords(context.layout, context.manifest.batch, (records) => {
+    const record = records.recipes[recipeId];
+    if (record?.rawSheet === undefined)
+      throw new Error(`${recipeId}: nothing generated to review`);
+    records.recipes[recipeId] = {
+      ...record,
+      review: {
+        verdict: "REJECTED",
+        candidate: null,
+        notes,
+        reviewedAt: context.now(),
+      },
+    };
+  });
   context.log(`${recipeId}: REJECTED`);
 }
 
@@ -1178,100 +1402,110 @@ export async function acceptRecipe(
     throw new Error(
       `${asset.id}: its fieldRecipe is not ${recipeId}, so it cannot be cropped from it`,
     );
-  const records = await loadRecords(context.layout, context.manifest.batch);
-  const record = records.recipes[recipeId];
-  if (record === undefined) throw new Error(`${recipeId}: not generated`);
-  const candidatePng = await candidateBytes(context, record, candidate);
-  const { raster, derivation } = await deriveMaster(
-    context,
-    records,
-    asset,
-    await readRaster(candidatePng),
-  );
-  const masterBytes = await encodePng(raster);
-  const masterSha = sha256(masterBytes);
-  const files = masterPaths(context.layout, asset);
-  await mkdir(path.dirname(files.master), { recursive: true });
-  await writeFile(files.master, masterBytes);
-  // Tall terrain keeps its body (the candidate) beside the master, so the
-  // runtime can draw a Road between the ground and the body.
-  if (derivation.kind === "ground-composite")
-    await writeFile(files.body, candidatePng);
-  let mask: MaskRecord | undefined;
-  if (assetOwned(asset)) {
-    const resolved = await resolveOwnerMask(context.root, asset, raster);
-    const maskBytes = await encodeMask(resolved.mask);
-    await writeFile(files.mask, maskBytes);
-    mask = {
-      path: posix(path.relative(context.root, files.mask)),
-      sha256: sha256(maskBytes),
-      source: resolved.source,
-      thresholds: OWNER_MASK_THRESHOLDS,
-      ...(resolved.speckleDropped === undefined
-        ? {}
-        : { speckleDropped: resolved.speckleDropped }),
-      ...(resolved.override === undefined
-        ? {}
-        : { override: resolved.override }),
-      qa: resolved.qa,
-    };
-  }
-  const placement = assetPlacement(asset);
-  const transparentClass = CHIBI_CLASS_RECIPES[asset.recipeClass].noBackground;
-  const assetRecord: AssetRecord = {
-    id: asset.id,
-    subject: asset.subject,
-    assetClass: asset.assetClass,
-    status: mask?.qa.status === "FAIL" ? "MASK_REJECTED" : "ACCEPTED",
-    recipe: recipeId,
-    candidate,
-    candidateSha256: sha256(candidatePng),
-    master: {
-      path: posix(path.relative(context.root, files.master)),
-      sha256: masterSha,
-      pixelSha256: pixelSha256(raster),
-      width: raster.width,
-      height: raster.height,
-    },
-    derivation,
-    anchor: placement.anchor,
-    overflow: placement.overflow,
-    ...(transparentClass && derivation.kind === "as-is"
-      ? { plateCheck: plateCheck(raster) }
-      : {}),
-    ...(mask === undefined ? {} : { mask }),
-    reviewChecks: checks,
-    notes,
-    acceptedAt: context.now(),
-  };
-  // Another recipe's earlier acceptance of the same asset is superseded.
-  for (const other of Object.values(records.recipes))
-    if (
-      other.asset === asset.id &&
-      other.id !== recipeId &&
-      other.review?.verdict === "ACCEPTED"
-    )
-      records.recipes[other.id] = {
-        ...other,
-        review: {
-          ...other.review,
-          verdict: "REJECTED",
-          notes: `${other.review.notes} Superseded by ${recipeId}.`,
-        },
-      };
-  // A shared field keeps the review of the variant that owns the recipe.
-  if (!sharedField || record.review?.verdict !== "ACCEPTED")
-    records.recipes[recipeId] = {
-      ...record,
-      review: {
-        verdict: "ACCEPTED",
+  // The lock is held from reading the records to writing them, so a verdict
+  // or recipe written by another run is never lost and the master, mask and
+  // records written here agree.
+  const assetRecord = await updateRecords(
+    context.layout,
+    context.manifest.batch,
+    async (records) => {
+      const record = records.recipes[recipeId];
+      if (record === undefined) throw new Error(`${recipeId}: not generated`);
+      const candidatePng = await candidateBytes(context, record, candidate);
+      const { raster, derivation } = await deriveMaster(
+        context,
+        records,
+        asset,
+        await readRaster(candidatePng),
+      );
+      const masterBytes = await encodePng(raster);
+      const masterSha = sha256(masterBytes);
+      const files = masterPaths(context.layout, asset);
+      await mkdir(path.dirname(files.master), { recursive: true });
+      await writeFile(files.master, masterBytes);
+      // Tall terrain keeps its body (the candidate) beside the master, so the
+      // runtime can draw a Road between the ground and the body.
+      if (derivation.kind === "ground-composite")
+        await writeFile(files.body, candidatePng);
+      let mask: MaskRecord | undefined;
+      if (assetOwned(asset)) {
+        const resolved = await resolveOwnerMask(context.root, asset, raster);
+        const maskBytes = await encodeMask(resolved.mask);
+        await writeFile(files.mask, maskBytes);
+        mask = {
+          path: posix(path.relative(context.root, files.mask)),
+          sha256: sha256(maskBytes),
+          source: resolved.source,
+          thresholds: OWNER_MASK_THRESHOLDS,
+          ...(resolved.speckleDropped === undefined
+            ? {}
+            : { speckleDropped: resolved.speckleDropped }),
+          ...(resolved.override === undefined
+            ? {}
+            : { override: resolved.override }),
+          qa: resolved.qa,
+        };
+      }
+      const placement = assetPlacement(asset);
+      const transparentClass =
+        CHIBI_CLASS_RECIPES[asset.recipeClass].noBackground;
+      const accepted: AssetRecord = {
+        id: asset.id,
+        subject: asset.subject,
+        assetClass: asset.assetClass,
+        status: mask?.qa.status === "FAIL" ? "MASK_REJECTED" : "ACCEPTED",
+        recipe: recipeId,
         candidate,
+        candidateSha256: sha256(candidatePng),
+        master: {
+          path: posix(path.relative(context.root, files.master)),
+          sha256: masterSha,
+          pixelSha256: pixelSha256(raster),
+          width: raster.width,
+          height: raster.height,
+        },
+        derivation,
+        anchor: placement.anchor,
+        overflow: placement.overflow,
+        ...(transparentClass && derivation.kind === "as-is"
+          ? { plateCheck: plateCheck(raster) }
+          : {}),
+        ...(mask === undefined ? {} : { mask }),
+        reviewChecks: checks,
         notes,
-        reviewedAt: context.now(),
-      },
-    };
-  records.assets[asset.id] = assetRecord;
-  await saveRecords(context.layout, records);
+        acceptedAt: context.now(),
+      };
+      // Another recipe's earlier acceptance of the same asset is superseded.
+      for (const other of Object.values(records.recipes))
+        if (
+          other.asset === asset.id &&
+          other.id !== recipeId &&
+          other.review?.verdict === "ACCEPTED"
+        )
+          records.recipes[other.id] = {
+            ...other,
+            review: {
+              ...other.review,
+              verdict: "REJECTED",
+              notes: `${other.review.notes} Superseded by ${recipeId}.`,
+            },
+          };
+      // A shared field keeps the review of the variant that owns the recipe.
+      if (!sharedField || record.review?.verdict !== "ACCEPTED")
+        records.recipes[recipeId] = {
+          ...record,
+          review: {
+            verdict: "ACCEPTED",
+            candidate,
+            notes,
+            reviewedAt: context.now(),
+          },
+        };
+      records.assets[asset.id] = accepted;
+      return accepted;
+    },
+  );
+  const mask = assetRecord.mask;
   context.log(
     `${recipeId}: ${assetRecord.status} as ${asset.id}${mask === undefined ? "" : ` (mask ${mask.source}, coverage ${(mask.qa.coverage * 100).toFixed(1)}%, QA ${mask.qa.status}${mask.qa.failures.length === 0 ? "" : `: ${mask.qa.failures.map((issue) => issue.code).join(", ")}`})`}`,
   );
