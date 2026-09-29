@@ -297,7 +297,23 @@ function scriptedRaiseDeadCommand(
               .filter((other) => other.ownerId !== actor)
               .map((other) => other.at),
           );
-    if (target === undefined) continue;
+    if (target === undefined) {
+      // With no enemy left to chase, a unit that stands on a Grave steps off
+      // it so the Necromancer can raise it (a kill that advances onto the
+      // victim's tile would otherwise block the only Grave for good).
+      const standsOnGrave = state.graves.some((grave) => same(grave, unit.at));
+      const stepOff = commands.find(
+        (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
+          command.kind === "MOVE" &&
+          command.unitId === unit.id &&
+          !state.graves.some((grave) =>
+            same(grave, command.path.at(-1) ?? unit.at),
+          ),
+      );
+      if (unit.role !== "CAPTAIN" && standsOnGrave && stepOff !== undefined)
+        return stepOff;
+      continue;
+    }
     if (unit.role === "CAPTAIN" && chebyshev(unit.at, target) === 1) continue;
     const best = commands
       .filter(

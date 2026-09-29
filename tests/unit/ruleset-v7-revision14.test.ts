@@ -52,6 +52,7 @@ import {
 } from "../../src/persistence/index";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
+import { scriptedUndeadRaiseDeadSaveV7 } from "../fixtures/v7-undead-ui";
 
 // Boards: the seed-2 DRY_LAND revision-13 boards the Undead tests use.
 // - two seats (11 x 11): capitals (8, 8) and (2, 8); rows 0-4 west of x 6
@@ -1072,6 +1073,26 @@ describe("ruleset-7 revision-14 natural play and persistence", () => {
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
   }, 60_000);
+
+  it("still scripts the browser smoke's Raise Dead save on its revision-14 map", () => {
+    // The browser smoke resumes this replay-valid save; it must stop on a
+    // human turn with Raise Dead offered for the Necromancer.
+    const scripted = scriptedUndeadRaiseDeadSaveV7("2026-09-29T12:00:00.000Z");
+    const loaded = parseSaveV7(scripted.source);
+    if (loaded.kind !== "VALID") throw new Error(loaded.kind);
+    const state = loaded.save.state;
+    const necromancer = unitAt(state, scripted.necromancerAt);
+    expect(necromancer).toMatchObject({
+      role: "CAPTAIN",
+      ownerId: state.humanPlayerId,
+    });
+    expect(state.turnOrder[state.activeSeatIndex]).toBe(state.humanPlayerId);
+    expect(scripted.graves.length).toBeGreaterThan(0);
+    expect(queryPlayerCommandsV7(state, state.humanPlayerId)).toContainEqual({
+      kind: "RAISE_DEAD",
+      unitId: necromancer.id,
+    });
+  });
 });
 
 function setupWith(
