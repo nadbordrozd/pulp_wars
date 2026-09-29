@@ -54,6 +54,7 @@ export * from "./v7/events";
 export * from "./v7/event-schema";
 export * from "./v7/event-projection";
 export * from "./v7/graves";
+export * from "./v7/infect";
 export * from "./v7/map";
 export * from "./v7/movement";
 export * from "./v7/observation";

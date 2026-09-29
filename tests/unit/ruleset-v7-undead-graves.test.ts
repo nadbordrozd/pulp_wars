@@ -100,8 +100,10 @@ describe("ruleset-7 revision-13 Graves: creation", () => {
       ["ORIGINAL", "UNDEAD"],
     ] as const) {
       const state = arena(factions, [
+        // A Fighter or Skeleton retaliates; an Undead Guard (Zombie) would
+        // infect its land victim instead (ruleset-v7-undead-combat tests).
         { seat: 0, role: "FIGHTER", at: { x: 2, y: 3 }, hp: 1 },
-        { seat: 1, role: "GUARD", at: { x: 3, y: 3 } },
+        { seat: 1, role: "FIGHTER", at: { x: 3, y: 3 } },
       ]);
       const attacker = unitAt(state, { x: 2, y: 3 });
       const result = attack(state, { x: 2, y: 3 }, { x: 3, y: 3 });
@@ -282,7 +284,8 @@ describe("ruleset-7 revision-13 Graves: creation", () => {
       [
         { seat: 0, role: "KNIGHT", at: { x: 1, y: 3 }, hp: 2 },
         { seat: 1, role: "FIGHTER", at: { x: 2, y: 3 }, hp: 1 },
-        { seat: 1, role: "GUARD", at: { x: 3, y: 3 } },
+        // A Skeleton, not a Zombie, so the Knight's death is not infected.
+        { seat: 1, role: "FIGHTER", at: { x: 3, y: 3 } },
       ],
     );
     const knight = unitAt(state, { x: 1, y: 3 });
@@ -607,8 +610,9 @@ describe("ruleset-7 revision-13 Graves: state, events, and persistence", () => {
   });
 
   it("orders GRAVE_CREATED right after UNIT_DIED and parses it strictly", () => {
+    // Section 8: UNIT_INFECTED and then GRAVE_CREATED follow UNIT_DIED.
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("GRAVE_CREATED")).toBe(
-      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_DIED") + 1,
+      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_DIED") + 2,
     );
     expect(parseEventV7({ kind: "GRAVE_CREATED", at: { x: 1, y: 2 } })).toEqual(
       { ok: true, value: { kind: "GRAVE_CREATED", at: { x: 1, y: 2 } } },

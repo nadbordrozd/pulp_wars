@@ -27,7 +27,9 @@ export function projectEventsV7(
     if (
       (event.kind === "UNIT_TRAINED" ||
         event.kind === "NAVAL_UNIT_TRAINED" ||
-        event.kind === "UNIT_REWARD_GRANTED") &&
+        event.kind === "UNIT_REWARD_GRANTED" ||
+        // Revision 13: a Zombie rising in a projected UNIT_INFECTED.
+        event.kind === "UNIT_INFECTED") &&
       eventVisible(
         beforeState,
         afterState,
@@ -238,6 +240,10 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
       return [event.sourceUnitId, event.targetUnitId];
     case "UNIT_SPAWN_DISPLACED":
       return [event.spawnedUnitId, event.displacedUnitId];
+    case "UNIT_INFECTED":
+      // Revision 13: the ordinary unit-visibility rule on the source Zombie
+      // and the risen Zombie; the victim is covered by its own UNIT_DIED.
+      return [event.sourceUnitId, event.unitId];
     default:
       return "unitId" in event ? [event.unitId] : [];
   }
@@ -264,6 +270,9 @@ function projectEventPayload(
           populationAdded: 3,
         };
   }
+  if (event.kind === "UNIT_INFECTED" && event.playerId !== viewerId)
+    // A unit's home city is owner-private, exactly as in the public view.
+    return { ...event, homeCityId: null };
   if (event.kind === "FOREST_CULTIVATED") {
     const viewer = after.players.find((player) => player.id === viewerId);
     return viewer !== undefined &&

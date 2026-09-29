@@ -1,5 +1,9 @@
 import type { PlayerId, UnitId } from "../model/ids";
-import { unitRoleMechanicsV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
+import {
+  unitRoleMechanicsV7,
+  unitRoleRuleV7,
+  type EffectiveRoleRuleV7,
+} from "../rules/ruleset-v7";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
 import type { CombatPreviewV7 } from "./events";
 import { tileAtV7 } from "./spatial-economy";
@@ -160,6 +164,16 @@ export function calculateCombatPreviewV7(
           };
         })
     : [];
+  const undead = undeadCombatEffectsV7({
+    attacker,
+    defender,
+    attackerRule,
+    defenderRule,
+    damageToDefender,
+    damageToAttacker,
+    attackerDies,
+    defenderDies,
+  });
   return {
     attackerId,
     targetUnitId,
@@ -195,7 +209,75 @@ export function calculateCombatPreviewV7(
       attackerRule.abilities.includes("ESCAPE") &&
       !attackerDies,
     splash,
+    ...undead,
   };
+}
+
+/** The unit facts the revision-13 Lifesteal and Infect effects read. */
+interface UndeadCombatantV7 {
+  readonly hp: number;
+  readonly maxHp: number;
+  readonly form: UnitStateV7["form"];
+}
+
+/**
+ * Revision 13 sections 6.4 and 6.5, shared by canonical resolution and the
+ * public preview. Lifesteal heals a surviving Vampire by the applied damage
+ * it dealt, after both damages, capped at its maximum HP. Infect converts a
+ * land-form victim killed by a Zombie (by its attack or its retaliation).
+ */
+export function undeadCombatEffectsV7(input: {
+  readonly attacker: UndeadCombatantV7;
+  readonly defender: UndeadCombatantV7;
+  readonly attackerRule: EffectiveRoleRuleV7;
+  readonly defenderRule: EffectiveRoleRuleV7;
+  readonly damageToDefender: number;
+  readonly damageToAttacker: number;
+  readonly attackerDies: boolean;
+  readonly defenderDies: boolean;
+}): Pick<
+  CombatPreviewV7,
+  "attackerHeal" | "defenderHeal" | "attackerInfected" | "defenderInfected"
+> {
+  return {
+    attackerHeal: lifestealHeal(
+      input.attacker,
+      input.attackerRule,
+      input.damageToAttacker,
+      input.damageToDefender,
+      input.attackerDies,
+    ),
+    defenderHeal: lifestealHeal(
+      input.defender,
+      input.defenderRule,
+      input.damageToDefender,
+      input.damageToAttacker,
+      input.defenderDies,
+    ),
+    attackerInfected:
+      input.attackerDies &&
+      input.attacker.form === "LAND" &&
+      input.defenderRule.abilities.includes("INFECT"),
+    defenderInfected:
+      input.defenderDies &&
+      input.defender.form === "LAND" &&
+      input.attackerRule.abilities.includes("INFECT"),
+  };
+}
+
+function lifestealHeal(
+  unit: UndeadCombatantV7,
+  rule: EffectiveRoleRuleV7,
+  damageTaken: number,
+  damageDealt: number,
+  dies: boolean,
+): number {
+  if (dies || damageDealt <= 0 || !rule.abilities.includes("LIFESTEAL"))
+    return 0;
+  return Math.max(
+    0,
+    Math.min(damageDealt, unit.maxHp - (unit.hp - damageTaken)),
+  );
 }
 
 export function pushedDestinationV7(

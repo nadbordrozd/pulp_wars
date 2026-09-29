@@ -42,6 +42,18 @@ export interface CombatPreviewV7 {
   /** Revision 12: a surviving Raider may make one ordinary escape Move. */
   readonly escapeAvailable: boolean;
   readonly splash: readonly CombatSplashEntryV7[];
+  /**
+   * Revision 13 Lifesteal: HP a surviving Vampire attacker or retaliating
+   * Vampire defender heals after both damages (0 when not applicable).
+   */
+  readonly attackerHeal: number;
+  readonly defenderHeal: number;
+  /**
+   * Revision 13 Infect: the corresponding land-form death is converted into a
+   * Zombie rising by the killing Zombie (false when not applicable).
+   */
+  readonly attackerInfected: boolean;
+  readonly defenderInfected: boolean;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
@@ -392,6 +404,16 @@ export type DomainEventV7 =
       readonly kind: "UNIT_DIED";
       readonly unitId: UnitId;
       readonly cause: "ATTACK" | "SPLASH" | "RETALIATION" | "ELIMINATION";
+    }
+  | {
+      /** Revision 13: a Zombie's land-form victim rose as a Zombie. */
+      readonly kind: "UNIT_INFECTED";
+      readonly playerId: PlayerId;
+      readonly sourceUnitId: UnitId;
+      readonly victimUnitId: UnitId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly homeCityId: CityId | null;
     }
   | { readonly kind: "GRAVE_CREATED"; readonly at: CoordV7 }
   | {

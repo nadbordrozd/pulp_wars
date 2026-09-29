@@ -26,7 +26,7 @@ import {
   rewardCandidatesForLevelV7,
 } from "./economy";
 import { applyCommandV7 } from "./reducer";
-import { calculateCombatPreviewV7 } from "./combat";
+import { calculateCombatPreviewV7, undeadCombatEffectsV7 } from "./combat";
 import type { CombatPreviewV7, DomainEventV7 } from "./events";
 import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
@@ -4159,6 +4159,17 @@ function publicCombatPreview(
             };
           })
       : [],
+    // Revision 13 Lifesteal and Infect from the visible attacker and target.
+    ...undeadCombatEffectsV7({
+      attacker,
+      defender: target,
+      attackerRule,
+      defenderRule,
+      damageToDefender,
+      damageToAttacker,
+      attackerDies,
+      defenderDies,
+    }),
   };
 }
 

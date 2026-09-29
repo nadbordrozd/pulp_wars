@@ -43,6 +43,7 @@ import {
 import type { DomainEventV7 } from "./events";
 import { calculateCombatPreviewV7, pushedDestinationV7 } from "./combat";
 import { recordCombatDeathV7 } from "./graves";
+import { recordInfectionV7 } from "./infect";
 import { createInitialMapStateV7 } from "./map";
 import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
 import { isUnitVisibleToPlayerV7 } from "./observation";
@@ -2256,7 +2257,8 @@ function applyAttack(
     let attackerAfter: UnitStateV7 = {
       ...attacker,
       at: preview.advances ? defender.at : attacker.at,
-      hp: attacker.hp - preview.damageToAttacker,
+      // Revision 13 Lifesteal heals after both damages (0 unless a Vampire).
+      hp: attacker.hp - preview.damageToAttacker + preview.attackerHeal,
       kills: attackerKills,
       captureEligible: false,
       activation: {
@@ -2272,7 +2274,7 @@ function applyAttack(
     const defenderAfter: UnitStateV7 = {
       ...defender,
       at: pushDestination ?? defender.at,
-      hp: defender.hp - preview.damageToDefender,
+      hp: defender.hp - preview.damageToDefender + preview.defenderHeal,
       kills: defenderKills,
       captureEligible:
         pushDestination === null ? defender.captureEligible : false,
@@ -2374,10 +2376,33 @@ function applyAttack(
         reason: defenseReason,
       });
     // Revision 13 section 6.8 step 7: each death in order (defender, splash
-    // in (y, x, id) order, attacker) may leave a Grave on its death tile
-    // before the attacker advances onto it.
+    // in (y, x, id) order, attacker) becomes an Infect rising when a Zombie
+    // killed a land-form victim, or may otherwise leave a Grave on its death
+    // tile before the attacker advances onto it.
     let graves = state.graves;
-    if (preview.defenderDies)
+    let nextEntityId = state.nextEntityId;
+    const risings: UnitStateV7[] = [];
+    const infect = (
+      source: UnitStateV7,
+      victim: UnitStateV7,
+      cause: "ATTACK" | "RETALIATION",
+    ): void => {
+      const allocation = allocateUnitId(nextEntityId);
+      nextEntityId = allocation.nextEntityId;
+      const rising = recordInfectionV7(
+        state,
+        source,
+        victim,
+        cause,
+        allocation.id,
+        exhaustedActivation(),
+        events,
+      );
+      risings.push(rising);
+      units = [...units, rising];
+    };
+    if (preview.defenderInfected) infect(attacker, defender, "ATTACK");
+    else if (preview.defenderDies)
       graves = recordCombatDeathV7(state, graves, defender, "ATTACK", events);
     for (const splash of preview.splash)
       if (splash.dies)
@@ -2388,7 +2413,8 @@ function applyAttack(
           "SPLASH",
           events,
         );
-    if (preview.attackerDies)
+    if (preview.attackerInfected) infect(defender, attacker, "RETALIATION");
+    else if (preview.attackerDies)
       graves = recordCombatDeathV7(
         state,
         graves,
@@ -2437,6 +2463,23 @@ function applyAttack(
           tiles: reveal.revealed,
         });
     }
+    for (const risen of risings) {
+      // Revision 13 section 5.4: a rising reveals its sight for its owner.
+      const risenState = { ...state, board, players, units } as GameStateV7;
+      const reveal = revealRadius(
+        risenState,
+        risen.ownerId,
+        risen.at,
+        unitSightRadiusAtV7(risenState, risen),
+      );
+      players = setExplored(players, risen.ownerId, reveal.explored);
+      if (reveal.revealed.length)
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: risen.ownerId,
+          tiles: reveal.revealed,
+        });
+    }
     const economy = recomputeLiveEconomyV7(
       state,
       { board, cities: state.cities, units },
@@ -2448,6 +2491,7 @@ function applyAttack(
         ...state,
         board,
         commandIndex: nextSafe(state.commandIndex),
+        nextEntityId,
         players,
         cities: economy.cities,
         units,

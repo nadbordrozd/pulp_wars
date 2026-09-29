@@ -1467,6 +1467,35 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
       expect(result.state.graves).toEqual([]);
       expect(humanView.graves).toEqual([]);
       expect(result.metrics.eventsByKind.GRAVE_CREATED).toBe(0);
+      expect(result.metrics.eventsByKind.UNIT_INFECTED).toBe(0);
+      // Revision 13 adds neutral Lifesteal/Infect fields to every combat
+      // preview; they must be neutral and are removed before hashing.
+      const neutralEvents = result.events.map((event) => {
+        if (event.kind !== "COMBAT_RESOLVED") return event;
+        const {
+          attackerHeal,
+          defenderHeal,
+          attackerInfected,
+          defenderInfected,
+          ...preview
+        } = event.preview;
+        expect({
+          attackerHeal,
+          defenderHeal,
+          attackerInfected,
+          defenderInfected,
+        }).toEqual({
+          attackerHeal: 0,
+          defenderHeal: 0,
+          attackerInfected: false,
+          defenderInfected: false,
+        });
+        return { ...event, preview };
+      });
+      expect(
+        result.events.some((event) => event.kind === "COMBAT_RESOLVED"),
+      ).toBe(true);
+      expect(result.metrics.eventHash).toBe(canonicalHash(result.events));
       const normalize = (value: unknown): unknown => {
         const { graves: _graves, ...rest } = value as { graves: unknown };
         void _graves;
@@ -1481,7 +1510,7 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
         mapHash: result.metrics.mapHash,
         postGenerationPrngHash: result.metrics.postGenerationPrngHash,
         commandHash: result.metrics.commandHash,
-        eventHash: result.metrics.eventHash,
+        eventHash: canonicalHash(neutralEvents),
         normalizedFinalStateHash: canonicalHash(normalize(result.state)),
         normalizedHumanViewHash: canonicalHash(normalize(humanView)),
         normalizedHumanCommandsHash: canonicalHash(

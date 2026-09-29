@@ -240,6 +240,15 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNIT_WAITED: ["kind", "playerId", "unitId"],
   UNIT_PROMOTED: ["kind", "unitId", "maxHp"],
   UNIT_DIED: ["kind", "unitId", "cause"],
+  UNIT_INFECTED: [
+    "kind",
+    "playerId",
+    "sourceUnitId",
+    "victimUnitId",
+    "unitId",
+    "at",
+    "homeCityId",
+  ],
   GRAVE_CREATED: ["kind", "at"],
   CITY_CAPTURED: ["kind", "cityId", "from", "to"],
   TREASURE_CAPTURED: [
@@ -785,6 +794,16 @@ function validPayload(
           e.cause as string,
         )
       );
+    case "UNIT_INFECTED":
+      return (
+        id(e.playerId) &&
+        id(e.sourceUnitId) &&
+        id(e.victimUnitId) &&
+        id(e.unitId) &&
+        new Set([e.sourceUnitId, e.victimUnitId, e.unitId]).size === 3 &&
+        parseCoordV7(e.at) !== null &&
+        (e.homeCityId === null || id(e.homeCityId))
+      );
     case "GRAVE_CREATED":
       return parseCoordV7(e.at) !== null;
     case "CITY_CAPTURED":
@@ -802,7 +821,9 @@ function combat(input: unknown): boolean {
       "advances",
       "attack2",
       "attackerDies",
+      "attackerHeal",
       "attackerId",
+      "attackerInfected",
       "breachApplied",
       "chargeApplied",
       "inspiredApplied",
@@ -814,6 +835,8 @@ function combat(input: unknown): boolean {
       "defenseBonusNumerator",
       "fortificationLevel",
       "defenderDies",
+      "defenderHeal",
+      "defenderInfected",
       "attacksRemaining",
       "attacksUsed",
       "maximumRange",
@@ -850,6 +873,16 @@ function combat(input: unknown): boolean {
         input.attackerDies === false)) &&
     [input.damageToAttacker, input.damageToDefender].every(nn) &&
     nn(input.fortificationLevel) &&
+    // Revision 13: Lifesteal heals only a survivor; Infect converts a death.
+    nn(input.attackerHeal) &&
+    nn(input.defenderHeal) &&
+    (input.attackerHeal === 0 || input.attackerDies === false) &&
+    (input.defenderHeal === 0 || input.defenderDies === false) &&
+    typeof input.attackerInfected === "boolean" &&
+    typeof input.defenderInfected === "boolean" &&
+    (!input.attackerInfected || input.attackerDies === true) &&
+    (!input.defenderInfected || input.defenderDies === true) &&
+    (!input.defenderInfected || input.advances === false) &&
     splash(input.splash) &&
     [
       input.chargeApplied,
