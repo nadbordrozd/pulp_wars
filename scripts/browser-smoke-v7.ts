@@ -8,6 +8,11 @@ import process from "node:process";
 import { format } from "prettier";
 import { browserReleaseRuntimeFingerprintV7 } from "./ruleset7-browser-release-fingerprint";
 import {
+  AFFLICTION_HUMAN_MARKERS_V7,
+  afflictionEvidenceExpressionV7,
+  undeadFixtureMountExpressionV7,
+} from "./browser-undead-fixture-v7";
+import {
   armFastForwardExpression,
   stableControlPointExpression,
 } from "./browser-smoke-v7-controls";
@@ -969,6 +974,7 @@ async function probeUndeadFlag(connection: Connection): Promise<string> {
     );
     await capture(connection, "undead-raise-dead-result-desktop.png");
     outcome += `; resumed Raise Dead dispatched (${preview.label})`;
+    outcome += `; ${await probeAfflictionFixture(connection, flagUrl(false))}`;
   }
   await evaluate(
     connection,
@@ -979,6 +985,66 @@ async function probeUndeadFlag(connection: Connection): Promise<string> {
     `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
   );
   return outcome;
+}
+
+/**
+ * Revision 14 (pulp_wars-vkq.19): the Plague and Bitten fixture, mounted on
+ * a fixture controller in both art sets, shows its board markers, the dock
+ * chips with their explanations, and the explained Disband. The smoke stays
+ * desktop-only; phone captures live in `review:ruleset7-undead-ui`. Dev
+ * server only: the fixture comes from `tests/fixtures`.
+ */
+async function probeAfflictionFixture(
+  connection: Connection,
+  url: string,
+): Promise<string> {
+  const doubly = { x: 9, y: 7 };
+  for (const artSet of ["LEGACY", "CHIBI"] as const) {
+    await evaluate(connection, `globalThis.__V7_AFFLICTION_PRIOR__ = true`);
+    await connection.send("Page.navigate", { url });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_AFFLICTION_PRIOR__ !== true && document.readyState === 'complete' && globalThis.__PULP_WARS_APP__ !== undefined`,
+    );
+    await evaluate(
+      connection,
+      undeadFixtureMountExpressionV7("afflictionHumanFixtureV7", artSet),
+      true,
+    );
+    await evaluate(
+      connection,
+      `(() => { globalThis.__UNDEAD_REVIEW__.boardHost.activate(${JSON.stringify(doubly)}); document.querySelector('canvas.board-canvas-v7')?.focus(); })()`,
+    );
+    await waitForExpression(
+      connection,
+      `document.querySelectorAll('.v7-selection-dock .v7-affliction-chip').length === 2`,
+    );
+    const evidence = await evaluate<{
+      readonly markers: readonly string[];
+      readonly chips: readonly (string | null)[];
+      readonly disband: string | null;
+      readonly disbandDisabled: string | null;
+    }>(connection, afflictionEvidenceExpressionV7(), true);
+    if (
+      JSON.stringify(evidence.markers) !==
+        JSON.stringify(AFFLICTION_HUMAN_MARKERS_V7) ||
+      !evidence.chips[0]?.startsWith("Plague. Plague from Player 2's Lich") ||
+      !evidence.chips[1]?.startsWith("Bitten. Bitten by Player 2's Zombie") ||
+      evidence.disband !==
+        "Disband unavailable. Plagued units can't Disband." ||
+      evidence.disbandDisabled !== "true"
+    )
+      throw new Error(
+        `${artSet} Plague/Bitten fixture evidence missing: ${JSON.stringify(evidence)}`,
+      );
+    await delay(400);
+    await capture(connection, `affliction-${artSet.toLowerCase()}-desktop.png`);
+  }
+  await evaluate(
+    connection,
+    `(() => { globalThis.__UNDEAD_REVIEW__?.view?.destroy?.(); delete globalThis.__UNDEAD_REVIEW__; })()`,
+  );
+  return "Plague/Bitten fixture markers, chips and Disband explained in LEGACY and CHIBI";
 }
 
 async function driveDefaultMatchToOutcome(

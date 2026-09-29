@@ -96,6 +96,58 @@ A match without an Undead seat looks and behaves exactly as in revision 12.
   `GRAVE_CREATED` animate on the effects canvas and are announced in the
   live region; all but Grave creation also show a toast.
 
+## Current Ruleset 7 revision 14 Plague and Bitten overlay
+
+This overlay implements the UI of the
+[revision-14 balance overlay](../product/RULESET_7_REVISION_14_BALANCE.md)
+(`pulp_wars-vkq.19`). Every cue reads only the public `plagued` and `bitten`
+view lists, public previews, and projected events, so all viewers see the same
+statuses and a hidden Lich is never named. A Human-only match changes only by
+the two economy texts below.
+
+- **Map markers.** A plagued unit shows a green-grey miasma cloud on a dark
+  disc and a bitten unit a bite of two jaws on a dark red disc; a unit with
+  both shows both, stacked. They are code-drawn and share one frame per art
+  set: LEGACY left of the sprite between the Field Defense symbol and the seat
+  badge, CHIBI just right of the unit's own HP bar, clear of the Undead badge,
+  Field Defense corner, seat badge, Inspired status and capital crown. The
+  markers are named by the subjects `STATUS:PLAGUED` and `STATUS:BITTEN`; a
+  later art bead may supply rasters through the renderer's `afflictionArt`
+  hook. The map cursor description adds "plagued" and "bitten".
+- **Dock and `?` details.** The unit dock shows a "Plague" or "Bitten" chip
+  (icon plus word) whose accessible name and title hold one sentence: Plague
+  costs 2 HP at the start of each of the unit's turns and spreads to adjacent
+  living units until its Lich dies or a Captain tends it (the source reads
+  "your Lich", "Player N's Lich" or "a hidden Lich"); Bitten says the unit
+  rises as the biter's Zombie on death unless a Captain tends it. The `?`
+  details repeat each sentence. Undead Lich, Zombie and Vampire details list
+  Plague, Bite and Unanswered; in an Undead match a Captain's Tend reads
+  "Heals nearby wounded troops by 2 and cures their Plague and bites." Help
+  adds the Plague, bite and Vampire tips for both factions.
+- **Disband.** An own plagued or bitten unit that would otherwise be offered
+  Disband shows an `aria-disabled` Disband action whose name explains
+  "Plagued units can't Disband." or "Bitten units can't Disband." (Plague
+  first when both apply).
+- **Previews.** In Undead matches Tend Wounded carries a chip (`+2 HP · 2
+cures`) and a full `aria-label` of its exact heals and cures, and selecting
+  the Captain labels each target on the board (`+2 HP`, `Cure`, `+2 · Cure`).
+  An attack preview's second line adds "No retaliation" (Vampire), "Plagues
+  target" or "Plagues N targets" (Lich), "Bites", "You get bitten",
+  "Rises as Zombie (bitten)" and "You rise as enemy Zombie (bitten)"; the
+  semantic label names the plagued units. The Lich splash ring marks each newly
+  plagued splash target (`−4 · Plague`). A Wail target that dies bitten reads
+  `−N · Rises` and the Wail description says "(dies, rises as a Zombie)".
+- **Events.** `PLAGUE_DAMAGED` and `PLAGUE_SPREAD` pulse a miasma ring on the
+  visible units (damage also shakes each unit), `PLAGUE_CLEARED` pulses a cure
+  ring, and `BITTEN_UNIT_RISEN` a red rising pulse. The live region announces
+  "Plague hit N of your units", "Plague spread to N units", "N units fell to
+  Plague" (`UNIT_DIED` cause `PLAGUE`), "Plague lifted from N units", "A bitten
+  Fighter rose as Player N's Zombie" and "Tend cured Plague on N and a bite";
+  Plague damage and spread toast only when they reach the viewer's units.
+- **Economy text (E2, every match).** The Coins tooltip ends "Commerce earns
+  trade. City levels above 5 add no more income." and Commerce no longer
+  lists "Market income is doubled".
+
 ## 0. Ruleset-6 replacement contract
 
 The responsive navigation, fixed Canvas host, map-first selection, non-modal

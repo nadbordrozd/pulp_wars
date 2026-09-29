@@ -55,7 +55,7 @@ export function drawSupportFeedbackV7(
         progress,
         fade,
         UNDEAD_PULSE_COLORS[feedback.effect],
-        feedback.effect === "RAISE" && !actor,
+        (feedback.effect === "RAISE" && !actor) || feedback.effect === "BITTEN",
       );
   }
 }
@@ -68,6 +68,9 @@ const UNDEAD_PULSE_COLORS: Readonly<
   WAIL: "#c9a6ff",
   INFECT: "#a6e36b",
   GRAVE: "#d9dcd4",
+  PLAGUE: "#9db77a",
+  CURE: "#c5fff2",
+  BITTEN: "#e0525a",
 };
 
 /** Revision 13: a contracting ring, with rising rays for raised Skeletons. */

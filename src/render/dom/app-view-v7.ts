@@ -20,6 +20,7 @@ import {
   unitRoleMechanicsV7,
   previewDevourV7,
   previewRaiseDeadV7,
+  previewTendWoundedV7,
   previewWailV7,
   previewEconomicV7,
   queryTechnologyTreeV7,
@@ -77,17 +78,21 @@ import {
 } from "./chibi-dom-art-v7";
 import { RULESET7_PLAYER_COLORS } from "../canvas/owner-recolour-v7";
 import {
+  DISBAND_BLOCKED_EXPLANATION_V7,
   RESTLESS_EXPLANATION_V7,
   devourPreviewDescriptionV7,
+  disbandBlockedByAfflictionV7,
   factionNameV7,
   matchHasUndeadV7,
   raiseDeadPreviewDescriptionV7,
   restlessOutsideTerritoryV7,
   restlessRecoverBlockedV7,
+  tendPreviewPresentationV7,
   undeadAbilityDescriptionV7,
   undeadAbilityNameV7,
   undeadBoundaryNoticeV7,
   undeadCommandLabelV7,
+  unitAfflictionsV7,
   unitIsUndeadV7,
   wailPreviewDescriptionV7,
 } from "../undead-presentation-v7";
@@ -1176,6 +1181,33 @@ export class Ruleset7DomAppView {
         grave.dataset.unitStatus = "grave";
         identityColumn?.append(grave);
       }
+      // Revision 14: public Plague and Bitten statuses, with a one-sentence
+      // explanation in the chip's accessible name and in the ? details.
+      for (const affliction of unitAfflictionsV7(view, unit.id)) {
+        const cue = el(this.#document, "span", "v7-chip v7-affliction-chip");
+        cue.dataset.unitStatus = affliction.id.toLowerCase();
+        cue.setAttribute("role", "img");
+        cue.setAttribute(
+          "aria-label",
+          `${affliction.chip}. ${affliction.explanation}`,
+        );
+        cue.title = affliction.explanation;
+        cue.append(
+          uiIconV7(
+            this.#document,
+            affliction.id === "PLAGUE" ? "plague" : "bite",
+          ),
+          text(this.#document, "span", affliction.chip),
+        );
+        identityColumn?.append(cue);
+        const state = el(this.#document, "section", "v7-tactical-state");
+        state.dataset.tacticalState = affliction.id.toLowerCase();
+        state.append(
+          text(this.#document, "strong", affliction.chip),
+          text(this.#document, "span", affliction.explanation),
+        );
+        unitDetails.append(state);
+      }
       const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
       if (stats !== undefined) {
         if (stats.statuses.length > 0) {
@@ -1263,12 +1295,15 @@ export class Ruleset7DomAppView {
         dock.append(rows);
         const abilities = el(this.#document, "div", "v7-abilities");
         for (const ability of stats.abilities) {
-          const description = abilityDescription(
-            ability,
-            stats.minimumRange,
-            stats.maximumRange,
-            unitFaction,
-          );
+          const description =
+            ability === "TEND_WOUNDED" && matchHasUndeadV7(view)
+              ? TEND_CURES_DESCRIPTION
+              : abilityDescription(
+                  ability,
+                  stats.minimumRange,
+                  stats.maximumRange,
+                  unitFaction,
+                );
           if (description === null) continue;
           const entry = el(this.#document, "p", "v7-unit-ability");
           entry.append(
@@ -1324,6 +1359,30 @@ export class Ruleset7DomAppView {
           `Recover unavailable. ${RESTLESS_EXPLANATION_V7}`,
         );
         actions.append(recover);
+      }
+      const disbandBlocked = disbandBlockedByAfflictionV7(view, unit.id);
+      if (disbandBlocked !== null) {
+        const explanation = DISBAND_BLOCKED_EXPLANATION_V7[disbandBlocked];
+        const disband = button(
+          this.#document,
+          "",
+          "affliction-disband",
+          "v7-context-action",
+        );
+        disband.append(
+          this.#chibiArt("ICON:ACTION:DISBAND", CHIBI_DOM_BOXES_V7.action)
+            ?.element ?? art(this.#document, "ui-action-disband", ""),
+          text(this.#document, "span", "Disband", "v7-action-label"),
+        );
+        // aria-disabled keeps the explanation reachable by keyboard.
+        disband.setAttribute("aria-disabled", "true");
+        disband.dataset.disabledReason = disbandBlocked.toLowerCase();
+        disband.title = explanation;
+        disband.setAttribute(
+          "aria-label",
+          `Disband unavailable. ${explanation}`,
+        );
+        actions.append(disband);
       }
       if (actions.querySelector("button") !== null) {
         dock.dataset.hasActions = "true";
@@ -1817,6 +1876,32 @@ export class Ruleset7DomAppView {
         action.setAttribute("aria-label", "Land grant for 6 Coins");
         action.append(economyChips(this.#document, { cost: 6 }));
       } else if (
+        command.kind === "TEND_WOUNDED" &&
+        this.#snapshot.view !== null &&
+        matchHasUndeadV7(this.#snapshot.view)
+      ) {
+        // Revision 14: the exact heals and cures (Undead matches only, so a
+        // Human-only Tend button is unchanged).
+        const view = this.#snapshot.view;
+        const preview = previewTendWoundedV7(view, command.unitId);
+        if (preview !== null) {
+          const summary = tendPreviewPresentationV7(view, preview);
+          action.setAttribute(
+            "aria-label",
+            `${commandLabel(command, this.#viewerFaction())} · ${summary.description}`,
+          );
+          action.title = summary.description;
+          if (summary.chip !== "")
+            action.append(
+              text(
+                this.#document,
+                "span",
+                summary.chip,
+                "v7-undead-preview-chip",
+              ),
+            );
+        }
+      } else if (
         command.kind === "WAIL" ||
         command.kind === "RAISE_DEAD" ||
         command.kind === "DEVOUR"
@@ -1958,6 +2043,9 @@ export class Ruleset7DomAppView {
             ...(view !== null && matchHasUndeadV7(view)
               ? [
                   "Units that fall in battle on land leave Graves. Undead raise or devour them, and Zombie kills rise as Zombies.",
+                  "Lich shots plague your units: −2 HP each turn, spreading to neighbours, until the Lich dies or a Captain tends them.",
+                  "Zombie bites make your units rise as enemy Zombies when they die; a Captain's Tend cures bites.",
+                  "Your units can't strike back at a Vampire's attack.",
                 ]
               : []),
           ]),
@@ -3498,7 +3586,7 @@ function trainingCostForViewV7(
 }
 function incomeDescription(view: PlayerViewV7): string {
   const cities = view.cities.filter((city) => city.ownerId === view.viewer.id);
-  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, land trade, sea trade, Market, population deficit, and siege effects. Connected cities grow with Roads; Commerce earns trade and doubles Markets.`;
+  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, land trade, sea trade, Market, population deficit, and siege effects. Connected cities grow with Roads; Commerce earns trade. City levels above 5 add no more income.`;
 }
 function tileCity(view: PlayerViewV7, at: CoordV7): number | null {
   const tile = view.board.tiles.find((entry) => same(entry.at, at));
@@ -3579,8 +3667,7 @@ function navalTechnologyNotesV7(
       "Usable Road and owned-city edges cost half movement",
       "Connected owned cities and the original capital each gain population",
     ];
-  if (technology === "COMMERCE")
-    return ["Connected cities earn trade", "Market income is doubled"];
+  if (technology === "COMMERCE") return ["Connected cities earn trade"];
   return [];
 }
 
@@ -4258,7 +4345,14 @@ const UNDEAD_HELP_TIPS: readonly string[] = [
   "A Banshee can't attack; it Wails at every visible living enemy within 2 tiles.",
   "Zombie kills rise as your Zombies, Vampires heal from damage they deal, and Lich shots splash.",
   "Restless: your units recover only inside your territory.",
+  "A Lich's shots plague living units: −2 HP each turn, spreading to neighbours, until the Lich dies or a Captain tends them.",
+  "Zombies bite living land units; a bitten unit that dies rises as the biter's Zombie unless a Captain tends it first.",
+  "Enemies can't strike back at a Vampire's attack.",
 ];
+
+/** Revision 14 Tend Wounded text, shown in Undead matches only. */
+const TEND_CURES_DESCRIPTION =
+  "Heals nearby wounded troops by 2 and cures their Plague and bites.";
 
 const UNDEAD_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   RAISE_DEAD: "grave",

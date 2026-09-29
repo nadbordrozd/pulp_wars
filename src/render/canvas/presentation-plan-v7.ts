@@ -66,7 +66,19 @@ export type CorePresentationStepV7 =
     };
 
 export type SupportEffectV7 =
-  "RALLY" | "TEND" | "RAISE" | "DEVOUR" | "WAIL" | "INFECT" | "GRAVE";
+  | "RALLY"
+  | "TEND"
+  | "RAISE"
+  | "DEVOUR"
+  | "WAIL"
+  | "INFECT"
+  | "GRAVE"
+  /** Revision 14: Plague damage or spread on the listed units. */
+  | "PLAGUE"
+  /** Revision 14: Plague lifted because its source Lich left the board. */
+  | "CURE"
+  /** Revision 14: a bitten victim rose as the biter's Zombie. */
+  | "BITTEN";
 
 /** Builds animation instructions exclusively from captured public views/events. */
 export function corePresentationPlanV7(
@@ -309,6 +321,62 @@ export function corePresentationPlanV7(
         steps.push({
           kind: "SUPPORT",
           effect: "INFECT",
+          actor: { unitId: event.unitId, at: event.at },
+          recipients: [],
+          durationMs: 320,
+        });
+    } else if (
+      event.kind === "PLAGUE_DAMAGED" ||
+      event.kind === "PLAGUE_SPREAD"
+    ) {
+      // Revision 14 Start Turn Plague: a miasma pulse on every visible
+      // damaged or newly plagued unit, then each damage impact.
+      const results = event.results.filter((result) =>
+        explored.has(`${result.at.x},${result.at.y}`),
+      );
+      const [first, ...rest] = results;
+      if (first === undefined) continue;
+      steps.push({
+        kind: "SUPPORT",
+        effect: "PLAGUE",
+        actor: { unitId: first.unitId, at: first.at },
+        recipients: rest.map((result) => ({
+          unitId: result.unitId,
+          at: result.at,
+        })),
+        durationMs: 320,
+      });
+      if (event.kind === "PLAGUE_DAMAGED")
+        for (const result of event.results)
+          if (explored.has(`${result.at.x},${result.at.y}`))
+            steps.push({
+              kind: "DAMAGE",
+              unitId: result.unitId,
+              at: result.at,
+              damage: result.damage,
+              lethal: result.dies,
+              durationMs: 100,
+            });
+    } else if (event.kind === "PLAGUE_CLEARED") {
+      const [first, ...rest] = event.unitIds.flatMap((unitId) => {
+        const unit =
+          after.units.find((candidate) => candidate.id === unitId) ??
+          before.units.find((candidate) => candidate.id === unitId);
+        return unit === undefined ? [] : [{ unitId, at: unit.at }];
+      });
+      if (first !== undefined)
+        steps.push({
+          kind: "SUPPORT",
+          effect: "CURE",
+          actor: first,
+          recipients: rest,
+          durationMs: 320,
+        });
+    } else if (event.kind === "BITTEN_UNIT_RISEN") {
+      if (explored.has(`${event.at.x},${event.at.y}`))
+        steps.push({
+          kind: "SUPPORT",
+          effect: "BITTEN",
           actor: { unitId: event.unitId, at: event.at },
           recipients: [],
           durationMs: 320,

@@ -16,6 +16,7 @@ import {
   playerFactionV7,
   previewDevourV7,
   previewRaiseDeadV7,
+  previewTendWoundedV7,
   previewWailV7,
   queryCombatPreviewV7,
   unitRoleRuleV7,
@@ -25,15 +26,20 @@ import {
   combatPreviewNoteV7,
   combatPreviewSemanticNoteV7,
   matchHasUndeadV7,
+  tendTargetLabelV7,
+  type AfflictionIdV7,
 } from "../undead-presentation-v7";
 import {
   abilityAreaStrokeV7,
   drawAbilityAreaCellV7,
   drawAbilityTargetV7,
+  afflictionSubjectV7,
+  drawAfflictionMarkerV7,
   drawCombatPreviewNoteV7,
   drawGraveMarkerV7,
   drawUndeadBadgeV7,
   type AbilityPreviewStyleV7,
+  type AfflictionSubjectV7,
 } from "./undead-canvas-v7";
 import {
   RULESET6_UNIT_ART_GEOMETRY,
@@ -103,6 +109,8 @@ export interface MapCommandTargetV7 {
     readonly at: CoordV7;
     readonly damage: number;
     readonly dies: boolean;
+    /** Revision 14: this Lich attack newly plagues the splashed unit. */
+    readonly plagued?: boolean;
   }[];
 }
 
@@ -178,6 +186,11 @@ export interface BoardRenderPlanEntryV7 {
    * badge unless the CHIBI art set shows its own Undead raster.
    */
   readonly faction?: "UNDEAD";
+  /**
+   * UNIT only, revision 14: the public Plague and Bitten statuses, drawn as
+   * small markers in the piece's overlay frame (absent when there are none).
+   */
+  readonly afflictions?: readonly AfflictionIdV7[];
   /** ABILITY_AREA / ABILITY_TARGET: the previewed ability. */
   readonly abilityStyle?: AbilityPreviewStyleV7;
   /** ABILITY_TARGET: lethal previewed damage. */
@@ -380,10 +393,15 @@ export function buildBoardRenderPlanV7(
       artSubject: "GRAVE",
       label: "Grave",
     });
+  const plaguedIds = new Set(view.plagued.map((entry) => entry.unitId));
+  const bittenIds = new Set(view.bitten.map((entry) => entry.unitId));
   for (const unit of view.units) {
     const faction = playerFactionV7(view, unit.ownerId);
     const undead = faction === "UNDEAD";
     const undeadLabel = undead ? unitRoleRuleV7(view, unit).label : null;
+    const afflictions: AfflictionIdV7[] = [];
+    if (plaguedIds.has(unit.id)) afflictions.push("PLAGUE");
+    if (bittenIds.has(unit.id)) afflictions.push("BITTEN");
     entries.push({
       key: `unit:${unit.id}`,
       kind: "UNIT",
@@ -411,6 +429,7 @@ export function buildBoardRenderPlanV7(
           (command) => command.kind === "MOVE" && command.unitId === unit.id,
         ),
       ...(undead ? { faction: "UNDEAD" as const } : {}),
+      ...(afflictions.length > 0 ? { afflictions } : {}),
     });
   }
   for (const value of view.improvementValues)
@@ -769,6 +788,13 @@ export function drawBoardV7(input: {
    * keyboard cursor or pointer hover). A lone splash target always shows.
    */
   readonly previewFocus?: CoordV7 | null;
+  /**
+   * Revision 14 hook: a registered raster for a Plague or Bitten marker. A
+   * subject without one (null) keeps the code-drawn marker.
+   */
+  readonly afflictionArt?: (
+    subject: AfflictionSubjectV7,
+  ) => CanvasImageSource | null;
 }): void {
   const { context, viewport, devicePixelRatio } = input;
   const chibiArt = input.artSet === "CHIBI" ? input.chibiArt : undefined;
@@ -1261,6 +1287,18 @@ export function drawBoardV7(input: {
         }
         if (entry.kind === "UNIT" && entry.faction === "UNDEAD" && !factionArt)
           drawUndeadBadgeV7(context, x, y, camera.zoom, chibiPiece);
+        if (entry.kind === "UNIT")
+          for (const [slot, affliction] of (
+            entry.afflictions ?? []
+          ).entries()) {
+            const subject = afflictionSubjectV7(affliction);
+            drawAfflictionMarkerV7(context, subject, x, y, camera.zoom, {
+              chibi: chibiPiece,
+              slot,
+              highContrast: input.highContrast ?? false,
+              raster: input.afflictionArt?.(subject) ?? null,
+            });
+          }
         if (entry.kind === "CITY" && entry.capital === true && chibiPiece)
           drawCapitalCrownV7(context, x, y, camera.zoom);
         if (entry.kind === "CITY") {
@@ -1801,7 +1839,7 @@ function drawSplashPreviewV7(
       y(item.at),
       camera.zoom,
       "SPLASH",
-      `−${item.damage}`,
+      item.plagued === true ? `−${item.damage} · Plague` : `−${item.damage}`,
       item.dies,
     );
 }
@@ -2182,7 +2220,9 @@ function addAbilityPreviews(
           layer: 7.5,
           at: target.at,
           abilityStyle: "WAIL",
-          label: `−${target.damage}`,
+          label: target.bittenRises
+            ? `−${target.damage} · Rises`
+            : `−${target.damage}`,
           lethal: target.dies,
         });
     }
@@ -2198,6 +2238,23 @@ function addAbilityPreviews(
         abilityStyle: "RAISE",
         label: "Rise",
       });
+  }
+  // Revision 14: Tend Wounded heals and cures, shown in Undead matches only
+  // (a Human-only match keeps its revision-12 board).
+  if (offered("TEND_WOUNDED") && matchHasUndeadV7(view)) {
+    const preview = previewTendWoundedV7(view, unitId);
+    for (const result of preview?.results ?? []) {
+      const target = view.units.find((unit) => unit.id === result.unitId);
+      if (target === undefined) continue;
+      entries.push({
+        key: `ability-target:TEND:${result.unitId}`,
+        kind: "ABILITY_TARGET",
+        layer: 7.5,
+        at: target.at,
+        abilityStyle: "TEND",
+        label: tendTargetLabelV7(result),
+      });
+    }
   }
   if (offered("DEVOUR")) {
     const preview = previewDevourV7(view, unitId);
@@ -2254,7 +2311,7 @@ function mapTargets(
         undeadMatch && preview !== null ? combatPreviewNoteV7(preview) : null;
       const semanticNote =
         undeadMatch && preview !== null
-          ? combatPreviewSemanticNoteV7(preview)
+          ? combatPreviewSemanticNoteV7(preview, view)
           : null;
       return [
         {
@@ -2277,6 +2334,9 @@ function mapTargets(
                   at: item.at,
                   damage: item.damage,
                   dies: item.dies,
+                  ...(preview.plagued.includes(item.unitId)
+                    ? { plagued: true }
+                    : {}),
                 })),
               }
             : {}),

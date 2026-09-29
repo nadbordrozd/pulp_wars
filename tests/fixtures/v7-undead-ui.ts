@@ -334,3 +334,119 @@ function scriptedRaiseDeadCommand(
   }
   return { kind: "END_TURN" };
 }
+
+/**
+ * Revision 14 Plague and Bitten fixtures on the same board. In the Human
+ * fixture the human seat is Human (seat 1 Undead): a Captain stands next to
+ * a plagued Warrior (its Lich is visible) and a wounded bitten Archer, a
+ * Knight faces a Zombie, and a Defender is both plagued (by a distant Lich)
+ * and bitten. In the Undead fixture the human seat is Undead: a Lich shot
+ * newly plagues its target and one splashed unit (the other is already
+ * plagued), a Zombie bites, a Vampire attacks unanswered, and a Banshee and
+ * a Skeleton can kill a bitten Warrior that rises for the Undead.
+ */
+export const AFFLICTION_SHOWCASE_V7 = {
+  human: {
+    captain: { x: 5, y: 2 },
+    plaguedWarrior: { x: 4, y: 2 },
+    bittenArcher: { x: 6, y: 2 },
+    visibleLich: { x: 3, y: 1 },
+    zombie: { x: 7, y: 4 },
+    knight: { x: 8, y: 4 },
+    doublyAfflicted: { x: 9, y: 7 },
+    farLich: { x: 1, y: 9 },
+  },
+  undead: {
+    lich: { x: 6, y: 6 },
+    lichTarget: { x: 4, y: 6 },
+    plaguedSplash: { x: 3, y: 6 },
+    freshSplash: { x: 4, y: 7 },
+    zombie: { x: 7, y: 6 },
+    zombieTarget: { x: 7, y: 7 },
+    vampire: { x: 9, y: 4 },
+    vampireTarget: { x: 10, y: 4 },
+    banshee: { x: 1, y: 1 },
+    bittenVictim: { x: 2, y: 2 },
+    skeleton: { x: 3, y: 2 },
+  },
+} as const;
+
+/** Adds Plague `[unit, source]` and Bitten `[unit, biterSeat, biter]` by piece index. */
+function withAfflictionsV7(
+  state: GameStateV7,
+  plagued: readonly (readonly [number, number])[],
+  bitten: readonly (readonly [number, number, number])[],
+): GameStateV7 {
+  const first = state.nextEntityId - state.units.length;
+  const id = (index: number) => unitId(first + index);
+  const seatId = (seat: number): PlayerId => {
+    const player = state.players.find((candidate) => candidate.seat === seat);
+    if (player === undefined) throw new Error(`Seat ${seat} missing`);
+    return player.id;
+  };
+  return checkedV7({
+    ...state,
+    plagued: plagued
+      .map(([unit, source]) => ({
+        unitId: id(unit),
+        sourceUnitId: id(source),
+      }))
+      .sort((left, right) => left.unitId - right.unitId),
+    bitten: bitten
+      .map(([unit, seat, biter]) => ({
+        unitId: id(unit),
+        biterPlayerId: seatId(seat),
+        biterUnitId: id(biter),
+      }))
+      .sort((left, right) => left.unitId - right.unitId),
+  });
+}
+
+export function afflictionHumanFixtureV7(): GameStateV7 {
+  const at = AFFLICTION_SHOWCASE_V7.human;
+  return withAfflictionsV7(
+    undeadUiArenaV7(
+      [
+        { seat: 0, role: "CAPTAIN", at: at.captain },
+        { seat: 0, role: "FIGHTER", at: at.plaguedWarrior },
+        { seat: 0, role: "MARKSMAN", at: at.bittenArcher, hp: 6 },
+        { seat: 1, role: "CATAPULT", at: at.visibleLich },
+        { seat: 1, role: "GUARD", at: at.zombie },
+        { seat: 0, role: "KNIGHT", at: at.knight },
+        { seat: 0, role: "GUARD", at: at.doublyAfflicted, hp: 8 },
+        { seat: 1, role: "CATAPULT", at: at.farLich },
+      ],
+      [],
+      ["ORIGINAL", "UNDEAD"],
+    ),
+    [
+      [1, 3],
+      [6, 7],
+    ],
+    [
+      [2, 1, 4],
+      [6, 1, 4],
+    ],
+  );
+}
+
+export function afflictionUndeadFixtureV7(): GameStateV7 {
+  const at = AFFLICTION_SHOWCASE_V7.undead;
+  return withAfflictionsV7(
+    undeadUiArenaV7([
+      { seat: 0, role: "CATAPULT", at: at.lich },
+      { seat: 1, role: "FIGHTER", at: at.lichTarget },
+      { seat: 1, role: "FIGHTER", at: at.plaguedSplash },
+      { seat: 1, role: "MARKSMAN", at: at.freshSplash },
+      { seat: 0, role: "GUARD", at: at.zombie },
+      { seat: 1, role: "FIGHTER", at: at.zombieTarget },
+      { seat: 0, role: "KNIGHT", at: at.vampire, hp: 7 },
+      { seat: 1, role: "FIGHTER", at: at.vampireTarget },
+      { seat: 0, role: "MARKSMAN", at: at.banshee },
+      { seat: 1, role: "FIGHTER", at: at.bittenVictim, hp: 1 },
+      { seat: 0, role: "FIGHTER", at: at.skeleton },
+    ]),
+    [[2, 0]],
+    [[9, 0, 4]],
+  );
+}

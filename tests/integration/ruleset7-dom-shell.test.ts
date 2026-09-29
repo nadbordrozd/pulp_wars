@@ -527,6 +527,17 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.querySelector(".v7-tech-detail")?.textContent).toContain(
       "Road-linked cities: +1 Coin",
     );
+    // Revision 14 (E2): Commerce no longer doubles Markets.
+    expect(document.querySelector(".v7-tech-detail")?.textContent).not.toMatch(
+      /doubl|Markets earn/,
+    );
+    const income = Array.from(document.querySelectorAll("[aria-label]"))
+      .map((node) => node.getAttribute("aria-label") ?? "")
+      .find((label) => label.includes("Next income"));
+    expect(income).toContain(
+      "Commerce earns trade. City levels above 5 add no more income.",
+    );
+    expect(income).not.toContain("doubles Markets");
     requiredButton('[data-action="tech-drill"]').click();
     expect(document.querySelector(".v7-tech-detail")?.textContent).toContain(
       "Reveals Ore",

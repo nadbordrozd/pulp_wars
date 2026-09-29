@@ -27,7 +27,9 @@ import {
 } from "../../src/render/dom/app-view-v7";
 import { knightOverrunPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
 import {
+  AFFLICTION_SHOWCASE_V7,
   UNDEAD_SHOWCASE_V7,
+  afflictionHumanFixtureV7,
   undeadShowcaseFixtureV7,
   undeadUiArenaV7,
 } from "../fixtures/v7-undead-ui";
@@ -269,6 +271,119 @@ describe("Revision 13 Undead DOM", () => {
     human.destroy();
   });
 
+  it("shows public Plague and Bitten chips, explains Disband, and previews Tend cures", async () => {
+    const controller = new FixtureController(afflictionHumanFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const at = AFFLICTION_SHOWCASE_V7.human;
+    const plague =
+      "Plague from Player 2's Lich: −2 HP at the start of each of its turns, spreading to adjacent living units, until that Lich dies or a Captain tends it.";
+
+    selectUnitAt(controller, host, at.plaguedWarrior);
+    const chip = requiredElement<HTMLElement>(
+      '.v7-selection-dock [data-unit-status="plague"]',
+    );
+    expect(chip.textContent).toBe("Plague");
+    expect(chip.getAttribute("aria-label")).toBe(`Plague. ${plague}`);
+    expect(chip.querySelector('svg[data-icon="plague"]')).not.toBeNull();
+    expect(
+      document.querySelector('.v7-selection-dock [data-unit-status="bitten"]'),
+    ).toBeNull();
+    const disband = requiredButton("affliction-disband");
+    expect(disband.getAttribute("aria-disabled")).toBe("true");
+    expect(disband.disabled).toBe(false);
+    expect(disband.dataset.disabledReason).toBe("plagued");
+    expect(disband.getAttribute("aria-label")).toBe(
+      "Disband unavailable. Plagued units can't Disband.",
+    );
+    expect(document.querySelector('[data-action="command-disband"]')).toBe(
+      null,
+    );
+    disband.click();
+    expect(controller.accepted).toEqual([]);
+    requiredButton("unit-help").click();
+    expect(
+      document.querySelector('[data-tactical-state="plague"]')?.textContent,
+    ).toBe(`Plague${plague}`);
+    requiredButton("close-unit-help").click();
+
+    selectUnitAt(controller, host, at.bittenArcher);
+    expect(
+      document
+        .querySelector('.v7-selection-dock [data-unit-status="bitten"]')
+        ?.getAttribute("aria-label"),
+    ).toBe(
+      "Bitten. Bitten by Player 2's Zombie: if it dies it rises as Player 2's Zombie, unless a Captain tends it first.",
+    );
+    expect(requiredButton("affliction-disband").dataset.disabledReason).toBe(
+      "bitten",
+    );
+
+    selectUnitAt(controller, host, at.doublyAfflicted);
+    expect(
+      Array.from(
+        document.querySelectorAll(".v7-selection-dock .v7-affliction-chip"),
+      ).map((node) => node.textContent),
+    ).toEqual(["Plague", "Bitten"]);
+    expect(requiredButton("affliction-disband").dataset.disabledReason).toBe(
+      "plagued",
+    );
+
+    selectUnitAt(controller, host, at.knight);
+    expect(document.querySelector(".v7-affliction-chip")).toBeNull();
+    expect(document.querySelector('[data-action="affliction-disband"]')).toBe(
+      null,
+    );
+
+    // The enemy Lich's and the Captain's ? details explain Plague and cures.
+    selectUnitAt(controller, host, at.visibleLich);
+    requiredButton("unit-help").click();
+    expect(
+      requiredElement<HTMLElement>(".v7-unit-help-dialog").textContent,
+    ).toContain(
+      "Living units its attacks hit are plagued: −2 HP each turn, spreading to neighbours, until this Lich dies or a Captain tends them.",
+    );
+    requiredButton("close-unit-help").click();
+    selectUnitAt(controller, host, at.captain);
+    requiredButton("unit-help").click();
+    expect(
+      requiredElement<HTMLElement>(".v7-unit-help-dialog").textContent,
+    ).toContain(
+      "Heals nearby wounded troops by 2 and cures their Plague and bites.",
+    );
+    requiredButton("close-unit-help").click();
+    const tend = requiredButton("command-tend_wounded");
+    expect(tend.getAttribute("aria-label")).toBe(
+      "Tend wounded · Tends 2 units: Fighter: cures Plague; Marksman: +2 HP, cures bite",
+    );
+    expect(tend.querySelector(".v7-undead-preview-chip")?.textContent).toBe(
+      "+2 HP · 2 cures",
+    );
+    tend.click();
+    await waitUntil(() => controller.accepted.length === 1);
+    await waitUntil(
+      () =>
+        document.querySelector("#v7-live")?.textContent ===
+        "Tend cured Plague on 1 and a bite",
+    );
+    expect(controller.snapshot().view?.plagued).toHaveLength(1);
+    selectUnitAt(controller, host, at.plaguedWarrior);
+    expect(document.querySelector(".v7-affliction-chip")).toBeNull();
+
+    host.callbacks?.onSelection(null);
+    requiredButton("compact-menu").click();
+    requiredButton("help").click();
+    const helpText =
+      requiredElement<HTMLElement>(".v7-help-tips").textContent ?? "";
+    expect(helpText).toContain(
+      "Lich shots plague your units: −2 HP each turn, spreading to neighbours, until the Lich dies or a Captain tends them.",
+    );
+    expect(helpText).toContain(
+      "Your units can't strike back at a Vampire's attack.",
+    );
+    app.destroy();
+  });
+
   it("keeps Human-only docks, Help, and leaderboard free of Undead cues", () => {
     const fixture = knightOverrunPublicFixtureV7();
     const controller = new FixtureController(fixture.state);
@@ -283,8 +398,17 @@ describe("Revision 13 Undead DOM", () => {
         null,
       );
       expect(document.body.textContent).not.toMatch(
-        /Undead|Grave|Frenzy|Restless/,
+        /Undead|Grave|Frenzy|Restless|Plague|Bitten|bites/,
       );
+      expect(document.querySelector(".v7-affliction-chip")).toBeNull();
+      expect(document.querySelector('[data-action="affliction-disband"]')).toBe(
+        null,
+      );
+      expect(
+        document
+          .querySelector('[data-action="command-tend_wounded"]')
+          ?.querySelector(".v7-undead-preview-chip") ?? null,
+      ).toBeNull();
     }
     host.callbacks?.onSelection(null);
     requiredButton("compact-menu").click();

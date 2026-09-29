@@ -164,11 +164,13 @@ describe("Revision 13 Undead presentation", () => {
       ),
     );
     const preview = required(queryCombatPreviewV7(view, lich.id, target.id));
+    // Revision 14: the Lich also plagues every surviving splashed unit.
     expect(attack.splash).toEqual(
       preview.splash.map((item) => ({
         at: item.at,
         damage: item.damage,
         dies: item.dies,
+        ...(preview.plagued.includes(item.unitId) ? { plagued: true } : {}),
       })),
     );
     expect(attack.splash?.map((item) => item.at)).toEqual(
@@ -189,7 +191,8 @@ describe("Revision 13 Undead presentation", () => {
       ),
     ).attackerHeal;
     expect(heal).toBeGreaterThan(0);
-    expect(vampireAttack.previewNote).toBe(`Heal +${heal}`);
+    // Revision 14: a Vampire's attack is also unanswered.
+    expect(vampireAttack.previewNote).toBe(`No retaliation · Heal +${heal}`);
     expect(vampireAttack.semanticLabel).toContain(
       `Lifesteal heals the attacker by ${heal} HP.`,
     );
@@ -493,10 +496,12 @@ describe("Revision 13 Undead presentation", () => {
         unitAt(view, UNDEAD_SHOWCASE_V7.lichTarget).id,
       ),
     );
-    expect(combatPreviewNoteV7(plain)).toBeNull();
+    // Revision 14: the Lich shot plagues; without Plague the note is empty.
+    expect(combatPreviewNoteV7({ ...plain, plagued: [] })).toBeNull();
     expect(
       combatPreviewNoteV7({
         ...plain,
+        plagued: [],
         defenderHeal: 2,
         attackerInfected: true,
       }),

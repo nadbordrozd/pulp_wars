@@ -3,6 +3,7 @@ import {
   factionRulesV7,
   gravesEnabledV7,
   playerFactionV7,
+  queryPlayerCommandsV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CoordV7,
@@ -11,6 +12,7 @@ import {
   type PlayerEventV7,
   type PlayerViewV7,
   type RaiseDeadPreviewV7,
+  type TendWoundedPreviewV7,
   type WailPreviewV7,
 } from "../engine/index";
 
@@ -100,6 +102,12 @@ export function undeadAbilityNameV7(
       return "Infect";
     case "LIFESTEAL":
       return "Lifesteal";
+    case "PLAGUE":
+      return "Plague";
+    case "BITE":
+      return "Bite";
+    case "UNANSWERED":
+      return "Unanswered";
     default:
       return null;
   }
@@ -123,6 +131,12 @@ export function undeadAbilityDescriptionV7(
       return "A land unit it kills rises as your Zombie.";
     case "LIFESTEAL":
       return "Heals by the damage it deals when it survives the fight.";
+    case "PLAGUE":
+      return "Living units its attacks hit are plagued: −2 HP each turn, spreading to neighbours, until this Lich dies or a Captain tends them.";
+    case "BITE":
+      return "Living land units it damages are bitten and rise as your Zombies when they die.";
+    case "UNANSWERED":
+      return "Units it attacks never strike back.";
     default:
       return null;
   }
@@ -146,28 +160,224 @@ export function undeadCommandLabelV7(
  */
 export function combatPreviewNoteV7(preview: CombatPreviewV7): string | null {
   const parts: string[] = [];
+  if (preview.noRetaliationReason === "UNANSWERED")
+    parts.push("No retaliation");
   if (preview.attackerHeal > 0) parts.push(`Heal +${preview.attackerHeal}`);
   if (preview.defenderHeal > 0)
     parts.push(`Foe heals +${preview.defenderHeal}`);
   if (preview.defenderInfected) parts.push("Rises as Zombie");
+  if (preview.defenderBittenRises) parts.push("Rises as Zombie (bitten)");
   if (preview.attackerInfected) parts.push("You rise as enemy Zombie");
+  if (preview.attackerBittenRises)
+    parts.push("You rise as enemy Zombie (bitten)");
+  const plague = plagueNote(preview);
+  if (plague !== null) parts.push(plague);
+  if (preview.defenderBitten) parts.push("Bites");
+  if (preview.attackerBitten) parts.push("You get bitten");
   return parts.length === 0 ? null : parts.join(" · ");
 }
 
-/** Screen-reader sentence for the same Lifesteal and Infect outcomes. */
+/** Revision 14: "Plagues target", or the count when splash targets join. */
+function plagueNote(preview: CombatPreviewV7): string | null {
+  const count = preview.plagued.length;
+  if (count === 0) return null;
+  return count === 1 && preview.plagued[0] === preview.targetUnitId
+    ? "Plagues target"
+    : `Plagues ${count} ${count === 1 ? "target" : "targets"}`;
+}
+
+/**
+ * Screen-reader sentence for the same Lifesteal, Infect, Plague, Bitten and
+ * unanswered-attack outcomes. `view` names the plagued units.
+ */
 export function combatPreviewSemanticNoteV7(
   preview: CombatPreviewV7,
+  view?: PlayerViewV7,
 ): string | null {
   const parts: string[] = [];
+  if (preview.noRetaliationReason === "UNANSWERED")
+    parts.push("The defender can't strike back at a Vampire.");
   if (preview.attackerHeal > 0)
     parts.push(`Lifesteal heals the attacker by ${preview.attackerHeal} HP.`);
   if (preview.defenderHeal > 0)
     parts.push(`Lifesteal heals the defender by ${preview.defenderHeal} HP.`);
   if (preview.defenderInfected)
     parts.push("The defender dies and rises as a Zombie.");
+  if (preview.defenderBittenRises)
+    parts.push("The bitten defender dies and rises as a Zombie.");
   if (preview.attackerInfected)
     parts.push("The attacker dies and rises as an enemy Zombie.");
+  if (preview.attackerBittenRises)
+    parts.push("The bitten attacker dies and rises as an enemy Zombie.");
+  if (preview.plagued.length > 0) {
+    const names = preview.plagued.map((id) => {
+      const unit = view?.units.find((candidate) => candidate.id === id);
+      const label =
+        view === undefined || unit === undefined
+          ? "unit"
+          : unitLabelV7(view, unit);
+      return id === preview.targetUnitId ? `the target ${label}` : label;
+    });
+    parts.push(`Plagues ${names.join(", ")}.`);
+  }
+  if (preview.defenderBitten)
+    parts.push("The defender is bitten and would rise as a Zombie on death.");
+  if (preview.attackerBitten)
+    parts.push("The attacker is bitten and would rise as a Zombie on death.");
   return parts.length === 0 ? null : parts.join(" ");
+}
+
+/**
+ * Revision 14 afflictions of one visible unit, from the public `plagued` and
+ * `bitten` lists: a short chip and a one-sentence explanation. A Plague
+ * source is named only when the view shows that Lich.
+ */
+export type AfflictionIdV7 = "PLAGUE" | "BITTEN";
+
+export interface UnitAfflictionV7 {
+  readonly id: AfflictionIdV7;
+  readonly chip: "Plague" | "Bitten";
+  readonly explanation: string;
+}
+
+export function unitAfflictionsV7(
+  view: PlayerViewV7,
+  unitId: number,
+): readonly UnitAfflictionV7[] {
+  const result: UnitAfflictionV7[] = [];
+  const plague = view.plagued.find((entry) => entry.unitId === unitId);
+  if (plague !== undefined) {
+    const source =
+      plague.sourceUnitId === null
+        ? undefined
+        : view.units.find((unit) => unit.id === plague.sourceUnitId);
+    const lich =
+      source === undefined
+        ? "a hidden Lich"
+        : `${possessive(view, source.ownerId)} ${unitLabelV7(view, source)}`;
+    result.push({
+      id: "PLAGUE",
+      chip: "Plague",
+      explanation: `Plague from ${lich}: −2 HP at the start of each of its turns, spreading to adjacent living units, until that Lich dies or a Captain tends it.`,
+    });
+  }
+  const bite = view.bitten.find((entry) => entry.unitId === unitId);
+  if (bite !== undefined) {
+    const biter = possessive(view, bite.biterPlayerId);
+    result.push({
+      id: "BITTEN",
+      chip: "Bitten",
+      explanation: `Bitten by ${biter} Zombie: if it dies it rises as ${biter} Zombie, unless a Captain tends it first.`,
+    });
+  }
+  return result;
+}
+
+/** "your" for the viewer, otherwise "Player N's". */
+function possessive(view: PlayerViewV7, playerId: number): string {
+  if (playerId === view.viewer.id) return "your";
+  const player = view.players.find((candidate) => candidate.id === playerId);
+  return player === undefined ? "an enemy" : `Player ${player.seat + 1}'s`;
+}
+
+/** Lower-case cursor cue, e.g. "plagued, bitten"; empty without statuses. */
+export function afflictionCursorCueV7(
+  view: PlayerViewV7,
+  unitId: number,
+): string {
+  return unitAfflictionsV7(view, unitId)
+    .map((affliction) => (affliction.id === "PLAGUE" ? "plagued" : "bitten"))
+    .join(", ");
+}
+
+const DISBAND_BLOCK_CACHE = new WeakMap<
+  PlayerViewV7,
+  Map<number, "PLAGUED" | "BITTEN" | null>
+>();
+
+/**
+ * Revision 14 (sections 3.6 and 4.5): the reason an own plagued or bitten
+ * unit is not offered Disband, exactly when the same view without its
+ * afflictions would offer it. `PLAGUED` wins when both apply.
+ */
+export function disbandBlockedByAfflictionV7(
+  view: PlayerViewV7,
+  unitId: number,
+): "PLAGUED" | "BITTEN" | null {
+  const plagued = view.plagued.some((entry) => entry.unitId === unitId);
+  const bitten = view.bitten.some((entry) => entry.unitId === unitId);
+  if (!plagued && !bitten) return null;
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (unit === undefined || unit.ownerId !== view.viewer.id) return null;
+  let byUnit = DISBAND_BLOCK_CACHE.get(view);
+  if (byUnit === undefined) {
+    byUnit = new Map();
+    DISBAND_BLOCK_CACHE.set(view, byUnit);
+  }
+  const cached = byUnit.get(unitId);
+  if (cached !== undefined) return cached;
+  const unafflicted: PlayerViewV7 = {
+    ...view,
+    plagued: view.plagued.filter((entry) => entry.unitId !== unitId),
+    bitten: view.bitten.filter((entry) => entry.unitId !== unitId),
+  };
+  const offered = queryPlayerCommandsV7(unafflicted).some(
+    (command) => command.kind === "DISBAND" && command.unitId === unitId,
+  );
+  const reason = !offered ? null : plagued ? "PLAGUED" : "BITTEN";
+  byUnit.set(unitId, reason);
+  return reason;
+}
+
+export const DISBAND_BLOCKED_EXPLANATION_V7: Readonly<
+  Record<"PLAGUED" | "BITTEN", string>
+> = {
+  PLAGUED: "Plagued units can't Disband.",
+  BITTEN: "Bitten units can't Disband.",
+};
+
+/** Accessible Tend Wounded summary with heals and revision-14 cures. */
+export function tendPreviewPresentationV7(
+  view: PlayerViewV7,
+  preview: TendWoundedPreviewV7,
+): { readonly chip: string; readonly description: string } {
+  const cures = preview.results.filter(
+    (result) => result.curedPlague || result.curedBitten,
+  ).length;
+  const healed = preview.results.reduce(
+    (sum, result) => sum + result.amount,
+    0,
+  );
+  const list = preview.results
+    .map((result) => {
+      const unit = view.units.find(
+        (candidate) => candidate.id === result.unitId,
+      );
+      const label = unit === undefined ? "Unit" : unitLabelV7(view, unit);
+      const effects = [
+        ...(result.amount > 0 ? [`+${result.amount} HP`] : []),
+        ...(result.curedPlague ? ["cures Plague"] : []),
+        ...(result.curedBitten ? ["cures bite"] : []),
+      ];
+      return `${label}: ${effects.join(", ")}`;
+    })
+    .join("; ");
+  return {
+    chip: [
+      ...(healed > 0 ? [`+${healed} HP`] : []),
+      ...(cures > 0 ? [`${cures} cure${cures === 1 ? "" : "s"}`] : []),
+    ].join(" · "),
+    description: `Tends ${preview.results.length} ${preview.results.length === 1 ? "unit" : "units"}: ${list}`,
+  };
+}
+
+/** Canvas label of one Tend target: `+2 HP`, `Cure`, or `+2 · Cure`. */
+export function tendTargetLabelV7(
+  result: TendWoundedPreviewV7["results"][number],
+): string {
+  const cure = result.curedPlague || result.curedBitten;
+  if (result.amount > 0 && cure) return `+${result.amount} · Cure`;
+  return cure ? "Cure" : `+${result.amount} HP`;
 }
 
 export interface WailTargetPresentationV7 {
@@ -177,6 +387,8 @@ export interface WailTargetPresentationV7 {
   readonly damage: number;
   readonly dies: boolean;
   readonly leavesGrave: boolean;
+  /** Revision 14: the death rises as the biter's Zombie. */
+  readonly bittenRises: boolean;
 }
 
 export function wailTargetsPresentationV7(
@@ -192,6 +404,7 @@ export function wailTargetsPresentationV7(
       damage: target.damage,
       dies: target.dies,
       leavesGrave: target.leavesGrave,
+      bittenRises: target.bittenRises,
     };
   });
 }
@@ -206,7 +419,7 @@ export function wailPreviewDescriptionV7(
   const list = targets
     .map(
       (target) =>
-        `${target.label} −${target.damage}${target.dies ? " (dies)" : ""}`,
+        `${target.label} −${target.damage}${target.bittenRises ? " (dies, rises as a Zombie)" : target.dies ? " (dies)" : ""}`,
     )
     .join(", ");
   return `Hits ${targets.length} ${targets.length === 1 ? "enemy" : "enemies"} within 2 tiles${kills > 0 ? `, ${kills} ${kills === 1 ? "dies" : "die"}` : ""}: ${list}`;
@@ -224,9 +437,11 @@ export function devourPreviewDescriptionV7(preview: DevourPreviewV7): string {
 }
 
 /**
- * Notification text for revision-13 events in one projected boundary. The
- * Grave-only case is logged but not toasted, so ordinary Undead-match kills
- * stay quiet.
+ * Notification text for revision-13 and revision-14 events in one projected
+ * boundary. The Grave-only case is logged but not toasted, so ordinary
+ * Undead-match kills stay quiet; Plague damage and spread toast only when
+ * they reach the viewer's units. Human-only matches never emit these events
+ * (and their Tend results never cure), so their notices are unchanged.
  */
 export function undeadBoundaryNoticeV7(
   events: readonly PlayerEventV7[],
@@ -251,6 +466,7 @@ export function undeadBoundaryNoticeV7(
   const parts: string[] = [];
   let toast = false;
   let graves = 0;
+  let plagueDeaths = 0;
   for (const event of events) {
     if (event.kind === "DEAD_RAISED") {
       toast = true;
@@ -276,7 +492,58 @@ export function undeadBoundaryNoticeV7(
         victim === undefined ? "unit" : unitLabelV7(after, victim);
       parts.push(`A fallen ${victimLabel} rose as a Zombie`);
     } else if (event.kind === "GRAVE_CREATED") graves += 1;
+    else if (event.kind === "PLAGUE_DAMAGED") {
+      // Revision 14 Start Turn Plague damage of one player's units.
+      const own = event.playerId === viewerId;
+      if (own) toast = true;
+      const count = event.results.length;
+      parts.push(
+        `Plague hit ${count} of ${possessive(after, event.playerId)} ${count === 1 ? "unit" : "units"}`,
+      );
+    } else if (event.kind === "UNIT_DIED" && event.cause === "PLAGUE")
+      plagueDeaths += 1;
+    else if (event.kind === "PLAGUE_SPREAD") {
+      const count = event.results.length;
+      if (
+        event.results.some(
+          (result) => unitById(result.unitId)?.ownerId === viewerId,
+        )
+      )
+        toast = true;
+      parts.push(`Plague spread to ${count} ${count === 1 ? "unit" : "units"}`);
+    } else if (event.kind === "PLAGUE_CLEARED") {
+      toast = true;
+      const count = event.unitIds.length;
+      parts.push(
+        `Plague lifted from ${count} ${count === 1 ? "unit" : "units"}`,
+      );
+    } else if (event.kind === "BITTEN_UNIT_RISEN") {
+      toast = true;
+      const victim = unitById(event.victimUnitId);
+      const victimLabel =
+        victim === undefined ? "unit" : unitLabelV7(after, victim);
+      parts.push(
+        `A bitten ${victimLabel} rose as ${possessive(after, event.playerId)} Zombie`,
+      );
+    } else if (event.kind === "WOUNDED_TENDED") {
+      const plague = event.results.filter((result) => result.curedPlague);
+      const bites = event.results.filter((result) => result.curedBitten);
+      if (plague.length + bites.length > 0) {
+        toast = true;
+        const cures = [
+          ...(plague.length > 0 ? [`Plague on ${plague.length}`] : []),
+          ...(bites.length > 0
+            ? [`${bites.length === 1 ? "a bite" : `${bites.length} bites`}`]
+            : []),
+        ];
+        parts.push(`Tend cured ${cures.join(" and ")}`);
+      }
+    }
   }
+  if (plagueDeaths > 0)
+    parts.push(
+      `${plagueDeaths} ${plagueDeaths === 1 ? "unit" : "units"} fell to Plague`,
+    );
   if (graves > 0)
     parts.push(`${graves} ${graves === 1 ? "Grave" : "Graves"} left`);
   return parts.length === 0 ? null : { text: parts.join(" · "), toast };

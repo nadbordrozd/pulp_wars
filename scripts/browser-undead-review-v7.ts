@@ -4,6 +4,12 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { prepareSmokeOutput } from "./browser-smoke-output";
+import {
+  AFFLICTION_HUMAN_MARKERS_V7,
+  afflictionEvidenceExpressionV7,
+  undeadFixtureMountExpressionV7,
+  type UndeadUiFixtureNameV7,
+} from "./browser-undead-fixture-v7";
 
 /**
  * Revision 13 Undead UI visual review (pulp_wars-vkq.8). It captures the
@@ -169,6 +175,111 @@ try {
     );
     await capture(connection, `showcase-${art}-after-wail-desktop.png`);
   }
+  // Revision 14 (pulp_wars-vkq.19): Plague and Bitten markers, chips,
+  // Disband explanation, Tend cures, and the revision-14 attack previews.
+  for (const art of ["legacy", "chibi"] as const) {
+    await viewport(connection, "desktop");
+    await mountShowcase(connection, art, "afflictionHumanFixtureV7");
+    const human = (await evaluate(
+      connection,
+      `globalThis.__UNDEAD_REVIEW__.afflictions.human`,
+    )) as Record<string, Coord>;
+    await activate(connection, human.plaguedWarrior as Coord);
+    const warrior = (await evaluate(
+      connection,
+      afflictionEvidenceExpressionV7(),
+      true,
+    )) as {
+      readonly markers: readonly string[];
+      readonly chips: readonly string[];
+      readonly disband: string | null;
+      readonly disbandDisabled: string | null;
+    };
+    evidence[`${art}PlaguedWarrior`] = warrior;
+    if (
+      JSON.stringify(warrior.markers) !==
+        JSON.stringify(AFFLICTION_HUMAN_MARKERS_V7) ||
+      warrior.chips.length !== 1 ||
+      !warrior.chips[0]?.startsWith("Plague. Plague from Player 2's Lich") ||
+      warrior.disband !== "Disband unavailable. Plagued units can't Disband." ||
+      warrior.disbandDisabled !== "true"
+    )
+      throw new Error(`Plague dock missing: ${JSON.stringify(warrior)}`);
+    await capture(connection, `affliction-${art}-plagued-desktop.png`);
+    await activate(connection, human.doublyAfflicted as Coord);
+    await capture(connection, `affliction-${art}-doubly-desktop.png`);
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="unit-help"]')?.click()`,
+    );
+    await delay(300);
+    evidence[`${art}DoublyHelp`] = await evaluate(
+      connection,
+      `Array.from(document.querySelectorAll('.v7-unit-help-dialog .v7-tactical-state')).map((node) => node.textContent)`,
+    );
+    await capture(connection, `affliction-${art}-doubly-help-desktop.png`);
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="close-unit-help"]')?.click()`,
+    );
+    await delay(300);
+    // The smallest zoom (CHIBI step 0.75) is where the markers must still read.
+    for (let step = 0; step < 4; step += 1)
+      await evaluate(
+        connection,
+        `document.querySelector('[data-action="zoom-out"]')?.click()`,
+      );
+    await delay(500);
+    evidence[`${art}MinimumZoom`] = await evaluate(
+      connection,
+      `({ tile: document.querySelector('canvas.board-canvas-v7')?.dataset.tileCssPx ?? null, step: document.querySelector('canvas.board-canvas-v7')?.dataset.zoomStep ?? null })`,
+    );
+    await capture(connection, `affliction-${art}-minimum-zoom-desktop.png`);
+    await activate(connection, human.captain as Coord);
+    const tend = await evaluate(
+      connection,
+      `document.querySelector('[data-action="command-tend_wounded"]')?.getAttribute('aria-label') ?? null`,
+    );
+    evidence[`${art}TendButton`] = tend;
+    if (typeof tend !== "string" || !tend.includes("cures Plague"))
+      throw new Error(`Tend cure preview missing: ${String(tend)}`);
+    await capture(connection, `affliction-${art}-tend-desktop.png`);
+    await activate(connection, human.knight as Coord);
+    await capture(connection, `affliction-${art}-bitten-attack-desktop.png`);
+    await viewport(connection, "phone");
+    await mountShowcase(connection, art, "afflictionHumanFixtureV7");
+    await activate(connection, human.doublyAfflicted as Coord);
+    await capture(connection, `affliction-${art}-doubly-phone.png`);
+    await viewport(connection, "desktop");
+    await mountShowcase(connection, art, "afflictionUndeadFixtureV7");
+    const undead = (await evaluate(
+      connection,
+      `globalThis.__UNDEAD_REVIEW__.afflictions.undead`,
+    )) as Record<string, Coord>;
+    await activate(connection, undead.lich as Coord);
+    await keys(connection, ["ArrowLeft", "ArrowLeft"]);
+    evidence[`${art}LichCursor`] = await evaluate(
+      connection,
+      `document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? null`,
+    );
+    await capture(connection, `affliction-${art}-lich-plague-desktop.png`);
+    await activate(connection, undead.zombie as Coord);
+    await capture(connection, `affliction-${art}-zombie-bite-desktop.png`);
+    await activate(connection, undead.vampire as Coord);
+    await capture(connection, `affliction-${art}-vampire-desktop.png`);
+    await activate(connection, undead.banshee as Coord);
+    evidence[`${art}BittenWail`] = await evaluate(
+      connection,
+      `document.querySelector('[data-action="command-wail"]')?.getAttribute('aria-label') ?? null`,
+    );
+    await capture(connection, `affliction-${art}-wail-bitten-desktop.png`);
+    await activate(connection, undead.skeleton as Coord);
+    await capture(connection, `affliction-${art}-skeleton-bitten-desktop.png`);
+    await viewport(connection, "phone");
+    await mountShowcase(connection, art, "afflictionUndeadFixtureV7");
+    await activate(connection, undead.lich as Coord);
+    await capture(connection, `affliction-${art}-lich-phone.png`);
+  }
   if (errors.length > 0)
     throw new Error(`Browser errors: ${errors.join("\n")}`);
   await writeFile(
@@ -195,6 +306,7 @@ function url(params: Record<string, string>): string {
 async function mountShowcase(
   connection: Connection,
   art: ArtSet,
+  fixture: UndeadUiFixtureNameV7 = "undeadShowcaseFixtureV7",
 ): Promise<void> {
   await navigate(connection, url({ art }));
   await waitFor(
@@ -203,55 +315,10 @@ async function mountShowcase(
   );
   await evaluate(
     connection,
-    `(async () => {
-      const engine = await import('/src/engine/index.ts');
-      const fixtures = await import('/tests/fixtures/v7-undead-ui.ts');
-      const { Ruleset7DomAppView } = await import('/src/render/dom/app-view-v7.ts');
-      const { CanvasBoardHostV7 } = await import('/src/render/canvas/board-host-v7.ts');
-      globalThis.__PULP_WARS_APP__?.destroy();
-      let state = fixtures.undeadShowcaseFixtureV7();
-      const subscribers = new Set();
-      const boundarySubscribers = new Set();
-      const traces = [];
-      const ai = { active: false, fastForward: false, policySlices: 0, acceptedCommands: 0, lastSliceMilliseconds: 0, maximumSliceMilliseconds: 0 };
-      const snapshot = () => {
-        const view = engine.viewForV7(state, state.humanPlayerId);
-        return { phase: 'ACTIVE', view, offeredCommands: engine.queryPlayerCommandsV7(view), savedAt: null, hasStoredSave: false, recovery: null, saveWarning: null, diagnostic: null, transitioning: false, ai };
-      };
-      const controller = {
-        snapshot,
-        subscribe(subscriber) { subscribers.add(subscriber); subscriber(snapshot()); return () => subscribers.delete(subscriber); },
-        subscribeAcceptedBoundary(subscriber) { boundarySubscribers.add(subscriber); return () => boundarySubscribers.delete(subscriber); },
-        async dispatch(command) {
-          const beforeState = state;
-          const beforeView = engine.viewForV7(beforeState, beforeState.humanPlayerId);
-          const applied = engine.applyCommandV7(beforeState, beforeState.humanPlayerId, command);
-          if (!applied.accepted) return { accepted: false, reason: 'ENGINE_REJECTED', error: applied.error };
-          state = applied.state;
-          const afterView = engine.viewForV7(state, state.humanPlayerId);
-          const playerEvents = engine.projectEventsV7(beforeState, state, state.humanPlayerId, applied.events);
-          traces.push({ command, eventKinds: playerEvents.events.map((event) => event.kind) });
-          const boundary = { actor: 'HUMAN', beforeView, afterView, playerEvents };
-          for (const subscriber of boundarySubscribers) subscriber(boundary);
-          const next = snapshot();
-          for (const subscriber of subscribers) subscriber(next);
-          return { accepted: true, beforeView, afterView, playerEvents };
-        },
-        async launch() { throw new Error('fixture launch unavailable'); },
-        async resume() { return true; },
-        async returnToMenu() { return false; },
-        async progressAiTurns() { return { ok: false, cancelled: true, acceptedCommands: 0, diagnostic: 'fixture' }; },
-        async restart() { return { ok: false, code: 'CONTROLLER_DESTROYED', diagnostic: 'fixture' }; },
-        async deleteStoredSave() { return false; },
-        setFastForward() {},
-        exportSafeLog() { return null; },
-        exportDebugBundle() { return { ok: false, reason: 'NO_ACTIVE_MATCH' }; },
-      };
-      const root = document.querySelector('#app');
-      const boardHost = new CanvasBoardHostV7(document);
-      const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: null, artSet: ${JSON.stringify(art.toUpperCase())} });
-      globalThis.__UNDEAD_REVIEW__ = { boardHost, traces, view, at: fixtures.UNDEAD_SHOWCASE_V7 };
-    })()`,
+    undeadFixtureMountExpressionV7(
+      fixture,
+      art === "chibi" ? "CHIBI" : "LEGACY",
+    ),
     true,
   );
   await delay(1_200);

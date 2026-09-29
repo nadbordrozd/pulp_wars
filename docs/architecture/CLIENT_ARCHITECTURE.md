@@ -8,7 +8,10 @@ The current client runs `pulp-wars-poc-7r14` (autosave
 [revision-13 Undead overlay](../product/RULESET_7_REVISION_13_UNDEAD.md) and
 [revision-14 balance overlay](../product/RULESET_7_REVISION_14_BALANCE.md)
 (Plague, Bitten, and the income, village, Vampire, and Lich changes; its UI
-surfaces follow in `pulp_wars-vkq.19`). The
+surfaces are described in the
+[Screen Flow revision-14 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-14-plague-and-bitten-overlay)
+and read only the public `plagued` and `bitten` view lists, previews, and
+projected events). The
 engine registers the Undead faction per seat. The setup UI offers a faction
 per seat only behind the `?undead=1` development flag, which the bootstrap
 reads (`src/app/undead-flag-v7.ts`) and never persists; saves with Undead

@@ -5,7 +5,8 @@
  * both art sets share them.
  */
 
-export type AbilityPreviewStyleV7 = "WAIL" | "RAISE" | "DEVOUR" | "SPLASH";
+export type AbilityPreviewStyleV7 =
+  "WAIL" | "RAISE" | "DEVOUR" | "SPLASH" | "TEND";
 
 /** Legacy and CHIBI Undead badge frames, relative to the cell centre. */
 export const UNDEAD_BADGE_FRAME_V7 = {
@@ -113,6 +114,223 @@ export function drawUndeadBadgeV7(
   context.restore();
 }
 
+/**
+ * Revision 14 status markers (Plague and Bitten), public to every viewer.
+ * The subject names the art slot: vkq.14 may register a raster for it, in
+ * which case the renderer passes that image and the code-drawn glyph is
+ * skipped. Slot 0 takes the first affliction, slot 1 the second.
+ */
+export type AfflictionSubjectV7 = "STATUS:PLAGUED" | "STATUS:BITTEN";
+
+export function afflictionSubjectV7(
+  affliction: "PLAGUE" | "BITTEN",
+): AfflictionSubjectV7 {
+  return affliction === "PLAGUE" ? "STATUS:PLAGUED" : "STATUS:BITTEN";
+}
+
+/**
+ * Marker frames relative to the cell centre (world units, 128 = one cell),
+ * stacked downwards. LEGACY: left of the sprite, between the Field Defense
+ * symbol and the owner seat badge. CHIBI: just right of the unit's own
+ * vertical HP bar, below the top-left Undead badge and Field Defense corner
+ * and above the seat badge, so they read as the unit's own and never meet
+ * another overlay.
+ */
+export const AFFLICTION_MARKER_FRAME_V7 = {
+  legacy: [
+    { left: -45, top: -31, size: 21 },
+    { left: -45, top: -9, size: 21 },
+  ],
+  chibi: [
+    { left: -52, top: -36, size: 26 },
+    { left: -52, top: -8, size: 26 },
+  ],
+} as const;
+
+const MARKER_OUTLINE = "#0d0f0c";
+
+const PLAGUE_COLORS = {
+  disc: "#1b1e19",
+  rim: "#d4dbc4",
+  cloud: "#a4bb86",
+  cloudShade: "#6b7c59",
+  outline: "#10160c",
+} as const;
+
+const BITE_COLORS = {
+  disc: "#4a1519",
+  rim: "#f0d6c0",
+  tooth: "#f7eddc",
+  blood: "#e2434b",
+} as const;
+
+/** Draws one affliction marker (or its registered raster) in its slot. */
+export function drawAfflictionMarkerV7(
+  context: CanvasRenderingContext2D,
+  subject: AfflictionSubjectV7,
+  x: number,
+  y: number,
+  zoom: number,
+  options: {
+    readonly chibi: boolean;
+    readonly slot: number;
+    readonly highContrast: boolean;
+    readonly raster?: CanvasImageSource | null;
+  },
+): void {
+  const frames = options.chibi
+    ? AFFLICTION_MARKER_FRAME_V7.chibi
+    : AFFLICTION_MARKER_FRAME_V7.legacy;
+  const frame = frames[Math.min(options.slot, frames.length - 1)] ?? frames[0];
+  const size = frame.size * zoom;
+  const left = x + frame.left * zoom;
+  const top = y + frame.top * zoom;
+  context.save();
+  if (options.raster !== undefined && options.raster !== null) {
+    context.drawImage(options.raster, left, top, size, size);
+    context.restore();
+    return;
+  }
+  const cx = left + size / 2;
+  const cy = top + size / 2;
+  const hc = options.highContrast;
+  const plague = subject === "STATUS:PLAGUED";
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  context.fillStyle = hc
+    ? "#000000"
+    : plague
+      ? PLAGUE_COLORS.disc
+      : BITE_COLORS.disc;
+  context.strokeStyle = hc
+    ? "#ffffff"
+    : plague
+      ? PLAGUE_COLORS.rim
+      : BITE_COLORS.rim;
+  // A dark outer ring keeps the disc readable on grass, sand and snow; the
+  // light inner rim keeps it readable on dark forest and water.
+  context.beginPath();
+  context.arc(cx, cy, size / 2, 0, Math.PI * 2);
+  context.fill();
+  const rim = context.strokeStyle;
+  context.strokeStyle = hc ? "#000000" : MARKER_OUTLINE;
+  context.lineWidth = Math.max(1.5, 3 * zoom);
+  context.stroke();
+  context.strokeStyle = rim;
+  context.lineWidth = Math.max(1, 1.4 * zoom);
+  context.beginPath();
+  context.arc(cx, cy, size / 2 - 1.2 * zoom, 0, Math.PI * 2);
+  context.stroke();
+  if (plague) drawPlagueCloud(context, cx, cy, size, zoom, hc);
+  else drawBiteMark(context, cx, cy, size, hc);
+  context.restore();
+}
+
+/** A green-grey miasma cloud with two falling drops. */
+function drawPlagueCloud(
+  context: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  size: number,
+  zoom: number,
+  hc: boolean,
+): void {
+  const s = size;
+  const puffs: readonly (readonly [number, number, number])[] = [
+    [-0.16, -0.02, 0.13],
+    [0.0, -0.11, 0.16],
+    [0.17, -0.01, 0.12],
+    [0.02, 0.05, 0.14],
+  ];
+  context.fillStyle = hc ? "#ffffff" : PLAGUE_COLORS.cloud;
+  context.strokeStyle = hc ? "#ffffff" : PLAGUE_COLORS.outline;
+  context.lineWidth = Math.max(1, 1.2 * zoom);
+  context.beginPath();
+  for (const [dx, dy, r] of puffs) {
+    context.moveTo(cx + dx * s + r * s, cy + dy * s);
+    context.arc(cx + dx * s, cy + dy * s, r * s, 0, Math.PI * 2);
+  }
+  context.stroke();
+  context.fill();
+  if (!hc) {
+    context.fillStyle = PLAGUE_COLORS.cloudShade;
+    context.beginPath();
+    context.ellipse(
+      cx + 0.02 * s,
+      cy + 0.14 * s,
+      0.22 * s,
+      0.06 * s,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    context.fill();
+  }
+  context.fillStyle = hc ? "#ffffff" : PLAGUE_COLORS.rim;
+  for (const dx of [-0.12, 0.13]) {
+    context.beginPath();
+    context.arc(
+      cx + dx * s,
+      cy + 0.33 * s,
+      Math.max(0.6, 0.055 * s),
+      0,
+      Math.PI * 2,
+    );
+    context.fill();
+  }
+}
+
+/** Two opposing rows of teeth closing on a red wound. */
+function drawBiteMark(
+  context: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  size: number,
+  hc: boolean,
+): void {
+  const s = size;
+  if (!hc) {
+    context.fillStyle = BITE_COLORS.blood;
+    context.beginPath();
+    context.ellipse(cx, cy, 0.27 * s, 0.09 * s, 0, 0, Math.PI * 2);
+    context.fill();
+  }
+  context.fillStyle = hc ? "#ffffff" : BITE_COLORS.tooth;
+  const tooth = (tipX: number, baseY: number, tipY: number, half: number) => {
+    context.beginPath();
+    context.moveTo(tipX - half, baseY);
+    context.lineTo(tipX, tipY);
+    context.lineTo(tipX + half, baseY);
+    context.closePath();
+    context.fill();
+  };
+  // Upper jaw: four teeth pointing down along a shallow arc.
+  for (const [dx, lift] of [
+    [-0.24, 0.05],
+    [-0.08, 0],
+    [0.08, 0],
+    [0.24, 0.05],
+  ] as const)
+    tooth(
+      cx + dx * s,
+      cy - (0.26 - lift) * s,
+      cy - (0.02 - lift * 0.4) * s,
+      0.075 * s,
+    );
+  // Lower jaw: three teeth pointing up, offset between the upper ones.
+  for (const [dx, lift] of [
+    [-0.16, 0.04],
+    [0, 0],
+    [0.16, 0.04],
+  ] as const)
+    tooth(
+      cx + dx * s,
+      cy + (0.26 - lift) * s,
+      cy + (0.03 + lift * 0.4) * s,
+      0.075 * s,
+    );
+}
+
 const STYLE_COLORS: Readonly<
   Record<
     AbilityPreviewStyleV7,
@@ -123,6 +341,7 @@ const STYLE_COLORS: Readonly<
   RAISE: { fill: "rgba(120, 230, 150, 0.2)", stroke: "#8ff0a4" },
   DEVOUR: { fill: "rgba(255, 128, 104, 0.2)", stroke: "#ff9a84" },
   SPLASH: { fill: "rgba(255, 170, 70, 0.18)", stroke: "#ffb35c" },
+  TEND: { fill: "rgba(103, 229, 202, 0.18)", stroke: "#67e5ca" },
 };
 
 /** Faint fill of one previewed area cell (Wail radius or splash ring). */

@@ -132,8 +132,10 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(BROWSER_RELEASE_SOURCE_PATHS_V7).toContain(
       "scripts/browser-smoke-output.ts",
     );
-    // Two release captures plus four ?undead=1 probe captures.
-    expect(source.match(/await capture\(/g)).toHaveLength(6);
+    // Two release captures, four ?undead=1 probe captures, and one
+    // revision-14 Plague/Bitten fixture capture per art set (in a loop).
+    expect(source.match(/await capture\(/g)).toHaveLength(7);
+    expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");
     expect(source).toContain("await stopBrowser(browser)");

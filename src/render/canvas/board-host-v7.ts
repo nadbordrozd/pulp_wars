@@ -4,7 +4,10 @@ import {
   type PlayerEventEnvelopeV7,
   type PlayerViewV7,
 } from "../../engine/index";
-import { unitIsUndeadV7 } from "../undead-presentation-v7";
+import {
+  afflictionCursorCueV7,
+  unitIsUndeadV7,
+} from "../undead-presentation-v7";
 import {
   MAX_ZOOM,
   MIN_ZOOM,
@@ -925,7 +928,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         : `${city.isCapital ? "Capital" : "City"} level ${city.level}`,
       unit === undefined
         ? ""
-        : `${unitName(model.view, unit)}, ${unit.hp} of ${unit.maxHp} HP`,
+        : [
+            `${unitName(model.view, unit)}, ${unit.hp} of ${unit.maxHp} HP`,
+            afflictionCursorCueV7(model.view, unit.id),
+          ]
+            .filter(Boolean)
+            .join(", "),
       actions.length === 0 ? "" : `Available: ${actions.join(", ")}`,
     ]
       .filter(Boolean)

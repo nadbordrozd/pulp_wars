@@ -1953,6 +1953,43 @@
   gap: 0.15rem;
 }
 
+/* Revision 14: Plague and Bitten status chips, public to every viewer. */
+.v7-affliction-chip {
+  padding: 0.12rem 0.45rem 0.12rem 0.3rem;
+  font-size: 0.7rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.v7-affliction-chip .v7-ui-icon {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.v7-affliction-chip[data-unit-status="plague"] {
+  border: 1px solid #b4d77a66;
+  background: #1c2618;
+  color: #cfe6a6;
+}
+
+.v7-affliction-chip[data-unit-status="bitten"] {
+  border: 1px solid #f0d6c066;
+  background: #3d1216;
+  color: #f7ddd0;
+}
+
+.v7-context-action[data-disabled-reason="plagued"],
+.v7-context-action[data-disabled-reason="bitten"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.v7-tactical-state[data-tactical-state="plague"],
+.v7-tactical-state[data-tactical-state="bitten"] {
+  display: grid;
+  gap: 0.15rem;
+}
+
 @media (max-width: 599px) {
   .v7-setup-factions {
     grid-template-columns: minmax(0, 1fr);

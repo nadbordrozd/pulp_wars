@@ -22,7 +22,9 @@ export type UiIconIdV7 =
   | "skull"
   | "grave"
   | "devour"
-  | "wail";
+  | "wail"
+  | "plague"
+  | "bite";
 
 const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   hp: "M12 20.5 4.2 12.8a4.6 4.6 0 0 1 6.5-6.5L12 7.6l1.3-1.3a4.6 4.6 0 0 1 6.5 6.5Z",
@@ -50,6 +52,10 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   devour:
     "M4 9c2 3 14 3 16 0M4 9l2 6c3 3 9 3 12 0l2-6M8 10.5l1 2 1-2M14 10.5l1 2 1-2",
   wail: "M12 12m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14",
+  // Revision 14: a miasma cloud with falling drops, and a bite of two jaws.
+  plague:
+    "M7.5 15.5a3.5 3.5 0 0 1-.4-7A5 5 0 0 1 16.6 7.6a3.9 3.9 0 0 1 .4 7.9ZM9 18.5v1.5M12.5 18.5v2.5M16 18.5v1.5",
+  bite: "M4 8.5l2.7 4.5 2.6-4.5 2.7 4.5 2.7-4.5 2.6 4.5L20 8.5M5.5 18l2.3-3.5 2.4 3.5 1.8-3.5 1.8 3.5 2.4-3.5 2.3 3.5",
 };
 
 const FILLED: ReadonlySet<UiIconIdV7> = new Set([
