@@ -87,8 +87,10 @@ Rules for resolution:
   tunic, hood, roofs, banners or sails. It must read at a glance at zoom 0.75.
   The target is 20–40% of opaque pixels.
 - Assets are generated with the owner areas in one **key colour** (bright
-  red, `#d8262c`). Nothing else in the asset may be red or red-brown: shields,
-  boots and bows use browns that are clearly not red.
+  red, `#d8262c`). Nothing else in the asset may be red or red-brown: every
+  non-owner material, and its shading, uses colours that are clearly not red
+  or red-brown. Each faction fragment chooses its own materials and their
+  shading within this rule (see [factions](factions/README.md)).
 - The pipeline extracts a **checked-in owner-mask PNG** per asset with strict
   thresholds. A mask-QA step rejects bleed onto non-owner materials, and a
   hand-corrected mask may be checked in as an override.
