@@ -6,7 +6,7 @@
  *   npm run art:chibi -- generate --batch N --ids a,b      (PixelLab calls)
  *   npm run art:chibi -- accept --batch N --id RECIPE --candidate K
  *       --notes TEXT --native-pass --enlarged-pass --owners-pass
- *       --no-plate-pass --camera-pass
+ *       --no-plate-pass --camera-pass [--asset VARIANT]
  *   npm run art:chibi -- reject --batch N --id RECIPE --notes TEXT
  *   npm run art:chibi -- registry --batch N
  *   npm run art:chibi -- dry-run --batch 0
@@ -140,6 +140,7 @@ async function main(): Promise<void> {
         noPlate: process.argv.includes("--no-plate-pass"),
         camera: process.argv.includes("--camera-pass"),
       },
+      option("--asset"),
     );
     return;
   }

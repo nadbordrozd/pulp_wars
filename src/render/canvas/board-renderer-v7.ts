@@ -127,6 +127,8 @@ export interface BoardRenderPlanEntryV7 {
   readonly edge?: TileEdge;
   readonly targetEdges?: readonly TileEdge[];
   readonly boundaryStyle?: "OWNER" | "CITY";
+  /** CITY only: the owner's capital (marked by a crown in the CHIBI art set). */
+  readonly capital?: boolean;
 }
 
 export interface BoardRenderPlanV7 {
@@ -295,6 +297,7 @@ export function buildBoardRenderPlanV7(
       ownerId: city.ownerId,
       ...ownerPresentation(view, city.ownerId),
       label: `${city.isCapital ? "Capital" : "City"} ${city.id}`,
+      ...(city.isCapital ? { capital: true } : {}),
       value: city.level,
       population: city.population,
       assetId: `building-city-${cityArtLevel(city.level)}`,
@@ -507,6 +510,58 @@ type PopulationPipStateV7 = keyof Pick<
   typeof POPULATION_PIP_COLORS_V7,
   "filled" | "empty" | "deficit"
 >;
+
+/**
+ * CHIBI overlay frame, in world units (128 = one cell, centre at 0,0). A
+ * standard chibi unit fills the middle 56 of 80 CSS px, bottom-aligned, so
+ * its overlays sit in the free side strips around it: seat badge in the
+ * bottom-left corner, a vertical HP bar in the left strip above it,
+ * population pips stacked up the right strip, and the capital crown in the
+ * top-right corner.
+ */
+export const CHIBI_OVERLAY_FRAME_V7 = {
+  seatBadge: { left: -63, top: 44, size: 18 },
+  hpBar: { left: -63, top: -36, width: 9, height: 76 },
+  populationColumn: { left: 46, bottom: 62 },
+  crown: { left: 42, right: 62, bottom: -44 },
+} as const;
+
+/**
+ * CHIBI capital cue: a gold crown in the cell's top-right corner, drawn with
+ * the seat badge's outline. It sits outside a standard unit's 56 px width,
+ * so a garrisoned unit never hides it. Sizes are world units (128 = cell).
+ */
+export function drawCapitalCrownV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+): void {
+  const { crown } = CHIBI_OVERLAY_FRAME_V7;
+  const left = x + crown.left * zoom;
+  const right = x + crown.right * zoom;
+  const bottom = y + crown.bottom * zoom;
+  const mid = (left + right) / 2;
+  context.save();
+  context.beginPath();
+  context.moveTo(left, bottom);
+  context.lineTo(left, bottom - 13 * zoom);
+  context.lineTo(left + 5 * zoom, bottom - 7 * zoom);
+  context.lineTo(mid, bottom - 16 * zoom);
+  context.lineTo(right - 5 * zoom, bottom - 7 * zoom);
+  context.lineTo(right, bottom - 13 * zoom);
+  context.lineTo(right, bottom);
+  context.closePath();
+  context.fillStyle = "#f4c542";
+  context.strokeStyle = "#171722";
+  context.lineWidth = 2 * zoom;
+  context.lineJoin = "miter";
+  context.fill();
+  context.stroke();
+  context.fillStyle = "#171722";
+  context.fillRect(left, bottom - 4 * zoom, right - left, 1.5 * zoom);
+  context.restore();
+}
 
 function drawPopulationPipV7(
   context: CanvasRenderingContext2D,
@@ -764,9 +819,13 @@ export function drawBoardV7(input: {
         }
         continue;
       }
+      // A unit or city drawn with (or loading) a registered chibi raster uses
+      // the chibi overlay frame; legacy fallbacks keep the legacy overlays.
+      let chibiPiece = false;
       if (entry.assetId !== undefined) {
         const chibi = resolveChibi(entry);
         const chibiReady = chibi?.kind === "READY" ? chibi : null;
+        chibiPiece = chibi !== null && chibi.kind !== "MISSING";
         const image =
           chibi === null || chibi.kind === "MISSING"
             ? input.images.resolve(entry.assetId)
@@ -796,7 +855,9 @@ export function drawBoardV7(input: {
                   input.highContrast ?? false,
                 )
               : null;
-            const scale = readiness?.scale ?? 1;
+            // CHIBI: the ready cue is the glow alone, so the sprite stays
+            // opaque at its 1:1 canvas and the city under it stays readable.
+            const scale = chibiPiece ? 1 : (readiness?.scale ?? 1);
             const jump =
               input.selectionJump?.unitId === Number(entry.key.slice(5))
                 ? selectionJumpOffsetCssPx(
@@ -811,7 +872,7 @@ export function drawBoardV7(input: {
               width: rect.width * scale,
               height: rect.height * scale,
             };
-            alpha = readiness?.opacity ?? 1;
+            alpha = chibiPiece ? 1 : (readiness?.opacity ?? 1);
             if (readiness !== null) {
               const glow = {
                 color: readiness.glow.color,
@@ -856,41 +917,51 @@ export function drawBoardV7(input: {
         (entry.kind === "UNIT" || entry.kind === "CITY") &&
         entry.ownerColor !== undefined
       ) {
+        const badge = chibiPiece
+          ? CHIBI_OVERLAY_FRAME_V7.seatBadge
+          : { left: -31, top: 13, size: 18 };
         context.fillStyle = entry.ownerColor;
         context.strokeStyle = "#171722";
         context.lineWidth = 2 * camera.zoom;
         context.fillRect(
-          x - 31 * camera.zoom,
-          y + 13 * camera.zoom,
-          18 * camera.zoom,
-          18 * camera.zoom,
+          x + badge.left * camera.zoom,
+          y + badge.top * camera.zoom,
+          badge.size * camera.zoom,
+          badge.size * camera.zoom,
         );
         context.strokeRect(
-          x - 31 * camera.zoom,
-          y + 13 * camera.zoom,
-          18 * camera.zoom,
-          18 * camera.zoom,
+          x + badge.left * camera.zoom,
+          y + badge.top * camera.zoom,
+          badge.size * camera.zoom,
+          badge.size * camera.zoom,
         );
         context.fillStyle = "#171722";
         context.font = `${800} ${11 * camera.zoom}px system-ui`;
         context.textAlign = "center";
         context.fillText(
           String((entry.ownerSeat ?? 0) + 1),
-          x - 22 * camera.zoom,
-          y + 27 * camera.zoom,
+          x + (badge.left + badge.size / 2) * camera.zoom,
+          y + (badge.top + 14) * camera.zoom,
         );
       }
+      if (entry.kind === "CITY" && entry.capital === true && chibiPiece)
+        drawCapitalCrownV7(context, x, y, camera.zoom);
       if (entry.kind === "CITY") {
         const width = Math.max(1, (entry.value ?? 1) + 1);
         const positive = Math.max(0, Math.min(width, entry.population ?? 0));
         const negative = Math.max(0, Math.min(width, -(entry.population ?? 0)));
         const pipSize = 7 * camera.zoom;
         const pipStep = 9 * camera.zoom;
+        const column = CHIBI_OVERLAY_FRAME_V7.populationColumn;
         for (let index = 0; index < width; index += 1) {
           drawPopulationPipV7(
             context,
-            x - (width * pipStep - 2 * camera.zoom) / 2 + index * pipStep,
-            y + 34 * camera.zoom,
+            chibiPiece
+              ? x + column.left * camera.zoom
+              : x - (width * pipStep - 2 * camera.zoom) / 2 + index * pipStep,
+            chibiPiece
+              ? y + column.bottom * camera.zoom - pipSize - index * pipStep
+              : y + 34 * camera.zoom,
             pipSize,
             index < positive
               ? "filled"
@@ -906,20 +977,40 @@ export function drawBoardV7(input: {
         entry.hp !== undefined &&
         entry.maxHp !== undefined
       ) {
+        const share = Math.max(0, Math.min(1, entry.hp / entry.maxHp));
         context.fillStyle = "#101718";
-        context.fillRect(
-          x - 25 * camera.zoom,
-          y + 25 * camera.zoom,
-          50 * camera.zoom,
-          7 * camera.zoom,
-        );
-        context.fillStyle = "#65d889";
-        context.fillRect(
-          x - 24 * camera.zoom,
-          y + 26 * camera.zoom,
-          48 * (entry.hp / entry.maxHp) * camera.zoom,
-          5 * camera.zoom,
-        );
+        if (chibiPiece) {
+          // Vertical bar in the cell's left strip, filling from the bottom.
+          const bar = CHIBI_OVERLAY_FRAME_V7.hpBar;
+          context.fillRect(
+            x + bar.left * camera.zoom,
+            y + bar.top * camera.zoom,
+            bar.width * camera.zoom,
+            bar.height * camera.zoom,
+          );
+          const inner = (bar.height - 2) * share;
+          context.fillStyle = "#65d889";
+          context.fillRect(
+            x + (bar.left + 1) * camera.zoom,
+            y + (bar.top + bar.height - 1 - inner) * camera.zoom,
+            (bar.width - 2) * camera.zoom,
+            inner * camera.zoom,
+          );
+        } else {
+          context.fillRect(
+            x - 25 * camera.zoom,
+            y + 25 * camera.zoom,
+            50 * camera.zoom,
+            7 * camera.zoom,
+          );
+          context.fillStyle = "#65d889";
+          context.fillRect(
+            x - 24 * camera.zoom,
+            y + 26 * camera.zoom,
+            48 * (entry.hp / entry.maxHp) * camera.zoom,
+            5 * camera.zoom,
+          );
+        }
       }
       if (entry.kind === "VALUE") {
         const count = Math.max(0, Math.min(24, entry.value ?? 0));

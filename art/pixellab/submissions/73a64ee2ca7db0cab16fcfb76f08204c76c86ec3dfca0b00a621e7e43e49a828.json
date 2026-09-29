@@ -1,0 +1,36 @@
+{
+  "id": "city-1-d-edit",
+  "jobId": "088f3d03-5d8d-4ea7-8a5f-44c1801fdb7d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "1",
+    "asset": "chibi-city-1",
+    "subject": "CITY:1",
+    "faction": "ORIGINAL",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 67365,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the soldier and all ground: erase the soldier, the grass and soil slab and the grey stone wall under the town, so the tower and cottages stand directly on a transparent background with nothing under them. Recolour every roof and the flag in one deep crimson red with darker crimson shading and no orange highlights. Keep the tower, cottages, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the soldier and all ground: erase the soldier, the grass and soil slab and the grey stone wall under the town, so the tower and cottages stand directly on a transparent background with nothing under them. Recolour every roof and the flag in one deep crimson red with darker crimson shading and no orange highlights. Keep the tower, cottages, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the soldier and all ground: erase the soldier, the grass and soil slab and the grey stone wall under the town, so the tower and cottages stand directly on a transparent background with nothing under them. Recolour every roof and the flag in one deep crimson red with darker crimson shading and no orange highlights. Keep the tower, cottages, outline and art style exactly the same.",
+    "editInstruction": "Remove the soldier and all ground: erase the soldier, the grass and soil slab and the grey stone wall under the town, so the tower and cottages stand directly on a transparent background with nothing under them. Recolour every roof and the flag in one deep crimson red with darker crimson shading and no orange highlights. Keep the tower, cottages, outline and art style exactly the same.",
+    "source": {
+      "recipe": "city-1-d",
+      "candidate": 0,
+      "sha256": "39a61778140348f8be5cfd9d7595130e2582f0c73edadc5c66cf49f895f0345f"
+    }
+  }
+}

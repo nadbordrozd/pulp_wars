@@ -1,0 +1,36 @@
+{
+  "id": "fighter-h-edit",
+  "jobId": "c9ddab0b-f38e-4f99-bf16-499c44702b94",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "1",
+    "asset": "chibi-fighter",
+    "subject": "UNIT:FIGHTER",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 67400,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make his bright red tunic longer, down to the knees, with bright red sleeves. Draw the mouth as a tiny dark line. Keep the helmet, red crest, sword, round grey steel shield, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet."
+      }
+    ],
+    "prompt": "Make his bright red tunic longer, down to the knees, with bright red sleeves. Draw the mouth as a tiny dark line. Keep the helmet, red crest, sword, round grey steel shield, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "negativePrompt": "",
+    "description": "Make his bright red tunic longer, down to the knees, with bright red sleeves. Draw the mouth as a tiny dark line. Keep the helmet, red crest, sword, round grey steel shield, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "editInstruction": "Make his bright red tunic longer, down to the knees, with bright red sleeves. Draw the mouth as a tiny dark line. Keep the helmet, red crest, sword, round grey steel shield, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+    "source": {
+      "recipe": "fighter-h",
+      "candidate": 0,
+      "sha256": "001b0d040940b917576004c020ae0b9e53746bae2b467e7ef4f266dbbe184da7"
+    }
+  }
+}

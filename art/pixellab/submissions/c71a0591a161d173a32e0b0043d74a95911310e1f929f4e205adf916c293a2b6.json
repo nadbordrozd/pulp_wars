@@ -1,0 +1,36 @@
+{
+  "id": "city-1-d-grow",
+  "jobId": "4bdd6e9f-1fc5-4263-ad0e-d81e635a5f03",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "1",
+    "asset": "chibi-city-1",
+    "subject": "CITY:1",
+    "faction": "ORIGINAL",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 67368,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the town bigger so it fills most of the image: add two more small cottages around the foot of the tower and make every roof bright red. Nothing at all under the buildings, transparent background, no people. Keep the tower, flag, outline and art style the same."
+      }
+    ],
+    "prompt": "Make the town bigger so it fills most of the image: add two more small cottages around the foot of the tower and make every roof bright red. Nothing at all under the buildings, transparent background, no people. Keep the tower, flag, outline and art style the same.",
+    "negativePrompt": "",
+    "description": "Make the town bigger so it fills most of the image: add two more small cottages around the foot of the tower and make every roof bright red. Nothing at all under the buildings, transparent background, no people. Keep the tower, flag, outline and art style the same.",
+    "editInstruction": "Make the town bigger so it fills most of the image: add two more small cottages around the foot of the tower and make every roof bright red. Nothing at all under the buildings, transparent background, no people. Keep the tower, flag, outline and art style the same.",
+    "source": {
+      "recipe": "city-1-d-edit-2",
+      "candidate": 0,
+      "sha256": "492ae0312fa11d20e6efdcbbf7a0e38ca4e18b824849365d3a26a52be3ee7294"
+    }
+  }
+}

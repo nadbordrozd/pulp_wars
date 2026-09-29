@@ -328,17 +328,74 @@ function statusLines(asset: ReviewAsset): string[] {
   ];
 }
 
-/** Deterministic terrain variant, the runtime's coordinate hash. */
+/** The runtime's cosmetic variant hash (chibiVariantV7). */
+function variantAt<T>(
+  variants: readonly T[],
+  col: number,
+  row: number,
+): T | undefined {
+  if (variants.length === 0) return undefined;
+  const index =
+    (((col * 31 + row * 17) % variants.length) + variants.length) %
+    variants.length;
+  return variants[index];
+}
+
+/**
+ * Scene terrain by subject: grass everywhere, a lake (shallow ring, deep
+ * centre) right of the pieces for the desktop mock and a shallow inlet at the
+ * phone's left edge. Variants of one subject use the runtime hash.
+ */
 function terrainAt(
   terrain: readonly ReviewAsset[],
   col: number,
   row: number,
 ): ReviewAsset | undefined {
   if (terrain.length === 0) return undefined;
-  const index =
-    (((col * 31 + row * 17) % terrain.length) + terrain.length) %
-    terrain.length;
-  return terrain[index];
+  const has = (subject: string): boolean =>
+    terrain.some((asset) => asset.spec.subject === subject);
+  const deep = col >= 10 && col <= 12 && row >= 3 && row <= 7;
+  const shallow =
+    (col >= 9 && col <= 13 && row >= 2 && row <= 8) ||
+    (col === 0 && row >= 5 && row <= 8);
+  const subject =
+    deep && has("TERRAIN:DEEP_WATER")
+      ? "TERRAIN:DEEP_WATER"
+      : (deep || shallow) && has("TERRAIN:SHALLOW_WATER")
+        ? "TERRAIN:SHALLOW_WATER"
+        : has("TERRAIN:GRASS")
+          ? "TERRAIN:GRASS"
+          : terrain[0]?.spec.subject;
+  return variantAt(
+    terrain.filter((asset) => asset.spec.subject === subject),
+    col,
+    row,
+  );
+}
+
+/** Tall terrain on free grass cells: a forest and a mountain cluster, plus a scatter. */
+function tallAt(
+  tall: readonly ReviewAsset[],
+  ground: ReviewAsset | undefined,
+  col: number,
+  row: number,
+): ReviewAsset | undefined {
+  if (tall.length === 0) return undefined;
+  if (ground !== undefined && ground.spec.subject !== "TERRAIN:GRASS")
+    return undefined;
+  const subjects = [...new Set(tall.map((asset) => asset.spec.subject))];
+  const pick = (subject: string | undefined) =>
+    variantAt(
+      tall.filter((asset) => asset.spec.subject === subject),
+      col,
+      row,
+    );
+  if (col >= 5 && col <= 7 && row >= 1 && row <= 4) return pick(subjects[0]);
+  if (col >= 5 && col <= 7 && row >= 6 && row <= 9)
+    return pick(subjects[subjects.length - 1]);
+  if ((col * 7 + row * 5) % 6 === 0)
+    return pick(subjects[(col + row) % subjects.length]);
+  return undefined;
 }
 
 /** Top-left of a master whose anchor lands on the centre of a cell at (x, y). */
@@ -680,16 +737,12 @@ function composeScene(
   for (let row = 0; row < SCENE_ROWS; row += 1)
     for (let col = 0; col < SCENE_COLUMNS; col += 1) {
       const key = `${col},${row}`;
-      if (
-        !occupied.has(key) &&
-        tall.length > 0 &&
-        (col * 7 + row * 5) % 6 === 0
-      ) {
-        const asset = tall[(col + row) % tall.length];
-        if (asset !== undefined) {
-          const at = placed(asset, left(col), top(row));
-          draw(target, asset.master, at.x, at.y);
-        }
+      const asset = occupied.has(key)
+        ? undefined
+        : tallAt(tall, terrainAt(terrain, col, row), col, row);
+      if (asset !== undefined) {
+        const at = placed(asset, left(col), top(row));
+        draw(target, asset.master, at.x, at.y);
       }
       for (const piece of pieces.filter(
         (candidate) => candidate.col === col && candidate.row === row,
@@ -756,7 +809,7 @@ async function mock(
     {
       x: s(12),
       y: s(topHud - 52),
-      text: "Turn 7   Stars 12 (+5)   Score 1 240",
+      text: "Turn 7 · 12 Coins (+5 next turn)",
       size: s(15),
       weight: "bold",
     },

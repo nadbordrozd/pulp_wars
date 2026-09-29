@@ -1,0 +1,36 @@
+{
+  "id": "forest-2-a-edit",
+  "jobId": "ef272e2d-727c-481d-9c9b-ad707c62a51f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "1",
+    "asset": "chibi-forest-2",
+    "subject": "TERRAIN:FOREST",
+    "faction": "ORIGINAL",
+    "recipeClass": "tall-terrain",
+    "requestSize": {
+      "width": 80,
+      "height": 104
+    },
+    "seed": 67335,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and soil slab under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and soil slab under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and soil slab under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and soil slab under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+    "source": {
+      "recipe": "forest-2-a",
+      "candidate": 0,
+      "sha256": "34046a31fcb9f9466981028988fcbc4d82c49b779b5d9c242f7b781e95599057"
+    }
+  }
+}

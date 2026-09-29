@@ -1,0 +1,36 @@
+{
+  "id": "village-d-edit",
+  "jobId": "4c6636a3-fcbb-4685-a94a-56a51d5e7345",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "1",
+    "asset": "chibi-village",
+    "subject": "SITE:VILLAGE",
+    "faction": "ORIGINAL",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 67355,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the soldier, the grey stone towers, the stone wall and all ground: erase them so only the cottages with thatched roofs remain, standing directly on a transparent background with nothing at all under them. Keep the cottages, straw roofs, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the soldier, the grey stone towers, the stone wall and all ground: erase them so only the cottages with thatched roofs remain, standing directly on a transparent background with nothing at all under them. Keep the cottages, straw roofs, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the soldier, the grey stone towers, the stone wall and all ground: erase them so only the cottages with thatched roofs remain, standing directly on a transparent background with nothing at all under them. Keep the cottages, straw roofs, outline and art style exactly the same.",
+    "editInstruction": "Remove the soldier, the grey stone towers, the stone wall and all ground: erase them so only the cottages with thatched roofs remain, standing directly on a transparent background with nothing at all under them. Keep the cottages, straw roofs, outline and art style exactly the same.",
+    "source": {
+      "recipe": "village-d",
+      "candidate": 0,
+      "sha256": "a2d66a05970b306fa5179da4f04c61575659181edc059174f0f3b1181d536639"
+    }
+  }
+}

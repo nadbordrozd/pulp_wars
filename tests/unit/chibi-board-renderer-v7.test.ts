@@ -283,6 +283,137 @@ describe("CHIBI board rendering", () => {
     );
   });
 
+  it("marks a registered CHIBI capital with a crown and leaves LEGACY and fallback cities unmarked", () => {
+    const city = chibiAsset("CITY:2", "SETTLEMENT", 96, 100);
+    const crownFills = (
+      extra: Partial<Parameters<typeof drawBoardV7>[0]>,
+      capital: boolean,
+    ) => {
+      const { context, log } = recordingContext();
+      drawBoardV7({
+        context,
+        viewport: { width: 800, height: 600 },
+        devicePixelRatio: 1,
+        camera: { offsetX: 40, offsetY: 40, zoom: chibiCameraZoom(1) },
+        plan: plan([
+          entry("CITY", 1, 1, "building-city-2", "CITY:2", {
+            value: 2,
+            ...(capital ? { capital: true } : {}),
+          }),
+        ]),
+        images: legacyImages,
+        ...extra,
+      });
+      return log.filter(
+        (call) =>
+          call[0] === "set" && call[1] === "fillStyle" && call[2] === "#f4c542",
+      ).length;
+    };
+    const chibi = fakeChibi([city]);
+    expect(crownFills({ artSet: "CHIBI", chibiArt: chibi }, true)).toBe(1);
+    expect(crownFills({ artSet: "CHIBI", chibiArt: chibi }, false)).toBe(0);
+    expect(crownFills({ artSet: "CHIBI", chibiArt: fakeChibi([]) }, true)).toBe(
+      0,
+    );
+    expect(crownFills({ artSet: "LEGACY", chibiArt: chibi }, true)).toBe(0);
+  });
+
+  it("keeps a ready CHIBI unit opaque at 1:1 and frames its overlays outside the figure", () => {
+    const fighter = chibiAsset("UNIT:FIGHTER", "STANDARD_UNIT", 56, 80);
+    const city = chibiAsset("CITY:1", "SETTLEMENT", 88, 96);
+    const draw = (chibiArt: ChibiBoardArtV7, step: 0.75 | 1) => {
+      const { context, log } = recordingContext();
+      drawBoardV7({
+        context,
+        viewport: { width: 800, height: 600 },
+        devicePixelRatio: 1,
+        camera: { offsetX: 40, offsetY: 40, zoom: chibiCameraZoom(step) },
+        plan: plan([
+          entry("CITY", 1, 1, "building-city-1", "CITY:1", {
+            value: 1,
+            population: 1,
+            capital: true,
+            ownerColor: RULESET7_PLAYER_COLORS.TEAL,
+            ownerSeat: 0,
+          }),
+          entry("UNIT", 1, 1, "unit-original-fighter", "UNIT:FIGHTER", {
+            ownerColor: RULESET7_PLAYER_COLORS.TEAL,
+            ownerSeat: 0,
+            hp: 6,
+            maxHp: 10,
+            ready: true,
+          }),
+        ]),
+        images: legacyImages,
+        artSet: "CHIBI",
+        chibiArt,
+        // Mid-pulse: LEGACY is at its most translucent and enlarged here.
+        readinessElapsedMs: 800,
+      });
+      return log;
+    };
+    for (const step of [1, 0.75] as const) {
+      const log = draw(fakeChibi([fighter, city]), step);
+      const centre = 40 + 128 * chibiCameraZoom(step);
+      const unitDraw = images(log).find(
+        (call) => (call[1] as { chibi?: string }).chibi === fighter.id,
+      );
+      // Anchor (28, 40) on the cell centre, master size times the step.
+      expect(unitDraw?.slice(2)).toEqual([
+        centre - 28 * step,
+        centre - 40 * step,
+        56 * step,
+        80 * step,
+      ]);
+      const unitIndex = log.indexOf(unitDraw as LogEntry);
+      const alphaBefore = log
+        .slice(0, unitIndex)
+        .filter((call) => call[0] === "set" && call[1] === "globalAlpha");
+      expect(alphaBefore.at(-1)?.[2]).toBe(1);
+      // Every overlay drawn after the unit stays clear of its 56 px canvas.
+      const overlays = log
+        .slice(unitIndex + 1)
+        .filter((call) => call[0] === "fillRect" || call[0] === "strokeRect")
+        .map((call) => call.slice(1) as number[]);
+      expect(overlays.length).toBeGreaterThanOrEqual(3);
+      for (const [left = 0, , width = 0] of overlays)
+        expect(
+          left + width <= centre - 28 * step || left >= centre + 28 * step,
+        ).toBe(true);
+    }
+    // A legacy-fallback unit in the CHIBI set keeps the legacy pulse.
+    const fallback = draw(fakeChibi([]), 1);
+    const legacyUnit = images(fallback).find(
+      (call) =>
+        (call[1] as { legacy?: string }).legacy === "unit-original-fighter",
+    );
+    const fallbackIndex = fallback.indexOf(legacyUnit as LogEntry);
+    const fallbackAlpha = fallback
+      .slice(0, fallbackIndex)
+      .filter((call) => call[0] === "set" && call[1] === "globalAlpha");
+    expect(Number(fallbackAlpha.at(-1)?.[2])).toBeLessThan(1);
+  });
+
+  it("puts capital on the plan entry of the viewer's capital only", () => {
+    const state = exploredAllV7(initialV7(1516));
+    const view = viewForV7(state, state.humanPlayerId);
+    const built = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    const cities = built.entries.filter(
+      (candidate) => candidate.kind === "CITY",
+    );
+    expect(cities.length).toBeGreaterThan(0);
+    for (const candidate of cities) {
+      const source = view.cities.find(
+        (city) => `city:${city.id}` === candidate.key,
+      );
+      expect(candidate.capital === true).toBe(source?.isCapital === true);
+    }
+  });
+
   it("fills the exact cell with opaque terrain at every zoom step", () => {
     const grass = chibiAsset("TERRAIN:GRASS", "TERRAIN", 80, 80);
     for (const [step, expected] of [

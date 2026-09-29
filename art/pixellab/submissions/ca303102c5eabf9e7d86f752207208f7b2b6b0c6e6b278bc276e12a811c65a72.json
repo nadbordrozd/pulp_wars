@@ -1,0 +1,69 @@
+{
+  "id": "fighter-f",
+  "jobId": "sync-2e79fdda-a370-4b7c-9f70-35ebf3920286",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "1",
+    "asset": "chibi-fighter",
+    "subject": "UNIT:FIGHTER",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 67396,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+        "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+        "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+        "text": "Subject: Fighter, a basic sword warrior with a very big head (about half of the figure's height) and a tiny sturdy body: round light steel-grey helmet with a big bright red plume crest, oversized light grey steel short sword raised in the right hand, big round shield painted cream-white with a grey steel rim and boss on the left arm, long bright red tunic down to the knees and a short bright red cape, cream-white sleeves, light grey gloves, dark slate-grey boots and belt; no bow, no quiver, no brown leather."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The mouth is a tiny dark line, not red.",
+        "negative": "bow, quiver, arrows, backpack, bag on the back, brown leather"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Fighter, a basic sword warrior with a very big head (about half of the figure's height) and a tiny sturdy body: round light steel-grey helmet with a big bright red plume crest, oversized light grey steel short sword raised in the right hand, big round shield painted cream-white with a grey steel rim and boss on the left arm, long bright red tunic down to the knees and a short bright red cape, cream-white sleeves, light grey gloves, dark slate-grey boots and belt; no bow, no quiver, no brown leather. The mouth is a tiny dark line, not red.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, backpack, bag on the back, brown leather",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Fighter, a basic sword warrior with a very big head (about half of the figure's height) and a tiny sturdy body: round light steel-grey helmet with a big bright red plume crest, oversized light grey steel short sword raised in the right hand, big round shield painted cream-white with a grey steel rim and boss on the left arm, long bright red tunic down to the knees and a short bright red cape, cream-white sleeves, light grey gloves, dark slate-grey boots and belt; no bow, no quiver, no brown leather. The mouth is a tiny dark line, not red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, backpack, bag on the back, brown leather."
+  }
+}

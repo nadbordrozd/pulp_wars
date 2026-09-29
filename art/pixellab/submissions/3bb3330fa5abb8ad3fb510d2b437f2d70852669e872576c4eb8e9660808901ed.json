@@ -1,0 +1,36 @@
+{
+  "id": "city-2-b-crimson",
+  "jobId": "32dbc943-63de-44d6-8b57-1271b45bf134",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "1",
+    "asset": "chibi-city-2",
+    "subject": "CITY:2",
+    "faction": "ORIGINAL",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 100
+    },
+    "seed": 67375,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the red slab and the soil under the town, so the walls stand directly on a transparent background with nothing at all under them. Recolour every roof, cone roof and the banner in one deep crimson red with darker crimson shading and no orange or scarlet highlights. Keep the buildings, beige stone, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the red slab and the soil under the town, so the walls stand directly on a transparent background with nothing at all under them. Recolour every roof, cone roof and the banner in one deep crimson red with darker crimson shading and no orange or scarlet highlights. Keep the buildings, beige stone, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the red slab and the soil under the town, so the walls stand directly on a transparent background with nothing at all under them. Recolour every roof, cone roof and the banner in one deep crimson red with darker crimson shading and no orange or scarlet highlights. Keep the buildings, beige stone, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the red slab and the soil under the town, so the walls stand directly on a transparent background with nothing at all under them. Recolour every roof, cone roof and the banner in one deep crimson red with darker crimson shading and no orange or scarlet highlights. Keep the buildings, beige stone, outline and art style exactly the same.",
+    "source": {
+      "recipe": "city-2-b",
+      "candidate": 0,
+      "sha256": "8437fab666a661bf545da2c531b6bb2cc32664431b645100a978c3290589f89f"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "id": "deep-water-1-c",
+  "jobId": "sync-c418c4ba-1354-4b2b-a908-e2539a4f165e",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "1",
+    "asset": "chibi-deep-water-1",
+    "subject": "TERRAIN:DEEP_WATER",
+    "faction": "ORIGINAL",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 67324,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-terrain.txt + scripts/art/chibi/fragments/class-terrain.negative.txt",
+        "text": "Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image.",
+        "negative": "border, frame, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: a flat seamless water texture of calm deep open sea seen from directly above: one flat even deep blue colour everywhere, with a few tiny lighter wave marks scattered evenly and sparsely, nothing else; open water only, no land anywhere."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, shrubs, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: a flat seamless water texture of calm deep open sea seen from directly above: one flat even deep blue colour everywhere, with a few tiny lighter wave marks scattered evenly and sparsely, nothing else; open water only, no land anywhere.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated, trees, bushes, shrubs, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: a flat seamless water texture of calm deep open sea seen from directly above: one flat even deep blue colour everywhere, with a few tiny lighter wave marks scattered evenly and sparsely, nothing else; open water only, no land anywhere. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated, trees, bushes, shrubs, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/deep-water-two-tone.png",
+      "sha256": "20f023baabf8b6f79afa8b0c6ee47b9e78a656df92181cfaa33c4be91e47a78f"
+    }
+  }
+}

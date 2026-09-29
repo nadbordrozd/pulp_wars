@@ -1,0 +1,36 @@
+{
+  "id": "city-1-d-edit-2",
+  "jobId": "d909ad46-3a59-46e0-81b9-c884e63c1c73",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "1",
+    "asset": "chibi-city-1",
+    "subject": "CITY:1",
+    "faction": "ORIGINAL",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 67366,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the white platform and its grey edge under the town, so the tower and cottages stand directly on a transparent background with nothing at all under them. Keep the tower, cottages, crimson roofs, flag, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the white platform and its grey edge under the town, so the tower and cottages stand directly on a transparent background with nothing at all under them. Keep the tower, cottages, crimson roofs, flag, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the white platform and its grey edge under the town, so the tower and cottages stand directly on a transparent background with nothing at all under them. Keep the tower, cottages, crimson roofs, flag, outline and art style exactly the same.",
+    "editInstruction": "Remove the white platform and its grey edge under the town, so the tower and cottages stand directly on a transparent background with nothing at all under them. Keep the tower, cottages, crimson roofs, flag, outline and art style exactly the same.",
+    "source": {
+      "recipe": "city-1-d-edit",
+      "candidate": 0,
+      "sha256": "a00effa422800e36575262ddcedc0c9d266176b30a57d4b8f315d44d8461ca20"
+    }
+  }
+}

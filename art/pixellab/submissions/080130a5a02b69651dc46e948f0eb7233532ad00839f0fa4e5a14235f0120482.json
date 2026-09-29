@@ -1,0 +1,61 @@
+{
+  "id": "deep-water-1-a",
+  "jobId": "sync-94dff6bf-9f12-43c9-8a67-cbde2bda0324",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "1",
+    "asset": "chibi-deep-water-1",
+    "subject": "TERRAIN:DEEP_WATER",
+    "faction": "ORIGINAL",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 67321,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-terrain.txt + scripts/art/chibi/fragments/class-terrain.negative.txt",
+        "text": "Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image.",
+        "negative": "border, frame, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: calm deep open sea seen from directly above, one even deep blue base colour with a few small lighter wave marks scattered evenly and sparsely all over, nothing else."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, shrubs, rocks, animals, boats"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: calm deep open sea seen from directly above, one even deep blue base colour with a few small lighter wave marks scattered evenly and sparsely all over, nothing else.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated, trees, bushes, shrubs, rocks, animals, boats",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: calm deep open sea seen from directly above, one even deep blue base colour with a few small lighter wave marks scattered evenly and sparsely all over, nothing else. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated, trees, bushes, shrubs, rocks, animals, boats.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/deep-water.png",
+      "sha256": "dc679aaa03f3c300d4a576f44514c566de1f3cc48ef97b716851d2e975b66770"
+    }
+  }
+}

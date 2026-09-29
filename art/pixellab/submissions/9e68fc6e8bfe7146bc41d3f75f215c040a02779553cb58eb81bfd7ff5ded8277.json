@@ -1,0 +1,63 @@
+{
+  "id": "city-2-a",
+  "jobId": "sync-21a0c218-3ccf-46e1-9cf6-381e26256d54",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "1",
+    "asset": "chibi-city-2",
+    "subject": "CITY:2",
+    "faction": "ORIGINAL",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 100
+    },
+    "seed": 67371,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+        "text": "Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items.",
+        "negative": "gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+        "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+        "text": "Subject: a level-2 town, clearly bigger than a small town: five chunky cottages with cream plaster walls and bright red tile roofs packed around a tall round grey stone keep with a bright red cone roof and a big red banner flag, a grey stone ring wall with a small gatehouse in front; wide and chunky, filling the whole width of the image."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: a level-2 town, clearly bigger than a small town: five chunky cottages with cream plaster walls and bright red tile roofs packed around a tall round grey stone keep with a bright red cone roof and a big red banner flag, a grey stone ring wall with a small gatehouse in front; wide and chunky, filling the whole width of the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful storybook medieval humans; simple cloth tunics and hoods, rounded steel helmets with crests, wooden shields and bows, leather boots and belts; towns of timber-and-plaster cottages with tile roofs, round stone keeps and short stone walls; no magic, no firearms, no modern or Napoleonic items. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: a level-2 town, clearly bigger than a small town: five chunky cottages with cream plaster walls and bright red tile roofs packed around a tall round grey stone keep with a bright red cone roof and a big red banner flag, a grey stone ring wall with a small gatehouse in front; wide and chunky, filling the whole width of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, cannon on units, top hat, bicorne, tricorne, modern clothing, steel plate full armour, magic glow, wings, pedestal, base, ground plate, plinth, round base, disc, rim, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd."
+  }
+}

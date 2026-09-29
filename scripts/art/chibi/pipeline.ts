@@ -424,6 +424,7 @@ export interface GenerationProvider {
     request: ChibiRequestSnapshot,
     sourceImage: Buffer | undefined,
     submitted: (jobId: string) => Promise<void>,
+    colorImage?: Buffer,
   ): Promise<ProviderResult>;
 }
 
@@ -479,7 +480,7 @@ export function pixelLabProvider(): GenerationProvider {
     );
   return {
     kind: "PIXELLAB",
-    async generate(recipe, request, sourceImage, submitted) {
+    async generate(recipe, request, sourceImage, submitted, colorImage) {
       const response = await fetch(
         `${CHIBI_API_BASE_URL}/${request.endpoint}`,
         {
@@ -488,7 +489,7 @@ export function pixelLabProvider(): GenerationProvider {
             Authorization: `Bearer ${key}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(requestBody(request, sourceImage)),
+          body: JSON.stringify(requestBody(request, sourceImage, colorImage)),
         },
       );
       if (!response.ok)
@@ -545,12 +546,12 @@ export function pixelLabProvider(): GenerationProvider {
 export function fixtureProvider(root: string): GenerationProvider {
   return {
     kind: "FIXTURE",
-    async generate(recipe, request, sourceImage, submitted) {
+    async generate(recipe, request, sourceImage, submitted, colorImage) {
       const fixture = recipe.fixture;
       if (fixture === undefined)
         throw new Error(`${recipe.id}: dry-run recipe has no fixture`);
       // Build the body to prove it is well-formed; it is never sent.
-      const body = requestBody(request, sourceImage);
+      const body = requestBody(request, sourceImage, colorImage);
       if (typeof body !== "object") throw new Error("request body missing");
       const bytes = await readFile(path.join(root, fixture.path));
       if (sha256(bytes) !== fixture.sha256)
@@ -707,6 +708,16 @@ export async function generateRecipe(
       source: { ...recipe.source, sha256: sha256(sourceImage) },
     };
   }
+  let colorImage: Buffer | undefined;
+  if (recipe.colorImage !== undefined) {
+    colorImage = await readFile(
+      path.join(context.root, recipe.colorImage.path),
+    );
+    if (sha256(colorImage) !== recipe.colorImage.sha256)
+      throw new Error(
+        `${recipeId}: forced palette ${recipe.colorImage.path} changed`,
+      );
+  }
   const submittedAt = context.now();
   const result = await context.provider.generate(
     recipe,
@@ -738,6 +749,7 @@ export async function generateRecipe(
       await saveRecords(context.layout, records);
       context.log(`${recipeId}: submitted job ${jobId}`);
     },
+    colorImage,
   );
   const stored = await storeCandidates(context, recipeId, result.images);
   const asset = findAsset(context.manifest, recipe.asset);
@@ -821,7 +833,21 @@ async function deriveMaster(
 ): Promise<{ raster: RgbaRaster; derivation: AssetRecord["derivation"] }> {
   const kind = CHIBI_CLASS_RECIPES[asset.recipeClass].derivation;
   if (kind === "seamless-crop") {
-    const crop = bestSeamlessWindow(candidate, asset.canvas);
+    const region = asset.cropRegion ?? {
+      left: 0,
+      top: 0,
+      width: candidate.width,
+      height: candidate.height,
+    };
+    const found = bestSeamlessWindow(
+      cropRaster(candidate, region),
+      asset.canvas,
+    );
+    const crop = {
+      ...found,
+      left: found.left + region.left,
+      top: found.top + region.top,
+    };
     const raster = cropRaster(candidate, crop);
     const holes = transparentPixels(raster);
     if (holes > 0)
@@ -909,6 +935,8 @@ export async function acceptRecipe(
   candidate: number,
   notes: string,
   checks: ReviewChecks,
+  /** A terrain variant cropped from this recipe's field (asset.fieldRecipe). */
+  assetId?: string,
 ): Promise<AssetRecord> {
   if (notes.trim().length === 0) throw new Error("A review note is required");
   const failed = Object.entries(checks)
@@ -919,7 +947,12 @@ export async function acceptRecipe(
       `${recipeId}: every review check must pass before acceptance (${failed.join(", ")})`,
     );
   const recipe = findRecipe(context.manifest, recipeId);
-  const asset = findAsset(context.manifest, recipe.asset);
+  const asset = findAsset(context.manifest, assetId ?? recipe.asset);
+  const sharedField = asset.id !== recipe.asset;
+  if (sharedField && asset.fieldRecipe !== recipeId)
+    throw new Error(
+      `${asset.id}: its fieldRecipe is not ${recipeId}, so it cannot be cropped from it`,
+    );
   const records = await loadRecords(context.layout, context.manifest.batch);
   const record = records.recipes[recipeId];
   if (record === undefined) throw new Error(`${recipeId}: not generated`);
@@ -997,15 +1030,17 @@ export async function acceptRecipe(
           notes: `${other.review.notes} Superseded by ${recipeId}.`,
         },
       };
-  records.recipes[recipeId] = {
-    ...record,
-    review: {
-      verdict: "ACCEPTED",
-      candidate,
-      notes,
-      reviewedAt: context.now(),
-    },
-  };
+  // A shared field keeps the review of the variant that owns the recipe.
+  if (!sharedField || record.review?.verdict !== "ACCEPTED")
+    records.recipes[recipeId] = {
+      ...record,
+      review: {
+        verdict: "ACCEPTED",
+        candidate,
+        notes,
+        reviewedAt: context.now(),
+      },
+    };
   records.assets[asset.id] = assetRecord;
   await saveRecords(context.layout, records);
   context.log(
@@ -1082,6 +1117,17 @@ export async function validateChibiProduction(root: string): Promise<string[]> {
         problems.push(
           `batch ${batch} recipe ${recipe.id}: ${error instanceof Error ? error.message : String(error)}`,
         );
+      }
+      if (recipe.colorImage !== undefined) {
+        const file = path.join(root, recipe.colorImage.path);
+        if (!(await exists(file)))
+          problems.push(
+            `batch ${batch} palette ${recipe.colorImage.path} is missing`,
+          );
+        else if (sha256(await readFile(file)) !== recipe.colorImage.sha256)
+          problems.push(
+            `batch ${batch} palette ${recipe.colorImage.path} changed`,
+          );
       }
       if (recipe.fixture !== undefined) {
         const file = path.join(root, recipe.fixture.path);

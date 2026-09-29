@@ -1,0 +1,1024 @@
+{
+  "schemaVersion": 1,
+  "batch": "1",
+  "title": "Chibi batch 1 (pilot): terrain, Village, City 1-3, Fighter, Marksman",
+  "bead": "pulp_wars-67q.3",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-grass-1",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-grass-2",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "fieldRecipe": "grass-1-a",
+      "cropRegion": {
+        "left": 35,
+        "top": 80,
+        "width": 102,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-grass-3",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "cropRegion": {
+        "left": 60,
+        "top": 40,
+        "width": 85,
+        "height": 85
+      }
+    },
+    {
+      "id": "chibi-forest-1",
+      "subject": "TERRAIN:FOREST",
+      "assetClass": "TALL_TERRAIN",
+      "recipeClass": "tall-terrain",
+      "canvas": {
+        "width": 80,
+        "height": 104
+      },
+      "groundAsset": "chibi-grass-1"
+    },
+    {
+      "id": "chibi-forest-2",
+      "subject": "TERRAIN:FOREST",
+      "assetClass": "TALL_TERRAIN",
+      "recipeClass": "tall-terrain",
+      "canvas": {
+        "width": 80,
+        "height": 104
+      },
+      "groundAsset": "chibi-grass-1"
+    },
+    {
+      "id": "chibi-mountain-1",
+      "subject": "TERRAIN:MOUNTAIN",
+      "assetClass": "TALL_TERRAIN",
+      "recipeClass": "tall-terrain",
+      "canvas": {
+        "width": 80,
+        "height": 104
+      },
+      "groundAsset": "chibi-grass-1"
+    },
+    {
+      "id": "chibi-mountain-2",
+      "subject": "TERRAIN:MOUNTAIN",
+      "assetClass": "TALL_TERRAIN",
+      "recipeClass": "tall-terrain",
+      "canvas": {
+        "width": 80,
+        "height": 104
+      },
+      "groundAsset": "chibi-grass-1"
+    },
+    {
+      "id": "chibi-mountain-3",
+      "subject": "TERRAIN:MOUNTAIN",
+      "assetClass": "TALL_TERRAIN",
+      "recipeClass": "tall-terrain",
+      "canvas": {
+        "width": 80,
+        "height": 104
+      },
+      "groundAsset": "chibi-grass-1"
+    },
+    {
+      "id": "chibi-shallow-water-1",
+      "subject": "TERRAIN:SHALLOW_WATER",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-shallow-water-2",
+      "subject": "TERRAIN:SHALLOW_WATER",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "fieldRecipe": "shallow-water-1-b",
+      "cropRegion": {
+        "left": 0,
+        "top": 0,
+        "width": 160,
+        "height": 90
+      }
+    },
+    {
+      "id": "chibi-deep-water-1",
+      "subject": "TERRAIN:DEEP_WATER",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "cropRegion": {
+        "left": 40,
+        "top": 0,
+        "width": 100,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-deep-water-2",
+      "subject": "TERRAIN:DEEP_WATER",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "fieldRecipe": "deep-water-1-c",
+      "cropRegion": {
+        "left": 40,
+        "top": 80,
+        "width": 100,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-village",
+      "subject": "SITE:VILLAGE",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      }
+    },
+    {
+      "id": "chibi-city-2",
+      "subject": "CITY:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 100
+      }
+    },
+    {
+      "id": "chibi-city-3",
+      "subject": "CITY:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 104
+      }
+    },
+    {
+      "id": "chibi-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-marksman.mask-override.png",
+        "masterPixelSha256": "cf49fd2f27c56002b1f19d952476997cb46f2151b76a2a46580fce608b740ba4",
+        "reason": "The automatic mask minus one 4-pixel component at (27..30, 37): the red mouth, which is a shade of the key but not owner cloth, and would turn teal or coral on the face. Nothing else changes and no QA code is waived."
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "grass-1-a",
+      "asset": "chibi-grass-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67301,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/grass.png",
+        "sha256": "78f55cc81c2c6063cafc20b8ec31103ad4760a2db56c47efdc23c62de15376fd"
+      },
+      "notes": "Flat-shaded meadow forced to the muted grass palette (#8ab85c base, h90 s0.50 v0.72, far calmer than the tile-80 neon lime #8bfa0d)."
+    },
+    {
+      "id": "grass-2-a",
+      "asset": "chibi-grass-2",
+      "endpoint": "create-image-pixflux",
+      "seed": 67302,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/grass.png",
+        "sha256": "78f55cc81c2c6063cafc20b8ec31103ad4760a2db56c47efdc23c62de15376fd"
+      },
+      "notes": "Second grass variant, same palette so variants join without a colour seam.",
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, boats"
+    },
+    {
+      "id": "shallow-water-1-a",
+      "asset": "chibi-shallow-water-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67311,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/shallow-water.png",
+        "sha256": "b5721e726ec126fe09e324e584266a6bf13cf143e83cf761905403c9d854aa7f"
+      },
+      "notes": "Shallow water forced to the turquoise palette (#66becc base).",
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, boats"
+    },
+    {
+      "id": "deep-water-1-a",
+      "asset": "chibi-deep-water-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67321,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/deep-water.png",
+        "sha256": "dc679aaa03f3c300d4a576f44514c566de1f3cc48ef97b716851d2e975b66770"
+      },
+      "notes": "Deep water forced to the deep-blue palette (#3c709e base).",
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, boats"
+    },
+    {
+      "id": "deep-water-2-a",
+      "asset": "chibi-deep-water-2",
+      "endpoint": "create-image-pixflux",
+      "seed": 67322,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/deep-water-flat.png",
+        "sha256": "c17f1976580aa4b368a6819d5d20527cc9825491ba9672337e9f4bcbc1e36507"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish"
+    },
+    {
+      "id": "forest-1-a",
+      "asset": "chibi-forest-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67331,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      }
+    },
+    {
+      "id": "forest-2-a",
+      "asset": "chibi-forest-2",
+      "endpoint": "create-image-pixen",
+      "seed": 67332,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      }
+    },
+    {
+      "id": "mountain-1-a",
+      "asset": "chibi-mountain-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67341,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      }
+    },
+    {
+      "id": "mountain-2-a",
+      "asset": "chibi-mountain-2",
+      "endpoint": "create-image-pixen",
+      "seed": 67342,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      }
+    },
+    {
+      "id": "mountain-3-a",
+      "asset": "chibi-mountain-3",
+      "endpoint": "create-image-pixen",
+      "seed": 67343,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      }
+    },
+    {
+      "id": "village-a",
+      "asset": "chibi-village",
+      "endpoint": "create-image-pixen",
+      "seed": 67351,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      }
+    },
+    {
+      "id": "city-1-a",
+      "asset": "chibi-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67361,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      }
+    },
+    {
+      "id": "city-2-a",
+      "asset": "chibi-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 67371,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      }
+    },
+    {
+      "id": "city-3-a",
+      "asset": "chibi-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 67381,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      }
+    },
+    {
+      "id": "fighter-a",
+      "asset": "chibi-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67391,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "fighter-b",
+      "asset": "chibi-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67392,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "marksman-a",
+      "asset": "chibi-marksman",
+      "endpoint": "create-image-pixen",
+      "seed": 67401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "marksman-b",
+      "asset": "chibi-marksman",
+      "endpoint": "create-image-pixen",
+      "seed": 67402,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "grass-2-b",
+      "asset": "chibi-grass-2",
+      "endpoint": "create-image-pixflux",
+      "seed": 67304,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/grass-variant.png",
+        "sha256": "8804fe631827f418c1d8c7923f3c45c73e27e7c012a23a95427e2e80205a7016"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, boats",
+      "notes": "Retry with the three-colour grass variant palette (grass-2-a quantised its base to the darker tuft green)."
+    },
+    {
+      "id": "shallow-water-1-b",
+      "asset": "chibi-shallow-water-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67313,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/shallow-water-flat.png",
+        "sha256": "f6e93a5b54efb9d86bacb143516f0ba78bb6d8eb05bd74b7178d7bbf55c34ce2"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish",
+      "notes": "Flat texture wording and a three-colour palette (shallow-water-1-a drew river banks)."
+    },
+    {
+      "id": "deep-water-1-b",
+      "asset": "chibi-deep-water-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67323,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/deep-water-flat.png",
+        "sha256": "c17f1976580aa4b368a6819d5d20527cc9825491ba9672337e9f4bcbc1e36507"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish",
+      "notes": "Flat texture wording and a three-colour palette (deep-water-1-a drew cliffs and islands)."
+    },
+    {
+      "id": "forest-1-a-edit",
+      "asset": "chibi-forest-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 67334,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "source": {
+        "recipe": "forest-1-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of forest-1-a (good trees on an isometric grass slab)."
+    },
+    {
+      "id": "mountain-1-b",
+      "asset": "chibi-mountain-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67344,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "notes": "No-face wording; mountain-1-a had a cute rock creature and a slab."
+    },
+    {
+      "id": "village-b",
+      "asset": "chibi-village",
+      "endpoint": "create-image-pixen",
+      "seed": 67352,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "notes": "No people, no tower; village-a had a soldier, a red-brown tower and a slab."
+    },
+    {
+      "id": "city-1-b",
+      "asset": "chibi-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67362,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "notes": "No people; city-1-a had a soldier, brown timber and a slab."
+    },
+    {
+      "id": "city-2-a-edit",
+      "asset": "chibi-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 67372,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "city-2-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab under the town, so the walls stand directly on a transparent background with nothing at all under them. Paint every roof solid bright red like the tower roof. Keep the buildings, grey stone, red flag, outline and art style exactly the same.",
+      "notes": "Ground removal plus solid red roofs (city-2-a roofs were salmon stripes, 8.8% owner area)."
+    },
+    {
+      "id": "city-3-a-edit",
+      "asset": "chibi-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 67382,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "recipe": "city-3-a",
+        "candidate": 0
+      },
+      "notes": "Ground-removal edit of city-3-a (strong walled city on a soil slab)."
+    },
+    {
+      "id": "fighter-c",
+      "asset": "chibi-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67393,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "notes": "Very big head, cream-painted shield, long red tunic and cape, no bow."
+    },
+    {
+      "id": "marksman-c",
+      "asset": "chibi-marksman",
+      "endpoint": "create-image-pixen",
+      "seed": 67403,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "notes": "Very big head, hood without helmet, long red tunic, grey boots."
+    },
+    {
+      "id": "grass-2-c",
+      "asset": "chibi-grass-2",
+      "endpoint": "create-image-pixflux",
+      "seed": 67301,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/grass.png",
+        "sha256": "78f55cc81c2c6063cafc20b8ec31103ad4760a2db56c47efdc23c62de15376fd"
+      },
+      "notes": "The grass-1-a request repeated exactly (same seed, prompt and palette) so variant 2 is another seamless window of the same meadow, with identical colours; seed-for-seed determinism is checked by the raw sheet hash."
+    },
+    {
+      "id": "grass-3-c",
+      "asset": "chibi-grass-3",
+      "endpoint": "create-image-pixflux",
+      "seed": 67305,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/grass.png",
+        "sha256": "78f55cc81c2c6063cafc20b8ec31103ad4760a2db56c47efdc23c62de15376fd"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, people, path, road",
+      "notes": "Four-colour grass palette again (two of three runs kept the #8ab85c base); no-tree, no-path negative."
+    },
+    {
+      "id": "mountain-1-b-edit",
+      "asset": "chibi-mountain-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 67345,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "source": {
+        "recipe": "mountain-1-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab and the loose boulders under the mountain, so the rock stands directly on a transparent background with nothing at all under it. Keep the peaks, snow, grey rock, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of mountain-1-b."
+    },
+    {
+      "id": "city-1-c",
+      "asset": "chibi-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67363,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "promptAddendum": "Same look as a storybook walled town: beige cobblestone walls and round beige stone towers with bright red cone roofs, cottages with cream plaster walls and solid bright red roofs shaded only with darker red. Only buildings: the streets are empty, no people, no soldiers, no figures, no animals.",
+      "notes": "Match the accepted City 3 (beige stone, solid red roofs); no people."
+    },
+    {
+      "id": "city-2-b",
+      "asset": "chibi-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 67373,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "promptAddendum": "Same look as a storybook walled town: beige cobblestone walls and round beige stone towers with bright red cone roofs, cottages with cream plaster walls and solid bright red roofs shaded only with darker red. Only buildings: the streets are empty, no people, no soldiers, no figures, no animals.",
+      "notes": "Match the accepted City 3; front wall and one tower only, so it stays smaller than City 3."
+    },
+    {
+      "id": "village-c",
+      "asset": "chibi-village",
+      "endpoint": "create-image-pixen",
+      "seed": 67353,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "promptAddendum": "Only buildings: the lanes are empty, no people, no soldiers, no figures, no animals. Roofs golden-yellow straw, walls cream plaster on beige cobblestone footings.",
+      "notes": "No people (village-a and village-b both drew a soldier)."
+    },
+    {
+      "id": "fighter-d",
+      "asset": "chibi-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67394,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "He carries only the sword and the shield: nothing on his back, no bow, no quiver. The mouth is a tiny dark line, not red.",
+      "notes": "fighter-c kept a bow on the back and a red mouth."
+    },
+    {
+      "id": "marksman-d",
+      "asset": "chibi-marksman",
+      "endpoint": "create-image-pixen",
+      "seed": 67404,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Bare head under the hood with brown hair, no helmet and no cap. The mouth is a tiny dark line, not red.",
+      "notes": "marksman-c had a steel cap under the hood and a red mouth."
+    },
+    {
+      "id": "grass-3-d",
+      "asset": "chibi-grass-3",
+      "endpoint": "create-image-pixflux",
+      "seed": 67306,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/grass-two-tone.png",
+        "sha256": "8bb7ad3243b8f31e720638c047c9c91bfa560988a8c1b8c20bc8248360b46457"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, people, path, road",
+      "notes": "Two-tone palette (#8ab85c base, #52793a tufts): any raw mid or light green quantises to the grass-1 base."
+    },
+    {
+      "id": "deep-water-1-c",
+      "asset": "chibi-deep-water-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67324,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/deep-water-two-tone.png",
+        "sha256": "20f023baabf8b6f79afa8b0c6ee47b9e78a656df92181cfaa33c4be91e47a78f"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish",
+      "notes": "Two-tone deep palette (#3f74a3 base, #8dbadc marks): deep-water-1-b made regular wave rows (wallpaper), deep-water-2-a a flat pale blue."
+    },
+    {
+      "id": "forest-2-a-edit",
+      "asset": "chibi-forest-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 67335,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "source": {
+        "recipe": "forest-2-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of forest-2-a."
+    },
+    {
+      "id": "mountain-2-a-edit",
+      "asset": "chibi-mountain-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 67346,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "source": {
+        "recipe": "mountain-2-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab, the snow on the ground and the loose boulders under the mountain, so the rock stands directly on a transparent background with nothing at all under it. Keep the peaks, snow caps, grey rock, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of mountain-2-a."
+    },
+    {
+      "id": "city-2-b-edit",
+      "asset": "chibi-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 67374,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "city-2-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the red slab and the soil under the town, so the walls stand directly on a transparent background with nothing at all under them. Paint every roof and cone roof solid bright red with only darker red shading. Keep the buildings, beige stone, banner, outline and art style exactly the same.",
+      "notes": "Ground removal (a key-red slab) plus solid red roofs."
+    },
+    {
+      "id": "city-1-d",
+      "asset": "chibi-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67364,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "promptAddendum": "Same look as a storybook town: beige cobblestone tower with a bright red cone roof, cottages with cream plaster walls and solid bright red roofs shaded only with darker red. Buildings only.",
+      "negativeAddendum": "soldier, knight, guard, warrior, person, villager, helmet, sword, character",
+      "notes": "Smaller than City 2: one tower and three cottages, no wall; people words moved to the exclusions."
+    },
+    {
+      "id": "village-d",
+      "asset": "chibi-village",
+      "endpoint": "create-image-pixen",
+      "seed": 67354,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "promptAddendum": "Buildings only.",
+      "negativeAddendum": "soldier, knight, guard, warrior, person, villager, helmet, sword, character",
+      "notes": "People words moved to the exclusions (villages a-c all drew a soldier)."
+    },
+    {
+      "id": "fighter-e",
+      "asset": "chibi-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67395,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "bow, quiver, arrows, backpack, bag on the back, brown leather",
+      "notes": "Bow and quiver moved to the exclusions (fighter c and d kept a quiver)."
+    },
+    {
+      "id": "fighter-f",
+      "asset": "chibi-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67396,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "bow, quiver, arrows, backpack, bag on the back, brown leather",
+      "notes": "Second seed of fighter-e."
+    },
+    {
+      "id": "city-2-b-crimson",
+      "asset": "chibi-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 67375,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "city-2-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the red slab and the soil under the town, so the walls stand directly on a transparent background with nothing at all under them. Recolour every roof, cone roof and the banner in one deep crimson red with darker crimson shading and no orange or scarlet highlights. Keep the buildings, beige stone, outline and art style exactly the same.",
+      "notes": "city-2-b-edit roofs came out scarlet (#e61500, hue 5.5, outside the key band): ask for crimson with no orange highlights."
+    },
+    {
+      "id": "city-1-d-edit",
+      "asset": "chibi-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 67365,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-1-d",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the soldier and all ground: erase the soldier, the grass and soil slab and the grey stone wall under the town, so the tower and cottages stand directly on a transparent background with nothing under them. Recolour every roof and the flag in one deep crimson red with darker crimson shading and no orange highlights. Keep the tower, cottages, outline and art style exactly the same.",
+      "notes": "city-1-d is the right small tower-and-cottages silhouette; remove the soldier, wall and slab."
+    },
+    {
+      "id": "village-d-edit",
+      "asset": "chibi-village",
+      "endpoint": "edit-image-pixen",
+      "seed": 67355,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "village-d",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the soldier, the grey stone towers, the stone wall and all ground: erase them so only the cottages with thatched roofs remain, standing directly on a transparent background with nothing at all under them. Keep the cottages, straw roofs, outline and art style exactly the same.",
+      "notes": "Every text-to-image village drew a soldier; keep village-d's thatched cottages and remove the rest."
+    },
+    {
+      "id": "city-1-d-edit-2",
+      "asset": "chibi-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 67366,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-1-d-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the white platform and its grey edge under the town, so the tower and cottages stand directly on a transparent background with nothing at all under them. Keep the tower, cottages, crimson roofs, flag, outline and art style exactly the same.",
+      "notes": "city-1-d-edit removed the soldier but drew a white checkered platform."
+    },
+    {
+      "id": "mountain-3-a-edit",
+      "asset": "chibi-mountain-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 67347,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "source": {
+        "recipe": "mountain-3-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab and the loose boulders under the mountain, so the rock and the small pine trees stand directly on a transparent background with nothing at all under them. Keep the peaks, snow, grey rock, pines, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of mountain-3-a (rock with pines, on a slab)."
+    },
+    {
+      "id": "city-2-c",
+      "asset": "chibi-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 67376,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "promptAddendum": "Same look as a storybook walled town: beige cobblestone walls and round beige stone towers with bright red cone roofs, cottages with cream plaster walls. Big bright red roofs cover most of the town and are its largest areas, shaded only with darker red. Buildings only.",
+      "negativeAddendum": "soldier, knight, guard, warrior, person, villager, character, orange roof",
+      "notes": "city-2-b roofs were scarlet (hue 5.5) or, after a crimson edit, a dark maroon covering only 10%: ask for roofs that dominate."
+    },
+    {
+      "id": "city-2-c-edit",
+      "asset": "chibi-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 67377,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "city-2-c",
+        "candidate": 0
+      },
+      "notes": "Default ground-removal edit for the one-pixel grass trim under city-2-c's walls."
+    },
+    {
+      "id": "city-1-e",
+      "asset": "chibi-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67367,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "promptAddendum": "Same look as a storybook walled town: beige cobblestone walls and a round beige stone tower with a bright red cone roof, cottages with cream plaster walls. Big bright red roofs cover most of the town and are its largest areas, shaded only with darker red. Buildings only.",
+      "negativeAddendum": "soldier, knight, guard, warrior, person, villager, character, orange roof",
+      "notes": "The accepted City 1 (city-1-d-edit-2) filled only about 60% of the tile with dark maroon roofs; reuse the city-2-c recipe that gave key-red roofs filling the canvas."
+    },
+    {
+      "id": "city-1-d-grow",
+      "asset": "chibi-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 67368,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-1-d-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Make the town bigger so it fills most of the image: add two more small cottages around the foot of the tower and make every roof bright red. Nothing at all under the buildings, transparent background, no people. Keep the tower, flag, outline and art style the same.",
+      "notes": "The accepted City 1 fills only about 60% of the tile; grow it within the same 88x96 canvas."
+    },
+    {
+      "id": "fighter-g",
+      "asset": "chibi-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67397,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The round steel shield is clearly visible. The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "bow, quiver, arrows, backpack, cape, brown leather, wooden shield, red shield, belt pouches",
+      "notes": "Root correction: round shield (plain grey steel, not brown), tile-80 Bold chibi proportions (huge head, few details)."
+    },
+    {
+      "id": "fighter-h",
+      "asset": "chibi-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67398,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The round steel shield is clearly visible. The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "bow, quiver, arrows, backpack, cape, brown leather, wooden shield, red shield, belt pouches",
+      "notes": "Root correction: round shield (plain grey steel, not brown), tile-80 Bold chibi proportions (huge head, few details)."
+    },
+    {
+      "id": "fighter-i",
+      "asset": "chibi-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67399,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The round steel shield is clearly visible. The mouth is a tiny dark line, not red.",
+      "negativeAddendum": "bow, quiver, arrows, backpack, cape, brown leather, wooden shield, red shield, belt pouches",
+      "notes": "Root correction: round shield (plain grey steel, not brown), tile-80 Bold chibi proportions (huge head, few details)."
+    },
+    {
+      "id": "fighter-h-edit",
+      "asset": "chibi-fighter",
+      "endpoint": "edit-image-pixen",
+      "seed": 67400,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "fighter-h",
+        "candidate": 0
+      },
+      "editInstruction": "Make his bright red tunic longer, down to the knees, with bright red sleeves. Draw the mouth as a tiny dark line. Keep the helmet, red crest, sword, round grey steel shield, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+      "notes": "fighter-h is the right design (huge head, round grey steel shield) but 14.5% owner area and a red mouth."
+    }
+  ]
+}

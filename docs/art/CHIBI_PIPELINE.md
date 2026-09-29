@@ -42,17 +42,36 @@ A faction swap changes only layer 3 and the subject list; a test checks it.
 
 ## Class recipes
 
-| Recipe class   | Endpoint                                       | Master                                                                |
-| -------------- | ---------------------------------------------- | --------------------------------------------------------------------- |
-| `unit`         | `create-image-pixen`, south-east, low detail   | the candidate, generated at the master size                           |
-| `settlement`   | Pixen, then optional `edit-image-pixen`        | the candidate; the edit removes a plate ("Remove all ground …")       |
-| `building`     | Pixen, then optional edit                      | as settlement                                                         |
-| `resource`     | Pixen, then optional edit                      | as settlement                                                         |
-| `terrain`      | `create-image-pixflux` (flat shading) or Pixen | a field at least 2x the tile; the seamless 80 x 80 window is cropped  |
-| `tall-terrain` | Pixen                                          | the transparent body drawn over an accepted ground tile's bottom cell |
+| Recipe class   | Endpoint                                       | Master                                                                                                 |
+| -------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `unit`         | `create-image-pixen`, south-east, low detail   | the candidate, generated at the master size                                                            |
+| `settlement`   | Pixen, then optional `edit-image-pixen`        | the candidate; the edit removes a plate ("Remove all ground …")                                        |
+| `building`     | Pixen, then optional edit                      | as settlement                                                                                          |
+| `resource`     | Pixen, then optional edit                      | as settlement                                                                                          |
+| `terrain`      | `create-image-pixflux` (flat shading) or Pixen | a field at least 2x the tile; the seamless 80 x 80 window is cropped, optionally inside a `cropRegion` |
+| `tall-terrain` | Pixen, then optional edit                      | the transparent body drawn over an accepted ground tile's bottom cell                                  |
 
 "Generate at the display size" is enforced: a non-terrain request must
 equal its master canvas. Pixen sizes must be multiples of 4.
+
+Pixen draws trees and rocks on an isometric slab just as it does cities, so
+tall terrain may use the same ground-removal edit before the composite.
+
+## Terrain palettes and variants
+
+- **Forced palette:** a Pixflux recipe may name a checked-in PNG in
+  [`scripts/art/chibi/palettes/`](../../scripts/art/chibi/palettes/) as
+  `colorImage` (path and SHA-256). It is sent as PixelLab's `color_image`,
+  and every output pixel uses its colours exactly. PixelLab maps each drawn
+  colour to its nearest palette entry, so a palette with close tones lets
+  the base colour land on different entries from seed to seed. Two-tone
+  palettes (base plus one far-off accent) keep the base stable.
+- **Variants that join:** variants of one terrain must share their base
+  colour, or a mixed map shows a patchwork. An asset may set `cropRegion`
+  (the part of the field searched for the seamless window). With
+  `fieldRecipe` it takes its window from another variant's accepted field:
+  `accept --id <recipe> --asset <variant>`. Pixflux is not deterministic
+  per seed, so a repeated request is not a way to get the same field.
 
 ## Owner masks
 
@@ -67,7 +86,8 @@ deterministic mask in [`owner-mask.ts`](../../scripts/art/chibi/owner-mask.ts):
   key, or embedded in red-brown material (5 of 8 neighbours); red-brown
   material above 3% of opaque pixels; owner coverage below 15% or above 55%.
   Coverage outside the direction's 20–40% target is recorded.
-- **Override:** a hand-corrected PNG named in the asset's `maskOverride`,
+- **Override:** a hand-corrected PNG (production overrides live in
+  [`scripts/art/chibi/overrides/`](../../scripts/art/chibi/overrides/)) named in the asset's `maskOverride`,
   bound to the master's pixel hash, with a written reason. It passes the
   same QA; it may waive only `RED_BROWN_MATERIAL`, `COVERAGE_LOW` or
   `COVERAGE_HIGH`.

@@ -156,14 +156,22 @@ batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
    pass). The pipeline composes them over an accepted ground tile. Legacy
    mountains stand on gravel, but no gravel subject exists; batch 1 must
    choose the ground for mountains (grass, or a pipeline-only gravel tile
-   that is never registered as a subject).
+   that is never registered as a subject). **Batch 1 decision:** grass.
+   Every Forest and Mountain composites over `chibi-grass-1`, so tall
+   terrain joins the surrounding meadow without a seam; the Mined Mountain
+   (batch 3) should do the same.
 4. **Mine is a terrain subject.** A Mine draws `TERRAIN:MINED_MOUNTAIN` (the
    art includes the mountain); `IMPROVEMENT:MINE` is never emitted. Batch 3
    lists "Mine" as an improvement; it is really a tall-terrain variant of
    batch 1's Mountain and must match it.
 5. **Capital cue.** Nothing on the map marks the capital today apart from
    its label. Batch 1 mentions a capital cue; that needs a new subject or a
-   code overlay.
+   code overlay. **Batch 1 decision:** a code overlay. Plan entries for a
+   capital carry `capital: true`, and the CHIBI art set draws a small gold
+   crown with the seat badge's outline in the top-right corner of the
+   cell. That corner lies outside a standard unit's 56 px width, so a
+   garrisoned unit never hides it. It needs no raster per city tier and
+   leaves LEGACY unchanged.
 6. **Ships have no class in the direction.** The size table has no row for
    boats. This inventory proposes LARGE_UNIT for the Patrol Boat and
    embarked form and GIANT_UNIT for the Battleship; confirm in batch 4.

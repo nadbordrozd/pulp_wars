@@ -480,6 +480,66 @@ describe("chibi prompt layering and manifests", async () => {
       expect(problems).toContain(expected);
   });
 
+  it("sends a checked-in forced palette and validates terrain variant windows", async () => {
+    const batch1 = await loadBatchManifest(ROOT, "1");
+    expect(batchManifestProblems(batch1, fragments, "1")).toEqual([]);
+    const paletted = batch1.recipes.find((recipe) => recipe.id === "grass-1-a");
+    if (paletted?.colorImage === undefined)
+      throw new Error("batch 1 grass recipe lost its palette");
+    const request = requestSnapshot(fragments, batch1, paletted);
+    expect(request.colorImage).toEqual(paletted.colorImage);
+    expect(() => requestBody(request)).toThrow(/colour image bytes/);
+    const png = Buffer.from("palette");
+    expect(requestBody(request, undefined, png)).toMatchObject({
+      shading: "flat shading",
+      color_image: {
+        type: "base64",
+        base64: png.toString("base64"),
+        format: "png",
+      },
+    });
+    const [grass, , fighter] = manifest.assets;
+    const [field, , , fighterA] = manifest.recipes;
+    if (!grass || !fighter || !field || !fighterA)
+      throw new Error("fixture manifest changed");
+    const palette = { path: "art/palette.png", sha256: "nope" };
+    const broken: ChibiBatchManifest = {
+      ...manifest,
+      dryRun: false,
+      assets: [
+        { ...grass, cropRegion: { left: 100, top: 0, width: 80, height: 70 } },
+        {
+          ...grass,
+          id: "chibi-dry-grass-2",
+          fieldRecipe: "dry-fighter-a",
+        },
+        { ...fighter, cropRegion: { left: 0, top: 0, width: 80, height: 80 } },
+      ],
+      recipes: [
+        {
+          ...field,
+          colorImage: palette,
+        },
+        {
+          ...fighterA,
+          colorImage: palette,
+        },
+      ],
+    };
+    const problems = batchManifestProblems(broken, fragments, "0").join("\n");
+    for (const expected of [
+      "cropRegion is smaller than the tile",
+      "cropRegion falls outside recipe dry-grass-field-a's field",
+      "a field recipe must be a terrain variant of the same subject",
+      "a shared field needs its own cropRegion",
+      "cropRegion is only for terrain crops",
+      "only Pixflux takes a forced palette",
+      "forced palettes are PNGs in scripts/art/chibi/palettes/",
+      "forced palette needs a sha256",
+    ])
+      expect(problems).toContain(expected);
+  });
+
   it("formats registry entries for src/assets/chibi-art-manifest.ts", async () => {
     const records = JSON.parse(
       await readFile(

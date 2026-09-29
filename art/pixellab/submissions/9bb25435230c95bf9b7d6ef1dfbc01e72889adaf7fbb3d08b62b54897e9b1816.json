@@ -1,0 +1,36 @@
+{
+  "id": "mountain-1-b-edit",
+  "jobId": "c749ea44-8450-4d0a-b5fc-dc298808cce9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "1",
+    "asset": "chibi-mountain-1",
+    "subject": "TERRAIN:MOUNTAIN",
+    "faction": "ORIGINAL",
+    "recipeClass": "tall-terrain",
+    "requestSize": {
+      "width": 80,
+      "height": 104
+    },
+    "seed": 67345,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and soil slab and the loose boulders under the mountain, so the rock stands directly on a transparent background with nothing at all under it. Keep the peaks, snow, grey rock, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and soil slab and the loose boulders under the mountain, so the rock stands directly on a transparent background with nothing at all under it. Keep the peaks, snow, grey rock, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and soil slab and the loose boulders under the mountain, so the rock stands directly on a transparent background with nothing at all under it. Keep the peaks, snow, grey rock, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and soil slab and the loose boulders under the mountain, so the rock stands directly on a transparent background with nothing at all under it. Keep the peaks, snow, grey rock, outline and art style exactly the same.",
+    "source": {
+      "recipe": "mountain-1-b",
+      "candidate": 0,
+      "sha256": "21aa319942b49d85da5de9e386b8bff77f5fbfb70012f0fe5e26235be5f6bea1"
+    }
+  }
+}

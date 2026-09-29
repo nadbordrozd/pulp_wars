@@ -1,0 +1,36 @@
+{
+  "id": "mountain-2-a-edit",
+  "jobId": "d12515eb-02dc-4c51-afab-9e0b066e574a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "1",
+    "asset": "chibi-mountain-2",
+    "subject": "TERRAIN:MOUNTAIN",
+    "faction": "ORIGINAL",
+    "recipeClass": "tall-terrain",
+    "requestSize": {
+      "width": 80,
+      "height": 104
+    },
+    "seed": 67346,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and soil slab, the snow on the ground and the loose boulders under the mountain, so the rock stands directly on a transparent background with nothing at all under it. Keep the peaks, snow caps, grey rock, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and soil slab, the snow on the ground and the loose boulders under the mountain, so the rock stands directly on a transparent background with nothing at all under it. Keep the peaks, snow caps, grey rock, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and soil slab, the snow on the ground and the loose boulders under the mountain, so the rock stands directly on a transparent background with nothing at all under it. Keep the peaks, snow caps, grey rock, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and soil slab, the snow on the ground and the loose boulders under the mountain, so the rock stands directly on a transparent background with nothing at all under it. Keep the peaks, snow caps, grey rock, outline and art style exactly the same.",
+    "source": {
+      "recipe": "mountain-2-a",
+      "candidate": 0,
+      "sha256": "70fa5817039b198c18227eec25b392b9d688f1b230a2decfe3eba043df5ed4c5"
+    }
+  }
+}

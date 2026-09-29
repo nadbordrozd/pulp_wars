@@ -79,7 +79,9 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     factionLayer: true,
     assetClasses: ["STANDARD_UNIT", "LARGE_UNIT", "GIANT_UNIT"],
     generators: ["create-image-pixen"],
-    editPass: false,
+    // A reviewed edit may enlarge the owner area or fix a detail (a red
+    // mouth) while keeping the accepted design.
+    editPass: true,
     noBackground: true,
     derivation: "as-is",
     options: { "create-image-pixen": PIECE_OPTIONS },
@@ -137,7 +139,9 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     factionLayer: false,
     assetClasses: ["TALL_TERRAIN"],
     generators: ["create-image-pixen"],
-    editPass: false,
+    // Pixen draws trees and rocks on an isometric slab like cities; the
+    // same ground-removal edit runs before the ground composite.
+    editPass: true,
     noBackground: true,
     derivation: "ground-composite",
     options: { "create-image-pixen": PIECE_OPTIONS },
@@ -208,7 +212,25 @@ export interface ChibiAssetSpec {
   readonly subjectAddendum?: string;
   /** ground-composite only: accepted TERRAIN asset drawn in the bottom cell. */
   readonly groundAsset?: string;
+  /**
+   * seamless-crop only: the part of the field the seamless window is searched
+   * in, so terrain variants can be distinct windows of one field and share
+   * its exact colours and features.
+   */
+  readonly cropRegion?: CropRegion;
+  /**
+   * seamless-crop only: the recipe of another variant of the same subject
+   * whose field this variant is cropped from (with its own cropRegion).
+   */
+  readonly fieldRecipe?: string;
   readonly maskOverride?: MaskOverrideSpec;
+}
+
+export interface CropRegion {
+  readonly left: number;
+  readonly top: number;
+  readonly width: number;
+  readonly height: number;
 }
 
 export interface DryRunFixture {
@@ -229,6 +251,12 @@ export interface DryRunReview {
   readonly expect?: "ACCEPTED" | "MASK_REJECTED";
 }
 
+export interface ColorImageSpec {
+  /** Repository-relative PNG under scripts/art/chibi/palettes/. */
+  readonly path: string;
+  readonly sha256: string;
+}
+
 export interface ChibiRecipe {
   readonly id: string;
   readonly asset: string;
@@ -243,6 +271,11 @@ export interface ChibiRecipe {
   readonly source?: { readonly recipe: string; readonly candidate: number };
   /** edit-image-pixen: defaults to fragments/edit-remove-ground.txt. */
   readonly editInstruction?: string;
+  /**
+   * create-image-pixflux only: a checked-in forced-palette PNG sent as
+   * `color_image`, so every variant of a terrain shares the same colours.
+   */
+  readonly colorImage?: ColorImageSpec;
   readonly notes?: string;
   /** Dry-run manifests only. */
   readonly fixture?: DryRunFixture;
@@ -422,6 +455,8 @@ export interface ChibiRequestSnapshot {
   readonly noBackground: boolean;
   readonly options: Readonly<Record<string, string>>;
   readonly editInstruction?: string;
+  /** Forced palette (Pixflux `color_image`), recorded by path and hash. */
+  readonly colorImage?: ColorImageSpec;
   readonly source?: {
     readonly recipe: string;
     readonly candidate: number;
@@ -499,13 +534,23 @@ export function requestSnapshot(
     };
   }
   const layered = layeredPrompt(fragments, manifest, asset, recipe);
-  return { ...common, ...layered };
+  return {
+    ...common,
+    ...layered,
+    ...(recipe.colorImage === undefined
+      ? {}
+      : { colorImage: recipe.colorImage }),
+  };
 }
 
-/** The PixelLab JSON body; `sourceImage` is the resolved edit source. */
+/**
+ * The PixelLab JSON body; `sourceImage` is the resolved edit source and
+ * `colorImage` the resolved forced-palette PNG.
+ */
 export function requestBody(
   request: ChibiRequestSnapshot,
   sourceImage?: Buffer,
+  colorImage?: Buffer,
 ): Record<string, unknown> {
   if (request.endpoint === "edit-image-pixen") {
     if (sourceImage === undefined || request.editInstruction === undefined)
@@ -521,12 +566,23 @@ export function requestBody(
       no_background: request.noBackground,
     };
   }
+  if (request.colorImage !== undefined && colorImage === undefined)
+    throw new Error("a forced palette needs its colour image bytes");
   return {
     description: request.description,
     image_size: request.requestSize,
     no_background: request.noBackground,
     seed: request.seed,
     ...request.options,
+    ...(request.colorImage === undefined || colorImage === undefined
+      ? {}
+      : {
+          color_image: {
+            type: "base64",
+            base64: colorImage.toString("base64"),
+            format: "png",
+          },
+        }),
   };
 }
 
@@ -636,6 +692,31 @@ export function batchManifestProblems(
         problems.push(`${label}: tall terrain needs a groundAsset`);
     } else if (asset.groundAsset !== undefined)
       problems.push(`${label}: groundAsset is only for tall terrain`);
+    if (asset.cropRegion !== undefined) {
+      const region = asset.cropRegion;
+      if (classRecipe.derivation !== "seamless-crop")
+        problems.push(`${label}: cropRegion is only for terrain crops`);
+      if (
+        [region.left, region.top, region.width, region.height].some(
+          (value) => !Number.isInteger(value) || value < 0,
+        )
+      )
+        problems.push(`${label}: cropRegion must be non-negative integers`);
+      if (
+        region.width < asset.canvas.width ||
+        region.height < asset.canvas.height
+      )
+        problems.push(`${label}: cropRegion is smaller than the tile`);
+      for (const recipe of manifest.recipes)
+        if (
+          (recipe.asset === asset.id || recipe.id === asset.fieldRecipe) &&
+          (region.left + region.width > recipe.requestSize.width ||
+            region.top + region.height > recipe.requestSize.height)
+        )
+          problems.push(
+            `${label}: cropRegion falls outside recipe ${recipe.id}'s field`,
+          );
+    }
     if (asset.maskOverride !== undefined) {
       const override = asset.maskOverride;
       if (!owned) problems.push(`${label}: mask override on an unowned asset`);
@@ -706,6 +787,19 @@ export function batchManifestProblems(
       if (recipe.source !== undefined || recipe.editInstruction !== undefined)
         problems.push(`${label}: only edits take a source or instruction`);
     }
+    if (recipe.colorImage !== undefined) {
+      if (recipe.endpoint !== "create-image-pixflux")
+        problems.push(`${label}: only Pixflux takes a forced palette`);
+      if (
+        !recipe.colorImage.path.startsWith("scripts/art/chibi/palettes/") ||
+        !recipe.colorImage.path.endsWith(".png")
+      )
+        problems.push(
+          `${label}: forced palettes are PNGs in scripts/art/chibi/palettes/`,
+        );
+      if (!SHA_PATTERN.test(recipe.colorImage.sha256))
+        problems.push(`${label}: forced palette needs a sha256`);
+    }
     const allowed = ENDPOINT_OPTIONS[recipe.endpoint];
     for (const [key, value] of Object.entries(recipe.options ?? {})) {
       if (!allowed.includes(key))
@@ -737,9 +831,29 @@ export function batchManifestProblems(
       problems.push(`${label}: production recipes cannot use fixtures`);
     recipeIds.push(recipe.id);
   }
-  for (const asset of manifest.assets)
+  for (const asset of manifest.assets) {
+    if (asset.fieldRecipe !== undefined) {
+      const label = `${at} asset ${asset.id}`;
+      const field = manifest.recipes.find(
+        (recipe) => recipe.id === asset.fieldRecipe,
+      );
+      const owner = manifest.assets.find((entry) => entry.id === field?.asset);
+      if (field === undefined || owner === undefined)
+        problems.push(`${label}: unknown field recipe ${asset.fieldRecipe}`);
+      else if (
+        owner.subject !== asset.subject ||
+        CHIBI_CLASS_RECIPES[asset.recipeClass]?.derivation !== "seamless-crop"
+      )
+        problems.push(
+          `${label}: a field recipe must be a terrain variant of the same subject`,
+        );
+      if (asset.cropRegion === undefined)
+        problems.push(`${label}: a shared field needs its own cropRegion`);
+      continue;
+    }
     if (!manifest.recipes.some((recipe) => recipe.asset === asset.id))
       problems.push(`${at} asset ${asset.id}: no recipe generates it`);
+  }
   return problems;
 }
 

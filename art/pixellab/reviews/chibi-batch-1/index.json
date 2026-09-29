@@ -1,0 +1,740 @@
+{
+  "batch": "1",
+  "bead": "pulp_wars-67q.3",
+  "title": "Chibi batch 1 (pilot): terrain, Village, City 1-3, Fighter, Marksman",
+  "dryRun": false,
+  "faction": "ORIGINAL",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-grass-1",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "grass-1-a",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-grass-1.png",
+        "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+        "pixelSha256": "7256125ac4b8e898fe4c7b34e322e56807801f70d1923135d8a8e9c6d24c9f9b",
+        "width": 80,
+        "height": 80
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "seamless-crop",
+        "crop": {
+          "left": 43,
+          "top": 7,
+          "width": 80,
+          "height": 80,
+          "seamCost": 0
+        }
+      }
+    },
+    {
+      "id": "chibi-grass-2",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "grass-1-a",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-grass-2.png",
+        "sha256": "d94b6245c88320fb161868322d40d0726fc1e9219f245a4764a1e317abd60638",
+        "pixelSha256": "acf702c12a75b9f58f80270fcedb189e7f818a0e8bccdf4174cdc699b378b6b6",
+        "width": 80,
+        "height": 80
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "seamless-crop",
+        "crop": {
+          "left": 51,
+          "top": 80,
+          "width": 80,
+          "height": 80,
+          "seamCost": 0.308
+        }
+      }
+    },
+    {
+      "id": "chibi-grass-3",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "grass-3-d",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-grass-3.png",
+        "sha256": "a9cfa8be11ce4abe315b113948cd8303fc42b11384a301f2492257b6b7239635",
+        "pixelSha256": "080693da65e280c130d1ccbacc687d9824c3a6c71159101984bcde50d48cc2d5",
+        "width": 80,
+        "height": 80
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "seamless-crop",
+        "crop": {
+          "left": 64,
+          "top": 40,
+          "width": 80,
+          "height": 80,
+          "seamCost": 2.55
+        }
+      }
+    },
+    {
+      "id": "chibi-forest-1",
+      "subject": "TERRAIN:FOREST",
+      "assetClass": "TALL_TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "forest-1-a-edit",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-forest-1.png",
+        "sha256": "bf59d40c95a90e5b8c36a68f7c1a7f156eea8464e6aed32182d48dec6dfdd428",
+        "pixelSha256": "737abe1a96b975d8b298f7bc04f400b324e1fe9c4ed1c656a317132e4af008a0",
+        "width": 80,
+        "height": 104
+      },
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 24,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "ground-composite",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0"
+        }
+      }
+    },
+    {
+      "id": "chibi-forest-2",
+      "subject": "TERRAIN:FOREST",
+      "assetClass": "TALL_TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "forest-2-a-edit",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-forest-2.png",
+        "sha256": "9428796978b54f0fa6b04f966d931e6d86f760ce4ea85d9491b291613b0d66bb",
+        "pixelSha256": "be5fcfc6a20f1db7ddc12547b527726920e8997cde869e5cb5351983a4df3e63",
+        "width": 80,
+        "height": 104
+      },
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 24,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "ground-composite",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0"
+        }
+      }
+    },
+    {
+      "id": "chibi-mountain-1",
+      "subject": "TERRAIN:MOUNTAIN",
+      "assetClass": "TALL_TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "mountain-1-b-edit",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-mountain-1.png",
+        "sha256": "84d3fa58ccc412c0c4ccc9d99e841e91597daf9fa1f06d35a18901f6525126c1",
+        "pixelSha256": "3b6ad13afe1eb95651242c2fa7fad681315c13261e090fa710ef8a826e9d60f0",
+        "width": 80,
+        "height": 104
+      },
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 24,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "ground-composite",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0"
+        }
+      }
+    },
+    {
+      "id": "chibi-mountain-3",
+      "subject": "TERRAIN:MOUNTAIN",
+      "assetClass": "TALL_TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "mountain-3-a-edit",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-mountain-3.png",
+        "sha256": "20775a6f6127a833b9df2497631eb7976271aade18ac1933aef9ead051765407",
+        "pixelSha256": "9de5f17a1d7fad2178d9d2c510793e615d4f924ec3d1d4312c8b7adf2abefdab",
+        "width": 80,
+        "height": 104
+      },
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 24,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "ground-composite",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0"
+        }
+      }
+    },
+    {
+      "id": "chibi-shallow-water-1",
+      "subject": "TERRAIN:SHALLOW_WATER",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "shallow-water-1-b",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-shallow-water-1.png",
+        "sha256": "33a873598d926328594bf821f3c3d0414ce5ff2bc3a40f0a77d4d6adaf9afe6e",
+        "pixelSha256": "27b1b488805abd89d0f5dba035faeb016e0af2ade7ce78304a254b8f8315b0ec",
+        "width": 80,
+        "height": 80
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "seamless-crop",
+        "crop": {
+          "left": 25,
+          "top": 69,
+          "width": 80,
+          "height": 80,
+          "seamCost": 0.404
+        }
+      }
+    },
+    {
+      "id": "chibi-shallow-water-2",
+      "subject": "TERRAIN:SHALLOW_WATER",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "shallow-water-1-b",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-shallow-water-2.png",
+        "sha256": "f3a2862c9f5ddb7a1961b71447a25a2eb4d69203d616979f81602ebcc820c167",
+        "pixelSha256": "01f316ee49052124f622cf79bdc8451da4b4cc33208b6315bbb1a51929ebb076",
+        "width": 80,
+        "height": 80
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "seamless-crop",
+        "crop": {
+          "left": 52,
+          "top": 7,
+          "width": 80,
+          "height": 80,
+          "seamCost": 4.375
+        }
+      }
+    },
+    {
+      "id": "chibi-deep-water-1",
+      "subject": "TERRAIN:DEEP_WATER",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "deep-water-1-c",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-deep-water-1.png",
+        "sha256": "4765e99575277bfb737da2eccabcbb5e90c878e6b040befc2fb3ee484a49161d",
+        "pixelSha256": "09a10ee9b7730ade22ffd3a12800b1088d4aadec7268eb9894236d5022d4ecf3",
+        "width": 80,
+        "height": 80
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "seamless-crop",
+        "crop": {
+          "left": 45,
+          "top": 0,
+          "width": 80,
+          "height": 80,
+          "seamCost": 3.417
+        }
+      }
+    },
+    {
+      "id": "chibi-deep-water-2",
+      "subject": "TERRAIN:DEEP_WATER",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "deep-water-1-c",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-deep-water-2.png",
+        "sha256": "f4efb33f22e105f68c5a4719c79a90c8be8178506ba27e322262124a457b5fee",
+        "pixelSha256": "b610b86527270716eb78cc1cfc08ff5181555d8a9aa9147cbfabcb7b5dce88de",
+        "width": 80,
+        "height": 80
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "seamless-crop",
+        "crop": {
+          "left": 41,
+          "top": 80,
+          "width": 80,
+          "height": 80,
+          "seamCost": 0.427
+        }
+      }
+    },
+    {
+      "id": "chibi-village",
+      "subject": "SITE:VILLAGE",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "village-d-edit",
+      "master": {
+        "path": "public/assets/chibi/settlements/chibi-village.png",
+        "sha256": "627bfc35f762cfad9eee7e6d6fa995ff4c72b55aeafceb26fc371332d38182aa",
+        "pixelSha256": "a64dfd2188162748aa5211e75fa33b5f01d8c7f0a71378854d0d92ae06b2f2b9",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 13,
+        "groundShare": 0.2372,
+        "footprintWidthShare": 0.5714,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "city-1-d-grow",
+      "master": {
+        "path": "public/assets/chibi/settlements/chibi-city-1.png",
+        "sha256": "5b576bb70d49d4b56cdd100e66a72a291d77465bcf60c18b73dc1786c249fc9c",
+        "pixelSha256": "ef4dd607129eecea56d3de871c7522e343c6e1bef97d885ba72fc373a63eede2",
+        "width": 88,
+        "height": 96
+      },
+      "anchor": {
+        "x": 44,
+        "y": 56
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 16,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0.2633,
+        "footprintWidthShare": 0.5385,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/settlements/chibi-city-1.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3518,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-city-2",
+      "subject": "CITY:2",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "city-2-c-edit",
+      "master": {
+        "path": "public/assets/chibi/settlements/chibi-city-2.png",
+        "sha256": "7b0fe4a3f7b292b9187773c20a1916fb47a836d94ab5a52afb07ec02f853a01d",
+        "pixelSha256": "0a1a040e8b53c4a4bd3c3ec112ab5b8fbf0d995b91ff141983a52f9a99047bc7",
+        "width": 96,
+        "height": 100
+      },
+      "anchor": {
+        "x": 48,
+        "y": 60
+      },
+      "overflow": {
+        "left": 8,
+        "right": 8,
+        "up": 20,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 18,
+        "groundShare": 0.3617,
+        "footprintWidthShare": 0.7159,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/settlements/chibi-city-2.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2089,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-city-3",
+      "subject": "CITY:3",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "city-3-a-edit",
+      "master": {
+        "path": "public/assets/chibi/settlements/chibi-city-3.png",
+        "sha256": "4ce1620a814f2019b2fec1678fc6de2c679c34ce41c667740ae312fe733bd8ca",
+        "pixelSha256": "0c737e442420a2684a250b44e858af44d668f0d246fbbb1b53785db04fe0f5b1",
+        "width": 96,
+        "height": 104
+      },
+      "anchor": {
+        "x": 48,
+        "y": 64
+      },
+      "overflow": {
+        "left": 8,
+        "right": 8,
+        "up": 24,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 19,
+        "groundShare": 0.0422,
+        "footprintWidthShare": 0.6667,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/settlements/chibi-city-3.mask.png",
+        "source": "AUTO",
+        "coverage": 0.1991,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "fighter-h-edit",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-fighter.png",
+        "sha256": "b4f093038b28a6e136c616ca51504828f3971d4abc74dbbf4e6b92c6036e7790",
+        "pixelSha256": "4037cb88f122d07259c661bda0c4e005317ce383fdc81d9da2fb60c09fed732b",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.1137,
+        "footprintWidthShare": 0.7255,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-fighter.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2148,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "marksman-c",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-marksman.png",
+        "sha256": "9c7f8e86122b18d98176d2290093b1e4da2a5ad48265a987cced85301ca6f6a1",
+        "pixelSha256": "cf49fd2f27c56002b1f19d952476997cb46f2151b76a2a46580fce608b740ba4",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.1369,
+        "footprintWidthShare": 0.6364,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-marksman.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.3339,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-1/sheet-1x.png",
+      "width": 1042,
+      "height": 3356,
+      "sha256": "26b611007de624221a8b7d1c80e1e2a38ec230a98123adc77ba8113488b9967a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-1/sheet-x4.png",
+      "width": 2370,
+      "height": 8396,
+      "sha256": "cc65e8d87093ae4ff77593327e9d89fa04d0588762b171c278301fd75e119cce"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-1/phone-mock.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "f8f52a970889abbb2b842e623e63c8824c776f6dc64870057fbbe2763421e9e8"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-1/desktop-mock.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "725a4f13162ca7cee4d397331d7b461e049a4cc1f9e2c35a6dfb0a07693253d8"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-1/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0ebc9bb07752dee24ebf9bb79e94b23b754e538fc3dc564940320edf24c17a08"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-1/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d0299590da89ae4ae4acbc1d94af2f177bfdb8bb49d31e4692f6f5a0f791e46e"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-1/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "4585b2849c143bdf2cb329b9556a571776b22e4e30af26eed40dd1ef74368bb3"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-1/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "469d5635e6995291d6266032f6bef4fcb6f32deed8e3bee75b05da8668bf56e3"
+    }
+  ],
+  "captures": {
+    "note": "Captured from the running game with ?art=chibi; subjects without a registered chibi raster still draw their legacy art.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-1/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-1/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-1/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-1/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-1/phone-links.md"
+}

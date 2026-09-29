@@ -1,0 +1,36 @@
+{
+  "id": "mountain-3-a-edit",
+  "jobId": "2c7df003-7ed3-4911-b483-6c6e0098c058",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "1",
+    "asset": "chibi-mountain-3",
+    "subject": "TERRAIN:MOUNTAIN",
+    "faction": "ORIGINAL",
+    "recipeClass": "tall-terrain",
+    "requestSize": {
+      "width": 80,
+      "height": 104
+    },
+    "seed": 67347,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and soil slab and the loose boulders under the mountain, so the rock and the small pine trees stand directly on a transparent background with nothing at all under them. Keep the peaks, snow, grey rock, pines, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and soil slab and the loose boulders under the mountain, so the rock and the small pine trees stand directly on a transparent background with nothing at all under them. Keep the peaks, snow, grey rock, pines, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and soil slab and the loose boulders under the mountain, so the rock and the small pine trees stand directly on a transparent background with nothing at all under them. Keep the peaks, snow, grey rock, pines, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and soil slab and the loose boulders under the mountain, so the rock and the small pine trees stand directly on a transparent background with nothing at all under them. Keep the peaks, snow, grey rock, pines, outline and art style exactly the same.",
+    "source": {
+      "recipe": "mountain-3-a",
+      "candidate": 0,
+      "sha256": "95d9b02016a61e26754158b8969a675bb5fc0524c8f4545aca2a7001e28a3b2e"
+    }
+  }
+}
