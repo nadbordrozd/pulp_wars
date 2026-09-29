@@ -542,6 +542,7 @@ try {
     );
   }
 
+  const chibi = await probeChibiArtSet(connection);
   await evaluate(
     connection,
     `localStorage.removeItem('pulpWars.save.current')`,
@@ -624,7 +625,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; ?art=chibi ${chibi}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -637,6 +638,97 @@ try {
       retryDelay: 100,
     });
   }
+}
+
+/**
+ * Opt-in CHIBI art set: ?art=chibi boots Ruleset 7 on the 80 px cell with
+ * discrete zoom steps, paints the board (legacy art at chibi geometry until
+ * batches register chibi rasters), and persists the choice until ?art=legacy.
+ */
+async function probeChibiArtSet(connection: Connection): Promise<string> {
+  const launchSelector = '[data-action="launch"]';
+  const canvasSelector = "canvas.board-canvas-v7";
+  const artUrl = (value: string | null): string => {
+    const url = new URL(baseUrl);
+    if (value === null) url.searchParams.delete("art");
+    else url.searchParams.set("art", value);
+    return url.href;
+  };
+  const navigateFresh = async (
+    url: string,
+    readiness: string,
+  ): Promise<void> => {
+    await evaluate(connection, `globalThis.__V7_CHIBI_PRIOR_DOCUMENT__ = true`);
+    await connection.send("Page.navigate", { url });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_CHIBI_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
+    );
+  };
+  const activeWithArt = (artSet: string): string =>
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && document.querySelector(${JSON.stringify(canvasSelector)})?.dataset.artSet === ${JSON.stringify(artSet)}; })()`;
+  await evaluate(
+    connection,
+    `localStorage.removeItem('pulpWars.save.v7r12.current')`,
+  );
+  await navigateFresh(
+    artUrl("chibi"),
+    `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
+  );
+  await pointerClick(connection, launchSelector);
+  await waitForExpression(connection, activeWithArt("CHIBI"), 900);
+  // Wait until accepted art has loaded and painted beyond the flat fills.
+  await waitForExpression(
+    connection,
+    `(() => { const canvas = document.querySelector(${JSON.stringify(canvasSelector)}); const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data; const colours = new Set(); for (let i = 0; i < data.length; i += 4 * 61) colours.add((data[i] << 16) | (data[i + 1] << 8) | data[i + 2]); return colours.size > 64; })()`,
+  );
+  const evidence = await evaluate<{
+    readonly before: { readonly step?: string; readonly tile?: string };
+    readonly after: { readonly step?: string; readonly tile?: string };
+    readonly stored: string | null;
+  }>(
+    connection,
+    `(() => {
+      const canvas = document.querySelector(${JSON.stringify(canvasSelector)});
+      const read = () => ({ step: canvas.dataset.zoomStep, tile: canvas.dataset.tileCssPx });
+      const before = read();
+      canvas.focus();
+      canvas.dispatchEvent(new KeyboardEvent('keydown', { key: '+', bubbles: true }));
+      const after = read();
+      return { before, after, stored: localStorage.getItem('pulpWars.ruleset7.artSet.v1') };
+    })()`,
+  );
+  const next: Readonly<Record<string, string>> = {
+    "0.75": "1",
+    "1": "1.5",
+  };
+  const beforeStep = evidence.before.step ?? "";
+  if (
+    next[beforeStep] === undefined ||
+    Number(evidence.before.tile) !== 80 * Number(beforeStep) ||
+    evidence.after.step !== next[beforeStep] ||
+    Number(evidence.after.tile) !== 80 * Number(evidence.after.step) ||
+    evidence.stored !== "CHIBI"
+  )
+    throw new Error(`?art=chibi geometry failed: ${JSON.stringify(evidence)}`);
+
+  // Without the parameter, the persisted choice still applies.
+  await navigateFresh(
+    artUrl(null),
+    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
+  );
+  await touchClick(connection, '[data-action="resume"]');
+  await waitForExpression(connection, activeWithArt("CHIBI"), 900);
+
+  await evaluate(
+    connection,
+    `localStorage.removeItem('pulpWars.save.v7r12.current')`,
+  );
+  await navigateFresh(
+    artUrl("legacy"),
+    `document.querySelector('[data-v7-setup]') !== null && localStorage.getItem('pulpWars.ruleset7.artSet.v1') === 'LEGACY'`,
+  );
+  return `zoom ${beforeStep}->${evidence.after.step} at ${evidence.after.tile}px cells, persisted and reset`;
 }
 
 async function driveDefaultMatchToOutcome(

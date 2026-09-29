@@ -1,0 +1,275 @@
+import type {
+  ImprovementIdV7,
+  ResourceIdV7,
+  TerrainIdV7,
+  UnitRoleIdV7,
+} from "../engine/index";
+
+/**
+ * Ruleset 7 art sets. LEGACY is the default production art; CHIBI is the
+ * opt-in migration target described in docs/art/CHIBI_ART_DIRECTION.md.
+ */
+export type ArtSetV7 = "LEGACY" | "CHIBI";
+
+/**
+ * Art-set-neutral name of what a map entry depicts. Batch beads register
+ * CHIBI rasters against these subjects; a subject without a registered
+ * raster falls back to its legacy asset drawn at the chibi geometry.
+ */
+export type ArtSubjectV7 =
+  | `TERRAIN:${TerrainIdV7 | "MINED_MOUNTAIN"}`
+  | `RESOURCE:${ResourceIdV7}`
+  | `IMPROVEMENT:${ImprovementIdV7}`
+  | `UNIT:${UnitRoleIdV7 | "EMBARKED_TRANSPORT"}`
+  | `CITY:${1 | 2 | 3}`
+  | "SITE:VILLAGE"
+  | "TREASURE";
+
+export type ChibiAssetClassV7 =
+  | "TERRAIN"
+  | "TALL_TERRAIN"
+  | "STANDARD_UNIT"
+  | "LARGE_UNIT"
+  | "GIANT_UNIT"
+  | "SETTLEMENT"
+  | "BUILDING"
+  | "RESOURCE";
+
+export interface ChibiPointV7 {
+  readonly x: number;
+  readonly y: number;
+}
+
+/**
+ * One checked-in chibi raster. All sizes are DPR-1 master pixels, which are
+ * CSS pixels at zoom 1 (one 80 x 80 tile).
+ */
+export interface ChibiArtAssetV7 {
+  readonly id: string;
+  readonly subject: ArtSubjectV7;
+  readonly assetClass: ChibiAssetClassV7;
+  readonly width: number;
+  readonly height: number;
+  /** Public URL of the DPR-1 master PNG. */
+  readonly url: string;
+  /**
+   * Master pixel placed on the owning cell centre. Omit it to use the class
+   * placement: bottom-centred units, settlements, buildings and tall terrain
+   * (anchor = width / 2, height - 40), centred terrain and resources.
+   */
+  readonly anchor?: ChibiPointV7;
+  /** Optional pre-built integer nearest-neighbour upscales of the master. */
+  readonly densityUrls?: Readonly<Partial<Record<2 | 3, string>>>;
+  /**
+   * Checked-in owner mask PNG with the master's exact dimensions. A pixel
+   * with alpha >= 128 marks an owner-colour pixel; everything else is kept.
+   */
+  readonly ownerMaskUrl?: string;
+}
+
+export interface ChibiClassGeometryV7 {
+  readonly maxWidth: number;
+  readonly maxHeight: number;
+  readonly placement: "CELL" | "CENTRE" | "BOTTOM_CENTRE";
+  /** Largest allowed overflow beyond either side of the 80 px cell. */
+  readonly maxSideOverflow: number;
+  /** Largest allowed overflow above the 80 px cell. */
+  readonly maxUpOverflow: number;
+}
+
+export const CHIBI_TILE_CSS_PX = 80;
+
+/** Normative canvas and overflow table from CHIBI_ART_DIRECTION.md section 3. */
+export const CHIBI_CLASS_GEOMETRY_V7 = {
+  TERRAIN: {
+    maxWidth: 80,
+    maxHeight: 80,
+    placement: "CELL",
+    maxSideOverflow: 0,
+    maxUpOverflow: 0,
+  },
+  TALL_TERRAIN: {
+    maxWidth: 80,
+    maxHeight: 104,
+    placement: "BOTTOM_CENTRE",
+    maxSideOverflow: 0,
+    maxUpOverflow: 24,
+  },
+  STANDARD_UNIT: {
+    maxWidth: 56,
+    maxHeight: 80,
+    placement: "BOTTOM_CENTRE",
+    maxSideOverflow: 0,
+    maxUpOverflow: 0,
+  },
+  LARGE_UNIT: {
+    maxWidth: 72,
+    maxHeight: 88,
+    placement: "BOTTOM_CENTRE",
+    maxSideOverflow: 4,
+    maxUpOverflow: 8,
+  },
+  GIANT_UNIT: {
+    maxWidth: 88,
+    maxHeight: 104,
+    placement: "BOTTOM_CENTRE",
+    maxSideOverflow: 4,
+    maxUpOverflow: 24,
+  },
+  SETTLEMENT: {
+    maxWidth: 96,
+    maxHeight: 104,
+    placement: "BOTTOM_CENTRE",
+    maxSideOverflow: 8,
+    maxUpOverflow: 24,
+  },
+  BUILDING: {
+    maxWidth: 80,
+    maxHeight: 88,
+    placement: "BOTTOM_CENTRE",
+    maxSideOverflow: 0,
+    maxUpOverflow: 8,
+  },
+  RESOURCE: {
+    maxWidth: 48,
+    maxHeight: 48,
+    placement: "CENTRE",
+    maxSideOverflow: 0,
+    maxUpOverflow: 0,
+  },
+} as const satisfies Readonly<Record<ChibiAssetClassV7, ChibiClassGeometryV7>>;
+
+export interface ChibiOverflowV7 {
+  readonly left: number;
+  readonly right: number;
+  readonly up: number;
+  readonly down: number;
+}
+
+export function chibiAnchorV7(asset: ChibiArtAssetV7): ChibiPointV7 {
+  if (asset.anchor !== undefined) return asset.anchor;
+  const half = CHIBI_TILE_CSS_PX / 2;
+  return CHIBI_CLASS_GEOMETRY_V7[asset.assetClass].placement === "BOTTOM_CENTRE"
+    ? { x: asset.width / 2, y: asset.height - half }
+    : { x: asset.width / 2, y: asset.height / 2 };
+}
+
+/** Overflow of the master canvas beyond its 80 x 80 owning cell, in CSS px at zoom 1. */
+export function chibiOverflowV7(asset: ChibiArtAssetV7): ChibiOverflowV7 {
+  const anchor = chibiAnchorV7(asset);
+  const half = CHIBI_TILE_CSS_PX / 2;
+  return {
+    left: Math.max(0, anchor.x - half),
+    right: Math.max(0, asset.width - anchor.x - half),
+    up: Math.max(0, anchor.y - half),
+    down: Math.max(0, asset.height - anchor.y - half),
+  };
+}
+
+const OWNED_SUBJECT_PREFIXES = ["UNIT:", "CITY:"] as const;
+
+function allowedClasses(subject: ArtSubjectV7): readonly ChibiAssetClassV7[] {
+  if (
+    subject === "TERRAIN:FOREST" ||
+    subject === "TERRAIN:MOUNTAIN" ||
+    subject === "TERRAIN:MINED_MOUNTAIN"
+  )
+    return ["TERRAIN", "TALL_TERRAIN"];
+  if (subject.startsWith("TERRAIN:")) return ["TERRAIN"];
+  if (subject.startsWith("RESOURCE:")) return ["RESOURCE"];
+  if (subject.startsWith("IMPROVEMENT:")) return ["BUILDING"];
+  if (subject.startsWith("UNIT:"))
+    return ["STANDARD_UNIT", "LARGE_UNIT", "GIANT_UNIT"];
+  if (subject.startsWith("CITY:") || subject === "SITE:VILLAGE")
+    return ["SETTLEMENT"];
+  return ["RESOURCE", "BUILDING"];
+}
+
+/** Returns every contract violation of one manifest entry; empty means valid. */
+export function chibiAssetProblemsV7(asset: ChibiArtAssetV7): string[] {
+  const problems: string[] = [];
+  const limits = CHIBI_CLASS_GEOMETRY_V7[asset.assetClass];
+  const label = `${asset.id} (${asset.subject}, ${asset.assetClass})`;
+  if (!allowedClasses(asset.subject).includes(asset.assetClass))
+    problems.push(`${label}: class does not fit the subject`);
+  if (
+    !Number.isInteger(asset.width) ||
+    !Number.isInteger(asset.height) ||
+    asset.width <= 0 ||
+    asset.height <= 0
+  )
+    problems.push(`${label}: master size must be positive integers`);
+  if (asset.width > limits.maxWidth || asset.height > limits.maxHeight)
+    problems.push(
+      `${label}: ${asset.width} x ${asset.height} exceeds ${limits.maxWidth} x ${limits.maxHeight}`,
+    );
+  if (
+    limits.placement === "CELL" &&
+    (asset.width !== CHIBI_TILE_CSS_PX || asset.height !== CHIBI_TILE_CSS_PX)
+  )
+    problems.push(`${label}: terrain tiles must be exactly 80 x 80`);
+  if (asset.assetClass === "TALL_TERRAIN" && asset.width !== CHIBI_TILE_CSS_PX)
+    problems.push(`${label}: tall terrain must be exactly 80 px wide`);
+  const overflow = chibiOverflowV7(asset);
+  if (Math.max(overflow.left, overflow.right) > limits.maxSideOverflow)
+    problems.push(
+      `${label}: side overflow ${Math.max(overflow.left, overflow.right)} exceeds ${limits.maxSideOverflow}`,
+    );
+  if (overflow.up > limits.maxUpOverflow)
+    problems.push(
+      `${label}: upward overflow ${overflow.up} exceeds ${limits.maxUpOverflow}`,
+    );
+  if (overflow.down > 0)
+    problems.push(`${label}: nothing may overflow below its cell`);
+  if (
+    OWNED_SUBJECT_PREFIXES.some((prefix) => asset.subject.startsWith(prefix)) &&
+    asset.ownerMaskUrl === undefined
+  )
+    problems.push(`${label}: owned subjects need a checked-in owner mask`);
+  return problems;
+}
+
+export interface ChibiArtRegistryV7 {
+  /** Accepted variants of one subject in manifest order; empty means fall back. */
+  variants(subject: ArtSubjectV7): readonly ChibiArtAssetV7[];
+}
+
+export function buildChibiArtRegistryV7(assets: readonly ChibiArtAssetV7[]): {
+  readonly registry: ChibiArtRegistryV7;
+  readonly problems: readonly string[];
+} {
+  const problems: string[] = [];
+  const ids = new Set<string>();
+  const bySubject = new Map<ArtSubjectV7, ChibiArtAssetV7[]>();
+  for (const asset of assets) {
+    const assetProblems = chibiAssetProblemsV7(asset);
+    if (ids.has(asset.id))
+      assetProblems.push(`${asset.id}: duplicate asset id`);
+    ids.add(asset.id);
+    if (assetProblems.length > 0) {
+      problems.push(...assetProblems);
+      continue;
+    }
+    bySubject.set(asset.subject, [
+      ...(bySubject.get(asset.subject) ?? []),
+      asset,
+    ]);
+  }
+  return {
+    registry: { variants: (subject) => bySubject.get(subject) ?? [] },
+    problems,
+  };
+}
+
+/** Deterministic cosmetic variant, the same coordinate hash legacy terrain uses. */
+export function chibiVariantV7(
+  variants: readonly ChibiArtAssetV7[],
+  at: ChibiPointV7,
+): ChibiArtAssetV7 | null {
+  if (variants.length === 0) return null;
+  const index =
+    (((Math.floor(at.x) * 31 + Math.floor(at.y) * 17) % variants.length) +
+      variants.length) %
+    variants.length;
+  return variants[index] ?? null;
+}

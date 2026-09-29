@@ -7,6 +7,7 @@ import {
   cleanupObsoleteRuleset7Saves,
   type ObsoleteSaveCleanupResultV7,
 } from "../persistence/index";
+import { resolveArtSetV7 } from "./art-set-v7";
 import {
   Ruleset7BrowserController,
   type Ruleset7BrowserControllerOptions,
@@ -41,17 +42,21 @@ export function bootstrapRuleset7App(
     initialSaveWarning:
       obsoleteSaveCleanup.warning ?? options.initialSaveWarning ?? null,
   });
+  const settingsStorage =
+    options.settingsStorage === undefined
+      ? browserStorageV7(browser)
+      : options.settingsStorage;
   const view = new Ruleset7DomAppView(documentRoot, root, controller, {
     ...options,
+    artSet:
+      options.artSet ??
+      resolveArtSetV7(browser?.location.search ?? "", settingsStorage),
     ...(obsoleteSaveCleanup.removedCount === 0
       ? {}
       : {
           startupNotice: `${obsoleteSaveCleanup.removedCount} obsolete Ruleset 7 ${obsoleteSaveCleanup.removedCount === 1 ? "save was" : "saves were"} removed from this browser.`,
         }),
-    settingsStorage:
-      options.settingsStorage === undefined
-        ? browserStorageV7(browser)
-        : options.settingsStorage,
+    settingsStorage,
   });
   const flush = (): void => {
     controller.flushPersistence();

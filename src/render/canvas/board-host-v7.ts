@@ -35,6 +35,21 @@ import {
   arrowGeometry,
 } from "./combat-presentation";
 import { BoardGlowCacheV7 } from "./glow-cache-v7";
+import type { ArtSetV7 } from "../../assets/chibi-art-v7";
+import {
+  browserChibiRasterEnvironmentV7,
+  createChibiArtResolverV7,
+  type ChibiBoardArtV7,
+} from "./chibi-art-resolver-v7";
+import {
+  adjacentChibiZoomStep,
+  chibiTileCssPx,
+  chibiZoomStepForCamera,
+  fitChibiCamera,
+  nearestChibiZoomStep,
+  zoomChibiCameraAt,
+  type ChibiZoomStepV7,
+} from "./chibi-geometry-v7";
 import {
   drawSupportFeedbackV7,
   drawWindmillHealingFeedbackV7,
@@ -52,6 +67,8 @@ export interface BoardHostModelV7 {
   readonly animationSpeed: "NORMAL" | "FAST";
   readonly presentationPaused: boolean;
   readonly highContrast: boolean;
+  /** Presentation-only art set; omitted means LEGACY. */
+  readonly artSet?: ArtSetV7;
 }
 
 export interface BoardHostCallbacksV7 {
@@ -78,6 +95,7 @@ export interface BoardHostV7 {
 export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #document: Document;
   readonly #images: BoardImageResolverV7;
+  readonly #chibiArt: ChibiBoardArtV7;
   readonly #glowCache: BoardGlowCacheV7;
   readonly #planCache: {
     view: PlayerViewV7;
@@ -100,6 +118,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #pointer: { id: number; start: Point; current: Point } | null = null;
   readonly #pointers = new Map<number, Point>();
   #pinch: { readonly distance: number; readonly midpoint: Point } | null = null;
+  /** CHIBI pinch zoom snaps to discrete steps relative to the gesture start. */
+  #pinchStart: {
+    readonly distance: number;
+    readonly step: ChibiZoomStepV7;
+  } | null = null;
+  #wheelDelta = 0;
   #resizeObserver: ResizeObserver | null = null;
   #animatedUnit: { readonly id: number; readonly at: CoordV7 } | null = null;
   #animationFrame: number | null = null;
@@ -151,6 +175,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#images = createBoardImageResolverV7(documentRoot, () => {
       this.#glowCache.clear();
       this.#draw();
+    });
+    this.#chibiArt = createChibiArtResolverV7({
+      environment: browserChibiRasterEnvironmentV7(documentRoot),
+      redraw: () => {
+        this.#glowCache.clear();
+        this.#draw();
+      },
     });
   }
 
@@ -247,10 +278,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       )
     )
       this.#inspectionCycle = null;
-    const key = `${String(model.matchInstanceId)}:${model.view.board.width}x${model.view.board.height}`;
+    const key = `${String(model.matchInstanceId)}:${model.view.board.width}x${model.view.board.height}:${this.#artSet()}`;
     if (this.#boardKey !== key) {
       this.#boardKey = key;
-      this.#camera = fitCamera(model.view.board, this.#viewport);
+      this.#camera =
+        this.#artSet() === "CHIBI"
+          ? fitChibiCamera(model.view.board, this.#viewport)
+          : fitCamera(model.view.board, this.#viewport);
       const capital = model.view.cities.find(
         (city) => city.ownerId === model.view.viewer.id && city.isCapital,
       );
@@ -277,6 +311,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   zoom(direction: "IN" | "OUT"): void {
     this.#cameraFollowAllowed = false;
+    if (this.#artSet() === "CHIBI") {
+      this.#camera = zoomChibiCameraAt(
+        this.#camera,
+        adjacentChibiZoomStep(chibiZoomStepForCamera(this.#camera), direction),
+        { x: this.#viewport.width / 2, y: this.#viewport.height / 2 },
+      );
+      this.#draw();
+      return;
+    }
     const factor = direction === "IN" ? 1.2 : 1 / 1.2;
     this.#camera = zoomCameraAt(
       this.#camera,
@@ -601,8 +644,27 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     return plan;
   }
 
+  #artSet(): ArtSetV7 {
+    return this.#model?.artSet ?? "LEGACY";
+  }
+
+  /** Public diagnostics for the art set and its exact cell size. */
+  #syncArtSetDataset(): void {
+    const canvas = this.#canvas;
+    if (canvas === null) return;
+    const artSet = this.#artSet();
+    const tile = String(chibiTileCssPx(this.#camera));
+    const step =
+      artSet === "CHIBI" ? String(chibiZoomStepForCamera(this.#camera)) : null;
+    if (canvas.dataset.artSet !== artSet) canvas.dataset.artSet = artSet;
+    if (canvas.dataset.tileCssPx !== tile) canvas.dataset.tileCssPx = tile;
+    if (step === null) delete canvas.dataset.zoomStep;
+    else if (canvas.dataset.zoomStep !== step) canvas.dataset.zoomStep = step;
+  }
+
   #draw(): void {
     const model = this.#model;
+    this.#syncArtSetDataset();
     const context = this.#context;
     if (model === null || context === null) return;
     this.#drawSerial += 1;
@@ -644,6 +706,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         sceneAlpha,
         impact: this.#impact,
         statusPulse: this.#statusPulse,
+        artSet: this.#artSet(),
+        chibiArt: this.#chibiArt,
         selectionJump:
           jump === null
             ? null
@@ -858,6 +922,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     else if (this.#pointers.size === 2) {
       this.#pointer = null;
       this.#pinch = pinchState([...this.#pointers.values()]);
+      this.#pinchStart =
+        this.#pinch === null
+          ? null
+          : {
+              distance: this.#pinch.distance,
+              step: chibiZoomStepForCamera(this.#camera),
+            };
     }
     canvas.setPointerCapture?.(event.pointerId);
   };
@@ -875,17 +946,30 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           x: current.midpoint.x - prior.midpoint.x,
           y: current.midpoint.y - prior.midpoint.y,
         });
-        this.#camera = zoomCameraAt(
-          this.#camera,
-          Math.max(
-            MIN_ZOOM,
-            Math.min(
-              MAX_ZOOM,
-              this.#camera.zoom * (current.distance / prior.distance),
+        const start = this.#pinchStart;
+        if (this.#artSet() !== "CHIBI")
+          this.#camera = zoomCameraAt(
+            this.#camera,
+            Math.max(
+              MIN_ZOOM,
+              Math.min(
+                MAX_ZOOM,
+                this.#camera.zoom * (current.distance / prior.distance),
+              ),
             ),
-          ),
-          current.midpoint,
-        );
+            current.midpoint,
+          );
+        else if (start !== null && start.distance > 0) {
+          const step = nearestChibiZoomStep(
+            start.step * (current.distance / start.distance),
+          );
+          if (step !== chibiZoomStepForCamera(this.#camera))
+            this.#camera = zoomChibiCameraAt(
+              this.#camera,
+              step,
+              current.midpoint,
+            );
+        }
         this.#draw();
       }
       this.#pinch = current;
@@ -912,6 +996,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#pointers.delete(event.pointerId);
     if (this.#pinch !== null) {
       this.#pinch = null;
+      this.#pinchStart = null;
       this.#pointer = null;
       return;
     }
@@ -939,12 +1024,31 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#pointers.delete(event.pointerId);
     this.#pointer = null;
     this.#pinch = null;
+    this.#pinchStart = null;
   };
   readonly #onWheel = (event: WheelEvent): void => {
     this.#cameraFollowAllowed = false;
     event.preventDefault();
     const canvas = this.#canvas;
     if (canvas === null) return;
+    if (this.#artSet() === "CHIBI") {
+      // Accumulate trackpad deltas so one wheel notch moves one discrete step.
+      const unit = event.deltaMode === 1 ? 40 : event.deltaMode === 2 ? 800 : 1;
+      const delta = event.deltaY * unit;
+      if (Math.sign(delta) !== Math.sign(this.#wheelDelta))
+        this.#wheelDelta = 0;
+      this.#wheelDelta += delta;
+      if (Math.abs(this.#wheelDelta) < CHIBI_WHEEL_STEP_DELTA) return;
+      const direction = this.#wheelDelta < 0 ? "IN" : "OUT";
+      this.#wheelDelta = 0;
+      this.#camera = zoomChibiCameraAt(
+        this.#camera,
+        adjacentChibiZoomStep(chibiZoomStepForCamera(this.#camera), direction),
+        localPoint(canvas, event),
+      );
+      this.#draw();
+      return;
+    }
     const factor = event.deltaY < 0 ? 1.1 : 1 / 1.1;
     this.#camera = zoomCameraAt(
       this.#camera,
@@ -1088,6 +1192,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#pointers.clear();
     this.#pointer = null;
     this.#pinch = null;
+    this.#pinchStart = null;
+    this.#wheelDelta = 0;
     this.#selectionJump = null;
     this.#readinessKey = null;
   }
@@ -1287,6 +1393,8 @@ function pinchState(
 function same(a: CoordV7, b: CoordV7): boolean {
   return a.x === b.x && a.y === b.y;
 }
+/** Pixel wheel delta for one CHIBI zoom step (one ordinary mouse notch). */
+const CHIBI_WHEEL_STEP_DELTA = 50;
 const NO_COMMANDS: readonly BoardHostModelV7["offeredCommands"][number][] = [];
 const title = (value: string): string =>
   value

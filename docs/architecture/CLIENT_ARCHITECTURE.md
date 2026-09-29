@@ -1056,6 +1056,51 @@ CSS custom properties own renderer size tokens and responsive layout. Changing
 tile size, zoom, canvas dimensions, or source raster density cannot alter a
 state hash.
 
+### Ruleset 7 art sets
+
+Ruleset 7 has two presentation-only art sets. LEGACY is the default and draws
+exactly as described above. CHIBI is opt-in for the
+[chibi migration](../art/CHIBI_MIGRATION_PLAN.md): `?art=chibi` selects it and
+`?art=legacy` returns to LEGACY. The choice is stored under its own
+`pulpWars.ruleset7.artSet.v1` key, so the shared exact-schema settings
+envelope is unchanged. Ruleset 6, rules, commands, saves, replay and hashes
+never see the art set.
+
+CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
+
+- World coordinates keep the 128-unit square projection, so picking, depth
+  sorting and code-native overlays are shared. A zoom step `s` sets
+  `camera.zoom = s x 80 / 128`, so a cell is exactly 80 CSS px at step 1.
+- Zoom is discrete: 0.75, 1, 1.5 and 2. Buttons, `+`/`-`, one wheel notch
+  (accumulated trackpad deltas) and pinch move between steps only. Fit to
+  board picks the largest step up to 1 that shows the board and never goes
+  below 0.75; larger boards pan. The camera offset snaps to whole device
+  pixels while drawing.
+- Each plan entry carries an art-set-neutral `artSubject` such as
+  `UNIT:FIGHTER`, `CITY:2` or `TERRAIN:FOREST`. `src/assets/chibi-art-manifest.ts`
+  registers accepted rasters per subject; several entries for one subject
+  are coordinate-hashed variants. The class table in `src/assets/chibi-art-v7.ts`
+  validates canvas size, anchor and overflow: units, settlements, buildings
+  and tall terrain are bottom-centred; terrain fills the cell; resources are
+  centred; nothing overflows below its cell.
+- A DPR-1 master draws at master size x step with smoothing off. Whole
+  device scales use nearest-neighbour from the master or from a manifest
+  x2/x3 variant that divides the scale. Fractional scales, such as step
+  0.75 on a DPR 2 screen, draw the master smoothed.
+- Tall terrain draws its owning cell in the ground pass, below Roads, and
+  its upward overflow in the row-major foreground pass. Cities, units and
+  buildings draw in the foreground pass, so upward and side overflow cover
+  the rows behind them and are covered by later rows.
+- Owned subjects recolour through a checked-in owner mask with the master's
+  dimensions: a mask pixel with alpha >= 128 selects an owner pixel, which
+  becomes the player colour scaled by its brightness relative to the key
+  colour `#d8262c`. The result is cached per asset, density and owner. There
+  is no runtime hue matching. A mask or pixel readback that fails falls back
+  to the legacy asset rather than showing the key colour.
+- A subject with no registered raster, or whose raster fails to load, draws
+  its legacy asset at the chibi geometry. A registered raster that is still
+  loading draws nothing, as legacy images do.
+
 ## 9. Application and screen state
 
 Navigation is a finite state separate from `GameState`:

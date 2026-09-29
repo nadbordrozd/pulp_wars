@@ -1,0 +1,341 @@
+// @vitest-environment jsdom
+
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { bootstrapRuleset7App } from "../../src/app/index";
+import {
+  ART_SET_STORAGE_KEY_V7,
+  artSetFromSearchV7,
+  resolveArtSetV7,
+} from "../../src/app/art-set-v7";
+import { viewForV7 } from "../../src/engine/index";
+import type { StorageAdapter } from "../../src/persistence/index";
+import {
+  CanvasBoardHostV7,
+  type BoardHostModelV7,
+} from "../../src/render/canvas/board-host-v7";
+import * as renderer from "../../src/render/canvas/board-renderer-v7";
+import type { CameraState } from "../../src/render/canvas/geometry";
+import { initialV7 } from "../fixtures/v7-builders";
+
+beforeEach(() => {
+  document.body.innerHTML = '<div id="app"></div>';
+  window.localStorage.clear();
+  window.history.replaceState(null, "", "/");
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  window.history.replaceState(null, "", "/");
+});
+
+function memoryStorage(): StorageAdapter & {
+  readonly values: Map<string, string>;
+} {
+  const values = new Map<string, string>();
+  return {
+    values,
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => {
+      values.set(key, value);
+    },
+    removeItem: (key) => {
+      values.delete(key);
+    },
+  };
+}
+
+describe("Ruleset 7 art-set switch", () => {
+  it("selects CHIBI with ?art=chibi, persists it, and keeps LEGACY the default", () => {
+    expect(artSetFromSearchV7("")).toBeNull();
+    expect(artSetFromSearchV7("?art=chibi")).toBe("CHIBI");
+    expect(artSetFromSearchV7("?ruleset=7&art=CHIBI")).toBe("CHIBI");
+    expect(artSetFromSearchV7("?art=legacy")).toBe("LEGACY");
+    expect(artSetFromSearchV7("?art=neon")).toBeNull();
+    expect(artSetFromSearchV7("?art=chibi&art=legacy")).toBeNull();
+
+    const storage = memoryStorage();
+    expect(resolveArtSetV7("", storage)).toBe("LEGACY");
+    expect(storage.values.size).toBe(0);
+    expect(resolveArtSetV7("?art=chibi", storage)).toBe("CHIBI");
+    expect(storage.values.get(ART_SET_STORAGE_KEY_V7)).toBe("CHIBI");
+    expect(resolveArtSetV7("", storage)).toBe("CHIBI");
+    expect(resolveArtSetV7("?art=neon", storage)).toBe("CHIBI");
+    expect(resolveArtSetV7("?art=legacy", storage)).toBe("LEGACY");
+    expect(resolveArtSetV7("", storage)).toBe("LEGACY");
+    storage.setItem(ART_SET_STORAGE_KEY_V7, "corrupt");
+    expect(resolveArtSetV7("", storage)).toBe("LEGACY");
+    const denied: StorageAdapter = {
+      getItem: () => {
+        throw new Error("denied");
+      },
+      setItem: () => {
+        throw new Error("denied");
+      },
+      removeItem: () => {
+        throw new Error("denied");
+      },
+    };
+    expect(resolveArtSetV7("?art=chibi", denied)).toBe("CHIBI");
+    expect(resolveArtSetV7("", denied)).toBe("LEGACY");
+    expect(resolveArtSetV7("", null)).toBe("LEGACY");
+  });
+
+  it("boots the production view on the URL art set and hands it to the board host", async () => {
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
+    window.history.replaceState(null, "", "/?art=chibi");
+    const settings = memoryStorage();
+    const app = bootstrapRuleset7App(document, {
+      storage: null,
+      settingsStorage: settings,
+    });
+    document
+      .querySelector<HTMLButtonElement>('[data-action="launch"]')
+      ?.click();
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    const canvas = document.querySelector<HTMLCanvasElement>(
+      "canvas.board-canvas-v7",
+    );
+    expect(canvas?.dataset.artSet).toBe("CHIBI");
+    expect(["0.75", "1"]).toContain(canvas?.dataset.zoomStep);
+    expect(Number(canvas?.dataset.tileCssPx)).toBe(
+      80 * Number(canvas?.dataset.zoomStep),
+    );
+    expect(settings.values.get(ART_SET_STORAGE_KEY_V7)).toBe("CHIBI");
+    // The shared settings envelope is untouched by the art-set preference.
+    expect(settings.values.has("pulpWars.settings.v1")).toBe(false);
+    app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    window.history.replaceState(null, "", "/");
+    const resumed = bootstrapRuleset7App(document, {
+      storage: null,
+      settingsStorage: settings,
+    });
+    document
+      .querySelector<HTMLButtonElement>('[data-action="launch"]')
+      ?.click();
+    await waitUntil(() => resumed.controller.snapshot().phase === "ACTIVE");
+    expect(
+      document.querySelector<HTMLCanvasElement>("canvas.board-canvas-v7")
+        ?.dataset.artSet,
+    ).toBe("CHIBI");
+    resumed.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    const legacy = bootstrapRuleset7App(document, { storage: null });
+    document
+      .querySelector<HTMLButtonElement>('[data-action="launch"]')
+      ?.click();
+    await waitUntil(() => legacy.controller.snapshot().phase === "ACTIVE");
+    const legacyCanvas = document.querySelector<HTMLCanvasElement>(
+      "canvas.board-canvas-v7",
+    );
+    expect(legacyCanvas?.dataset.artSet).toBe("LEGACY");
+    expect(legacyCanvas?.dataset.zoomStep).toBeUndefined();
+    legacy.destroy();
+  });
+});
+
+describe("CHIBI Canvas host camera", () => {
+  function rig(artSet: BoardHostModelV7["artSet"]) {
+    const draws: Parameters<typeof renderer.drawBoardV7>[0][] = [];
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
+      clearRect: vi.fn(),
+      setTransform: vi.fn(),
+    } as unknown as CanvasRenderingContext2D);
+    vi.spyOn(renderer, "drawBoardV7").mockImplementation((input) => {
+      draws.push(input);
+    });
+    const container = document.createElement("div");
+    document.body.replaceChildren(container);
+    vi.spyOn(container, "getBoundingClientRect").mockReturnValue({
+      width: 1024,
+      height: 640,
+      x: 0,
+      y: 0,
+      left: 0,
+      top: 0,
+      right: 1024,
+      bottom: 640,
+      toJSON: () => ({}),
+    });
+    const host = new CanvasBoardHostV7(document);
+    const onSelection = vi.fn();
+    host.mount(container, { onSelection, onCommand: vi.fn() });
+    const state = initialV7(1519);
+    const view = viewForV7(state, state.humanPlayerId);
+    const model: BoardHostModelV7 = {
+      matchInstanceId: 1,
+      view,
+      offeredCommands: [],
+      interactive: true,
+      motion: "REDUCED",
+      animationSpeed: "FAST",
+      presentationPaused: false,
+      highContrast: false,
+      interaction: {
+        selection: null,
+        selectedUnitId: null,
+        selectedAchievement: null,
+      },
+      ...(artSet === undefined ? {} : { artSet }),
+    };
+    host.update(model);
+    const canvas = container.querySelector("canvas");
+    if (canvas === null) throw new Error("canvas missing");
+    vi.spyOn(canvas, "getBoundingClientRect").mockReturnValue({
+      width: 1024,
+      height: 640,
+      x: 0,
+      y: 0,
+      left: 0,
+      top: 0,
+      right: 1024,
+      bottom: 640,
+      toJSON: () => ({}),
+    });
+    const camera = (): CameraState => {
+      const last = draws.at(-1);
+      if (last === undefined) throw new Error("no draw");
+      return last.camera;
+    };
+    const key = (value: string) =>
+      canvas.dispatchEvent(
+        new KeyboardEvent("keydown", { key: value, bubbles: true }),
+      );
+    const pointer = (type: string, id: number, x: number, y: number) => {
+      const event = new MouseEvent(type, {
+        bubbles: true,
+        clientX: x,
+        clientY: y,
+      });
+      Object.defineProperty(event, "pointerId", { value: id });
+      canvas.dispatchEvent(event);
+    };
+    return {
+      host,
+      model,
+      view,
+      canvas,
+      draws,
+      camera,
+      key,
+      pointer,
+      onSelection,
+    };
+  }
+
+  it("fits at 0.75, steps through 1, 1.5 and 2 with keys, and never leaves the step list", () => {
+    const { host, canvas, draws, camera, key } = rig("CHIBI");
+    expect(draws.at(-1)).toMatchObject({ artSet: "CHIBI" });
+    expect(draws.at(-1)?.chibiArt).toBeDefined();
+    expect(canvas.dataset).toMatchObject({
+      artSet: "CHIBI",
+      zoomStep: "0.75",
+      tileCssPx: "60",
+    });
+    const seen: string[] = [];
+    for (let index = 0; index < 4; index += 1) {
+      key("+");
+      seen.push(`${canvas.dataset.zoomStep}:${canvas.dataset.tileCssPx}`);
+    }
+    expect(seen).toEqual(["1:80", "1.5:120", "2:160", "2:160"]);
+    for (let index = 0; index < 4; index += 1) key("-");
+    expect(canvas.dataset.zoomStep).toBe("0.75");
+    host.zoom("IN");
+    expect(camera().zoom).toBe(0.625);
+    host.destroy();
+  });
+
+  it("turns one wheel notch or accumulated trackpad deltas into exactly one step", () => {
+    const { host, canvas } = rig("CHIBI");
+    const wheel = (deltaY: number) =>
+      canvas.dispatchEvent(
+        new WheelEvent("wheel", {
+          deltaY,
+          clientX: 512,
+          clientY: 320,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    wheel(-100);
+    expect(canvas.dataset.zoomStep).toBe("1");
+    wheel(-20);
+    wheel(-20);
+    expect(canvas.dataset.zoomStep).toBe("1");
+    wheel(-20);
+    expect(canvas.dataset.zoomStep).toBe("1.5");
+    wheel(100);
+    expect(canvas.dataset.zoomStep).toBe("1");
+    host.destroy();
+  });
+
+  it("snaps pinch zoom to discrete steps and picks tiles at the 80 px geometry", () => {
+    const { host, view, canvas, camera, pointer, onSelection, key } =
+      rig("CHIBI");
+    key("+");
+    expect(canvas.dataset.zoomStep).toBe("1");
+    pointer("pointerdown", 1, 400, 300);
+    pointer("pointerdown", 2, 500, 300);
+    pointer("pointermove", 2, 520, 300);
+    expect(canvas.dataset.zoomStep).toBe("1");
+    pointer("pointermove", 2, 600, 300);
+    expect(canvas.dataset.zoomStep).toBe("2");
+    pointer("pointerup", 2, 600, 300);
+    pointer("pointerup", 1, 400, 300);
+    key("-");
+    expect(canvas.dataset.zoomStep).toBe("1.5");
+    key("-");
+    const current = camera();
+    expect(current.zoom).toBe(0.625);
+    const empty = view.board.tiles.find(
+      (tile) =>
+        tile.at.x > 0 &&
+        tile.at.y > 0 &&
+        !view.units.some((unit) => sameAt(unit.at, tile.at)) &&
+        !view.cities.some((city) => sameAt(city.at, tile.at)),
+    );
+    if (empty === undefined) throw new Error("empty tile missing");
+    // Tap 39 px right of the cell centre: still inside its 80 px cell.
+    const x = current.offsetX + empty.at.x * 80 + 39;
+    const y = current.offsetY + empty.at.y * 80;
+    pointer("pointerdown", 3, x, y);
+    pointer("pointerup", 3, x, y);
+    expect(onSelection.mock.calls.at(-1)?.[0]).toEqual({
+      kind: "TILE",
+      at: empty.at,
+    });
+    host.destroy();
+  });
+
+  it("keeps LEGACY camera behaviour and refits when the art set changes", () => {
+    const { host, model, canvas, camera, key } = rig(undefined);
+    expect(canvas.dataset.artSet).toBe("LEGACY");
+    expect(canvas.dataset.zoomStep).toBeUndefined();
+    const legacyZoom = camera().zoom;
+    key("+");
+    expect(camera().zoom).toBeCloseTo(Math.min(1.75, legacyZoom * 1.2));
+    host.update({ ...model, artSet: "CHIBI" });
+    expect(canvas.dataset.zoomStep).toBe("0.75");
+    host.update({ ...model, artSet: "LEGACY" });
+    expect(canvas.dataset.artSet).toBe("LEGACY");
+    expect(camera().zoom).toBe(legacyZoom);
+    host.destroy();
+  });
+});
+
+function sameAt(
+  left: { readonly x: number; readonly y: number },
+  right: { readonly x: number; readonly y: number },
+): boolean {
+  return left.x === right.x && left.y === right.y;
+}
+
+async function waitUntil(predicate: () => boolean): Promise<void> {
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    if (predicate()) return;
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+  throw new Error("condition not reached");
+}

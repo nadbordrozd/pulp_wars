@@ -38,6 +38,18 @@ import { readinessUnitStyleV6 } from "./readiness-presentation";
 import { selectionJumpOffsetCssPx } from "./selection-jump-presentation";
 import { RULESET7_TACTICAL_UI_SYMBOL_BY_ID } from "../../assets/ruleset7-tactical-ui-symbols";
 import { tacticalAttachmentsV7 } from "../tactical-presentation-v7";
+import type { ArtSetV7, ArtSubjectV7 } from "../../assets/chibi-art-v7";
+import { chibiOverflowV7 } from "../../assets/chibi-art-v7";
+import type {
+  ChibiBoardArtV7,
+  ChibiResolutionV7,
+} from "./chibi-art-resolver-v7";
+import {
+  chibiDestinationRect,
+  chibiMasterScale,
+  snapCameraToDevicePixels,
+} from "./chibi-geometry-v7";
+import { RULESET7_PLAYER_COLORS } from "./owner-recolour-v7";
 
 export type BoardSelectionV7 =
   | { readonly kind: "TILE"; readonly at: CoordV7 }
@@ -85,6 +97,8 @@ export interface BoardRenderPlanEntryV7 {
     | "SELECTION"
     | "CURSOR";
   readonly assetId?: string;
+  /** Art-set-neutral subject; the CHIBI art set resolves its raster from it. */
+  readonly artSubject?: ArtSubjectV7;
   readonly roadNeighbors?: readonly CoordV7[];
   readonly roadJoins?: readonly (readonly [CoordV7, CoordV7])[];
   /** A pair Farm is cropped into one source half per authoritative cell. */
@@ -121,12 +135,7 @@ export interface BoardRenderPlanV7 {
   readonly targets: readonly MapCommandTargetV7[];
 }
 
-const PLAYER_COLORS = {
-  CORAL: "#f06762",
-  TEAL: "#28b7a4",
-  GOLD: "#e2b63f",
-  VIOLET: "#a277d2",
-} as const;
+const PLAYER_COLORS = RULESET7_PLAYER_COLORS;
 
 const TILE_EDGES: readonly TileEdge[] = ["NORTH", "EAST", "SOUTH", "WEST"];
 
@@ -180,6 +189,12 @@ export function buildBoardRenderPlanV7(
               : tile.terrain === "SHALLOW_WATER"
                 ? "terrain-ruleset7-water-shallow"
                 : "terrain-ruleset7-water-deep",
+      artSubject:
+        tile.terrain === "FOREST" && suppressesForestCanopyV7(tile.improvement)
+          ? "TERRAIN:GRASS"
+          : tile.terrain === "MOUNTAIN" && tile.improvement === "MINE"
+            ? "TERRAIN:MINED_MOUNTAIN"
+            : `TERRAIN:${tile.terrain}`,
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
     });
@@ -221,6 +236,7 @@ export function buildBoardRenderPlanV7(
         layer: tile.improvement === "PORT" ? 4 : 3,
         at: tile.at,
         assetId: resourceMapArtIdV7(tile.resource, tile.at),
+        artSubject: `RESOURCE:${tile.resource}`,
       });
     if (tile.improvement !== null && tile.improvement !== "MINE") {
       const farm =
@@ -234,6 +250,9 @@ export function buildBoardRenderPlanV7(
         at: tile.at,
         assetId:
           farm?.assetId ?? RULESET7_IMPROVEMENT_ART_IDS[tile.improvement],
+        artSubject: `IMPROVEMENT:${tile.improvement}`,
+        ownerId: tile.territoryOwnerId,
+        ...ownerPresentation(view, tile.territoryOwnerId),
         ...(farm?.sourceCrop === undefined
           ? {}
           : { sourceCrop: farm.sourceCrop }),
@@ -248,6 +267,7 @@ export function buildBoardRenderPlanV7(
         layer: 4,
         at: tile.at,
         assetId: "building-village",
+        artSubject: "SITE:VILLAGE",
         label: "Village",
       });
     if (
@@ -278,6 +298,7 @@ export function buildBoardRenderPlanV7(
       value: city.level,
       population: city.population,
       assetId: `building-city-${cityArtLevel(city.level)}`,
+      artSubject: `CITY:${cityArtLevel(city.level)}`,
     });
   for (const at of view.treasureChests)
     entries.push({
@@ -286,6 +307,7 @@ export function buildBoardRenderPlanV7(
       layer: 4,
       at,
       assetId: "building-treasure-chest",
+      artSubject: "TREASURE",
       label: "Treasure",
     });
   for (const unit of view.units)
@@ -302,6 +324,10 @@ export function buildBoardRenderPlanV7(
         unit.form === "EMBARKED"
           ? "unit-shared-embarked-transport"
           : RULESET7_UNIT_ART_IDS[unit.role],
+      artSubject:
+        unit.form === "EMBARKED"
+          ? "UNIT:EMBARKED_TRANSPORT"
+          : `UNIT:${unit.role}`,
       label:
         unit.form === "EMBARKED"
           ? `Embarked Transport · ${title(unit.role)} passenger`
@@ -533,8 +559,29 @@ export function drawBoardV7(input: {
     readonly progress: number;
     readonly statusId: string;
   } | null;
+  /** LEGACY (default) or the opt-in CHIBI art set. */
+  readonly artSet?: ArtSetV7;
+  /** Required for CHIBI; subjects it cannot resolve draw their legacy asset. */
+  readonly chibiArt?: ChibiBoardArtV7;
 }): void {
-  const { context, viewport, devicePixelRatio, camera } = input;
+  const { context, viewport, devicePixelRatio } = input;
+  const chibiArt = input.artSet === "CHIBI" ? input.chibiArt : undefined;
+  // CHIBI cells land on whole device pixels; LEGACY keeps its exact camera.
+  const camera =
+    chibiArt === undefined
+      ? input.camera
+      : snapCameraToDevicePixels(input.camera, devicePixelRatio);
+  const resolveChibi = (
+    entry: BoardRenderPlanEntryV7,
+  ): ChibiResolutionV7 | null =>
+    chibiArt === undefined || entry.artSubject === undefined
+      ? null
+      : chibiArt.resolve({
+          subject: entry.artSubject,
+          at: entry.at,
+          ownerColor: entry.ownerColor,
+          deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+        });
   const sceneAlpha = input.sceneAlpha ?? 1;
   context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
   if (input.clear !== false) {
@@ -599,6 +646,25 @@ export function drawBoardV7(input: {
         continue;
       }
       if (entry.kind === "TERRAIN") {
+        const chibi = resolveChibi(entry);
+        if (chibi !== null && chibi.kind !== "MISSING") {
+          if (pass === "GROUND") {
+            context.fillStyle =
+              entry.ownerColor === undefined
+                ? "#65965b"
+                : `${entry.ownerColor}55`;
+            context.fillRect(left, top, size, size);
+          }
+          if (chibi.kind === "READY")
+            drawChibiTerrainV7(context, chibi, {
+              centre: { x, y },
+              camera,
+              devicePixelRatio,
+              sceneAlpha,
+              part: pass === "GROUND" ? "CELL" : "OVERFLOW",
+            });
+          continue;
+        }
         if (pass === "GROUND") {
           context.fillStyle =
             entry.ownerColor === undefined
@@ -699,13 +765,28 @@ export function drawBoardV7(input: {
         continue;
       }
       if (entry.assetId !== undefined) {
-        const image = input.images.resolve(entry.assetId);
+        const chibi = resolveChibi(entry);
+        const chibiReady = chibi?.kind === "READY" ? chibi : null;
+        const image =
+          chibi === null || chibi.kind === "MISSING"
+            ? input.images.resolve(entry.assetId)
+            : chibiReady === null
+              ? null
+              : chibiReady.image;
         if (image !== null) {
-          let rect = anchoredDestinationRect(
-            { x, y },
-            camera.zoom,
-            geometryFor(entry),
-          );
+          let rect =
+            chibiReady === null
+              ? anchoredDestinationRect(
+                  { x, y },
+                  camera.zoom,
+                  geometryFor(entry),
+                )
+              : chibiDestinationRect(
+                  { x, y },
+                  camera,
+                  chibiReady.asset,
+                  devicePixelRatio,
+                );
           let alpha = 1;
           if (entry.kind === "UNIT") {
             const readiness = entry.ready
@@ -740,12 +821,21 @@ export function drawBoardV7(input: {
               if (input.glowCache === undefined)
                 drawRegisteredImageGlow(context, image, rect, glow);
               else
-                input.glowCache.draw(context, image, entry.assetId, rect, glow);
+                input.glowCache.draw(
+                  context,
+                  image,
+                  chibiReady?.cacheKey ?? entry.assetId,
+                  rect,
+                  glow,
+                );
             }
           }
           context.save();
           context.globalAlpha = alpha * sceneAlpha;
-          if (entry.sourceCrop === undefined)
+          if (chibiReady !== null) {
+            context.imageSmoothingEnabled = chibiReady.smoothing;
+            context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+          } else if (entry.sourceCrop === undefined)
             context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
           else
             context.drawImage(
@@ -1705,6 +1795,52 @@ function drawEntryImage(
   context.save();
   context.globalAlpha = input.sceneAlpha;
   context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+  context.restore();
+}
+
+/**
+ * Draws a chibi terrain raster in two row-ordered parts: the owning 80 x 80
+ * cell during the ground pass (below Roads) and any upward overflow during
+ * the foreground pass, after every entry of the rows behind it.
+ */
+function drawChibiTerrainV7(
+  context: CanvasRenderingContext2D,
+  chibi: Extract<ChibiResolutionV7, { readonly kind: "READY" }>,
+  input: {
+    readonly centre: { readonly x: number; readonly y: number };
+    readonly camera: CameraState;
+    readonly devicePixelRatio: number;
+    readonly sceneAlpha: number;
+    readonly part: "CELL" | "OVERFLOW";
+  },
+): void {
+  const { asset } = chibi;
+  const rect = chibiDestinationRect(
+    input.centre,
+    input.camera,
+    asset,
+    input.devicePixelRatio,
+  );
+  const scale = chibiMasterScale(input.camera);
+  const up = chibiOverflowV7(asset).up;
+  const rows = input.part === "CELL" ? asset.height - up : up;
+  if (rows <= 0) return;
+  const sourceTop = input.part === "CELL" ? up : 0;
+  const density = chibi.density;
+  context.save();
+  context.globalAlpha = input.sceneAlpha;
+  context.imageSmoothingEnabled = chibi.smoothing;
+  context.drawImage(
+    chibi.image,
+    0,
+    sourceTop * density,
+    asset.width * density,
+    rows * density,
+    rect.x,
+    rect.y + sourceTop * scale,
+    rect.width,
+    rows * scale,
+  );
   context.restore();
 }
 

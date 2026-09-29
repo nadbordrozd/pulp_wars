@@ -1,0 +1,229 @@
+import {
+  buildChibiArtRegistryV7,
+  chibiVariantV7,
+  type ArtSubjectV7,
+  type ChibiArtAssetV7,
+  type ChibiArtRegistryV7,
+} from "../../assets/chibi-art-v7";
+import { CHIBI_ART_ASSETS_V7 } from "../../assets/chibi-art-manifest";
+import { chibiRasterForDeviceScale } from "./chibi-geometry-v7";
+import type { Point } from "./geometry";
+import { parseHexColourV7, recolourOwnerPixelsV7 } from "./owner-recolour-v7";
+
+export type ChibiResolutionV7 =
+  /** No usable chibi raster: draw the legacy asset at chibi geometry. */
+  | { readonly kind: "MISSING" }
+  /** A registered raster (or its mask) is still loading: draw nothing yet. */
+  | { readonly kind: "LOADING" }
+  | {
+      readonly kind: "READY";
+      readonly asset: ChibiArtAssetV7;
+      readonly image: CanvasImageSource;
+      /** Raster density: 1 for the master, 2 or 3 for a manifest variant. */
+      readonly density: 1 | 2 | 3;
+      readonly smoothing: boolean;
+      /** Stable per asset, density and owner; used by effect caches. */
+      readonly cacheKey: string;
+    };
+
+export interface ChibiArtRequestV7 {
+  readonly subject: ArtSubjectV7;
+  readonly at: Point;
+  readonly ownerColor?: string | undefined;
+  /** Device pixels per master pixel: zoom step x devicePixelRatio. */
+  readonly deviceScale: number;
+}
+
+export interface ChibiBoardArtV7 {
+  resolve(request: ChibiArtRequestV7): ChibiResolutionV7;
+}
+
+/** Browser seams, injectable so the loading and recolour cache are testable. */
+export interface ChibiRasterEnvironmentV7 {
+  loadImage(url: string, settle: (ok: boolean) => void): CanvasImageSource;
+  readPixels(
+    image: CanvasImageSource,
+    width: number,
+    height: number,
+  ): Uint8ClampedArray | null;
+  createSurface(
+    pixels: Uint8ClampedArray,
+    width: number,
+    height: number,
+  ): CanvasImageSource | null;
+}
+
+export function browserChibiRasterEnvironmentV7(
+  documentRoot: Document,
+): ChibiRasterEnvironmentV7 {
+  return {
+    loadImage(url, settle) {
+      const image = documentRoot.createElement("img");
+      image.addEventListener("load", () => settle(true));
+      image.addEventListener("error", () => settle(false));
+      image.src = url;
+      return image;
+    },
+    readPixels(image, width, height) {
+      try {
+        const canvas = documentRoot.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+        if (context === null) return null;
+        context.imageSmoothingEnabled = false;
+        context.clearRect(0, 0, width, height);
+        context.drawImage(image, 0, 0, width, height);
+        return context.getImageData(0, 0, width, height).data;
+      } catch {
+        return null;
+      }
+    },
+    createSurface(pixels, width, height) {
+      try {
+        const canvas = documentRoot.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        if (context === null) return null;
+        const data = context.createImageData(width, height);
+        data.data.set(pixels);
+        context.putImageData(data, 0, 0);
+        return canvas;
+      } catch {
+        return null;
+      }
+    },
+  };
+}
+
+type RasterRecord =
+  | { readonly state: "LOADING"; readonly image: CanvasImageSource }
+  | { readonly state: "READY"; readonly image: CanvasImageSource }
+  | { readonly state: "FAILED" };
+
+/**
+ * Resolves CHIBI rasters by subject. Owner recolour runs once per asset,
+ * density and owner colour through the checked-in mask and is cached; a
+ * failed load or pixel readback falls back to the legacy asset rather than
+ * ever showing the raw key colour.
+ */
+export function createChibiArtResolverV7(input: {
+  readonly environment: ChibiRasterEnvironmentV7;
+  readonly redraw: () => void;
+  readonly registry?: ChibiArtRegistryV7;
+}): ChibiBoardArtV7 {
+  const registry =
+    input.registry ?? buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7).registry;
+  const rasters = new Map<string, RasterRecord>();
+  const maskPixels = new Map<string, Uint8ClampedArray>();
+  const recoloured = new Map<string, CanvasImageSource>();
+  const raster = (url: string): RasterRecord => {
+    const existing = rasters.get(url);
+    if (existing !== undefined) return existing;
+    const outcome: {
+      settled: boolean | null;
+      image: CanvasImageSource | null;
+    } = { settled: null, image: null };
+    const image = input.environment.loadImage(url, (ok) => {
+      outcome.settled = ok;
+      const loaded = outcome.image;
+      // A synchronous settle is recorded below, after loadImage returns.
+      if (loaded === null) return;
+      rasters.set(
+        url,
+        ok ? { state: "READY", image: loaded } : { state: "FAILED" },
+      );
+      input.redraw();
+    });
+    outcome.image = image;
+    // Synchronous environments may settle during loadImage itself.
+    const record: RasterRecord =
+      outcome.settled === null
+        ? { state: "LOADING", image }
+        : outcome.settled
+          ? { state: "READY", image }
+          : { state: "FAILED" };
+    rasters.set(url, record);
+    return record;
+  };
+  return {
+    resolve(request) {
+      const asset = chibiVariantV7(
+        registry.variants(request.subject),
+        request.at,
+      );
+      if (asset === null) return { kind: "MISSING" };
+      const choice = chibiRasterForDeviceScale(asset, request.deviceScale);
+      const source = raster(choice.url);
+      if (source.state === "FAILED") return { kind: "MISSING" };
+      if (source.state === "LOADING") return { kind: "LOADING" };
+      const baseKey = `chibi:${asset.id}@${choice.density}`;
+      const owner =
+        request.ownerColor === undefined
+          ? null
+          : parseHexColourV7(request.ownerColor);
+      if (asset.ownerMaskUrl === undefined || owner === null)
+        return {
+          kind: "READY",
+          asset,
+          image: source.image,
+          density: choice.density,
+          smoothing: choice.smoothing,
+          cacheKey: baseKey,
+        };
+      const cacheKey = `${baseKey}#${request.ownerColor ?? ""}`;
+      const cached = recoloured.get(cacheKey);
+      if (cached !== undefined)
+        return {
+          kind: "READY",
+          asset,
+          image: cached,
+          density: choice.density,
+          smoothing: choice.smoothing,
+          cacheKey,
+        };
+      const mask = raster(asset.ownerMaskUrl);
+      if (mask.state === "FAILED") return { kind: "MISSING" };
+      if (mask.state === "LOADING") return { kind: "LOADING" };
+      let maskData = maskPixels.get(asset.ownerMaskUrl);
+      if (maskData === undefined) {
+        const read = input.environment.readPixels(
+          mask.image,
+          asset.width,
+          asset.height,
+        );
+        if (read === null) return { kind: "MISSING" };
+        maskData = read;
+        maskPixels.set(asset.ownerMaskUrl, maskData);
+      }
+      const width = asset.width * choice.density;
+      const height = asset.height * choice.density;
+      const pixels = input.environment.readPixels(source.image, width, height);
+      if (pixels === null) return { kind: "MISSING" };
+      const surface = input.environment.createSurface(
+        recolourOwnerPixelsV7({
+          pixels,
+          width,
+          height,
+          mask: maskData,
+          maskWidth: asset.width,
+          maskHeight: asset.height,
+          owner,
+        }),
+        width,
+        height,
+      );
+      if (surface === null) return { kind: "MISSING" };
+      recoloured.set(cacheKey, surface);
+      return {
+        kind: "READY",
+        asset,
+        image: surface,
+        density: choice.density,
+        smoothing: choice.smoothing,
+        cacheKey,
+      };
+    },
+  };
+}

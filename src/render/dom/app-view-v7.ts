@@ -47,6 +47,7 @@ import {
   technologyArtworkLayoutV7,
 } from "./selection-identity-v7";
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
+import type { ArtSetV7 } from "../../assets/chibi-art-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -87,6 +88,8 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
 
 export interface MountRuleset7AppOptions {
   readonly boardHost?: BoardHostV7;
+  /** Presentation-only Ruleset 7 art set; LEGACY when omitted. */
+  readonly artSet?: ArtSetV7;
   readonly downloadSafeLog?: (source: string, filename: string) => void;
   readonly downloadDebugBundle?: (source: string, filename: string) => void;
   readonly settingsStorage?: StorageAdapter | null;
@@ -131,6 +134,7 @@ export class Ruleset7DomAppView {
   readonly #downloadSafeLog: (source: string, filename: string) => void;
   readonly #downloadDebugBundle: (source: string, filename: string) => void;
   readonly #settingsStorage: StorageAdapter | null;
+  readonly #artSet: ArtSetV7;
   #snapshot: Ruleset7BrowserSnapshot;
   #unsubscribe: (() => void) | null = null;
   #unsubscribeAcceptedBoundary: (() => void) | null = null;
@@ -200,6 +204,7 @@ export class Ruleset7DomAppView {
       options.downloadDebugBundle ??
       ((source, filename) => downloadJsonFile(documentRoot, source, filename));
     this.#settingsStorage = options.settingsStorage ?? null;
+    this.#artSet = options.artSet ?? "LEGACY";
     this.#notice = options.startupNotice ?? "";
     this.#motion =
       documentRoot.defaultView?.matchMedia?.("(prefers-reduced-motion: reduce)")
@@ -858,6 +863,7 @@ export class Ruleset7DomAppView {
       animationSpeed: this.#animationSpeed,
       presentationPaused: this.#screen === "SETTINGS",
       highContrast: this.#highContrast,
+      artSet: this.#artSet,
       interaction: {
         selection: this.#selection,
         selectedUnitId:
