@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "batch": "original-fragment-check",
+  "title": "ORIGINAL fragment check: the proposed materials-and-motifs Human fragment replayed on requests that leaked soldiers or bows under the old fragment (exploration, never registered)",
+  "bead": "pulp_wars-ldq",
+  "faction": "TEST-ORIGINAL-FRAGMENT",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-test-original-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-test-original-village",
+      "subject": "SITE:VILLAGE",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-test-original-farm",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-test-original-guard",
+      "subject": "UNIT:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "fighter-a",
+      "asset": "chibi-test-original-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 67391,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "notes": "Replay of batch-1 fighter-a (same seed, subject text and size, no addenda), which carried a bow and quiver from the old fragment. Only the faction layer differs."
+    },
+    {
+      "id": "village-a",
+      "asset": "chibi-test-original-village",
+      "endpoint": "create-image-pixen",
+      "seed": 67351,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "notes": "Replay of batch-1 village-a (same seed, subject text and size, no addenda), which drew a soldier inside the village under the old fragment. No figure words in the recipe."
+    },
+    {
+      "id": "farm-a",
+      "asset": "chibi-test-original-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69001,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "notes": "A batch-3 building with the new fragment and a candidate Farm line, deliberately without the figure negativeAddendum production recipes add, so figures are kept out only by the fragment and class layers."
+    },
+    {
+      "id": "guard-a",
+      "asset": "chibi-test-original-guard",
+      "endpoint": "create-image-pixen",
+      "seed": 68201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "notes": "Replay of batch-2 guard-a's seed, subject text and size without its recipe addendum (which excluded bow, quiver and arrows), so only the fragment keeps archer props away."
+    }
+  ]
+}

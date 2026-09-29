@@ -1,0 +1,63 @@
+{
+  "id": "guard-a",
+  "jobId": "sync-b63eac82-43a3-43fc-994b-7fe12dd2ffb4",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "original-fragment-check",
+    "asset": "chibi-test-original-guard",
+    "subject": "UNIT:GUARD",
+    "faction": "TEST-ORIGINAL-FRAGMENT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 68201,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/original-fragment-check/faction.md#prompt-fragment + art/explorations/original-fragment-check/faction.md#negative-fragment",
+        "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+        "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/original-fragment-check/subjects.json",
+        "text": "Subject: Guard, a chunky cute heavy spearman with a very big head (about half of the figure's height) and a tiny sturdy body in a wide braced stance: a heavy round light steel-grey helmet with a wide brim and a nose guard, a huge tall rectangular tower shield painted solid bright red with a thick light steel border held in front of the body on the left arm, covering him from chin to shins, and a long spear with a pale yellow wooden shaft and a light steel point held upright in the right hand, the point high above the helmet; light grey gloves, dark slate-grey boots; simple shapes and very few details; clearly a wall of shield, not a sword fighter."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Guard, a chunky cute heavy spearman with a very big head (about half of the figure's height) and a tiny sturdy body in a wide braced stance: a heavy round light steel-grey helmet with a wide brim and a nose guard, a huge tall rectangular tower shield painted solid bright red with a thick light steel border held in front of the body on the left arm, covering him from chin to shins, and a long spear with a pale yellow wooden shaft and a light steel point held upright in the right hand, the point high above the helmet; light grey gloves, dark slate-grey boots; simple shapes and very few details; clearly a wall of shield, not a sword fighter.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Guard, a chunky cute heavy spearman with a very big head (about half of the figure's height) and a tiny sturdy body in a wide braced stance: a heavy round light steel-grey helmet with a wide brim and a nose guard, a huge tall rectangular tower shield painted solid bright red with a thick light steel border held in front of the body on the left arm, covering him from chin to shins, and a long spear with a pale yellow wooden shaft and a light steel point held upright in the right hand, the point high above the helmet; light grey gloves, dark slate-grey boots; simple shapes and very few details; clearly a wall of shield, not a sword fighter. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd."
+  }
+}

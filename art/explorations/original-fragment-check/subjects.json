@@ -1,0 +1,10 @@
+{
+  "faction": "TEST-ORIGINAL-FRAGMENT",
+  "note": "Subject layer of the exploration copy of the proposed ORIGINAL fragment (bead pulp_wars-ldq). UNIT:FIGHTER and SITE:VILLAGE are the exact subject texts of batch-1 recipes fighter-a (bow and quiver leak) and village-a (soldier in the village); UNIT:GUARD is batch-2 guard-a's text; IMPROVEMENT:FARM is a candidate batch-3 line. Exploration only.",
+  "subjects": {
+    "UNIT:FIGHTER": "Subject: Fighter, a basic sword warrior: rounded light steel-grey helmet with a big bright red crest, oversized light steel short sword held up in the right hand, big round shield of pale sandy-tan wood with a light grey steel rim and boss on the left arm, bright red tunic covering the torso, cream-white sleeves and gloves, dark slate-grey belt and boots.",
+    "UNIT:GUARD": "Subject: Guard, a chunky cute heavy spearman with a very big head (about half of the figure's height) and a tiny sturdy body in a wide braced stance: a heavy round light steel-grey helmet with a wide brim and a nose guard, a huge tall rectangular tower shield painted solid bright red with a thick light steel border held in front of the body on the left arm, covering him from chin to shins, and a long spear with a pale yellow wooden shaft and a light steel point held upright in the right hand, the point high above the helmet; light grey gloves, dark slate-grey boots; simple shapes and very few details; clearly a wall of shield, not a sword fighter.",
+    "SITE:VILLAGE": "Subject: a tiny neutral village that belongs to no one: two or three small cottages with cream plaster walls, light tan timber beams and golden-yellow straw thatched roofs, a short light wooden fence; no flag, no banner, no stone tower, no wall, and no red anywhere.",
+    "IMPROVEMENT:FARM": "Subject: Farm, one small chunky farmstead: a small barn with cream plaster walls, pale birch timber framing and a golden straw thatched roof, beside a neat square field of golden wheat in rows with a short pale birch fence around it and one small round haystack; wide and chunky, filling the whole width of the image. Buildings only."
+  }
+}

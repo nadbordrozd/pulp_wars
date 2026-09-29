@@ -1,0 +1,349 @@
+{
+  "schemaVersion": 1,
+  "batch": "original-fragment-check",
+  "recipes": {
+    "farm-a": {
+      "id": "farm-a",
+      "asset": "chibi-test-original-farm",
+      "jobId": "sync-6cd92940-e9fb-4dc4-8d7a-ef72f3d0f1dd",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "original-fragment-check",
+        "asset": "chibi-test-original-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-ORIGINAL-FRAGMENT",
+        "recipeClass": "building",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69001,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/original-fragment-check/faction.md#prompt-fragment + art/explorations/original-fragment-check/faction.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-building.txt + scripts/art/chibi/fragments/class-building.negative.txt",
+            "text": "Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/original-fragment-check/subjects.json",
+            "text": "Subject: Farm, one small chunky farmstead: a small barn with cream plaster walls, pale birch timber framing and a golden straw thatched roof, beside a neat square field of golden wheat in rows with a short pale birch fence around it and one small round haystack; wide and chunky, filling the whole width of the image. Buildings only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Subject: Farm, one small chunky farmstead: a small barn with cream plaster walls, pale birch timber framing and a golden straw thatched roof, beside a neat square field of golden wheat in rows with a short pale birch fence around it and one small round haystack; wide and chunky, filling the whole width of the image. Buildings only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Subject: Farm, one small chunky farmstead: a small barn with cream plaster walls, pale birch timber framing and a golden straw thatched roof, beside a neat square field of golden wheat in rows with a short pale birch fence around it and one small round haystack; wide and chunky, filling the whole width of the image. Buildings only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building."
+      },
+      "submittedAt": "2026-09-29T14:22:28.687Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/explorations/original-fragment-check/raw/farm-a.png",
+      "rawSheetSha256": "b0eb6604417e7976101ff89a1e7a097945ae16b5754e567b01e65ed268503694",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.7988,
+          "footprintWidthShare": 0.6622,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-09-29T14:23:20.828Z",
+      "usageUsd": 0.009827321343951756,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Fragment check only, never a candidate. No figures without any figure words in the recipe: a cream plaster barn with pale timber and a straw roof, a fenced golden wheat field and a haystack. Stands on a grass-and-soil slab, like every text-to-image settlement; needs the ground-removal edit.",
+        "reviewedAt": "2026-09-29T14:26:11.759Z"
+      }
+    },
+    "fighter-a": {
+      "id": "fighter-a",
+      "asset": "chibi-test-original-fighter",
+      "jobId": "sync-2e1e44a4-2e27-43aa-85bc-fe7fa43b4e80",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "original-fragment-check",
+        "asset": "chibi-test-original-fighter",
+        "subject": "UNIT:FIGHTER",
+        "faction": "TEST-ORIGINAL-FRAGMENT",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 67391,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/original-fragment-check/faction.md#prompt-fragment + art/explorations/original-fragment-check/faction.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/original-fragment-check/subjects.json",
+            "text": "Subject: Fighter, a basic sword warrior: rounded light steel-grey helmet with a big bright red crest, oversized light steel short sword held up in the right hand, big round shield of pale sandy-tan wood with a light grey steel rim and boss on the left arm, bright red tunic covering the torso, cream-white sleeves and gloves, dark slate-grey belt and boots."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Fighter, a basic sword warrior: rounded light steel-grey helmet with a big bright red crest, oversized light steel short sword held up in the right hand, big round shield of pale sandy-tan wood with a light grey steel rim and boss on the left arm, bright red tunic covering the torso, cream-white sleeves and gloves, dark slate-grey belt and boots.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Fighter, a basic sword warrior: rounded light steel-grey helmet with a big bright red crest, oversized light steel short sword held up in the right hand, big round shield of pale sandy-tan wood with a light grey steel rim and boss on the left arm, bright red tunic covering the torso, cream-white sleeves and gloves, dark slate-grey belt and boots. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd."
+      },
+      "submittedAt": "2026-09-29T14:20:45.090Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/original-fragment-check/raw/fighter-a.png",
+      "rawSheetSha256": "277c1afd9c03d8cd8cbabcae8f06f3d661574e25d241111f80efd9b4922a9f75",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0037,
+          "footprintWidthShare": 0.6531,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T14:21:36.294Z",
+      "usageUsd": 0.009156566593382095,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Fragment check only, never a candidate. No bow and no quiver (the old-fragment fighter-a with this seed and subject text carried both). Red cloth mask over the lower face and an orange wood shield (the old subject line asked for sandy-tan wood); mask QA passes at 15.7% owner area, 0.2% red-brown.",
+        "reviewedAt": "2026-09-29T14:26:11.402Z"
+      }
+    },
+    "guard-a": {
+      "id": "guard-a",
+      "asset": "chibi-test-original-guard",
+      "jobId": "sync-b63eac82-43a3-43fc-994b-7fe12dd2ffb4",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "original-fragment-check",
+        "asset": "chibi-test-original-guard",
+        "subject": "UNIT:GUARD",
+        "faction": "TEST-ORIGINAL-FRAGMENT",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 68201,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/original-fragment-check/faction.md#prompt-fragment + art/explorations/original-fragment-check/faction.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red."
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/original-fragment-check/subjects.json",
+            "text": "Subject: Guard, a chunky cute heavy spearman with a very big head (about half of the figure's height) and a tiny sturdy body in a wide braced stance: a heavy round light steel-grey helmet with a wide brim and a nose guard, a huge tall rectangular tower shield painted solid bright red with a thick light steel border held in front of the body on the left arm, covering him from chin to shins, and a long spear with a pale yellow wooden shaft and a light steel point held upright in the right hand, the point high above the helmet; light grey gloves, dark slate-grey boots; simple shapes and very few details; clearly a wall of shield, not a sword fighter."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Guard, a chunky cute heavy spearman with a very big head (about half of the figure's height) and a tiny sturdy body in a wide braced stance: a heavy round light steel-grey helmet with a wide brim and a nose guard, a huge tall rectangular tower shield painted solid bright red with a thick light steel border held in front of the body on the left arm, covering him from chin to shins, and a long spear with a pale yellow wooden shaft and a light steel point held upright in the right hand, the point high above the helmet; light grey gloves, dark slate-grey boots; simple shapes and very few details; clearly a wall of shield, not a sword fighter.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the figure; no other red or red-brown anywhere, so leather, wood, shields, boots and bows use browns that are clearly not red. Subject: Guard, a chunky cute heavy spearman with a very big head (about half of the figure's height) and a tiny sturdy body in a wide braced stance: a heavy round light steel-grey helmet with a wide brim and a nose guard, a huge tall rectangular tower shield painted solid bright red with a thick light steel border held in front of the body on the left arm, covering him from chin to shins, and a long spear with a pale yellow wooden shaft and a light steel point held upright in the right hand, the point high above the helmet; light grey gloves, dark slate-grey boots; simple shapes and very few details; clearly a wall of shield, not a sword fighter. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd."
+      },
+      "submittedAt": "2026-09-29T14:23:20.829Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/original-fragment-check/raw/guard-a.png",
+      "rawSheetSha256": "cbbd148b1c8f90c6e10f5620db6209edc37e155421764936f11964a07108b64b",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0618,
+          "footprintWidthShare": 0.7925,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-29T14:23:52.809Z",
+      "usageUsd": 0.008121967501110501,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Fragment check only, never a candidate. Replayed without the bow and quiver exclusions of batch-2 guard-a: no bow, quiver or arrows. Red tower shield and spear as asked; red-brown material fell from 4.1% (old guard-a) to 0.8%, owner area 21.4%, mask QA passes. The face is shaded red and the mouth is red (no mouth addendum in this replay).",
+        "reviewedAt": "2026-09-29T14:26:11.940Z"
+      }
+    },
+    "village-a": {
+      "id": "village-a",
+      "asset": "chibi-test-original-village",
+      "jobId": "sync-30867094-771d-456e-a679-73c70d4c6899",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "original-fragment-check",
+        "asset": "chibi-test-original-village",
+        "subject": "SITE:VILLAGE",
+        "faction": "TEST-ORIGINAL-FRAGMENT",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 67351,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/original-fragment-check/faction.md#prompt-fragment + art/explorations/original-fragment-check/faction.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/original-fragment-check/subjects.json",
+            "text": "Subject: a tiny neutral village that belongs to no one: two or three small cottages with cream plaster walls, light tan timber beams and golden-yellow straw thatched roofs, a short light wooden fence; no flag, no banner, no stone tower, no wall, and no red anywhere."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Subject: a tiny neutral village that belongs to no one: two or three small cottages with cream plaster walls, light tan timber beams and golden-yellow straw thatched roofs, a short light wooden fence; no flag, no banner, no stone tower, no wall, and no red anywhere.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Subject: a tiny neutral village that belongs to no one: two or three small cottages with cream plaster walls, light tan timber beams and golden-yellow straw thatched roofs, a short light wooden fence; no flag, no banner, no stone tower, no wall, and no red anywhere. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd."
+      },
+      "submittedAt": "2026-09-29T14:21:36.295Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/explorations/original-fragment-check/raw/village-a.png",
+      "rawSheetSha256": "2997f283572ea12fbacd7b12d001af19e49b61a27eeec0b895f3273afacd9f0a",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.6075,
+          "footprintWidthShare": 0.8906,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-09-29T14:22:28.686Z",
+      "usageUsd": 0.009654660489824083,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Fragment check only, never a candidate. No soldier and no figure of any kind (the old-fragment village-a with this seed and subject text drew a soldier). Pale timber and cream plaster, no red; still a grey stone tower against the subject's no-tower clause, a brown post in front and the usual grass-and-soil slab that the ground-removal edit handles.",
+        "reviewedAt": "2026-09-29T14:26:11.582Z"
+      }
+    }
+  },
+  "assets": {}
+}
