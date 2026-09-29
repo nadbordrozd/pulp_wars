@@ -4,9 +4,11 @@ import type {
   PlayerEventEnvelopeV7,
   PlayerEventV7,
 } from "./events";
+import { effectiveRoleRuleV7 } from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
+  FACTION_IDS_V7,
   IMPROVEMENT_IDS_V7,
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
@@ -674,8 +676,9 @@ function validPayload(
         id(e.cityId) &&
         id(e.unitId) &&
         UNIT_ROLE_IDS_V7.includes(e.role as never) &&
-        (e.cost === trainingCost(e.role as UnitRoleIdV7) ||
-          e.cost === Math.max(1, trainingCost(e.role as UnitRoleIdV7) - 1)) &&
+        trainingCosts(e.role as UnitRoleIdV7).some(
+          (cost) => e.cost === cost || e.cost === Math.max(1, cost - 1),
+        ) &&
         parseCoordV7(e.at) !== null
       );
     case "NAVAL_UNIT_TRAINED":
@@ -762,7 +765,9 @@ function validPayload(
         id(e.unitId) &&
         UNIT_ROLE_IDS_V7.includes(e.role as never) &&
         e.role !== "JUGGERNAUT" &&
-        e.coinDelta === Math.floor(trainingCost(e.role as UnitRoleIdV7) / 2)
+        trainingCosts(e.role as UnitRoleIdV7).some(
+          (cost) => e.coinDelta === Math.floor(cost / 2),
+        )
       );
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
@@ -1047,20 +1052,18 @@ function improvementCost(improvement: ImprovementIdV7): number {
       return 5;
   }
 }
-function trainingCost(role: UnitRoleIdV7): number {
-  const costs: Readonly<Record<UnitRoleIdV7, number>> = {
-    FIGHTER: 2,
-    RAIDER: 4,
-    MARKSMAN: 3,
-    GUARD: 3,
-    CAPTAIN: 5,
-    CATAPULT: 8,
-    KNIGHT: 9,
-    JUGGERNAUT: 0,
-    PATROL_BOAT: 5,
-    BATTLESHIP: 16,
-  };
-  return costs[role];
+function trainingCost(role: "PATROL_BOAT" | "BATTLESHIP"): number {
+  return role === "PATROL_BOAT" ? 5 : 16;
+}
+/**
+ * Context-free event parsing cannot see the owner's faction, so a land
+ * training or Disband amount is accepted when it matches the role's cost in
+ * any registered faction (revision 13: the Ghoul costs 3, the Raider 4).
+ */
+function trainingCosts(role: UnitRoleIdV7): readonly number[] {
+  return FACTION_IDS_V7.map(
+    (faction) => effectiveRoleRuleV7(role, faction).cost ?? 0,
+  );
 }
 function restoredResource(
   value: unknown,

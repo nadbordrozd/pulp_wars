@@ -3,7 +3,9 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r12`. Revision 12 adds a free opening research
+previews under `pulp-wars-poc-7r13`. Role facts resolve through the owner's
+faction registration, so Undead seats play without errors, but the policy has
+no Undead-specific tactics yet. Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
 turn) and Raider Escape handling (an escape Move is used only toward a

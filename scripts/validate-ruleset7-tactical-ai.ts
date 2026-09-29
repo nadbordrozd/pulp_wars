@@ -14,7 +14,7 @@ import {
   applyCommandV7,
   arePlayersAlliedV7,
   createPlayableGameV7,
-  effectiveRoleRuleV7,
+  unitRoleRuleV7,
   landTradeCityIdsV7,
   marketIncomeForCityV7,
   queryCombatPreviewV7,
@@ -1012,7 +1012,7 @@ function publicThreatenedCityIds(view: PlayerViewV7): ReadonlySet<number> {
       const imminentCapture =
         unit.form === "LAND" &&
         unit.captureEligible &&
-        effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE") &&
+        unitRoleRuleV7(view, unit).abilities.includes("CAPTURE") &&
         sameCoord(unit.at, city.at);
       if (imminentCapture || threatened.has(`${city.at.y},${city.at.x}`))
         result.add(city.id);

@@ -492,7 +492,7 @@ function movementState(origin: CoordV7): GameStateV7 {
   const human = base.humanPlayerId;
   const enemy = base.players.find((player) => player.id !== human)!.id;
   const role = "RAIDER" as const;
-  const maxHp = effectiveRoleRuleV7(role).maxHp;
+  const maxHp = effectiveRoleRuleV7(role, "ORIGINAL").maxHp;
   return checkedV7({
     ...base,
     treasureChests: [],

@@ -8,7 +8,7 @@ import {
   landTradeCityIdsV7,
   seaTradeCityIdsV7,
 } from "./economy";
-import { isResourceRevealedV7 } from "../rules/ruleset-v7";
+import { isResourceRevealedV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import type {
@@ -16,6 +16,8 @@ import type {
   BiomeIdV7,
   AchievementIdV7,
   CoordV7,
+  FactionIdV7,
+  FactionTreeIdV7,
   GameStateV7,
   ImprovementIdV7,
   MatchOutcomeV7,
@@ -81,8 +83,8 @@ export interface PublicPlayerV7 {
   readonly seat: number;
   readonly controller: "HUMAN" | "AI";
   readonly color: PlayerColorV7;
-  readonly faction: "ORIGINAL";
-  readonly factionTreeId: "ORIGINAL_BASELINE_V5";
+  readonly faction: FactionIdV7;
+  readonly factionTreeId: FactionTreeIdV7;
   readonly originalCapitalCityId: CityId;
   readonly status: "ACTIVE" | "ELIMINATED";
 }
@@ -126,7 +128,7 @@ export interface PublicLeaderboardEntryV7 {
   readonly seat: number;
   readonly controller: "HUMAN" | "AI";
   readonly color: PlayerColorV7;
-  readonly faction: "ORIGINAL";
+  readonly faction: FactionIdV7;
   readonly status: "ACTIVE" | "ELIMINATED";
   readonly isViewer: boolean;
   readonly cityCount: number;
@@ -494,7 +496,7 @@ export function viewForV7(
         seat: player.seat,
         controller: player.controller,
         color: player.color,
-        faction: "ORIGINAL",
+        faction: player.faction,
         status: player.status,
         isViewer: playerId === viewerId,
         cityCount:
@@ -781,7 +783,9 @@ export function achievementProgressV7(
   );
   const roles = new Set(
     state.units.flatMap((unit) =>
-      unit.ownerId === playerId && unit.hp > 0 && unit.role !== "JUGGERNAUT"
+      unit.ownerId === playerId &&
+      unit.hp > 0 &&
+      unitRoleRuleV7(state, unit).cost !== null
         ? [unit.role]
         : [],
     ),

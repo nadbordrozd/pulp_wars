@@ -5,7 +5,7 @@ Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The headless CLI
-accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r12`
+accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r13`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). The
 [Ruleset-7 revision-4 biome-economy specification](../product/RULESET_7_REVISION_4_BIOME_ECONOMY.md)
 is historical: it introduced the simulation matrix, telemetry, and revision-4

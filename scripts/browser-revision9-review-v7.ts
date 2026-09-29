@@ -75,7 +75,7 @@ try {
     const cells = state.board.tiles.filter((tile) => tile.territoryCityId === city.id && tile.site === null).slice(0, 5);
     if (cells.length < 5) throw new Error('owned review cells missing');
     const [forest, mountain, dockTile, field, knightCell] = cells;
-    const captainRule = effectiveRoleRuleV7('CAPTAIN'), knightRule = effectiveRoleRuleV7('KNIGHT');
+    const captainRule = effectiveRoleRuleV7('CAPTAIN', 'ORIGINAL'), knightRule = effectiveRoleRuleV7('KNIGHT', 'ORIGINAL');
     const baseUnit = state.units.find((unit) => unit.ownerId === actor);
     if (!baseUnit) throw new Error('owned unit missing');
     const captainId = state.nextEntityId, knightId = state.nextEntityId + 1;

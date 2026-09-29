@@ -4,6 +4,8 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import {
+  FACTION_IDS_V7,
+  FACTION_TREE_IDS_V7,
   RULESET_7_ID,
   SAVE_STORAGE_KEY_V7,
   parseMatchSetupV7,
@@ -19,8 +21,8 @@ const archive = JSON.parse(
 if (archive.rulesetId !== "pulp-wars-poc-7r2")
   throw new Error("Archived revision-2 release corpus identity changed");
 if (
-  RULESET_7_ID !== "pulp-wars-poc-7r12" ||
-  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r12.current" ||
+  RULESET_7_ID !== "pulp-wars-poc-7r13" ||
+  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r13.current" ||
   parseMatchSetupV7({
     rulesetId: RULESET_7_ID,
     seed: 0,
@@ -30,12 +32,14 @@ if (
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
-    factions: ["ORIGINAL", "ORIGINAL"],
+    factions: ["ORIGINAL", "UNDEAD"],
     mapType: "CONTINENTS",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
-  }) === null
+  }) === null ||
+  FACTION_IDS_V7.join(",") !== "ORIGINAL,UNDEAD" ||
+  FACTION_TREE_IDS_V7.join(",") !== "ORIGINAL_BASELINE_V5,UNDEAD_BASELINE_V1"
 )
-  throw new Error("Current revision-12 release identity is invalid");
+  throw new Error("Current revision-13 release identity is invalid");
 
 const vitest = path.join(root, "node_modules/vitest/vitest.mjs");
 const result = spawnSync(
@@ -57,6 +61,7 @@ const result = spawnSync(
     "tests/unit/ruleset-v7-playtest-r10.test.ts",
     "tests/unit/ruleset-v7-logistics-r11.test.ts",
     "tests/unit/ruleset-v7-revision12.test.ts",
+    "tests/unit/ruleset-v7-undead-faction.test.ts",
     "tests/unit/ruleset-v7-save.test.ts",
     "tests/unit/persistence-v7.test.ts",
     "tests/integration/ruleset7-biome-browser.test.ts",
@@ -66,7 +71,7 @@ const result = spawnSync(
   { cwd: root, stdio: "inherit" },
 );
 if (result.status !== 0)
-  throw new Error("Current revision-12 release contract tests failed");
+  throw new Error("Current revision-13 release contract tests failed");
 process.stdout.write(
-  "ruleset-7 current release PASS: revision-12 rules (free opening research, Fertile Ground mask, Raider Escape), roster, economy, naval, logistics, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
+  "ruleset-7 current release PASS: revision-13 identity and faction registration (Human and Undead rosters), revision-12 rules (free opening research, Fertile Ground mask, Raider Escape), roster, economy, naval, logistics, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
 );

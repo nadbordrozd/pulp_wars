@@ -370,7 +370,9 @@ describe("Ruleset 7 naval public presentation", () => {
       }),
     );
     expect(
-      recruitmentRolePresentationV7("BATTLESHIP").restrictions.join(" "),
+      recruitmentRolePresentationV7("BATTLESHIP", "ORIGINAL").restrictions.join(
+        " ",
+      ),
     ).toContain("Moves or fires each turn, not both.");
   });
 

@@ -64,7 +64,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r12");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r13");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V2");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -265,7 +265,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     const preview = calculateCombatPreviewV7(state, attacker.id, defender.id);
     expect(preview).toMatchObject({
       fortificationLevel: 3,
-      defense2: effectiveRoleRuleV7("FIGHTER").defense2 + 6,
+      defense2: effectiveRoleRuleV7("FIGHTER", "ORIGINAL").defense2 + 6,
       defenseBonusNumerator: 3,
       defenseBonusDenominator: 2,
     });
@@ -1798,7 +1798,7 @@ function unit(
   at: CoordV7,
   form: UnitStateV7["form"] = "LAND",
 ): UnitStateV7 {
-  const rule = effectiveRoleRuleV7(role);
+  const rule = effectiveRoleRuleV7(role, "ORIGINAL");
   return {
     id,
     ownerId,

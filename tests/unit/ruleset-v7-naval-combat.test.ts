@@ -11,7 +11,7 @@ import { withPortV7 } from "../fixtures/v7-naval-builders";
 
 describe("ruleset-7 naval combat", () => {
   it("freezes exact Patrol Boat and Battleship statistics", () => {
-    expect(effectiveRoleRuleV7("PATROL_BOAT")).toMatchObject({
+    expect(effectiveRoleRuleV7("PATROL_BOAT", "ORIGINAL")).toMatchObject({
       cost: 5,
       maxHp: 10,
       attack2: 4,
@@ -20,7 +20,7 @@ describe("ruleset-7 naval combat", () => {
       range: 1,
       mayUsePrimaryActionAfterMove: true,
     });
-    expect(effectiveRoleRuleV7("BATTLESHIP")).toMatchObject({
+    expect(effectiveRoleRuleV7("BATTLESHIP", "ORIGINAL")).toMatchObject({
       cost: 16,
       maxHp: 25,
       attack2: 12,

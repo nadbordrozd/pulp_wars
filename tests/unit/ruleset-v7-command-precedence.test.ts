@@ -319,7 +319,7 @@ function makeUnit(
   homeCityId: UnitStateV7["homeCityId"] = null,
   activation: UnitStateV7["activation"] = READY,
 ): UnitStateV7 {
-  const rule = effectiveRoleRuleV7(role);
+  const rule = effectiveRoleRuleV7(role, "ORIGINAL");
   return {
     id,
     ownerId,

@@ -42,7 +42,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 Knight Overrun activation", () => {
   it("uses the exact role values and has no Capture ability", () => {
-    expect(effectiveRoleRuleV7("KNIGHT")).toMatchObject({
+    expect(effectiveRoleRuleV7("KNIGHT", "ORIGINAL")).toMatchObject({
       cost: 9,
       maxHp: 10,
       attack2: 6,
@@ -1303,9 +1303,9 @@ function makeUnit(
   ownerId: UnitStateV7["ownerId"],
   role: UnitRoleIdV7,
   at: CoordV7,
-  hp = effectiveRoleRuleV7(role).maxHp,
+  hp = effectiveRoleRuleV7(role, "ORIGINAL").maxHp,
 ): UnitStateV7 {
-  const rule = effectiveRoleRuleV7(role);
+  const rule = effectiveRoleRuleV7(role, "ORIGINAL");
   return {
     id,
     ownerId,

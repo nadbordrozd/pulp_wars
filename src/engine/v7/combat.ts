@@ -1,5 +1,5 @@
 import type { PlayerId, UnitId } from "../model/ids";
-import { effectiveRoleRuleV7 } from "../rules/ruleset-v7";
+import { unitRoleMechanicsV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
 import type { CombatPreviewV7 } from "./events";
 import { tileAtV7 } from "./spatial-economy";
@@ -57,8 +57,9 @@ export function calculateCombatPreviewV7(
 ): CombatPreviewV7 {
   const attacker = requireUnit(state, attackerId);
   const defender = requireUnit(state, targetUnitId);
-  const attackerRule = effectiveRoleRuleV7(attacker.role);
-  const defenderRule = effectiveRoleRuleV7(defender.role);
+  const attackerRule = unitRoleRuleV7(state, attacker);
+  const defenderRule = unitRoleRuleV7(state, defender);
+  const attackerMechanics = unitRoleMechanicsV7(state, attacker);
   const distance = chebyshev(attacker.at, defender.at);
   const chargeApplied =
     requirePlayer(state, attacker.ownerId).researchedTechs.includes(
@@ -121,10 +122,9 @@ export function calculateCombatPreviewV7(
     defenderDies &&
     !attackerDies &&
     distance === 1 &&
-    attacker.role !== "CATAPULT" &&
+    attackerMechanics.advancesAfterKill &&
     attacker.form === "LAND" &&
-    defender.form === "LAND" &&
-    !(attacker.role === "MARKSMAN" && distance > 1);
+    defender.form === "LAND";
   const push = pushState(
     state,
     attacker,
@@ -132,35 +132,34 @@ export function calculateCombatPreviewV7(
     !defenderDies && distance === 1,
   );
   const nextAttacks = attacker.activation.attacksUsed + 1;
-  const splash =
-    attacker.role === "BATTLESHIP"
-      ? state.units
-          .filter(
-            (unit) =>
-              unit.hp > 0 &&
-              unit.id !== defender.id &&
-              chebyshev(unit.at, defender.at) === 1 &&
-              arePlayersHostileV7(state, attacker.ownerId, unit.ownerId),
-          )
-          .sort(
-            (left, right) =>
-              left.at.y - right.at.y ||
-              left.at.x - right.at.x ||
-              left.id - right.id,
-          )
-          .map((unit) => {
-            const damage = Math.min(
-              unit.hp,
-              Math.max(1, Math.ceil(damageToDefender / 2)),
-            );
-            return {
-              unitId: unit.id,
-              at: unit.at,
-              damage,
-              dies: damage >= unit.hp,
-            };
-          })
-      : [];
+  const splash = attackerMechanics.splash
+    ? state.units
+        .filter(
+          (unit) =>
+            unit.hp > 0 &&
+            unit.id !== defender.id &&
+            chebyshev(unit.at, defender.at) === 1 &&
+            arePlayersHostileV7(state, attacker.ownerId, unit.ownerId),
+        )
+        .sort(
+          (left, right) =>
+            left.at.y - right.at.y ||
+            left.at.x - right.at.x ||
+            left.id - right.id,
+        )
+        .map((unit) => {
+          const damage = Math.min(
+            unit.hp,
+            Math.max(1, Math.ceil(damageToDefender / 2)),
+          );
+          return {
+            unitId: unit.id,
+            at: unit.at,
+            damage,
+            dies: damage >= unit.hp,
+          };
+        })
+    : [];
   return {
     attackerId,
     targetUnitId,
@@ -189,7 +188,7 @@ export function calculateCombatPreviewV7(
     push,
     attacksUsed: nextAttacks,
     attacksRemaining: 0,
-    overrunAdvance: attacker.role === "KNIGHT" && advances,
+    overrunAdvance: attackerRule.abilities.includes("OVERRUN") && advances,
     overrunContinues: false,
     escapeAvailable:
       attacker.form === "LAND" &&
@@ -249,7 +248,7 @@ function pushState(
 ): CombatPreviewV7["push"] {
   if (
     !survivesMelee ||
-    !effectiveRoleRuleV7(attacker.role).abilities.includes("PUSH")
+    !unitRoleRuleV7(state, attacker).abilities.includes("PUSH")
   )
     return "BLOCKED";
   const behind = {

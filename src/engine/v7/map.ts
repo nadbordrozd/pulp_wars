@@ -2,7 +2,11 @@ import { deepFreeze } from "../model/freeze";
 import { allocateCityId, allocateUnitId, cityId, playerId } from "../model/ids";
 import { nextBounded, nextUint32, randomState } from "../random/random";
 import { canonicalHash } from "../replay/canonical";
-import { ORIGINAL_BASELINE_V5_TREE, RULESET_7 } from "../rules/ruleset-v7";
+import {
+  RULESET_7,
+  effectiveRoleRuleV7,
+  factionTreeV7,
+} from "../rules/ruleset-v7";
 import { placeTreasureChestsV6 } from "../v6/map";
 import { parseMatchSetupV7 } from "./setup";
 import { parseGameStateV7 } from "./state-schema";
@@ -17,6 +21,7 @@ import {
   type CityStateV7,
   type CoordV7,
   type GameStateV7,
+  type FactionIdV7,
   type MatchSetupV7,
   type PlayerColorV7,
   type PlayerStateV7,
@@ -1659,25 +1664,30 @@ export function createInitialMapStateV7(
 }
 function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
   const colors = COLORS.filter((color) => color !== setup.humanColor);
-  return Array.from({ length: setup.aiCount + 1 }, (_, seat) => ({
-    id: playerId(seat + 1),
-    seat,
-    controller: seat === 0 ? "HUMAN" : "AI",
-    color: seat === 0 ? setup.humanColor : (colors[seat - 1] as PlayerColorV7),
-    faction: "ORIGINAL",
-    factionTreeId: "ORIGINAL_BASELINE_V5",
-    status: "ACTIVE",
-    coins: RULESET_7.startingCoins,
-    researchedTechs: ORIGINAL_BASELINE_V5_TREE.startingTechIds,
-    explored: [],
-    spoilsClaimedCityIds: [],
-    achievementEntitlements: [
-      { achievement: "EXPLORER", unlocked: false, spent: false },
-      { achievement: "ENGINEER", unlocked: false, spent: false },
-      { achievement: "MUSTER", unlocked: false, spent: false },
-    ],
-    originalCapitalCityId: cityId(seat * 2 + 1),
-  }));
+  return Array.from({ length: setup.aiCount + 1 }, (_, seat) => {
+    // Revision 13: each seat binds its setup faction and that faction's tree.
+    const tree = factionTreeV7(setup.factions[seat] as FactionIdV7);
+    return {
+      id: playerId(seat + 1),
+      seat,
+      controller: seat === 0 ? "HUMAN" : "AI",
+      color:
+        seat === 0 ? setup.humanColor : (colors[seat - 1] as PlayerColorV7),
+      faction: tree.faction,
+      factionTreeId: tree.id,
+      status: "ACTIVE",
+      coins: RULESET_7.startingCoins,
+      researchedTechs: tree.startingTechIds,
+      explored: [],
+      spoilsClaimedCityIds: [],
+      achievementEntitlements: [
+        { achievement: "EXPLORER", unlocked: false, spent: false },
+        { achievement: "ENGINEER", unlocked: false, spent: false },
+        { achievement: "MUSTER", unlocked: false, spent: false },
+      ],
+      originalCapitalCityId: cityId(seat * 2 + 1),
+    };
+  });
 }
 function createEntities(
   players: readonly PlayerStateV7[],
@@ -1706,6 +1716,8 @@ function createEntities(
     });
     const unit = allocateUnitId(nextEntityId);
     nextEntityId = unit.nextEntityId;
+    // The start unit is the owner's FIGHTER role (Fighter or Skeleton).
+    const startRule = effectiveRoleRuleV7("FIGHTER", player.faction);
     units.push({
       id: unit.id,
       ownerId: player.id,
@@ -1713,8 +1725,8 @@ function createEntities(
       role: "FIGHTER",
       form: "LAND",
       at,
-      hp: 10,
-      maxHp: 10,
+      hp: startRule.maxHp,
+      maxHp: startRule.maxHp,
       kills: 0,
       veteran: false,
       captureEligible: false,

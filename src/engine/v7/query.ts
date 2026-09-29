@@ -1,11 +1,13 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
-  ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TECHNOLOGY_BRANCH_IDS_V7,
   effectiveRoleRuleV7,
+  factionTreeV7,
   technologyCapabilitiesV7,
+  unitRoleMechanicsV7,
+  unitRoleRuleV7,
   isResourceRevealedV7,
   playerTechnologyResearchCostV7,
   technologyResearchCostV7,
@@ -40,6 +42,8 @@ import {
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   type CoordV7,
+  type FactionIdV7,
+  type FactionTreeIdV7,
   type AchievementEntitlementV7,
   type AchievementIdV7,
   type GameStateV7,
@@ -66,8 +70,8 @@ export interface PublicTechnologyNodeV7 {
   readonly unlockedRoleRules: readonly EffectiveRoleRuleV7[];
 }
 export interface PublicTechnologyTreeV7 {
-  readonly id: "ORIGINAL_BASELINE_V5";
-  readonly faction: "ORIGINAL";
+  readonly id: FactionTreeIdV7;
+  readonly faction: FactionIdV7;
   readonly ownedCityCount: number;
   readonly branches: typeof TECHNOLOGY_BRANCH_IDS_V7;
   readonly nodes: readonly PublicTechnologyNodeV7[];
@@ -85,12 +89,15 @@ export function queryTechnologyTreeV7(
   ).length;
   if (ownedCityCount < 1) throw new RangeError("Technology requires a city");
   const owned = new Set(player.researchedTechs);
+  // Revision 13: the tree, unlock effects, and role labels are the viewer's
+  // own faction registration.
+  const tree = factionTreeV7(player.faction);
   return {
-    id: "ORIGINAL_BASELINE_V5",
-    faction: "ORIGINAL",
+    id: tree.id,
+    faction: tree.faction,
     ownedCityCount,
     branches: TECHNOLOGY_BRANCH_IDS_V7,
-    nodes: ORIGINAL_BASELINE_V5_TREE.nodes.map((node) => {
+    nodes: tree.nodes.map((node) => {
       const missingPrerequisites = node.prerequisites.filter(
         (tech) => !owned.has(tech),
       );
@@ -124,10 +131,12 @@ export function queryTechnologyTreeV7(
         cost,
         affordable: nodeState === "AVAILABLE" && player.coins >= cost,
         effects: node.unlocks,
-        unlockedRoleRules: node.unlockedRoles.map(effectiveRoleRuleV7),
+        unlockedRoleRules: node.unlockedRoles.map(
+          (roleId) => tree.roleRules[roleId],
+        ),
       };
     }),
-    roleBindings: ORIGINAL_BASELINE_V5_TREE.roleRules,
+    roleBindings: tree.roleRules,
   };
 }
 
@@ -135,9 +144,8 @@ export function queryTechnologyCapabilitiesV7(
   input: GameStateV7 | PlayerViewV7,
   viewerId?: PlayerId,
 ): TechnologyCapabilitiesV7 {
-  return technologyCapabilitiesV7(
-    asView(input, viewerId).viewer.researchedTechs,
-  );
+  const viewer = asView(input, viewerId).viewer;
+  return technologyCapabilitiesV7(viewer.researchedTechs, viewer.faction);
 }
 
 const BASIC_KINDS = Object.keys(
@@ -367,7 +375,7 @@ function appendPublicCityCommandsV7(
       })(),
   );
   for (const role of UNIT_ROLE_IDS_V7) {
-    const rule = effectiveRoleRuleV7(role);
+    const rule = effectiveRoleRuleV7(role, player.faction);
     if (
       !centerBlocked &&
       role !== "PATROL_BOAT" &&
@@ -380,7 +388,7 @@ function appendPublicCityCommandsV7(
       candidates.push({ kind: "TRAIN", cityId: city.id, role });
   }
   for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const) {
-    const rule = effectiveRoleRuleV7(role);
+    const rule = effectiveRoleRuleV7(role, player.faction);
     if (
       rule.cost !== null &&
       (rule.technology === null ||
@@ -432,7 +440,7 @@ function appendPublicUnitCommandsV7(
   )
     for (const reachable of reachablePlayerMovementPathsV7(view, unit))
       candidates.push({ kind: "MOVE", unitId: unit.id, path: reachable.path });
-  const rule = effectiveRoleRuleV7(unit.role);
+  const rule = unitRoleRuleV7(view, unit);
   const primaryReady =
     !primaryUsedForQuery(unit) &&
     (!unit.activation.moved || rule.mayUsePrimaryActionAfterMove);
@@ -459,14 +467,16 @@ function appendPublicUnitCommandsV7(
     unit.form === "LAND" &&
     rule.abilities.includes("RALLY") &&
     view.units.some((target) => {
-      const targetRole = effectiveRoleRuleV7(target.role).tacticalRole;
+      if (target.ownerId !== player.id) return false;
+      const targetRule = unitRoleRuleV7(view, target);
+      const targetRole = targetRule.tacticalRole;
       return (
-        target.ownerId === player.id &&
         target.form === "LAND" &&
         target.id !== unit.id &&
         !target.activation.inspired &&
         targetRole !== "SUPPORT" &&
         targetRole !== "SIEGE" &&
+        targetRule.abilities.includes("ATTACK") &&
         chebyshev(unit.at, target.at) === 1
       );
     })
@@ -706,7 +716,7 @@ export function estimateCombatV7(
     (unit) => unit.id === targetUnitId && unit.hp > 0,
   );
   if (attacker === undefined || target === undefined) return null;
-  const rule = effectiveRoleRuleV7(attacker.role);
+  const rule = unitRoleRuleV7(state, attacker);
   const distance = Math.max(
     Math.abs(attacker.at.x - target.at.x),
     Math.abs(attacker.at.y - target.at.y),
@@ -842,7 +852,7 @@ export function queryThreatenedTilesV7(
     (candidate) => candidate.id === unitId && candidate.hp > 0,
   );
   if (unit === undefined) return [];
-  const rule = effectiveRoleRuleV7(unit.role);
+  const rule = unitRoleRuleV7(view, unit);
   if (!rule.abilities.includes("ATTACK")) return [];
   const origins = [
     unit.at,
@@ -3961,8 +3971,9 @@ function publicCombatPreview(
     !publicHostile(view, attacker.ownerId, target.ownerId)
   )
     return null;
-  const attackerRule = effectiveRoleRuleV7(attacker.role);
-  const defenderRule = effectiveRoleRuleV7(target.role);
+  const attackerRule = unitRoleRuleV7(view, attacker);
+  const defenderRule = unitRoleRuleV7(view, target);
+  const attackerMechanics = unitRoleMechanicsV7(view, attacker);
   const distance = chebyshev(attacker.at, target.at);
   const attackReady =
     !primaryUsedForQuery(attacker) || attacker.activation.overrunActive;
@@ -4042,14 +4053,13 @@ function publicCombatPreview(
     defenderDies &&
     !attackerDies &&
     distance === 1 &&
-    attacker.role !== "CATAPULT" &&
+    attackerMechanics.advancesAfterKill &&
     attacker.form === "LAND" &&
     target.form === "LAND" &&
-    !(attacker.role === "MARKSMAN" && distance > 1) &&
     publicAdvanceDestinationLegal(view, target.at);
   const nextAttacks = attacker.activation.attacksUsed + 1;
   const overrunContinues =
-    attacker.role === "KNIGHT" &&
+    attackerRule.abilities.includes("OVERRUN") &&
     advances &&
     view.units.some(
       (unit) =>
@@ -4067,7 +4077,7 @@ function publicCombatPreview(
     minimumRange: attackerRule.minimumRange,
     maximumRange: attackerRule.range,
     chargeApplied:
-      attacker.role === "RAIDER" &&
+      attackerRule.abilities.includes("CHARGE") &&
       view.viewer.researchedTechs.includes("RAIDING") &&
       attacker.activation.moved &&
       attacker.activation.movedPathLength >= 2 &&
@@ -4098,41 +4108,40 @@ function publicCombatPreview(
     ),
     attacksUsed: nextAttacks,
     attacksRemaining: overrunContinues ? 1 : 0,
-    overrunAdvance: attacker.role === "KNIGHT" && advances,
+    overrunAdvance: attackerRule.abilities.includes("OVERRUN") && advances,
     overrunContinues,
     escapeAvailable:
       attacker.form === "LAND" &&
       attackerRule.abilities.includes("ESCAPE") &&
       !attackerDies,
-    splash:
-      attacker.role === "BATTLESHIP"
-        ? view.units
-            .filter(
-              (unit) =>
-                unit.hp > 0 &&
-                unit.id !== target.id &&
-                chebyshev(unit.at, target.at) === 1 &&
-                publicHostile(view, attacker.ownerId, unit.ownerId),
-            )
-            .sort(
-              (left, right) =>
-                left.at.y - right.at.y ||
-                left.at.x - right.at.x ||
-                left.id - right.id,
-            )
-            .map((unit) => {
-              const damage = Math.min(
-                unit.hp,
-                Math.max(1, Math.ceil(damageToDefender / 2)),
-              );
-              return {
-                unitId: unit.id,
-                at: unit.at,
-                damage,
-                dies: damage >= unit.hp,
-              };
-            })
-        : [],
+    splash: attackerMechanics.splash
+      ? view.units
+          .filter(
+            (unit) =>
+              unit.hp > 0 &&
+              unit.id !== target.id &&
+              chebyshev(unit.at, target.at) === 1 &&
+              publicHostile(view, attacker.ownerId, unit.ownerId),
+          )
+          .sort(
+            (left, right) =>
+              left.at.y - right.at.y ||
+              left.at.x - right.at.x ||
+              left.id - right.id,
+          )
+          .map((unit) => {
+            const damage = Math.min(
+              unit.hp,
+              Math.max(1, Math.ceil(damageToDefender / 2)),
+            );
+            return {
+              unitId: unit.id,
+              at: unit.at,
+              damage,
+              dies: damage >= unit.hp,
+            };
+          })
+      : [],
   };
 }
 
@@ -4156,7 +4165,7 @@ function publicPushState(
 ): CombatPreviewV7["push"] {
   if (
     !survivesMelee ||
-    !effectiveRoleRuleV7(attacker.role).abilities.includes("PUSH")
+    !unitRoleRuleV7(view, attacker).abilities.includes("PUSH")
   )
     return "BLOCKED";
   const behind = {

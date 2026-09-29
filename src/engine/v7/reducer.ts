@@ -8,6 +8,7 @@ import {
   SPATIAL_ECONOMIC_ACTIONS_V7,
   effectiveRoleRuleV7,
   technologyCapabilitiesV7,
+  unitRoleRuleV7,
   isResourceRevealedV7,
   playerTechnologyResearchCostV7,
   type BasicEconomicCommandKindV7,
@@ -701,7 +702,7 @@ function applySpatial(
     const marketIncome =
       rule.improvement === "MARKET"
         ? Math.min(4, evaluation.marketIncome) *
-          technologyCapabilitiesV7(player.researchedTechs)
+          technologyCapabilitiesV7(player.researchedTechs, player.faction)
             .marketIncomeMultiplier
         : evaluation.marketIncome;
     return accepted(next, [
@@ -1284,7 +1285,7 @@ function applyTrainNaval(
   if (!city.cityActionAvailable)
     return rejected(original, "CITY_ACTION_SPENT", { cityId: city.id });
   const player = requirePlayer(state, actor);
-  const rule = effectiveRoleRuleV7(command.role);
+  const rule = effectiveRoleRuleV7(command.role, player.faction);
   const tile = tileAtV7(state.board, command.at);
   if (
     tile?.territoryCityId !== city.id ||
@@ -1508,7 +1509,7 @@ function applyTrain(
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING", { cityId: city.id });
   const player = requirePlayer(state, actor);
-  const rule = effectiveRoleRuleV7(command.role);
+  const rule = effectiveRoleRuleV7(command.role, player.faction);
   if (command.role === "PATROL_BOAT" || command.role === "BATTLESHIP")
     return rejected(original, "UNIT_ROLE_INVALID", { role: command.role });
   if (rule.cost === null)
@@ -1798,7 +1799,11 @@ function applyReward(
     } else if (unitRole !== null) {
       const allocation = allocateUnitId(nextEntityId);
       nextEntityId = allocation.nextEntityId;
-      const rule = effectiveRoleRuleV7(unitRole);
+      // Revision 13: MILITIA and JUGGERNAUT grant the owner's faction unit.
+      const rule = effectiveRoleRuleV7(
+        unitRole,
+        requirePlayer(state, actor).faction,
+      );
       const created: UnitStateV7 = {
         id: allocation.id,
         ownerId: actor,
@@ -2056,7 +2061,11 @@ function resolveTreasure(
       : null;
   if (placement !== null) {
     const allocation = allocateUnitId(state.nextEntityId);
-    const rule = effectiveRoleRuleV7("KNIGHT");
+    // Revision 13: the treasure KNIGHT is the actor's faction unit.
+    const rule = effectiveRoleRuleV7(
+      "KNIGHT",
+      requirePlayer(state, actor).faction,
+    );
     const spawnedUnit: UnitStateV7 = {
       id: allocation.id,
       ownerId: actor,
@@ -2177,7 +2186,7 @@ function applyAttack(
   const attacker = actorCheck.unit;
   if (attacker.form === "EMBARKED")
     return rejected(original, "ATTACK_NOT_LEGAL", { reason: "EMBARKED" });
-  const rule = effectiveRoleRuleV7(attacker.role);
+  const rule = unitRoleRuleV7(state, attacker);
   if (
     (!attacker.activation.overrunActive && primaryUsed(attacker)) ||
     (!attacker.activation.overrunActive &&
@@ -2322,7 +2331,7 @@ function applyAttack(
       units,
     } as GameStateV7;
     const overrunContinues =
-      attacker.role === "KNIGHT" &&
+      rule.abilities.includes("OVERRUN") &&
       preview.advances &&
       !preview.attackerDies &&
       units.some(
@@ -2349,7 +2358,7 @@ function applyAttack(
     const finalPreview = {
       ...preview,
       attacksRemaining: overrunContinues ? 1 : 0,
-      overrunAdvance: attacker.role === "KNIGHT" && preview.advances,
+      overrunAdvance: rule.abilities.includes("OVERRUN") && preview.advances,
       overrunContinues,
     };
     const events: DomainEventV7[] = [
@@ -2455,7 +2464,7 @@ function supportCaptain(
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
   const captain = actorCheck.unit;
-  const rule = effectiveRoleRuleV7(captain.role);
+  const rule = unitRoleRuleV7(state, captain);
   if (captain.form !== "LAND" || !rule.abilities.includes(ability))
     return rejected(original, "UNIT_ROLE_INVALID", { role: captain.role });
   if (
@@ -2478,15 +2487,18 @@ function applyRally(
   if ("accepted" in result) return result;
   const targets = state.units
     .filter((unit) => {
-      const tactical = effectiveRoleRuleV7(unit.role).tacticalRole;
+      if (unit.hp <= 0 || unit.ownerId !== actor) return false;
+      const targetRule = unitRoleRuleV7(state, unit);
+      const tactical = targetRule.tacticalRole;
+      // Revision 13 Frenzy eligibility: Rally targets also need ATTACK, which
+      // every Human non-support, non-siege land role has.
       return (
-        unit.hp > 0 &&
-        unit.ownerId === actor &&
         unit.form === "LAND" &&
         unit.id !== result.captain.id &&
         !unit.activation.inspired &&
         tactical !== "SUPPORT" &&
         tactical !== "SIEGE" &&
+        targetRule.abilities.includes("ATTACK") &&
         chebyshev(result.captain.at, unit.at) === 1
       );
     })
@@ -2887,7 +2899,7 @@ function applyDisband(
   const player = requirePlayer(state, actor);
   if (!player.researchedTechs.includes("ADMINISTRATION"))
     return rejected(original, "TECH_REQUIRED", { tech: "ADMINISTRATION" });
-  const rule = effectiveRoleRuleV7(actorCheck.unit.role);
+  const rule = unitRoleRuleV7(state, actorCheck.unit);
   if (rule.cost === null)
     return rejected(original, "UNIT_ROLE_INVALID", {
       role: actorCheck.unit.role,
@@ -2948,9 +2960,7 @@ function applyCapture(
       ? occupied
       : undefined;
   const village = occupied === undefined && tile?.site === "VILLAGE";
-  const canCapture = effectiveRoleRuleV7(unit.role).abilities.includes(
-    "CAPTURE",
-  );
+  const canCapture = unitRoleRuleV7(state, unit).abilities.includes("CAPTURE");
   if (
     (!village && hostile === undefined) ||
     !canCapture ||
@@ -3402,7 +3412,7 @@ function resetTurnUnits(state: GameStateV7, playerId: PlayerId): GameStateV7 {
       );
       const tile = tileAtV7(state.board, unit.at);
       const captureEligible =
-        effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE") &&
+        unitRoleRuleV7(state, unit).abilities.includes("CAPTURE") &&
         (tile?.site === "VILLAGE" ||
           (city !== undefined &&
             arePlayersHostileV7(state, playerId, city.ownerId)));
@@ -3587,7 +3597,7 @@ function evaluateAchievementsV7(
     state.units.flatMap((unit) =>
       unit.ownerId === playerId &&
       unit.hp > 0 &&
-      effectiveRoleRuleV7(unit.role).cost !== null
+      unitRoleRuleV7(state, unit).cost !== null
         ? [unit.role]
         : [],
     ),
@@ -3639,11 +3649,13 @@ function unitSightRadius(
   ownerId: PlayerId,
   unit: UnitStateV7,
 ): number {
+  const owner = requirePlayer(state, ownerId);
   const capabilities = technologyCapabilitiesV7(
-    requirePlayer(state, ownerId).researchedTechs,
+    owner.researchedTechs,
+    owner.faction,
   );
   const base = Math.max(
-    effectiveRoleRuleV7(unit.role).sightRadius,
+    effectiveRoleRuleV7(unit.role, owner.faction).sightRadius,
     capabilities.roleSightRadius[unit.role] ?? 0,
   );
   const tile = tileAtV7(state.board, unit.at);

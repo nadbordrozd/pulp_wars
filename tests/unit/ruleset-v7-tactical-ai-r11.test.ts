@@ -1933,8 +1933,8 @@ function navalCompositionView(
     role,
     form: "NAVAL" as const,
     at: required(water[index]),
-    hp: effectiveRoleRuleV7(role).maxHp,
-    maxHp: effectiveRoleRuleV7(role).maxHp,
+    hp: effectiveRoleRuleV7(role, "ORIGINAL").maxHp,
+    maxHp: effectiveRoleRuleV7(role, "ORIGINAL").maxHp,
     captureEligible: false,
   });
   const defender = {
@@ -2093,7 +2093,7 @@ function roleUnit(
     role,
     at,
     hp,
-    maxHp: effectiveRoleRuleV7(role).maxHp,
+    maxHp: effectiveRoleRuleV7(role, "ORIGINAL").maxHp,
     activation,
   };
 }

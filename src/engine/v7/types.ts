@@ -5,11 +5,12 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r12" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r12.current" as const;
-export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL"] as const);
+export const RULESET_7_ID = "pulp-wars-poc-7r13" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r13.current" as const;
+export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL", "UNDEAD"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
+  "UNDEAD_BASELINE_V1",
 ] as const);
 export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
@@ -275,8 +276,8 @@ export interface PlayerStateV7 {
   readonly seat: number;
   readonly controller: "HUMAN" | "AI";
   readonly color: PlayerColorV7;
-  readonly faction: "ORIGINAL";
-  readonly factionTreeId: "ORIGINAL_BASELINE_V5";
+  readonly faction: FactionIdV7;
+  readonly factionTreeId: FactionTreeIdV7;
   readonly status: "ACTIVE" | "ELIMINATED";
   readonly coins: number;
   readonly researchedTechs: readonly TechnologyIdV7[];

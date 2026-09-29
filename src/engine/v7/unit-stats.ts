@@ -1,7 +1,4 @@
-import {
-  effectiveRoleRuleV7,
-  technologyCapabilitiesV7,
-} from "../rules/ruleset-v7";
+import { technologyCapabilitiesV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
 import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
 import { tileAtV7 } from "./spatial-economy";
 import type { GameStateV7, UnitStateV7 } from "./types";
@@ -58,10 +55,16 @@ export function publicUnitStatsV7(
   state: GameStateV7,
   unit: UnitStateV7,
 ): PublicUnitStatsV7 {
-  const role = effectiveRoleRuleV7(unit.role);
+  const role = unitRoleRuleV7(state, unit);
   const embarked = unit.form === "EMBARKED";
   const owner = state.players.find((player) => player.id === unit.ownerId);
   if (owner === undefined) throw new RangeError("INVALID_STATE");
+  const capabilities = technologyCapabilitiesV7(
+    owner.researchedTechs,
+    owner.faction,
+  );
+  // Revision 13: Undead support labels Rally as Frenzy and Inspired as Frenzied.
+  const frenzied = owner.faction === "UNDEAD";
   const promotion = unit.maxHp - role.maxHp;
   const charge =
     !embarked &&
@@ -91,16 +94,10 @@ export function publicUnitStatsV7(
   );
   const highGround =
     tileAtV7(state.board, unit.at)?.terrain === "MOUNTAIN" &&
-    technologyCapabilitiesV7(owner.researchedTechs)
-      .highGroundVisionRadiusBonus === 1;
+    capabilities.highGroundVisionRadiusBonus === 1;
   const sight = embarked
     ? 1
-    : Math.max(
-        role.sightRadius,
-        technologyCapabilitiesV7(owner.researchedTechs).roleSightRadius[
-          unit.role
-        ] ?? 0,
-      );
+    : Math.max(role.sightRadius, capabilities.roleSightRadius[unit.role] ?? 0);
   const labelText = embarked ? "Embarked transport" : role.label;
   return {
     unitId: unit.id,
@@ -145,8 +142,10 @@ export function publicUnitStatsV7(
                 modifier(
                   inspired,
                   "INSPIRED",
-                  "Inspired",
-                  "Captain Rally adds 1 Attack to the next attack this turn.",
+                  frenzied ? "Frenzied" : "Inspired",
+                  frenzied
+                    ? "Necromancer Frenzy adds 1 Attack to the next attack this turn."
+                    : "Captain Rally adds 1 Attack to the next attack this turn.",
                   2,
                 ),
               ]
@@ -207,7 +206,7 @@ export function publicUnitStatsV7(
     abilities: embarked ? [] : role.abilities,
     statuses: [
       ...(unit.activation.inspired && unit.activation.attacksUsed === 0
-        ? ["Inspired: +1 next Attack"]
+        ? [frenzied ? "Frenzied: +1 next Attack" : "Inspired: +1 next Attack"]
         : []),
       ...(unit.activation.tendedThisTurn ? ["Tended this turn"] : []),
       ...(unit.activation.overrunActive ? ["Overrun: attack again"] : []),

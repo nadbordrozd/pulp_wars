@@ -11,7 +11,7 @@ import { canonicalHash, canonicalJson } from "../engine/replay/canonical";
 import {
   ORIGINAL_BASELINE_V5_TREE,
   TECHNOLOGY_BRANCH_IDS_V7,
-  effectiveRoleRuleV7,
+  unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import {
@@ -83,7 +83,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r12";
+  readonly rulesetId: "pulp-wars-poc-7r13";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -634,7 +634,7 @@ export async function runAiBatchV7(
           await new Promise<void>((resolve) => setTimeout(resolve, 0));
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r12",
+              rulesetId: "pulp-wars-poc-7r13",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -731,7 +731,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r12",
+    rulesetId: "pulp-wars-poc-7r13",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1201,7 +1201,7 @@ function recordSnapshotV7(
           candidate.ownerId === unit.ownerId &&
           candidate.id !== unit.id &&
           candidate.hp * 2 >= candidate.maxHp &&
-          effectiveRoleRuleV7(candidate.role).defense2 >= 4 &&
+          unitRoleRuleV7(state, candidate).defense2 >= 4 &&
           chebyshev(candidate.at, unit.at) === 1,
       );
       if (screened) metrics.catapult.screenSurvivals += 1;

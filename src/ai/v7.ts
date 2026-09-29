@@ -1,8 +1,9 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
-  ORIGINAL_BASELINE_V5_TREE,
   effectiveRoleRuleV7,
+  factionTreeV7,
   technologyCapabilitiesV7,
+  unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CombatPreviewV7 } from "../engine/v7/events";
@@ -1098,7 +1099,7 @@ function* tacticalPlanWorkV7(
           threatenedCity(context, city.id) &&
           same(city.at, objective),
       );
-      const role = effectiveRoleRuleV7(unit.role).tacticalRole;
+      const role = unitRoleRuleV7(view, unit).tacticalRole;
       const moveDestinationKeys =
         context.lookup.moveDestinationKeysByUnit.get(unit.id) ?? new Set();
       const approachCells = neighbors8V7(view, objective).filter((at) =>
@@ -1211,7 +1212,7 @@ function* hasReplacementPathWorkV7(
       unit.activation.captured ||
       unit.activation.specialActed ||
       unit.hp * 2 < unit.maxHp ||
-      effectiveRoleRuleV7(unit.role).defense2 < 4
+      unitRoleRuleV7(view, unit).defense2 < 4
     )
       continue;
     const queue: CoordV7[][] = [[]];
@@ -1452,13 +1453,13 @@ function* navalPlanWorkV7(
     (unit) =>
       unit.ownerId === view.viewer.id &&
       unit.form === "LAND" &&
-      effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE"),
+      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"),
   );
   const visibleObjectiveClaimants = view.units.filter(
     (unit) =>
       unit.form === "LAND" &&
       publicPlayersAllied(view, view.viewer.id, unit.ownerId) &&
-      effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE"),
+      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"),
   );
   const captureComponents = new Set(
     captureUnits.flatMap((unit) => {
@@ -1791,7 +1792,8 @@ function* navalPlanWorkV7(
       (unit) => unit.ownerId === view.viewer.id && unit.role === "PATROL_BOAT",
     )
   )
-    reserveCoins = effectiveRoleRuleV7("PATROL_BOAT").cost ?? 5;
+    reserveCoins =
+      effectiveRoleRuleV7("PATROL_BOAT", view.viewer.faction).cost ?? 5;
   return {
     active,
     target,
@@ -1996,7 +1998,7 @@ function* addHostileThreatsWorkV7(
     const imminentCapture =
       unit.form === "LAND" &&
       unit.captureEligible &&
-      effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE") &&
+      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE") &&
       same(unit.at, city.at);
     if (!tiles.has(coordKey(city.at)) && !imminentCapture) continue;
     context.threats.push({
@@ -2063,7 +2065,7 @@ function* publicThreatenedTilesWorkV7(
   pathWork?: MutablePolicyPathDiagnosticsV7,
   policyLookup?: PolicyLookupV7,
 ): Generator<void, readonly CoordV7[]> {
-  const rule = effectiveRoleRuleV7(unit.role);
+  const rule = unitRoleRuleV7(view, unit);
   const facts = publicCombatFacts(view, unit, policyLookup);
   if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) return [];
   const origins = new Map([[coordKey(unit.at), unit.at]]);
@@ -2121,7 +2123,7 @@ function* publicThreatenedTilesWorkV7(
               occupant.form !== "EMBARKED" &&
               occupant.ownerId !== unit.ownerId &&
               !publicPlayersAllied(view, unit.ownerId, occupant.ownerId) &&
-              publicProjectsZocForThreatV7(occupant, unit, tile),
+              publicProjectsZocForThreatV7(view, occupant, unit, tile),
           ),
         );
         if (!terrainStop && !hostileZoc) queue.push({ at: tile.at, spent2 });
@@ -2154,6 +2156,7 @@ function* publicThreatenedTilesWorkV7(
 }
 
 function publicProjectsZocForThreatV7(
+  view: PlayerViewV7,
   projector: PublicUnitV7,
   target: PublicUnitV7,
   tile: PlayerViewV7["board"]["tiles"][number],
@@ -2161,7 +2164,7 @@ function publicProjectsZocForThreatV7(
   if (!tile.explored) return true;
   if (tile.biome !== null) return projector.form !== "NAVAL";
   if (projector.form === "NAVAL") return true;
-  const rule = effectiveRoleRuleV7(projector.role);
+  const rule = unitRoleRuleV7(view, projector);
   return (
     target.form !== "LAND" &&
     rule.abilities.includes("ATTACK") &&
@@ -2232,7 +2235,7 @@ function isPolicyCandidate(
       actor !== undefined &&
       objective !== undefined &&
       to !== undefined &&
-      effectiveRoleRuleV7(actor.role).tacticalRole === "SIEGE" &&
+      unitRoleRuleV7(context.view, actor).tacticalRole === "SIEGE" &&
       distance(to, objective) >= 2 &&
       distance(to, objective) <= 3 &&
       !hasReachableScreenAtV7(context, actor, to)
@@ -2442,7 +2445,7 @@ function attackPurposeFactsV7(
   );
   const higherResult =
     actor !== undefined &&
-    realizedTargetLoss > retainedUnitValue(actor) &&
+    realizedTargetLoss > retainedUnitValue(context.view, actor) &&
     preview.damageToDefender > preview.damageToAttacker;
   return { savesCity, opensLethalFollowUp, higherResult };
 }
@@ -2575,7 +2578,7 @@ function* sharedCityContextWorkV7(
         );
       if (
         unit.form === "LAND" &&
-        effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE")
+        unitRoleRuleV7(view, unit).abilities.includes("CAPTURE")
       )
         hasLandCaptureUnit = true;
       if (unit.role === "PATROL_BOAT") patrolBoats += 1;
@@ -2626,7 +2629,7 @@ function* sharedCityContextWorkV7(
         unit.ownerId === view.viewer.id &&
         unit.form === "LAND" &&
         unit.hp * 2 >= unit.maxHp &&
-        effectiveRoleRuleV7(unit.role).defense2 >= 4
+        unitRoleRuleV7(view, unit).defense2 >= 4
       ) {
         if (distance(unit.at, city.at) <= 1) durableScreen = true;
         else
@@ -2649,11 +2652,11 @@ function* sharedCityContextWorkV7(
     for (const command of landByCity.get(cityId) ?? []) {
       const count = ownedRoleCounts.get(command.role) ?? 0;
       const value =
-        effectiveRoleRuleV7(command.role).maxHp +
+        effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp +
         Number(command.role === "GUARD" && threatened) * 20 +
         Number(command.role === "CATAPULT" && durableScreen) * 12 +
         20 * Number(count === 0) -
-        2 * (effectiveRoleRuleV7(command.role).cost ?? 0) -
+        2 * (effectiveRoleRuleV7(command.role, view.viewer.faction).cost ?? 0) -
         8 * count;
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
@@ -2701,14 +2704,20 @@ function* sharedCityContextWorkV7(
     let bestUtility = Number.NEGATIVE_INFINITY;
     let bestTie: readonly number[] = [];
     for (const command of shared) {
-      const cost = sharedTrainingCostV7(command, forgeCities, improvementByKey);
+      const cost = sharedTrainingCostV7(
+        view,
+        command,
+        forgeCities,
+        improvementByKey,
+      );
       const worsens =
         command.kind === "TRAIN" &&
         threatened &&
         centerGuard !== undefined &&
-        (effectiveRoleRuleV7(command.role).defense2 <
-          effectiveRoleRuleV7(centerGuard.role).defense2 ||
-          effectiveRoleRuleV7(command.role).maxHp < centerGuard.hp);
+        (effectiveRoleRuleV7(command.role, view.viewer.faction).defense2 <
+          unitRoleRuleV7(view, centerGuard).defense2 ||
+          effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp <
+            centerGuard.hp);
       const spendsReserve =
         command.kind !== "LAND_GRANT" &&
         context.naval.active &&
@@ -2732,7 +2741,7 @@ function* sharedCityContextWorkV7(
           command.kind === "LAND_GRANT"
             ? neutral * 7 - 18
             : command.kind === "TRAIN"
-              ? (effectiveRoleRuleV7(command.role).maxHp +
+              ? (effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp +
                   Number(command.role === "GUARD" && threatened) * 20 +
                   Number(command.role === "CATAPULT" && durableScreen) * 12) *
                   3 -
@@ -2762,12 +2771,13 @@ function* sharedCityContextWorkV7(
 }
 
 function sharedTrainingCostV7(
+  view: PlayerViewV7,
   command: SharedCityCommandV7,
   forgeCities: ReadonlySet<CityId>,
   improvementByKey: ReadonlyMap<string, ImprovementIdV7 | null>,
 ): number {
   if (command.kind === "LAND_GRANT") return 0;
-  const base = effectiveRoleRuleV7(command.role).cost ?? 0;
+  const base = effectiveRoleRuleV7(command.role, view.viewer.faction).cost ?? 0;
   return command.kind === "TRAIN_NAVAL"
     ? Math.max(
         1,
@@ -3086,9 +3096,7 @@ function scoreCommandWithContext(
 
   if (command.kind === "DISEMBARK" && actor !== undefined) {
     priority = context.naval.active ? 1335 : 810;
-    strategicValue = effectiveRoleRuleV7(actor.role).abilities.includes(
-      "CAPTURE",
-    )
+    strategicValue = unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")
       ? 70
       : 10;
     objectiveValue =
@@ -3217,7 +3225,7 @@ function scoreCommandWithContext(
         unit.form === "LAND" &&
         !unit.activation.inspired &&
         !["SUPPORT", "SIEGE"].includes(
-          effectiveRoleRuleV7(unit.role).tacticalRole,
+          unitRoleRuleV7(view, unit).tacticalRole,
         ) &&
         distance(unit.at, actor.at) === 1,
     );
@@ -3305,7 +3313,7 @@ function scoreCommandWithContext(
       if (
         destinationCity !== undefined &&
         isHostile(view, destinationCity.ownerId) &&
-        effectiveRoleRuleV7(actor.role).abilities.includes("CAPTURE")
+        unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")
       ) {
         priority = Math.max(priority, 1290);
         strategicValue += 30;
@@ -3313,7 +3321,7 @@ function scoreCommandWithContext(
       const assigned = context.tactical.objectiveByUnitId.get(actor.id);
       if (
         assigned !== undefined &&
-        effectiveRoleRuleV7(actor.role).tacticalRole === "SIEGE" &&
+        unitRoleRuleV7(view, actor).tacticalRole === "SIEGE" &&
         resultAt !== null &&
         distance(resultAt, assigned) >= 2 &&
         distance(resultAt, assigned) <= 3 &&
@@ -3331,7 +3339,7 @@ function scoreCommandWithContext(
     }
     if (autoembark) {
       priority = Math.max(priority, 1300);
-      strategicValue += effectiveRoleRuleV7(actor.role).abilities.includes(
+      strategicValue += unitRoleRuleV7(view, actor).abilities.includes(
         "CAPTURE",
       )
         ? 50
@@ -3376,9 +3384,7 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "DISBAND" && actor !== undefined) {
-    immediateValue = Math.floor(
-      (effectiveRoleRuleV7(actor.role).cost ?? 0) / 2,
-    );
+    immediateValue = Math.floor((unitRoleRuleV7(view, actor).cost ?? 0) / 2);
     strategicValue = freeCapacity(view, actor.homeCityId) <= 0 ? 6 : 0;
     priority = 1090;
   }
@@ -3800,11 +3806,11 @@ function researchValue(
         first: chain[0],
         totalCost:
           totalResearchCost(context.view, chain) +
-          (effectiveRoleRuleV7(role).cost ?? 0),
+          (effectiveRoleRuleV7(role, context.view.viewer.faction).cost ?? 0),
         value:
-          effectiveRoleRuleV7(role).maxHp +
-          effectiveRoleRuleV7(role).attack2 +
-          effectiveRoleRuleV7(role).defense2,
+          effectiveRoleRuleV7(role, context.view.viewer.faction).maxHp +
+          effectiveRoleRuleV7(role, context.view.viewer.faction).attack2 +
+          effectiveRoleRuleV7(role, context.view.viewer.faction).defense2,
       };
     })
     .filter((plan) => plan.first !== undefined)
@@ -3849,7 +3855,7 @@ function shortestResearchChainForCommand(
   view: PlayerViewV7,
   command: string,
 ): readonly TechnologyIdV7[] {
-  const target = ORIGINAL_BASELINE_V5_TREE.nodes.find((node) =>
+  const target = factionTreeV7(view.viewer.faction).nodes.find((node) =>
     node.unlocks.some(
       (unlock) => unlock.kind === "COMMAND" && unlock.command === command,
     ),
@@ -3861,7 +3867,7 @@ function shortestResearchChainForRole(
   view: PlayerViewV7,
   role: UnitRoleIdV7,
 ): readonly TechnologyIdV7[] {
-  const tech = effectiveRoleRuleV7(role).technology;
+  const tech = effectiveRoleRuleV7(role, view.viewer.faction).technology;
   return tech === null ? [] : researchChain(view, tech);
 }
 
@@ -3873,7 +3879,7 @@ function researchChain(
   const result: TechnologyIdV7[] = [];
   const visit = (tech: TechnologyIdV7): void => {
     if (owned.has(tech) || result.includes(tech)) return;
-    const node = ORIGINAL_BASELINE_V5_TREE.nodes.find(
+    const node = factionTreeV7(view.viewer.faction).nodes.find(
       (item) => item.id === tech,
     );
     for (const prerequisite of node?.prerequisites ?? []) visit(prerequisite);
@@ -4014,7 +4020,10 @@ function trainingStrategicValue(
   context: PolicyContextV7,
   command: Extract<CommandV7, { kind: "TRAIN" }>,
 ): number {
-  let value = effectiveRoleRuleV7(command.role).maxHp;
+  let value = effectiveRoleRuleV7(
+    command.role,
+    context.view.viewer.faction,
+  ).maxHp;
   if (command.role === "GUARD" && threatenedCity(context, command.cityId))
     value += 20;
   if (command.role === "CATAPULT" && hasDurableScreen(context, command.cityId))
@@ -4061,7 +4070,7 @@ function tacticalMovementObjectiveValueV7(
   if (assigned === undefined)
     return movementObjectiveValue(context.view, actor.at, to);
   let value = distance(actor.at, assigned) - distance(to, assigned);
-  const role = effectiveRoleRuleV7(actor.role).tacticalRole;
+  const role = unitRoleRuleV7(context.view, actor).tacticalRole;
   if (role === "SIEGE") {
     const range = distance(to, assigned);
     if (range >= 2 && range <= 3 && hasReachableScreenAtV7(context, actor, to))
@@ -4116,7 +4125,8 @@ function navalMovementObjectiveValueV7(
   if (actor.form === "NAVAL") {
     return routeProgress(context.naval.fleetDistanceByKey, actor.at, to);
   }
-  if (!effectiveRoleRuleV7(actor.role).abilities.includes("CAPTURE")) return 0;
+  if (!unitRoleRuleV7(context.view, actor).abilities.includes("CAPTURE"))
+    return 0;
   const ports = view.naval.ownedPorts
     .filter((port) => port.status === "ACTIVE")
     .map((port) => port.at);
@@ -4147,11 +4157,13 @@ function publicRevealGain(
     actor.form === "EMBARKED"
       ? 1
       : actor.form === "NAVAL"
-        ? effectiveRoleRuleV7(actor.role).sightRadius
+        ? unitRoleRuleV7(view, actor).sightRadius
         : Math.max(
-            effectiveRoleRuleV7(actor.role).sightRadius,
-            technologyCapabilitiesV7(view.viewer.researchedTechs)
-              .roleSightRadius[actor.role] ?? 0,
+            unitRoleRuleV7(view, actor).sightRadius,
+            technologyCapabilitiesV7(
+              view.viewer.researchedTechs,
+              view.viewer.faction,
+            ).roleSightRadius[actor.role] ?? 0,
           ) +
           Number(
             view.viewer.researchedTechs.includes("ENGINEERING") &&
@@ -4199,7 +4211,7 @@ function screenValue(
   if (
     actor.hp * 2 < actor.maxHp ||
     actor.form !== "LAND" ||
-    effectiveRoleRuleV7(actor.role).defense2 < 4
+    unitRoleRuleV7(view, actor).defense2 < 4
   )
     return 0;
   return (
@@ -4274,8 +4286,8 @@ function publicProjectedDamageWithLookupV7(
   },
   lookup?: PolicyLookupV7,
 ): number {
-  const attackRule = effectiveRoleRuleV7(attacker.role);
-  const defenseRule = effectiveRoleRuleV7(defender.role);
+  const attackRule = unitRoleRuleV7(view, attacker);
+  const defenseRule = unitRoleRuleV7(view, defender);
   const attackFacts = publicCombatFacts(view, attacker, lookup);
   const publishedAttack2 = attackFacts.attack2;
   const attack2 =
@@ -4327,7 +4339,7 @@ function publicCombatFacts(
   const published = actual
     ? lookup?.unitStatsById.get(unit.id)
     : view.unitStats.find((item) => item.unitId === unit.id);
-  const role = effectiveRoleRuleV7(unit.role);
+  const role = unitRoleRuleV7(view, unit);
   const total = (id: "ATTACK" | "MOVE"): number | null => {
     const value = published?.stats.find((item) => item.id === id)?.total;
     return value === undefined ? null : value.numerator / value.denominator;
@@ -4440,7 +4452,7 @@ function hasDurableScreen(context: PolicyContextV7, cityId: CityId): boolean {
         unit.ownerId === context.view.viewer.id &&
         unit.form === "LAND" &&
         unit.hp * 2 >= unit.maxHp &&
-        effectiveRoleRuleV7(unit.role).defense2 >= 4 &&
+        unitRoleRuleV7(context.view, unit).defense2 >= 4 &&
         (distance(unit.at, city.at) <= 1 ||
           (context.lookup.moveDestinationsByUnit.get(unit.id) ?? []).some(
             (destination) => distance(destination, city.at) <= 1,
@@ -4460,7 +4472,7 @@ function hasReachableScreenAtV7(
       unit.ownerId !== context.view.viewer.id ||
       unit.form !== "LAND" ||
       unit.hp * 2 < unit.maxHp ||
-      effectiveRoleRuleV7(unit.role).defense2 < 4
+      unitRoleRuleV7(context.view, unit).defense2 < 4
     )
       return false;
     if (distance(unit.at, at) === 1 && !unit.activation.handled) return true;
@@ -4481,7 +4493,7 @@ function usefulDisband(
   const { view } = context;
   const unit = context.lookup.unitsById.get(command.unitId);
   if (unit === undefined) return false;
-  const refund = Math.floor((effectiveRoleRuleV7(unit.role).cost ?? 0) / 2);
+  const refund = Math.floor((unitRoleRuleV7(view, unit).cost ?? 0) / 2);
   const danger = visibleImmediateDamage(
     view,
     unit,
@@ -4491,12 +4503,12 @@ function usefulDisband(
   );
   return (
     refund + (freeCapacity(view, unit.homeCityId) <= 0 ? 3 : 0) >
-    retainedUnitValue(unit) - danger
+    retainedUnitValue(view, unit) - danger
   );
 }
 
-function retainedUnitValue(unit: PublicUnitV7): number {
-  const rule = effectiveRoleRuleV7(unit.role);
+function retainedUnitValue(view: PlayerViewV7, unit: PublicUnitV7): number {
+  const rule = unitRoleRuleV7(view, unit);
   return unit.role === "JUGGERNAUT"
     ? 40 + rule.attack2 + rule.defense2 + 8 + unit.kills * 2
     : (rule.cost ?? 0) * 4 + unit.hp + unit.kills * 2;
@@ -4513,7 +4525,7 @@ function targetStrategicValue(
       ? view.units.find((item) => item.id === unitId)
       : undefined);
   if (unit === undefined) return 0;
-  const rule = effectiveRoleRuleV7(unit.role);
+  const rule = unitRoleRuleV7(view, unit);
   return unit.role === "JUGGERNAUT"
     ? 40 +
         rule.attack2 +
@@ -4550,7 +4562,7 @@ function trainingCostV7(
   view: PlayerViewV7,
   command: Extract<CommandV7, { kind: "TRAIN" | "TRAIN_NAVAL" }>,
 ): number {
-  const base = effectiveRoleRuleV7(command.role).cost ?? 0;
+  const base = effectiveRoleRuleV7(command.role, view.viewer.faction).cost ?? 0;
   if (command.kind === "TRAIN_NAVAL") {
     const tile = view.board.tiles.find(
       (candidate) => candidate.explored && same(candidate.at, command.at),
@@ -4600,7 +4612,7 @@ function projectPublicUnits(
       const unit = byId.get(stats.unitId);
       if (unit === undefined) return [];
       if (!changed.has(unit.id)) return [stats];
-      const role = effectiveRoleRuleV7(unit.role);
+      const role = unitRoleRuleV7(view, unit);
       const embarked = unit.form === "EMBARKED";
       const tile = view.board.tiles.find(
         (candidate) => candidate.explored && same(candidate.at, unit.at),
@@ -4635,8 +4647,10 @@ function projectPublicUnits(
         : Math.max(
             role.sightRadius,
             unit.ownerId === view.viewer.id
-              ? (technologyCapabilitiesV7(view.viewer.researchedTechs)
-                  .roleSightRadius[unit.role] ?? 0)
+              ? (technologyCapabilitiesV7(
+                  view.viewer.researchedTechs,
+                  view.viewer.faction,
+                ).roleSightRadius[unit.role] ?? 0)
               : 0,
           );
       const statValue = (

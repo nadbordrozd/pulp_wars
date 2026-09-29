@@ -72,7 +72,7 @@ export function validatePreview(evidence: PreviewEvidenceV7): void {
     );
   if (
     evidence.persisted.version !== 7 ||
-    evidence.persisted.rulesetId !== "pulp-wars-poc-7r12" ||
+    evidence.persisted.rulesetId !== "pulp-wars-poc-7r13" ||
     evidence.persisted.commandIndex !== evidence.returned.commandIndex
   )
     throw new Error(

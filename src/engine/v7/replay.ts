@@ -151,6 +151,7 @@ export function parseReplayFileV7(input: unknown): ReplayParseResultV7 {
       "pulp-wars-poc-7r9",
       "pulp-wars-poc-7r10",
       "pulp-wars-poc-7r11",
+      "pulp-wars-poc-7r12",
     ].some((rulesetId) => hasRulesetSetup(input, rulesetId))
   )
     return { kind: "INCOMPATIBLE_REPLAY" };

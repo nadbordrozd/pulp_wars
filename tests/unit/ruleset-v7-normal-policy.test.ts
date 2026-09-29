@@ -733,7 +733,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r12");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r13");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(
@@ -1433,7 +1433,7 @@ function fixtureState(specs: readonly UnitSpec[]): GameStateV7 {
   if (enemy === undefined) throw new Error("Enemy missing");
   const firstId = base.nextEntityId;
   const units = specs.map(([role, at, own, hp], index) => {
-    const rule = effectiveRoleRuleV7(role);
+    const rule = effectiveRoleRuleV7(role, "ORIGINAL");
     const ownerId = own ? base.humanPlayerId : enemy.id;
     return {
       id: (firstId + index) as UnitStateV7["id"],

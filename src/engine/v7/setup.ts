@@ -1,7 +1,9 @@
 import {
+  FACTION_IDS_V7,
   RULESET_7_ID,
   type AiCountV7,
   type BoardSizeV7,
+  type FactionIdV7,
   type MatchSetupV7,
   type PlayerColorV7,
 } from "./types";
@@ -37,7 +39,9 @@ export function parseMatchSetupV7(input: unknown): MatchSetupV7 | null {
     !isColor(input.humanColor) ||
     !isDenseArrayV7(input.factions) ||
     input.factions.length !== input.aiCount + 1 ||
-    !input.factions.every((faction) => faction === "ORIGINAL")
+    !input.factions.every((faction) =>
+      FACTION_IDS_V7.includes(faction as FactionIdV7),
+    )
   ) {
     return null;
   }
@@ -50,7 +54,7 @@ export function parseMatchSetupV7(input: unknown): MatchSetupV7 | null {
     aiDifficulty: "NORMAL",
     aiMode: input.aiMode,
     humanColor: input.humanColor,
-    factions: [...input.factions] as readonly "ORIGINAL"[],
+    factions: [...input.factions] as readonly FactionIdV7[],
     mapType: input.mapType,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };

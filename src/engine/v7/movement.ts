@@ -1,8 +1,5 @@
 import type { PlayerId } from "../model/ids";
-import {
-  effectiveRoleRuleV7,
-  technologyCapabilitiesV7,
-} from "../rules/ruleset-v7";
+import { technologyCapabilitiesV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
 import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
@@ -65,8 +62,11 @@ export function validateMovementPathV7(
 ): MovementPathResultV7 {
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const player = requirePlayer(state, unit.ownerId);
-  const rule = effectiveRoleRuleV7(unit.role);
-  const capabilities = technologyCapabilitiesV7(player.researchedTechs);
+  const rule = unitRoleRuleV7(state, unit);
+  const capabilities = technologyCapabilitiesV7(
+    player.researchedTechs,
+    player.faction,
+  );
   const budget2 = (unit.form === "EMBARKED" ? 3 : rule.move) * 2;
   const knownBeforeCommand = player.explored;
   let explored = player.explored;
@@ -341,7 +341,10 @@ function publicMovementContextV7(view: PlayerViewV7): PublicMovementContextV7 {
     else occupants.push(unit);
   }
   const context: PublicMovementContextV7 = {
-    capabilities: technologyCapabilitiesV7(view.viewer.researchedTechs),
+    capabilities: technologyCapabilitiesV7(
+      view.viewer.researchedTechs,
+      view.viewer.faction,
+    ),
     ownedCityKeys: new Set(
       view.cities
         .filter((city) => city.ownerId === view.viewer.id)
@@ -361,7 +364,7 @@ function validatePlayerMovementPathWithContextV7(
   context: PublicMovementContextV7,
 ): MovementPathResultV7 {
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
-  const role = effectiveRoleRuleV7(unit.role);
+  const role = unitRoleRuleV7(view, unit);
   const capabilities = context.capabilities;
   const budget2 = (unit.form === "EMBARKED" ? 3 : role.move) * 2;
   let current = unit.at;
@@ -513,9 +516,12 @@ export function unitSightRadiusAtV7(
 ): number {
   if (unit.form === "EMBARKED") return 1;
   const player = requirePlayer(state, unit.ownerId);
-  const capabilities = technologyCapabilitiesV7(player.researchedTechs);
+  const capabilities = technologyCapabilitiesV7(
+    player.researchedTechs,
+    player.faction,
+  );
   const base = Math.max(
-    effectiveRoleRuleV7(unit.role).sightRadius,
+    unitRoleRuleV7(state, unit).sightRadius,
     capabilities.roleSightRadius[unit.role] ?? 0,
   );
   return (
@@ -605,7 +611,7 @@ function projectsZocV7(
       "NAVIGATION",
     );
   }
-  const rule = effectiveRoleRuleV7(projector.role);
+  const rule = unitRoleRuleV7(state, projector);
   return (
     target.form !== "LAND" &&
     isUnitVisibleToPlayerV7(state, projector.ownerId, target) &&
@@ -697,7 +703,7 @@ function publicProjectsZocV7(
   if (targetTile === undefined || !targetTile.explored) return true;
   if (targetTile.biome !== null) return projector.form !== "NAVAL";
   if (projector.form === "NAVAL") return true;
-  const rule = effectiveRoleRuleV7(projector.role);
+  const rule = unitRoleRuleV7(view, projector);
   return (
     targetForm !== "LAND" &&
     rule.abilities.includes("ATTACK") &&

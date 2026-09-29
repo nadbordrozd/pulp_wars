@@ -345,8 +345,8 @@ function legalWorstCaseView(): PlayerViewV7 {
     homeCityId,
     role,
     at,
-    hp: effectiveRoleRuleV7(role).maxHp,
-    maxHp: effectiveRoleRuleV7(role).maxHp,
+    hp: effectiveRoleRuleV7(role, "ORIGINAL").maxHp,
+    maxHp: effectiveRoleRuleV7(role, "ORIGINAL").maxHp,
   });
   const hostilePlayers = created.state.players.filter(
     (player) => player.id !== playerId,
@@ -421,8 +421,8 @@ function legalWorstCaseView(): PlayerViewV7 {
           ? {
               ...unit,
               role: "GUARD" as const,
-              hp: effectiveRoleRuleV7("GUARD").maxHp,
-              maxHp: effectiveRoleRuleV7("GUARD").maxHp,
+              hp: effectiveRoleRuleV7("GUARD", "ORIGINAL").maxHp,
+              maxHp: effectiveRoleRuleV7("GUARD", "ORIGINAL").maxHp,
             }
           : unit,
       ),

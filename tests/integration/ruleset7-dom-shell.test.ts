@@ -571,7 +571,7 @@ describe("Ruleset 7 DOM shell", () => {
     );
     if (city === undefined) throw new Error("owned city missing");
     const roles = UNIT_ROLE_IDS_V7.filter(
-      (role) => effectiveRoleRuleV7(role).cost !== null,
+      (role) => effectiveRoleRuleV7(role, "ORIGINAL").cost !== null,
     );
     const snapshot: Ruleset7BrowserSnapshot = {
       ...initial,
@@ -601,7 +601,7 @@ describe("Ruleset 7 DOM shell", () => {
       roles.length,
     );
     for (const role of roles) {
-      const rule = effectiveRoleRuleV7(role);
+      const rule = effectiveRoleRuleV7(role, "ORIGINAL");
       const help = requiredButton(
         `[data-action="train-help-${role.toLowerCase()}"]`,
       );
@@ -938,7 +938,7 @@ describe("Ruleset 7 DOM shell", () => {
       at: targetAt,
     };
     const trainableRoles = UNIT_ROLE_IDS_V7.filter(
-      (role) => effectiveRoleRuleV7(role).cost !== null,
+      (role) => effectiveRoleRuleV7(role, "ORIGINAL").cost !== null,
     );
     const snapshot: Ruleset7BrowserSnapshot = {
       ...initial,

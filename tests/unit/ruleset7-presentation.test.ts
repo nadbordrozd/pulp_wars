@@ -166,7 +166,7 @@ describe("Ruleset 7 public presentation", () => {
   });
 
   it("presents canonical recruitment base data and exact Knight Overrun limits", () => {
-    const knightOverrun = recruitmentRolePresentationV7("KNIGHT");
+    const knightOverrun = recruitmentRolePresentationV7("KNIGHT", "ORIGINAL");
     expect(knightOverrun.label).toBe("Knight");
     expect(knightOverrun.stats).toEqual([
       { label: "HP", value: "10" },
@@ -181,20 +181,23 @@ describe("Ruleset 7 public presentation", () => {
     ]);
     expect(knightOverrun.restrictions).toEqual(["Can't capture."]);
 
-    const catapult = recruitmentRolePresentationV7("CATAPULT");
+    const catapult = recruitmentRolePresentationV7("CATAPULT", "ORIGINAL");
     expect(catapult.abilities.join(" ")).toContain("range 2–3");
-    const battleship = recruitmentRolePresentationV7("BATTLESHIP");
+    const battleship = recruitmentRolePresentationV7("BATTLESHIP", "ORIGINAL");
     expect(battleship.restrictions).not.toContain("Can't capture.");
     expect(battleship.restrictions).not.toContain("Can't attack after moving.");
   });
 
   it("groups technology detail items from structured effect kinds", () => {
     expect(
-      technologyEffectGroupsV7([
-        { kind: "UNIT_ROLE", role: "KNIGHT" },
-        { kind: "COMMAND", command: "BUILD_MARKET" },
-        { kind: "ARMS_INDUSTRY_DISCOUNT", coins: 1 },
-      ]),
+      technologyEffectGroupsV7(
+        [
+          { kind: "UNIT_ROLE", role: "KNIGHT" },
+          { kind: "COMMAND", command: "BUILD_MARKET" },
+          { kind: "ARMS_INDUSTRY_DISCOUNT", coins: 1 },
+        ],
+        "ORIGINAL",
+      ),
     ).toEqual([
       {
         id: "UNITS",
@@ -213,9 +216,10 @@ describe("Ruleset 7 public presentation", () => {
       },
     ]);
     expect(
-      technologyEffectGroupsV7([
-        { kind: "COMMAND", command: "CULTIVATE_FOREST" },
-      ]),
+      technologyEffectGroupsV7(
+        [{ kind: "COMMAND", command: "CULTIVATE_FOREST" }],
+        "ORIGINAL",
+      ),
     ).toEqual([
       {
         id: "ACTIONS",

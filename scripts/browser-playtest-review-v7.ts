@@ -132,8 +132,8 @@ try {
       const city = base.cities.find((candidate) => candidate.ownerId === actor);
       const baseUnit = base.units.find((unit) => unit.ownerId === actor);
       if (!city || !baseUnit) throw new Error('playtest fixture owner data missing');
-      const captainRule = effectiveRoleRuleV7('CAPTAIN');
-      const fighterRule = effectiveRoleRuleV7('FIGHTER');
+      const captainRule = effectiveRoleRuleV7('CAPTAIN', 'ORIGINAL');
+      const fighterRule = effectiveRoleRuleV7('FIGHTER', 'ORIGINAL');
       const cleanActivation = { ...baseUnit.activation, moved: false, attacked: false, handled: false, specialActed: false, inspired: false, tendedThisTurn: false, attacksUsed: 0, overrunActive: false };
       const layerCoords = [{ x: 4, y: 4 }, { x: 5, y: 5 }, { x: 5, y: 4 }, { x: 4, y: 5 }, { x: 6, y: 5 }, { x: 6, y: 4 }];
       const layerKeys = new Set(layerCoords.map((at) => at.x + ',' + at.y));

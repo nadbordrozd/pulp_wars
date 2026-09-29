@@ -132,7 +132,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       errors: [],
       stalls: [],
       metrics: {
-        rulesetId: "pulp-wars-poc-7r12",
+        rulesetId: "pulp-wars-poc-7r13",
         commandCapHits: 1,
       },
     });
@@ -657,7 +657,7 @@ function makeUnit(
   at: CoordV7,
   hp: number,
 ): UnitStateV7 {
-  const rule = effectiveRoleRuleV7(role);
+  const rule = effectiveRoleRuleV7(role, "ORIGINAL");
   return {
     id: id as UnitStateV7["id"],
     ownerId,

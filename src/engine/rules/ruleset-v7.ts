@@ -1,12 +1,17 @@
 import { deepFreeze } from "../model/freeze";
+import type { PlayerId } from "../model/ids";
 import {
   COMMAND_KIND_ORDER_V7,
+  FACTION_IDS_V7,
+  FACTION_TREE_IDS_V7,
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   type CommandKindV7,
+  type FactionIdV7,
+  type FactionTreeIdV7,
   type ImprovementIdV7,
   type ResourceIdV7,
   type TechnologyIdV7,
@@ -91,6 +96,8 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "LAND_TRADE_INCOME"; readonly coins: 1 }
   | { readonly kind: "SEA_TRADE_INCOME"; readonly coins: 1 }
   | { readonly kind: "CAPTAIN_SUPPORT" }
+  /** Revision 13 Undead: Necromancer Frenzy (Rally) and Raise Dead. */
+  | { readonly kind: "NECROMANCER_SUPPORT" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -118,7 +125,14 @@ export type UnitRoleAbilityV7 =
   | "TEND_WOUNDED"
   | "OVERRUN"
   | "ESCAPE"
-  | "PUSH";
+  | "PUSH"
+  // Revision 13 Undead ability identifiers. Their mechanics are delivered by
+  // later revision-13 work; in this registration they are declarations only.
+  | "RAISE_DEAD"
+  | "DEVOUR"
+  | "INFECT"
+  | "LIFESTEAL"
+  | "WAIL";
 
 export interface EffectiveRoleRuleV7 {
   readonly role: UnitRoleIdV7;
@@ -147,12 +161,24 @@ export interface EffectiveRoleRuleV7 {
   readonly abilities: readonly UnitRoleAbilityV7[];
 }
 
+/**
+ * Engine-only per-role mechanics that the historical role-rule shape does not
+ * carry. They resolve through the owner's faction like every role rule.
+ */
+export interface RoleMechanicsV7 {
+  /** A melee kill moves the surviving attacker onto the defender's tile. */
+  readonly advancesAfterKill: boolean;
+  /** An attack splashes onto hostile units around the primary target. */
+  readonly splash: boolean;
+}
+
 export interface FactionTechnologyTreeV7 {
-  readonly id: "ORIGINAL_BASELINE_V5";
-  readonly faction: "ORIGINAL";
+  readonly id: FactionTreeIdV7;
+  readonly faction: FactionIdV7;
   readonly startingTechIds: readonly [];
   readonly nodes: readonly TechnologyNodeV7[];
   readonly roleRules: Readonly<Record<UnitRoleIdV7, EffectiveRoleRuleV7>>;
+  readonly roleMechanics: Readonly<Record<UnitRoleIdV7, RoleMechanicsV7>>;
 }
 
 export type BasicEconomicCommandKindV7 =
@@ -729,19 +755,220 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   }),
 });
 
+const mechanics = (
+  overrides: Partial<Record<UnitRoleIdV7, Partial<RoleMechanicsV7>>>,
+): Readonly<Record<UnitRoleIdV7, RoleMechanicsV7>> =>
+  deepFreeze(
+    Object.fromEntries(
+      UNIT_ROLE_IDS_V7.map((roleId) => [
+        roleId,
+        {
+          advancesAfterKill: true,
+          splash: false,
+          ...overrides[roleId],
+        },
+      ]),
+    ) as Record<UnitRoleIdV7, RoleMechanicsV7>,
+  );
+
+export const ORIGINAL_ROLE_MECHANICS_V7 = mechanics({
+  CATAPULT: { advancesAfterKill: false },
+  BATTLESHIP: { splash: true },
+});
+
 export const ORIGINAL_BASELINE_V5_TREE: FactionTechnologyTreeV7 = deepFreeze({
   id: "ORIGINAL_BASELINE_V5",
   faction: "ORIGINAL",
   startingTechIds: [],
   nodes: ORIGINAL_BASELINE_V5_NODES,
   roleRules: ORIGINAL_ROLE_RULES_V7,
+  roleMechanics: ORIGINAL_ROLE_MECHANICS_V7,
 });
+
+/**
+ * Revision 13 Undead technology graph: identical to ORIGINAL_BASELINE_V5
+ * except that Administration grants Necromancer support instead of Captain
+ * support and Chivalry grants no Overrun.
+ */
+export const UNDEAD_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
+  ORIGINAL_BASELINE_V5_NODES.map((original) =>
+    node(
+      original.id,
+      original.branch,
+      original.tier,
+      original.prerequisites,
+      original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+        unlock.kind === "CAPTAIN_SUPPORT"
+          ? [{ kind: "NECROMANCER_SUPPORT" }]
+          : unlock.kind === "OVERRUN"
+            ? []
+            : [unlock],
+      ),
+    ),
+  ),
+);
+
+export const UNDEAD_ROLE_RULES_V7: Readonly<
+  Record<UnitRoleIdV7, EffectiveRoleRuleV7>
+> = deepFreeze({
+  FIGHTER: role({
+    ...ORIGINAL_ROLE_RULES_V7.FIGHTER,
+    label: "Skeleton",
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+  RAIDER: role({
+    role: "RAIDER",
+    label: "Ghoul",
+    tacticalRole: "SKIRMISHER",
+    cost: 3,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 2,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "SCOUTING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "CHARGE", "DEVOUR"],
+  }),
+  MARKSMAN: role({
+    role: "MARKSMAN",
+    label: "Banshee",
+    tacticalRole: "RANGED",
+    cost: 3,
+    maxHp: 8,
+    attack2: 2,
+    defense2: 2,
+    move: 1,
+    range: 0,
+    minimumRange: 0,
+    sightRadius: 1,
+    technology: "MARKSMANSHIP",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["CAPTURE", "WAIL"],
+  }),
+  GUARD: role({
+    role: "GUARD",
+    label: "Zombie",
+    tacticalRole: "DEFENDER",
+    cost: 3,
+    maxHp: 20,
+    attack2: 4,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "DRILL",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "CAPTURE", "INFECT"],
+  }),
+  CAPTAIN: role({
+    role: "CAPTAIN",
+    label: "Necromancer",
+    tacticalRole: "SUPPORT",
+    cost: 5,
+    maxHp: 10,
+    attack2: 2,
+    defense2: 2,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "ADMINISTRATION",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "RALLY", "RAISE_DEAD"],
+  }),
+  CATAPULT: role({
+    role: "CATAPULT",
+    label: "Lich",
+    tacticalRole: "SIEGE",
+    cost: 8,
+    maxHp: 10,
+    attack2: 5,
+    defense2: 2,
+    move: 1,
+    range: 3,
+    minimumRange: 2,
+    sightRadius: 1,
+    technology: "SAWMILLING",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK"],
+  }),
+  KNIGHT: role({
+    role: "KNIGHT",
+    label: "Vampire",
+    tacticalRole: "BREAKTHROUGH",
+    cost: 9,
+    maxHp: 10,
+    attack2: 6,
+    defense2: 2,
+    move: 3,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "CHIVALRY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "LIFESTEAL"],
+  }),
+  JUGGERNAUT: role({
+    ...ORIGINAL_ROLE_RULES_V7.JUGGERNAUT,
+    label: "Abomination",
+    abilities: ["ATTACK", "CAPTURE", "PUSH"],
+  }),
+  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
+  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+});
+
+/**
+ * Lich splash is delivered with the Lich splash rules; until then the Lich
+ * keeps Catapult parity. The Zombie never advances after a kill.
+ */
+export const UNDEAD_ROLE_MECHANICS_V7 = mechanics({
+  GUARD: { advancesAfterKill: false },
+  CATAPULT: { advancesAfterKill: false },
+  BATTLESHIP: { splash: true },
+});
+
+export const UNDEAD_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "UNDEAD_BASELINE_V1",
+  faction: "UNDEAD",
+  startingTechIds: [],
+  nodes: UNDEAD_BASELINE_V1_NODES,
+  roleRules: UNDEAD_ROLE_RULES_V7,
+  roleMechanics: UNDEAD_ROLE_MECHANICS_V7,
+});
+
+/** Frozen faction registrations; there is no cross-faction fallback. */
+export const FACTION_TREES_V7: Readonly<
+  Record<FactionIdV7, FactionTechnologyTreeV7>
+> = deepFreeze({
+  ORIGINAL: ORIGINAL_BASELINE_V5_TREE,
+  UNDEAD: UNDEAD_BASELINE_V1_TREE,
+});
+
+export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
+  deepFreeze({ ORIGINAL: "Human", UNDEAD: "Undead" });
+
+export function factionTreeV7(faction: FactionIdV7): FactionTechnologyTreeV7 {
+  const tree = Object.hasOwn(FACTION_TREES_V7, faction)
+    ? FACTION_TREES_V7[faction]
+    : undefined;
+  if (tree === undefined)
+    throw new RangeError(`Unknown v7 faction: ${String(faction)}`);
+  return tree;
+}
+
+export function factionTreeIdV7(faction: FactionIdV7): FactionTreeIdV7 {
+  return factionTreeV7(faction).id;
+}
+
 export const RULESET_7 = deepFreeze({
   id: RULESET_7_ID,
   version: 7 as const,
   startingCoins: 5 as const,
-  technologies: ORIGINAL_BASELINE_V5_NODES,
-  tree: ORIGINAL_BASELINE_V5_TREE,
+  factionTrees: FACTION_TREES_V7,
 });
 
 export function technologyResearchCostV7(
@@ -789,18 +1016,73 @@ export function isResourceRevealedV7(
   return required === undefined || researchedTechs.includes(required);
 }
 
-export function effectiveRoleRuleV7(roleId: UnitRoleIdV7): EffectiveRoleRuleV7 {
-  return ORIGINAL_ROLE_RULES_V7[roleId];
+/** The role rule of one faction's registration; the faction is mandatory. */
+export function effectiveRoleRuleV7(
+  roleId: UnitRoleIdV7,
+  faction: FactionIdV7,
+): EffectiveRoleRuleV7 {
+  const rule = factionTreeV7(faction).roleRules[roleId];
+  if (rule === undefined)
+    throw new RangeError(`Unknown v7 role for ${faction}: ${String(roleId)}`);
+  return rule;
 }
-export function requireTechnologyNodeV7(id: TechnologyIdV7): TechnologyNodeV7 {
-  const result = ORIGINAL_BASELINE_V5_NODES.find((item) => item.id === id);
+
+/** Engine-only role mechanics of one faction's registration. */
+export function roleMechanicsV7(
+  roleId: UnitRoleIdV7,
+  faction: FactionIdV7,
+): RoleMechanicsV7 {
+  const result = factionTreeV7(faction).roleMechanics[roleId];
+  if (result === undefined)
+    throw new RangeError(`Unknown v7 role for ${faction}: ${String(roleId)}`);
+  return result;
+}
+
+/** Anything that lists players with their bound faction (state or view). */
+export interface FactionRosterV7 {
+  readonly players: readonly {
+    readonly id: PlayerId;
+    readonly faction: FactionIdV7;
+  }[];
+}
+
+export function playerFactionV7(
+  roster: FactionRosterV7,
+  playerId: PlayerId,
+): FactionIdV7 {
+  const player = roster.players.find((candidate) => candidate.id === playerId);
+  if (player === undefined) throw new RangeError("INVALID_STATE");
+  return player.faction;
+}
+
+/** Resolves a unit's role rule through its owner's faction registration. */
+export function unitRoleRuleV7(
+  roster: FactionRosterV7,
+  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+): EffectiveRoleRuleV7 {
+  return effectiveRoleRuleV7(unit.role, playerFactionV7(roster, unit.ownerId));
+}
+
+/** Resolves a unit's engine mechanics through its owner's faction. */
+export function unitRoleMechanicsV7(
+  roster: FactionRosterV7,
+  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+): RoleMechanicsV7 {
+  return roleMechanicsV7(unit.role, playerFactionV7(roster, unit.ownerId));
+}
+
+export function requireTechnologyNodeV7(
+  id: TechnologyIdV7,
+  faction: FactionIdV7,
+): TechnologyNodeV7 {
+  const result = factionTreeV7(faction).nodes.find((item) => item.id === id);
   if (result === undefined)
     throw new RangeError(`Unknown v7 technology: ${id}`);
   return result;
 }
 
 export interface TechnologyCapabilitiesV7 {
-  readonly treeId: "ORIGINAL_BASELINE_V5";
+  readonly treeId: FactionTreeIdV7;
   readonly resourceReveals: readonly ResourceIdV7[];
   readonly commands: readonly TechnologyUnlockedCommandV7[];
   readonly trainableRoles: readonly UnitRoleIdV7[];
@@ -830,8 +1112,10 @@ export interface TechnologyCapabilitiesV7 {
 
 export function technologyCapabilitiesV7(
   researchedTechs: readonly TechnologyIdV7[],
+  faction: FactionIdV7,
 ): TechnologyCapabilitiesV7 {
-  const cacheKey = JSON.stringify([...researchedTechs].sort());
+  const tree = factionTreeV7(faction);
+  const cacheKey = JSON.stringify([tree.id, ...[...researchedTechs].sort()]);
   const cached = TECHNOLOGY_CAPABILITIES_CACHE_V7.get(cacheKey);
   if (cached !== undefined) {
     TECHNOLOGY_CAPABILITIES_CACHE_V7.delete(cacheKey);
@@ -839,9 +1123,9 @@ export function technologyCapabilitiesV7(
     return cached;
   }
   const known = new Set(researchedTechs);
-  const unlocks = ORIGINAL_BASELINE_V5_NODES.filter((node) =>
-    known.has(node.id),
-  ).flatMap((node) => node.unlocks);
+  const unlocks = tree.nodes
+    .filter((node) => known.has(node.id))
+    .flatMap((node) => node.unlocks);
   const resources = new Set<ResourceIdV7>();
   const commands = new Set<TechnologyUnlockedCommandV7>();
   const roles = new Set<UnitRoleIdV7>();
@@ -921,6 +1205,7 @@ export function technologyCapabilitiesV7(
         hostileCaptureSpoilsCoins = 2;
         break;
       case "CAPTAIN_SUPPORT":
+      case "NECROMANCER_SUPPORT":
       case "OVERRUN":
       case "CHARGE_BONUS":
       case "MELEE_FIELD_DEMOLITION":
@@ -928,17 +1213,17 @@ export function technologyCapabilitiesV7(
         break;
     }
   const result: TechnologyCapabilitiesV7 = deepFreeze({
-    treeId: "ORIGINAL_BASELINE_V5",
+    treeId: tree.id,
     resourceReveals: RESOURCE_IDS_V7.filter((item) => resources.has(item)),
     commands: COMMAND_KIND_ORDER_V7.filter((item) =>
       commands.has(item as TechnologyUnlockedCommandV7),
     ) as readonly TechnologyUnlockedCommandV7[],
     trainableRoles: UNIT_ROLE_IDS_V7.filter(
       (item) =>
-        effectiveRoleRuleV7(item).cost !== null &&
+        tree.roleRules[item].cost !== null &&
         (item === "FIGHTER" || roles.has(item)),
     ),
-    roleBindings: ORIGINAL_ROLE_RULES_V7,
+    roleBindings: tree.roleRules,
     economicFormulas: formulas,
     connectedFarmVisuals,
     forestMovementFreedomRoles: UNIT_ROLE_IDS_V7.filter((item) =>
@@ -972,13 +1257,37 @@ const TECHNOLOGY_CAPABILITIES_CACHE_V7 = new Map<
 >();
 
 export function assertRuleset7Registry(): void {
+  const complete = FACTION_IDS_V7.every((faction, index) => {
+    const tree = FACTION_TREES_V7[faction];
+    return (
+      tree.faction === faction &&
+      tree.id === FACTION_TREE_IDS_V7[index] &&
+      tree.nodes.length === TECHNOLOGY_IDS_V7.length &&
+      tree.nodes.every((item, position) => {
+        const reference = ORIGINAL_BASELINE_V5_NODES[position];
+        return (
+          item.id === TECHNOLOGY_IDS_V7[position] &&
+          reference !== undefined &&
+          item.tier === reference.tier &&
+          item.branch === reference.branch &&
+          JSON.stringify(item.prerequisites) ===
+            JSON.stringify(reference.prerequisites)
+        );
+      }) &&
+      Reflect.ownKeys(tree.roleRules).length === UNIT_ROLE_IDS_V7.length &&
+      Reflect.ownKeys(tree.roleMechanics).length === UNIT_ROLE_IDS_V7.length &&
+      UNIT_ROLE_IDS_V7.every(
+        (roleId) =>
+          tree.roleRules[roleId].role === roleId &&
+          tree.roleRules[roleId].tacticalRole ===
+            ORIGINAL_ROLE_RULES_V7[roleId].tacticalRole,
+      )
+    );
+  });
   if (
-    ORIGINAL_BASELINE_V5_NODES.length !== TECHNOLOGY_IDS_V7.length ||
-    !ORIGINAL_BASELINE_V5_NODES.every(
-      (node, index) => node.id === TECHNOLOGY_IDS_V7[index],
-    ) ||
-    Reflect.ownKeys(ORIGINAL_ROLE_RULES_V7).length !==
-      UNIT_ROLE_IDS_V7.length ||
+    !complete ||
+    FACTION_IDS_V7.length !== FACTION_TREE_IDS_V7.length ||
+    Reflect.ownKeys(FACTION_TREES_V7).length !== FACTION_IDS_V7.length ||
     IMPROVEMENT_IDS_V7.length !== 11
   )
     throw new Error("Ruleset-7 registry is incomplete");

@@ -16,6 +16,7 @@ import type {
 } from "../../app/v7-controller";
 import {
   effectiveRoleRuleV7,
+  unitRoleRuleV7,
   previewEconomicV7,
   queryTechnologyTreeV7,
   type CommandV7,
@@ -29,6 +30,7 @@ import {
   type TechnologyIdV7,
   type AchievementIdV7,
   type UnitRoleIdV7,
+  type FactionIdV7,
 } from "../../engine/index";
 import { downloadJsonFile } from "../../app/browser-download";
 import {
@@ -890,7 +892,7 @@ export class Ruleset7DomAppView {
         (candidate) => candidate.id === selection.unitId,
       );
       if (unit === undefined) return null;
-      const roleRule = effectiveRoleRuleV7(unit.role);
+      const roleRule = unitRoleRuleV7(view, unit);
       const roleLabel = roleRule.label;
       dock.append(
         identity(
@@ -941,7 +943,7 @@ export class Ruleset7DomAppView {
           text(
             this.#document,
             "p",
-            effectiveRoleRuleV7(unit.role).abilities.includes("CAPTURE")
+            unitRoleRuleV7(view, unit).abilities.includes("CAPTURE")
               ? "Carrying troops. Pick a highlighted shore tile to land."
               : "Carrying troops that can't capture. Pick a highlighted shore tile to land.",
             "v7-transport-passenger",
@@ -1425,9 +1427,14 @@ export class Ruleset7DomAppView {
           : "v7-context-action",
       );
       action.append(
-        text(this.#document, "span", commandLabel(command), "v7-action-label"),
+        text(
+          this.#document,
+          "span",
+          commandLabel(command, this.#viewerFaction()),
+          "v7-action-label",
+        ),
       );
-      action.title = commandLabel(command);
+      action.title = commandLabel(command, this.#viewerFaction());
       if (command.kind === "CULTIVATE_FOREST") {
         action.title =
           "Clear for farming · Removes Forest and creates Fertile Ground";
@@ -1447,8 +1454,8 @@ export class Ruleset7DomAppView {
           ),
         );
       if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL") {
-        const rule = effectiveRoleRuleV7(command.role);
         const view = this.#snapshot.view;
+        const rule = effectiveRoleRuleV7(command.role, this.#viewerFaction());
         const cost =
           view === null
             ? (rule.cost ?? 0)
@@ -1461,7 +1468,7 @@ export class Ruleset7DomAppView {
       } else if (command.kind === "BUILD_MONUMENT") {
         action.setAttribute(
           "aria-label",
-          `${commandLabel(command)} · free · population +3`,
+          `${commandLabel(command, this.#viewerFaction())} · free · population +3`,
         );
         action.append(economyChips(this.#document, { population: 3 }));
       } else if (command.kind === "BUILD_FIELD_DEFENSE") {
@@ -1486,7 +1493,7 @@ export class Ruleset7DomAppView {
         if (preview?.ok) {
           action.setAttribute(
             "aria-label",
-            `${commandLabel(command)} · ${economicPreviewLabelV7(preview.preview)}`,
+            `${commandLabel(command, this.#viewerFaction())} · ${economicPreviewLabelV7(preview.preview)}`,
           );
           action.append(
             economyChips(this.#document, {
@@ -1514,7 +1521,10 @@ export class Ruleset7DomAppView {
           "v7-train-help",
         );
         help.append(text(this.#document, "span", "?", "v7-train-help-glyph"));
-        const label = effectiveRoleRuleV7(command.role).label;
+        const label = effectiveRoleRuleV7(
+          command.role,
+          this.#viewerFaction(),
+        ).label;
         help.setAttribute("aria-label", `About ${label}`);
         help.disabled = this.#localBusy();
         help.onclick = () => {
@@ -1759,7 +1769,10 @@ export class Ruleset7DomAppView {
       );
     const unlocks = this.#document.createElement("ul");
     unlocks.className = "v7-tech-unlocks";
-    for (const group of technologyEffectGroupsV7(node.effects))
+    for (const group of technologyEffectGroupsV7(
+      node.effects,
+      this.#viewerFaction(),
+    ))
       for (const item of group.items) {
         const entry = text(this.#document, "li", item);
         entry.dataset.effectGroup = group.id;
@@ -1809,8 +1822,9 @@ export class Ruleset7DomAppView {
   }
 
   #recruitHelp(role: UnitRoleIdV7): HTMLElement {
-    const presentation = recruitmentRolePresentationV7(role);
-    const rule = effectiveRoleRuleV7(role);
+    const faction = this.#viewerFaction();
+    const presentation = recruitmentRolePresentationV7(role, faction);
+    const rule = effectiveRoleRuleV7(role, faction);
     const modal = el(this.#document, "section", "v7-recruit-help");
     modal.dataset.v7Region = "recruit-help";
     modal.dataset.recruitRole = role;
@@ -2389,7 +2403,8 @@ export class Ruleset7DomAppView {
       result.afterView.viewer.id,
     );
     if (special !== null) this.#showToast(special);
-    this.#notice = special ?? `${commandLabel(command)}.`;
+    this.#notice =
+      special ?? `${commandLabel(command, result.afterView.viewer.faction)}.`;
     if (command.kind === "RESEARCH") this.#selectedTech = null;
     this.#pendingFocusAction = restoreAction;
     this.#humanDispatchSettling = true;
@@ -2686,6 +2701,13 @@ export class Ruleset7DomAppView {
     }, 3200);
   }
 
+  /** The viewer's faction; labels always use the viewer's own registration. */
+  #viewerFaction(): FactionIdV7 {
+    const view = this.#snapshot.view;
+    if (view === null) throw new RangeError("No Ruleset 7 view");
+    return view.viewer.faction;
+  }
+
   #localBusy(): boolean {
     return (
       this.#presentationActive ||
@@ -2965,7 +2987,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r12",
+    rulesetId: "pulp-wars-poc-7r13",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -3012,7 +3034,7 @@ function trainingCostForViewV7(
   view: PlayerViewV7,
   command: Extract<CommandV7, { kind: "TRAIN" | "TRAIN_NAVAL" }>,
 ): number {
-  const base = effectiveRoleRuleV7(command.role).cost ?? 0;
+  const base = effectiveRoleRuleV7(command.role, view.viewer.faction).cost ?? 0;
   if (command.kind === "TRAIN_NAVAL") {
     const tile = view.board.tiles.find((candidate) =>
       same(candidate.at, command.at),
@@ -3049,14 +3071,17 @@ function tileCity(view: PlayerViewV7, at: CoordV7): number | null {
 }
 function effectDescription(
   effect: PublicTechnologyNodeV7["effects"][number],
+  faction: FactionIdV7,
 ): string {
+  const label = (roleId: UnitRoleIdV7): string =>
+    effectiveRoleRuleV7(roleId, faction).label;
   switch (effect.kind) {
     case "COMMAND":
       return effect.command === "CULTIVATE_FOREST"
         ? "Clear for farming: removes Forest and creates Fertile Ground"
         : title(effect.command);
     case "UNIT_ROLE":
-      return effectiveRoleRuleV7(effect.role).label;
+      return label(effect.role);
     case "RESOURCE_REVEAL":
       return `Reveals ${effect.resources.map(title).join(" and ")}`;
     case "ECONOMIC_FORMULA":
@@ -3064,13 +3089,13 @@ function effectDescription(
     case "CONNECTED_FARM_VISUALS":
       return "Neighboring farms join into one field";
     case "FOREST_MOVEMENT_FREEDOM":
-      return `${effect.roles.map((role) => effectiveRoleRuleV7(role).label).join(" and ")} move freely through forest`;
+      return `${effect.roles.map(label).join(" and ")} move freely through forest`;
     case "MOUNTAIN_MOVEMENT":
       return "Units can climb mountains";
     case "HIGH_GROUND_VISION":
       return "+1 sight on mountains";
     case "ROLE_SIGHT":
-      return `${effectiveRoleRuleV7(effect.role).label} sight ${effect.radius}`;
+      return `${label(effect.role)} sight ${effect.radius}`;
     case "ROAD_MOVEMENT":
       return "Road edges cost half a movement point";
     case "OWNED_CITY_CAPACITY_BONUS":
@@ -3089,10 +3114,12 @@ function effectDescription(
       return `Sea-linked cities: +${effect.coins} Coin`;
     case "CAPTAIN_SUPPORT":
       return "Captains Rally or Tend nearby troops";
+    case "NECROMANCER_SUPPORT":
+      return "Necromancers Frenzy nearby troops or Raise Dead";
     case "OVERRUN":
       return "Knights advance after a kill and may attack again";
     case "CHARGE_BONUS":
-      return `Raiders gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
+      return `${label("RAIDER")}s gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
     case "MELEE_FIELD_DEMOLITION":
       return "Surviving melee attacks destroy Field Defense";
     case "NAVAL_TRAINING_DISCOUNT":
@@ -3137,6 +3164,7 @@ export interface TechnologyEffectGroupV7 {
 /** Keeps technology prose grouped directly by the structured unlock union. */
 export function technologyEffectGroupsV7(
   effects: PublicTechnologyNodeV7["effects"],
+  faction: FactionIdV7,
 ): readonly TechnologyEffectGroupV7[] {
   const order: readonly TechnologyEffectGroupV7["id"][] = [
     "UNITS",
@@ -3159,8 +3187,8 @@ export function technologyEffectGroupsV7(
     const id = technologyEffectGroupIdV7(effect);
     const descriptions =
       effect.kind === "UNIT_ROLE"
-        ? technologyRoleDescriptionsV7(effect.role)
-        : [effectDescription(effect)];
+        ? technologyRoleDescriptionsV7(effect.role, faction)
+        : [effectDescription(effect, faction)];
     grouped.set(id, [...(grouped.get(id) ?? []), ...descriptions]);
   }
   return order.flatMap((id) => {
@@ -3169,8 +3197,11 @@ export function technologyEffectGroupsV7(
   });
 }
 
-function technologyRoleDescriptionsV7(roleId: UnitRoleIdV7): readonly string[] {
-  return [`Train ${effectiveRoleRuleV7(roleId).label}`];
+function technologyRoleDescriptionsV7(
+  roleId: UnitRoleIdV7,
+  faction: FactionIdV7,
+): readonly string[] {
+  return [`Train ${effectiveRoleRuleV7(roleId, faction).label}`];
 }
 
 function technologyEffectGroupIdV7(
@@ -3203,6 +3234,7 @@ function technologyEffectGroupIdV7(
     case "MARKET_INCOME_MULTIPLIER":
     case "SEA_TRADE_INCOME":
     case "CAPTAIN_SUPPORT":
+    case "NECROMANCER_SUPPORT":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":
@@ -3222,8 +3254,9 @@ export interface RecruitmentRolePresentationV7 {
 /** Canonical base-role information only; it deliberately has no live-unit state. */
 export function recruitmentRolePresentationV7(
   roleId: UnitRoleIdV7,
+  faction: FactionIdV7,
 ): RecruitmentRolePresentationV7 {
-  const role = effectiveRoleRuleV7(roleId);
+  const role = effectiveRoleRuleV7(roleId, faction);
   const restrictions: string[] = [];
   const ship = roleId === "PATROL_BOAT" || roleId === "BATTLESHIP";
   if (!role.mayUsePrimaryActionAfterMove && role.minimumRange <= 1 && !ship)
@@ -3416,9 +3449,9 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   LAND_GRANT: "Land grant",
   BUILD_FIELD_DEFENSE: "Fortify",
 };
-function commandLabel(command: CommandV7): string {
+function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL")
-    return effectiveRoleRuleV7(command.role).label;
+    return effectiveRoleRuleV7(command.role, faction).label;
   if (command.kind === "BUILD_MONUMENT") return "Monument";
   return COMMAND_LABELS[command.kind] ?? title(command.kind);
 }

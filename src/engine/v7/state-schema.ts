@@ -1,8 +1,10 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
 import type { PlayerId } from "../model/ids";
+import { effectiveRoleRuleV7, factionTreeIdV7 } from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
   BIOME_IDS_V7,
+  FACTION_IDS_V7,
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
   REWARD_IDS_V7,
@@ -16,6 +18,7 @@ import {
   type CityRewardRecordV7,
   type CityStateV7,
   type CoordV7,
+  type FactionIdV7,
   type GameStateV7,
   type ImprovementIdV7,
   type MatchOutcomeV7,
@@ -96,27 +99,6 @@ const PREREQUISITE: Readonly<Partial<Record<TechnologyIdV7, TechnologyIdV7>>> =
     NAVAL_ENGINEERING: "NAVIGATION",
   };
 
-const BASE_HP: Readonly<Record<UnitRoleIdV7, number>> = {
-  FIGHTER: 10,
-  RAIDER: 10,
-  MARKSMAN: 10,
-  GUARD: 15,
-  CAPTAIN: 10,
-  CATAPULT: 10,
-  KNIGHT: 10,
-  JUGGERNAUT: 40,
-  PATROL_BOAT: 10,
-  BATTLESHIP: 25,
-};
-
-const CAPTURE_ROLES = new Set<UnitRoleIdV7>([
-  "FIGHTER",
-  "RAIDER",
-  "MARKSMAN",
-  "GUARD",
-  "JUGGERNAUT",
-]);
-
 export function parseGameStateV7(input: unknown): GameStateV7 | null {
   if (
     !hasExactKeysV7(input, STATE_KEYS) ||
@@ -129,10 +111,10 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const humanPlayerId = parsePlayerIdV7(input.humanPlayerId);
   const board = setup === null ? null : parseBoard(input.board, setup.width);
   const players =
-    setup === null ? null : parsePlayers(input.players, setup.factions.length);
+    setup === null ? null : parsePlayers(input.players, setup.factions);
   const cities = parseCities(input.cities);
   const contributions = parseContributions(input.populationContributions);
-  const units = parseUnits(input.units);
+  const units = players === null ? null : parseUnits(input.units, players);
   const treasureChests = parseSortedCoords(input.treasureChests);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
@@ -328,15 +310,16 @@ function parseTile(input: unknown): TileStateV7 | null {
 
 function parsePlayers(
   input: unknown,
-  count: number,
+  factions: readonly FactionIdV7[],
 ): readonly PlayerStateV7[] | null {
-  if (!isDenseArrayV7(input) || input.length !== count) return null;
+  if (!isDenseArrayV7(input) || input.length !== factions.length) return null;
   const players: PlayerStateV7[] = [];
   for (let index = 0; index < input.length; index += 1) {
     const player = parsePlayer(input[index]);
     if (
       player === null ||
       player.seat !== index ||
+      player.faction !== factions[index] ||
       (players.at(-1)?.id ?? 0) >= player.id
     )
       return null;
@@ -365,8 +348,8 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     !isNonNegativeSafeIntegerV7(input.seat) ||
     (input.controller !== "HUMAN" && input.controller !== "AI") ||
     !isColor(input.color) ||
-    input.faction !== "ORIGINAL" ||
-    input.factionTreeId !== "ORIGINAL_BASELINE_V5" ||
+    !FACTION_IDS_V7.includes(input.faction as FactionIdV7) ||
+    input.factionTreeId !== factionTreeIdV7(input.faction as FactionIdV7) ||
     (input.status !== "ACTIVE" && input.status !== "ELIMINATED") ||
     !isNonNegativeSafeIntegerV7(input.coins)
   )
@@ -414,8 +397,8 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     seat: input.seat,
     controller: input.controller,
     color: input.color,
-    faction: "ORIGINAL",
-    factionTreeId: "ORIGINAL_BASELINE_V5",
+    faction: input.faction as FactionIdV7,
+    factionTreeId: factionTreeIdV7(input.faction as FactionIdV7),
     status: input.status,
     coins: input.coins,
     researchedTechs: researched,
@@ -647,18 +630,24 @@ function parseContributionSource(
   return null;
 }
 
-function parseUnits(input: unknown): readonly UnitStateV7[] | null {
+function parseUnits(
+  input: unknown,
+  players: readonly PlayerStateV7[],
+): readonly UnitStateV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: UnitStateV7[] = [];
   for (const candidate of input) {
-    const unit = parseUnit(candidate);
+    const unit = parseUnit(candidate, players);
     if (unit === null || (values.at(-1)?.id ?? 0) >= unit.id) return null;
     values.push(unit);
   }
   return values;
 }
 
-function parseUnit(input: unknown): UnitStateV7 | null {
+function parseUnit(
+  input: unknown,
+  players: readonly PlayerStateV7[],
+): UnitStateV7 | null {
   if (
     !hasExactKeysV7(input, [
       "activation",
@@ -693,20 +682,25 @@ function parseUnit(input: unknown): UnitStateV7 | null {
   const at = parseCoordV7(input.at);
   const activation = parseActivation(input.activation);
   const role = input.role as UnitRoleIdV7;
+  // Revision 13: every role rule resolves through the owner's faction.
+  const faction = players.find((player) => player.id === owner)?.faction;
+  if (faction === undefined) return null;
+  const rule = effectiveRoleRuleV7(role, faction);
+  const overrun = rule.abilities.includes("OVERRUN");
   if (
     id === null ||
     owner === null ||
     (input.homeCityId !== null && home === null) ||
     at === null ||
     activation === null ||
-    input.maxHp !== BASE_HP[role] + (input.veteran ? 5 : 0) ||
+    input.maxHp !== rule.maxHp + (input.veteran ? 5 : 0) ||
     (input.veteran && input.kills < 3) ||
-    (input.captureEligible && !CAPTURE_ROLES.has(role)) ||
-    (role !== "KNIGHT" && activation.attacksUsed > 1) ||
+    (input.captureEligible && !rule.abilities.includes("CAPTURE")) ||
+    (!overrun && activation.attacksUsed > 1) ||
     (activation.overrunActive &&
-      (role !== "KNIGHT" || !activation.attacked || activation.handled)) ||
+      (!overrun || !activation.attacked || activation.handled)) ||
     (activation.escapeAvailable &&
-      (role !== "RAIDER" ||
+      (!rule.abilities.includes("ESCAPE") ||
         input.form !== "LAND" ||
         !activation.attacked ||
         activation.handled)) ||

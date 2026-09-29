@@ -23,8 +23,11 @@ import { checkedV7, initialV7, richV7, setupV7 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 technology", () => {
   it("reuses the exact immutable capability table for equal technology sets", () => {
-    const forward = technologyCapabilitiesV7(TECHNOLOGY_IDS_V7);
-    const reverse = technologyCapabilitiesV7([...TECHNOLOGY_IDS_V7].reverse());
+    const forward = technologyCapabilitiesV7(TECHNOLOGY_IDS_V7, "ORIGINAL");
+    const reverse = technologyCapabilitiesV7(
+      [...TECHNOLOGY_IDS_V7].reverse(),
+      "ORIGINAL",
+    );
     expect(reverse).toBe(forward);
     expect(Object.isFrozen(forward)).toBe(true);
     expect(canonicalHash(reverse)).toBe(canonicalHash(forward));
