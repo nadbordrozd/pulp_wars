@@ -1,15 +1,17 @@
 # Faction fragment: UNDEAD
 
-**Status:** draft for bead `pulp_wars-vkq.11`; needs explicit user approval
-before any generation. Written from [FACTION_TEMPLATE.md](FACTION_TEMPLATE.md)
+**Status:** approved by the user on 2026-09-29 (bead `pulp_wars-vkq.11`),
+with the recommended answer to every open question (see
+[Decisions](#decisions-approved-2026-09-29)). Written from [FACTION_TEMPLATE.md](FACTION_TEMPLATE.md)
 under the rules in the [README](README.md), which come from the
 faction-layer dry run (`pulp_wars-tt3.1`).
 
 The art pipeline reads the two `text` blocks under **Prompt fragment** and
 **Negative fragment** below as layer 3 of every Undead prompt, so edit them
-here and nowhere else. The subject lines further down are drafts: after
-approval, the sample bead (`pulp_wars-vkq.12`) copies them into
-`scripts/art/chibi/subjects/UNDEAD.json`.
+here and nowhere else. The sample bead (`pulp_wars-vkq.12`) copies the
+approved subject lines further down into
+`scripts/art/chibi/subjects/UNDEAD.json`; a line may still be tuned there
+when the sample shows it needs it, within the rules of this document.
 
 The rules and roster come from the
 [revision-13 Undead spec](../../product/RULESET_7_REVISION_13_UNDEAD.md)
@@ -100,7 +102,7 @@ This guides the subject lines; it is not sent to PixelLab.
 
 ## Subject lines
 
-Draft lines for `scripts/art/chibi/subjects/UNDEAD.json`, written like the
+Approved lines for `scripts/art/chibi/subjects/UNDEAD.json`, written like the
 Human lines in `scripts/art/chibi/subjects/ORIGINAL.json`. Each unit line
 carries the full body language and puts the owner colour on a garment that
 covers the torso and legs. Keys are the mechanical role subjects; the
@@ -147,6 +149,21 @@ opaque colours; no legs, no weapon, no bow; the tip of the gown's tail is
 the lowest thing in the image; simple shapes and very few details; clearly
 a floating spirit, not an archer.
 ```
+
+The Banshee floats, so she relaxes the shared unit class fragment's "both
+feet visible; the feet are the lowest thing in the image" for her recipe
+only. The class fragment itself stays unchanged; the override lives in the
+subject line above (no legs, the tail's tip is the lowest thing) and in her
+batch-manifest recipe:
+
+- `promptAddendum`: `She floats with no feet: the tip of her gown's tail
+takes the place of the feet and touches the bottom of the image.` The tail
+  must touch the bottom so she stands on the tile at the same anchor as
+  every other unit, not hovering above it.
+- `negativeAddendum`: `feet, legs, shoes, boots, bow, quiver, arrows`.
+
+The other shared rules (outline, camera, nothing under her, owner-mask
+minimum) still apply in full.
 
 **Zombie** (`UNIT:GUARD`, standard unit 56 x 80):
 
@@ -235,44 +252,14 @@ unit, when a unit stands on it.
 
 ### Cities and villages
 
-**Recommendation: Undead share the Human settlement art.** The runtime keys
-city art by level only (`CITY:1`, `CITY:2`, `CITY:3` and the neutral
+**Decided: Undead share the Human settlement art.** The runtime keys city
+art by level only (`CITY:1`, `CITY:2`, `CITY:3` and the neutral
 `SITE:VILLAGE` in `src/assets/chibi-art-v7.ts`), not by owner faction, and
 a city changes owner when it is captured. Shared cities need no runtime
 change, keep the owner mask the only sign of who holds a city, and never
-swap a city's whole look on capture. The neutral village is unowned and
-stays shared either way. Undead identity then lives in the units, the Grave
-and the ability effects.
-
-If the user prefers Undead city tiers, the runtime must key `CITY:*` art by
-the owner's faction, and a captured city would change style on capture.
-These draft lines would then apply, each recipe with the `negativeAddendum`
-`soldier, person, character, skeleton, zombie, ghost, face`:
-
-```text
-Subject: a small level-1 spooky town: one short crooked round tower of
-weathered grey stone with a bright red pointed roof, a small round window
-glowing cold pale blue and a big red banner flag, and three chunky crooked
-cottages with pale blue-grey stone walls and solid bright red pointed roofs
-pressed around its foot, two small grey headstones; no wall; wide and
-chunky, filling the whole width of the image. Buildings only.
-
-Subject: a level-2 spooky town, clearly bigger than a small town: five
-chunky crooked cottages with pale blue-grey stone walls and solid bright red
-pointed roofs packed around a tall crooked square grey stone manor tower
-with a big red banner flag, a low weathered grey stone wall with a dark
-slate-grey iron gate across the front and one round crooked corner tower
-with a bright red pointed roof; wide and chunky, filling the whole width of
-the image. Buildings only.
-
-Subject: a large level-3 spooky city, the biggest settlement: many chunky
-crooked houses with pale blue-grey stone walls and bright red pointed roofs
-packed inside a crenellated weathered grey stone ring wall with an iron
-gate, two round crooked corner towers with bright red pointed roofs and a
-tall central castle keep with pointed spires, small windows glowing cold
-pale blue and a big red banner flag; wide and chunky, filling the whole
-image. Buildings only.
-```
+swap a city's whole look on capture. There are no Undead city or village
+subject lines; Undead identity lives in the units, the Grave and the
+ability effects.
 
 ### Ability effects (future subjects)
 
@@ -306,44 +293,34 @@ Canvas and class follow the mechanical role's subject in the
 | Abomination (`JUGGERNAUT`) | 88 x 104      | patchwork smock over belly and knees      | giant stitched hulk, head sunk between shoulders, one arm bigger, manacles with broken chains |
 | Patrol Boat, Battleship    | Human art     | Human art                                 | reused unchanged (spec section 3)                                                             |
 | Grave marker               | about 40 x 40 | none (unowned)                            | small leaning rounded headstone with an engraved skull and a moss tuft                        |
-| City 1–3, village          | Human art     | Human art                                 | shared (recommended); optional Undead tiers above                                             |
+| City 1–3, village          | Human art     | Human art                                 | shared Human art (decided)                                                                    |
 
-## Open questions for the user
+## Decisions (approved 2026-09-29)
 
-These are the guesses in this draft. Each has a recommended answer.
+The user approved this document with the recommended answer to every open
+question of the draft:
 
-1. **Cities.** Share the Human city and village art (recommended; no runtime
-   change), or give Undead their own city tiers (the runtime must key city
-   art by owner faction, and a captured city changes style)? The sample bead
-   `pulp_wars-vkq.12` currently lists "Undead city tiers"; with shared
-   cities its sample becomes Skeleton, Banshee and one more unit.
-2. **Banshee and Lich feet.** The shared unit class fragment says "both feet
-   visible; the feet are the lowest thing in the image". A floating Banshee
-   with no legs contradicts it. Accept a per-recipe override (recommended),
-   or give her small feet under the gown? The Lich keeps small feet under
-   its robe.
-3. **Vampire mount.** The Human Knight rides a horse; this draft makes the
-   Vampire an unmounted count with a huge bat-wing cape, to read apart from
-   the Knight and still fill the large canvas. Or should he ride a bony
-   horse?
-4. **Ghoul.** A lone ghoul on all fours in the large 72 x 88 canvas
-   (draft), or a smaller upright ghoul on the standard canvas, or a ghoul
-   riding a bony hound like the Human pony rider?
-5. **Zombie.** Arms out and no shield (draft), or a coffin-lid tower shield
-   like the Human Guard's (it would have to be owner red to keep the owner
-   area, since it hides the smock)?
-6. **Tone.** Grins, sleepy eyes and goofy faces on every unit: is this the
-   right level of spooky, or should they be a little more menacing?
-7. **Third secondary colour.** Grey-green moss accents (draft) or none, so
-   the palette is only ivory and slate blue-grey?
-8. **Grave marker.** Unowned and resource-sized (about 40 x 40) drawn under
-   units, as drafted? Its exact placement on the tile belongs to the Grave
-   marker UI bead.
-9. **Shared direction wording.** [Chibi direction section
-   4](../CHIBI_ART_DIRECTION.md#4-owner-colour) still says shields, boots and
-   bows use browns, which contradicts this faction's never-brown rule (the
-   point `pulp_wars-bi3` left open). Reword it as "colours that are clearly
-   not red", in a separate change?
+1. **Cities:** Undead share the Human city and village art; there are no
+   Undead city tiers.
+2. **Banshee:** floats with no feet; the "feet visible" class rule is
+   relaxed for her recipe only, through her subject line and recipe
+   addenda (see [Subject lines](#subject-lines)). The Lich keeps small feet
+   under its robe.
+3. **Vampire:** on foot, with a huge bat-wing cape; no mount.
+4. **Ghoul:** alone on all fours in the large 72 x 88 canvas; no mount.
+5. **Zombie:** arms stretched forward; no shield and no weapon.
+6. **Tone:** playful and goofy (grins, sleepy eyes, funny faces), never
+   menacing, gory or horror.
+7. **Palette:** grey-green moss stays as the third secondary colour, as
+   small accents only.
+8. **Grave marker:** unowned and resource-sized (about 40 x 40), drawn
+   under units; its placement on the tile belongs to the Grave marker UI
+   bead.
+
+The brown wording in
+[chibi direction section 4](../CHIBI_ART_DIRECTION.md#4-owner-colour) is
+being reworded to "non-owner materials never red or red-brown" in a
+separate bead, which matches this faction's never-brown rule.
 
 ## Check before approval
 
@@ -351,7 +328,6 @@ These are the guesses in this draft. Each has a recommended answer.
 - [x] Every material has a non-red, non-brown shading colour.
 - [x] Every unit line puts red on a garment covering torso and legs.
 - [x] Feet, hands, handles, stocks and shields have non-brown colours.
-- [x] Every optional settlement line ends "Buildings only." and fills the
-      width.
-- [ ] The sample (Skeleton, Banshee, and City 1 if Undead cities are chosen)
-      passes mask QA and reads apart from the Human set at zoom 0.75.
+- [x] No settlement lines: Undead share the Human city and village art.
+- [ ] The sample (Skeleton and Banshee) passes mask QA and reads apart from
+      the Human set at zoom 0.75.
