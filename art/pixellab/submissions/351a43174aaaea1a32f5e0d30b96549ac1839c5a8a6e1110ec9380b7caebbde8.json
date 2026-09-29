@@ -1,0 +1,36 @@
+{
+  "id": "fish-a-edit",
+  "jobId": "b7d695f8-dec1-456c-a0ed-f86a14d17041",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-fish",
+    "subject": "RESOURCE:FISH",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 69502,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the round pond, its grass rim and soil base: keep only the two leaping yellow fish and a tiny white water splash under them, on a transparent background with nothing else. Keep the fish, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the round pond, its grass rim and soil base: keep only the two leaping yellow fish and a tiny white water splash under them, on a transparent background with nothing else. Keep the fish, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the round pond, its grass rim and soil base: keep only the two leaping yellow fish and a tiny white water splash under them, on a transparent background with nothing else. Keep the fish, outline and art style exactly the same.",
+    "editInstruction": "Remove the round pond, its grass rim and soil base: keep only the two leaping yellow fish and a tiny white water splash under them, on a transparent background with nothing else. Keep the fish, outline and art style exactly the same.",
+    "source": {
+      "recipe": "fish-a",
+      "candidate": 0,
+      "sha256": "5fb514947c20d1f4e9234e8909eb1cb4f8709d3e317daf574d90c442f9277dbe"
+    }
+  }
+}

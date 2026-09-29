@@ -267,8 +267,17 @@ export interface ChibiRecipe {
   readonly options?: Readonly<Record<string, string | null>>;
   readonly promptAddendum?: string;
   readonly negativeAddendum?: string;
-  /** edit-image-pixen: the candidate of an earlier recipe to edit. */
-  readonly source?: { readonly recipe: string; readonly candidate: number };
+  /**
+   * edit-image-pixen: the candidate of an earlier recipe to edit. `batch`
+   * names an earlier production batch whose recorded candidate is edited
+   * (for example a batch-3 Mine derived from a batch-1 Mountain); without it
+   * the source is an earlier recipe of the same asset in this batch.
+   */
+  readonly source?: {
+    readonly batch?: string;
+    readonly recipe: string;
+    readonly candidate: number;
+  };
   /** edit-image-pixen: defaults to fragments/edit-remove-ground.txt. */
   readonly editInstruction?: string;
   /**
@@ -797,7 +806,18 @@ export function batchManifestProblems(
       const source = recipe.source;
       if (source === undefined)
         problems.push(`${label}: an edit needs a source recipe`);
-      else {
+      else if (source.batch !== undefined && source.batch !== manifest.batch) {
+        // A cross-batch source is resolved and size-checked at generation
+        // time from that batch's records.
+        if (manifest.dryRun)
+          problems.push(`${label}: dry runs cannot edit another batch`);
+        if (!/^[1-9][0-9]*$/.test(source.batch))
+          problems.push(`${label}: source batch must be a production batch`);
+        if (Number(source.batch) >= Number(manifest.batch))
+          problems.push(`${label}: source batch must be an earlier batch`);
+        if (!Number.isInteger(source.candidate) || source.candidate < 0)
+          problems.push(`${label}: edit source candidate must be >= 0`);
+      } else {
         const sourceRecipe = manifest.recipes.find(
           (entry) => entry.id === source.recipe,
         );

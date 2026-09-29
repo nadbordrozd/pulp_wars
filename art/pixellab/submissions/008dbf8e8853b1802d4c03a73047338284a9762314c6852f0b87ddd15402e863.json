@@ -1,0 +1,36 @@
+{
+  "id": "lumber-camp-a-edit",
+  "jobId": "12af257b-a877-4e50-a74a-33110337d2bf",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-lumber-camp",
+    "subject": "IMPROVEMENT:LUMBER_CAMP",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69902,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and soil slab under the camp so the cabin, log pile and pine trees stand directly on a transparent background with nothing under them. Paint the whole cabin roof solid bright red with darker red shading. Make the cabin log walls pale birch yellow, never brown. Keep the layout, outline and art style the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and soil slab under the camp so the cabin, log pile and pine trees stand directly on a transparent background with nothing under them. Paint the whole cabin roof solid bright red with darker red shading. Make the cabin log walls pale birch yellow, never brown. Keep the layout, outline and art style the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and soil slab under the camp so the cabin, log pile and pine trees stand directly on a transparent background with nothing under them. Paint the whole cabin roof solid bright red with darker red shading. Make the cabin log walls pale birch yellow, never brown. Keep the layout, outline and art style the same.",
+    "editInstruction": "Remove all ground: erase the grass and soil slab under the camp so the cabin, log pile and pine trees stand directly on a transparent background with nothing under them. Paint the whole cabin roof solid bright red with darker red shading. Make the cabin log walls pale birch yellow, never brown. Keep the layout, outline and art style the same.",
+    "source": {
+      "recipe": "lumber-camp-a",
+      "candidate": 0,
+      "sha256": "9ce9d98d66413d0d9e279de1ceaaa3ad47fff93942c4c3d396f03542889aa738"
+    }
+  }
+}

@@ -160,6 +160,12 @@ export interface BoardRenderPlanEntryV7 {
   readonly edge?: TileEdge;
   readonly targetEdges?: readonly TileEdge[];
   readonly boundaryStyle?: "OWNER" | "CITY";
+  /**
+   * RESOURCE only: the same cell's improvement art already shows this
+   * resource (a Mine's ore cart over Ore, a Farm's wheat over Fertile
+   * Ground). The CHIBI art set skips it; LEGACY still draws it.
+   */
+  readonly coveredByImprovement?: boolean;
   /** CITY only: the owner's capital (marked by a crown in the CHIBI art set). */
   readonly capital?: boolean;
   /** UNIT only: an Undead-owned unit, drawn with the Undead faction badge. */
@@ -278,6 +284,10 @@ export function buildBoardRenderPlanV7(
         at: tile.at,
         assetId: resourceMapArtIdV7(tile.resource, tile.at),
         artSubject: `RESOURCE:${tile.resource}`,
+        ...((tile.resource === "ORE" && tile.improvement === "MINE") ||
+        (tile.resource === "FERTILE_GROUND" && tile.improvement === "FARM")
+          ? { coveredByImprovement: true }
+          : {}),
       });
     if (tile.improvement !== null && tile.improvement !== "MINE") {
       const farm =
@@ -578,7 +588,80 @@ export const CHIBI_OVERLAY_FRAME_V7 = {
   hpBar: { left: -63, top: -36, width: 9, height: 76 },
   populationColumn: { left: 46, bottom: 62 },
   crown: { left: 42, right: 62, bottom: -44 },
+  /** Field Defense badge: the top-left corner, just above the HP bar strip. */
+  fieldDefense: { left: -63, top: -64, size: 28 },
 } as const;
+
+/** LEGACY road: brown dirt strokes (outline, then fill) in world units. */
+const ROAD_STROKES_V7 = [
+  ["#69472e", 8],
+  ["#a57a4c", 5],
+] as const satisfies readonly (readonly [string, number])[];
+
+/**
+ * CHIBI road: a beige cobblestone path (the ORIGINAL settlement stone) with
+ * the chibi pieces' near-black outline, about 1 px each side at zoom 1.
+ */
+export const CHIBI_ROAD_STROKES_V7 = [
+  ["#2a2426", 12],
+  ["#d8c08c", 8],
+] as const satisfies readonly (readonly [string, number])[];
+
+/**
+ * CHIBI Field Defense: a chunky palisade badge (four sharpened pale birch
+ * stakes on a light steel crossbar, thick near-black outline, the ORIGINAL
+ * materials) in the cell's top-left corner; a city fortification level is
+ * written over it. Drawn on a 28-unit grid scaled to the badge size.
+ */
+export function drawChibiFieldDefenseV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  level: number,
+  highContrast: boolean,
+): void {
+  const { fieldDefense } = CHIBI_OVERLAY_FRAME_V7;
+  const unit = (fieldDefense.size / 28) * zoom;
+  const left = x + fieldDefense.left * zoom;
+  const top = y + fieldDefense.top * zoom;
+  const px = (value: number): number => left + value * unit;
+  const py = (value: number): number => top + value * unit;
+  const ink = "#2a2426";
+  const birch = highContrast ? "#ffffff" : "#f1dc8f";
+  const birchShade = highContrast ? "#c8c8c8" : "#c9ad62";
+  const steel = highContrast ? "#ffffff" : "#b9c3cf";
+  context.save();
+  context.strokeStyle = ink;
+  context.lineWidth = 2 * unit;
+  context.lineJoin = "miter";
+  for (const stake of [2, 8, 14, 20]) {
+    context.beginPath();
+    context.moveTo(px(stake), py(26));
+    context.lineTo(px(stake), py(8));
+    context.lineTo(px(stake + 3), py(2));
+    context.lineTo(px(stake + 6), py(8));
+    context.lineTo(px(stake + 6), py(26));
+    context.closePath();
+    context.fillStyle = birch;
+    context.fill();
+    context.fillStyle = birchShade;
+    context.fillRect(px(stake + 4), py(9), 2 * unit, 17 * unit);
+    context.stroke();
+  }
+  context.fillStyle = steel;
+  context.fillRect(px(0), py(15), 28 * unit, 5 * unit);
+  context.strokeRect(px(0), py(15), 28 * unit, 5 * unit);
+  if (level > 0) {
+    context.font = `800 ${16 * unit}px system-ui`;
+    context.textAlign = "center";
+    context.lineWidth = 3.5 * unit;
+    context.fillStyle = "#ffffff";
+    context.strokeText(String(level), px(14), py(21));
+    context.fillText(String(level), px(14), py(21));
+  }
+  context.restore();
+}
 
 /**
  * CHIBI capital cue: a gold crown in the cell's top-right corner, drawn with
@@ -711,7 +794,13 @@ export function drawBoardV7(input: {
   // below (a giant's upward overflow), so the overlays are drawn after every
   // piece, in plan order, and no sprite can hide them.
   const deferredChibiOverlays: (() => void)[] = [];
-  for (const pass of ["FOG", "GROUND", "ROAD", "FOREGROUND"] as const)
+  // CHIBI draws every road casing before any road fill, so a corner join
+  // and its cell's road read as one path instead of crossing outlines.
+  const passes =
+    chibiArt === undefined
+      ? (["FOG", "GROUND", "ROAD", "FOREGROUND"] as const)
+      : (["FOG", "GROUND", "ROAD_CASING", "ROAD", "FOREGROUND"] as const);
+  for (const pass of passes)
     for (const entry of input.plan.entries) {
       if (
         entry.kind === "LINK" ||
@@ -728,7 +817,7 @@ export function drawBoardV7(input: {
       if (
         (pass === "FOG" && entry.kind !== "FOG") ||
         (pass === "GROUND" && entry.kind !== "TERRAIN") ||
-        (pass === "ROAD" &&
+        ((pass === "ROAD" || pass === "ROAD_CASING") &&
           entry.kind !== "ROAD" &&
           entry.kind !== "ROAD_JOIN") ||
         (pass === "FOREGROUND" &&
@@ -829,7 +918,18 @@ export function drawBoardV7(input: {
         continue;
       }
       if (entry.kind === "ROAD" || entry.kind === "ROAD_JOIN") {
-        drawRoad(context, entry, x, y, camera.zoom);
+        drawRoad(
+          context,
+          entry,
+          x,
+          y,
+          camera.zoom,
+          chibiArt === undefined
+            ? ROAD_STROKES_V7
+            : pass === "ROAD_CASING"
+              ? CHIBI_ROAD_STROKES_V7.slice(0, 1)
+              : CHIBI_ROAD_STROKES_V7.slice(1),
+        );
         continue;
       }
       if (entry.kind === "GRAVE") {
@@ -865,6 +965,28 @@ export function drawBoardV7(input: {
           input.highContrast ?? false,
         );
         context.restore();
+        continue;
+      }
+      if (
+        entry.kind === "RESOURCE" &&
+        entry.coveredByImprovement === true &&
+        chibiArt !== undefined
+      )
+        continue;
+      if (entry.kind === "FIELD_DEFENSE" && chibiArt !== undefined) {
+        // Deferred with the piece overlays so a tall piece in the row below
+        // never hides it.
+        const highContrast = input.highContrast ?? false;
+        deferredChibiOverlays.push(() =>
+          drawChibiFieldDefenseV7(
+            context,
+            x,
+            y,
+            camera.zoom,
+            entry.value ?? 0,
+            highContrast,
+          ),
+        );
         continue;
       }
       if (entry.kind === "FIELD_DEFENSE") {
@@ -2469,6 +2591,7 @@ function drawRoad(
   x: number,
   y: number,
   zoom: number,
+  strokes: readonly (readonly [string, number])[],
 ): void {
   const half = (TILE_WIDTH * zoom) / 2;
   context.save();
@@ -2477,10 +2600,7 @@ function drawRoad(
   context.clip();
   context.lineCap = "round";
   context.lineJoin = "round";
-  for (const [color, width] of [
-    ["#69472e", 8],
-    ["#a57a4c", 5],
-  ] as const) {
+  for (const [color, width] of strokes) {
     context.strokeStyle = color;
     context.lineWidth = width * zoom;
     context.beginPath();

@@ -1,0 +1,36 @@
+{
+  "id": "farm-c-edit-2",
+  "jobId": "012ae2c3-4518-420c-b792-bc3470bc5bc5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-farm",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69807,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase only the green grass and the brown soil sides of the slab under the farm. Keep the barn, the golden wheat sheaves, the round haystack and the white fence exactly where they are, standing on a transparent background. Paint the roof one deep crimson red with darker crimson shading, no orange highlights, and the timber pale straw yellow. Keep the outline and art style the same."
+      }
+    ],
+    "prompt": "Erase only the green grass and the brown soil sides of the slab under the farm. Keep the barn, the golden wheat sheaves, the round haystack and the white fence exactly where they are, standing on a transparent background. Paint the roof one deep crimson red with darker crimson shading, no orange highlights, and the timber pale straw yellow. Keep the outline and art style the same.",
+    "negativePrompt": "",
+    "description": "Erase only the green grass and the brown soil sides of the slab under the farm. Keep the barn, the golden wheat sheaves, the round haystack and the white fence exactly where they are, standing on a transparent background. Paint the roof one deep crimson red with darker crimson shading, no orange highlights, and the timber pale straw yellow. Keep the outline and art style the same.",
+    "editInstruction": "Erase only the green grass and the brown soil sides of the slab under the farm. Keep the barn, the golden wheat sheaves, the round haystack and the white fence exactly where they are, standing on a transparent background. Paint the roof one deep crimson red with darker crimson shading, no orange highlights, and the timber pale straw yellow. Keep the outline and art style the same.",
+    "source": {
+      "recipe": "farm-c",
+      "candidate": 0,
+      "sha256": "f8ccac0e0b050d942ac41cc41eba157ddb63b7d585d372c5880ebff294a7816b"
+    }
+  }
+}

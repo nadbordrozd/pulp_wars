@@ -1,0 +1,36 @@
+{
+  "id": "port-a-edit-2",
+  "jobId": "3aef1235-41a8-48d8-8527-c5c683c00167",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-port",
+    "subject": "IMPROVEMENT:PORT",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 70003,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the hut roof and the flag in one deep crimson red with darker crimson shading and no orange or scarlet highlights, and make the flag bigger. Make the door pale birch yellow, not brown. Keep the pier, posts, hut walls, outline and art style exactly the same, on a transparent background with nothing under the posts."
+      }
+    ],
+    "prompt": "Recolour the hut roof and the flag in one deep crimson red with darker crimson shading and no orange or scarlet highlights, and make the flag bigger. Make the door pale birch yellow, not brown. Keep the pier, posts, hut walls, outline and art style exactly the same, on a transparent background with nothing under the posts.",
+    "negativePrompt": "",
+    "description": "Recolour the hut roof and the flag in one deep crimson red with darker crimson shading and no orange or scarlet highlights, and make the flag bigger. Make the door pale birch yellow, not brown. Keep the pier, posts, hut walls, outline and art style exactly the same, on a transparent background with nothing under the posts.",
+    "editInstruction": "Recolour the hut roof and the flag in one deep crimson red with darker crimson shading and no orange or scarlet highlights, and make the flag bigger. Make the door pale birch yellow, not brown. Keep the pier, posts, hut walls, outline and art style exactly the same, on a transparent background with nothing under the posts.",
+    "source": {
+      "recipe": "port-a-edit",
+      "candidate": 0,
+      "sha256": "abdb3b9030e38d347a8e58f8c6c9f0608450e7965cc4084eb0abf267fe0b7164"
+    }
+  }
+}

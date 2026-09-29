@@ -1,0 +1,36 @@
+{
+  "id": "monument-a-edit-2",
+  "jobId": "7ec2077a-17b4-46ae-a8b6-6a6d66297194",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-monument",
+    "subject": "IMPROVEMENT:MONUMENT",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 70104,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the square grey stone footing and its orange rim at the bottom, so the beige obelisk rises straight from a transparent background with nothing at all under it. Keep the obelisk, golden star, red banners, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the square grey stone footing and its orange rim at the bottom, so the beige obelisk rises straight from a transparent background with nothing at all under it. Keep the obelisk, golden star, red banners, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the square grey stone footing and its orange rim at the bottom, so the beige obelisk rises straight from a transparent background with nothing at all under it. Keep the obelisk, golden star, red banners, outline and art style exactly the same.",
+    "editInstruction": "Remove the square grey stone footing and its orange rim at the bottom, so the beige obelisk rises straight from a transparent background with nothing at all under it. Keep the obelisk, golden star, red banners, outline and art style exactly the same.",
+    "source": {
+      "recipe": "monument-a",
+      "candidate": 0,
+      "sha256": "5c3768f23f389f61cd2066ffe7b83ee03292d07ef9542c86ce6f15dea1568106"
+    }
+  }
+}

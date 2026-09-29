@@ -1,0 +1,36 @@
+{
+  "id": "pearls-a-edit",
+  "jobId": "5cba4a87-fc92-4c68-8dd1-1e3f7638c7c1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-pearls",
+    "subject": "RESOURCE:PEARLS",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 69602,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the small brown pebbles floating around the shell so only the open clam shell with its white pearl remains, on a transparent background with nothing else. Keep the shell, pearl, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the small brown pebbles floating around the shell so only the open clam shell with its white pearl remains, on a transparent background with nothing else. Keep the shell, pearl, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the small brown pebbles floating around the shell so only the open clam shell with its white pearl remains, on a transparent background with nothing else. Keep the shell, pearl, outline and art style exactly the same.",
+    "editInstruction": "Remove the small brown pebbles floating around the shell so only the open clam shell with its white pearl remains, on a transparent background with nothing else. Keep the shell, pearl, outline and art style exactly the same.",
+    "source": {
+      "recipe": "pearls-a",
+      "candidate": 0,
+      "sha256": "a70926e37f2b46bb68f16912012d53aa7856e27689404177b90e65c5947a1ed1"
+    }
+  }
+}

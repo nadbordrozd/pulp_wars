@@ -561,6 +561,59 @@ describe("chibi prompt layering and manifests", async () => {
       expect(problems).toContain(expected);
   });
 
+  it("derives the batch-3 Mines from batch-1 Mountains on batch-1 grass", async () => {
+    const batch3 = await loadBatchManifest(ROOT, "3");
+    expect(batchManifestProblems(batch3, fragments, "3")).toEqual([]);
+    const mine = batch3.recipes.find(
+      (recipe) => recipe.id === "mined-mountain-1-a",
+    );
+    const mineSource = mine?.source;
+    if (mine === undefined || mineSource === undefined)
+      throw new Error("batch 3 Mine recipe lost");
+    expect(mineSource).toMatchObject({
+      batch: "1",
+      recipe: "mountain-1-b-edit",
+    });
+    const records = await loadRecords(productionLayout(ROOT, "3"), "3");
+    expect(records.assets["chibi-mined-mountain-1"]?.derivation).toMatchObject({
+      kind: "ground-composite",
+      ground: { asset: "chibi-grass-1", batch: "1" },
+    });
+    const problems = (source: { batch: string }, dryRun: boolean) =>
+      batchManifestProblems(
+        {
+          ...batch3,
+          dryRun,
+          recipes: [
+            {
+              ...mine,
+              source: { ...mineSource, ...source },
+              ...(dryRun
+                ? {
+                    fixture: {
+                      path: "x.png",
+                      sha256: "0".repeat(64),
+                      provenance: "test",
+                    },
+                  }
+                : {}),
+            },
+          ],
+        },
+        fragments,
+        "3",
+      ).join("\n");
+    expect(problems({ batch: "4" }, false)).toContain(
+      "source batch must be an earlier batch",
+    );
+    expect(problems({ batch: "x" }, false)).toContain(
+      "source batch must be a production batch",
+    );
+    expect(problems({ batch: "1" }, true)).toContain(
+      "dry runs cannot edit another batch",
+    );
+  });
+
   it("sends a checked-in forced palette and validates terrain variant windows", async () => {
     const batch1 = await loadBatchManifest(ROOT, "1");
     expect(batchManifestProblems(batch1, fragments, "1")).toEqual([]);

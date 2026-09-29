@@ -1,0 +1,650 @@
+{
+  "batch": "3",
+  "bead": "pulp_wars-67q.7",
+  "title": "Chibi batch 3: resources, Treasure, Farm, Lumber Camp, Mine, Port, Monument",
+  "dryRun": false,
+  "faction": "ORIGINAL",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-fruit",
+      "subject": "RESOURCE:FRUIT",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fruit-a-edit",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fruit.png",
+        "sha256": "3f9f19113fd3bb392223fca826850a822a13bf1837e0dd7dee8d10e48dc787ea",
+        "pixelSha256": "31128fefebc9527cb188a959e29b1773190d2afb494728cfe45633a3de393f62",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0,
+        "footprintWidthShare": 0.3333,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-fertile-ground",
+      "subject": "RESOURCE:FERTILE_GROUND",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fertile-ground-a",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fertile-ground.png",
+        "sha256": "7457fc52b2473970638f916542b3b9e163184cc47690446f39c840bf2171560d",
+        "pixelSha256": "8dfa058a3c878776a47157730381cbd41febee5ed4a1ca4b024a484aef76238e",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.3908,
+        "footprintWidthShare": 0.5357,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-game",
+      "subject": "RESOURCE:GAME",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "game-a-edit",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-game.png",
+        "sha256": "ec96addb7550467d4c2eb9eb204be960a4e8fc1b085cc05f7d3d4f139bcb92ee",
+        "pixelSha256": "eb94f4b497df1767a58546fc5ff13a5fbad6a60c54fe8074bea822ac56a77641",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.2984,
+        "footprintWidthShare": 0.7857,
+        "suspect": true
+      }
+    },
+    {
+      "id": "chibi-ore",
+      "subject": "RESOURCE:ORE",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "ore-a-edit",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-ore.png",
+        "sha256": "4d9337e7852d7c43b31a11a49058912e23ea8bf10b23f22b775ba7b622f0543d",
+        "pixelSha256": "dc08890cf70e1245042ed550acd90f25011eeee1bc494fe060f82cb4b0614c7e",
+        "width": 40,
+        "height": 40
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0,
+        "footprintWidthShare": 0.8421,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-fish",
+      "subject": "RESOURCE:FISH",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fish-b",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fish.png",
+        "sha256": "2076c312a52dd8b73a934e3501128c8c01de2109775feba5d5e3450c56e1b531",
+        "pixelSha256": "9699159782df610f33430b694bbb49ca7aed794620dd84c3d9e4c2ea0877d5d2",
+        "width": 40,
+        "height": 40
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.0081,
+        "footprintWidthShare": 0.7931,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-pearls",
+      "subject": "RESOURCE:PEARLS",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "pearls-a-edit",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-pearls.png",
+        "sha256": "552b406824bea2c9bd2e573d6957a844e51c21c8f652b3a7c77a960ced29d686",
+        "pixelSha256": "090371ae1f635f6d08221bc5b5f8318b95dda161d9ff6719f9bbeec1871f2355",
+        "width": 40,
+        "height": 40
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0.1,
+        "footprintWidthShare": 0.8276,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-treasure",
+      "subject": "TREASURE",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "treasure-a",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-treasure.png",
+        "sha256": "a7f2d5d712fdc5469a3dd7547f61f95c48bf4a8026a055f93270f065ae77b5ed",
+        "pixelSha256": "c17213b5511d3b734284011ee9797773c2ac242035c834ad219c7256fca4c3f3",
+        "width": 40,
+        "height": 40
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.1705,
+        "footprintWidthShare": 0.9688,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-farm",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "farm-c-edit-3",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-farm.png",
+        "sha256": "3acfaf0305108245fb2bc377f6b8e99eeb5bcbd5d1728699225b8e4b6436d31d",
+        "pixelSha256": "5f68d0a8b24ecccfd0efd9bf31af48b7bfd30c2c579e67e6ba75756ef1d2ef2f",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.5556,
+        "footprintWidthShare": 0.5694,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/buildings/chibi-farm.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.2859,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-lumber-camp",
+      "subject": "IMPROVEMENT:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "lumber-camp-a-edit",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-lumber-camp.png",
+        "sha256": "0d1f508e024a6d41fb8cb1c4ac5e7382f797ebcd5b4f9675869bc3ac934076fb",
+        "pixelSha256": "e505383279da8035f81c2782208ddd381380dd500c989ef45cd5c8eb74221f47",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 11,
+        "groundShare": 0.3241,
+        "footprintWidthShare": 0.7302,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/buildings/chibi-lumber-camp.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2594,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-port",
+      "subject": "IMPROVEMENT:PORT",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "port-a-edit-2",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-port.png",
+        "sha256": "e66192a3d52fe130678cfc88ae14671453f8d03962750a7fdfb37df6860d0986",
+        "pixelSha256": "268b5a97c0181483bd8fd872f5a7f9aa90c00edf6ae0a003c680c3145f25c817",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.1245,
+        "footprintWidthShare": 0.6615,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/buildings/chibi-port.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.1598,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-monument",
+      "subject": "IMPROVEMENT:MONUMENT",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "monument-a-edit-2",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-monument.png",
+        "sha256": "0a7c2ae5ff4b91a841f5542a4b92003cc08b035cce17bc663df1d9d2300179f4",
+        "pixelSha256": "32072f5c4df33f5b36881f3b444596cd3e3953bca7a91d5877710c24d0bba1b9",
+        "width": 80,
+        "height": 88
+      },
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 13,
+        "groundShare": 0.4048,
+        "footprintWidthShare": 1,
+        "suspect": true
+      },
+      "mask": {
+        "path": "public/assets/chibi/buildings/chibi-monument.mask.png",
+        "source": "OVERRIDE",
+        "coverage": 0.2884,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-mined-mountain-1",
+      "subject": "TERRAIN:MINED_MOUNTAIN",
+      "assetClass": "TALL_TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "mined-mountain-1-a",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-mined-mountain-1.png",
+        "sha256": "6a4ae8114244caaffc0c4f6c3df580af62ece7f60c9b3a2cbc534a572723764f",
+        "pixelSha256": "47dfc9843ce59e62e2e6f7e76fa0998c8ead97541a3edf0dee7e5f727913b738",
+        "width": 80,
+        "height": 104
+      },
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 24,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "ground-composite",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "batch": "1"
+        }
+      }
+    },
+    {
+      "id": "chibi-mined-mountain-2",
+      "subject": "TERRAIN:MINED_MOUNTAIN",
+      "assetClass": "TALL_TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "mined-mountain-2-a",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-mined-mountain-2.png",
+        "sha256": "81f7888fc78176bcbc4a9fece9642b550605527250340573e7c74c88d07bfd1c",
+        "pixelSha256": "af97123017fb735b2cf734efa51231a1ca514a478b0247a93b7fc7f7e5372059",
+        "width": 80,
+        "height": 104
+      },
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 24,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "ground-composite",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "batch": "1"
+        }
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/sheet-1x.png",
+      "width": 1042,
+      "height": 1780,
+      "sha256": "687d90d86793f5e5a1f0d991a8ae05db4427daea39c8a67b207b6ce630b3256c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/sheet-x4.png",
+      "width": 2370,
+      "height": 6148,
+      "sha256": "6e065ae020d24aa2775db2a521e256280a44cf71c8df315938fec20ba4b96b30"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/phone-mock.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "08485c3127c8e0e20e8d03fc23a2927b901948a253455614ca671eebdbe6efdb"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/desktop-mock.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6c8191258978336090ff58442b2132d2d064746861a67f010e851bea7df05ba2"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "bb7d330185079b8e2f9b20198da8caefe556ffc9db75ed49871393ac5d67e812"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8808d39e769e7cd403c930a7c45dc23b4ec484e005a58c7bff0a6902a53380f1"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/ingame-scene-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "05fd9196e2bc8a124b9f13625f15e43cf45f961e51653a9180ed7bd148b757ab"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/ingame-scene-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "98db7d902ba95f7495cfd4dc261d7325f23fa377bfa5927e189de4fc8cf108c5"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "08454ac7da39aad54648286a5f077b0f42f4e85229bded674244bdf2abcee2b9"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "8292d61e0c4b27db2a30405b4c3bd42a02b80f5b6cb2ef1e7c11c1cfc45fbe37"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/ingame-scene-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "48530aad7ebfe9698e94a0f813648e7bede5da4ef608ccf9b27943b1116610cc"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-3/ingame-scene-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "49bfa2d7d0dfba14a9bd9fc48fe52f7be44cae4efadfe7abfb42f7d140c03f2d"
+    }
+  ],
+  "captures": {
+    "note": "Captured from the running game with ?art=chibi; subjects without a registered chibi raster still draw their legacy art.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-3/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-3/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-3/ingame-scene-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic showcase)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-3/ingame-scene-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic showcase)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-3/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-3/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-3/ingame-scene-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic showcase)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-3/ingame-scene-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic showcase)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-3/phone-links.md"
+}

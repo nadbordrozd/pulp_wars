@@ -1,0 +1,37 @@
+{
+  "id": "mined-mountain-1-a",
+  "jobId": "52998a20-bfdb-4e37-9706-490546853fe1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-mined-mountain-1",
+    "subject": "TERRAIN:MINED_MOUNTAIN",
+    "faction": "ORIGINAL",
+    "recipeClass": "tall-terrain",
+    "requestSize": {
+      "width": 80,
+      "height": 104
+    },
+    "seed": 70201,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, outline and art style exactly the same, on a transparent background with nothing at all under the mountain."
+      }
+    ],
+    "prompt": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+    "negativePrompt": "",
+    "description": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+    "editInstruction": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+    "source": {
+      "batch": "1",
+      "recipe": "mountain-1-b-edit",
+      "candidate": 0,
+      "sha256": "c1042db9a985ea76f2f26df1c9f0df0e9bbf72acada95207968cb18888b32b6e"
+    }
+  }
+}

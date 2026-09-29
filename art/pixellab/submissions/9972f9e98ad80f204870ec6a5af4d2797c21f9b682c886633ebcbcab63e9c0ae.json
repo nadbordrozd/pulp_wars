@@ -1,0 +1,36 @@
+{
+  "id": "farm-c-edit-3",
+  "jobId": "b06ad606-ca3f-49dd-a0c9-66a0490a40d7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-farm",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69808,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add three big upright golden wheat sheaves standing at the left of the barn and one big round golden haystack at its right, all standing directly on the transparent background with nothing under them. Make the barn timber pale straw yellow, not orange or brown. Keep the barn, red roof, cream walls, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Add three big upright golden wheat sheaves standing at the left of the barn and one big round golden haystack at its right, all standing directly on the transparent background with nothing under them. Make the barn timber pale straw yellow, not orange or brown. Keep the barn, red roof, cream walls, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Add three big upright golden wheat sheaves standing at the left of the barn and one big round golden haystack at its right, all standing directly on the transparent background with nothing under them. Make the barn timber pale straw yellow, not orange or brown. Keep the barn, red roof, cream walls, outline and art style exactly the same.",
+    "editInstruction": "Add three big upright golden wheat sheaves standing at the left of the barn and one big round golden haystack at its right, all standing directly on the transparent background with nothing under them. Make the barn timber pale straw yellow, not orange or brown. Keep the barn, red roof, cream walls, outline and art style exactly the same.",
+    "source": {
+      "recipe": "farm-c-edit",
+      "candidate": 0,
+      "sha256": "d77f043e084aa6da4b3e4da5194899cd791a39d3f4f87f928a43af02a91efc25"
+    }
+  }
+}

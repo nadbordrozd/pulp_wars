@@ -146,11 +146,25 @@ batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
    runtime has no art subject for either, so batch 3 cannot "replace" them
    by registering rasters. Batch 3 needs a user decision: restyle them in
    code (a `ui/presentation` change), or add road or defense subjects to
-   the runtime first.
+   the runtime first. **Batch 3 decision:** restyle in code, CHIBI only
+   (LEGACY unchanged). Roads are a beige cobblestone path (`#d8c08c`) with
+   the pieces' near-black casing (`CHIBI_ROAD_STROKES_V7`), and every road
+   casing is drawn before any road fill so corner joins read as one path.
+   Field Defense is a palisade badge (four pale birch stakes on a light
+   steel crossbar, thick outline) in the cell's top-left corner above the
+   HP bar strip (`CHIBI_OVERLAY_FRAME_V7.fieldDefense`); a city's
+   fortification level is written on it, and it is drawn with the deferred
+   piece overlays so no tall piece hides it. Known gap: CHIBI tall terrain
+   draws its whole owning cell in the ground pass, so a Road on a Forest,
+   Mountain or Mine is drawn across the tree or rock body (legacy draws the
+   body over the Road); fixing it needs a body-only chibi raster.
 2. **Farm pairs.** Legacy Farms join into horizontal and vertical two-tile
    fields. Chibi has one `IMPROVEMENT:FARM` subject and no pair logic, so a
    chibi Farm is a single-tile building unless the runtime gains pair
-   subjects.
+   subjects. **Batch 3 decision:** one single-cell Farm (a barn with a
+   haystack and wheat) is drawn for every Farm cell, paired or not; the
+   CHIBI path ignores the legacy pair crop, so a pair reads as two
+   neighbouring farmsteads.
 3. **Tall-terrain ground.** Chibi Forest and Mountain masters contain their
    own 80 x 80 ground cell (the runtime draws the cell during the ground
    pass). The pipeline composes them over an accepted ground tile. Legacy
@@ -163,7 +177,14 @@ batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
 4. **Mine is a terrain subject.** A Mine draws `TERRAIN:MINED_MOUNTAIN` (the
    art includes the mountain); `IMPROVEMENT:MINE` is never emitted. Batch 3
    lists "Mine" as an improvement; it is really a tall-terrain variant of
-   batch 1's Mountain and must match it.
+   batch 1's Mountain and must match it. **Batch 3 decision:** each Mined
+   Mountain is an `edit-image-pixen` of the matching accepted batch-1
+   Mountain body (a cross-batch edit source) with a timber mine entrance
+   and an ore cart, composited on `chibi-grass-1`; the two variants follow
+   the Mountain variant order, so a Mine keeps its mountain's shape. The
+   CHIBI art set does not draw the Ore resource over a Mine (the cart shows
+   it) or Fertile Ground under a Farm (`coveredByImprovement`); LEGACY
+   still draws both.
 5. **Capital cue.** Nothing on the map marks the capital today apart from
    its label. Batch 1 mentions a capital cue; that needs a new subject or a
    code overlay. **Batch 1 decision:** a code overlay. Plan entries for a
@@ -180,6 +201,13 @@ batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
 8. **Owner colour on improvements.** The direction says owned buildings
    carry an owner area, but the runtime contract only requires masks for
    units and cities. Decide per batch whether improvements get masks.
+   **Batch 3 decision:** buildings carry owner colour where it is natural
+   in the ORIGINAL vocabulary, always with a checked-in mask: the Farm and
+   Lumber Camp roofs, the Port roof and flag, the Monument banners (16–29%
+   of opaque pixels). Resources, Treasure and the Mine are unowned map
+   features with no owner colour. Deep crimson roof shading falls just
+   outside the automatic extraction band, so the Farm, Port and Monument
+   use keyLike-band overrides (no QA waiver).
 9. **The DOM ignores the art set.** `?art=chibi` switches only the canvas.
    Selection docks, technology cards, action buttons and rewards keep
    legacy art, including legacy map sprites of chibi subjects. Batch 5 (or

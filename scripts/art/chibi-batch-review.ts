@@ -16,6 +16,10 @@
  *   desktop-mock.png       exact 1440x900 DPR 1 screenshot, sprites 1:1
  *   ingame-*.png           the real game with ?art=chibi at zoom 1 and 0.75,
  *                          desktop 1440x900 DPR 1 and phone 390x844 DPR 3
+ *   ingame-scene-*.png     batch 3 onwards: the synthetic showcase from
+ *                          scripts/art/chibi/review-scene-v7.ts (every map
+ *                          subject, Roads and Field Defense, two owners)
+ *                          drawn by the real board host at zoom 1 and 0.75
  *   phone-links.md         raw GitHub URLs for review on a phone
  *   index.json             sizes, hashes, anchors, mask coverage and QA
  *
@@ -281,6 +285,62 @@ function isTerrainTile(asset: ReviewAsset): boolean {
   return asset.spec.assetClass === "TERRAIN";
 }
 
+/** Subjects that only ever stand on water. */
+const WATER_SUBJECTS: ReadonlySet<string> = new Set([
+  "RESOURCE:FISH",
+  "RESOURCE:PEARLS",
+  "IMPROVEMENT:PORT",
+  "IMPROVEMENT:SHIPYARD",
+  "UNIT:PATROL_BOAT",
+  "UNIT:BATTLESHIP",
+  "UNIT:EMBARKED_TRANSPORT",
+]);
+
+/** The ground a piece is reviewed on: shallow water for water pieces. */
+function groundFor(
+  asset: ReviewAsset,
+  terrain: readonly ReviewAsset[],
+  col: number,
+  row: number,
+): ReviewAsset | undefined {
+  if (WATER_SUBJECTS.has(asset.spec.subject)) {
+    const water = terrain.filter(
+      (tile) => tile.spec.subject === "TERRAIN:SHALLOW_WATER",
+    );
+    const pick = variantAt(water, col, row);
+    if (pick !== undefined) return pick;
+  }
+  return terrainAt(terrain, col, row);
+}
+
+/**
+ * Accepted terrain tiles of earlier production batches, so a batch without
+ * terrain of its own (batch 3 onwards) is reviewed on the real ground.
+ */
+async function contextTerrain(batch: string): Promise<ReviewAsset[]> {
+  const result: ReviewAsset[] = [];
+  for (let earlier = 1; earlier < Number(batch); earlier += 1) {
+    const manifest = await loadBatchManifest(ROOT, String(earlier)).catch(
+      () => undefined,
+    );
+    if (manifest === undefined || manifest.dryRun) continue;
+    const records = await loadRecords(
+      productionLayout(ROOT, String(earlier)),
+      String(earlier),
+    );
+    const assets = await loadReviewAssets(
+      manifest,
+      Object.values(records.assets),
+    );
+    result.push(
+      ...assets.filter(
+        (asset) => isTerrainTile(asset) && asset.record.status === "ACCEPTED",
+      ),
+    );
+  }
+  return result;
+}
+
 async function loadReviewAssets(
   manifest: ChibiBatchManifest,
   records: readonly AssetRecord[],
@@ -429,7 +489,7 @@ function tileBox(
 ): void {
   const cellLeft = left + MARGIN.side * k;
   const cellTop = top + MARGIN.up * k;
-  const ground = terrainAt(terrain, 0, 0);
+  const ground = groundFor(asset, terrain, 0, 0);
   if (ground === undefined)
     fillRect(
       target,
@@ -609,7 +669,7 @@ async function sheet(
       const left = x0 + (cells.length + 2) * (boxWidth + gap);
       const small = await smoothed(pieceRaster(asset, "A"), 0.75);
       const tile = 60;
-      const ground = terrainAt(terrain, 0, 0);
+      const ground = groundFor(asset, terrain, 0, 0);
       const cellTop = top + MARGIN.up;
       if (ground === undefined)
         fillRect(
@@ -723,9 +783,23 @@ function composeScene(
   // Terrain fills the whole view, including cells left of or above the scene.
   const firstCol = -Math.ceil(view.originX / TILE);
   const firstRow = -Math.ceil(view.originY / TILE);
+  const waterPiece = new Set(
+    pieces
+      .filter((piece) => WATER_SUBJECTS.has(piece.asset.spec.subject))
+      .map((piece) => `${piece.col},${piece.row}`),
+  );
   for (let row = firstRow; row < SCENE_ROWS; row += 1)
     for (let col = firstCol; col < SCENE_COLUMNS; col += 1) {
-      const ground = terrainAt(terrain, col, row);
+      const water = pieces.find(
+        (piece) =>
+          piece.col === col &&
+          piece.row === row &&
+          waterPiece.has(`${col},${row}`),
+      );
+      const ground =
+        water === undefined
+          ? terrainAt(terrain, col, row)
+          : groundFor(water.asset, terrain, col, row);
       if (ground === undefined)
         fillRect(
           target,
@@ -962,9 +1036,83 @@ async function waitForServer(url: string): Promise<void> {
   throw new Error(`Dev server at ${url} did not start`);
 }
 
+/**
+ * The synthetic showcase (scripts/art/chibi/review-scene-v7.ts) drawn by the
+ * real board host over the running game, at zoom 1 and 0.75: every map
+ * subject, Farm pairs, Mines, Ports, Roads and Field Defense for two owners,
+ * which a fresh game's start area never shows.
+ */
+async function captureScene(
+  connection: Connection,
+  directory: string,
+  viewport: {
+    readonly name: string;
+    readonly width: number;
+    readonly height: number;
+    readonly dpr: number;
+  },
+): Promise<CaptureEvidence[]> {
+  await evaluate(
+    connection,
+    `(async () => { const scene = await import('/scripts/art/chibi/review-scene-v7.ts'); const shown = scene.showChibiReviewSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view); globalThis.__CHIBI_REVIEW_SCENE__ = shown; return true; })()`,
+  );
+  const evidence: CaptureEvidence[] = [];
+  for (const step of ["1", "0.75"] as const) {
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      const current = await evaluate<string | null>(
+        connection,
+        `globalThis.__CHIBI_REVIEW_SCENE__.canvas.dataset.zoomStep ?? null`,
+      );
+      if (current === step) break;
+      await evaluate(
+        connection,
+        `globalThis.__CHIBI_REVIEW_SCENE__.host.zoom(${JSON.stringify(Number(current) < Number(step) ? "IN" : "OUT")})`,
+      );
+    }
+    await waitFor(
+      connection,
+      `Array.from(document.images).every((image) => image.complete)`,
+    );
+    await delay(1200);
+    const zoomStep = await evaluate<string | null>(
+      connection,
+      `globalThis.__CHIBI_REVIEW_SCENE__.canvas.dataset.zoomStep ?? null`,
+    );
+    if (zoomStep !== step)
+      throw new Error(`scene could not reach zoom ${step}: ${zoomStep}`);
+    const shot = (await connection.send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: false,
+    })) as { data?: string };
+    if (shot.data === undefined)
+      throw new Error("Chrome returned no screenshot");
+    const file = path.join(
+      directory,
+      `ingame-scene-${viewport.name}-zoom-${step}.png`,
+    );
+    await writeFile(file, Buffer.from(shot.data, "base64"));
+    evidence.push({
+      file: posix(file),
+      viewport: `${viewport.width}x${viewport.height} CSS at DPR ${viewport.dpr} (synthetic showcase)`,
+      zoomStep,
+      tileCssPx: await evaluate<string | null>(
+        connection,
+        `globalThis.__CHIBI_REVIEW_SCENE__.canvas.dataset.tileCssPx ?? null`,
+      ),
+      artSet: "CHIBI",
+    });
+  }
+  await evaluate(
+    connection,
+    `(() => { globalThis.__CHIBI_REVIEW_SCENE__.host.destroy(); document.querySelector('[data-chibi-review-scene]')?.remove(); delete globalThis.__CHIBI_REVIEW_SCENE__; return true; })()`,
+  );
+  return evidence;
+}
+
 async function captureInGame(
   directory: string,
   baseUrl: string,
+  scene: boolean,
 ): Promise<CaptureEvidence[]> {
   const chrome = process.env.CHROME_PATH;
   if (chrome === undefined || chrome === "")
@@ -1103,6 +1251,8 @@ async function captureInGame(
           ...dataset,
         });
       }
+      if (scene)
+        evidence.push(...(await captureScene(connection, directory, viewport)));
     }
     connection.close();
   } finally {
@@ -1156,9 +1306,13 @@ async function main(): Promise<void> {
   if (assetRecords.length === 0)
     throw new Error(`batch ${batch} has no accepted assets to review`);
   const assets = await loadReviewAssets(manifest, assetRecords);
-  const terrain = assets.filter(
+  const ownTerrain = assets.filter(
     (asset) => isTerrainTile(asset) && asset.record.status === "ACCEPTED",
   );
+  // A batch without terrain tiles is reviewed on earlier batches' ground.
+  const context =
+    ownTerrain.length > 0 || dryRun ? [] : await contextTerrain(batch);
+  const terrain = ownTerrain.length > 0 ? ownTerrain : context;
   const label = `Chibi batch ${batch}${dryRun ? " (dry run, fixtures)" : ""}`;
   const outputs: string[] = [];
   const out = (name: string): string => {
@@ -1181,9 +1335,10 @@ async function main(): Promise<void> {
     `${label}: sprites at x4`,
   );
   // Mocks show only what could ship; mask-rejected art stays on the sheets.
-  const sceneAssets = assets.filter(
-    (asset) => asset.record.status === "ACCEPTED",
-  );
+  const sceneAssets = [
+    ...context,
+    ...assets.filter((asset) => asset.record.status === "ACCEPTED"),
+  ];
   await mock(out("phone-mock.png"), sceneAssets, {
     width: 1170,
     height: 2532,
@@ -1212,6 +1367,9 @@ async function main(): Promise<void> {
       captures = await captureInGame(
         directory,
         given ?? `http://localhost:${port}/`,
+        // Batch 3 onwards places resources and improvements a fresh game
+        // never shows; production batches add the synthetic showcase.
+        !dryRun && Number(batch) >= 3,
       );
     } finally {
       if (server !== undefined) stopDevServer(server);
@@ -1253,6 +1411,8 @@ async function main(): Promise<void> {
       "phone-mock.png",
       "ingame-phone-zoom-1.png",
       "ingame-phone-zoom-0.75.png",
+      "ingame-scene-phone-zoom-1.png",
+      "ingame-scene-phone-zoom-0.75.png",
     ]
       .map(linkFor)
       .filter((line): line is string => line !== null),
@@ -1263,6 +1423,8 @@ async function main(): Promise<void> {
       "desktop-mock.png",
       "ingame-desktop-zoom-1.png",
       "ingame-desktop-zoom-0.75.png",
+      "ingame-scene-desktop-zoom-1.png",
+      "ingame-scene-desktop-zoom-0.75.png",
       "sheet-1x.png",
       "sheet-x4.png",
     ]

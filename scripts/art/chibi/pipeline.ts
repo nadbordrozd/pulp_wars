@@ -310,7 +310,12 @@ export interface AssetRecord {
   readonly derivation: {
     readonly kind: "as-is" | "seamless-crop" | "ground-composite";
     readonly crop?: CropWindow;
-    readonly ground?: { readonly asset: string; readonly sha256: string };
+    readonly ground?: {
+      readonly asset: string;
+      readonly sha256: string;
+      /** Set when the ground tile was accepted in an earlier batch. */
+      readonly batch?: string;
+    };
   };
   readonly anchor: { readonly x: number; readonly y: number };
   readonly overflow: {
@@ -808,9 +813,25 @@ export async function generateRecipe(
   let request = requestSnapshot(context.fragments, context.manifest, recipe);
   let sourceImage: Buffer | undefined;
   if (recipe.source !== undefined) {
-    const source = records.recipes[recipe.source.recipe];
+    const crossBatch =
+      recipe.source.batch !== undefined &&
+      recipe.source.batch !== context.manifest.batch;
+    const sourceRecords =
+      crossBatch && recipe.source.batch !== undefined
+        ? await loadRecords(
+            productionLayout(context.root, recipe.source.batch),
+            recipe.source.batch,
+          )
+        : records;
+    const source = sourceRecords.recipes[recipe.source.recipe];
     if (source === undefined)
       throw new Error(`${recipeId}: generate ${recipe.source.recipe} first`);
+    if (
+      crossBatch &&
+      (source.candidateSize?.width !== recipe.requestSize.width ||
+        source.candidateSize.height !== recipe.requestSize.height)
+    )
+      throw new Error(`${recipeId}: edit size must match its source`);
     sourceImage = await candidateBytes(
       context,
       source,
@@ -938,6 +959,36 @@ export function masterPaths(
   };
 }
 
+/**
+ * The accepted ground tile under tall terrain: this batch's own record, or,
+ * for a production batch, the same asset accepted in an earlier production
+ * batch (the batch-3 Mine stands on batch 1's grass).
+ */
+async function acceptedGroundAsset(
+  context: PipelineContext,
+  records: BatchRecords,
+  groundId: string,
+): Promise<{ ground: AssetRecord; batch?: string } | undefined> {
+  const own = records.assets[groundId];
+  if (own?.status === "ACCEPTED") return { ground: own };
+  const batch = context.manifest.batch;
+  const production =
+    !context.manifest.dryRun &&
+    context.layout.records === productionLayout(context.root, batch).records;
+  if (!production) return undefined;
+  for (const earlier of await listBatches(context.root)) {
+    if (earlier === batch || !/^[1-9][0-9]*$/.test(earlier)) continue;
+    if (Number(earlier) >= Number(batch)) continue;
+    const other = await loadRecords(
+      productionLayout(context.root, earlier),
+      earlier,
+    );
+    const ground = other.assets[groundId];
+    if (ground?.status === "ACCEPTED") return { ground, batch: earlier };
+  }
+  return undefined;
+}
+
 async function deriveMaster(
   context: PipelineContext,
   records: BatchRecords,
@@ -978,15 +1029,23 @@ async function deriveMaster(
     );
   if (kind === "ground-composite") {
     const groundId = asset.groundAsset ?? "";
-    const ground = records.assets[groundId];
-    if (ground?.status !== "ACCEPTED")
+    const found = await acceptedGroundAsset(context, records, groundId);
+    if (found === undefined)
       throw new Error(`${asset.id}: ground asset ${groundId} is not accepted`);
+    const { ground, batch } = found;
     const bytes = await readFile(path.join(context.root, ground.master.path));
     if (sha256(bytes) !== ground.master.sha256)
       throw new Error(`${asset.id}: ground ${groundId} bytes changed`);
     return {
       raster: groundComposite(candidate, await readRaster(bytes)),
-      derivation: { kind, ground: { asset: groundId, sha256: sha256(bytes) } },
+      derivation: {
+        kind,
+        ground: {
+          asset: groundId,
+          sha256: sha256(bytes),
+          ...(batch === undefined ? {} : { batch }),
+        },
+      },
     };
   }
   return { raster: candidate, derivation: { kind } };

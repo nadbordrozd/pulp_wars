@@ -1,0 +1,36 @@
+{
+  "id": "ore-a-edit",
+  "jobId": "3f64c996-1f34-4048-9bfb-49c470306661",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-ore",
+    "subject": "RESOURCE:ORE",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 69402,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass disc under the rocks so the dark rocks and blue crystals stand directly on a transparent background with nothing at all under them. Keep the rocks, crystals, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass disc under the rocks so the dark rocks and blue crystals stand directly on a transparent background with nothing at all under them. Keep the rocks, crystals, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass disc under the rocks so the dark rocks and blue crystals stand directly on a transparent background with nothing at all under them. Keep the rocks, crystals, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass disc under the rocks so the dark rocks and blue crystals stand directly on a transparent background with nothing at all under them. Keep the rocks, crystals, outline and art style exactly the same.",
+    "source": {
+      "recipe": "ore-a",
+      "candidate": 0,
+      "sha256": "a2758807b3054e03da2682672dec380cbade534c97905611c8be68fdec1a04db"
+    }
+  }
+}

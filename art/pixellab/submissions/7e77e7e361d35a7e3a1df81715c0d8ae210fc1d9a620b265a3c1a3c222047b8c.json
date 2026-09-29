@@ -1,0 +1,36 @@
+{
+  "id": "port-a-edit",
+  "jobId": "87eb9138-0398-482f-b960-333b22d2c370",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-port",
+    "subject": "IMPROVEMENT:PORT",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 70002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint the hut roof and the flag solid bright red with darker red shading, and make the flag twice as big. Make the roof ridge and flag pole pale birch yellow, never brown or orange. Keep the pier, posts, hut walls, outline and art style exactly the same, on a transparent background with nothing under the posts."
+      }
+    ],
+    "prompt": "Paint the hut roof and the flag solid bright red with darker red shading, and make the flag twice as big. Make the roof ridge and flag pole pale birch yellow, never brown or orange. Keep the pier, posts, hut walls, outline and art style exactly the same, on a transparent background with nothing under the posts.",
+    "negativePrompt": "",
+    "description": "Paint the hut roof and the flag solid bright red with darker red shading, and make the flag twice as big. Make the roof ridge and flag pole pale birch yellow, never brown or orange. Keep the pier, posts, hut walls, outline and art style exactly the same, on a transparent background with nothing under the posts.",
+    "editInstruction": "Paint the hut roof and the flag solid bright red with darker red shading, and make the flag twice as big. Make the roof ridge and flag pole pale birch yellow, never brown or orange. Keep the pier, posts, hut walls, outline and art style exactly the same, on a transparent background with nothing under the posts.",
+    "source": {
+      "recipe": "port-a",
+      "candidate": 0,
+      "sha256": "bb4d8068cf8ac8b3e412e9982a45a38d36c32a9f83fc367f498adcb62e43daa7"
+    }
+  }
+}

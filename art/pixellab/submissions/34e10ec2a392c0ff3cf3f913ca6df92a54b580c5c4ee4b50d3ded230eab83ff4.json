@@ -1,0 +1,36 @@
+{
+  "id": "fruit-a-edit",
+  "jobId": "14e3c6f9-3989-42e6-aa6b-c8d003cf9d10",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-fruit",
+    "subject": "RESOURCE:FRUIT",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 69102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the soil disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leaves, peach-orange fruits, trunk, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the soil disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leaves, peach-orange fruits, trunk, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the soil disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leaves, peach-orange fruits, trunk, outline and art style exactly the same.",
+    "editInstruction": "Remove the soil disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leaves, peach-orange fruits, trunk, outline and art style exactly the same.",
+    "source": {
+      "recipe": "fruit-a",
+      "candidate": 0,
+      "sha256": "4ba7eb2a8ecb578e3d002277e8fba258d8cd41e088e808e967410b26b6170610"
+    }
+  }
+}

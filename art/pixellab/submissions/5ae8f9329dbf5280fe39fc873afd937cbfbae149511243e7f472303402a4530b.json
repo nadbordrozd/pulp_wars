@@ -1,0 +1,37 @@
+{
+  "id": "mined-mountain-2-a",
+  "jobId": "a06032b5-c1bd-4f00-a27b-275b3d6115a7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-mined-mountain-2",
+    "subject": "TERRAIN:MINED_MOUNTAIN",
+    "faction": "ORIGINAL",
+    "recipeClass": "tall-terrain",
+    "requestSize": {
+      "width": 80,
+      "height": 104
+    },
+    "seed": 70202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, small pine trees, outline and art style exactly the same, on a transparent background with nothing at all under the mountain."
+      }
+    ],
+    "prompt": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, small pine trees, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+    "negativePrompt": "",
+    "description": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, small pine trees, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+    "editInstruction": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, small pine trees, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+    "source": {
+      "batch": "1",
+      "recipe": "mountain-3-a-edit",
+      "candidate": 0,
+      "sha256": "a2f1e5fcd3c979d52babc983699586e326261d2951e00d0b517eabbbe81677a8"
+    }
+  }
+}

@@ -1,0 +1,606 @@
+{
+  "schemaVersion": 1,
+  "batch": "3",
+  "title": "Chibi batch 3: resources, Treasure, Farm, Lumber Camp, Mine, Port, Monument",
+  "bead": "pulp_wars-67q.7",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-fruit",
+      "subject": "RESOURCE:FRUIT",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-fertile-ground",
+      "subject": "RESOURCE:FERTILE_GROUND",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-game",
+      "subject": "RESOURCE:GAME",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-ore",
+      "subject": "RESOURCE:ORE",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      }
+    },
+    {
+      "id": "chibi-fish",
+      "subject": "RESOURCE:FISH",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      }
+    },
+    {
+      "id": "chibi-pearls",
+      "subject": "RESOURCE:PEARLS",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      }
+    },
+    {
+      "id": "chibi-treasure",
+      "subject": "TREASURE",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      }
+    },
+    {
+      "id": "chibi-farm",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      },
+      "ownerColour": true,
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-farm.mask-override.png",
+        "masterPixelSha256": "5f68d0a8b24ecccfd0efd9bf31af48b7bfd30c2c579e67e6ba75756ef1d2ef2f",
+        "reason": "The automatic mask misses the roof's darkest tile-shadow lines and dormer edge (deep crimson below the extraction band), which would stay red on a Teal roof. The override selects every opaque pixel in the keyLike band (the widest band an override may use): the whole roof and nothing else. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-lumber-camp",
+      "subject": "IMPROVEMENT:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      },
+      "ownerColour": true
+    },
+    {
+      "id": "chibi-port",
+      "subject": "IMPROVEMENT:PORT",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      },
+      "ownerColour": true,
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-port.mask-override.png",
+        "masterPixelSha256": "268b5a97c0181483bd8fd872f5a7f9aa90c00edf6ae0a003c680c3145f25c817",
+        "reason": "The automatic mask misses the darker crimson half of the hut roof and its shadow pixels, which would stay red on a Teal port. The override selects every opaque pixel in the keyLike band (the widest band an override may use): the roof and the flag, nothing else. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-monument",
+      "subject": "IMPROVEMENT:MONUMENT",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      },
+      "ownerColour": true,
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-monument.mask-override.png",
+        "masterPixelSha256": "32072f5c4df33f5b36881f3b444596cd3e3953bca7a91d5877710c24d0bba1b9",
+        "reason": "The automatic mask catches only the lighter half of the left banner; the right banner and the banner shadows are crimson just outside the extraction band and would stay red for every owner. The override selects every opaque pixel in the keyLike band: both banners and nothing else. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-mined-mountain-1",
+      "subject": "TERRAIN:MINED_MOUNTAIN",
+      "assetClass": "TALL_TERRAIN",
+      "recipeClass": "tall-terrain",
+      "canvas": {
+        "width": 80,
+        "height": 104
+      },
+      "groundAsset": "chibi-grass-1"
+    },
+    {
+      "id": "chibi-mined-mountain-2",
+      "subject": "TERRAIN:MINED_MOUNTAIN",
+      "assetClass": "TALL_TERRAIN",
+      "recipeClass": "tall-terrain",
+      "canvas": {
+        "width": 80,
+        "height": 104
+      },
+      "groundAsset": "chibi-grass-1"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "fruit-a",
+      "asset": "chibi-fruit",
+      "endpoint": "create-image-pixen",
+      "seed": 69101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "tree trunk, basket, crate, person, character, red apples"
+    },
+    {
+      "id": "ore-a",
+      "asset": "chibi-ore",
+      "endpoint": "create-image-pixen",
+      "seed": 69401,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "mine cart, pickaxe, person, character, gold coins, glowing"
+    },
+    {
+      "id": "fish-a",
+      "asset": "chibi-fish",
+      "endpoint": "create-image-pixen",
+      "seed": 69501,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "water surface, pond, ripples ring, boat, fishing rod, person, character"
+    },
+    {
+      "id": "fertile-ground-a",
+      "asset": "chibi-fertile-ground",
+      "endpoint": "create-image-pixen",
+      "seed": 69201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "field, farm, fence, basket, sack, person, character, scarecrow"
+    },
+    {
+      "id": "game-a",
+      "asset": "chibi-game",
+      "endpoint": "create-image-pixen",
+      "seed": 69301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "hunter, person, character, saddle, harness, red nose, reindeer"
+    },
+    {
+      "id": "pearls-a",
+      "asset": "chibi-pearls",
+      "endpoint": "create-image-pixen",
+      "seed": 69601,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "water surface, pond, sand, beach, person, character, pink, necklace"
+    },
+    {
+      "id": "treasure-a",
+      "asset": "chibi-treasure",
+      "endpoint": "create-image-pixen",
+      "seed": 69701,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "person, character, skull, map, red gems, brown wood, dark brown"
+    },
+    {
+      "id": "farm-a",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69801,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, farmer, worker, figure, animal, cow, horse, scarecrow, windmill"
+    },
+    {
+      "id": "lumber-camp-a",
+      "asset": "chibi-lumber-camp",
+      "endpoint": "create-image-pixen",
+      "seed": 69901,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, lumberjack, worker, figure, animal, sawmill, water wheel"
+    },
+    {
+      "id": "port-a",
+      "asset": "chibi-port",
+      "endpoint": "create-image-pixen",
+      "seed": 70001,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, sailor, figure, ship, boat, sail, lighthouse"
+    },
+    {
+      "id": "monument-a",
+      "asset": "chibi-monument",
+      "endpoint": "create-image-pixen",
+      "seed": 70101,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, statue, figure, king, fountain, stepped base, stairs"
+    },
+    {
+      "id": "mined-mountain-1-a",
+      "asset": "chibi-mined-mountain-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 70201,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "source": {
+        "batch": "1",
+        "recipe": "mountain-1-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+      "notes": "Mine: edit of the accepted batch-1 Mountain 1 body so a mined mountain keeps its mountain's shape (MINED_MOUNTAIN variants follow the Mountain variant order)."
+    },
+    {
+      "id": "mined-mountain-2-a",
+      "asset": "chibi-mined-mountain-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 70202,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "source": {
+        "batch": "1",
+        "recipe": "mountain-3-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, small pine trees, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+      "notes": "Mine: edit of the accepted batch-1 Mountain 3 body (second Mountain variant)."
+    },
+    {
+      "id": "fruit-a-edit",
+      "asset": "chibi-fruit",
+      "endpoint": "edit-image-pixen",
+      "seed": 69102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "fruit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the soil disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leaves, peach-orange fruits, trunk, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of fruit-a (good small fruit tree on a soil disc)."
+    },
+    {
+      "id": "ore-a-edit",
+      "asset": "chibi-ore",
+      "endpoint": "edit-image-pixen",
+      "seed": 69402,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "ore-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass disc under the rocks so the dark rocks and blue crystals stand directly on a transparent background with nothing at all under them. Keep the rocks, crystals, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of ore-a (rocks and crystals on a grass disc)."
+    },
+    {
+      "id": "fish-a-edit",
+      "asset": "chibi-fish",
+      "endpoint": "edit-image-pixen",
+      "seed": 69502,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "fish-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the round pond, its grass rim and soil base: keep only the two leaping yellow fish and a tiny white water splash under them, on a transparent background with nothing else. Keep the fish, outline and art style exactly the same.",
+      "notes": "fish-a drew the fish over a round pond island; keep the fish, drop the pond."
+    },
+    {
+      "id": "farm-a-edit",
+      "asset": "chibi-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 69802,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "farm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab under the farm so the barn, wheat field, fence and haystack stand directly on a transparent background with nothing under them. Paint the whole barn roof solid bright red with darker red shading. Make every wall timber and the fence pale straw yellow, never brown. Keep the layout, outline and art style the same.",
+      "notes": "Ground removal plus a solid key-red roof (farm-a: slab, 14.7% owner area, 4.3% red-brown timber)."
+    },
+    {
+      "id": "lumber-camp-a-edit",
+      "asset": "chibi-lumber-camp",
+      "endpoint": "edit-image-pixen",
+      "seed": 69902,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "lumber-camp-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab under the camp so the cabin, log pile and pine trees stand directly on a transparent background with nothing under them. Paint the whole cabin roof solid bright red with darker red shading. Make the cabin log walls pale birch yellow, never brown. Keep the layout, outline and art style the same.",
+      "notes": "Ground removal plus a solid key-red roof and pale walls (lumber-camp-a: slab, 13.3% owner area, 6.6% red-brown walls)."
+    },
+    {
+      "id": "port-a-edit",
+      "asset": "chibi-port",
+      "endpoint": "edit-image-pixen",
+      "seed": 70002,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "port-a",
+        "candidate": 0
+      },
+      "editInstruction": "Paint the hut roof and the flag solid bright red with darker red shading, and make the flag twice as big. Make the roof ridge and flag pole pale birch yellow, never brown or orange. Keep the pier, posts, hut walls, outline and art style exactly the same, on a transparent background with nothing under the posts.",
+      "notes": "port-a is the right pier; enlarge and brighten its owner area (7.2% crimson)."
+    },
+    {
+      "id": "port-a-edit-2",
+      "asset": "chibi-port",
+      "endpoint": "edit-image-pixen",
+      "seed": 70003,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "port-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the hut roof and the flag in one deep crimson red with darker crimson shading and no orange or scarlet highlights, and make the flag bigger. Make the door pale birch yellow, not brown. Keep the pier, posts, hut walls, outline and art style exactly the same, on a transparent background with nothing under the posts.",
+      "notes": "port-a-edit roof and flag mix scarlet (hue above 5) with the key: 6.4% red-brown; ask for one crimson as city-2-b-crimson did."
+    },
+    {
+      "id": "monument-a-edit",
+      "asset": "chibi-monument",
+      "endpoint": "edit-image-pixen",
+      "seed": 70102,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "monument-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the two red cloth banners much wider and longer so together they cover most of the front of the obelisk, in one deep crimson red with darker crimson shading and no orange highlights. Keep the beige stone obelisk, golden star, small stone footing, outline and art style exactly the same, on a transparent background with nothing under it.",
+      "notes": "monument-a is the right obelisk but only 10.7% owner area; widen the banners."
+    },
+    {
+      "id": "farm-a-edit-2",
+      "asset": "chibi-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 69803,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "farm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase only the green grass border and the brown soil sides of the slab so nothing sticks out below the farm. Keep the square field of golden wheat rows, its pale fence, the barn, the haystack, outline and art style exactly the same. Paint the whole barn roof solid bright red with darker red shading. Transparent background.",
+      "notes": "farm-a-edit removed the slab and the wheat field with it; keep the field, drop only the slab edges."
+    },
+    {
+      "id": "pearls-a-edit",
+      "asset": "chibi-pearls",
+      "endpoint": "edit-image-pixen",
+      "seed": 69602,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "pearls-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the small brown pebbles floating around the shell so only the open clam shell with its white pearl remains, on a transparent background with nothing else. Keep the shell, pearl, outline and art style exactly the same.",
+      "notes": "pearls-a: good clam, but loose pebbles float around it."
+    },
+    {
+      "id": "fish-b",
+      "asset": "chibi-fish",
+      "endpoint": "create-image-pixen",
+      "seed": 69503,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "water surface, pond, island, grass, soil, ripples ring, boat, fishing rod, person, character, second fish",
+      "notes": "fish-a-edit is right but tiny (about 20 px): ask for one big fish."
+    },
+    {
+      "id": "farm-b",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69804,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, farmer, worker, figure, animal, cow, horse, scarecrow, windmill, field, soil rows, furrows",
+      "notes": "Farm subject rewritten to barn plus upright wheat sheaves (farm-a's flat field is ground and does not survive ground removal)."
+    },
+    {
+      "id": "farm-c",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69805,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, farmer, worker, figure, animal, cow, horse, scarecrow, windmill, field, soil rows, furrows",
+      "notes": "Second seed of farm-b."
+    },
+    {
+      "id": "monument-b",
+      "asset": "chibi-monument",
+      "endpoint": "create-image-pixen",
+      "seed": 70103,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "soldier, person, character, archer, statue, figure, king, fountain, stepped base, stairs, plinth, pedestal, square base",
+      "notes": "monument-a stands on a square stone footing that reads as a plinth; ask for an obelisk rising straight from the ground."
+    },
+    {
+      "id": "game-a-edit",
+      "asset": "chibi-game",
+      "endpoint": "edit-image-pixen",
+      "seed": 69302,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "game-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the deer's nose a small dark grey dot instead of red. Keep the deer, antlers, sandy fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+      "notes": "game-a is the right deer, but its nose is red (a reindeer read)."
+    },
+    {
+      "id": "farm-c-edit",
+      "asset": "chibi-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 69806,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "farm-c",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab and the stone path under the farm so the barn, wheat sheaves, haystack and fence stand directly on a transparent background with nothing under them. Make all timber and the door pale straw yellow, never brown. Keep the red roof, cream walls, outline and art style exactly the same.",
+      "notes": "farm-c is the right chunky barn with wheat sheaves; remove its slab and brown timber."
+    },
+    {
+      "id": "monument-a-edit-2",
+      "asset": "chibi-monument",
+      "endpoint": "edit-image-pixen",
+      "seed": 70104,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "monument-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the square grey stone footing and its orange rim at the bottom, so the beige obelisk rises straight from a transparent background with nothing at all under it. Keep the obelisk, golden star, red banners, outline and art style exactly the same.",
+      "notes": "monument-a stands on a square stone footing that reads as a plinth; remove it (monument-b drew a stubby tower on a slab)."
+    },
+    {
+      "id": "farm-c-edit-2",
+      "asset": "chibi-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 69807,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "farm-c",
+        "candidate": 0
+      },
+      "editInstruction": "Erase only the green grass and the brown soil sides of the slab under the farm. Keep the barn, the golden wheat sheaves, the round haystack and the white fence exactly where they are, standing on a transparent background. Paint the roof one deep crimson red with darker crimson shading, no orange highlights, and the timber pale straw yellow. Keep the outline and art style the same.",
+      "notes": "farm-c-edit dropped the wheat sheaves and haystack with the slab (a plain cottage); keep them this time and use one crimson."
+    },
+    {
+      "id": "farm-c-edit-3",
+      "asset": "chibi-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 69808,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "farm-c-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Add three big upright golden wheat sheaves standing at the left of the barn and one big round golden haystack at its right, all standing directly on the transparent background with nothing under them. Make the barn timber pale straw yellow, not orange or brown. Keep the barn, red roof, cream walls, outline and art style exactly the same.",
+      "notes": "farm-c-edit is a clean barn on nothing but lost its farm cues; add wheat sheaves and a haystack back without ground."
+    }
+  ]
+}

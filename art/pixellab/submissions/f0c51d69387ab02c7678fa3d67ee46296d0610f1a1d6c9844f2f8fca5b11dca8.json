@@ -1,0 +1,36 @@
+{
+  "id": "game-a-edit",
+  "jobId": "efeacc22-df5f-48ed-a610-6785063a139d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-game",
+    "subject": "RESOURCE:GAME",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 69302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the deer's nose a small dark grey dot instead of red. Keep the deer, antlers, sandy fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves."
+      }
+    ],
+    "prompt": "Make the deer's nose a small dark grey dot instead of red. Keep the deer, antlers, sandy fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "negativePrompt": "",
+    "description": "Make the deer's nose a small dark grey dot instead of red. Keep the deer, antlers, sandy fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "editInstruction": "Make the deer's nose a small dark grey dot instead of red. Keep the deer, antlers, sandy fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "source": {
+      "recipe": "game-a",
+      "candidate": 0,
+      "sha256": "458733df831cbf3bc949a9be6e2a6d75bc998e2b0a0260b82b9c9e0eb23398c4"
+    }
+  }
+}

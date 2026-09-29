@@ -1,0 +1,36 @@
+{
+  "id": "farm-c-edit",
+  "jobId": "b55b1dc3-93d3-492b-9ff7-e38f2fc947f9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-farm",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69806,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and soil slab and the stone path under the farm so the barn, wheat sheaves, haystack and fence stand directly on a transparent background with nothing under them. Make all timber and the door pale straw yellow, never brown. Keep the red roof, cream walls, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and soil slab and the stone path under the farm so the barn, wheat sheaves, haystack and fence stand directly on a transparent background with nothing under them. Make all timber and the door pale straw yellow, never brown. Keep the red roof, cream walls, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and soil slab and the stone path under the farm so the barn, wheat sheaves, haystack and fence stand directly on a transparent background with nothing under them. Make all timber and the door pale straw yellow, never brown. Keep the red roof, cream walls, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and soil slab and the stone path under the farm so the barn, wheat sheaves, haystack and fence stand directly on a transparent background with nothing under them. Make all timber and the door pale straw yellow, never brown. Keep the red roof, cream walls, outline and art style exactly the same.",
+    "source": {
+      "recipe": "farm-c",
+      "candidate": 0,
+      "sha256": "f8ccac0e0b050d942ac41cc41eba157ddb63b7d585d372c5880ebff294a7816b"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "id": "treasure-a",
+  "jobId": "sync-7eda9b97-dbca-4228-8790-dbdfa0cafb71",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "3",
+    "asset": "chibi-treasure",
+    "subject": "TREASURE",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 69701,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+        "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+        "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: a small chunky treasure chest of pale golden birch planks with light steel bands, corners and a round steel lock, the lid slightly open showing a heap of gold coins inside; the chest is the only thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "person, character, skull, map, red gems, brown wood, dark brown"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky treasure chest of pale golden birch planks with light steel bands, corners and a round steel lock, the lid slightly open showing a heap of gold coins inside; the chest is the only thing in the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, person, skull, map, red gems, brown wood, dark brown",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky treasure chest of pale golden birch planks with light steel bands, corners and a round steel lock, the lid slightly open showing a heap of gold coins inside; the chest is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, person, skull, map, red gems, brown wood, dark brown."
+  }
+}

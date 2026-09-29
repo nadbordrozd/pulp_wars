@@ -78,6 +78,18 @@ equal its master canvas. Pixen sizes must be multiples of 4.
 Pixen draws trees and rocks on an isometric slab just as it does cities, so
 tall terrain may use the same ground-removal edit before the composite.
 
+### Building on earlier batches
+
+- **Cross-batch edit source:** an edit recipe's `source` may name an
+  earlier production batch (`{ "batch": "1", "recipe": "mountain-1-b-edit",
+"candidate": 0 }`). The candidate is read from that batch's records and
+  raw sheet, must match the request size, and its hash is stored in the new
+  record. Batch 3 derives each Mined Mountain from the accepted batch-1
+  Mountain this way, so a Mine keeps its mountain's shape.
+- **Cross-batch ground:** a tall-terrain `groundAsset` accepted in an
+  earlier production batch is found there when the current batch has no
+  such asset; the record's `derivation.ground.batch` names it.
+
 ## Terrain palettes and variants
 
 - **Forced palette:** a Pixflux recipe may name a checked-in PNG in
@@ -142,8 +154,20 @@ entry against the records.
 and B (Teal) through the runtime recolour, exact 1170 x 2532 phone and
 1440 x 900 desktop mocks, in-game captures with `?art=chibi` at zoom 1 and
 0.75 on desktop and phone, `phone-links.md` with raw GitHub URLs, and
-`index.json`. Captures start Vite on port 6175 (never 6173) unless a URL is
-given, and need `CHROME_PATH`. `--skip-capture` skips them.
+`index.json`. Captures start Vite on port 6175 (never 6173; `--port N`
+picks another) unless a URL is given, and need `CHROME_PATH`.
+`--skip-capture` skips them.
+
+From batch 3 on, a batch without terrain of its own is reviewed on the
+accepted terrain of earlier batches, water pieces (Fish, Pearls, Port,
+ships) stand on shallow water in the sheets and mocks, and the captures add
+`ingame-scene-{desktop,phone}-zoom-{1,0.75}.png`: the synthetic showcase in
+[`review-scene-v7.ts`](../../scripts/art/chibi/review-scene-v7.ts), which
+rewrites a 9 x 7 patch around the capital of the running game (every
+resource and improvement, Farm pairs, Mines, Ports with Fish, Roads with
+corner joins, Field Defense and a fortification level, Treasure, two
+owners) and draws it with the real board host, since a fresh game's start
+area shows almost none of them.
 
 ## Dry run
 

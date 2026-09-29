@@ -1,0 +1,36 @@
+{
+  "id": "farm-a-edit-2",
+  "jobId": "d9319216-829d-4694-ad86-3977daa80297",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-farm",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "ORIGINAL",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69803,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase only the green grass border and the brown soil sides of the slab so nothing sticks out below the farm. Keep the square field of golden wheat rows, its pale fence, the barn, the haystack, outline and art style exactly the same. Paint the whole barn roof solid bright red with darker red shading. Transparent background."
+      }
+    ],
+    "prompt": "Erase only the green grass border and the brown soil sides of the slab so nothing sticks out below the farm. Keep the square field of golden wheat rows, its pale fence, the barn, the haystack, outline and art style exactly the same. Paint the whole barn roof solid bright red with darker red shading. Transparent background.",
+    "negativePrompt": "",
+    "description": "Erase only the green grass border and the brown soil sides of the slab so nothing sticks out below the farm. Keep the square field of golden wheat rows, its pale fence, the barn, the haystack, outline and art style exactly the same. Paint the whole barn roof solid bright red with darker red shading. Transparent background.",
+    "editInstruction": "Erase only the green grass border and the brown soil sides of the slab so nothing sticks out below the farm. Keep the square field of golden wheat rows, its pale fence, the barn, the haystack, outline and art style exactly the same. Paint the whole barn roof solid bright red with darker red shading. Transparent background.",
+    "source": {
+      "recipe": "farm-a",
+      "candidate": 0,
+      "sha256": "1de2bb92cc4a25a5ceeae2921d362ccf3b99a9599908a56bbce3617ca27ccdbf"
+    }
+  }
+}
