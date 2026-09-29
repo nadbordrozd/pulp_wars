@@ -13,6 +13,7 @@ import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
 import {
   batchManifestProblems,
   layeredPrompt,
+  promptLayerChanges,
   requestBody,
   requestSnapshot,
   type ChibiBatchManifest,
@@ -423,6 +424,75 @@ describe("chibi prompt layering and manifests", async () => {
     const body = requestBody(editRequest, Buffer.from("png"));
     expect(body).toMatchObject({ width: 72, height: 72, seed: 67203 });
     expect(() => requestBody(editRequest)).toThrow(/source image/);
+  });
+
+  it("keeps the shared owner fragment faction-neutral", () => {
+    const owner = fragments.owner.text;
+    expect(fragments.owner.source).toBe(
+      "scripts/art/chibi/fragments/owner.txt",
+    );
+    // The key colour and the target owner area stay.
+    expect(owner).toContain("bright red (#d8262c)");
+    expect(owner).toContain("about a quarter to a third of the subject");
+    // Non-owner materials must not be red, whatever the faction's materials.
+    expect(owner).toMatch(/clearly not red or red-brown/);
+    // It also lands in settlement and building prompts, and in every
+    // faction's: no figure wording and no faction materials or props.
+    expect(owner).not.toMatch(
+      /\b(figure|leather|wood|wooden|shields?|boots?|bows?|metal|bone|cloth|steel)\b/i,
+    );
+    expect(owner.replaceAll("red-brown", "")).not.toMatch(/brown/i);
+  });
+
+  it("keeps generated records as the historical requests", async () => {
+    let owned = 0;
+    for (const batch of ["1", "2"]) {
+      const production = await loadBatchManifest(ROOT, batch);
+      const records = await loadRecords(productionLayout(ROOT, batch), batch);
+      for (const record of Object.values(records.recipes)) {
+        const recorded = record.request.layers.find(
+          (layer) => layer.layer === "owner",
+        );
+        if (recorded === undefined) continue;
+        owned += 1;
+        // Generated before bead pulp_wars-bi3: the Human-era owner text
+        // stays in the record, exactly as it was sent to PixelLab.
+        expect(recorded.text).toContain("leather, wood, shields");
+        expect(record.request.prompt).toContain(recorded.text);
+        const recipe = production.recipes.find(
+          (entry) => entry.id === record.id,
+        );
+        if (recipe === undefined) throw new Error(`${record.id}: no recipe`);
+        const live = requestSnapshot(fragments, production, recipe);
+        expect(promptLayerChanges(record.request, live)).toContain("owner");
+        expect(live.prompt).toContain(fragments.owner.text);
+      }
+    }
+    expect(owned).toBeGreaterThan(0);
+  });
+
+  it("lists the prompt layers that changed since generation", () => {
+    const layer = (name: "owner" | "subject" | "recipe", text: string) => ({
+      layer: name,
+      source: `${name}.txt`,
+      text,
+    });
+    const recorded = {
+      layers: [layer("owner", "old"), layer("subject", "same")],
+    };
+    expect(promptLayerChanges(recorded, recorded)).toEqual([]);
+    expect(
+      promptLayerChanges(recorded, {
+        layers: [
+          layer("owner", "new"),
+          { ...layer("subject", "same"), negative: "pedestal" },
+          layer("recipe", "extra"),
+        ],
+      }),
+    ).toEqual(["owner", "subject", "recipe"]);
+    expect(
+      promptLayerChanges(recorded, { layers: [layer("subject", "same")] }),
+    ).toEqual(["owner"]);
   });
 
   it("accepts the checked-in batch manifests", async () => {

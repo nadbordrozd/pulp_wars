@@ -24,6 +24,7 @@ import process from "node:process";
 import {
   batchManifestProblems,
   findAsset,
+  promptLayerChanges,
   requestSnapshot,
 } from "./chibi/batch-manifest";
 import { runDryRun } from "./chibi/dry-run";
@@ -140,11 +141,23 @@ async function main(): Promise<void> {
         `${state.padEnd(10)} ${recipe.id} -> ${recipe.asset} (${recipe.endpoint} ${recipe.requestSize.width}x${recipe.requestSize.height} seed ${recipe.seed})`,
       );
       if (command === "prompts") {
-        const request = requestSnapshot(fragments, manifest, recipe);
+        // A generated recipe shows the request it was generated with; the
+        // live fragments apply only to recipes not yet generated.
+        const live = requestSnapshot(fragments, manifest, recipe);
+        const request = record?.request ?? live;
         for (const layer of request.layers)
           console.log(`  [${layer.layer}] ${layer.source}`);
-        console.log(`  description: ${request.description}`);
+        console.log(
+          `  ${record === undefined ? "description" : "recorded description"}: ${request.description}`,
+        );
         console.log(`  options: ${JSON.stringify(request.options)}`);
+        if (record !== undefined) {
+          const changed = promptLayerChanges(record.request, live);
+          if (changed.length > 0)
+            console.log(
+              `  live fragments changed since generation: ${changed.join(", ")}`,
+            );
+        }
       }
     }
     return;

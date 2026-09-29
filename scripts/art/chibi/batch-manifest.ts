@@ -554,6 +554,35 @@ export function requestSnapshot(
 }
 
 /**
+ * Prompt layers whose source or text differ between the request recorded at
+ * generation time and the one the live fragments build now. Fragments are
+ * live: they apply to recipes not yet generated. A recorded request is the
+ * historical copy and is never rebuilt or resubmitted, so a later fragment
+ * edit (for example owner.txt, bead pulp_wars-bi3) shows up here as drift,
+ * not as a validation failure.
+ */
+export function promptLayerChanges(
+  recorded: Pick<ChibiRequestSnapshot, "layers">,
+  live: Pick<ChibiRequestSnapshot, "layers">,
+): PromptLayerName[] {
+  const names = [
+    ...new Set([
+      ...recorded.layers.map((layer) => layer.layer),
+      ...live.layers.map((layer) => layer.layer),
+    ]),
+  ];
+  return names.filter((name) => {
+    const before = recorded.layers.find((layer) => layer.layer === name);
+    const after = live.layers.find((layer) => layer.layer === name);
+    return (
+      before?.source !== after?.source ||
+      before?.text !== after?.text ||
+      before?.negative !== after?.negative
+    );
+  });
+}
+
+/**
  * The PixelLab JSON body; `sourceImage` is the resolved edit source and
  * `colorImage` the resolved forced-palette PNG.
  */

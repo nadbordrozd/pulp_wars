@@ -40,6 +40,27 @@ layer's source and text, the full description, size, seed and options.
 
 A faction swap changes only layer 3 and the subject list; a test checks it.
 
+### Fragment changes and historical records
+
+Fragments are live: an edit applies to every recipe not yet generated. A
+generated recipe keeps the request stored in its record and receipt, which
+is the exact text sent to PixelLab; `generate` never resubmits it, and
+`art:validate` checks the stored bytes, receipts and masks, not the stored
+text against today's fragments. `prompts` prints a generated recipe's
+recorded description and lists the layers the live fragments have changed
+since (`promptLayerChanges`). So accepted assets stay valid after a fragment
+edit; to use new text, add a new recipe.
+
+`owner.txt` became faction-neutral in bead `pulp_wars-bi3`. It keeps the key
+colour and the owner area (about a quarter to a third of the subject, since
+it also reaches settlements and buildings) and says every other material and
+its shading must be clearly not red or red-brown. It no longer says "figure"
+or names Human materials ("leather, wood, shields, boots and bows use
+browns"), which invited brown shading on metal and bone factions. Materials
+and their non-red shading belong in the faction fragment and subject lines
+(see the [factions README](factions/README.md)). Batch 1 and 2 records keep
+the Human-era owner text they were generated with.
+
 ## Class recipes
 
 | Recipe class   | Endpoint                                       | Master                                                                                                 |
