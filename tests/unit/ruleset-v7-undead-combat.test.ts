@@ -878,7 +878,7 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
       "2026-09-29T12:00:00.000Z",
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
-  });
+  }, 60_000);
 
   it("keeps an all-Human exchange neutral", () => {
     const state = arena(

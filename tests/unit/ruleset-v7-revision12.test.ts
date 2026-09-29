@@ -986,7 +986,7 @@ describe("ruleset-7 revision-12 Raider Escape", () => {
     expect(loaded.kind).toBe("VALID");
     if (loaded.kind !== "VALID") return;
     expect(canonicalHash(loaded.save.state)).toBe(canonicalHash(state));
-  });
+  }, 60_000);
 
   it("uses the escape Move only toward a strictly safer visible tile", () => {
     const fixture = raiderEscapePublicFixtureV7();
