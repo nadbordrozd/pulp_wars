@@ -7,6 +7,7 @@ import {
 } from "../../src/ai/v7-opening";
 import {
   CAPITAL_GROWTH_MINIMUM_V7,
+  PRIOR_RULESET_7_IDS,
   RULESET_7_ID,
   SAVE_STORAGE_KEY_V7,
   SHALLOW_WATER_MINIMUM_SHARE_V7,
@@ -22,6 +23,8 @@ import {
   parseGameStateV7,
   parseMatchSetupV7,
   parseReplayFileV7,
+  parseReplayJsonV7,
+  runReplayV7,
   villageCountV7,
   viewForV7,
   type BiomeIdV7,
@@ -92,8 +95,6 @@ describe("ruleset-7 revision-16 identity", () => {
         setup: oldSetup,
       }),
     ).toBeNull();
-    // Identities after 7r12 are rejected as invalid setups (the replay reader
-    // names only the older identities as incompatible).
     expect(
       parseReplayFileV7({
         format: "pulp-wars-replay",
@@ -102,7 +103,7 @@ describe("ruleset-7 revision-16 identity", () => {
         commands: [],
         checkpoints: [],
       }),
-    ).toEqual({ kind: "INVALID_REPLAY" });
+    ).toEqual({ kind: "INCOMPATIBLE_REPLAY" });
     expect(parseReplayFileV7(createReplayV7(setup)).kind).toBe("VALID");
     const save = createSaveEnvelopeV7(
       { state: created.state, replay: createReplayV7(setup) },
@@ -119,6 +120,64 @@ describe("ruleset-7 revision-16 identity", () => {
         }),
       ),
     ).toMatchObject({ kind: "INCOMPATIBLE" });
+  });
+});
+
+describe("ruleset-7 prior identities", () => {
+  const revision = Number(/^pulp-wars-poc-7r(\d+)$/.exec(RULESET_7_ID)?.[1]);
+  const expectedPrior = [
+    "pulp-wars-poc-7",
+    ...Array.from(
+      { length: revision - 2 },
+      (_, index) => `pulp-wars-poc-7r${String(index + 2)}`,
+    ),
+  ];
+
+  it("lists every earlier Ruleset 7 identity exactly once, in order", () => {
+    expect(revision).toBe(16);
+    expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
+    expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
+  });
+
+  it("cleans the autosave key of every earlier Ruleset 7 identity", () => {
+    expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual(
+      PRIOR_RULESET_7_IDS.map((id) =>
+        id === "pulp-wars-poc-7"
+          ? "pulpWars.save.v7.current"
+          : `pulpWars.save.v7r${id.slice("pulp-wars-poc-7r".length)}.current`,
+      ),
+    );
+  });
+
+  it.each(expectedPrior)("reports a %s replay as INCOMPATIBLE_REPLAY", (id) => {
+    const setup = { ...setupFor("CONTINENTS", 11, 1, 3), rulesetId: id };
+    const replay = {
+      format: "pulp-wars-replay",
+      version: 7,
+      setup,
+      commands: [],
+      checkpoints: [],
+    };
+    expect(parseReplayFileV7(replay)).toEqual({ kind: "INCOMPATIBLE_REPLAY" });
+    expect(parseReplayJsonV7(JSON.stringify(replay))).toEqual({
+      kind: "INCOMPATIBLE_REPLAY",
+    });
+    expect(() => runReplayV7(replay)).toThrow(
+      expect.objectContaining({ code: "INCOMPATIBLE_REPLAY" }),
+    );
+  });
+
+  it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r17", "other"])
+      expect(
+        parseReplayFileV7({
+          format: "pulp-wars-replay",
+          version: 7,
+          setup: { ...setupFor("CONTINENTS", 11, 1, 3), rulesetId: id },
+          commands: [],
+          checkpoints: [],
+        }),
+      ).toEqual({ kind: "INVALID_REPLAY" });
   });
 });
 

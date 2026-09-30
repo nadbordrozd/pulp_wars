@@ -13,7 +13,11 @@ import {
 } from "./schema";
 import { parseMatchSetupV7 } from "./setup";
 import { parseGameStateV7 } from "./state-schema";
-import type { GameStateV7, MatchSetupV7 } from "./types";
+import {
+  PRIOR_RULESET_7_IDS,
+  type GameStateV7,
+  type MatchSetupV7,
+} from "./types";
 
 export interface ReplayCheckpointV7 {
   readonly index: number;
@@ -139,20 +143,7 @@ export function parseReplayFileV7(input: unknown): ReplayParseResultV7 {
   if (
     hasFormatVersion(input, "pulp-wars-replay") &&
     input.version === 7 &&
-    [
-      "pulp-wars-poc-7",
-      "pulp-wars-poc-7r2",
-      "pulp-wars-poc-7r3",
-      "pulp-wars-poc-7r4",
-      "pulp-wars-poc-7r5",
-      "pulp-wars-poc-7r6",
-      "pulp-wars-poc-7r7",
-      "pulp-wars-poc-7r8",
-      "pulp-wars-poc-7r9",
-      "pulp-wars-poc-7r10",
-      "pulp-wars-poc-7r11",
-      "pulp-wars-poc-7r12",
-    ].some((rulesetId) => hasRulesetSetup(input, rulesetId))
+    PRIOR_RULESET_7_IDS.some((rulesetId) => hasRulesetSetup(input, rulesetId))
   )
     return { kind: "INCOMPATIBLE_REPLAY" };
   if (
