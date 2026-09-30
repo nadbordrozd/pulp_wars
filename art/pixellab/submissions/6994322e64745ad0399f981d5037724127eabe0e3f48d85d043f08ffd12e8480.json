@@ -1,0 +1,62 @@
+{
+  "id": "effect-splash-c",
+  "jobId": "sync-83326769-a11b-4560-99b5-7e8e98be9adc",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "effects-undead",
+    "asset": "chibi-effect-splash",
+    "subject": "EFFECT:SPLASH",
+    "faction": "UNDEAD",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 14162,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-flat.txt",
+        "text": "Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-effect.txt + scripts/art/chibi/fragments/class-effect.negative.txt",
+        "text": "Class: one bold chunky magic effect sprite for a turn-based strategy game map, a single stylised burst with a big simple silhouette, thick single-colour black outline around every shape, flat solid colours with one shadow tone and very few details; it must read at a glance at 40 pixels drawn over grass and over small figures. All colours are solid and opaque, with no soft glow and no gradients. The effect floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, dirt, earth, pedestal, plate, shadow, character, person, creature, text, letters, numbers, red, crimson, blood, gore, bright green, lime, glowing green, cyan glow, teal, turquoise, purple magic glow, violet, orange flames, yellow, gold, translucent, see-through, soft glow"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/UNDEAD.json",
+        "text": "Subject: a round starburst explosion of cold magic flame seen from above: spiky pale icy blue flame tongues pointing outward in every direction from a round white-hot centre, with a few small ivory spark specks around it, floating in empty space; no base, no fire pit, no logs."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped. Class: one bold chunky magic effect sprite for a turn-based strategy game map, a single stylised burst with a big simple silhouette, thick single-colour black outline around every shape, flat solid colours with one shadow tone and very few details; it must read at a glance at 40 pixels drawn over grass and over small figures. All colours are solid and opaque, with no soft glow and no gradients. The effect floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a round starburst explosion of cold magic flame seen from above: spiky pale icy blue flame tongues pointing outward in every direction from a round white-hot centre, with a few small ivory spark specks around it, floating in empty space; no base, no fire pit, no logs.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, dirt, earth, pedestal, plate, shadow, character, person, creature, red, crimson, blood, gore, bright green, lime, glowing green, cyan glow, teal, turquoise, purple magic glow, violet, orange flames, yellow, gold, translucent, see-through, soft glow, base, stand, stone slab, floor, campfire, fire pit, logs",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped. Class: one bold chunky magic effect sprite for a turn-based strategy game map, a single stylised burst with a big simple silhouette, thick single-colour black outline around every shape, flat solid colours with one shadow tone and very few details; it must read at a glance at 40 pixels drawn over grass and over small figures. All colours are solid and opaque, with no soft glow and no gradients. The effect floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a round starburst explosion of cold magic flame seen from above: spiky pale icy blue flame tongues pointing outward in every direction from a round white-hot centre, with a few small ivory spark specks around it, floating in empty space; no base, no fire pit, no logs. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, dirt, earth, pedestal, plate, shadow, character, person, creature, red, crimson, blood, gore, bright green, lime, glowing green, cyan glow, teal, turquoise, purple magic glow, violet, orange flames, yellow, gold, translucent, see-through, soft glow, base, stand, stone slab, floor, campfire, fire pit, logs.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/undead-frost.png",
+      "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+    }
+  }
+}

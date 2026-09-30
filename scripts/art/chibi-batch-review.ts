@@ -25,6 +25,16 @@
  *                          showcase; others get a roster of their unit and
  *                          improvement subjects for the viewer and an Undead
  *                          rival, ships on water, with Fighters for scale
+ *   ingame-effects-*.png   effect batches (every asset a STATUS or EFFECT,
+ *                          bead pulp_wars-vkq.14): the synthetic effects
+ *                          scene (scripts/art/chibi/review-effects-v7.ts)
+ *                          with the Plague and Bitten markers on units of all
+ *                          four colours and the effect cues pinned
+ *                          mid-animation (scene A: Wail, Lich splash, Plague,
+ *                          Lifesteal; scene B: Raise Dead, the Bitten and
+ *                          Infect risings, cure), zoom 1 and 0.75, desktop
+ *                          and phone; effect batches get effect sheets
+ *                          instead of the owner sheets and mocks
  *   phone-links.md         raw GitHub URLs for review on a phone
  *   index.json             sizes, hashes, anchors, mask coverage and QA
  *
@@ -328,7 +338,9 @@ function groundFor(
  */
 async function contextTerrain(batch: string): Promise<ReviewAsset[]> {
   const result: ReviewAsset[] = [];
-  for (let earlier = 1; earlier < Number(batch); earlier += 1) {
+  // A named batch (effects-undead) is reviewed on every numbered batch.
+  const last = /^[0-9]+$/.test(batch) ? Number(batch) : 6;
+  for (let earlier = 1; earlier < last; earlier += 1) {
     const manifest = await loadBatchManifest(ROOT, String(earlier)).catch(
       () => undefined,
     );
@@ -853,6 +865,338 @@ async function interfaceSheet(
   await writeImage(file, target, labels);
 }
 
+// ------------------------------------------------------------ effect sheets
+
+/** Board overlays of bead pulp_wars-vkq.14: status markers and effects. */
+function isEffectAsset(asset: ReviewAsset): boolean {
+  return (
+    asset.spec.assetClass === "STATUS" || asset.spec.assetClass === "EFFECT"
+  );
+}
+
+/** A marker master (32 x 32) is drawn at 16 CSS px per zoom step. */
+const MARKER_CSS = 16;
+/**
+ * Top-left of a marker in its CHIBI slot 0 relative to the cell's top-left
+ * at zoom 1 (AFFLICTION_MARKER_FRAME_V7.chibi[0]: left -52, top -36, size
+ * 26 world units, x 0.625, centred, rounded like the renderer at DPR 1).
+ */
+const MARKER_SLOT = { x: 8, y: 18 };
+
+const PLAYER_COLOURS = [
+  ["Coral", RULESET7_PLAYER_COLORS.CORAL],
+  ["Teal", RULESET7_PLAYER_COLORS.TEAL],
+  ["Gold", RULESET7_PLAYER_COLORS.GOLD],
+  ["Violet", RULESET7_PLAYER_COLORS.VIOLET],
+] as const;
+
+function recolouredWith(master: RgbaRaster, mask: BinaryMask, hex: string) {
+  const rgb = parseHexColourV7(hex);
+  if (rgb === null) throw new Error("bad owner colour");
+  const maskPixels = new Uint8ClampedArray(mask.width * mask.height * 4);
+  mask.bits.forEach((bit, index) => {
+    if (bit === 1) maskPixels[index * 4 + 3] = 255;
+  });
+  return {
+    width: master.width,
+    height: master.height,
+    data: new Uint8Array(
+      recolourOwnerPixelsV7({
+        pixels: new Uint8ClampedArray(master.data),
+        width: master.width,
+        height: master.height,
+        mask: maskPixels,
+        maskWidth: mask.width,
+        maskHeight: mask.height,
+        owner: rgb,
+      }),
+    ),
+  };
+}
+
+/** The accepted chibi Fighter in each player colour, for scale and contrast. */
+async function playerFighters(): Promise<
+  { readonly name: string; readonly raster: Raster }[]
+> {
+  const master = await readRaster(
+    await readFile(
+      path.join(ROOT, "public/assets/chibi/units/chibi-fighter.png"),
+    ),
+  );
+  const mask = await readMask(
+    path.join(ROOT, "public/assets/chibi/units/chibi-fighter.mask.png"),
+  );
+  return PLAYER_COLOURS.map(([name, hex]) => ({
+    name,
+    raster: recolouredWith(master, mask, hex),
+  }));
+}
+
+/**
+ * The sprite as the runtime draws it at zoom 1 on a DPR 1 screen scaled by
+ * k: markers at 16 CSS px (a smoothed half at k = 1, the 1:1 DPR 2 master
+ * doubled at k = 4), effects at their master size.
+ */
+async function effectAtZoom1(asset: ReviewAsset, k: 1 | 4): Promise<Raster> {
+  if (asset.spec.assetClass !== "STATUS") return scaled(asset.master, k);
+  return k === 1
+    ? smoothed(asset.master, MARKER_CSS / asset.master.width)
+    : scaled(asset.master, (MARKER_CSS * k) / asset.master.width);
+}
+
+/**
+ * Effect sheet: each marker or effect on the accepted terrain (grass,
+ * forest, shallow and deep water, mountain) and on the dark dock panel,
+ * then over a Fighter of each of the four player colours (markers in their
+ * CHIBI slot, effects centred on the cell), then at zoom 0.75 (smoothed).
+ */
+async function effectSheet(
+  file: string,
+  assets: readonly ReviewAsset[],
+  terrain: readonly ReviewAsset[],
+  k: 1 | 4,
+  title: string,
+): Promise<void> {
+  const margin = 20;
+  const labelWidth = 330;
+  const gap = 12;
+  const box = TILE * k;
+  const grounds = [
+    "TERRAIN:GRASS",
+    "TERRAIN:FOREST",
+    "TERRAIN:SHALLOW_WATER",
+    "TERRAIN:DEEP_WATER",
+    "TERRAIN:MOUNTAIN",
+  ].map((subject) => ({
+    subject,
+    tile: terrain.find((asset) => asset.spec.subject === subject),
+  }));
+  const grass = grounds[0]?.tile;
+  const fighters = await playerFighters();
+  const columns = [
+    "grass",
+    "forest",
+    "shallow",
+    "deep",
+    "mountain",
+    "dock panel",
+    ...fighters.map((fighter) => `over ${fighter.name}`),
+    ...(k === 1 ? ["zoom 0.75, Teal"] : []),
+  ];
+  const header = 96;
+  const rowHeight = box + 24 + gap;
+  const width = margin * 2 + labelWidth + columns.length * (box + gap);
+  const height = header + assets.length * rowHeight + margin;
+  const target = blank(width, height, PAPER);
+  const labels: Label[] = [
+    { x: margin, y: 40, text: title, size: 24, weight: "bold" },
+    {
+      x: margin,
+      y: 66,
+      text:
+        k === 1
+          ? "Zoom 1 at DPR 1: effects 1:1; 32 px markers at 16 px (smoothed half) in the unit's CHIBI marker slot. Zoom 0.75 smoothed."
+          : "x4 nearest-neighbour: effects x4; markers at 64 px (their 32 px master x2, the DPR 2 look at x2).",
+      size: 15,
+      color: "#c8ccd4",
+    },
+  ];
+  columns.forEach((name, index) =>
+    labels.push({
+      x: margin + labelWidth + index * (box + gap),
+      y: header - 8,
+      text: name,
+      size: 13,
+      weight: "bold",
+      color: "#e2b340",
+    }),
+  );
+  const tileRaster = (tile: ReviewAsset | undefined): Raster | null =>
+    tile === undefined
+      ? null
+      : scaled(
+          tile.master.height > TILE ? cropBottomCell(tile.master) : tile.master,
+          k,
+        );
+  for (const [row, asset] of assets.entries()) {
+    const top = header + row * rowHeight;
+    labels.push(
+      { x: margin, y: top + 20, text: asset.spec.id, size: 16, weight: "bold" },
+      {
+        x: margin,
+        y: top + 40,
+        text: `${asset.spec.subject} · ${asset.spec.assetClass}`,
+        size: 13,
+        color: "#c8ccd4",
+      },
+      {
+        x: margin,
+        y: top + 58,
+        text: `${asset.master.width}x${asset.master.height} · palette ${path.basename(asset.spec.palette?.path ?? "none")}`,
+        size: 13,
+        color: "#c8ccd4",
+      },
+      {
+        x: margin,
+        y: top + 76,
+        text: asset.record.status,
+        size: 12,
+        color: asset.record.status === "ACCEPTED" ? "#9fdc9f" : "#ff8a80",
+      },
+    );
+    const marker = asset.spec.assetClass === "STATUS";
+    // Markers stand on their dark token, as the renderer draws them.
+    const plain = await effectAtZoom1(asset, k);
+    const sprite = marker ? withToken(plain, k) : plain;
+    const pad = (sprite.width - plain.width) / 2;
+    const centred = (left: number) => ({
+      x: left + Math.floor((box - sprite.width) / 2),
+      y: top + Math.floor((box - sprite.height) / 2),
+    });
+    let column = 0;
+    const next = (): number => margin + labelWidth + column++ * (box + gap);
+    for (const ground of grounds) {
+      const left = next();
+      const tile = tileRaster(ground.tile);
+      if (tile === null)
+        fillRect(
+          target,
+          { x: left, y: top, width: box, height: box },
+          GROUND_FILL,
+        );
+      else draw(target, tile, left, top);
+      const at = centred(left);
+      draw(target, sprite, at.x, at.y);
+    }
+    {
+      const left = next();
+      fillRect(target, { x: left, y: top, width: box, height: box }, UI_DARK);
+      const at = centred(left);
+      draw(target, sprite, at.x, at.y);
+    }
+    for (const fighter of fighters) {
+      const left = next();
+      const tile = tileRaster(grass);
+      if (tile === null)
+        fillRect(
+          target,
+          { x: left, y: top, width: box, height: box },
+          GROUND_FILL,
+        );
+      else draw(target, tile, left, top);
+      // The Fighter is bottom-centred with its anchor on the cell centre.
+      const unit = scaled(fighter.raster, k);
+      draw(
+        target,
+        unit,
+        left + (TILE / 2 - fighter.raster.width / 2) * k,
+        top + (TILE / 2 - (fighter.raster.height - TILE / 2)) * k,
+      );
+      if (marker)
+        draw(
+          target,
+          sprite,
+          left + MARKER_SLOT.x * k - pad,
+          top + MARKER_SLOT.y * k - pad,
+        );
+      else {
+        const at = centred(left);
+        draw(target, sprite, at.x, at.y);
+      }
+    }
+    if (k === 1) {
+      const left = next();
+      const tile =
+        grass === undefined ? null : await smoothed(grass.master, 0.75);
+      const small = 60;
+      if (tile === null)
+        fillRect(
+          target,
+          { x: left, y: top, width: small, height: small },
+          GROUND_FILL,
+        );
+      else draw(target, tile, left, top);
+      const teal = fighters[1]?.raster;
+      if (teal !== undefined) {
+        const unit = await smoothed(teal, 0.75);
+        draw(
+          target,
+          unit,
+          left + small / 2 - unit.width / 2,
+          top + small / 2 - (unit.height - small / 2),
+        );
+      }
+      const tiny = marker
+        ? withToken(
+            await smoothed(
+              asset.master,
+              (MARKER_CSS * 0.75) / asset.master.width,
+            ),
+            0.75,
+          )
+        : await smoothed(asset.master, 0.75);
+      if (marker)
+        draw(
+          target,
+          tiny,
+          left + Math.round(MARKER_SLOT.x * 0.75) - 1,
+          top + Math.round(MARKER_SLOT.y * 0.75) - 1,
+        );
+      else
+        draw(
+          target,
+          tiny,
+          left + Math.floor((small - tiny.width) / 2),
+          top + Math.floor((small - tiny.height) / 2),
+        );
+    }
+  }
+  await writeImage(file, target, labels);
+}
+
+/**
+ * A marker on its token: the renderer's dark slate disc with a bone rim
+ * (undead-canvas-v7.ts), radius 8.5 CSS px and a 1 px rim at zoom 1, scaled
+ * by k, with the marker centred on it.
+ */
+function withToken(marker: Raster, k: number): Raster {
+  const radius = 8.5 * k;
+  const rim = Math.max(1, Math.round(k));
+  const size = Math.max(marker.width, Math.ceil(radius * 2) + 2);
+  const disc = blank(size, size);
+  const centre = size / 2;
+  for (let y = 0; y < size; y += 1)
+    for (let x = 0; x < size; x += 1) {
+      const distance = Math.hypot(x + 0.5 - centre, y + 0.5 - centre);
+      if (distance > radius) continue;
+      const colour =
+        distance > radius - rim ? [0xef, 0xe8, 0xcf] : [0x20, 0x24, 0x2e];
+      disc.data.set([...colour, 255], (y * size + x) * 4);
+    }
+  draw(
+    disc,
+    marker,
+    Math.floor((size - marker.width) / 2),
+    Math.floor((size - marker.height) / 2),
+  );
+  return disc;
+}
+
+/** The bottom 80 x 80 cell of a tall-terrain master (its ground and base). */
+function cropBottomCell(master: RgbaRaster): Raster {
+  const data = new Uint8Array(TILE * TILE * 4);
+  const top = master.height - TILE;
+  for (let y = 0; y < TILE; y += 1)
+    data.set(
+      master.data.subarray(
+        (top + y) * master.width * 4,
+        ((top + y) * master.width + TILE) * 4,
+      ),
+      y * TILE * 4,
+    );
+  return { width: TILE, height: TILE, data };
+}
+
 // ------------------------------------------------------------ mocks
 
 interface ScenePiece {
@@ -1340,11 +1684,96 @@ async function captureDom(
   return evidence;
 }
 
+/** Effect scenes of scripts/art/chibi/review-effects-v7.ts (vkq.14). */
+const EFFECT_SCENES = ["A", "B"] as const;
+
+/**
+ * Effect batches: the synthetic effects scene drawn by the real board host,
+ * with the markers on units of all four colours and each scene's cues
+ * pinned mid-animation, at zoom 1 and 0.75.
+ */
+async function captureEffects(
+  connection: Connection,
+  directory: string,
+  viewport: {
+    readonly name: string;
+    readonly width: number;
+    readonly height: number;
+    readonly dpr: number;
+  },
+): Promise<CaptureEvidence[]> {
+  const evidence: CaptureEvidence[] = [];
+  for (const scene of EFFECT_SCENES) {
+    await evaluate(
+      connection,
+      `(async () => { const review = await import('/scripts/art/chibi/review-effects-v7.ts'); globalThis.__CHIBI_REVIEW_SCENE__ = review.showChibiEffectsReviewV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, ${JSON.stringify(scene)}); return true; })()`,
+    );
+    for (const step of ["1", "0.75"] as const) {
+      for (let attempt = 0; attempt < 6; attempt += 1) {
+        const current = await evaluate<string | null>(
+          connection,
+          `globalThis.__CHIBI_REVIEW_SCENE__.canvas.dataset.zoomStep ?? null`,
+        );
+        if (current === step) break;
+        await evaluate(
+          connection,
+          `globalThis.__CHIBI_REVIEW_SCENE__.host.zoom(${JSON.stringify(Number(current) < Number(step) ? "IN" : "OUT")})`,
+        );
+      }
+      // Re-pin after zooming, let every raster load, and pin again so the
+      // cues draw their loaded sprites.
+      await evaluate(connection, `globalThis.__CHIBI_REVIEW_SCENE__.pin()`);
+      await waitFor(
+        connection,
+        `Array.from(document.images).every((image) => image.complete)`,
+      );
+      await delay(1200);
+      await evaluate(connection, `globalThis.__CHIBI_REVIEW_SCENE__.pin()`);
+      await delay(200);
+      const zoomStep = await evaluate<string | null>(
+        connection,
+        `globalThis.__CHIBI_REVIEW_SCENE__.canvas.dataset.zoomStep ?? null`,
+      );
+      if (zoomStep !== step)
+        throw new Error(
+          `effects scene could not reach zoom ${step}: ${zoomStep}`,
+        );
+      const shot = (await connection.send("Page.captureScreenshot", {
+        format: "png",
+        captureBeyondViewport: false,
+      })) as { data?: string };
+      if (shot.data === undefined)
+        throw new Error("Chrome returned no screenshot");
+      const file = path.join(
+        directory,
+        `ingame-effects-${scene.toLowerCase()}-${viewport.name}-zoom-${step}.png`,
+      );
+      await writeFile(file, Buffer.from(shot.data, "base64"));
+      evidence.push({
+        file: posix(file),
+        viewport: `${viewport.width}x${viewport.height} CSS at DPR ${viewport.dpr} (effects scene ${scene})`,
+        zoomStep,
+        tileCssPx: await evaluate<string | null>(
+          connection,
+          `globalThis.__CHIBI_REVIEW_SCENE__.canvas.dataset.tileCssPx ?? null`,
+        ),
+        artSet: "CHIBI",
+      });
+    }
+    await evaluate(
+      connection,
+      `(() => { globalThis.__CHIBI_REVIEW_SCENE__.host.destroy(); document.querySelector('[data-chibi-review-scene]')?.remove(); delete globalThis.__CHIBI_REVIEW_SCENE__; return true; })()`,
+    );
+  }
+  return evidence;
+}
+
 async function captureInGame(
   directory: string,
   baseUrl: string,
   sceneSubjects: readonly string[] | null,
   interfaceBatch = false,
+  effectBatch = false,
 ): Promise<CaptureEvidence[]> {
   const chrome = process.env.CHROME_PATH;
   if (chrome === undefined || chrome === "")
@@ -1494,6 +1923,10 @@ async function captureInGame(
         );
       if (interfaceBatch)
         evidence.push(...(await captureDom(connection, directory, viewport)));
+      if (effectBatch)
+        evidence.push(
+          ...(await captureEffects(connection, directory, viewport)),
+        );
     }
     connection.close();
   } finally {
@@ -1562,6 +1995,7 @@ async function main(): Promise<void> {
       );
     }
   const interfaceBatch = assets.every(isInterfaceAsset);
+  const effectBatch = assets.every(isEffectAsset);
   const ownTerrain = assets.filter(
     (asset) => isTerrainTile(asset) && asset.record.status === "ACCEPTED",
   );
@@ -1576,7 +2010,26 @@ async function main(): Promise<void> {
     outputs.push(file);
     return file;
   };
-  if (interfaceBatch) {
+  if (effectBatch) {
+    // Only what could ship: rejected 16 x 16 markers have no master.
+    const accepted = assets.filter(
+      (asset) => asset.record.status === "ACCEPTED",
+    );
+    await effectSheet(
+      out("sheet-1x.png"),
+      accepted,
+      terrain,
+      1,
+      `${label}: markers and effects at zoom 1`,
+    );
+    await effectSheet(
+      out("sheet-x4.png"),
+      accepted,
+      terrain,
+      4,
+      `${label}: markers and effects at x4`,
+    );
+  } else if (interfaceBatch) {
     await interfaceSheet(
       out("sheet-1x.png"),
       assets,
@@ -1610,8 +2063,9 @@ async function main(): Promise<void> {
     ...context,
     ...assets.filter((asset) => asset.record.status === "ACCEPTED"),
   ];
-  // Interface art is reviewed in the real DOM instead of on a map mock.
-  if (!interfaceBatch) {
+  // Interface art is reviewed in the real DOM instead of on a map mock,
+  // and effects in the effects scene.
+  if (!interfaceBatch && !effectBatch) {
     await mock(out("phone-mock.png"), sceneAssets, {
       width: 1170,
       height: 2532,
@@ -1644,7 +2098,7 @@ async function main(): Promise<void> {
         given ?? `http://localhost:${port}/`,
         // Batch 3 onwards places pieces a fresh game never shows: production
         // batches add the synthetic scene of their map subjects.
-        dryRun || Number(batch) < 3 || interfaceBatch
+        dryRun || Number(batch) < 3 || interfaceBatch || effectBatch
           ? null
           : [
               ...new Set(
@@ -1658,6 +2112,7 @@ async function main(): Promise<void> {
               ),
             ],
         interfaceBatch,
+        effectBatch,
       );
     } finally {
       if (server !== undefined) stopDevServer(server);
@@ -1701,6 +2156,10 @@ async function main(): Promise<void> {
       "ingame-phone-zoom-0.75.png",
       "ingame-scene-phone-zoom-1.png",
       "ingame-scene-phone-zoom-0.75.png",
+      ...EFFECT_SCENES.flatMap((scene) => [
+        `ingame-effects-${scene.toLowerCase()}-phone-zoom-1.png`,
+        `ingame-effects-${scene.toLowerCase()}-phone-zoom-0.75.png`,
+      ]),
     ]
       .map(linkFor)
       .filter((line): line is string => line !== null),
@@ -1721,6 +2180,10 @@ async function main(): Promise<void> {
       "ingame-desktop-zoom-0.75.png",
       "ingame-scene-desktop-zoom-1.png",
       "ingame-scene-desktop-zoom-0.75.png",
+      ...EFFECT_SCENES.flatMap((scene) => [
+        `ingame-effects-${scene.toLowerCase()}-desktop-zoom-1.png`,
+        `ingame-effects-${scene.toLowerCase()}-desktop-zoom-0.75.png`,
+      ]),
       "sheet-1x.png",
       "sheet-x4.png",
     ]

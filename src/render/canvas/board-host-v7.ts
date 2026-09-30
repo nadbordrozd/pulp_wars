@@ -53,6 +53,7 @@ import {
 import {
   adjacentChibiZoomStep,
   chibiBoardWorldBounds,
+  chibiMasterScale,
   chibiTileCssPx,
   chibiZoomStepForCamera,
   fitChibiCamera,
@@ -61,8 +62,10 @@ import {
   type ChibiZoomStepV7,
 } from "./chibi-geometry-v7";
 import {
+  SUPPORT_EFFECT_SUBJECTS_V7,
   drawSupportFeedbackV7,
   drawWindmillHealingFeedbackV7,
+  type SupportEffectArtV7,
   type SupportFeedbackV7,
   type WindmillHealingFeedbackV7,
 } from "./support-presentation-v7";
@@ -167,6 +170,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     readonly statusId: string;
   } | null = null;
   #supportFeedback: SupportFeedbackV7 | null = null;
+  /** Review tooling only (pinSupportFeedback): cues frozen mid-animation. */
+  #pinnedSupportFeedback: readonly SupportFeedbackV7[] = [];
+  #effectArtRequested = false;
   #windmillHealingFeedback: WindmillHealingFeedbackV7 | null = null;
   #crossfade: {
     readonly before: PlayerViewV7;
@@ -379,6 +385,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#impact = null;
     this.#statusPulse = null;
     this.#supportFeedback = null;
+    this.#pinnedSupportFeedback = [];
     this.#windmillHealingFeedback = null;
     this.#drawSupportOverlay();
     this.#crossfade = null;
@@ -687,6 +694,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #draw(): void {
     const model = this.#model;
     this.#syncArtSetDataset();
+    this.#requestEffectArt();
     const context = this.#context;
     if (model === null || context === null) return;
     this.#drawSerial += 1;
@@ -800,6 +808,54 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#drawSupportOverlay();
   }
 
+  /**
+   * CHIBI effect rasters for the support cues (bead pulp_wars-vkq.14), or
+   * null in LEGACY. Asking for every subject once starts their loads, so the
+   * first Undead cue of a game usually finds its sprite ready; a sprite
+   * still loading draws the code cue for that frame.
+   */
+  #supportEffectArt(): SupportEffectArtV7 | null {
+    if (this.#artSet() !== "CHIBI") return null;
+    const devicePixelRatio = this.#document.defaultView?.devicePixelRatio ?? 1;
+    const deviceScale = chibiMasterScale(this.#camera) * devicePixelRatio;
+    const art = this.#chibiArt;
+    return {
+      devicePixelRatio,
+      image: (subject) => {
+        const resolved = art.resolve({
+          subject,
+          at: { x: 0, y: 0 },
+          deviceScale,
+        });
+        return resolved.kind === "READY"
+          ? {
+              image: resolved.image,
+              width: resolved.asset.width,
+              height: resolved.asset.height,
+            }
+          : null;
+      },
+    };
+  }
+
+  /** Starts loading the CHIBI effect rasters once, before the first cue. */
+  #requestEffectArt(): void {
+    if (this.#effectArtRequested || this.#artSet() !== "CHIBI") return;
+    this.#effectArtRequested = true;
+    const art = this.#supportEffectArt();
+    for (const subject of SUPPORT_EFFECT_SUBJECTS_V7) art?.image(subject);
+  }
+
+  /**
+   * Review tooling and tests: draws the given support cues at their fixed
+   * progress on the effects canvas until cleared with an empty list. The
+   * game never calls it; presentations clear it.
+   */
+  pinSupportFeedback(feedback: readonly SupportFeedbackV7[]): void {
+    this.#pinnedSupportFeedback = feedback;
+    this.#drawSupportOverlay();
+  }
+
   #drawSupportOverlay(): void {
     const context = this.#effectsContext;
     const canvas = this.#effectsCanvas;
@@ -807,6 +863,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const dpr = this.#document.defaultView?.devicePixelRatio ?? 1;
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, this.#viewport.width, this.#viewport.height);
+    const effectArt = this.#supportEffectArt();
+    for (const pinned of this.#pinnedSupportFeedback)
+      drawSupportFeedbackV7(context, this.#camera, pinned, false, effectArt);
     const feedback = this.#supportFeedback;
     const windmill = this.#windmillHealingFeedback;
     if (feedback === null && windmill === null) {
@@ -828,6 +887,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#camera,
         feedback,
         this.#model?.motion === "REDUCED",
+        effectArt,
       );
     } else {
       delete canvas.dataset.supportEffect;

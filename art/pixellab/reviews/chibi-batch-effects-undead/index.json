@@ -1,0 +1,444 @@
+{
+  "batch": "effects-undead",
+  "bead": "pulp_wars-vkq.14",
+  "title": "Undead ability effects and revision 14 status markers",
+  "dryRun": false,
+  "faction": "UNDEAD",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-marker-plagued",
+      "subject": "STATUS:PLAGUED",
+      "assetClass": "STATUS",
+      "status": "ACCEPTED",
+      "recipe": "marker-plagued-d",
+      "master": {
+        "path": "public/assets/chibi/status/chibi-marker-plagued.png",
+        "sha256": "2287597ce58b272187d8edcce1feb39ff440c62f7bcda4fc2f4d3006309f8abf",
+        "pixelSha256": "026abcc650bc7657a4bcdd9965c53f75b64320abd3b8410623959733f9c4a014",
+        "width": 32,
+        "height": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 16
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-plague.png",
+          "sha256": "62586ebf3daa41cddc110873a5064bc300beeca5b9548c9790a9955dd71c7e93"
+        }
+      }
+    },
+    {
+      "id": "chibi-marker-bitten",
+      "subject": "STATUS:BITTEN",
+      "assetClass": "STATUS",
+      "status": "ACCEPTED",
+      "recipe": "marker-bitten-b",
+      "master": {
+        "path": "public/assets/chibi/status/chibi-marker-bitten.png",
+        "sha256": "782f998e39fed5b04720fdcb64826391e7d7fd46256e89f4d629165de53277e6",
+        "pixelSha256": "4e9bf78395d2f1e3e3db0c78b806f7e6dd5eef2f163b937623a68bdbced785cc",
+        "width": 32,
+        "height": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 16
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-bite.png",
+          "sha256": "09a51ec01240b3d3aaa8fec10191a08b0e8784b89bdcb1a4c2427dc241e2cce1"
+        }
+      }
+    },
+    {
+      "id": "chibi-effect-splash",
+      "subject": "EFFECT:SPLASH",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-splash-d",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-effect-splash.png",
+        "sha256": "c054857b040e0a995bbdb7798c9414985a8787a399c03150904f99eb9983e832",
+        "pixelSha256": "6faf046c262cc0307933019fce85dd828bb68313040f688cf2774fa6b4f33e6d",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-frost.png",
+          "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+        }
+      }
+    },
+    {
+      "id": "chibi-effect-wail",
+      "subject": "EFFECT:WAIL",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-wail-c",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-effect-wail.png",
+        "sha256": "b8c991005246287472e9539b52d6cbc96797ec0b05bf02795ab83618678e6c5e",
+        "pixelSha256": "b5f4c18eec514ba351318976e8065684a45a27e31dbc8d4513de9ed4c9ca4db4",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-frost.png",
+          "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+        }
+      }
+    },
+    {
+      "id": "chibi-effect-raise",
+      "subject": "EFFECT:RAISE",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-raise-b-edit",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-effect-raise.png",
+        "sha256": "ddd8822ad60196d642122ed42295510eb3a6a66337559d324346ea99df014c57",
+        "pixelSha256": "e589f05bce88c204f01737801b9b0b6de5174a20202a8d97e61dda514428915d",
+        "width": 40,
+        "height": 40
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-frost.png",
+          "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+        }
+      }
+    },
+    {
+      "id": "chibi-effect-cure",
+      "subject": "EFFECT:CURE",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-cure-c-edit",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-effect-cure.png",
+        "sha256": "ba164950386e6d2a9122dcf4786e1df9958328a4f969075eccc0559bb9b620cd",
+        "pixelSha256": "e61ce98c2d9bdc080660599a6a6275535417c3e69913b7dc3f48fcc6fb80d1e5",
+        "width": 32,
+        "height": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 16
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-cure.png",
+          "sha256": "3a8d6c016fe881b9afdee3f17f4cbb0536d41815a1713e0a5413cdd0226228f3"
+        }
+      }
+    },
+    {
+      "id": "chibi-effect-wisp",
+      "subject": "EFFECT:WISP",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-wisp-b",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-effect-wisp.png",
+        "sha256": "fab59bb00017177dfe93535bcc18d4200915759474ccf8290647f7f629d12399",
+        "pixelSha256": "b201c94292606a5ba01fb5d9580e62b05edccdb9333aae162124b374737ea40c",
+        "width": 24,
+        "height": 24
+      },
+      "anchor": {
+        "x": 12,
+        "y": 12
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-frost.png",
+          "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+        }
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/sheet-1x.png",
+      "width": 1382,
+      "height": 928,
+      "sha256": "36ad1793d5d9fb935c199ab75cbd6b4a6c9142da4311584b2eebb2f98c037e69"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/sheet-x4.png",
+      "width": 3690,
+      "height": 2608,
+      "sha256": "f918d8e343020edf32b2cac5126d524a2dd129f24154bc9b4abce597a71a23a0"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "88190c8b0434c192305d739279f870b35b8299f5db8d18c02963ee9ce3a56a1a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4c2ee12a069b4a0a9e6c9c8d0738149b280c16bf6d6616872ba673bc06bc7b95"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-a-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "90dff63a0079757bd138a75d7482c9462cfef024983917bb749c33e635589a93"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-a-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "963110252e4003e218b5012e8214f8668459cbfe63bbe2f02a37916e660624b3"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-b-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6a459520128c3e25aa7ebc95a3307487ce908aefe407f1a88fab3229d83f9909"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-b-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a12f22bcb7ebb802927209364da30eafe89a1c87e26cf113689d7460f5f357d5"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "4084cde2dabc98ba1bb7a960ec6df4e4d137bd996799dc8b5030bd19d9c77509"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "3a85b214e4bdaf09737d5c77c37729754a996578bc386c86071e031e2f80db44"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-a-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "6599631381bfbfd0f6ed2d066febd077cf5b5ec72156dbe54d4f24e99ccc0e3b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-a-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "61ec1155e4f6d5b40ca17d66061f6419a9746db9989cbe0e145365b37927bb0f"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-b-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "b51ecd07562aeaaaa9509b4530e05f97b7f91fc06e26bcfa66b80c423b0529a1"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-b-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "3876edf198507b5cc93ec3e49a5d398285c8ee08846e166325ac0b49c0c192c5"
+    }
+  ],
+  "captures": {
+    "note": "Captured from the running game with ?art=chibi; subjects without a registered chibi raster still draw their legacy art.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-a-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1 (effects scene A)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-a-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1 (effects scene A)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-b-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1 (effects scene B)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-b-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1 (effects scene B)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-a-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3 (effects scene A)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-a-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3 (effects scene A)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-b-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3 (effects scene B)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-effects-undead/ingame-effects-b-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3 (effects scene B)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-effects-undead/phone-links.md"
+}

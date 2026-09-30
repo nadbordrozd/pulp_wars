@@ -62,6 +62,9 @@ import {
   candidateCell,
   cropRaster,
   groundComposite,
+  offPalettePixels,
+  paletteColours,
+  paletteMapRaster,
   plateCheck,
   transparentPixels,
   type CropWindow,
@@ -201,7 +204,13 @@ export async function loadFragments(root: string): Promise<FragmentLibrary> {
   for (const name of Object.keys(CHIBI_CLASS_RECIPES) as ChibiRecipeClass[])
     classes[name] = await fragmentFile(root, `class-${name}`, true);
   const camera = {} as Record<ChibiCamera, Fragment>;
-  for (const name of ["three-quarter", "top-down", "portrait", "icon"] as const)
+  for (const name of [
+    "three-quarter",
+    "top-down",
+    "portrait",
+    "icon",
+    "flat",
+  ] as const)
     camera[name] = await fragmentFile(root, `camera-${name}`, false);
   const subjects: Record<string, Record<string, string>> = {};
   for (const file of (
@@ -318,8 +327,11 @@ export interface AssetRecord {
     readonly height: number;
   };
   readonly derivation: {
-    readonly kind: "as-is" | "seamless-crop" | "ground-composite";
+    readonly kind:
+      "as-is" | "seamless-crop" | "ground-composite" | "palette-map";
     readonly crop?: CropWindow;
+    /** palette-map: the palette the master's colours were mapped to. */
+    readonly palette?: { readonly path: string; readonly sha256: string };
     readonly ground?: {
       readonly asset: string;
       readonly sha256: string;
@@ -1169,6 +1181,8 @@ const CLASS_DIRECTORY: Readonly<Record<string, string>> = {
   RESOURCE: "resources",
   PORTRAIT: "portraits",
   ICON: "icons",
+  STATUS: "status",
+  EFFECT: "effects",
 };
 
 export function masterPaths(
@@ -1304,6 +1318,23 @@ async function deriveMaster(
     throw new Error(
       `${asset.id}: candidate ${candidate.width}x${candidate.height} is not the ${asset.canvas.width}x${asset.canvas.height} master`,
     );
+  if (kind === "palette-map") {
+    const palette = asset.palette;
+    if (palette === undefined) throw new Error(`${asset.id}: no palette`);
+    const bytes = await readFile(path.join(context.root, palette.path));
+    if (sha256(bytes) !== palette.sha256)
+      throw new Error(`${asset.id}: palette ${palette.path} changed`);
+    return {
+      raster: paletteMapRaster(
+        candidate,
+        paletteColours(await readRaster(bytes)),
+      ),
+      derivation: {
+        kind,
+        palette: { path: palette.path, sha256: palette.sha256 },
+      },
+    };
+  }
   if (kind === "ground-composite") {
     const groundId = asset.groundAsset ?? "";
     const found = await acceptedGroundAsset(context, records, groundId);
@@ -1561,6 +1592,30 @@ export async function verifyAssetRecord(
     problems.push(`${label}: unowned asset has a mask`);
   if (record.status === "ACCEPTED")
     problems.push(...(await tallTerrainLayerProblems(root, record, master)));
+  if (record.derivation.kind === "palette-map") {
+    const palette = record.derivation.palette;
+    const file = palette === undefined ? null : path.join(root, palette.path);
+    if (palette === undefined || file === null || !(await exists(file)))
+      problems.push(`${label}: palette is missing`);
+    else {
+      const paletteBytes = await readFile(file);
+      if (sha256(paletteBytes) !== palette.sha256)
+        problems.push(`${label}: palette ${palette.path} changed`);
+      else if (
+        asset.palette?.path !== palette.path ||
+        asset.palette.sha256 !== palette.sha256
+      )
+        problems.push(`${label}: recorded palette is not the manifest's`);
+      else {
+        const off = offPalettePixels(
+          master,
+          paletteColours(await readRaster(paletteBytes)),
+        );
+        if (off > 0)
+          problems.push(`${label}: ${off} master pixels are off the palette`);
+      }
+    }
+  }
   return problems;
 }
 
@@ -1658,7 +1713,7 @@ export async function validateChibiProduction(root: string): Promise<string[]> {
           );
       }
     }
-    for (const asset of manifest.assets)
+    for (const asset of manifest.assets) {
       if (
         asset.maskOverride !== undefined &&
         !(await exists(path.join(root, asset.maskOverride.path)))
@@ -1666,6 +1721,18 @@ export async function validateChibiProduction(root: string): Promise<string[]> {
         problems.push(
           `batch ${batch} asset ${asset.id}: override ${asset.maskOverride.path} is missing`,
         );
+      if (asset.palette !== undefined) {
+        const file = path.join(root, asset.palette.path);
+        if (!(await exists(file)))
+          problems.push(
+            `batch ${batch} asset ${asset.id}: palette ${asset.palette.path} is missing`,
+          );
+        else if (sha256(await readFile(file)) !== asset.palette.sha256)
+          problems.push(
+            `batch ${batch} asset ${asset.id}: palette ${asset.palette.path} changed`,
+          );
+      }
+    }
     if (manifest.dryRun) continue;
     const layout = productionLayout(root, batch);
     const records = await loadRecords(layout, batch);

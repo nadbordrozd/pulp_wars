@@ -943,6 +943,64 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 48,
     url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-wail.png"),
   },
+  // Bead pulp_wars-vkq.14 (batch effects-undead): the revision 14 Plague
+  // and Bitten markers and the Undead ability effect sprites.
+  {
+    id: "chibi-marker-plagued",
+    subject: "STATUS:PLAGUED",
+    assetClass: "STATUS",
+    width: 32,
+    height: 32,
+    url: chibiArtUrl("assets/chibi/status/chibi-marker-plagued.png"),
+  },
+  {
+    id: "chibi-marker-bitten",
+    subject: "STATUS:BITTEN",
+    assetClass: "STATUS",
+    width: 32,
+    height: 32,
+    url: chibiArtUrl("assets/chibi/status/chibi-marker-bitten.png"),
+  },
+  {
+    id: "chibi-effect-wail",
+    subject: "EFFECT:WAIL",
+    assetClass: "EFFECT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/effects/chibi-effect-wail.png"),
+  },
+  {
+    id: "chibi-effect-splash",
+    subject: "EFFECT:SPLASH",
+    assetClass: "EFFECT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/effects/chibi-effect-splash.png"),
+  },
+  {
+    id: "chibi-effect-raise",
+    subject: "EFFECT:RAISE",
+    assetClass: "EFFECT",
+    width: 40,
+    height: 40,
+    url: chibiArtUrl("assets/chibi/effects/chibi-effect-raise.png"),
+  },
+  {
+    id: "chibi-effect-wisp",
+    subject: "EFFECT:WISP",
+    assetClass: "EFFECT",
+    width: 24,
+    height: 24,
+    url: chibiArtUrl("assets/chibi/effects/chibi-effect-wisp.png"),
+  },
+  {
+    id: "chibi-effect-cure",
+    subject: "EFFECT:CURE",
+    assetClass: "EFFECT",
+    width: 32,
+    height: 32,
+    url: chibiArtUrl("assets/chibi/effects/chibi-effect-cure.png"),
+  },
 ];
 
 export function chibiArtUrl(path: string): string {

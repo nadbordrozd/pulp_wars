@@ -147,7 +147,17 @@ export const AFFLICTION_MARKER_FRAME_V7 = {
   ],
 } as const;
 
+/** Master size of a CHIBI marker raster (STATUS class, bead vkq.14). */
+export const AFFLICTION_RASTER_MASTER_PX_V7 = 32;
+/**
+ * World units a CHIBI marker raster covers: 16 CSS px at zoom step 1
+ * (camera.zoom 0.625), the frame's 26 rounded down to whole CSS pixels.
+ */
+export const AFFLICTION_RASTER_WORLD_SIZE_V7 = 25.6;
+
 const MARKER_OUTLINE = "#0d0f0c";
+/** Dark slate token behind a CHIBI marker raster. */
+const MARKER_TOKEN = "#20242e";
 
 const PLAGUE_COLORS = {
   disc: "#1b1e19",
@@ -176,6 +186,8 @@ export function drawAfflictionMarkerV7(
     readonly slot: number;
     readonly highContrast: boolean;
     readonly raster?: CanvasImageSource | null;
+    /** Snaps a raster to whole device pixels (default 1). */
+    readonly devicePixelRatio?: number;
   },
 ): void {
   const frames = options.chibi
@@ -187,7 +199,45 @@ export function drawAfflictionMarkerV7(
   const top = y + frame.top * zoom;
   context.save();
   if (options.raster !== undefined && options.raster !== null) {
-    context.drawImage(options.raster, left, top, size, size);
+    // A CHIBI marker is a 32 x 32 master drawn at 16 CSS px per zoom step
+    // (AFFLICTION_RASTER_WORLD_SIZE_V7), centred in the frame and snapped
+    // to device pixels: nearest-neighbour where that is 1:1 or a whole
+    // upscale (DPR 2 at zoom 1), smoothed otherwise.
+    const ratio =
+      options.devicePixelRatio !== undefined && options.devicePixelRatio > 0
+        ? options.devicePixelRatio
+        : 1;
+    const drawn = options.chibi ? AFFLICTION_RASTER_WORLD_SIZE_V7 * zoom : size;
+    const snap = (value: number): number => Math.round(value * ratio) / ratio;
+    const deviceScale = (drawn * ratio) / AFFLICTION_RASTER_MASTER_PX_V7;
+    context.imageSmoothingEnabled = !(
+      Math.abs(deviceScale - Math.round(deviceScale)) < 1e-6 &&
+      Math.round(deviceScale) >= 1
+    );
+    if (options.chibi) {
+      // A dark token with a bone rim, like the Undead badge, keeps the
+      // small marker legible on grass, forest and water.
+      context.fillStyle = MARKER_TOKEN;
+      context.strokeStyle = BONE;
+      context.lineWidth = Math.max(1, 1.2 * zoom);
+      context.beginPath();
+      context.arc(
+        left + size / 2,
+        top + size / 2,
+        size / 2 + 0.6 * zoom,
+        0,
+        Math.PI * 2,
+      );
+      context.fill();
+      context.stroke();
+    }
+    context.drawImage(
+      options.raster,
+      snap(left + (size - drawn) / 2),
+      snap(top + (size - drawn) / 2),
+      drawn,
+      drawn,
+    );
     context.restore();
     return;
   }

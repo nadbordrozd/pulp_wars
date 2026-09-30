@@ -66,6 +66,8 @@ All sizes are CSS pixels at zoom 1, which is the normal play view.
 | Resource                        | about 40 x 40 to 48 x 48 | Centred; visibly smaller and calmer than a unit                                                                       |
 | Interface portrait              | 48 x 48                  | Interface only (DOM); owned, with a mask; head and shoulders (ships and the Catapult whole)                           |
 | Interface icon                  | 48 x 48 (HUD 32 x 32)    | Interface only (DOM); unowned; one item floating on transparency, no badge or frame                                   |
+| Status marker (Plague, Bitten)  | 32 x 32                  | Board overlay; unowned; drawn at 16 CSS px on a dark token in the unit's marker slot (bead `pulp_wars-vkq.14`)        |
+| Ability effect                  | up to 48 x 48            | Board effects canvas; unowned; centred on a cell, moved, scaled and faded by code (bead `pulp_wars-vkq.14`)           |
 
 Ships use the unit classes (decided in bead `pulp_wars-67q.9`): the Patrol
 Boat and the embarked transport are large units (72 x 88 and 72 x 72, since

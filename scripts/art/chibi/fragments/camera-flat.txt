@@ -1,0 +1,1 @@
+Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped.

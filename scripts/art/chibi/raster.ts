@@ -122,6 +122,87 @@ export function groundComposite(
   return { width: body.width, height: body.height, data };
 }
 
+export type PaletteColour = readonly [number, number, number];
+
+/** The distinct opaque colours of a checked-in palette PNG, in scan order. */
+export function paletteColours(palette: RgbaRaster): PaletteColour[] {
+  const colours: PaletteColour[] = [];
+  const seen = new Set<number>();
+  for (let offset = 0; offset < palette.data.length; offset += 4) {
+    if ((palette.data[offset + 3] ?? 0) < 128) continue;
+    const r = palette.data[offset] ?? 0;
+    const g = palette.data[offset + 1] ?? 0;
+    const b = palette.data[offset + 2] ?? 0;
+    const key = (r << 16) | (g << 8) | b;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    colours.push([r, g, b]);
+  }
+  return colours;
+}
+
+/**
+ * The palette-map derivation (bead pulp_wars-vkq.14): every pixel with
+ * alpha >= 128 becomes the nearest palette colour, fully opaque, and every
+ * other pixel fully transparent. Nearness is the "redmean" weighted RGB
+ * distance; ties keep the earlier palette colour. It is what Pixflux's
+ * forced palette does server-side, applied to a Pixen candidate whose shape
+ * is right but whose colours drift towards the player colours.
+ */
+export function paletteMapRaster(
+  raster: RgbaRaster,
+  colours: readonly PaletteColour[],
+): RgbaRaster {
+  if (colours.length === 0) throw new Error("the palette has no colours");
+  const data = new Uint8Array(raster.width * raster.height * 4);
+  for (let offset = 0; offset < data.length; offset += 4) {
+    if ((raster.data[offset + 3] ?? 0) < 128) continue;
+    const r = raster.data[offset] ?? 0;
+    const g = raster.data[offset + 1] ?? 0;
+    const b = raster.data[offset + 2] ?? 0;
+    let best = colours[0] as PaletteColour;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (const colour of colours) {
+      const mean = (r + colour[0]) / 2;
+      const dr = r - colour[0];
+      const dg = g - colour[1];
+      const db = b - colour[2];
+      const distance =
+        (2 + mean / 256) * dr * dr +
+        4 * dg * dg +
+        (2 + (255 - mean) / 256) * db * db;
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = colour;
+      }
+    }
+    data[offset] = best[0];
+    data[offset + 1] = best[1];
+    data[offset + 2] = best[2];
+    data[offset + 3] = 255;
+  }
+  return { width: raster.width, height: raster.height, data };
+}
+
+/** Pixels of a palette-mapped master that are not a palette colour or not crisp. */
+export function offPalettePixels(
+  raster: RgbaRaster,
+  colours: readonly PaletteColour[],
+): number {
+  const allowed = new Set(colours.map(([r, g, b]) => (r << 16) | (g << 8) | b));
+  let count = 0;
+  for (let offset = 0; offset < raster.data.length; offset += 4) {
+    const alpha = raster.data[offset + 3] ?? 0;
+    if (alpha === 0) continue;
+    const key =
+      ((raster.data[offset] ?? 0) << 16) |
+      ((raster.data[offset + 1] ?? 0) << 8) |
+      (raster.data[offset + 2] ?? 0);
+    if (alpha !== 255 || !allowed.has(key)) count += 1;
+  }
+  return count;
+}
+
 export interface PlateCheck {
   /** Rows of the bottom band of the opaque bounding box that were checked. */
   readonly bandRows: number;

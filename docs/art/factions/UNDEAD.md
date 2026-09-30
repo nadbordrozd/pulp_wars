@@ -271,20 +271,31 @@ swap a city's whole look on capture. There are no Undead city or village
 subject lines; Undead identity lives in the units, the Grave and the
 ability effects.
 
-### Ability effects (future subjects)
+### Ability effects and status markers (bead `pulp_wars-vkq.14`)
 
-For the effects bead (`pulp_wars-vkq.14`); not part of the sample. The
-chibi direction has no effect class yet, so their canvas and whether they
-are rasters or code-drawn overlays are open. None of them is owned, so none
-uses the key red, and none uses green, cyan or purple.
+The CHIBI art set draws raster effects and markers; LEGACY keeps its
+code-drawn cues. None is owned, so none uses the key red, and none uses
+green, cyan or purple: every master is palette-mapped onto a checked-in
+palette (see the [pipeline](../CHIBI_PIPELINE.md#status-markers-and-effects)).
+Each effect is one sprite that the effects canvas moves, scales and fades
+in code; reduced motion freezes it at its midpoint.
 
-| Effect      | Draft idea                                                                                        |
-| ----------- | ------------------------------------------------------------------------------------------------- |
-| Wail        | concentric pale blue-white sound rings with a few wavy lines, spreading over the radius-2 area    |
-| Lich splash | a burst of cold pale blue flame with small ivory sparks over the target and its eight neighbours  |
-| Raise Dead  | two small ivory bone hands popping up beside a headstone, with pale blue wisps                    |
-| Infect      | a small swirl of slate-grey and pale blue wisps with a stitched patch over the victim as it rises |
-| Lifesteal   | pale blue wisps flowing from the target to the Vampire; never red, never blood                    |
+| Cue                     | Sprite (subject, master)                            | Animation                                                                |
+| ----------------------- | --------------------------------------------------- | ------------------------------------------------------------------------ |
+| Plague marker           | grey-green queasy cloud (`STATUS:PLAGUED`, 32 x 32) | none; drawn at 16 CSS px on a dark token in the unit's marker slot       |
+| Bitten marker           | slate jaws with ivory teeth (`STATUS:BITTEN`, 32)   | none; as the Plague marker                                               |
+| Wail                    | ((( ))) sound fans (`EFFECT:WAIL`, 48)              | grows over the Banshee inside pale blue-white rings; above each hit unit |
+| Lich splash             | frost starburst (`EFFECT:SPLASH`, 48)               | bursts on the target, smaller on each splashed unit                      |
+| Raise Dead              | two bone hands with wisps (`EFFECT:RAISE`, 40)      | rise out of each raised Grave                                            |
+| Infect, Bitten rising   | pale blue spirit wisp (`EFFECT:WISP`, 24)           | three wisps spiral up the risen Zombie                                   |
+| Lifesteal               | the same wisp                                       | two wisps arc from the drained unit to the Vampire                       |
+| Plague damage or spread | the Plague marker at 1:1                            | a puff drifting up over each unit                                        |
+| Plague cured or lifted  | white sparkles (`EFFECT:CURE`, 32)                  | twinkle over the unit's head (Plague lifted, and a Tend that cures)      |
+
+The markers use a 32 x 32 master (Pixflux's smallest canvas; Pixen's
+16 x 16 output was noise) drawn into the 16 px marker frame, which is 1:1 on
+DPR 2 screens. The dock's Plague and bite chips keep their vector glyphs
+([inventory flag 11](../CHIBI_ASSET_INVENTORY.md#flags-the-plan-did-not-foresee)).
 
 ## Roster notes
 

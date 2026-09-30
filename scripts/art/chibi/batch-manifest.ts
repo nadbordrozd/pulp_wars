@@ -34,7 +34,11 @@ export type ChibiRecipeClass =
   /** Batch 5: owned head-and-shoulders unit portraits for the interface. */
   | "portrait"
   /** Batch 5: unowned interface icons (technologies, commands, rewards, HUD). */
-  | "icon";
+  | "icon"
+  /** Revision 14 board status markers (Plague, Bitten), 16 x 16 (vkq.14). */
+  | "status"
+  /** Undead ability effect sprites for the effects canvas (vkq.14). */
+  | "effect";
 
 export type ChibiEndpoint =
   "create-image-pixen" | "create-image-pixflux" | "edit-image-pixen";
@@ -46,9 +50,17 @@ export type ChibiDerivation =
   /** A pure crop of the window whose wrap-around seams differ least (terrain). */
   | "seamless-crop"
   /** The transparent body is drawn over an accepted ground tile in the bottom cell (tall terrain). */
-  | "ground-composite";
+  | "ground-composite"
+  /**
+   * Every opaque pixel of the candidate mapped to the nearest colour of the
+   * asset's checked-in palette (status markers and effects, bead
+   * pulp_wars-vkq.14): Pixen draws the right shape, the palette keeps red,
+   * cyan, green and purple (the player colours) out.
+   */
+  | "palette-map";
 
-export type ChibiCamera = "three-quarter" | "top-down" | "portrait" | "icon";
+export type ChibiCamera =
+  "three-quarter" | "top-down" | "portrait" | "icon" | "flat";
 
 export interface ChibiClassRecipe {
   readonly camera: ChibiCamera;
@@ -72,6 +84,21 @@ const PIECE_OPTIONS = {
   detail: "low detail",
   view: "low top-down",
   direction: "south-east",
+} as const;
+
+/** Status markers and effects (vkq.14): flat, front-on, black outline. */
+const EFFECT_OPTIONS = {
+  "create-image-pixflux": {
+    outline: "single color black outline",
+    shading: "flat shading",
+    detail: "low detail",
+    view: "side",
+  },
+  "create-image-pixen": {
+    outline: "single color black outline",
+    detail: "low detail",
+    view: "side",
+  },
 } as const;
 
 /**
@@ -144,7 +171,7 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     camera: "top-down",
     factionLayer: false,
     assetClasses: ["TERRAIN"],
-    generators: ["create-image-pixflux", "create-image-pixen"],
+    generators: ["create-image-pixen", "create-image-pixflux"],
     editPass: false,
     noBackground: false,
     derivation: "seamless-crop",
@@ -205,6 +232,37 @@ export const CHIBI_CLASS_RECIPES: Readonly<
         view: "low top-down",
       },
     },
+  },
+  // Bead pulp_wars-vkq.14: board overlays that belong to no faction's
+  // materials (the faction layer's bone, cloth and iron would turn a cloud
+  // into a prop), so their palette lives in the class and subject texts.
+  // Pixen draws them; its 16 x 16 output is noise, so markers are 32 x 32.
+  // Pixflux (with a forced palette) stays allowed only for the recorded
+  // attempts: it ignored these subjects, which come last in a long layered
+  // description. The flat camera shows one shape floating alone on
+  // transparency, with no floor (the three-quarter icon camera drew a
+  // burst on an isometric plate).
+  status: {
+    camera: "flat",
+    factionLayer: false,
+    assetClasses: ["STATUS"],
+    generators: ["create-image-pixen", "create-image-pixflux"],
+    editPass: true,
+    noBackground: true,
+    derivation: "palette-map",
+    options: EFFECT_OPTIONS,
+  },
+  // Effects use the icon camera (batch 5's floating item sprites): the flat
+  // camera and "burst" wording drew campfires and explosions on tiles.
+  effect: {
+    camera: "icon",
+    factionLayer: false,
+    assetClasses: ["EFFECT"],
+    generators: ["create-image-pixen", "create-image-pixflux"],
+    editPass: true,
+    noBackground: true,
+    derivation: "palette-map",
+    options: EFFECT_OPTIONS,
   },
 };
 
@@ -284,6 +342,11 @@ export interface ChibiAssetSpec {
    */
   readonly fieldRecipe?: string;
   readonly maskOverride?: MaskOverrideSpec;
+  /**
+   * palette-map only: the checked-in palette PNG (under
+   * scripts/art/chibi/palettes/) every opaque master pixel is mapped to.
+   */
+  readonly palette?: ColorImageSpec;
 }
 
 export interface CropRegion {
@@ -697,7 +760,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT):UNDEAD:[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:)?[A-Z_]+$|^CITY:[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT):UNDEAD:[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:)?[A-Z_]+$|^CITY:[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^STATUS:(PLAGUED|BITTEN)$|^EFFECT:[A-Z_]+$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;
@@ -724,6 +787,9 @@ function sizeProblems(
   } else if (endpoint === "create-image-pixflux") {
     if (width < 16 || height < 16 || width > 400 || height > 400)
       problems.push(`${label}: Pixflux sides must be 16..400`);
+    // PixelLab answers HTTP 422 below this area (vkq.14, a 16 x 16 marker).
+    if (width * height < 32 * 32)
+      problems.push(`${label}: Pixflux area must be at least 32x32`);
   } else if (width < 1 || height < 1)
     problems.push(`${label}: edit size must be positive`);
   return problems;
@@ -804,6 +870,20 @@ export function batchManifestProblems(
       problems.push(`${at}: ${problem}`);
     if (subjectText(fragments, manifest.faction, asset.subject) === null)
       problems.push(`${label}: no subject text for ${asset.subject}`);
+    if (classRecipe.derivation === "palette-map") {
+      const palette = asset.palette;
+      if (palette === undefined)
+        problems.push(`${label}: a palette-map asset needs a palette`);
+      else if (
+        !palette.path.startsWith("scripts/art/chibi/palettes/") ||
+        !palette.path.endsWith(".png") ||
+        !SHA_PATTERN.test(palette.sha256)
+      )
+        problems.push(
+          `${label}: palettes are PNGs in scripts/art/chibi/palettes/ with a sha256`,
+        );
+    } else if (asset.palette !== undefined)
+      problems.push(`${label}: palette is only for palette-map classes`);
     if (classRecipe.derivation === "ground-composite") {
       if (asset.groundAsset === undefined)
         problems.push(`${label}: tall terrain needs a groundAsset`);

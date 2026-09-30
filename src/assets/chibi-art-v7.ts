@@ -30,7 +30,24 @@ export type ArtSubjectV7 =
   | "TREASURE"
   /** Revision 13: the unowned Grave marker left by a fallen land unit. */
   | "GRAVE"
-  | UiArtSubjectV7;
+  | UiArtSubjectV7
+  | ChibiEffectSubjectV7;
+
+/**
+ * Board overlays of revision 14 and the Undead abilities (bead
+ * pulp_wars-vkq.14), CHIBI only; LEGACY keeps its code-drawn cues.
+ * `STATUS:*` are the Plague and Bitten unit markers (drawn in the
+ * AFFLICTION_MARKER_FRAME_V7 slots; the Plague marker is also the Plague
+ * puff effect at 1:1); `EFFECT:*` are single sprites the effects canvas
+ * animates with code-driven position, scale and alpha: WAIL (Banshee
+ * shriek), SPLASH (Lich frost burst), RAISE (bone hands of Raise Dead),
+ * WISP (the Lifesteal drain and the Infect and Bitten risings) and CURE
+ * (Plague or a bite cured).
+ */
+export type ChibiEffectIdV7 = "WAIL" | "SPLASH" | "RAISE" | "WISP" | "CURE";
+
+export type ChibiEffectSubjectV7 =
+  "STATUS:PLAGUED" | "STATUS:BITTEN" | `EFFECT:${ChibiEffectIdV7}`;
 
 /**
  * Interface (DOM) subjects, batch 5 (bead pulp_wars-67q.11). The board never
@@ -106,7 +123,16 @@ export type ChibiAssetClassV7 =
   /** Interface portrait (DOM only), owned: 48 x 48, centred. */
   | "PORTRAIT"
   /** Interface icon (DOM only), unowned: up to 48 x 48, centred. */
-  | "ICON";
+  | "ICON"
+  /**
+   * Board status marker (Plague, Bitten), unowned, centred. The one class
+   * not drawn at 1 master px per CSS px: a 32 x 32 master (Pixflux's
+   * smallest canvas; Pixen's 16 x 16 output was noise) is drawn into the
+   * 16 CSS px marker frame, which is 1:1 on DPR 2 screens.
+   */
+  | "STATUS"
+  /** Board ability effect sprite, unowned: up to 48 x 48, centred. */
+  | "EFFECT";
 
 export interface ChibiPointV7 {
   readonly x: number;
@@ -239,6 +265,20 @@ export const CHIBI_CLASS_GEOMETRY_V7 = {
     maxSideOverflow: 0,
     maxUpOverflow: 0,
   },
+  STATUS: {
+    maxWidth: 32,
+    maxHeight: 32,
+    placement: "CENTRE",
+    maxSideOverflow: 0,
+    maxUpOverflow: 0,
+  },
+  EFFECT: {
+    maxWidth: 48,
+    maxHeight: 48,
+    placement: "CENTRE",
+    maxSideOverflow: 0,
+    maxUpOverflow: 0,
+  },
 } as const satisfies Readonly<Record<ChibiAssetClassV7, ChibiClassGeometryV7>>;
 
 export interface ChibiOverflowV7 {
@@ -286,6 +326,8 @@ function allowedClasses(subject: ArtSubjectV7): readonly ChibiAssetClassV7[] {
     return ["SETTLEMENT"];
   if (subject.startsWith("PORTRAIT:")) return ["PORTRAIT"];
   if (subject.startsWith("ICON:")) return ["ICON"];
+  if (subject.startsWith("STATUS:")) return ["STATUS"];
+  if (subject.startsWith("EFFECT:")) return ["EFFECT"];
   return ["RESOURCE", "BUILDING"];
 }
 

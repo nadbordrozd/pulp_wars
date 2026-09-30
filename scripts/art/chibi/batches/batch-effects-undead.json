@@ -1,0 +1,500 @@
+{
+  "schemaVersion": 1,
+  "batch": "effects-undead",
+  "title": "Undead ability effects and revision 14 status markers",
+  "bead": "pulp_wars-vkq.14",
+  "faction": "UNDEAD",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-status-plagued",
+      "subject": "STATUS:PLAGUED",
+      "assetClass": "STATUS",
+      "recipeClass": "status",
+      "canvas": {
+        "width": 16,
+        "height": 16
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-plague.png",
+        "sha256": "62586ebf3daa41cddc110873a5064bc300beeca5b9548c9790a9955dd71c7e93"
+      }
+    },
+    {
+      "id": "chibi-status-bitten",
+      "subject": "STATUS:BITTEN",
+      "assetClass": "STATUS",
+      "recipeClass": "status",
+      "canvas": {
+        "width": 16,
+        "height": 16
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-bite.png",
+        "sha256": "09a51ec01240b3d3aaa8fec10191a08b0e8784b89bdcb1a4c2427dc241e2cce1"
+      }
+    },
+    {
+      "id": "chibi-marker-plagued",
+      "subject": "STATUS:PLAGUED",
+      "assetClass": "STATUS",
+      "recipeClass": "status",
+      "canvas": {
+        "width": 32,
+        "height": 32
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-plague.png",
+        "sha256": "62586ebf3daa41cddc110873a5064bc300beeca5b9548c9790a9955dd71c7e93"
+      }
+    },
+    {
+      "id": "chibi-marker-bitten",
+      "subject": "STATUS:BITTEN",
+      "assetClass": "STATUS",
+      "recipeClass": "status",
+      "canvas": {
+        "width": 32,
+        "height": 32
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-bite.png",
+        "sha256": "09a51ec01240b3d3aaa8fec10191a08b0e8784b89bdcb1a4c2427dc241e2cce1"
+      }
+    },
+    {
+      "id": "chibi-effect-splash",
+      "subject": "EFFECT:SPLASH",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-frost.png",
+        "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+      }
+    },
+    {
+      "id": "chibi-effect-wail",
+      "subject": "EFFECT:WAIL",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-frost.png",
+        "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+      }
+    },
+    {
+      "id": "chibi-effect-raise",
+      "subject": "EFFECT:RAISE",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-frost.png",
+        "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+      }
+    },
+    {
+      "id": "chibi-effect-plague",
+      "subject": "EFFECT:PLAGUE",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-plague.png",
+        "sha256": "62586ebf3daa41cddc110873a5064bc300beeca5b9548c9790a9955dd71c7e93"
+      }
+    },
+    {
+      "id": "chibi-effect-cure",
+      "subject": "EFFECT:CURE",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 32,
+        "height": 32
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-cure.png",
+        "sha256": "3a8d6c016fe881b9afdee3f17f4cbb0536d41815a1713e0a5413cdd0226228f3"
+      }
+    },
+    {
+      "id": "chibi-effect-wisp",
+      "subject": "EFFECT:WISP",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 24,
+        "height": 24
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-frost.png",
+        "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "status-plagued-a",
+      "asset": "chibi-status-plagued",
+      "endpoint": "create-image-pixen",
+      "seed": 14140,
+      "requestSize": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    {
+      "id": "status-bitten-a",
+      "asset": "chibi-status-bitten",
+      "endpoint": "create-image-pixen",
+      "seed": 14141,
+      "requestSize": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    {
+      "id": "effect-splash-a",
+      "asset": "chibi-effect-splash",
+      "endpoint": "create-image-pixen",
+      "seed": 14142,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "effect-wail-a",
+      "asset": "chibi-effect-wail",
+      "endpoint": "create-image-pixen",
+      "seed": 14143,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "effect-raise-a",
+      "asset": "chibi-effect-raise",
+      "endpoint": "create-image-pixen",
+      "seed": 14144,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      }
+    },
+    {
+      "id": "effect-plague-a",
+      "asset": "chibi-effect-plague",
+      "endpoint": "create-image-pixen",
+      "seed": 14147,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      }
+    },
+    {
+      "id": "effect-cure-a",
+      "asset": "chibi-effect-cure",
+      "endpoint": "create-image-pixen",
+      "seed": 14148,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      }
+    },
+    {
+      "id": "status-plagued-b",
+      "asset": "chibi-status-plagued",
+      "endpoint": "create-image-pixen",
+      "seed": 14150,
+      "requestSize": {
+        "width": 16,
+        "height": 16
+      },
+      "notes": "Pixen again (Pixflux refuses canvases under 32x32); the subject now names its only colours and the recipe excludes red explicitly.",
+      "negativeAddendum": "red, pink, blood, drops of blood, brown, green glow"
+    },
+    {
+      "id": "status-bitten-b",
+      "asset": "chibi-status-bitten",
+      "endpoint": "create-image-pixen",
+      "seed": 14151,
+      "requestSize": {
+        "width": 16,
+        "height": 16
+      },
+      "notes": "Pixen again (Pixflux refuses canvases under 32x32); the subject now names its only colours and the recipe excludes red explicitly.",
+      "negativeAddendum": "red, pink, blood, lips, gums, tongue, green glow"
+    },
+    {
+      "id": "effect-splash-b",
+      "asset": "chibi-effect-splash",
+      "endpoint": "create-image-pixflux",
+      "seed": 14152,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/undead-frost.png",
+        "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+      },
+      "notes": "Pixflux, flat camera, forced pale blue frost palette."
+    },
+    {
+      "id": "marker-plagued-a",
+      "asset": "chibi-marker-plagued",
+      "endpoint": "create-image-pixflux",
+      "seed": 14160,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs",
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/undead-plague.png",
+        "sha256": "62586ebf3daa41cddc110873a5064bc300beeca5b9548c9790a9955dd71c7e93"
+      },
+      "notes": "32 x 32 Pixflux (its smallest canvas) with the forced grey-green plague palette; drawn into the 16 px marker frame (1:1 on DPR 2)."
+    },
+    {
+      "id": "marker-bitten-a",
+      "asset": "chibi-marker-bitten",
+      "endpoint": "create-image-pixflux",
+      "seed": 14161,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, lips, gums, tongue",
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/undead-bite.png",
+        "sha256": "09a51ec01240b3d3aaa8fec10191a08b0e8784b89bdcb1a4c2427dc241e2cce1"
+      },
+      "notes": "32 x 32 Pixflux with the forced ivory and slate bite palette."
+    },
+    {
+      "id": "effect-splash-c",
+      "asset": "chibi-effect-splash",
+      "endpoint": "create-image-pixflux",
+      "seed": 14162,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "high top-down"
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs",
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/undead-frost.png",
+        "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+      },
+      "notes": "Seen from above as a radial burst, forced frost palette."
+    },
+    {
+      "id": "marker-plagued-b",
+      "asset": "chibi-marker-plagued",
+      "endpoint": "create-image-pixen",
+      "seed": 14170,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, red, pink, blood, brown, animal, statue",
+      "notes": "Pixen at 32 x 32 (drawn into the 16 px marker frame)."
+    },
+    {
+      "id": "marker-bitten-b",
+      "asset": "chibi-marker-bitten",
+      "endpoint": "create-image-pixen",
+      "seed": 14171,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, red, pink, blood, lips, gums, tongue, tree",
+      "notes": "Pixen at 32 x 32 (drawn into the 16 px marker frame)."
+    },
+    {
+      "id": "effect-splash-d",
+      "asset": "chibi-effect-splash",
+      "endpoint": "create-image-pixen",
+      "seed": 14172,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, gems, crystals",
+      "notes": "Pixen with the flat camera; frost-white flame wording."
+    },
+    {
+      "id": "marker-plagued-c",
+      "asset": "chibi-marker-plagued",
+      "endpoint": "create-image-pixen",
+      "seed": 14180,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "negativeAddendum": "island, tree, campfire, fire, house, grass, ground, floor, pedestal, plate, red, pink, blood, brown",
+      "notes": "Pixen at 32 x 32, cartoon-cloud wording; palette-mapped on acceptance."
+    },
+    {
+      "id": "marker-plagued-d",
+      "asset": "chibi-marker-plagued",
+      "endpoint": "create-image-pixen",
+      "seed": 14190,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "negativeAddendum": "ground, floor, grass, island, pedestal, plate, stand, base, tree, red, pink, brown, mushroom, campfire",
+      "notes": "Queasy cartoon cloud; palette-mapped on acceptance. Also the Plague puff effect at 1:1."
+    },
+    {
+      "id": "effect-wail-b",
+      "asset": "chibi-effect-wail",
+      "endpoint": "create-image-pixen",
+      "seed": 14191,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "ground, floor, grass, island, pedestal, plate, stand, base, tree, red, pink, brown, wings, totem, lantern, speaker, purple",
+      "notes": "Sound-wave symbol wording."
+    },
+    {
+      "id": "effect-wisp-a",
+      "asset": "chibi-effect-wisp",
+      "endpoint": "create-image-pixen",
+      "seed": 14192,
+      "requestSize": {
+        "width": 24,
+        "height": 24
+      },
+      "negativeAddendum": "ground, floor, grass, island, pedestal, plate, stand, base, tree, red, pink, brown, candle, lantern, face",
+      "notes": "One wisp for Lifesteal (drain) and the Infect and Bitten risings."
+    },
+    {
+      "id": "effect-cure-b",
+      "asset": "chibi-effect-cure",
+      "endpoint": "create-image-pixen",
+      "seed": 14200,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "notes": "Item-sprite class wording and the icon camera; palette-mapped on acceptance."
+    },
+    {
+      "id": "effect-wisp-b",
+      "asset": "chibi-effect-wisp",
+      "endpoint": "create-image-pixen",
+      "seed": 14201,
+      "requestSize": {
+        "width": 24,
+        "height": 24
+      },
+      "notes": "Item-sprite class wording and the icon camera; palette-mapped on acceptance."
+    },
+    {
+      "id": "effect-wail-c",
+      "asset": "chibi-effect-wail",
+      "endpoint": "create-image-pixen",
+      "seed": 14202,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Item-sprite class wording and the icon camera; palette-mapped on acceptance."
+    },
+    {
+      "id": "effect-raise-b",
+      "asset": "chibi-effect-raise",
+      "endpoint": "create-image-pixen",
+      "seed": 14203,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "Item-sprite class wording and the icon camera; palette-mapped on acceptance."
+    },
+    {
+      "id": "effect-raise-b-edit",
+      "asset": "chibi-effect-raise",
+      "endpoint": "edit-image-pixen",
+      "seed": 14210,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "effect-raise-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the ground tile, the grass, the fire and everything under the two hands, leaving empty transparent background there; keep the two skeleton hands and the curling wisps around their wrists exactly the same.",
+      "notes": "The raise-b hands are right but stand over a campfire on a tile; the edit removes the tile and fire."
+    },
+    {
+      "id": "effect-cure-c",
+      "asset": "chibi-effect-cure",
+      "endpoint": "create-image-pixen",
+      "seed": 14211,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "options": {
+        "view": "side"
+      },
+      "promptAddendum": "The sparkles float in empty air: there is no fountain, no pedestal, no gem and no ground.",
+      "notes": "Side view so nothing stands on a floor."
+    },
+    {
+      "id": "marker-bitten-c",
+      "asset": "chibi-marker-bitten",
+      "endpoint": "create-image-pixen",
+      "seed": 14212,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "promptAddendum": "Draw it as two big pointed ivory-white fangs side by side, like a vampire's bite, with two small dark round puncture holes just below their tips; nothing else.",
+      "negativeAddendum": "ground, floor, grass, island, pedestal, plate, stand, base, red, pink, blood, lips, gums, tongue, face",
+      "notes": "Fangs variant of the bite marker, to compare with marker-bitten-b."
+    },
+    {
+      "id": "effect-cure-c-edit",
+      "asset": "chibi-effect-cure",
+      "endpoint": "edit-image-pixen",
+      "seed": 14220,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "source": {
+        "recipe": "effect-cure-c",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the fountain, the grass island, the fire and everything below the sparkles, leaving empty transparent background there; keep only the white four-pointed star sparkles exactly the same, floating in empty air.",
+      "notes": "cure-c drew good white sparkles above a fountain on a tile; the edit keeps only the sparkles."
+    }
+  ]
+}

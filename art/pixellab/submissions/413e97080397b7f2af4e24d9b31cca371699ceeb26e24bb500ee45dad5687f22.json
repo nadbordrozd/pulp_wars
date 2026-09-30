@@ -1,0 +1,51 @@
+{
+  "id": "status-bitten-a",
+  "jobId": "sync-fb29615e-b9e6-4178-aed3-eede0f927fc1",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "effects-undead",
+    "asset": "chibi-status-bitten",
+    "subject": "STATUS:BITTEN",
+    "faction": "UNDEAD",
+    "recipeClass": "status",
+    "requestSize": {
+      "width": 16,
+      "height": 16
+    },
+    "seed": 14141,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-icon.txt",
+        "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-status.txt + scripts/art/chibi/fragments/class-status.negative.txt",
+        "text": "Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, text, letters, numbers, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/UNDEAD.json",
+        "text": "Subject: a zombie bite: a set of big blunt ivory-white teeth in two curved rows, upper and lower, closing on each other like a biting mouth seen from the front, with a dark slate-grey gap between the rows; no lips, no face, one simple shape."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a zombie bite: a set of big blunt ivory-white teeth in two curved rows, upper and lower, closing on each other like a biting mouth seen from the front, with a dark slate-grey gap between the rows; no lips, no face, one simple shape.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a zombie bite: a set of big blunt ivory-white teeth in two curved rows, upper and lower, closing on each other like a biting mouth seen from the front, with a dark slate-grey gap between the rows; no lips, no face, one simple shape. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold."
+  }
+}

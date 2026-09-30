@@ -1,0 +1,57 @@
+{
+  "id": "marker-bitten-b",
+  "jobId": "sync-ff3e198f-16ec-4b8e-9d19-fe732cde37af",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "effects-undead",
+    "asset": "chibi-marker-bitten",
+    "subject": "STATUS:BITTEN",
+    "faction": "UNDEAD",
+    "recipeClass": "status",
+    "requestSize": {
+      "width": 32,
+      "height": 32
+    },
+    "seed": 14171,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-flat.txt",
+        "text": "Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-status.txt + scripts/art/chibi/fragments/class-status.negative.txt",
+        "text": "Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, text, letters, numbers, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/UNDEAD.json",
+        "text": "Subject: a set of chattering teeth floating in empty space: two short curved rows of big pointed ivory-white teeth, the upper row pointing down and the lower row pointing up, biting together, with a thin dark slate-grey gap between the rows; no lips, no gums, no mouth, no face."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, red, pink, blood, lips, gums, tongue, tree"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped. Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a set of chattering teeth floating in empty space: two short curved rows of big pointed ivory-white teeth, the upper row pointing down and the lower row pointing up, biting together, with a thin dark slate-grey gap between the rows; no lips, no gums, no mouth, no face.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold, pedestal, plate, base, stand, stone slab, floor, campfire, fire pit, logs, pink, lips, gums, tongue, tree",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped. Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a set of chattering teeth floating in empty space: two short curved rows of big pointed ivory-white teeth, the upper row pointing down and the lower row pointing up, biting together, with a thin dark slate-grey gap between the rows; no lips, no gums, no mouth, no face. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold, pedestal, plate, base, stand, stone slab, floor, campfire, fire pit, logs, pink, lips, gums, tongue, tree."
+  }
+}

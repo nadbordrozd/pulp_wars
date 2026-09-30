@@ -1,0 +1,36 @@
+{
+  "id": "effect-cure-c-edit",
+  "jobId": "84721254-a972-437a-8333-de4f0c136727",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "effects-undead",
+    "asset": "chibi-effect-cure",
+    "subject": "EFFECT:CURE",
+    "faction": "UNDEAD",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 32,
+      "height": 32
+    },
+    "seed": 14220,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the fountain, the grass island, the fire and everything below the sparkles, leaving empty transparent background there; keep only the white four-pointed star sparkles exactly the same, floating in empty air."
+      }
+    ],
+    "prompt": "Remove the fountain, the grass island, the fire and everything below the sparkles, leaving empty transparent background there; keep only the white four-pointed star sparkles exactly the same, floating in empty air.",
+    "negativePrompt": "",
+    "description": "Remove the fountain, the grass island, the fire and everything below the sparkles, leaving empty transparent background there; keep only the white four-pointed star sparkles exactly the same, floating in empty air.",
+    "editInstruction": "Remove the fountain, the grass island, the fire and everything below the sparkles, leaving empty transparent background there; keep only the white four-pointed star sparkles exactly the same, floating in empty air.",
+    "source": {
+      "recipe": "effect-cure-c",
+      "candidate": 0,
+      "sha256": "4473431d82a311118a2e38c1ae5a708a1bae49e5c96760036e7cb7344c58f939"
+    }
+  }
+}

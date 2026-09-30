@@ -1,0 +1,57 @@
+{
+  "id": "marker-plagued-d",
+  "jobId": "sync-4b51c70e-919b-48af-92e5-901cdaba9cca",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "effects-undead",
+    "asset": "chibi-marker-plagued",
+    "subject": "STATUS:PLAGUED",
+    "faction": "UNDEAD",
+    "recipeClass": "status",
+    "requestSize": {
+      "width": 32,
+      "height": 32
+    },
+    "seed": 14190,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-flat.txt",
+        "text": "Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-status.txt + scripts/art/chibi/fragments/class-status.negative.txt",
+        "text": "Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, text, letters, numbers, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/UNDEAD.json",
+        "text": "Subject: one small puffy grey-green cartoon cloud of sickly gas, round and fluffy with three bumps on top, with a queasy little face (two droopy dot eyes and a wavy frown), grey-green with a darker grey-green underside; it floats alone in empty space; not a tree, not a mushroom, no ground."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "ground, floor, grass, island, pedestal, plate, stand, base, tree, red, pink, brown, mushroom, campfire"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped. Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one small puffy grey-green cartoon cloud of sickly gas, round and fluffy with three bumps on top, with a queasy little face (two droopy dot eyes and a wavy frown), grey-green with a darker grey-green underside; it floats alone in empty space; not a tree, not a mushroom, no ground.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold, floor, island, pedestal, plate, stand, base, tree, pink, brown, mushroom, campfire",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped. Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one small puffy grey-green cartoon cloud of sickly gas, round and fluffy with three bumps on top, with a queasy little face (two droopy dot eyes and a wavy frown), grey-green with a darker grey-green underside; it floats alone in empty space; not a tree, not a mushroom, no ground. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold, floor, island, pedestal, plate, stand, base, tree, pink, brown, mushroom, campfire."
+  }
+}

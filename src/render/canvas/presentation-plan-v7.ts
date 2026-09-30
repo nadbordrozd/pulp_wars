@@ -78,7 +78,17 @@ export type SupportEffectV7 =
   /** Revision 14: Plague lifted because its source Lich left the board. */
   | "CURE"
   /** Revision 14: a bitten victim rose as the biter's Zombie. */
-  | "BITTEN";
+  | "BITTEN"
+  /**
+   * Revision 13 Lich splash (vkq.14): the burst on the shot's target (the
+   * actor cell) and on each splashed unit, between the shot and the damage.
+   */
+  | "SPLASH"
+  /**
+   * Revision 13 Lifesteal (vkq.14): the healed Vampire is the actor; the
+   * unit it drained is the single recipient.
+   */
+  | "LIFESTEAL";
 
 /** Builds animation instructions exclusively from captured public views/events. */
 export function corePresentationPlanV7(
@@ -221,6 +231,38 @@ export function corePresentationPlanV7(
         to: defender.at,
         durationMs: ranged ? 280 : 230,
       });
+      // The Lich (an Undead Catapult) bursts on its target and splash cells.
+      if (
+        attacker.role === "CATAPULT" &&
+        factionOf(before, attacker.ownerId) === "UNDEAD"
+      )
+        steps.push({
+          kind: "SUPPORT",
+          effect: "SPLASH",
+          actor: { unitId: defender.id, at: defender.at },
+          recipients: event.preview.splash.flatMap((splash) => {
+            const victim = before.units.find(
+              (unit) => unit.id === splash.unitId,
+            );
+            return victim === undefined
+              ? []
+              : [{ unitId: victim.id, at: victim.at }];
+          }),
+          durationMs: 320,
+        });
+      // Lifesteal: a wisp drains from the damaged unit to the healed Vampire.
+      for (const [healed, drained, heal] of [
+        [attacker, defender, event.preview.attackerHeal],
+        [defender, attacker, event.preview.defenderHeal],
+      ] as const)
+        if (heal > 0)
+          steps.push({
+            kind: "SUPPORT",
+            effect: "LIFESTEAL",
+            actor: { unitId: healed.id, at: healed.at },
+            recipients: [{ unitId: drained.id, at: drained.at }],
+            durationMs: 320,
+          });
       for (const splash of event.preview.splash) {
         const victim = before.units.find((unit) => unit.id === splash.unitId);
         if (victim !== undefined)
@@ -273,6 +315,24 @@ export function corePresentationPlanV7(
           recipients,
           durationMs: 320,
         });
+      // Revision 14: Tend also cures Plague and bites; the cured sparkle.
+      if (event.kind === "WOUNDED_TENDED") {
+        const [first, ...rest] = event.results.flatMap((result) => {
+          const unit = publicUnits.get(result.unitId);
+          return unit !== undefined &&
+            (result.curedPlague || result.curedBitten)
+            ? [{ unitId: unit.id, at: unit.at }]
+            : [];
+        });
+        if (first !== undefined)
+          steps.push({
+            kind: "SUPPORT",
+            effect: "CURE",
+            actor: first,
+            recipients: rest,
+            durationMs: 320,
+          });
+      }
     } else if (event.kind === "DEAD_RAISED") {
       const actor = [...after.units, ...before.units].find(
         (unit) => unit.id === event.unitId,
@@ -406,6 +466,13 @@ export function corePresentationPlanV7(
     }
   }
   return steps;
+}
+
+function factionOf(
+  view: PlayerViewV7,
+  playerId: PlayerViewV7["players"][number]["id"],
+): PlayerViewV7["players"][number]["faction"] | undefined {
+  return view.players.find((player) => player.id === playerId)?.faction;
 }
 
 function same(left: CoordV7, right: CoordV7): boolean {

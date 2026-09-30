@@ -1,0 +1,62 @@
+{
+  "id": "marker-plagued-a",
+  "jobId": "sync-07f6b9bb-913b-4ca6-993f-80a318ce5336",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "effects-undead",
+    "asset": "chibi-marker-plagued",
+    "subject": "STATUS:PLAGUED",
+    "faction": "UNDEAD",
+    "recipeClass": "status",
+    "requestSize": {
+      "width": 32,
+      "height": 32
+    },
+    "seed": 14160,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "side"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-flat.txt",
+        "text": "Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-status.txt + scripts/art/chibi/fragments/class-status.negative.txt",
+        "text": "Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, text, letters, numbers, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/UNDEAD.json",
+        "text": "Subject: a small lumpy cloud of grey-green plague smoke made of three round puffs, pale grey-green on top and darker grey-green underneath, with two tiny round grey-green droplets under it, floating in empty space; one simple shape, no face."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped. Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a small lumpy cloud of grey-green plague smoke made of three round puffs, pale grey-green on top and darker grey-green underneath, with two tiny round grey-green droplets under it, floating in empty space; one simple shape, no face.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold, pedestal, plate, base, stand, stone slab, floor, campfire, fire pit, logs",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped. Class: one tiny bold status marker for a strategy game map, a single simple symbol with a big clear chunky silhouette, thick single-colour black outline all around, only two or three flat colours and no details at all; it must read at a glance at 16 pixels over green grass, blue water and white snow. The symbol floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a small lumpy cloud of grey-green plague smoke made of three round puffs, pale grey-green on top and darker grey-green underneath, with two tiny round grey-green droplets under it, floating in empty space; one simple shape, no face. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, coin, emblem, button, border, circular background, square background, disc, ground, grass, shadow, many small objects, red, crimson, blood, bright green, lime, cyan, teal, turquoise, purple, violet, orange, yellow, gold, pedestal, plate, base, stand, stone slab, floor, campfire, fire pit, logs.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/undead-plague.png",
+      "sha256": "62586ebf3daa41cddc110873a5064bc300beeca5b9548c9790a9955dd71c7e93"
+    }
+  }
+}

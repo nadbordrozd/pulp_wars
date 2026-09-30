@@ -1,0 +1,36 @@
+{
+  "id": "effect-raise-b-edit",
+  "jobId": "3337b3d1-a047-44fa-96bb-842a75ed720a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "effects-undead",
+    "asset": "chibi-effect-raise",
+    "subject": "EFFECT:RAISE",
+    "faction": "UNDEAD",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 14210,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the ground tile, the grass, the fire and everything under the two hands, leaving empty transparent background there; keep the two skeleton hands and the curling wisps around their wrists exactly the same."
+      }
+    ],
+    "prompt": "Remove the ground tile, the grass, the fire and everything under the two hands, leaving empty transparent background there; keep the two skeleton hands and the curling wisps around their wrists exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the ground tile, the grass, the fire and everything under the two hands, leaving empty transparent background there; keep the two skeleton hands and the curling wisps around their wrists exactly the same.",
+    "editInstruction": "Remove the ground tile, the grass, the fire and everything under the two hands, leaving empty transparent background there; keep the two skeleton hands and the curling wisps around their wrists exactly the same.",
+    "source": {
+      "recipe": "effect-raise-b",
+      "candidate": 0,
+      "sha256": "14699979949cd28e0abbf0585aeb63901b010a6244741c6904d27855c88525df"
+    }
+  }
+}

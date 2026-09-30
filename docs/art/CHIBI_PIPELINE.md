@@ -74,6 +74,8 @@ the Human-era owner text they were generated with.
 | `tall-terrain` | Pixen, then optional edit                      | the transparent body drawn over an accepted ground tile's bottom cell                                  |
 | `portrait`     | Pixen, `side` view, south-east, low detail     | the candidate: a 48 x 48 head-and-shoulders interface portrait with an owner mask (batch 5)            |
 | `icon`         | Pixen, low top-down, no direction              | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships and the Catapult        |
+| `status`       | Pixen, flat camera, side view                  | the candidate palette-mapped: a 32 x 32 board status marker                                            |
+| `effect`       | Pixen, icon camera, side view                  | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                   |
 
 "Generate at the display size" is enforced: a non-terrain request must
 equal its master canvas. Pixen sizes must be multiples of 4.
@@ -115,6 +117,39 @@ icons). The review of batch 5 shows both.
 - **Cross-batch ground:** a tall-terrain `groundAsset` accepted in an
   earlier production batch is found there when the current batch has no
   such asset; the record's `derivation.ground.batch` names it.
+
+### Status markers and effects
+
+Batch `effects-undead` (bead `pulp_wars-vkq.14`) adds the `status` and
+`effect` recipe classes for the board's Plague and Bitten markers and the
+Undead ability effects. They skip the faction layer (bone, cloth and iron
+would turn a cloud into a prop) and name their colours in the subject line.
+Three findings shaped them:
+
+- Pixen answers at 16 x 16 with noise, and Pixflux refuses canvases under
+  32 x 32 (HTTP 422, now a manifest check), so markers are 32 x 32.
+- Pixflux ignored these subjects: they come last in a long layered
+  description. It stays allowed only for the recorded attempts.
+- Pixen draws the right shapes but drifts towards the player colours (red
+  gums, cyan flames) and puts effects on tiles or campfires. The `effect`
+  class says "item sprite" with the icon camera, and a ground-removal edit
+  (`editInstruction`) rescued the Raise Dead hands and the cure sparkles.
+
+Their derivation is **palette-map**: every candidate pixel with alpha >= 128
+becomes the nearest colour (redmean distance) of the asset's checked-in
+`palette` (`scripts/art/chibi/palettes/undead-*.png`), fully opaque, and the
+rest transparent, exactly what Pixflux's forced palette does server-side.
+`art:validate` checks that the recorded palette is the manifest's, that its
+bytes are unchanged, and that every master pixel is a palette colour.
+
+A review of a batch whose assets are all markers or effects writes effect
+sheets (each sprite on grass, forest, shallow and deep water, mountain and
+the dock panel, over a Fighter of each of the four player colours, and at
+zoom 0.75) and the captures `ingame-effects-{a,b}-{desktop,phone}-zoom-{1,0.75}.png`
+from [`review-effects-v7.ts`](../../scripts/art/chibi/review-effects-v7.ts):
+markers on units of all four colours and the cues pinned mid-animation
+through `CanvasBoardHostV7.pinSupportFeedback` (scene A: Wail, Lich splash,
+Plague, Lifesteal; scene B: Raise Dead, Bitten and Infect risings, cure).
 
 ## Terrain palettes and variants
 

@@ -1292,11 +1292,27 @@ export function drawBoardV7(input: {
             entry.afflictions ?? []
           ).entries()) {
             const subject = afflictionSubjectV7(affliction);
+            // CHIBI pieces draw the registered marker raster (bead
+            // pulp_wars-vkq.14) unless the hook supplies one; high contrast
+            // and a raster still loading keep the code-drawn marker.
+            const registered =
+              chibiPiece &&
+              chibiArt !== undefined &&
+              !(input.highContrast ?? false)
+                ? chibiArt.resolve({
+                    subject,
+                    at: entry.at,
+                    deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+                  })
+                : null;
             drawAfflictionMarkerV7(context, subject, x, y, camera.zoom, {
               chibi: chibiPiece,
               slot,
               highContrast: input.highContrast ?? false,
-              raster: input.afflictionArt?.(subject) ?? null,
+              raster:
+                input.afflictionArt?.(subject) ??
+                (registered?.kind === "READY" ? registered.image : null),
+              devicePixelRatio,
             });
           }
         if (entry.kind === "CITY" && entry.capital === true && chibiPiece)
