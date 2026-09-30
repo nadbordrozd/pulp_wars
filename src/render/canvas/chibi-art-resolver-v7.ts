@@ -1,6 +1,7 @@
 import {
   buildChibiArtRegistryV7,
   chibiFallbackSubjectV7,
+  chibiOverflowV7,
   chibiVariantV7,
   type ArtSubjectV7,
   type ChibiArtAssetV7,
@@ -32,11 +33,31 @@ export type ChibiResolutionV7 =
        * fails, or for a density variant; the master is drawn whole instead.
        */
       readonly layers?: ChibiTallTerrainImagesV7;
+      /**
+       * Tall terrain at a smoothed (fractional) scale: the master's owning
+       * cell and upward overflow, and the body layer's owning cell once it
+       * is loaded, as separate rasters. Bilinear filtering of a source
+       * sub-rectangle reads the rows across its edge, so drawing the cell
+       * from the whole master blended the transparent overflow row into
+       * the cell's top device row: a faint seam (pulp_wars-51t). Absent at
+       * whole scales, for a density variant, and when pixel readback
+       * fails; the master is then drawn by sub-rectangle.
+       */
+      readonly parts?: ChibiTallTerrainPartsV7;
     };
 
 export interface ChibiTallTerrainImagesV7 {
   readonly ground: CanvasImageSource;
   readonly body: CanvasImageSource;
+}
+
+export interface ChibiTallTerrainPartsV7 {
+  /** Master rows below the upward overflow (80 x 80 at density 1). */
+  readonly cell: CanvasImageSource;
+  /** Master rows of the upward overflow. */
+  readonly overflow: CanvasImageSource;
+  /** Body-layer rows below the upward overflow, when the body is loaded. */
+  readonly bodyCell?: CanvasImageSource;
 }
 
 /**
@@ -168,6 +189,42 @@ export function createChibiArtResolverV7(input: {
   const rasters = new Map<string, RasterRecord>();
   const maskPixels = new Map<string, Uint8ClampedArray>();
   const recoloured = new Map<string, CanvasImageSource>();
+  // Row slices of a loaded raster, keyed by URL; null once readback failed.
+  const slices = new Map<
+    string,
+    { cell: CanvasImageSource; overflow: CanvasImageSource } | null
+  >();
+  const slice = (
+    url: string,
+    image: CanvasImageSource,
+    asset: ChibiArtAssetV7,
+  ): { cell: CanvasImageSource; overflow: CanvasImageSource } | null => {
+    const cached = slices.get(url);
+    if (cached !== undefined) return cached;
+    const { width, height } = asset;
+    const up = chibiOverflowV7(asset).up;
+    const pixels = input.environment.readPixels(image, width, height);
+    const cell =
+      pixels === null
+        ? null
+        : input.environment.createSurface(
+            pixels.slice(up * width * 4),
+            width,
+            height - up,
+          );
+    const overflow =
+      pixels === null
+        ? null
+        : input.environment.createSurface(
+            pixels.slice(0, up * width * 4),
+            width,
+            up,
+          );
+    const result =
+      cell === null || overflow === null ? null : { cell, overflow };
+    slices.set(url, result);
+    return result;
+  };
   const raster = (url: string): RasterRecord => {
     const existing = rasters.get(url);
     if (existing !== undefined) return existing;
@@ -226,6 +283,21 @@ export function createChibiArtResolverV7(input: {
                 ground: raster(asset.layers.groundUrl),
                 body: raster(asset.layers.bodyUrl),
               };
+        const loadedLayers =
+          layers?.ground.state === "READY" && layers.body.state === "READY"
+            ? { ground: layers.ground.image, body: layers.body.image }
+            : undefined;
+        const master =
+          choice.smoothing &&
+          choice.density === 1 &&
+          asset.assetClass === "TALL_TERRAIN" &&
+          chibiOverflowV7(asset).up > 0
+            ? slice(choice.url, source.image, asset)
+            : null;
+        const body =
+          master === null || loadedLayers === undefined
+            ? null
+            : slice(asset.layers?.bodyUrl ?? "", loadedLayers.body, asset);
         return {
           kind: "READY",
           asset,
@@ -233,14 +305,16 @@ export function createChibiArtResolverV7(input: {
           density: choice.density,
           smoothing: choice.smoothing,
           cacheKey: baseKey,
-          ...(layers?.ground.state === "READY" && layers.body.state === "READY"
-            ? {
-                layers: {
-                  ground: layers.ground.image,
-                  body: layers.body.image,
+          ...(loadedLayers === undefined ? {} : { layers: loadedLayers }),
+          ...(master === null
+            ? {}
+            : {
+                parts: {
+                  cell: master.cell,
+                  overflow: master.overflow,
+                  ...(body === null ? {} : { bodyCell: body.cell }),
                 },
-              }
-            : {}),
+              }),
         };
       }
       const cacheKey = `${baseKey}#${ownerColor ?? ""}`;

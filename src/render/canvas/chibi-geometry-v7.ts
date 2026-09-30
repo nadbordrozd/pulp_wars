@@ -1,6 +1,7 @@
 import {
   CHIBI_TILE_CSS_PX,
   chibiAnchorV7,
+  chibiOverflowV7,
   type ChibiArtAssetV7,
 } from "../../assets/chibi-art-v7";
 import {
@@ -218,6 +219,50 @@ export function chibiGarrisonDestinationRect(
     y: Math.round((bottom - height) * ratio) / ratio,
     width,
     height,
+  };
+}
+
+/** The part of a chibi terrain master drawn in one pass (see drawChibiTerrainV7). */
+export type ChibiTerrainPartV7 = "CELL" | "OVERFLOW";
+
+/**
+ * CSS-pixel destination of one part of a chibi terrain master: its owning
+ * cell (every row below the upward overflow) or its upward overflow. Every
+ * edge is the unsnapped master edge rounded to a whole device pixel on its
+ * own, so the cell and overflow parts share their split row, and horizontally
+ * or vertically adjacent cells share their boundary exactly: no one-device-
+ * pixel gap or overlap at any zoom step or device pixel ratio. Where the
+ * master geometry already lands on whole device pixels (every step on a DPR
+ * 1, 2 or 3 screen) this equals chibiDestinationRect, so whole scales stay
+ * nearest-neighbour exact.
+ */
+export function chibiTerrainPartRect(
+  cellCentre: Point,
+  camera: CameraState,
+  asset: ChibiArtAssetV7,
+  devicePixelRatio: number,
+  part: ChibiTerrainPartV7,
+): ChibiDestinationRectV7 {
+  const scale = chibiMasterScale(camera);
+  const anchor = chibiAnchorV7(asset);
+  const ratio = devicePixelRatio > 0 ? devicePixelRatio : 1;
+  // Edges in whole device pixels; CSS values divide once, so equal device
+  // edges give bit-identical CSS edges and whole sizes stay exact.
+  const device = (value: number): number => Math.round(value * ratio);
+  const originX = cellCentre.x - anchor.x * scale;
+  const originY = cellCentre.y - anchor.y * scale;
+  const up = chibiOverflowV7(asset).up;
+  const left = device(originX);
+  const right = device(originX + asset.width * scale);
+  const split = device(originY + up * scale);
+  const top = part === "CELL" ? split : device(originY);
+  const bottom =
+    part === "CELL" ? device(originY + asset.height * scale) : split;
+  return {
+    x: left / ratio,
+    y: top / ratio,
+    width: (right - left) / ratio,
+    height: (bottom - top) / ratio,
   };
 }
 

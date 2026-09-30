@@ -82,6 +82,7 @@ import {
 import {
   CHIBI_GARRISON_SCALE,
   chibiDestinationRect,
+  chibiTerrainPartRect,
   chibiGarrisonDestinationRect,
   chibiMasterScale,
   isWholeScale,
@@ -2616,34 +2617,60 @@ function drawChibiTerrainV7(
   },
 ): void {
   const { asset } = chibi;
-  const rect = chibiDestinationRect(
+  const up = chibiOverflowV7(asset).up;
+  const rows = input.part === "OVERFLOW" ? up : asset.height - up;
+  if (rows <= 0) return;
+  // Every edge lands on a whole device pixel from a shared boundary, so the
+  // cell meets its overflow and its neighbours without a gap (pulp_wars-51t).
+  const rect = chibiTerrainPartRect(
     input.centre,
     input.camera,
     asset,
     input.devicePixelRatio,
+    input.part === "OVERFLOW" ? "OVERFLOW" : "CELL",
   );
-  const scale = chibiMasterScale(input.camera);
-  const up = chibiOverflowV7(asset).up;
-  const rows = input.part === "OVERFLOW" ? up : asset.height - up;
-  if (rows <= 0) return;
+  // At a smoothed scale the part is drawn from its own raster, so bilinear
+  // filtering never blends in rows across the split.
+  const part =
+    input.part === "OVERFLOW"
+      ? chibi.parts?.overflow
+      : input.part === "CELL"
+        ? input.image === undefined
+          ? chibi.parts?.cell
+          : input.image === chibi.layers?.body
+            ? chibi.parts?.bodyCell
+            : undefined
+        : undefined;
   // The ground tile is only the owning cell, so it is read from its top.
   const sourceTop = input.part === "CELL" ? up : 0;
-  const destinationTop = input.part === "OVERFLOW" ? 0 : up;
   const density = input.image === undefined ? chibi.density : 1;
   context.save();
   context.globalAlpha = input.sceneAlpha;
   context.imageSmoothingEnabled = chibi.smoothing;
-  context.drawImage(
-    input.image ?? chibi.image,
-    0,
-    sourceTop * density,
-    asset.width * density,
-    rows * density,
-    rect.x,
-    rect.y + destinationTop * scale,
-    rect.width,
-    rows * scale,
-  );
+  if (part !== undefined)
+    context.drawImage(
+      part,
+      0,
+      0,
+      asset.width,
+      rows,
+      rect.x,
+      rect.y,
+      rect.width,
+      rect.height,
+    );
+  else
+    context.drawImage(
+      input.image ?? chibi.image,
+      0,
+      sourceTop * density,
+      asset.width * density,
+      rows * density,
+      rect.x,
+      rect.y,
+      rect.width,
+      rect.height,
+    );
   context.restore();
 }
 
