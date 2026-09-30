@@ -10,6 +10,7 @@ import {
   type Ruleset7AcceptedBoundary,
 } from "../../src/app/index";
 import type {
+  CityId,
   PlayerViewV7,
   PublicPopulationContributionV7,
 } from "../../src/engine/index";
@@ -726,7 +727,7 @@ describe("Ruleset 7 DOM shell", () => {
       document.querySelector<HTMLElement>(
         '.v7-selection-dock[data-selection-kind="city"]',
       )?.scrollTop,
-    ).not.toBe(123);
+    ).toBe(37);
 
     const train = requiredButton(".v7-train-action");
     train.click();
@@ -735,6 +736,147 @@ describe("Ruleset 7 DOM shell", () => {
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({ kind: "TRAIN", cityId: city.id }),
     );
+    app.destroy();
+    source.destroy();
+  });
+
+  it("keeps the dock scroll across re-renders of the same selection and resets it on a new selection", async () => {
+    const source = new Ruleset7BrowserController();
+    const launched = await source.launch(setupV7(1539));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    const initial = source.snapshot();
+    const launchedView = initial.view;
+    if (launchedView === null) throw new Error("public view missing");
+    const city = launchedView.cities.find(
+      (candidate) => candidate.ownerId === launchedView.viewer.id,
+    );
+    if (city === undefined) throw new Error("owned city missing");
+    // A second visible city, so the dock can switch between two cities.
+    const otherCity = {
+      ...city,
+      id: (Math.max(...launchedView.cities.map((candidate) => candidate.id)) +
+        1) as CityId,
+    };
+    const view: PlayerViewV7 = {
+      ...launchedView,
+      cities: [...launchedView.cities, otherCity],
+    };
+    const unit = view.units.find(
+      (candidate) => candidate.ownerId === view.viewer.id,
+    );
+    if (unit === undefined) throw new Error("owned unit missing");
+    const roles = UNIT_ROLE_IDS_V7.filter(
+      (role) => effectiveRoleRuleV7(role, "ORIGINAL").cost !== null,
+    );
+    const snapshot: Ruleset7BrowserSnapshot = {
+      ...initial,
+      view,
+      offeredCommands: roles.map((role) => ({
+        kind: "TRAIN" as const,
+        cityId: city.id,
+        role,
+      })),
+    };
+    let nextResult: Ruleset7DispatchResult = {
+      accepted: true,
+      beforeView: view,
+      afterView: view,
+      playerEvents: {
+        format: "pulp-wars-player-events",
+        version: 7,
+        viewerId: view.viewer.id,
+        commandIndex: view.commandIndex + 1,
+        events: [],
+      },
+    };
+    const dispatch = vi.fn(async () => nextResult);
+    const host = new CapturingBoardHost();
+    const app = new Ruleset7DomAppView(
+      document,
+      requiredRoot(),
+      fixturePort(source, snapshot, dispatch),
+      { boardHost: host, settingsStorage: null },
+    );
+    const currentDock = (): HTMLElement => {
+      const dock = document.querySelector<HTMLElement>(".v7-selection-dock");
+      if (dock === null) throw new Error("selection dock missing");
+      return dock;
+    };
+
+    host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
+    const cityDock = currentDock();
+    cityDock.scrollTop = 140;
+
+    // An accepted command rebuilds the dock; the same city stays selected.
+    requiredButton(".v7-train-action").click();
+    await waitUntil(() => dispatch.mock.calls.length === 1);
+    await flushMicrotasks();
+    expect(currentDock()).not.toBe(cityDock);
+    expect(currentDock().dataset.selectionKind).toBe("city");
+    expect(currentDock().scrollTop).toBe(140);
+
+    // A rejected command renders an error notice; the scroll still holds.
+    nextResult = { accepted: false, reason: "NOT_OFFERED" };
+    currentDock().scrollTop = 90;
+    requiredButton(".v7-train-action").click();
+    await waitUntil(() => dispatch.mock.calls.length === 2);
+    await flushMicrotasks();
+    expect(document.querySelector(".v7-toast-error")).not.toBeNull();
+    expect(currentDock().scrollTop).toBe(90);
+
+    // Selecting another city, then a unit, starts each dock at the top.
+    host.callbacks?.onSelection({ kind: "CITY", cityId: otherCity.id });
+    expect(currentDock().scrollTop).toBe(0);
+    currentDock().scrollTop = 60;
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
+    expect(currentDock().dataset.selectionKind).toBe("unit");
+    expect(currentDock().scrollTop).toBe(0);
+
+    // A visible move swaps the unit dock for a placeholder; the settled dock
+    // returns to the scroll the player left.
+    currentDock().scrollTop = 25;
+    nextResult = {
+      accepted: true,
+      beforeView: view,
+      afterView: view,
+      playerEvents: {
+        format: "pulp-wars-player-events",
+        version: 7,
+        viewerId: view.viewer.id,
+        commandIndex: view.commandIndex + 1,
+        events: [{ kind: "UNIT_MOVED", unitId: unit.id, path: [unit.at] }],
+      },
+    };
+    // jsdom has no layout, so emulate the browser clamping the emptied
+    // placeholder's scroll to the top.
+    const clamp = new MutationObserver(() => {
+      const busy = document.querySelector<HTMLElement>(
+        '.v7-selection-dock[aria-busy="true"]',
+      );
+      if (busy !== null) busy.scrollTop = 0;
+    });
+    clamp.observe(requiredRoot(), {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["aria-busy"],
+    });
+    host.callbacks?.onCommand({
+      at: unit.at,
+      family: "MOVE",
+      command: { kind: "MOVE", unitId: unit.id, path: [unit.at] },
+    });
+    await waitUntil(() => dispatch.mock.calls.length === 3);
+    await flushMicrotasks();
+    clamp.disconnect();
+    expect(currentDock().getAttribute("aria-busy")).toBeNull();
+    expect(currentDock().dataset.selectionKind).toBe("unit");
+    expect(currentDock().scrollTop).toBe(25);
+
+    // Closing the dock and reselecting the same unit starts at the top.
+    requiredButton('[data-action="close-dock"]').click();
+    expect(document.querySelector(".v7-selection-dock")).toBeNull();
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
+    expect(currentDock().scrollTop).toBe(0);
     app.destroy();
     source.destroy();
   });
@@ -1314,4 +1456,9 @@ async function waitUntil(predicate: () => boolean): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
   throw new Error("Condition not reached");
+}
+
+async function flushMicrotasks(): Promise<void> {
+  for (let index = 0; index < 5; index += 1)
+    await new Promise((resolve) => setTimeout(resolve, 0));
 }

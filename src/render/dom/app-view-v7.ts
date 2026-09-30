@@ -229,8 +229,6 @@ export class Ruleset7DomAppView {
   #selectedRecruitHelp: UnitRoleIdV7 | null = null;
   #selectedUnitHelpId: number | null = null;
   #unitHelpModal: HTMLElement | null = null;
-  #cityDockScrollTop: number | null = null;
-  #clearCityDockScrollAfterRestore = false;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
   #notice = "";
@@ -759,8 +757,6 @@ export class Ruleset7DomAppView {
           this.#selection = selection;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
-          this.#cityDockScrollTop = null;
-          this.#clearCityDockScrollAfterRestore = false;
           this.#selectedModifier = null;
           this.#render();
         },
@@ -779,8 +775,6 @@ export class Ruleset7DomAppView {
     if (view.pendingChoices.length > 0) {
       this.#selectedRecruitHelp = null;
       this.#selectedUnitHelpId = null;
-      this.#cityDockScrollTop = null;
-      this.#clearCityDockScrollAfterRestore = false;
     }
     const activeId = view.turnOrder[view.activeSeatIndex];
     const active = view.players.find((player) => player.id === activeId);
@@ -939,6 +933,11 @@ export class Ruleset7DomAppView {
       toast.dataset.toastId = String(toastMessage.id);
       nextChildren.push(toast);
     }
+    // Every render rebuilds the dock. On narrow screens it can exceed its
+    // height cap and scroll vertically, so remember where the outgoing dock
+    // was scrolled and put the new one back there while the same selection
+    // stays selected; a different selection starts at the top.
+    const previousDockScroll = dockScrollPosition(main);
     const dock =
       this.#selection === null ? null : this.#dock(view, this.#selection);
     if (dock !== null) {
@@ -1004,6 +1003,12 @@ export class Ruleset7DomAppView {
       nextChildren.push(warning);
     }
     reconcileMatchChildren(main, board, nextChildren);
+    if (
+      dock !== null &&
+      previousDockScroll !== null &&
+      previousDockScroll.key === dock.dataset.selectionKey
+    )
+      dock.scrollTop = previousDockScroll.top;
     shell.dataset.contrast = this.#highContrast ? "high" : "standard";
     shell.dataset.uiScale = String(this.#uiScale);
     shell.style.setProperty("--ui-scale", String(this.#uiScale));
@@ -1018,25 +1023,6 @@ export class Ruleset7DomAppView {
           .querySelector<HTMLButtonElement>(`[data-action="${focusAction}"]`)
           ?.focus();
       });
-    // Every render rebuilds the dock. On narrow screens a city dock can
-    // exceed its height cap and scroll vertically, so a Train help round trip
-    // puts the dock back where the player left it (after the focus restore,
-    // which only scrolls the help button into view).
-    if (this.#cityDockScrollTop !== null) {
-      const scrollTop = this.#cityDockScrollTop;
-      const clearAfterRestore = this.#clearCityDockScrollAfterRestore;
-      queueMicrotask(() => {
-        if (this.#destroyed) return;
-        const dock = main.querySelector<HTMLElement>(
-          '.v7-selection-dock[data-selection-kind="city"]',
-        );
-        if (dock !== null) dock.scrollTop = scrollTop;
-        if (clearAfterRestore) {
-          this.#cityDockScrollTop = null;
-          this.#clearCityDockScrollAfterRestore = false;
-        }
-      });
-    }
   }
 
   #boardModel(view: PlayerViewV7): Parameters<BoardHostV7["update"]>[0] {
@@ -1069,6 +1055,7 @@ export class Ruleset7DomAppView {
   #dock(view: PlayerViewV7, selection: BoardSelectionV7): HTMLElement | null {
     const dock = el(this.#document, "section", "v7-selection-dock");
     dock.dataset.selectionKind = selection.kind.toLowerCase();
+    dock.dataset.selectionKey = selectionKey(selection);
     dock.dataset.hasActions = "false";
     dock.setAttribute("aria-label", "Selected map object");
     const close = iconButton(this.#document, "close", "Close", "close-dock");
@@ -1959,10 +1946,6 @@ export class Ruleset7DomAppView {
         help.disabled = this.#localBusy();
         help.onclick = () => {
           this.#selectedRecruitHelp = command.role;
-          this.#cityDockScrollTop =
-            actions.closest<HTMLElement>(".v7-selection-dock")?.scrollTop ??
-            null;
-          this.#clearCityDockScrollAfterRestore = false;
           this.#render();
         };
         card.append(action, help);
@@ -2975,6 +2958,9 @@ export class Ruleset7DomAppView {
       const dock =
         this.#matchRoot.querySelector<HTMLElement>(".v7-selection-dock");
       if (dock !== null) {
+        // The placeholder cannot scroll; keep the dock's scroll for the
+        // settled render.
+        dock.dataset.scrollTop ??= String(dock.scrollTop);
         dock.replaceChildren(
           text(this.#document, "p", "Movement", "v7-movement-status"),
         );
@@ -3209,7 +3195,6 @@ export class Ruleset7DomAppView {
     this.#selectedRecruitHelp = null;
     this.#pendingFocusAction =
       role === null ? null : `train-help-${role.toLowerCase()}`;
-    this.#clearCityDockScrollAfterRestore = true;
     this.#render();
   }
 
@@ -3276,6 +3261,27 @@ export class Ruleset7DomAppView {
       this.#snapshot.ai.active
     );
   }
+}
+
+function selectionKey(selection: BoardSelectionV7): string {
+  switch (selection.kind) {
+    case "UNIT":
+      return `unit:${selection.unitId}`;
+    case "CITY":
+      return `city:${selection.cityId}`;
+    case "TILE":
+      return `tile:${selection.at.x},${selection.at.y}`;
+  }
+}
+
+function dockScrollPosition(
+  main: HTMLElement,
+): { readonly key: string; readonly top: number } | null {
+  const dock = main.querySelector<HTMLElement>(".v7-selection-dock");
+  const key = dock?.dataset.selectionKey;
+  if (dock === null || key === undefined) return null;
+  const saved = Number(dock.dataset.scrollTop);
+  return { key, top: Number.isFinite(saved) ? saved : dock.scrollTop };
 }
 
 function reconcileMatchChildren(
