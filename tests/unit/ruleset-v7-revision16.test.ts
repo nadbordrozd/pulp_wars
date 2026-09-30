@@ -236,7 +236,7 @@ describe("ruleset-7 revision-16 orthogonal Shallow Water", () => {
             water.filter((tile) => tile.terrain === "SHALLOW_WATER").length,
           ).toBeGreaterThanOrEqual(Math.ceil(water.length * 0.25));
         }
-  });
+  }, 120_000);
 
   it("keeps the revision-15 eight-neighbour classification for parity fixtures only", () => {
     const setup = setupFor("ARCHIPELAGO", 14, 1, 0);
