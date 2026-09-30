@@ -81,8 +81,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the r15 identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r15");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r15.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r16");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r16.current");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL", "UNDEAD"]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -103,17 +103,18 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r14 and preserves the r15 save", () => {
+  it("cleans obsolete keys through v7r15 and preserves the r16 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r14.current",
+      "pulpWars.save.v7r15.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(14);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(15);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
       ["pulpWars.save.v7r13.current", "r13"],
       ["pulpWars.save.v7r14.current", "r14"],
-      [SAVE_STORAGE_KEY_V7, "r15"],
+      ["pulpWars.save.v7r15.current", "r15"],
+      [SAVE_STORAGE_KEY_V7, "r16"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -122,8 +123,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r12.current",
         "pulpWars.save.v7r13.current",
         "pulpWars.save.v7r14.current",
+        "pulpWars.save.v7r15.current",
       ],
-      removedCount: 3,
+      removedCount: 4,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1397,13 +1399,18 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
   });
 });
 
-describe("ruleset-7 all-Human parity with revision 12", () => {
-  // Digests of fixed-seed all-Human headless matches recorded from the
-  // revision-12 code (commit 3dddcdd) with the ruleset identity normalized.
-  // Revision 13 reproduced them unchanged. Revision 14 changes all-Human play
-  // only through the village table (VL) and income (E2); these matches start
-  // on their revision-13 boards and never reach the E2 caps, so they still
-  // reproduce the revision-12 digests exactly.
+describe("ruleset-7 all-Human parity digests", () => {
+  // Digests of fixed-seed all-Human headless matches with the ruleset
+  // identity normalized, first recorded from the revision-12 code (commit
+  // 3dddcdd). Revisions 13-15 reproduced them unchanged: revision 14 changes
+  // all-Human play only through the village table (VL) and income (E2);
+  // these matches start on their revision-13 boards and never reach the E2
+  // caps. Revision 16 (`pulp_wars-wwc`) changes all-Human play only through
+  // the Normal AI opening (growth-first research and growth harvests before
+  // other spending, section 3.6); with those two policy rules disabled the
+  // matches still reproduced the revision-12 digests exactly, so the command,
+  // event, state, and view digests below are re-recorded from the revision-16
+  // code while the map and post-generation PRNG digests are unchanged.
   const BASELINE = [
     {
       seed: 7,
@@ -1412,21 +1419,21 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
       aiMode: "RIVAL",
       mapType: "CONTINENTS",
       maxRounds: 30,
-      acceptedCommands: 118,
-      rounds: 16,
+      acceptedCommands: 156,
+      rounds: 17,
       termination: "OUTCOME",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "d92f2f8b8c0f94f98415e1461943bcc1b20a94447cc7443e485a292cbaebaee8",
+        "74a32308a5e2f6df47b39ecd31e6fc31a3f51e92df57771cf0ecced3501e9136",
       eventHash:
-        "8f9cee8beccde319f6a8c4c867461ee72035d00c32e5f0f2f6941a850d5d2515",
+        "9f4ab09b0dd277978e5e37de59838f728af28c560db33d8628a7ac33453a6c5b",
       normalizedFinalStateHash:
-        "36b0f384f6795a82a03f8ac58aa8c6de20e7bbe4e1b5481b615f11310f310b26",
+        "0b3a706922080459de1efde7e24e474107ef7cdd4faf4e44056afc5a89103f06",
       normalizedHumanViewHash:
-        "7c1c3de01dc510204a05d72a7ce144d69141a4f6459dfe236e6e2e3a9b75d24a",
+        "b32dd2ad803f38250958b4fdde08e25ca66fba74e52208db23d80a8a8f71363e",
       normalizedHumanCommandsHash:
         "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     },
@@ -1437,7 +1444,7 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
       aiMode: "COOPERATIVE",
       mapType: "ARCHIPELAGO",
       maxRounds: 18,
-      acceptedCommands: 329,
+      acceptedCommands: 383,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1445,20 +1452,20 @@ describe("ruleset-7 all-Human parity with revision 12", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "f59fdb4f2bef6be842c6b44d6beea02fc82cad23cab3f19560a4f4b6608c7541",
+        "02fca080970c53f664626275b56dc06dde4cac8952b9c4f2aa1e176ada684b44",
       eventHash:
-        "f06cc10a9ba2ed58ab9b2e3ec54b4533810cdcf5b48234a6db5c062b781e9def",
+        "bacafa6d2b0c5176a62f62f05b6478f4e253be825c7e6f746e62d9bc100dad9a",
       normalizedFinalStateHash:
-        "3ec6b95efd93d4b827ae62735c2552477417f1f4ef2a0fe59e7c4f993549d6d9",
+        "9d1622d5a6b347aa2e5223ef6023eb611a243747975ca3ede0ae45a3e5963b78",
       normalizedHumanViewHash:
-        "b0962b73e99d464ab8ae3219c71b95dd3d52a86dcc3a09612357ba4f32b776e8",
+        "415aed46a5cc8d020e025b0d3f5fc4da659b3a5c39020c4c70c55e982d68d940",
       normalizedHumanCommandsHash:
-        "dbbba8646e5e9a23421de0864b7aa3e94342a1d034731f2e0f3d8b2259f62f2d",
+        "caf917c1a39bd0245652dfa31c047a21e1e99ddcf943a0b1001e53f85d9eb4d5",
     },
   ] as const;
 
   for (const baseline of BASELINE)
-    it(`reproduces the revision-12 match for seed ${baseline.seed} apart from identity`, () => {
+    it(`reproduces the revision-16 all-Human match for seed ${baseline.seed} apart from identity`, () => {
       const setup: MatchSetupV7 = {
         rulesetId: RULESET_7_ID,
         seed: baseline.seed,

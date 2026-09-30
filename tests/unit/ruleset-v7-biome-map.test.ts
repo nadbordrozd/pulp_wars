@@ -114,13 +114,31 @@ describe("ruleset-7 revision-4 regional biome map", () => {
       canonicalMapRandomHashV7(second.map),
     );
     expect(first.map).toEqual(second.map);
-    // Revision 14 (VL) adds a seventh village to 16 x 16 three-AI maps.
+    // Revision 16 (`pulp_wars-wwc`): the capital growth floor and
+    // `CAPITAL_GROWTH` accept this map on its eleventh candidate.
     expect(canonicalMapRandomHashV7(first.map)).toBe(
+      "d2d3b0eccab1c3c957f1133f6b2445516d0f7632a30a438cf6d50fd60508a78b",
+    );
+    expect(first.map.attempt).toBe(11);
+    // Revision-15 generation rules reproduce the revision-14/15 map (seven
+    // villages, accepted on candidate 25) exactly.
+    const revision15 = generateInitialMapWithVillageCountV7(
+      setupV7(0, 3),
+      7,
+      "REVISION_15",
+    );
+    if (!revision15.ok) throw new Error(revision15.error.code);
+    expect(canonicalMapRandomHashV7(revision15.map)).toBe(
       "d5ef48d4a00f69de47a19761ab0b959efe5b0be7186c22670d523310970f862a",
     );
-    // With the revision-13 count the generator reproduces the revision-13
-    // map exactly: only the village count changed.
-    const revision13 = generateInitialMapWithVillageCountV7(setupV7(0, 3), 6);
+    expect(revision15.map.attempt).toBe(25);
+    // With the revision-13 count and revision-15 rules the generator
+    // reproduces the revision-13 map exactly.
+    const revision13 = generateInitialMapWithVillageCountV7(
+      setupV7(0, 3),
+      6,
+      "REVISION_15",
+    );
     if (!revision13.ok) throw new Error(revision13.error.code);
     expect(canonicalMapRandomHashV7(revision13.map)).toBe(
       "3d8bc500d57fa1281bea3dd6d0b2ab38fbcf597d57c99db92058ab80999bda46",
@@ -140,7 +158,7 @@ describe("ruleset-7 revision-4 regional biome map", () => {
         treasureChests: first.map.treasureChests,
         random: first.map.random,
       }),
-    ).toBe("c81433668f13089cc65a4281a3f6b75670a11ee70d31aa2684f0af9c58d0efd6");
+    ).toBe("98ae7d977bfdf2a115fed7433a362cced63e95a9f08403193204a76e5d08be65");
     expect(new Set(first.map.board.tiles.map((tile) => tile.biome))).toEqual(
       new Set(BIOME_IDS_V7),
     );
@@ -324,11 +342,28 @@ describe("ruleset-7 revision-4 regional biome map", () => {
     const generated = generateInitialMapV7(setupV7(1, 3));
     expect(generated.ok).toBe(true);
     if (!generated.ok) return;
-    // Revision 14 (VL): the seed-1 16 x 16 three-AI map is accepted on its
-    // eighth candidate (the fourteenth with the revision-13 six villages).
-    expect(generated.map.attempt).toBe(8);
-    expect(generated.map.attempts).toHaveLength(8);
-    const revision13 = generateInitialMapWithVillageCountV7(setupV7(1, 3), 6);
+    // Revision 16 (`pulp_wars-wwc`): the seed-1 16 x 16 three-AI map is
+    // accepted on its thirteenth candidate (four earlier ones fail
+    // `CAPITAL_GROWTH`); revision-15 rules accept the eighth (the fourteenth
+    // with the revision-13 six villages).
+    expect(generated.map.attempt).toBe(13);
+    expect(generated.map.attempts).toHaveLength(13);
+    expect(
+      generated.map.attempts.filter((attempt) =>
+        attempt.failures.includes("CAPITAL_GROWTH"),
+      ),
+    ).toHaveLength(4);
+    const revision15 = generateInitialMapWithVillageCountV7(
+      setupV7(1, 3),
+      7,
+      "REVISION_15",
+    );
+    expect(revision15.ok && revision15.map.attempt).toBe(8);
+    const revision13 = generateInitialMapWithVillageCountV7(
+      setupV7(1, 3),
+      6,
+      "REVISION_15",
+    );
     expect(revision13.ok && revision13.map.attempt).toBe(14);
     const settlementCount =
       generated.map.capitals.length + generated.map.villages.length;
@@ -341,7 +376,7 @@ describe("ruleset-7 revision-4 regional biome map", () => {
         expect(attempt.initialRandomState).toBe(
           generated.map.attempts[index - 1]?.finalRandomState,
         );
-      expect(attempt.failures.length === 0).toBe(index === 7);
+      expect(attempt.failures.length === 0).toBe(index === 12);
     }
   });
 

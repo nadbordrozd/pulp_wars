@@ -27,7 +27,7 @@ describe("ruleset-7 naval persistence schema", () => {
     expect(parsed).toEqual(fixture.state);
     expect(parseMatchSetupV7(fixture.state.setup)).toEqual(fixture.state.setup);
     expect(fixture.state.setup).toMatchObject({
-      rulesetId: "pulp-wars-poc-7r15",
+      rulesetId: "pulp-wars-poc-7r16",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     });
@@ -196,7 +196,9 @@ describe("ruleset-7 naval persistence schema", () => {
     if (land === undefined) throw new Error("landing missing");
     await accept(land);
 
-    const pearlSetup = { ...setupV7(27), mapType: "CONTINENTS" as const };
+    // pulp_wars-wwc: seed 20 (was 27) puts Pearls in the human capital's
+    // territory on revision-16 maps (orthogonal Shallow Water redraws water).
+    const pearlSetup = { ...setupV7(20), mapType: "CONTINENTS" as const };
     const pearlCreated = createPlayableGameV7(pearlSetup);
     if (!pearlCreated.ok) throw new Error(pearlCreated.error.code);
     state = pearlCreated.state;

@@ -132,7 +132,7 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
       errors: [],
       stalls: [],
       metrics: {
-        rulesetId: "pulp-wars-poc-7r15",
+        rulesetId: "pulp-wars-poc-7r16",
         commandCapHits: 1,
       },
     });
@@ -144,11 +144,12 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
         activePlayerId: initialActivePlayerId,
       },
     ]);
-    // Revision 12: the free opening research comes first.
-    expect(first.commandLog.map((entry) => entry.command.kind)).toEqual([
-      "RESEARCH",
-      "RESEARCH",
-      "MOVE",
+    // Revision 12: the free opening research comes first. Revision 16: it is
+    // the growth technology (Hunting here) and both growth harvests follow.
+    expect(first.commandLog.map((entry) => entry.command)).toMatchObject([
+      { kind: "RESEARCH", tech: "HUNTING" },
+      { kind: "HUNT_GAME" },
+      { kind: "HUNT_GAME" },
     ]);
     expect(
       canonicalJson({

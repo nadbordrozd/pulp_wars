@@ -4,6 +4,7 @@ import {
   RULESET_7_ID,
   canonicalHash,
   canonicalMapRandomHashV7,
+  capitalGrowthReadyV7,
   generateInitialMapV7,
   type CoordV7,
   type MapTypeV7,
@@ -79,6 +80,16 @@ for (const mapType of mapTypes)
             `DRY_LAND parity ${width}/${aiCount}/${seed}`,
           );
         validate(first.map.board.tiles, width, mapType, aiCount + 1);
+        // Revision 16: every capital is growth-ready (CAPITAL_GROWTH).
+        for (const capital of first.map.capitals)
+          assert(
+            capitalGrowthReadyV7(
+              first.map.board,
+              capital,
+              mapType !== "DRY_LAND",
+            ),
+            `${mapType}/${width}/${aiCount}/${seed} capital growth`,
+          );
         const diversityKey = `${mapType}:${width}:${aiCount}`;
         const masks = coastlineHashes.get(diversityKey) ?? new Set<string>();
         masks.add(
@@ -156,8 +167,9 @@ function validate(
   assert(land.length >= Math.ceil((bounds[0] ?? 0) * tiles.length));
   assert(land.length <= Math.floor((bounds[1] ?? 1) * tiles.length));
   const landKeys = new Set(land.map((tile) => key(tile.at)));
+  // Revision 16: Shallow iff an orthogonal neighbour is land; at least 25%.
   for (const tile of water) {
-    const coastal = neighbors(width, tile.at).some((at) =>
+    const coastal = orthogonalNeighbors(width, tile.at).some((at) =>
       landKeys.has(key(at)),
     );
     assert.equal(tile.terrain, coastal ? "SHALLOW_WATER" : "DEEP_WATER");
@@ -165,7 +177,7 @@ function validate(
   }
   assert(
     water.filter((tile) => tile.terrain === "SHALLOW_WATER").length >=
-      Math.ceil(water.length * 0.4),
+      Math.ceil(water.length * 0.25),
   );
   assert(
     water.filter((tile) => tile.terrain === "DEEP_WATER").length >=
@@ -600,6 +612,17 @@ function assertSettlementWaterNetwork(
   }
   assert.equal(seen.size, inhabited.size);
 }
+function orthogonalNeighbors(width: number, at: CoordV7): CoordV7[] {
+  return [
+    { x: at.x, y: at.y - 1 },
+    { x: at.x + 1, y: at.y },
+    { x: at.x, y: at.y + 1 },
+    { x: at.x - 1, y: at.y },
+  ].filter(
+    (near) => near.x >= 0 && near.y >= 0 && near.x < width && near.y < width,
+  );
+}
+
 function neighbors(width: number, at: CoordV7): CoordV7[] {
   const out: CoordV7[] = [];
   for (let dy = -1; dy <= 1; dy++)

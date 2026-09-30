@@ -2034,6 +2034,11 @@ export class Ruleset7DomAppView {
           ]),
       "Capture every enemy city to win.",
       "Move a land unit onto your port to put it to sea.",
+      ...(view !== null && view.setup.mapType !== "DRY_LAND"
+        ? [
+            "Shallow Water: water that shares an edge with land. Water touching land only at a corner is Deep Water.",
+          ]
+        : []),
     ])
       tips.append(text(this.#document, "li", tip));
     const keys = el(this.#document, "dl", "v7-help-keys");
@@ -3492,7 +3497,7 @@ function setupFrom(draft: DraftV7, undeadSetup: boolean): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r15",
+    rulesetId: "pulp-wars-poc-7r16",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,

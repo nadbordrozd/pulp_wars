@@ -416,7 +416,9 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("returns a real accepted match boundary to Main menu and resumes it", async () => {
     const app = bootstrapRuleset7App(document);
-    requiredInput("v7-seed").value = "1";
+    // pulp_wars-wwc: seed 4 opens with the human seat on revision-16 maps
+    // (seed 1 now opens with the AI).
+    requiredInput("v7-seed").value = "4";
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     const wait = app.controller
@@ -425,6 +427,12 @@ describe("Ruleset 7 DOM shell", () => {
     if (wait === undefined) throw new Error("WAIT missing");
     expect((await app.controller.dispatch(wait)).accepted).toBe(true);
     const commandIndex = app.controller.snapshot().view?.commandIndex;
+    // Revision 16 terrain help on a naval (default Continents) match.
+    openMenuItem("help");
+    expect(document.querySelector(".v7-help-tips")?.textContent).toContain(
+      "Shallow Water: water that shares an edge with land. Water touching land only at a corner is Deep Water.",
+    );
+    requiredButton('[data-action="close-overlay"]').click();
 
     openMenuItem("main-menu");
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
@@ -494,7 +502,8 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("researches only inside Tech, preserves card focus, and shows exact formulas", async () => {
     const app = bootstrapRuleset7App(document, { storage: null });
-    requiredInput("v7-seed").value = "1";
+    // pulp_wars-wwc: a human-first seed on revision-16 maps (was 1).
+    requiredInput("v7-seed").value = "4";
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     expect(document.querySelector('[data-action^="research-"]')).toBeNull();

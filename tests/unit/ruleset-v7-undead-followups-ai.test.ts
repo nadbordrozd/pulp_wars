@@ -263,24 +263,28 @@ describe("vkq.21 Normal AI: living seats hunt a plaguing Lich", () => {
 });
 
 describe("vkq.21 Normal AI: Liches and Vampires stay ashore", () => {
-  it("boards other units but never a Lich or Vampire (HU Archipelago 14, seed 1)", () => {
-    // The pre-vkq.21 policy embarked a Vampire in round 7 of this match.
-    const result = runAiMatchV7(
-      {
-        rulesetId: RULESET_7_ID,
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
-        seed: 1,
-        width: 14,
-        height: 14,
-        aiCount: 1,
-        aiDifficulty: "NORMAL",
-        aiMode: "RIVAL",
-        humanColor: "CORAL",
-        factions: ["ORIGINAL", "UNDEAD"],
-        mapType: "ARCHIPELAGO",
-      },
-      { maxRounds: 12, recordCheckpointHashes: false },
-    );
+  it("boards other units but never a Lich or Vampire (HU Archipelago 14, seed 29)", () => {
+    // The pre-vkq.21 policy embarked a Vampire in round 7 of seed 1 on
+    // revision-15 maps. pulp_wars-wwc: revision-16 maps and the growth-first
+    // opening delay seed 1's first Undead embarkation past round 12; seed 29
+    // embarks three Undead units within 12 rounds.
+    const setup: MatchSetupV7 = {
+      rulesetId: RULESET_7_ID,
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      seed: 29,
+      width: 14,
+      height: 14,
+      aiCount: 1,
+      aiDifficulty: "NORMAL",
+      aiMode: "RIVAL",
+      humanColor: "CORAL",
+      factions: ["ORIGINAL", "UNDEAD"],
+      mapType: "ARCHIPELAGO",
+    };
+    const result = runAiMatchV7(setup, {
+      maxRounds: 12,
+      recordCheckpointHashes: false,
+    });
     const undead = required(
       result.state.players.find((player) => player.faction === "UNDEAD"),
     ).id;

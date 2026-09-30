@@ -133,7 +133,7 @@ try {
   await evaluate(
     connection,
     `(() => {
-      localStorage.removeItem('pulpWars.save.v7r15.current');
+      localStorage.removeItem('pulpWars.save.v7r16.current');
       localStorage.setItem('pulpWars.save.v7.current', 'old-v7-bytes');
       localStorage.setItem('pulpWars.save.v7r2.current', 'old-v7r2-bytes');
       localStorage.setItem('pulpWars.save.v7r3.current', 'old-v7r3-bytes');
@@ -148,6 +148,7 @@ try {
       localStorage.setItem('pulpWars.save.v7r12.current', 'old-v7r12-bytes');
       localStorage.setItem('pulpWars.save.v7r13.current', 'old-v7r13-bytes');
       localStorage.setItem('pulpWars.save.v7r14.current', 'old-v7r14-bytes');
+      localStorage.setItem('pulpWars.save.v7r15.current', 'old-v7r15-bytes');
       localStorage.setItem('pulpWars.save.current', 'v6-bytes');
       localStorage.setItem('pulpWars.settings.v1', JSON.stringify({ format: 'pulp-wars-settings', version: 1, settings: { uiScale: 1, motion: 'REDUCED', animationSpeed: 'NORMAL', highContrast: false } }));
       localStorage.setItem('pulpWars.unrelated', 'unrelated-bytes');
@@ -230,7 +231,7 @@ try {
       if (!initial) throw new Error('command-zero public trace missing');
       const view = snapshot.view;
       if (!view) throw new Error('returned public view missing');
-      const save = JSON.parse(localStorage.getItem('pulpWars.save.v7r15.current') ?? 'null');
+      const save = JSON.parse(localStorage.getItem('pulpWars.save.v7r16.current') ?? 'null');
       const safe = JSON.parse(controller.exportSafeLog()?.source ?? 'null');
       const debug = controller.exportDebugBundle({ acknowledgeHiddenInformation: true });
       if (!debug.ok) throw new Error('spoiler debug export missing');
@@ -468,12 +469,13 @@ try {
     readonly oldV7r12: string | null;
     readonly oldV7r13: string | null;
     readonly oldV7r14: string | null;
+    readonly oldV7r15: string | null;
     readonly v6: string | null;
     readonly settings: string | null;
     readonly unrelated: string | null;
   }>(
     connection,
-    `({ current: localStorage.getItem('pulpWars.save.v7r15.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7r8: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7r9: localStorage.getItem('pulpWars.save.v7r9.current'), oldV7r10: localStorage.getItem('pulpWars.save.v7r10.current'), oldV7r11: localStorage.getItem('pulpWars.save.v7r11.current'), oldV7r12: localStorage.getItem('pulpWars.save.v7r12.current'), oldV7r13: localStorage.getItem('pulpWars.save.v7r13.current'), oldV7r14: localStorage.getItem('pulpWars.save.v7r14.current'), v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
+    `({ current: localStorage.getItem('pulpWars.save.v7r16.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7r8: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7r9: localStorage.getItem('pulpWars.save.v7r9.current'), oldV7r10: localStorage.getItem('pulpWars.save.v7r10.current'), oldV7r11: localStorage.getItem('pulpWars.save.v7r11.current'), oldV7r12: localStorage.getItem('pulpWars.save.v7r12.current'), oldV7r13: localStorage.getItem('pulpWars.save.v7r13.current'), oldV7r14: localStorage.getItem('pulpWars.save.v7r14.current'), oldV7r15: localStorage.getItem('pulpWars.save.v7r15.current'),v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
   );
   if (
     keys.current !== null ||
@@ -491,6 +493,7 @@ try {
     keys.oldV7r12 !== null ||
     keys.oldV7r13 !== null ||
     keys.oldV7r14 !== null ||
+    keys.oldV7r15 !== null ||
     keys.v6 !== "v6-bytes" ||
     JSON.parse(keys.settings ?? "null")?.settings?.motion !== "REDUCED" ||
     keys.unrelated !== "unrelated-bytes"
@@ -523,7 +526,7 @@ try {
         acceptance:
           timingMode === "STRICT" ? "FUNCTIONAL_AND_TIMING" : "FUNCTIONAL",
         timing: { mode: timingMode, ...timing },
-        rulesetId: "pulp-wars-poc-7r15",
+        rulesetId: "pulp-wars-poc-7r16",
         runtimeFingerprint: browserReleaseRuntimeFingerprintV7(process.cwd()),
         productionEntry: "src/main.ts",
         route: "DEFAULT_NO_RULESET_PARAMETER",
@@ -667,7 +670,7 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
   const launchSelector = '[data-action="launch"]';
   const canvasSelector = "canvas.board-canvas-v7";
   const artKey = "pulpWars.ruleset7.artSet.v1";
-  const saveKey = "pulpWars.save.v7r15.current";
+  const saveKey = "pulpWars.save.v7r16.current";
   const artUrl = (value: string | null): string => {
     const url = new URL(baseUrl);
     if (value === null) url.searchParams.delete("art");
@@ -814,7 +817,7 @@ async function probeUndeadFlag(connection: Connection): Promise<string> {
       `globalThis.__V7_UNDEAD_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
     );
   };
-  const saveKey = "pulpWars.save.v7r15.current";
+  const saveKey = "pulpWars.save.v7r16.current";
   await evaluate(
     connection,
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,

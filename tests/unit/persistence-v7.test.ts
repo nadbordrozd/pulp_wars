@@ -41,7 +41,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r15.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r16.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -471,10 +471,14 @@ describe("ruleset-7 save and replay foundation", () => {
   // This integration-style case rebuilds five replay checkpoints, so its
   // timeout is intentionally local rather than changing the global budget.
   it("naturally replays Muster unlock and its command-bearing Monument placement", () => {
-    const created = createPlayableGameV7(setup);
+    // pulp_wars-wwc: revision-16 maps differ (the growth floor accepts an
+    // earlier candidate); seed 42 leaves no open Monument tile after the
+    // scripted Muster turns, seed 46 does.
+    const musterSetup = { ...setup, seed: 46 };
+    const created = createPlayableGameV7(musterSetup);
     if (!created.ok) throw new Error(created.error.code);
     let state: GameStateV7 = created.state;
-    let replay: ReplayFileV7 = createReplayV7(setup);
+    let replay: ReplayFileV7 = createReplayV7(musterSetup);
     const humanId = state.humanPlayerId;
     const city = required(
       state.cities.find((candidate) => candidate.ownerId === humanId),

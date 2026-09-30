@@ -168,6 +168,11 @@ interface PolicyContextV7 {
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
   readonly commands: readonly CommandV7[];
+  /**
+   * Revision 16 (section 3.6 rule 2): a ready growth harvest of the level-1
+   * original capital, which outranks research, training, and construction.
+   */
+  readonly openingGrowthHarvest: boolean;
   readonly threats: ThreatV7[];
   readonly threatenedTiles: ReadonlyMap<UnitId, ReadonlySet<string>>;
   naval: NavalPlanV7;
@@ -1048,6 +1053,9 @@ function bareContext(
     afflictions: publicAfflictionsV7(view),
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
     commands,
+    openingGrowthHarvest: commands.some((command) =>
+      openingGrowthHarvestV7(view, command),
+    ),
     threats,
     threatenedTiles,
     naval: NO_NAVAL_PLAN_V7,
@@ -2402,7 +2410,10 @@ function isPolicyCandidate(
     context.view.viewer.coins - economic.preview.cost <
       context.naval.reserveCoins &&
     command.kind !== "BUILD_PORT" &&
-    command.kind !== "GATHER_PEARLS"
+    command.kind !== "GATHER_PEARLS" &&
+    // Revision 16 (section 3.6 rule 2): the naval Coin reserve never holds
+    // back a growth harvest of the level-1 original capital.
+    !openingGrowthHarvestV7(context.view, command)
   )
     return false;
   return true;
@@ -3326,6 +3337,41 @@ function isAutoembarkMoveV7(
   );
 }
 
+/**
+ * Revision 16 (section 3.6 rule 2): a growth harvest of the level-1 original
+ * capital scores at least this, above a level-reaching economic action
+ * (1210). While one is ready, research, training, and construction scoring
+ * at or above it drop just below it (the free opener, 1305, is never pending
+ * while a harvest is legal); attacks, captures, Rally, Tend, and movement
+ * keep their priorities.
+ */
+const NORMAL_GROWTH_HARVEST_PRIORITY_V7 = 1212;
+
+/**
+ * A legal, affordable (ready) harvest of a growth resource (Fruit, Game, or
+ * Fish) in the viewer's original capital's territory while that capital is
+ * still level 1.
+ */
+function openingGrowthHarvestV7(
+  view: PlayerViewV7,
+  command: CommandV7,
+): boolean {
+  if (
+    command.kind !== "HARVEST_FRUIT" &&
+    command.kind !== "HUNT_GAME" &&
+    command.kind !== "HARVEST_FISH"
+  )
+    return false;
+  const capital = view.cities.find(
+    (city) =>
+      city.id === view.viewer.originalCapitalCityId &&
+      city.ownerId === view.viewer.id,
+  );
+  if (capital === undefined || capital.level !== 1) return false;
+  const tile = findPublicTileV7(view, command.at);
+  return tile?.explored === true && tile.territoryCityId === capital.id;
+}
+
 function scoreCommandWithContext(
   context: PolicyContextV7,
   command: CommandV7,
@@ -3407,6 +3453,9 @@ function scoreCommandWithContext(
     } else if (context.naval.active && command.kind === "HARVEST_FISH") {
       priority = Math.max(priority, 1170);
     }
+    // Revision 16 (section 3.6 rule 2): growth before other spending.
+    if (openingGrowthHarvestV7(view, command))
+      priority = Math.max(priority, NORMAL_GROWTH_HARVEST_PRIORITY_V7);
     if (command.kind === "BUILD_ROAD") {
       const corridor = context.tactical.roadCorridor;
       if (
@@ -3956,6 +4005,19 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "END_TURN") priority = 0;
+
+  // Revision 16 (section 3.6 rule 2): while a growth harvest of the level-1
+  // original capital is ready, research, training, and construction wait
+  // below it; tactical actions keep their priorities.
+  if (
+    context.openingGrowthHarvest &&
+    priority >= NORMAL_GROWTH_HARVEST_PRIORITY_V7 &&
+    (command.kind === "RESEARCH" ||
+      command.kind === "TRAIN" ||
+      command.kind === "TRAIN_NAVAL" ||
+      command.kind.startsWith("BUILD_"))
+  )
+    priority = NORMAL_GROWTH_HARVEST_PRIORITY_V7 - 1;
 
   safetyValue +=
     actor === undefined ||

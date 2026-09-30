@@ -102,12 +102,13 @@ interface ArenaOptions {
 }
 
 describe("ruleset-7 revision-14 identity and roster", () => {
-  it("keeps rejecting r13 after the r15 identity and cleans the r13 and r14 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r15");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r15.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+  it("keeps rejecting r13 after the r16 identity and cleans the r13 through r15 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r16");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r16.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
+      "pulpWars.save.v7r15.current",
     ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(
@@ -1054,7 +1055,7 @@ describe("ruleset-7 revision-14 villages and economy", () => {
 
 describe("ruleset-7 revision-14 natural play and persistence", () => {
   it("round-trips Plague and Bitten from ordinary Normal AI play", () => {
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 11);
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 16);
     const match = runAiMatchV7(setup, { maxRounds: 45 });
     expect(match.errors).toEqual([]);
     expect(match.stalls).toEqual([]);

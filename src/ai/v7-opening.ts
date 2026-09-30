@@ -28,8 +28,19 @@ import type { PlayerViewV7 } from "../engine/v7/view";
  *   local resources are poor.
  *
  * The highest score wins; ties break by frozen technology order.
+ *
+ * Revision 16 growth-first research (section 3.6 rule 1) runs before those
+ * scores: when one or more offered tier-1 growth technologies (GATHERING,
+ * HUNTING, SHORECRAFT) unlock at least two visible growth resources of their
+ * kind (Fruit on Grass, Game on Forest, Fish on Shallow Water) on explored
+ * tiles of the original capital's own territory, the one with the most such
+ * resources is the opener (ties by technology order). It is reported with
+ * score `NORMAL_GROWTH_OPENING_SCORE_V7 + resources`, above every revision-12
+ * score; the other offered technologies keep their revision-12 scores.
  */
 export const NORMAL_OPENING_SURVEY_RADIUS_V7 = 2;
+export const NORMAL_GROWTH_OPENING_SCORE_V7 = 1000;
+export const NORMAL_GROWTH_OPENING_MINIMUM_V7 = 2;
 export const NORMAL_OPENING_THREAT_UNIT_RADIUS_V7 = 4;
 export const NORMAL_OPENING_THREAT_CITY_RADIUS_V7 = 5;
 
@@ -58,10 +69,23 @@ export function normalOpeningScoresV7(
       city.ownerId === view.viewer.id,
   );
   const survey = capital === undefined ? null : surveyCapital(view, capital);
+  const growth =
+    capital === undefined
+      ? null
+      : normalGrowthOpeningV7(
+          view,
+          capital.id,
+          offered.map((node) => node.id),
+        );
   return offered
     .map((node) => ({
       tech: node.id,
-      score: survey === null ? 0 : openingScore(node.id, survey),
+      score:
+        growth !== null && growth.tech === node.id
+          ? NORMAL_GROWTH_OPENING_SCORE_V7 + growth.resources
+          : survey === null
+            ? 0
+            : openingScore(node.id, survey),
     }))
     .sort(
       (left, right) =>
@@ -76,6 +100,46 @@ export function normalOpeningTechnologyV7(
   view: PlayerViewV7,
 ): TechnologyIdV7 | null {
   return normalOpeningScoresV7(view)[0]?.tech ?? null;
+}
+
+/** The growth resource each tier-1 growth technology unlocks a harvest of. */
+const GROWTH_OPENING_RESOURCES_V7 = [
+  { tech: "GATHERING", terrain: "GRASS", resource: "FRUIT" },
+  { tech: "HUNTING", terrain: "FOREST", resource: "GAME" },
+  { tech: "SHORECRAFT", terrain: "SHALLOW_WATER", resource: "FISH" },
+] as const;
+
+/**
+ * Revision 16 growth-first opener: among the `offered` growth technologies,
+ * the one unlocking the most (at least two) visible growth resources on
+ * explored tiles of the capital's own territory; ties by technology order.
+ */
+function normalGrowthOpeningV7(
+  view: PlayerViewV7,
+  capitalId: number,
+  offered: readonly TechnologyIdV7[],
+): { readonly tech: TechnologyIdV7; readonly resources: number } | null {
+  let best: { tech: TechnologyIdV7; resources: number } | null = null;
+  for (const option of GROWTH_OPENING_RESOURCES_V7) {
+    if (!offered.includes(option.tech)) continue;
+    const resources = view.board.tiles.filter(
+      (tile) =>
+        tile.explored &&
+        tile.territoryCityId === capitalId &&
+        tile.terrain === option.terrain &&
+        tile.resource === option.resource,
+    ).length;
+    if (resources < NORMAL_GROWTH_OPENING_MINIMUM_V7) continue;
+    if (
+      best === null ||
+      resources > best.resources ||
+      (resources === best.resources &&
+        TECHNOLOGY_IDS_V7.indexOf(option.tech) <
+          TECHNOLOGY_IDS_V7.indexOf(best.tech))
+    )
+      best = { tech: option.tech, resources };
+  }
+  return best;
 }
 
 interface CapitalSurveyV7 {

@@ -66,12 +66,13 @@ const READY: UnitStateV7["activation"] = {
 };
 
 describe("ruleset-7 revision-15 identity", () => {
-  it("pins the r15 identity, cleans the r14 save key, and rejects r14", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r15");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r15.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  it("keeps rejecting r14 after the r16 identity and cleans the r14 and r15 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r16");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r16.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r14.current",
-    );
+      "pulpWars.save.v7r15.current",
+    ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const setup = setupWith(["ORIGINAL", "UNDEAD"]);
     const created = createPlayableGameV7(setup);

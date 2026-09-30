@@ -54,7 +54,8 @@ export type MapInvariantCodeV7 =
   | "NAVAL_TOPOLOGY"
   | "NAVAL_REACHABILITY"
   | "COASTAL_SETTLEMENT"
-  | "CAPITAL_SEA_ESCAPE";
+  | "CAPITAL_SEA_ESCAPE"
+  | "CAPITAL_GROWTH";
 
 export interface MapGenerationAttemptV7 {
   readonly attempt: number;
@@ -127,6 +128,11 @@ const LARGE: Readonly<Record<AiCountV7, number>> = { 1: 14, 2: 13, 3: 12 };
 const HUGE: Readonly<Record<AiCountV7, number>> = { 1: 21, 2: 20, 3: 19 };
 const SMALL_ARCHIPELAGO_VILLAGES_V7 = 3;
 const CROWDED_ARCHIPELAGO_VILLAGES_V7 = 6;
+/** Revision 16: Shallow Water is at least this share of a naval map's water. */
+export const SHALLOW_WATER_MINIMUM_SHARE_V7 = 0.25;
+const REVISION_15_SHALLOW_WATER_MINIMUM_SHARE_V7 = 0.4;
+/** Revision 16: a growth-ready capital ring holds this many of one kind. */
+export const CAPITAL_GROWTH_MINIMUM_V7 = 2;
 
 export function regionCountV7(width: number, height: number): number {
   return Math.max(3, Math.floor((width * height + 32) / 64));
@@ -177,38 +183,57 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
   const setup = parseMatchSetupV7(input);
   if (setup === null)
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
-  return generateMapWithVillageCountV7(setup, villageCount(setup));
+  return generateMapWithVillageCountV7(
+    setup,
+    villageCount(setup),
+    "REVISION_16",
+  );
 }
 
 /**
- * Parity and fixture support only; no rule path calls it. The revision-14
- * generator with an explicit neutral-village count. With the revision-13
- * count of a setup (3/4/6, 13/12/11, or 20/19/18) it reproduces that
- * revision's board, treasures, and turn order byte for byte, which lets tests
- * hold a map fixed while the rules change.
+ * Generation rules a parity call reproduces. `REVISION_16` is the current
+ * generator. `REVISION_15` is the revision-14/15 generator: eight-neighbour
+ * Shallow Water, the 40% Shallow minimum, and no capital growth floor or
+ * `CAPITAL_GROWTH` invariant.
+ */
+export type MapGenerationRulesV7 = "REVISION_15" | "REVISION_16";
+
+/**
+ * Parity and fixture support only; no rule path calls it. The generator with
+ * an explicit neutral-village count and generation rules. With the revision-13
+ * count of a setup (3/4/6, 13/12/11, or 20/19/18) and `REVISION_15` rules it
+ * reproduces the revision-13 board, treasures, and turn order byte for byte,
+ * which lets tests hold a map fixed while the rules change.
  */
 export function generateInitialMapWithVillageCountV7(
   input: unknown,
   villages: number,
+  rules: MapGenerationRulesV7 = "REVISION_16",
 ): GenerateMapResultV7 {
   const setup = parseMatchSetupV7(input);
-  if (setup === null || !Number.isSafeInteger(villages) || villages < 0)
+  if (
+    setup === null ||
+    !Number.isSafeInteger(villages) ||
+    villages < 0 ||
+    (rules !== "REVISION_15" && rules !== "REVISION_16")
+  )
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
-  return generateMapWithVillageCountV7(setup, villages);
+  return generateMapWithVillageCountV7(setup, villages, rules);
 }
 
 function generateMapWithVillageCountV7(
   setup: MatchSetupV7,
   villages: number,
+  rules: MapGenerationRulesV7,
 ): GenerateMapResultV7 {
   let random = randomState(setup.seed);
   let lastFailure: MapInvariantCodeV7 = "TILE_LAYOUT";
   const attempts: MapGenerationAttemptV7[] = [];
   for (let attempt = 1; attempt <= 256; attempt += 1) {
     const initialRandomState = random.state;
-    const candidate = generateCandidate(setup, random, villages);
+    const candidate = generateCandidate(setup, random, villages, rules);
     random = candidate.random;
-    const failures = validate(candidate, setup, villages);
+    const failures = validate(candidate, setup, villages, rules);
     attempts.push({
       attempt,
       initialRandomState,
@@ -282,6 +307,7 @@ function generateCandidate(
   setup: MatchSetupV7,
   initial: RandomStateV7,
   villageTotal: number,
+  rules: MapGenerationRulesV7,
 ): Candidate {
   let random = initial;
   const topologyDraws = new Map<string, number>();
@@ -455,6 +481,7 @@ function generateCandidate(
         assignment.values,
         rank,
         navalLand,
+        rules,
       );
       board = naval.board;
       capitals.splice(0, capitals.length, ...naval.capitals);
@@ -509,6 +536,16 @@ function generateCandidate(
       random = turnOrder.random;
     }
   }
+  // Revision 16 (section 3.3): the PRNG-free capital growth floor runs last,
+  // after the settlement ring floors and the water resource draws, so every
+  // invariant (capital fairness included) sees the floored board.
+  if (!navalPlacementFailed && rules === "REVISION_16")
+    board = applyCapitalGrowthFloorV7(
+      board,
+      capitals,
+      (at) => rank.get(key(at)) ?? 0,
+      setup.mapType !== "DRY_LAND",
+    );
   return {
     board,
     capitals: [...capitals].sort(compareCoords),
@@ -660,13 +697,149 @@ export function applySettlementFloorsV7(
   }
 }
 
+/**
+ * Revision 16 section 4.1: a water cell is Shallow Water if and only if one of
+ * its four orthogonal on-board neighbours is land; water whose only land
+ * contact is diagonal is Deep Water. Off-board cells never count.
+ */
+export function isShallowWaterV7(
+  width: number,
+  height: number,
+  at: CoordV7,
+  isLand: (at: CoordV7) => boolean,
+): boolean {
+  return neighbors4(width, height, at).some(isLand);
+}
+
+/** Growth resources on a capital's eight ring cells (revision 16 section 3.2). */
+export interface CapitalGrowthCountsV7 {
+  /** Fruit on Grass. */
+  readonly fruit: number;
+  /** Game on Forest. */
+  readonly game: number;
+  /** Fish on Shallow Water; always 0 when `naval` is false (Dry Land). */
+  readonly fish: number;
+}
+
+/**
+ * Revision 16 section 3.2: the growth resources of each kind on the capital's
+ * eight ring cells. Fish counts only on naval (non-`DRY_LAND`) maps.
+ */
+export function capitalGrowthCountsV7(
+  board: BoardStateV7,
+  capital: CoordV7,
+  naval: boolean,
+): CapitalGrowthCountsV7 {
+  let fruit = 0;
+  let game = 0;
+  let fish = 0;
+  for (const at of neighbors8(board.width, board.height, capital)) {
+    const tile = tileAt(board, at);
+    if (tile === undefined) continue;
+    if (tile.resource === "FRUIT" && tile.terrain === "GRASS") fruit += 1;
+    else if (tile.resource === "GAME" && tile.terrain === "FOREST") game += 1;
+    else if (
+      naval &&
+      tile.resource === "FISH" &&
+      tile.terrain === "SHALLOW_WATER"
+    )
+      fish += 1;
+  }
+  return { fruit, game, fish };
+}
+
+/**
+ * Revision 16 `CAPITAL_GROWTH`: the capital's ring holds at least two growth
+ * resources of the same kind, so free research of that kind's technology and
+ * two harvests (4 of the first turn's 7 Coins) reach level 2 on turn 1.
+ */
+export function capitalGrowthReadyV7(
+  board: BoardStateV7,
+  capital: CoordV7,
+  naval: boolean,
+): boolean {
+  const counts = capitalGrowthCountsV7(board, capital, naval);
+  return (
+    Math.max(counts.fruit, counts.game, counts.fish) >=
+    CAPITAL_GROWTH_MINIMUM_V7
+  );
+}
+
+/**
+ * Revision 16 section 3.3 growth floor: deterministic and PRNG-free. For each
+ * capital in `(y, x)` order that is not growth-ready, place Fruit on empty
+ * ring Grass or Game on empty ring Forest (no resource, site, or
+ * improvement), choosing the feasible kind that needs fewer additions (a tie
+ * picks Game for a `WOODLAND` capital, otherwise Fruit), on the eligible cells
+ * of lowest `rank`. Terrain never changes, no resource is removed, and no
+ * Fish, Pearls, Fertile Ground, or Ore is placed. A capital with no feasible
+ * kind is left unchanged for `CAPITAL_GROWTH` to reject.
+ */
+export function applyCapitalGrowthFloorV7(
+  board: BoardStateV7,
+  capitals: readonly CoordV7[],
+  rank: (at: CoordV7) => number,
+  naval: boolean,
+): BoardStateV7 {
+  let tiles: TileStateV7[] | null = null;
+  const current = (): BoardStateV7 =>
+    tiles === null ? board : { ...board, tiles };
+  for (const capital of [...capitals].sort(compareCoords)) {
+    const counts = capitalGrowthCountsV7(current(), capital, naval);
+    if (
+      Math.max(counts.fruit, counts.game, counts.fish) >=
+      CAPITAL_GROWTH_MINIMUM_V7
+    )
+      continue;
+    const empty = neighbors8(board.width, board.height, capital)
+      .map((at) => tileAt(current(), at) as TileStateV7)
+      .filter(
+        (tile) =>
+          tile.biome !== null &&
+          tile.resource === null &&
+          tile.site === null &&
+          tile.improvement === null,
+      )
+      .sort((a, b) => rank(a.at) - rank(b.at) || compareCoords(a.at, b.at));
+    const woodland = tileAt(board, capital)?.biome === "WOODLAND";
+    const choice = [
+      {
+        resource: "FRUIT" as const,
+        need: CAPITAL_GROWTH_MINIMUM_V7 - counts.fruit,
+        cells: empty.filter((tile) => tile.terrain === "GRASS"),
+        preferred: !woodland,
+      },
+      {
+        resource: "GAME" as const,
+        need: CAPITAL_GROWTH_MINIMUM_V7 - counts.game,
+        cells: empty.filter((tile) => tile.terrain === "FOREST"),
+        preferred: woodland,
+      },
+    ]
+      .filter((option) => option.cells.length >= option.need)
+      .sort(
+        (a, b) => a.need - b.need || Number(b.preferred) - Number(a.preferred),
+      )[0];
+    if (choice === undefined) continue;
+    const next: TileStateV7[] = tiles ?? [...board.tiles];
+    for (const tile of choice.cells.slice(0, choice.need))
+      next[tile.at.y * board.width + tile.at.x] = {
+        ...tile,
+        resource: choice.resource,
+      };
+    tiles = next;
+  }
+  return current();
+}
+
 function validate(
   candidate: Candidate,
   setup: MatchSetupV7,
   villageTotal: number,
+  rules: MapGenerationRulesV7,
 ): MapInvariantCodeV7[] {
   if (setup.mapType !== "DRY_LAND")
-    return validateNavalCandidate(candidate, setup, villageTotal);
+    return validateNavalCandidate(candidate, setup, villageTotal, rules);
   const board = candidate.board;
   const failures: MapInvariantCodeV7[] = [];
   const capitals = board.tiles.filter((tile) => tile.site === "CAPITAL");
@@ -784,6 +957,11 @@ function validate(
     Math.max(...scores) - Math.min(...scores) > 5
   )
     failures.push("CAPITAL_SCORE");
+  if (
+    rules === "REVISION_16" &&
+    capitals.some((capital) => !capitalGrowthReadyV7(board, capital.at, false))
+  )
+    failures.push("CAPITAL_GROWTH");
   return [...new Set(failures)];
 }
 
@@ -800,6 +978,7 @@ function applyNavalTopologyV7(
   oldAssignments: readonly CoordV7[],
   rank: ReadonlyMap<string, number>,
   land: ReadonlySet<string>,
+  rules: MapGenerationRulesV7,
 ): {
   board: BoardStateV7;
   capitals: CoordV7[];
@@ -982,9 +1161,13 @@ function applyNavalTopologyV7(
           terrain: site === null ? tile.terrain : "GRASS",
           resource: site === null ? tile.resource : null,
         };
-      const shallow = neighbors8(original.width, original.height, tile.at).some(
-        (at) => land.has(key(at)),
-      );
+      // Revision 16 (section 4.1): orthogonal land contact only; the
+      // revision-15 parity rules keep the eight-neighbour test.
+      const landAt = (at: CoordV7): boolean => land.has(key(at));
+      const shallow =
+        rules === "REVISION_16"
+          ? isShallowWaterV7(original.width, original.height, tile.at, landAt)
+          : neighbors8(original.width, original.height, tile.at).some(landAt);
       const terrain: TerrainIdV7 = shallow ? "SHALLOW_WATER" : "DEEP_WATER";
       return { ...tile, biome: null, terrain, resource: null, site: null };
     }),
@@ -1163,10 +1346,15 @@ function validateNavalCandidate(
   candidate: Candidate,
   setup: MatchSetupV7,
   villageTotal: number,
+  rules: MapGenerationRulesV7,
 ): MapInvariantCodeV7[] {
   const board = candidate.board;
   const failures: MapInvariantCodeV7[] = [];
   if (candidate.navalPlacementFailed) return ["SETTLEMENT_COUNT"];
+  const shallowMinimumShare =
+    rules === "REVISION_16"
+      ? SHALLOW_WATER_MINIMUM_SHARE_V7
+      : REVISION_15_SHALLOW_WATER_MINIMUM_SHARE_V7;
   const land = board.tiles.filter((tile) => tile.biome !== null);
   const water = board.tiles.filter((tile) => tile.biome === null);
   const bounds =
@@ -1193,9 +1381,11 @@ function validateNavalCandidate(
     )
   )
     failures.push("TILE_LAYOUT");
+  // Revision 16 (section 4.2): the Shallow minimum is 25% of water (was 40%,
+  // sized for the eight-neighbour classification).
   if (
     water.filter((tile) => tile.terrain === "SHALLOW_WATER").length <
-      Math.ceil(water.length * 0.4) ||
+      Math.ceil(water.length * shallowMinimumShare) ||
     water.filter((tile) => tile.terrain === "DEEP_WATER").length <
       Math.max(4, Math.floor(water.length / 10))
   )
@@ -1341,6 +1531,13 @@ function validateNavalCandidate(
     )
   )
     failures.push("CAPITAL_SEA_ESCAPE");
+  if (
+    rules === "REVISION_16" &&
+    capitalTiles.some(
+      (capital) => !capitalGrowthReadyV7(board, capital.at, true),
+    )
+  )
+    failures.push("CAPITAL_GROWTH");
   return [...new Set(failures)];
 }
 
@@ -1664,13 +1861,14 @@ export function createInitialMapStateV7(
 export function createInitialMapStateWithVillageCountV7(
   input: unknown,
   villages: number,
+  rules: MapGenerationRulesV7 = "REVISION_16",
 ): CreateInitialMapStateResultV7 {
   const setup = parseMatchSetupV7(input);
   if (setup === null)
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   return initialMapStateFromV7(
     setup,
-    generateInitialMapWithVillageCountV7(setup, villages),
+    generateInitialMapWithVillageCountV7(setup, villages, rules),
   );
 }
 

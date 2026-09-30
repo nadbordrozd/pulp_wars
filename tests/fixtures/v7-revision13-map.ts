@@ -1,6 +1,7 @@
 import {
   createInitialMapStateWithVillageCountV7,
   createPlayableGameFromMapStateV7,
+  villageCountV7,
   type CreateInitialMapStateResultV7,
   type DomainEventV7,
   type GameStateV7,
@@ -9,8 +10,9 @@ import {
 
 /**
  * Revision-13 neutral village counts (before revision 14's VL change). With
- * them the revision-14 generator reproduces revision-13 maps byte for byte,
- * so rule tests written against a revision-13 board keep that board.
+ * them and the `REVISION_15` generation rules (eight-neighbour Shallow Water,
+ * no revision-16 growth floor) the generator reproduces revision-13 maps byte
+ * for byte, so rule tests written against a revision-13 board keep that board.
  */
 export function revision13VillageCountV7(setup: MatchSetupV7): number {
   const table =
@@ -32,6 +34,7 @@ export function createRevision13MapStateV7(
   return createInitialMapStateWithVillageCountV7(
     setup,
     revision13VillageCountV7(setup),
+    "REVISION_15",
   );
 }
 
@@ -52,9 +55,31 @@ export function revision13PlayableGameV7(setup: MatchSetupV7): {
     createInitialMapStateWithVillageCountV7(
       setup,
       revision13VillageCountV7(setup),
+      "REVISION_15",
     ),
   );
   if (!created.ok)
     throw new Error(`revision-13 game failed: ${created.error.code}`);
+  return { state: created.state, events: created.events };
+}
+
+/**
+ * `pulp_wars-wwc`: the playable first turn of `setup` on its revision-15
+ * board (the revision-14 village count with `REVISION_15` generation rules),
+ * for rule tests written against a revision-14/15 generated layout.
+ */
+export function revision15PlayableGameV7(setup: MatchSetupV7): {
+  readonly state: GameStateV7;
+  readonly events: readonly DomainEventV7[];
+} {
+  const created = createPlayableGameFromMapStateV7(
+    createInitialMapStateWithVillageCountV7(
+      setup,
+      villageCountV7(setup),
+      "REVISION_15",
+    ),
+  );
+  if (!created.ok)
+    throw new Error(`revision-15 game failed: ${created.error.code}`);
   return { state: created.state, events: created.events };
 }

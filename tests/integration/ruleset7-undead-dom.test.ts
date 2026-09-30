@@ -233,6 +233,8 @@ describe("Revision 13 Undead DOM", () => {
       "Units that fall in battle on land leave Graves.",
     );
     expect(helpText).not.toContain("Raider");
+    // Revision 16: the Shallow Water sentence is naval-only (Dry Land arena).
+    expect(helpText).not.toContain("Shallow Water");
     requiredButton("close-overlay").click();
 
     requiredButton("compact-menu").click();

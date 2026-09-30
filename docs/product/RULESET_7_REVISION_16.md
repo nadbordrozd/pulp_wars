@@ -1,10 +1,11 @@
 # Ruleset 7 revision 16: starting growth, economy deflation, 2-tile boats, and orthogonal shallow water
 
-**Status:** proposed contract (`pulp_wars-72r`), not implemented. It is
+**Status:** contract (`pulp_wars-72r`), partly implemented. It is
 implemented by three beads in order: `pulp_wars-wwc` (identity, capital
-growth guarantee, orthogonal shallow water), `pulp_wars-zsa` (2-tile boats
-and landing reach), and `pulp_wars-4gc` (economy deflation); see
-[section 9](#9-implementation-split-and-sequencing). Until revisions 13–16
+growth guarantee, orthogonal shallow water; implemented, see
+[section 13](#13-implementation-record)), `pulp_wars-zsa`
+(2-tile boats and landing reach), and `pulp_wars-4gc` (economy deflation);
+see [section 9](#9-implementation-split-and-sequencing). Until revisions 13–16
 are folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (`pulp_wars-vkq.16`), this overlay together with
 [revision 15](RULESET_7_REVISION_15_BALANCE.md),
@@ -617,3 +618,109 @@ consistent with the engine; the user may change any of them.
 - **Growth floor visibility.** The floor makes capital rings slightly richer
   in Fruit and Game than the biome tables; development scores stay inside the
   fairness band by construction.
+
+## 13. Implementation record
+
+### 13.1 Engine and AI
+
+- **Identity.** `RULESET_7_ID = "pulp-wars-poc-7r16"`, autosave
+  `pulpWars.save.v7r16.current`; `OBSOLETE_SAVE_STORAGE_KEYS_V7` ends with
+  `pulpWars.save.v7r15.current`. The replay reader still names only the
+  identities through `7r12` as `INCOMPATIBLE_REPLAY`; a `7r13`–`7r15` replay
+  is rejected as `INVALID_REPLAY` (unchanged since revision 13).
+- **Map generation** (`src/engine/v7/map.ts`). `isShallowWaterV7` is the
+  section 4.1 test; `SHALLOW_WATER_MINIMUM_SHARE_V7 = 0.25`;
+  `applyCapitalGrowthFloorV7` is the section 3.3 floor (called at the end of
+  every candidate that placed its settlements, with the candidate's
+  settlement-floor rank); `capitalGrowthCountsV7` and `capitalGrowthReadyV7`
+  implement section 3.2, and `CAPITAL_GROWTH` is checked last in both
+  validators. The floor draws nothing, so revision-15 and revision-16
+  candidates stay PRNG-identical attempt by attempt.
+- **Parity generator.** `generateInitialMapWithVillageCountV7` and
+  `createInitialMapStateWithVillageCountV7` take an optional
+  `MapGenerationRulesV7` (`"REVISION_16"` by default, `"REVISION_15"` for
+  eight-neighbour Shallow, the 40% minimum, and no floor or
+  `CAPITAL_GROWTH`). No rule path uses `REVISION_15`; it keeps fixture boards
+  fixed.
+- **Normal AI** (`src/ai/v7-opening.ts`, `src/ai/v7.ts`). Rule 1 reports the
+  growth opener with score `1000 + resources`. Rule 2 is implemented as a
+  priority band: a ready growth harvest of the level-1 original capital
+  scores at least 1212 (above a level-reaching economic action, 1210), and
+  while one is ready, `RESEARCH`, `TRAIN`, `TRAIN_NAVAL`, and `BUILD_*`
+  candidates scoring 1212 or more drop to 1211; the naval Coin reserve never
+  filters such a harvest. Attacks, captures, Rally, Tend, and movement keep
+  their priorities (the revision-11 tactical tests pin that).
+- **UI.** The Help screen of a naval match adds the section 8 terrain
+  sentence.
+
+### 13.2 Acceptance sweeps
+
+`npm run validate:ruleset7-growth-maps` (seeds 0–99 of all 60 cells) and
+`npm run validate:ruleset7-growth-maps -- --tight` (seeds 0–999 of the tight
+cells) both pass: every map is accepted, every capital is growth-ready, and
+every naval map keeps at least 25% Shallow Water.
+
+| Map type    | Maps | Mean attempt | Worst attempt (cell) | Smallest Shallow share |
+| ----------- | ---: | -----------: | -------------------- | ---------------------: |
+| Dry Land    | 1200 |         3.82 | 39 (20 × 20, 3 AI)   |                      – |
+| Pangea      | 1200 |         3.64 | 24 (20 × 20, 3 AI)   |                  0.331 |
+| Continents  | 1200 |         6.14 | 110 (14 × 14, 2 AI)  |                  0.313 |
+| Archipelago | 1200 |        12.07 | 223 (20 × 20, 3 AI)  |                  0.251 |
+| Lakes       | 1200 |         1.79 | 11 (16 × 16, 3 AI)   |                  0.440 |
+
+| Tight cell (seeds 0–999)  | Accepted | Mean attempt | Worst attempt |
+| ------------------------- | -------: | -----------: | ------------: |
+| Archipelago 16 × 16, 3 AI |     1000 |        26.46 |           203 |
+| Archipelago 20 × 20, 2 AI |     1000 |        20.69 |           160 |
+| Archipelago 20 × 20, 3 AI |     1000 |        36.09 |           231 |
+| Archipelago 25 × 25, 1 AI |     1000 |         4.37 |            24 |
+| Archipelago 25 × 25, 2 AI |     1000 |         7.10 |            42 |
+| Archipelago 25 × 25, 3 AI |     1000 |         9.74 |            82 |
+| Continents 14 × 14, 2 AI  |     1000 |        17.79 |           134 |
+
+The worst tight-cell attempt (231 of 256, 20 × 20 three-AI Archipelago) is
+the closest any sweep came to the candidate budget.
+
+### 13.3 Level 2 evidence
+
+- **Rules.** `tests/unit/ruleset-v7-revision16.test.ts` plays a scripted first
+  turn (free research of the guaranteed kind, two harvests, reward) for every
+  capital of seeds 0–19 of every 11/14/16 cell of every map type; every
+  capital reaches level 2 on its owner's first turn with 7 Coins.
+- **Normal AI.** Seeds 0–19 of every map type at 11 × 11 and 14 × 14, one AI,
+  Human mirror and both mixed seat orders (1,200 seats): revision 15 reached
+  level 2 with 4.3% of capitals by the owner's first turn and 28.8% by the
+  second; revision 16 reaches it with 100% on the first turn. The test pins
+  the second-turn requirement over the same matrix.
+
+### 13.4 Refreshed artifacts
+
+- **Identity literals** in the engine, headless CLI and runner, DOM setup,
+  browser smoke scripts (which seed and check the obsolete `v7r15` key), the
+  late-public-view contract, the balance matrix, the biome validator, the
+  release contract (which now runs the revision-16 test), and the tests that
+  pin identity; the Land Grant hidden-owner state fixture is re-identified
+  with its stored board kept.
+- **Fixed boards.** `tests/fixtures/v7-revision13-map.ts` builds its
+  revision-13 boards with `REVISION_15` rules (unchanged layouts for every
+  rule fixture) and adds `revision15PlayableGameV7` (the revision-14 village
+  count with `REVISION_15` rules), which the endgame-siege arena now uses.
+- **Re-pinned map hashes.** Biome map seed 0 (16 × 16, three AI): new hash
+  and board hash, accepted on candidate 11; the revision-15 hash
+  (candidate 25) and the revision-13 hash are asserted through
+  `REVISION_15`. Seed 1: accepted on candidate 13 (four `CAPITAL_GROWTH`
+  rejections) instead of 8.
+- **All-Human digests.** The two fixed-board all-Human matches keep their map
+  and post-generation PRNG digests; with the section 3.6 rules disabled they
+  still reproduced the revision-12 digests, so their command, event, state,
+  and view digests were re-recorded from the revision-16 policy.
+- **Natural-play seeds** re-chosen on revision-16 maps and openings: Raider
+  escape 13 → 5; Plague/Bitten, Lich-splash and scripted-Wail round trips and
+  the Undead telemetry match 11 → 16; Undead boarding (Archipelago 14 × 14)
+  1 → 29; Pearls in naval persistence 27 → 20; Muster Monument 42 → 46; DOM
+  resume and Tech-screen tests 1 → 4 (seed 1 now opens with the AI). The
+  headless command-cap test now expects Hunting and two Game hunts first.
+- **Validators.** `validate:ruleset7-naval-maps` checks the orthogonal rule,
+  the 25% minimum, and growth-ready capitals; its Dry Land parity file
+  (`RULESET_7_DRY_LAND_PARITY.json`, revision 6) has not matched since
+  revision 14's village change and is unchanged here.

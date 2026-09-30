@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r15`. Role facts resolve through the owner's
+previews under `pulp-wars-poc-7r16`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
 duration valuation, and the endgame siege mode (`pulp_wars-1mc`) are
@@ -13,7 +13,20 @@ choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
 turn) and Raider Escape handling (an escape Move is used only toward a
 strictly safer visible tile while visible enemies threaten the Raider); see
-[current rules §16](../product/RULESET_7_CURRENT.md#16-normal-ai-summary). It does not read an
+[current rules §16](../product/RULESET_7_CURRENT.md#16-normal-ai-summary).
+Revision 16 ([section 3.6](../product/RULESET_7_REVISION_16.md#36-normal-ai-opening),
+`pulp_wars-wwc`, both factions) puts growth first: when offered Gathering,
+Hunting, or Shorecraft unlocks at least two visible growth resources (Fruit,
+Game, Fish) in the original capital's own territory, the free opener is the
+one with the most (ties by technology order; reported score 1000 + count),
+otherwise the revision-12 scores apply. While that capital is level 1, a
+ready growth harvest in its territory scores at least priority 1212 and
+research, training, and construction (`BUILD_*`) that would score at or above
+it drop to 1211; the naval Coin reserve never filters such a harvest. Attacks,
+captures, Rally, Tend, and movement keep their priorities. With maps that
+guarantee two growth resources of one kind (revision 16 §3), every Normal
+capital of seeds 0–19 of every 1v1 11/14 cell (Human mirror and both mixed
+orders) reached level 2 on its owner's first turn. It does not read an
 opponent's private research, economy, unexplored terrain, or authoritative
 state. Enemy threat reach resets the enemy's activation for its next turn;
 friendly replacements and screens use their current activation. Known terrain,
@@ -144,8 +157,8 @@ As Undead:
   offer it).
 - **Training**: Banshee +8 while a living hostile seat is active, −30
   otherwise (and no research toward it); Necromancer +4 per visible Grave (at
-  most 3); Lich +4. The opening research keeps the revision-12 scorer for
-  both factions.
+  most 3); Lich +4. The opening research keeps the revision-12 scorer and the
+  revision-16 growth-first rules for both factions.
 
 Against Undead (any seat in such a match):
 

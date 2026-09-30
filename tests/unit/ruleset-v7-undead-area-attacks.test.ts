@@ -744,7 +744,7 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
   });
 
   it("round-trips Wails and Lich splash through replay, checkpoints, and save", () => {
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 11);
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 16);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
@@ -787,9 +787,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
   }, 60_000);
 
   it("round-trips Lich splash from ordinary Normal AI play", () => {
-    // Seed 11 fields a Lich that splashes within 45 rounds of Normal play on
-    // revision-14 maps (seed 3 did on revision-13 maps).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 11), {
+    // Seed 16 fields a Lich that splashes within 45 rounds of Normal play on
+    // revision-16 maps (seed 11 did on revision-14/15 maps, seed 3 on
+    // revision-13 maps).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 16), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

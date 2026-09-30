@@ -2,15 +2,20 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r15` (autosave
-`pulpWars.save.v7r15.current`), whose rules are described by
+The current client runs `pulp-wars-poc-7r16` (autosave
+`pulpWars.save.v7r16.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r15.current`), whose rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) plus the in-progress
 [revision-13 Undead overlay](../product/RULESET_7_REVISION_13_UNDEAD.md),
 [revision-14 balance overlay](../product/RULESET_7_REVISION_14_BALANCE.md)
-(Plague, Bitten, and the income, village, Vampire, and Lich changes), and
+(Plague, Bitten, and the income, village, Vampire, and Lich changes),
 [revision-15 overlay](../product/RULESET_7_REVISION_15_BALANCE.md) (three-turn
 Plague that spreads only on its first turn, 18-HP Zombies; the Plague chip
-counts the remaining turns; its UI
+counts the remaining turns), and the
+[revision-16 overlay](../product/RULESET_7_REVISION_16.md) (so far
+`pulp_wars-wwc`: orthogonal Shallow Water, the capital growth floor, and the
+growth-first Normal AI opening; Help on naval maps explains the Shallow
+rule; the Plague and Bitten UI
 surfaces are described in the
 [Screen Flow revision-14 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-14-plague-and-bitten-overlay)
 and read only the public `plagued` and `bitten` view lists, previews, and
