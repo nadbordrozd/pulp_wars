@@ -69,8 +69,10 @@ describe("ruleset-7 late public query performance", () => {
       "0b13410860e1df0d398369ce7fb307a2689edfa9dbf5305ab6fe1dfee8abd93b",
     );
     const ready = queryAiReadyCommandsV7(view);
+    // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
+    // ordinals once more; the revision-12-ordinal value below is unchanged.
     expect(canonicalHash(ready)).toBe(
-      "6fde8da6cf3560bd7deef30acb5a59758455b7df442c50b5c83923f9de6e4190",
+      "31111a40b7eeae72012b8bc71144402b23aeeaf890fc4b148b953257e4c66d0b",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

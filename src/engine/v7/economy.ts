@@ -841,7 +841,13 @@ export function startTurnEconomyV7(
   const healing = resolveWindmillHealingV7(afflicted.state, player.id);
   const regeneration = resolveRegenerationV7(healing.state, player.id);
   const income = playerIncomeV7(regeneration.state, player.id);
-  const coins = player.coins + income.totalCoins;
+  // Revision 17: Plunder from a Start Turn chain may already have changed the
+  // player's Coins, so income adds to the state's Coins, not the argument's.
+  const current = regeneration.state.players.find(
+    (item) => item.id === player.id,
+  );
+  if (current === undefined) throw new RangeError("INVALID_STATE");
+  const coins = current.coins + income.totalCoins;
   if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
   return {
     state: {

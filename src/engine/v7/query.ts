@@ -25,6 +25,8 @@ import {
 } from "../rules/ruleset-v7";
 import { compareCommandsV7, type CommandV7 } from "./commands";
 import {
+  arePlayersAlliedV7,
+  arePlayersHostileV7,
   assignedUnitCountV7,
   cityLevelIncomeV7,
   cityUnitCapacityV7,
@@ -33,7 +35,15 @@ import {
 } from "./economy";
 import { raiseDeadGravesV7 } from "./graves";
 import { applyCommandV7 } from "./reducer";
-import { afflictionCombatEffectsV7 } from "./afflictions";
+import { BITTEN_RISING_HP_V7, afflictionCombatEffectsV7 } from "./afflictions";
+import {
+  blastAreaV7,
+  isExplodingUnitV7,
+  resolveExplosionChainV7,
+  type BlastUnitV7,
+  type ExplosionCauseV7,
+} from "./explosions";
+import { INFECT_RISING_HP_V7 } from "./infect";
 import {
   calculateCombatPreviewV7,
   gangUpBonusV7,
@@ -602,6 +612,15 @@ function appendPublicUnitCommandsV7(
     publicWailTargetsV7(view, unit).length > 0
   )
     candidates.push({ kind: "WAIL", unitId: unit.id });
+  // Revision 17 Kaboom: any goblin-crewed land-form unit that has not used a
+  // primary action, after a Move too, with or without a unit in the area.
+  if (
+    !overrun &&
+    !primaryUsedForQuery(unit) &&
+    unit.form === "LAND" &&
+    rule.abilities.includes("KABOOM")
+  )
+    candidates.push({ kind: "KABOOM", unitId: unit.id });
   if (
     !overrun &&
     primaryReady &&
@@ -990,6 +1009,154 @@ export function queryCombatPreviewV7(
   return publicCombatPreview(view, attackerId, targetUnitId);
 }
 
+/**
+ * Revision 17 public explosion preview entry. `unitId` is null for a Zombie
+ * that rises during the previewed command (its ID does not exist yet).
+ * `friendly` means owned by the viewer or an ally.
+ */
+export interface ExplosionPreviewResultV7 {
+  readonly unitId: UnitId | null;
+  readonly ownerId: PlayerId;
+  readonly at: CoordV7;
+  readonly damage: number;
+  readonly dies: boolean;
+  readonly friendly: boolean;
+}
+
+/** One previewed explosion of a chain, in resolution order. */
+export interface ExplosionPreviewV7 {
+  readonly unitId: UnitId;
+  readonly ownerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  readonly at: CoordV7;
+  readonly cause: ExplosionCauseV7;
+  readonly wave: number;
+  readonly damage: number;
+  readonly results: readonly ExplosionPreviewResultV7[];
+  readonly fieldDefenseDestroyed: readonly CoordV7[];
+}
+
+/**
+ * Totals over every previewed explosion relative to the viewer (friendly is
+ * own or allied; the Kaboom unit itself is never a result). `plunderCoins`
+ * is the viewer's Plunder from its own units' blasts (0 without Plunder).
+ */
+export interface ExplosionPreviewTotalsV7 {
+  readonly hostileDamage: number;
+  readonly hostileKills: number;
+  readonly friendlyDamage: number;
+  readonly friendlyKills: number;
+  readonly plunderCoins: number;
+}
+
+export interface ExplosionChainPreviewV7 {
+  readonly explosions: readonly ExplosionPreviewV7[];
+  readonly totals: ExplosionPreviewTotalsV7;
+  readonly friendlyFire: boolean;
+  /**
+   * True when a previewed blast area (or, for an attack, the splash ring
+   * or an unknown Push destination the chain depends on) includes a cell the
+   * viewer has not explored; otherwise the preview equals the resolution.
+   */
+  readonly touchesUnexplored: boolean;
+}
+
+export interface KaboomPreviewV7 extends ExplosionChainPreviewV7 {
+  readonly unitId: UnitId;
+  readonly at: CoordV7;
+}
+
+export interface AttackExplosionsPreviewV7 extends ExplosionChainPreviewV7 {
+  readonly attackerId: UnitId;
+  readonly targetUnitId: UnitId;
+}
+
+/**
+ * Revision 17 section 9 Kaboom preview: null unless `KABOOM` is offered;
+ * otherwise the chain the Kaboom sets off, computed from the viewer's visible
+ * units only. The first blast is always exact (its owner explored the whole
+ * area); with `touchesUnexplored: false` the whole preview is exact.
+ */
+export function previewKaboomV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): KaboomPreviewV7 | null;
+export function previewKaboomV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  unitId: UnitId,
+): KaboomPreviewV7 | null;
+export function previewKaboomV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrUnit: PlayerId | UnitId,
+  maybeUnit?: UnitId,
+): KaboomPreviewV7 | null {
+  const view =
+    maybeUnit === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrUnit as PlayerId);
+  const unitId = maybeUnit ?? (viewerOrUnit as UnitId);
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "KABOOM" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const exploder = view.units.find((unit) => unit.id === unitId);
+  if (exploder === undefined) return null;
+  const simulation = createPublicChainSimulationV7(view);
+  const units = view.units
+    .filter((unit) => unit.id !== exploder.id)
+    .map(simulation.blastUnit);
+  // Death first, then the bang: a Bitten Kaboom unit rises on its tile.
+  const rising = simulation.rise(simulation.blastUnit(exploder));
+  if (rising !== null) units.push(rising);
+  return {
+    unitId,
+    at: exploder.at,
+    ...simulation.run(units, [
+      { unit: simulation.blastUnit(exploder), cause: "KABOOM" },
+    ]),
+  };
+}
+
+/**
+ * Revision 17 section 9: the death blasts an offered attack would set off
+ * (the exploding units among the defender, the splash victims, and the
+ * attacker, after the attack's deaths, risings, advance, and Push), or an
+ * empty chain; null when the attack is not offered. Public information only.
+ */
+export function previewAttackExplosionsV7(
+  view: PlayerViewV7,
+  attackerId: UnitId,
+  targetUnitId: UnitId,
+): AttackExplosionsPreviewV7 | null;
+export function previewAttackExplosionsV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  attackerId: UnitId,
+  targetUnitId: UnitId,
+): AttackExplosionsPreviewV7 | null;
+export function previewAttackExplosionsV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerOrAttacker: PlayerId | UnitId,
+  attackerOrTarget: UnitId,
+  maybeTarget?: UnitId,
+): AttackExplosionsPreviewV7 | null {
+  const view =
+    maybeTarget === undefined
+      ? (input as PlayerViewV7)
+      : asView(input, viewerOrAttacker as PlayerId);
+  const attackerId =
+    maybeTarget === undefined ? (viewerOrAttacker as UnitId) : attackerOrTarget;
+  const targetUnitId = maybeTarget ?? attackerOrTarget;
+  if (!publicCommandOfferingAllowedV7(view)) return null;
+  const preview = publicCombatPreviewCore(view, attackerId, targetUnitId);
+  if (preview === null) return null;
+  const chain = publicAttackChainV7(view, preview);
+  return { attackerId, targetUnitId, ...chain.preview };
+}
+
 /** Revision 13 Raise Dead preview: the Graves that rise, in (y, x) order. */
 export interface RaiseDeadPreviewV7 {
   readonly graves: readonly CoordV7[];
@@ -1226,8 +1393,11 @@ export function queryThreatenedTilesV7(
   const rule = unitRoleRuleV7(view, unit);
   // Revision 13: a Banshee threatens Chebyshev 1-2 around each reachable tile.
   const wail = rule.abilities.includes("WAIL");
+  // Revision 17: a goblin-crewed land unit may Kaboom after moving, so it
+  // also threatens every tile within Chebyshev 1 of a tile it can reach.
+  const kaboom = unit.form === "LAND" && rule.abilities.includes("KABOOM");
   if (!rule.abilities.includes("ATTACK") && !wail) return [];
-  const minimumRange = wail ? 1 : rule.minimumRange;
+  const minimumRange = kaboom ? 0 : wail ? 1 : rule.minimumRange;
   const maximumRange = wail ? WAIL_RADIUS_V7 : rule.range;
   const origins = [
     unit.at,
@@ -4354,7 +4524,7 @@ function distinct<T>(values: readonly T[]): T[] {
   return [...new Set(values)];
 }
 
-function publicCombatPreview(
+function publicCombatPreviewCore(
   view: PlayerViewV7,
   attackerId: UnitId,
   targetUnitId: UnitId,
@@ -4451,14 +4621,18 @@ function publicCombatPreview(
       )
     : 0;
   const attackerDies = damageToAttacker >= attacker.hp;
+  // Revision 17: the Bomb Chucker's bomb (splash target mode `ALL`) lists
+  // visible own and allied units too.
   const splash = attackerMechanics.splash
     ? view.units
         .filter(
           (unit) =>
             unit.hp > 0 &&
             unit.id !== target.id &&
+            unit.id !== attacker.id &&
             chebyshev(unit.at, target.at) === 1 &&
-            publicHostile(view, attacker.ownerId, unit.ownerId),
+            (attackerMechanics.splashTargets === "ALL" ||
+              publicHostile(view, attacker.ownerId, unit.ownerId)),
         )
         .sort(
           (left, right) =>
@@ -4579,6 +4753,310 @@ function publicCombatPreview(
     }),
     ...afflictions,
   };
+}
+
+/**
+ * The public combat preview. Revision 17 section 6.7: when the attack sets
+ * off a chain, the Overrun (Ram) continuation is evaluated after it.
+ */
+function publicCombatPreview(
+  view: PlayerViewV7,
+  attackerId: UnitId,
+  targetUnitId: UnitId,
+): CombatPreviewV7 | null {
+  const preview = publicCombatPreviewCore(view, attackerId, targetUnitId);
+  if (preview === null || !preview.overrunAdvance) return preview;
+  const chain = publicAttackChainV7(view, preview);
+  if (chain.preview.explosions.length === 0) return preview;
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (target === undefined) return preview;
+  const overrunContinues =
+    chain.units.some((unit) => unit.id === attackerId) &&
+    chain.units.some(
+      (unit) =>
+        unit.id !== attackerId &&
+        unit.hp > 0 &&
+        publicHostile(view, view.viewer.id, unit.ownerId) &&
+        chebyshev(target.at, unit.at) === 1,
+    );
+  return {
+    ...preview,
+    overrunContinues,
+    attacksRemaining: overrunContinues ? 1 : 0,
+  };
+}
+
+interface PublicChainSimulationV7 {
+  readonly blastUnit: (unit: PlayerViewV7["units"][number]) => BlastUnitV7;
+  /** Records that the attack bites `unitId` for `biterId` (revision 14). */
+  readonly bite: (unitId: UnitId, biterId: PlayerId) => void;
+  /** The Bitten rising a land-form death leaves, or null. */
+  readonly rise: (victim: BlastUnitV7) => BlastUnitV7 | null;
+  /** The Infect rising of a land-form victim killed by `killerId`'s Zombie. */
+  readonly infect: (victim: BlastUnitV7, killerId: PlayerId) => BlastUnitV7;
+  readonly run: (
+    units: readonly BlastUnitV7[],
+    initial: readonly {
+      readonly unit: BlastUnitV7;
+      readonly cause: ExplosionCauseV7;
+    }[],
+    dependsOnUnexplored?: boolean,
+    /** Field Defense the previewed command removed before the chain. */
+    clearedFieldDefense?: CoordV7 | null,
+  ) => ExplosionChainPreviewV7 & { readonly units: readonly BlastUnitV7[] };
+}
+
+/**
+ * Revision 17 public chain simulation over the viewer's visible units with
+ * the canonical chain resolver. Risings get provisional negative IDs that
+ * the preview reports as null.
+ */
+function createPublicChainSimulationV7(
+  view: PlayerViewV7,
+): PublicChainSimulationV7 {
+  let provisional = 0;
+  const bites = new Map(
+    view.bitten.map((entry) => [entry.unitId, entry.biterPlayerId] as const),
+  );
+  const owners = new Map<UnitId, PlayerId>(
+    view.units.map((unit) => [unit.id, unit.ownerId] as const),
+  );
+  const rising = (at: CoordV7, ownerId: PlayerId, hp: number): BlastUnitV7 => {
+    provisional -= 1;
+    const id = provisional as UnitId;
+    owners.set(id, ownerId);
+    const rule = unitRoleRuleV7(view, { ownerId, role: "GUARD" });
+    return {
+      id,
+      ownerId,
+      role: "GUARD",
+      form: "LAND",
+      at: { x: at.x, y: at.y },
+      hp: Math.min(hp, rule.maxHp),
+    };
+  };
+  const rise = (victim: BlastUnitV7): BlastUnitV7 | null => {
+    const biterId = bites.get(victim.id);
+    return biterId === undefined || victim.form !== "LAND"
+      ? null
+      : rising(victim.at, biterId, BITTEN_RISING_HP_V7);
+  };
+  return {
+    blastUnit: (unit) => ({
+      id: unit.id,
+      ownerId: unit.ownerId,
+      role: unit.role,
+      form: unit.form,
+      at: unit.at,
+      hp: unit.hp,
+    }),
+    bite: (unitId, biterId) => {
+      bites.set(unitId, biterId);
+    },
+    rise,
+    infect: (victim, killerId) =>
+      rising(victim.at, killerId, INFECT_RISING_HP_V7),
+    run: (
+      units,
+      initial,
+      dependsOnUnexplored = false,
+      clearedFieldDefense = null,
+    ) => {
+      const chain = resolveExplosionChainV7<BlastUnitV7>({
+        roster: view,
+        width: view.board.width,
+        height: view.board.height,
+        units,
+        initial,
+        fieldDefense: (at) => {
+          if (clearedFieldDefense !== null && same(at, clearedFieldDefense))
+            return false;
+          const tile = tileAtView(view, at);
+          return tile?.explored === true && tile.fieldDefense;
+        },
+        onDeath: (victim) => rise(victim),
+      });
+      const viewerId = view.viewer.id;
+      const plunderCoins = technologyCapabilitiesV7(
+        view.viewer.researchedTechs,
+        view.viewer.faction,
+      ).plunderCoins;
+      const totals = {
+        hostileDamage: 0,
+        hostileKills: 0,
+        friendlyDamage: 0,
+        friendlyKills: 0,
+        plunderCoins: 0,
+      };
+      let touchesUnexplored = dependsOnUnexplored;
+      const explosions = chain.explosions.map(
+        (explosion): ExplosionPreviewV7 => {
+          if (
+            blastAreaV7(explosion.at, view.board.width, view.board.height).some(
+              (at) => tileAtView(view, at)?.explored !== true,
+            )
+          )
+            touchesUnexplored = true;
+          return {
+            unitId: explosion.unitId,
+            ownerId: explosion.ownerId,
+            role: explosion.role,
+            at: explosion.at,
+            cause: explosion.cause,
+            wave: explosion.wave,
+            damage: explosion.damage,
+            fieldDefenseDestroyed: explosion.fieldDefenseDestroyed,
+            results: explosion.results.map((entry) => {
+              const ownerId = owners.get(entry.unitId);
+              if (ownerId === undefined) throw new RangeError("INVALID_STATE");
+              const friendly =
+                ownerId === viewerId ||
+                arePlayersAlliedV7(view, viewerId, ownerId);
+              if (friendly) {
+                totals.friendlyDamage += entry.damage;
+                if (entry.dies) totals.friendlyKills += 1;
+              } else if (arePlayersHostileV7(view, viewerId, ownerId)) {
+                totals.hostileDamage += entry.damage;
+                if (entry.dies) {
+                  totals.hostileKills += 1;
+                  if (explosion.ownerId === viewerId)
+                    totals.plunderCoins += plunderCoins;
+                }
+              }
+              return {
+                unitId: entry.unitId < 0 ? null : entry.unitId,
+                ownerId,
+                at: entry.at,
+                damage: entry.damage,
+                dies: entry.dies,
+                friendly,
+              };
+            }),
+          };
+        },
+      );
+      return {
+        units: chain.units,
+        explosions,
+        totals,
+        friendlyFire: totals.friendlyDamage > 0,
+        touchesUnexplored,
+      };
+    },
+  };
+}
+
+/**
+ * Revision 17: the public board after an attack's damage, deaths, risings,
+ * advance, and Push, and the chain its exploding victims set off (sections
+ * 6.3 and 6.7), mirroring canonical resolution.
+ */
+function publicAttackChainV7(
+  view: PlayerViewV7,
+  preview: CombatPreviewV7,
+): {
+  readonly preview: ExplosionChainPreviewV7;
+  readonly units: readonly BlastUnitV7[];
+} {
+  const sim = createPublicChainSimulationV7(view);
+  const attackerUnit = view.units.find(
+    (unit) => unit.id === preview.attackerId,
+  );
+  const targetUnit = view.units.find(
+    (unit) => unit.id === preview.targetUnitId,
+  );
+  if (attackerUnit === undefined || targetUnit === undefined)
+    throw new RangeError("INVALID_STATE");
+  const attacker = sim.blastUnit(attackerUnit);
+  const target = sim.blastUnit(targetUnit);
+  const splash = new Map(
+    preview.splash.map((entry) => [entry.unitId, entry] as const),
+  );
+  const units: BlastUnitV7[] = [];
+  const risings: BlastUnitV7[] = [];
+  const initial: { unit: BlastUnitV7; cause: ExplosionCauseV7 }[] = [];
+  if (preview.defenderBitten) sim.bite(target.id, attacker.ownerId);
+  if (preview.attackerBitten) sim.bite(attacker.id, target.ownerId);
+  // Deaths in canonical order: defender, splash victims, attacker.
+  if (preview.defenderDies) {
+    const rising = preview.defenderInfected
+      ? sim.infect(target, attacker.ownerId)
+      : sim.rise(target);
+    if (rising !== null) risings.push(rising);
+    if (isExplodingUnitV7(view, target))
+      initial.push({ unit: target, cause: "DEATH" });
+  }
+  for (const unit of view.units) {
+    if (unit.id === attacker.id || unit.id === target.id) continue;
+    const entry = splash.get(unit.id);
+    const blast = sim.blastUnit(unit);
+    if (entry === undefined) units.push(blast);
+    else if (!entry.dies) units.push({ ...blast, hp: blast.hp - entry.damage });
+  }
+  for (const entry of preview.splash) {
+    if (!entry.dies) continue;
+    const victim = view.units.find((unit) => unit.id === entry.unitId);
+    if (victim === undefined) throw new RangeError("INVALID_STATE");
+    const blast = sim.blastUnit(victim);
+    const rising = sim.rise(blast);
+    if (rising !== null) risings.push(rising);
+    if (isExplodingUnitV7(view, blast))
+      initial.push({ unit: blast, cause: "DEATH" });
+  }
+  if (preview.attackerDies) {
+    const rising = preview.attackerInfected
+      ? sim.infect(attacker, target.ownerId)
+      : sim.rise(attacker);
+    if (rising !== null) risings.push(rising);
+    if (isExplodingUnitV7(view, attacker))
+      initial.push({ unit: attacker, cause: "DEATH" });
+  } else
+    units.push({
+      ...attacker,
+      at: preview.advances ? target.at : attacker.at,
+      hp: attacker.hp - preview.damageToAttacker + preview.attackerHeal,
+    });
+  if (!preview.defenderDies)
+    units.push({
+      ...target,
+      at:
+        preview.push === "WILL_PUSH"
+          ? {
+              x: target.at.x * 2 - attacker.at.x,
+              y: target.at.y * 2 - attacker.at.y,
+            }
+          : target.at,
+      hp: target.hp - preview.damageToDefender + preview.defenderHeal,
+    });
+  units.push(...risings);
+  const splashRingUnexplored =
+    unitRoleMechanicsV7(view, attackerUnit).splash &&
+    blastAreaV7(target.at, view.board.width, view.board.height).some(
+      (at) => tileAtView(view, at)?.explored !== true,
+    );
+  // The attack's primary Field Defense rules (CATAPULT, INSPIRED,
+  // EXPLOSIVES, OCCUPATION) resolve before the chain, as canonically.
+  const targetTile = tileAtView(view, target.at);
+  const distance = chebyshev(attacker.at, target.at);
+  const primaryDefenseLost =
+    targetTile?.explored === true &&
+    targetTile.fieldDefense &&
+    (attackerUnit.role === "CATAPULT" ||
+      (preview.inspiredApplied && distance === 1 && !preview.attackerDies) ||
+      (distance === 1 &&
+        !preview.attackerDies &&
+        attackerUnit.form === "LAND" &&
+        view.viewer.researchedTechs.includes("EXPLOSIVES")) ||
+      preview.advances);
+  const chain = sim.run(
+    units,
+    initial,
+    splashRingUnexplored ||
+      (initial.length > 0 && preview.push === "UNKNOWN_BEHIND_FOG"),
+    primaryDefenseLost ? target.at : null,
+  );
+  const { units: after, ...chainPreview } = chain;
+  return { preview: chainPreview, units: after };
 }
 
 function publicAdvanceDestinationLegal(

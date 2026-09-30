@@ -522,6 +522,7 @@ describe("ruleset-7 Goblin roster", () => {
           role,
           mechanics.advancesAfterKill,
           mechanics.splash,
+          mechanics.splashTargets,
           mechanics.buildsFieldDefense,
           mechanics.rallyRadius,
           mechanics.rallyReachesSupportAndSiege,
@@ -529,21 +530,22 @@ describe("ruleset-7 Goblin roster", () => {
         ];
       }),
     ).toEqual([
-      // TODO(pulp_wars-0ao.3): the Bomb Chucker bomb splash.
-      ["FIGHTER", true, false, false, 1, false, 0],
-      ["RAIDER", true, false, false, 1, false, 0],
-      ["MARKSMAN", true, false, false, 1, false, 0],
-      ["GUARD", true, false, true, 1, false, 0],
-      ["CAPTAIN", true, false, false, 2, true, 0],
-      ["CATAPULT", false, false, false, 1, false, 0],
-      ["KNIGHT", true, false, false, 1, false, 0],
-      ["JUGGERNAUT", true, false, false, 1, false, 4],
-      ["PATROL_BOAT", true, false, false, 1, false, 0],
-      ["BATTLESHIP", true, true, false, 1, false, 0],
+      ["FIGHTER", true, false, "HOSTILE", false, 1, false, 0],
+      ["RAIDER", true, false, "HOSTILE", false, 1, false, 0],
+      // Revision 17: the Bomb Chucker's bomb splashes every unit.
+      ["MARKSMAN", true, true, "ALL", false, 1, false, 0],
+      ["GUARD", true, false, "HOSTILE", true, 1, false, 0],
+      ["CAPTAIN", true, false, "HOSTILE", false, 2, true, 0],
+      ["CATAPULT", false, false, "HOSTILE", false, 1, false, 0],
+      ["KNIGHT", true, false, "HOSTILE", false, 1, false, 0],
+      ["JUGGERNAUT", true, false, "HOSTILE", false, 1, false, 4],
+      ["PATROL_BOAT", true, false, "HOSTILE", false, 1, false, 0],
+      ["BATTLESHIP", true, true, "HOSTILE", false, 1, false, 0],
     ]);
     for (const table of [ORIGINAL_ROLE_MECHANICS_V7, UNDEAD_ROLE_MECHANICS_V7])
       for (const role of UNIT_ROLE_IDS_V7)
         expect([
+          table[role].splashTargets,
           table[role].buildsFieldDefense,
           table[role].rallyRadius,
           table[role].rallyReachesSupportAndSiege,
@@ -551,6 +553,7 @@ describe("ruleset-7 Goblin roster", () => {
           table[role].deathBlastDamage,
           table[role].regeneration,
         ]).toEqual([
+          "HOSTILE",
           role === "FIGHTER" || role === "GUARD",
           1,
           false,

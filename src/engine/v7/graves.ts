@@ -7,10 +7,17 @@ import type { CoordV7, GameStateV7, UnitStateV7 } from "./types";
 
 /**
  * Revision 13 combat death causes that may leave a Grave (section 5.1), plus
- * the revision-14 Plague death.
+ * the revision-14 Plague death and the revision-17 Kaboom and explosion
+ * deaths.
  */
 export type GraveDeathCauseV7 =
-  "ATTACK" | "RETALIATION" | "SPLASH" | "WAIL" | "PLAGUE";
+  | "ATTACK"
+  | "RETALIATION"
+  | "SPLASH"
+  | "WAIL"
+  | "PLAGUE"
+  | "KABOOM"
+  | "EXPLOSION";
 
 /** The canonical state a Grave decision reads. */
 export type GraveContextV7 = Pick<

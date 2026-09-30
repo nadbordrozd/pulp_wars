@@ -11,15 +11,17 @@ import {
  * order is unchanged. AI tie-break tuples carry `-ordinal` of the command
  * kind, which changes pinned hashes of all-Human decisions only
  * representationally. These helpers restore the revision-12 ordinals so a
- * test can prove the rest of a hashed value is byte-identical.
+ * test can prove the rest of a hashed value is byte-identical. Revision 17
+ * likewise inserts KABOOM after WAIL (Goblin spec section 9).
  */
-const REVISION_13_COMMAND_KINDS: readonly string[] = [
+const LATER_COMMAND_KINDS: readonly string[] = [
   "RAISE_DEAD",
   "DEVOUR",
   "WAIL",
+  "KABOOM",
 ];
 const REVISION_12_COMMAND_KIND_ORDER = COMMAND_KIND_ORDER_V7.filter(
-  (kind) => !REVISION_13_COMMAND_KINDS.includes(kind),
+  (kind) => !LATER_COMMAND_KINDS.includes(kind),
 );
 
 /** The tuple slot holding `-ordinal` of the command kind. */

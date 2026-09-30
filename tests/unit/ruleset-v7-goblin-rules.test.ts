@@ -213,7 +213,7 @@ describe("ruleset-7 Goblin Gang Up", () => {
 
 describe("ruleset-7 Goblin Bomb Chucker range", () => {
   const chucker = { x: 4, y: 2 };
-  it("cannot target an adjacent unit and attacks at distance 2 without splash", () => {
+  it("cannot target an adjacent unit and attacks at distance 2", () => {
     const state = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],
       [
@@ -236,13 +236,11 @@ describe("ruleset-7 Goblin Bomb Chucker range", () => {
     expect(
       queryPlayerCommandsV7(state, state.humanPlayerId),
     ).not.toContainEqual(command);
-    // TODO(pulp_wars-0ao.3): the bomb splash (friendly fire included).
+    // The bomb splash (friendly fire included) is covered by
+    // ruleset-v7-goblin-explosions.test.ts.
     const bomb = resolvedAttack(state, chucker, { x: 4, y: 4 });
-    expect([bomb.minimumRange, bomb.maximumRange, bomb.splash]).toEqual([
-      2,
-      2,
-      [],
-    ]);
+    expect([bomb.minimumRange, bomb.maximumRange]).toEqual([2, 2]);
+    expect(bomb.splash.map((entry) => entry.at)).toEqual([{ x: 5, y: 4 }]);
   });
 
   it("retaliates only against an attacker exactly 2 cells away", () => {

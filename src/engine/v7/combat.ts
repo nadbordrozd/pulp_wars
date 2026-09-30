@@ -161,14 +161,18 @@ export function calculateCombatPreviewV7(
     ? Math.min(attacker.hp, rawAttackerDamage)
     : 0;
   const attackerDies = damageToAttacker >= attacker.hp;
+  // Revision 17: splash target mode `ALL` (the Goblin Bomb Chucker's bomb)
+  // also hits own and allied units; Battleship and Lich splash stay hostile.
   const splash = attackerMechanics.splash
     ? state.units
         .filter(
           (unit) =>
             unit.hp > 0 &&
             unit.id !== defender.id &&
+            unit.id !== attacker.id &&
             chebyshev(unit.at, defender.at) === 1 &&
-            arePlayersHostileV7(state, attacker.ownerId, unit.ownerId),
+            (attackerMechanics.splashTargets === "ALL" ||
+              arePlayersHostileV7(state, attacker.ownerId, unit.ownerId)),
         )
         .sort(
           (left, right) =>

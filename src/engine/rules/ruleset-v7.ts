@@ -142,7 +142,7 @@ export type UnitRoleAbilityV7 =
   | "BITE"
   | "UNANSWERED"
   // Revision 17 Goblins: goblin-crewed units may blow themselves up (the
-  // command lands with pulp_wars-0ao.3); the Troll regenerates.
+  // KABOOM command); the Troll regenerates.
   | "KABOOM"
   | "REGENERATE";
 
@@ -180,8 +180,15 @@ export interface EffectiveRoleRuleV7 {
 export interface RoleMechanicsV7 {
   /** A melee kill moves the surviving attacker onto the defender's tile. */
   readonly advancesAfterKill: boolean;
-  /** An attack splashes onto hostile units around the primary target. */
+  /** An attack splashes onto units around the primary target. */
   readonly splash: boolean;
+  /**
+   * Revision 17 splash target mode: `HOSTILE` (Battleship, Lich) splashes
+   * only hostile units; `ALL` (the Goblin Bomb Chucker's bomb) splashes
+   * every other unit, own and allied included (friendly fire). Irrelevant
+   * without `splash`.
+   */
+  readonly splashTargets: "HOSTILE" | "ALL";
   /**
    * Revision 17: the role may `BUILD_FIELD_DEFENSE` (with Fortification):
    * the Fighter and Guard roles of every faction except the Goblin Goblin.
@@ -807,6 +814,7 @@ const mechanics = (
         {
           advancesAfterKill: true,
           splash: false,
+          splashTargets: "HOSTILE",
           buildsFieldDefense: roleId === "FIGHTER" || roleId === "GUARD",
           rallyRadius: 1,
           rallyReachesSupportAndSiege: false,
@@ -1156,17 +1164,20 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
  * Revision 17 Goblin engine mechanics: only the Orc Brute builds Field
  * Defense; the Orc Warboss's WAAAGH! reaches radius 2 including support and
  * siege roles; goblin-crewed roles carry Kaboom damage and the Bomb Chucker,
- * Rocket Cart, and Scrap Buggy death-blast damage (resolved from
- * `pulp_wars-0ao.3`); the Troll regenerates 4 HP. Boats are Human boats.
- *
- * TODO(pulp_wars-0ao.3): the Bomb Chucker bomb splash (friendly fire, splash
- * target mode `ALL`). Until then a Bomb Chucker attack is ordinary targeted
- * damage without splash.
+ * Rocket Cart, and Scrap Buggy death-blast damage (resolved by
+ * `explosions.ts`); the Bomb Chucker's bomb splashes every other unit
+ * next to its target (splash target mode `ALL`, friendly fire); the Troll
+ * regenerates 4 HP. Boats are Human boats.
  */
 export const GOBLIN_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: { buildsFieldDefense: false, kaboomDamage: 4 },
   RAIDER: { kaboomDamage: 4 },
-  MARKSMAN: { kaboomDamage: 4, deathBlastDamage: 3 },
+  MARKSMAN: {
+    splash: true,
+    splashTargets: "ALL",
+    kaboomDamage: 4,
+    deathBlastDamage: 3,
+  },
   CAPTAIN: { rallyRadius: 2, rallyReachesSupportAndSiege: true },
   CATAPULT: { advancesAfterKill: false, kaboomDamage: 5, deathBlastDamage: 5 },
   KNIGHT: { kaboomDamage: 5, deathBlastDamage: 5 },

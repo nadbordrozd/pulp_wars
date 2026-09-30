@@ -954,8 +954,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
       while (beforeDecision === null)
         beforeDecision = beforeWork.advanceWork(1);
       if (seed === 810) {
+        // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
+        // ordinals once more; the revision-12-ordinal value below is unchanged.
         expect(canonicalHash(beforeDecision)).toBe(
-          "7ee4a23c678746728e96f7fec06ba0e58730ae68a1479855e80414633c19800f",
+          "cc19fcd40f24ab903cf0aacea7a00dc53c0bb29fdc7aae84a070f12963232de1",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); with revision-12 ordinals it is unchanged.
@@ -1005,8 +1007,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           preservedRedevelopmentCount(capturedView, capturedCommands),
       );
       if (seed === 810) {
+        // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
+        // ordinals once more; the revision-12-ordinal value below is unchanged.
         expect(canonicalHash(capturedDecision)).toBe(
-          "68d818e9119d1b7a991438a32b16bdf5fcec16512d8d6eec6307adb35460b7aa",
+          "35180c12bbbea45a6d8c91905280736e174faeae4cc7f1d716fd36466256bb18",
         );
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(capturedDecision)),

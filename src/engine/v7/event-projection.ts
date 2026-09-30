@@ -137,10 +137,12 @@ export function projectEventsV7(
           reveal(projected, revealed, unit, revealReason());
       }
     }
-    if (event.kind === "WAIL_RESOLVED") {
+    if (event.kind === "WAIL_RESOLVED" || event.kind === "EXPLOSION_RESOLVED") {
       // Revision 13 section 6.6, following the Battleship splash precedent:
       // a viewer who sees the Banshee gets the results it owns or could see
       // before; otherwise only its own entries as COMBAT_SPLASH_DAMAGE.
+      // Revision 17 section 8.6: an explosion follows the Wail rule (an
+      // exploder that died is seen before the command, or not at all).
       const owned = (entry: { readonly unitId: UnitId }) =>
         beforeState.units.find((unit) => unit.id === entry.unitId)?.ownerId ===
         viewerId;

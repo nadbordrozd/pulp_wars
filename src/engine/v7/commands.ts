@@ -72,7 +72,9 @@ export type CommandV7 =
         | "DISBAND"
         | "WAIT"
         | "BUILD_FIELD_DEFENSE"
-        | "WAIL";
+        | "WAIL"
+        /** Revision 17: a goblin-crewed unit blows itself up. */
+        | "KABOOM";
       readonly unitId: UnitId;
     }
   | { readonly kind: "LAND_GRANT"; readonly cityId: CityId }
@@ -150,6 +152,7 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "WAIT",
   "BUILD_FIELD_DEFENSE",
   "WAIL",
+  "KABOOM",
 ]);
 
 export function parseCommandEnvelopeV7(

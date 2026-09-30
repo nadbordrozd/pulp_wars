@@ -279,7 +279,13 @@ export type DomainEventV7 =
   | {
       readonly kind: "FIELD_DEFENSE_DESTROYED";
       readonly at: CoordV7;
-      readonly reason: "CATAPULT" | "INSPIRED" | "EXPLOSIVES" | "OCCUPATION";
+      readonly reason:
+        | "CATAPULT"
+        | "INSPIRED"
+        | "EXPLOSIVES"
+        | "OCCUPATION"
+        /** Revision 17: every explosion clears its whole 3 × 3 blast area. */
+        | "EXPLOSION";
     }
   | {
       readonly kind: "LAND_GRANTED";
@@ -475,6 +481,24 @@ export type DomainEventV7 =
       readonly results: readonly CombatSplashEntryV7[];
     }
   | {
+      /**
+       * Revision 17 explosion (section 6): the exploding unit of `playerId`
+       * died on `at` and dealt its fixed `damage` to every other unit in the
+       * 3 × 3 blast area, in (y, x, id) order (possibly empty). `cause` is
+       * `KABOOM` for a Kaboom and `DEATH` for a death blast; `wave` is the
+       * 1-based chain wave. Deaths follow as `UNIT_DIED` cause `EXPLOSION`.
+       */
+      readonly kind: "EXPLOSION_RESOLVED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly role: UnitRoleIdV7;
+      readonly at: CoordV7;
+      readonly cause: "KABOOM" | "DEATH";
+      readonly wave: number;
+      readonly damage: number;
+      readonly results: readonly CombatSplashEntryV7[];
+    }
+  | {
       readonly kind: "IMPROVEMENT_PILLAGED";
       readonly playerId: PlayerId;
       readonly unitId: UnitId;
@@ -527,7 +551,16 @@ export type DomainEventV7 =
       readonly kind: "UNIT_DIED";
       readonly unitId: UnitId;
       readonly cause:
-        "ATTACK" | "SPLASH" | "RETALIATION" | "ELIMINATION" | "WAIL" | "PLAGUE";
+        | "ATTACK"
+        | "SPLASH"
+        | "RETALIATION"
+        | "ELIMINATION"
+        | "WAIL"
+        | "PLAGUE"
+        /** Revision 17: the Kaboom unit itself. */
+        | "KABOOM"
+        /** Revision 17: killed by an explosion. */
+        | "EXPLOSION";
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */

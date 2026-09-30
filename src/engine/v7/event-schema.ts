@@ -231,6 +231,17 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   TILES_REVEALED: ["kind", "playerId", "tiles"],
   COMBAT_RESOLVED: ["kind", "preview"],
   WAIL_RESOLVED: ["kind", "playerId", "unitId", "at", "results"],
+  EXPLOSION_RESOLVED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "role",
+    "at",
+    "cause",
+    "wave",
+    "damage",
+    "results",
+  ],
   IMPROVEMENT_PILLAGED: [
     "kind",
     "playerId",
@@ -679,9 +690,13 @@ function validPayload(
     case "FIELD_DEFENSE_DESTROYED":
       return (
         parseCoordV7(e.at) !== null &&
-        ["CATAPULT", "INSPIRED", "EXPLOSIVES", "OCCUPATION"].includes(
-          e.reason as string,
-        )
+        [
+          "CATAPULT",
+          "INSPIRED",
+          "EXPLOSIVES",
+          "OCCUPATION",
+          "EXPLOSION",
+        ].includes(e.reason as string)
       );
     case "LAND_GRANTED":
       return (
@@ -850,6 +865,35 @@ function validPayload(
         parseCoordV7(e.at) !== null &&
         splashEntries(e.results, true)
       );
+    case "EXPLOSION_RESOLVED":
+      // Revision 17: the results never name the exploder and lie in its
+      // 3 × 3 blast area; each hit deals at most the blast damage.
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        UNIT_ROLE_IDS_V7.includes(e.role as never) &&
+        parseCoordV7(e.at) !== null &&
+        (e.cause === "KABOOM" || e.cause === "DEATH") &&
+        pos(e.wave) &&
+        (e.cause === "DEATH" || e.wave === 1) &&
+        pos(e.damage) &&
+        splashEntries(e.results, false) &&
+        (
+          e.results as readonly {
+            unitId: number;
+            at: { x: number; y: number };
+            damage: number;
+          }[]
+        ).every(
+          (entry) =>
+            entry.unitId !== e.unitId &&
+            entry.damage <= (e.damage as number) &&
+            Math.max(
+              Math.abs(entry.at.x - (e.at as { x: number }).x),
+              Math.abs(entry.at.y - (e.at as { y: number }).y),
+            ) <= 1,
+        )
+      );
     case "IMPROVEMENT_PILLAGED":
       return (
         id(e.playerId) &&
@@ -893,6 +937,8 @@ function validPayload(
           "ELIMINATION",
           "WAIL",
           "PLAGUE",
+          "KABOOM",
+          "EXPLOSION",
         ].includes(e.cause as string)
       );
     case "UNIT_INFECTED":

@@ -7,6 +7,7 @@ import {
   factionTreeV7,
   isRallyTargetV7,
   technologyCapabilitiesV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
@@ -2154,8 +2155,15 @@ function* publicThreatenedTilesWorkV7(
     return [];
   const minimumRange = wail ? 1 : facts.minimumRange;
   const maximumRange = wail ? WAIL_THREAT_RADIUS_V7 : facts.maximumRange;
+  // Revision 17: a goblin-crewed land unit may Kaboom after any Move (even a
+  // Rocket Cart), threatening every tile within Chebyshev 1 of a tile it can
+  // reach. Only Goblin units have Kaboom, so other matches are unchanged.
+  const kaboom = unit.form === "LAND" && rule.abilities.includes("KABOOM");
   const origins = new Map([[coordKey(unit.at), unit.at]]);
-  if (unit.form !== "EMBARKED" && rule.mayUsePrimaryActionAfterMove) {
+  if (
+    unit.form !== "EMBARKED" &&
+    (rule.mayUsePrimaryActionAfterMove || kaboom)
+  ) {
     const queue = [{ at: unit.at, spent2: 0 }];
     const best = new Map([[coordKey(unit.at), 0]]);
     const settled = new Set<string>();
@@ -2219,6 +2227,7 @@ function* publicThreatenedTilesWorkV7(
   }
   const direct: CoordV7[] = [];
   for (const origin of origins.values()) {
+    const attacks = rule.mayUsePrimaryActionAfterMove || same(origin, unit.at);
     for (let y = origin.y - maximumRange; y <= origin.y + maximumRange; y += 1)
       for (
         let x = origin.x - maximumRange;
@@ -2229,7 +2238,11 @@ function* publicThreatenedTilesWorkV7(
           continue;
         const at = { x, y };
         const range = distance(origin, at);
-        if (range >= minimumRange && range <= maximumRange) direct.push(at);
+        if (
+          (attacks && range >= minimumRange && range <= maximumRange) ||
+          (kaboom && range <= 1)
+        )
+          direct.push(at);
       }
     yield;
   }
@@ -5876,7 +5889,7 @@ function visibleImmediateDamage(
         );
       continue;
     }
-    const damage = publicProjectedDamageWithLookupV7(
+    const attackDamage = publicProjectedDamageWithLookupV7(
       view,
       hostile,
       actor,
@@ -5884,6 +5897,16 @@ function visibleImmediateDamage(
       { maximumCharge: !directlyThreatened },
       effectiveLookup,
     );
+    // Revision 17: a goblin-crewed land unit's Kaboom reach (included in its
+    // threatened tiles) deals its fixed Kaboom damage, whatever the Defense.
+    const kaboomDamage =
+      hostile.form === "LAND"
+        ? (unitRoleMechanicsV7(view, hostile).kaboomDamage ?? 0)
+        : 0;
+    const damage =
+      kaboomDamage > attackDamage
+        ? Math.min(kaboomDamage, actor.hp)
+        : attackDamage;
     total += damage;
     // A lethal Zombie hit converts the victim into a hostile Zombie.
     if (

@@ -271,8 +271,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const basicChoice = chooseNormalCommandV7(basicView);
     // Revision 14 (E2) changes the Market values the candidate scores use;
     // with E2 reverted the revision-13 values 580c9ac8… and 7b8d235c… return.
+    // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
+    // ordinals once more; the revision-12-ordinal value below is unchanged.
     expect(canonicalHash(basicChoice)).toBe(
-      "407e3b45ff98de5e69269c79dfe7ac74915b1c48ea1bf91a24b581e2fbe03ddd",
+      "f5ed8e6fae5cccafaf026cd9187c79c5e5e26c9a1d1c040b18f6d294760219a8",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals.
@@ -786,8 +788,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // pulp_wars-1mc: this view is an endgame (4 cities against 1), so its
     // capturers' approach MOVEs rise from 700 to 1105 (was 5c8816…e1b3); the
     // command and every non-MOVE candidate below keep their pinned values.
+    // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
+    // ordinals once more; the revision-12-ordinal value below is unchanged.
     expect(canonicalHash(sliced)).toBe(
-      "9b3587746c908ddff6597df763892c7fa10a63af8e2e18706856676bfe6acbec",
+      "f6db1e0b1f28962611824693f8e4fb9757031edcde5da0fe2397bd5268ca7627",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value was 8936ff…1156
@@ -816,8 +820,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const revision4Candidates = sliced.candidates.filter((candidate) =>
       revision4Commands.has(JSON.stringify(candidate.command)),
     );
+    // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
+    // ordinals once more; the revision-12-ordinal value below is unchanged.
     expect(canonicalHash(revision4Candidates)).toBe(
-      "08cd64533b1f50d2c665ad255d7ffa88de3982db5862c7002d0f637c377b2b39",
+      "72b63221b046ee04eaf780bdc683279c8504eb0b723ad8e87f2eb459ff8d0766",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),

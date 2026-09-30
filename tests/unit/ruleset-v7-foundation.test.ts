@@ -79,8 +79,22 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "BATTLESHIP",
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(42);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(68);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(43);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(69);
+    // Revision 17 inserts KABOOM after WAIL and EXPLOSION_RESOLVED after
+    // WAIL_RESOLVED (Goblin spec section 9).
+    expect(
+      COMMAND_KIND_ORDER_V7.slice(
+        COMMAND_KIND_ORDER_V7.indexOf("WAIL"),
+        COMMAND_KIND_ORDER_V7.indexOf("WAIL") + 3,
+      ),
+    ).toEqual(["WAIL", "KABOOM", "RECOVER"]);
+    expect(
+      DOMAIN_EVENT_KIND_ORDER_V7.slice(
+        DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED"),
+        DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED") + 3,
+      ),
+    ).toEqual(["WAIL_RESOLVED", "EXPLOSION_RESOLVED", "IMPROVEMENT_PILLAGED"]);
     // Revision 14 inserts the Start Turn Plague events after TURN_STARTED;
     // revision 15 adds PLAGUE_EXPIRED after PLAGUE_SPREAD; revision 17 adds
     // Troll regeneration after Windmill healing.

@@ -64,6 +64,12 @@ import {
 } from "./afflictions";
 import { resolveStartTurnPlagueV7 } from "./plague";
 import {
+  isExplodingUnitV7,
+  resolveStateExplosionChainV7,
+  type CreditedDeathV7,
+  type ExplosionCauseV7,
+} from "./explosions";
+import {
   STARTING_FIGHTERS_V7,
   createInitialMapStateV7,
   type CreateInitialMapStateResultV7,
@@ -142,6 +148,7 @@ export type RuleErrorCodeV7 =
   | "UNIT_ALREADY_HANDLED"
   | "PILLAGE_INVALID_TARGET"
   | "WAIL_NOT_LEGAL"
+  | "KABOOM_NOT_LEGAL"
   | "DISBAND_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
@@ -276,6 +283,10 @@ function navalFactsMayChangeV7(command: CommandV7): boolean {
     "MOVE",
     "REDEVELOP",
     "WAIL",
+    // Revision 17 section 6.7: an exploding blockader lifts its blockade, and
+    // END_TURN reports blockades lifted by Start Turn Plague and chains.
+    "KABOOM",
+    "END_TURN",
   ].includes(command.kind);
 }
 
@@ -380,6 +391,8 @@ function applyCommandCoreV7(
     return applyFieldDefense(stateInput, state, actor, command.unitId);
   if (command.kind === "WAIL")
     return applyWail(stateInput, state, actor, command.unitId);
+  if (command.kind === "KABOOM")
+    return applyKaboom(stateInput, state, actor, command.unitId);
   if (command.kind === "LAND_GRANT")
     return applyLandGrant(stateInput, state, actor, command.cityId);
   if (command.kind === "END_TURN")
@@ -2333,10 +2346,21 @@ function applyAttack(
         ? calculated
         : { ...calculated, advances: canAdvance };
     const attacksUsed = attacker.activation.attacksUsed + 1;
+    // Revision 17 section 6.8: splash kills of own or allied units (the
+    // Bomb Chucker's friendly fire) earn no promotion credit.
     const attackerKills =
       attacker.kills +
       (preview.defenderDies ? 1 : 0) +
-      preview.splash.filter((entry) => entry.dies).length;
+      preview.splash.filter(
+        (entry) =>
+          entry.dies &&
+          arePlayersHostileV7(
+            state,
+            actor,
+            requireValue(state.units.find((unit) => unit.id === entry.unitId))
+              .ownerId,
+          ),
+      ).length;
     const defenderKills = defender.kills + (preview.attackerDies ? 1 : 0);
     if (
       !Number.isSafeInteger(attacksUsed) ||
@@ -2401,7 +2425,7 @@ function applyAttack(
               ? "OCCUPATION"
               : null
       : null;
-    const board =
+    let board =
       defenseReason === null || destinationTile === undefined
         ? state.board
         : replaceTile(state, defender.at, {
@@ -2429,40 +2453,9 @@ function applyAttack(
       players: visiblePlayers,
       units,
     } as GameStateV7;
-    const overrunContinues =
-      rule.abilities.includes("OVERRUN") &&
-      preview.advances &&
-      !preview.attackerDies &&
-      units.some(
-        (candidate) =>
-          candidate.id !== attacker.id &&
-          candidate.hp > 0 &&
-          arePlayersHostileV7(state, actor, candidate.ownerId) &&
-          chebyshev(defender.at, candidate.at) === 1 &&
-          isUnitVisibleToPlayerV7(visibleState, actor, candidate),
-      );
-    if (overrunContinues) {
-      attackerAfter = {
-        ...attackerAfter,
-        activation: {
-          ...attackerAfter.activation,
-          overrunActive: true,
-          handled: false,
-        },
-      };
-      units = units.map((unit) =>
-        unit.id === attackerAfter.id ? attackerAfter : unit,
-      );
-    }
-    const finalPreview = {
-      ...preview,
-      attacksRemaining: overrunContinues ? 1 : 0,
-      overrunAdvance: rule.abilities.includes("OVERRUN") && preview.advances,
-      overrunContinues,
-    };
-    const events: DomainEventV7[] = [
-      { kind: "COMBAT_RESOLVED", preview: finalPreview },
-    ];
+    // Revision 17 section 6.7: COMBAT_RESOLVED states the Overrun (Ram)
+    // continuation evaluated after any chain, so it is inserted below.
+    const events: DomainEventV7[] = [];
     if (defenseReason !== null)
       events.push({
         kind: "FIELD_DEFENSE_DESTROYED",
@@ -2562,10 +2555,78 @@ function applyAttack(
         from: defender.at,
         to: pushDestination,
       });
+    // Revision 17 section 6.7: the exploding units among the defender, the
+    // splash victims, and the attacker explode after the attack's deaths,
+    // risings, advance, and Push; Overrun (Ram) is evaluated afterwards.
+    const initialExplosions: {
+      readonly unit: UnitStateV7;
+      readonly cause: ExplosionCauseV7;
+    }[] = [];
+    if (preview.defenderDies && isExplodingUnitV7(state, defender))
+      initialExplosions.push({ unit: defender, cause: "DEATH" });
+    for (const splash of preview.splash) {
+      const victim = requireValue(
+        state.units.find((unit) => unit.id === splash.unitId),
+      );
+      if (splash.dies && isExplodingUnitV7(state, victim))
+        initialExplosions.push({ unit: victim, cause: "DEATH" });
+    }
+    if (preview.attackerDies && isExplodingUnitV7(state, attacker))
+      initialExplosions.push({ unit: attacker, cause: "DEATH" });
+    const chain = resolveStateExplosionChainV7(
+      state,
+      { units, board, graves, nextEntityId, bitten },
+      initialExplosions,
+      events,
+    );
+    units = [...chain.units];
+    board = chain.board;
+    graves = chain.graves;
+    nextEntityId = chain.nextEntityId;
+    risings.push(...chain.risings);
+    const survivor = units.find((unit) => unit.id === attacker.id);
+    const afterChainState = {
+      ...visibleState,
+      board,
+      units,
+    } as GameStateV7;
+    const overrunContinues =
+      rule.abilities.includes("OVERRUN") &&
+      preview.advances &&
+      !preview.attackerDies &&
+      survivor !== undefined &&
+      units.some(
+        (candidate) =>
+          candidate.id !== attacker.id &&
+          candidate.hp > 0 &&
+          arePlayersHostileV7(state, actor, candidate.ownerId) &&
+          chebyshev(defender.at, candidate.at) === 1 &&
+          isUnitVisibleToPlayerV7(afterChainState, actor, candidate),
+      );
+    if (overrunContinues && survivor !== undefined) {
+      attackerAfter = {
+        ...survivor,
+        activation: {
+          ...survivor.activation,
+          overrunActive: true,
+          handled: false,
+        },
+      };
+      units = units.map((unit) =>
+        unit.id === attackerAfter.id ? attackerAfter : unit,
+      );
+    }
+    const finalPreview = {
+      ...preview,
+      attacksRemaining: overrunContinues ? 1 : 0,
+      overrunAdvance: rule.abilities.includes("OVERRUN") && preview.advances,
+      overrunContinues,
+    };
+    events.unshift({ kind: "COMBAT_RESOLVED", preview: finalPreview });
     // Revision 17 Plunder (sections 6.8 and 7.4): the attacker's owner is
     // credited with the defender and splash deaths, the defender's owner with
-    // a retaliation death; a victim that rises still counts as killed.
-    // TODO(pulp_wars-0ao.3): explosion kills credited to the exploder's owner.
+    // a retaliation death, and each exploding unit's owner with its blast's
+    // deaths; a victim that rises still counts as killed.
     const plunder = plunderAwardsV7(state, visiblePlayers, [
       ...(preview.defenderDies
         ? [{ creditedId: attacker.ownerId, victimOwnerId: defender.ownerId }]
@@ -2585,6 +2646,7 @@ function applyAttack(
       ...(preview.attackerDies
         ? [{ creditedId: defender.ownerId, victimOwnerId: attacker.ownerId }]
         : []),
+      ...chain.credits,
     ]);
     events.push(...plunder.events);
     let players = plunder.players;
@@ -2660,52 +2722,6 @@ function applyAttack(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
-}
-
-/**
- * Revision 17 Plunder: each credited death of a unit whose owner is hostile
- * to the credited player earns that player its `plunderCoins` (Goblin
- * Commerce). One `PLUNDER_AWARDED` per player with at least one plundered
- * kill, in player-ID order. Other factions never have Plunder.
- */
-function plunderAwardsV7(
-  state: GameStateV7,
-  players: readonly PlayerStateV7[],
-  deaths: readonly {
-    readonly creditedId: PlayerId;
-    readonly victimOwnerId: PlayerId;
-  }[],
-): {
-  readonly players: readonly PlayerStateV7[];
-  readonly events: readonly DomainEventV7[];
-} {
-  const kills = new Map<PlayerId, number>();
-  for (const death of deaths) {
-    const credited = requirePlayer(state, death.creditedId);
-    if (
-      technologyCapabilitiesV7(credited.researchedTechs, credited.faction)
-        .plunderCoins > 0 &&
-      arePlayersHostileV7(state, death.creditedId, death.victimOwnerId)
-    )
-      kills.set(death.creditedId, (kills.get(death.creditedId) ?? 0) + 1);
-  }
-  if (kills.size === 0) return { players, events: [] };
-  const events: DomainEventV7[] = [];
-  let next = players;
-  for (const [playerId, count] of [...kills].sort(([a], [b]) => a - b)) {
-    const player = requirePlayer(state, playerId);
-    const coins =
-      count *
-      technologyCapabilitiesV7(player.researchedTechs, player.faction)
-        .plunderCoins;
-    next = next.map((item) =>
-      item.id === playerId
-        ? { ...item, coins: nextSafeBy(item.coins, coins) }
-        : item,
-    );
-    events.push({ kind: "PLUNDER_AWARDED", playerId, kills: count, coins });
-  }
-  return { players: next, events };
 }
 
 function supportCaptain(
@@ -3695,7 +3711,7 @@ function applyEndTurn(
       nextPlayer.id,
     );
     const started = startTurnEconomyV7(advanced, nextPlayer, false, (next) =>
-      resolveStartTurnPlagueV7(next, nextPlayer.id),
+      resolveStartTurnPlagueAndChainV7(next, nextPlayer.id),
     );
     const turnStarted = started.events[0];
     if (turnStarted === undefined) throw new RangeError("INVALID_STATE");
@@ -3847,9 +3863,41 @@ function applyWail(
       risings.push(rising);
       units = [...units, rising];
     }
-    let players = state.players;
+    // Revision 17 section 6.7: Wail kills of exploding units set off a chain,
+    // then its Plunder (never for the Undead Banshee's owner).
+    const chain = resolveStateExplosionChainV7(
+      state,
+      {
+        units,
+        board: state.board,
+        graves,
+        nextEntityId,
+        bitten: state.bitten,
+      },
+      targets.flatMap((entry) => {
+        const victim = requireValue(
+          state.units.find((unit) => unit.id === entry.unitId),
+        );
+        return entry.dies && isExplodingUnitV7(state, victim)
+          ? [{ unit: victim, cause: "DEATH" as const }]
+          : [];
+      }),
+      events,
+    );
+    units = [...chain.units];
+    graves = chain.graves;
+    nextEntityId = chain.nextEntityId;
+    risings.push(...chain.risings);
+    const plunder = plunderAwardsV7(state, state.players, chain.credits);
+    events.push(...plunder.events);
+    let players = plunder.players;
     for (const risen of risings) {
-      const risenState = { ...state, players, units } as GameStateV7;
+      const risenState = {
+        ...state,
+        board: chain.board,
+        players,
+        units,
+      } as GameStateV7;
       const reveal = revealRadius(
         risenState,
         risen.ownerId,
@@ -3866,13 +3914,14 @@ function applyWail(
     }
     const economy = recomputeLiveEconomyV7(
       state,
-      { board: state.board, cities: state.cities, units },
+      { board: chain.board, cities: state.cities, units },
       state.populationContributions,
     );
     events.push(...economyAndGrowth(economy.changes));
     const settlement = settleCityRewardsV7(
       {
         ...state,
+        board: chain.board,
         commandIndex: nextSafe(state.commandIndex),
         nextEntityId,
         players,
@@ -3890,6 +3939,243 @@ function applyWail(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
+}
+
+/**
+ * Revision 17 section 6.2 Kaboom: a goblin-crewed land-form unit that has not
+ * used a primary action (it may have moved) dies (`UNIT_DIED` cause `KABOOM`,
+ * then its Grave or Bitten rising) and its explosion resolves as wave 1 of a
+ * chain. No target is needed. Then Plunder, rising reveals, and the ordinary
+ * economy, reward-settlement, and achievement tail (section 6.7).
+ */
+function applyKaboom(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const exploder = actorCheck.unit;
+  if (!unitRoleRuleV7(state, exploder).abilities.includes("KABOOM"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: exploder.role });
+  if (primaryUsed(exploder) || exploder.activation.overrunActive)
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  if (exploder.form !== "LAND")
+    return rejected(original, "KABOOM_NOT_LEGAL", { reason: "EMBARKED" });
+  try {
+    const events: DomainEventV7[] = [];
+    let units = state.units.filter((unit) => unit.id !== exploder.id);
+    let graves = state.graves;
+    let nextEntityId = state.nextEntityId;
+    const risings: UnitStateV7[] = [];
+    // "Death first, then the bang": the Kaboom unit's death and its Grave
+    // or Bitten rising precede its explosion, so a rising on its tile is hit.
+    const bite = biteOfV7(state, exploder.id);
+    if (bite === undefined)
+      graves = recordCombatDeathV7(state, graves, exploder, "KABOOM", events);
+    else {
+      const allocation = allocateUnitId(nextEntityId);
+      nextEntityId = allocation.nextEntityId;
+      const rising = recordBittenRisingV7(
+        { players: state.players, units },
+        bite,
+        exploder,
+        "KABOOM",
+        allocation.id,
+        exhaustedActivation(),
+        events,
+      );
+      risings.push(rising);
+      units = [...units, rising];
+    }
+    const chain = resolveStateExplosionChainV7(
+      state,
+      { units, board: state.board, graves, nextEntityId, bitten: state.bitten },
+      [{ unit: exploder, cause: "KABOOM" }],
+      events,
+    );
+    units = [...chain.units];
+    graves = chain.graves;
+    nextEntityId = chain.nextEntityId;
+    risings.push(...chain.risings);
+    const plunder = plunderAwardsV7(state, state.players, chain.credits);
+    events.push(...plunder.events);
+    let players = plunder.players;
+    for (const risen of risings) {
+      const risenState = {
+        ...state,
+        board: chain.board,
+        players,
+        units,
+      } as GameStateV7;
+      const reveal = revealRadius(
+        risenState,
+        risen.ownerId,
+        risen.at,
+        unitSightRadiusAtV7(risenState, risen),
+      );
+      players = setExplored(players, risen.ownerId, reveal.explored);
+      if (reveal.revealed.length)
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: risen.ownerId,
+          tiles: reveal.revealed,
+        });
+    }
+    const economy = recomputeLiveEconomyV7(
+      state,
+      { board: chain.board, cities: state.cities, units },
+      state.populationContributions,
+    );
+    events.push(...economyAndGrowth(economy.changes));
+    const settlement = settleCityRewardsV7(
+      {
+        ...state,
+        board: chain.board,
+        commandIndex: nextSafe(state.commandIndex),
+        nextEntityId,
+        players,
+        cities: economy.cities,
+        units,
+        graves,
+        populationContributions: economy.populationContributions,
+      },
+      actor,
+    );
+    events.push(...settlement.events);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    events.push(...achievements.events);
+    return accepted(checked(achievements.state), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * Revision 17 Start Turn chain (section 6.7): after Plague steps 1-5, the
+ * player's exploding units that Plague killed explode; then Plunder, the
+ * chain's rising reveals, and the live economy when a unit died. Runs inside
+ * the Start Turn before Windmill healing.
+ */
+function resolveStartTurnPlagueAndChainV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const plague = resolveStartTurnPlagueV7(state, playerId);
+  const initial = plague.events.flatMap((event) => {
+    if (event.kind !== "UNIT_DIED" || event.cause !== "PLAGUE") return [];
+    const victim = requireValue(
+      state.units.find((unit) => unit.id === event.unitId),
+    );
+    return isExplodingUnitV7(state, victim)
+      ? [{ unit: { ...victim, hp: 0 }, cause: "DEATH" as const }]
+      : [];
+  });
+  if (initial.length === 0) return plague;
+  const after = plague.state;
+  const events: DomainEventV7[] = [...plague.events];
+  const chain = resolveStateExplosionChainV7(
+    after,
+    {
+      units: after.units,
+      board: after.board,
+      graves: after.graves,
+      nextEntityId: after.nextEntityId,
+      bitten: after.bitten,
+    },
+    initial,
+    events,
+  );
+  const plunder = plunderAwardsV7(after, after.players, chain.credits);
+  events.push(...plunder.events);
+  let players = plunder.players;
+  for (const risen of chain.risings) {
+    const risenState = {
+      ...after,
+      board: chain.board,
+      players,
+      units: chain.units,
+    } as GameStateV7;
+    const reveal = revealRadius(
+      risenState,
+      risen.ownerId,
+      risen.at,
+      unitSightRadiusAtV7(risenState, risen),
+    );
+    players = setExplored(players, risen.ownerId, reveal.explored);
+    if (reveal.revealed.length)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: risen.ownerId,
+        tiles: reveal.revealed,
+      });
+  }
+  const economy = recomputeLiveEconomyV7(
+    after,
+    { board: chain.board, cities: after.cities, units: chain.units },
+    after.populationContributions,
+  );
+  events.push(...economyAndGrowth(economy.changes));
+  return {
+    state: {
+      ...after,
+      board: chain.board,
+      players,
+      units: chain.units,
+      graves: chain.graves,
+      nextEntityId: chain.nextEntityId,
+      cities: economy.cities,
+      populationContributions: economy.populationContributions,
+    },
+    events,
+  };
+}
+
+/**
+ * Revision 17 Plunder: each credited death of a unit whose owner is hostile
+ * to the credited player earns that player its `plunderCoins` (Goblin
+ * Commerce). One `PLUNDER_AWARDED` per player with at least one plundered
+ * kill, in player-ID order. Other factions never have Plunder.
+ */
+function plunderAwardsV7(
+  state: GameStateV7,
+  players: readonly PlayerStateV7[],
+  deaths: readonly CreditedDeathV7[],
+): {
+  readonly players: readonly PlayerStateV7[];
+  readonly events: readonly DomainEventV7[];
+} {
+  const kills = new Map<PlayerId, number>();
+  for (const death of deaths) {
+    const credited = requirePlayer(state, death.creditedId);
+    if (
+      technologyCapabilitiesV7(credited.researchedTechs, credited.faction)
+        .plunderCoins > 0 &&
+      arePlayersHostileV7(state, death.creditedId, death.victimOwnerId)
+    )
+      kills.set(death.creditedId, (kills.get(death.creditedId) ?? 0) + 1);
+  }
+  if (kills.size === 0) return { players, events: [] };
+  const events: DomainEventV7[] = [];
+  let next = players;
+  for (const [playerId, count] of [...kills].sort(([a], [b]) => a - b)) {
+    const player = requirePlayer(state, playerId);
+    const coins =
+      count *
+      technologyCapabilitiesV7(player.researchedTechs, player.faction)
+        .plunderCoins;
+    next = next.map((item) =>
+      item.id === playerId
+        ? { ...item, coins: nextSafeBy(item.coins, coins) }
+        : item,
+    );
+    events.push({ kind: "PLUNDER_AWARDED", playerId, kills: count, coins });
+  }
+  return { players: next, events };
 }
 
 function validateUnitActor(
