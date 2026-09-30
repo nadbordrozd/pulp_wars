@@ -10,8 +10,10 @@ import {
   EMBARKED_LANDING_MAX_SPENT_V7,
   embarkedMovementSpentV7,
   factionRulesV7,
+  isRallyTargetV7,
   playerFactionV7,
   technologyCapabilitiesV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
   isResourceRevealedV7,
   playerTechnologyResearchCostV7,
@@ -62,6 +64,7 @@ import {
 } from "./afflictions";
 import { resolveStartTurnPlagueV7 } from "./plague";
 import {
+  STARTING_FIGHTERS_V7,
   createInitialMapStateV7,
   type CreateInitialMapStateResultV7,
 } from "./map";
@@ -1883,6 +1886,53 @@ function applyReward(
         role: unitRole,
       });
       events.push(...spawn.events);
+      // Revision 17 section 8.9: a Goblin Militia is two Goblins. The second
+      // appears on the first adjacent cell in (y, x) order that the ordinary
+      // reward displacement rule allows, or is not created.
+      const militiaSize =
+        command.reward === "MILITIA"
+          ? STARTING_FIGHTERS_V7[requirePlayer(state, actor).faction]
+          : 1;
+      const secondAt =
+        militiaSize === 2
+          ? rewardDisplacementCellV7(
+              { ...state, players, cities, units },
+              actor,
+              city.at,
+            )
+          : null;
+      if (secondAt !== null) {
+        const second = allocateUnitId(nextEntityId);
+        nextEntityId = second.nextEntityId;
+        const companion: UnitStateV7 = {
+          ...created,
+          id: second.id,
+          at: secondAt,
+        };
+        units = [...units, companion];
+        events.push({
+          kind: "UNIT_REWARD_GRANTED",
+          playerId: actor,
+          cityId: city.id,
+          reachedLevel: command.reachedLevel,
+          unitId: companion.id,
+          role: unitRole,
+        });
+        const sightState = { ...state, players, units } as GameStateV7;
+        const reveal = revealRadius(
+          sightState,
+          actor,
+          companion.at,
+          unitSightRadiusAtV7(sightState, companion),
+        );
+        players = setExplored(players, actor, reveal.explored);
+        if (reveal.revealed.length > 0)
+          events.push({
+            kind: "TILES_REVEALED",
+            playerId: actor,
+            tiles: reveal.revealed,
+          });
+      }
     }
     const settlement = settleCityRewardsV7(
       {
@@ -2512,7 +2562,32 @@ function applyAttack(
         from: defender.at,
         to: pushDestination,
       });
-    let players = visiblePlayers;
+    // Revision 17 Plunder (sections 6.8 and 7.4): the attacker's owner is
+    // credited with the defender and splash deaths, the defender's owner with
+    // a retaliation death; a victim that rises still counts as killed.
+    // TODO(pulp_wars-0ao.3): explosion kills credited to the exploder's owner.
+    const plunder = plunderAwardsV7(state, visiblePlayers, [
+      ...(preview.defenderDies
+        ? [{ creditedId: attacker.ownerId, victimOwnerId: defender.ownerId }]
+        : []),
+      ...preview.splash.flatMap((entry) =>
+        entry.dies
+          ? [
+              {
+                creditedId: attacker.ownerId,
+                victimOwnerId: requireValue(
+                  state.units.find((unit) => unit.id === entry.unitId),
+                ).ownerId,
+              },
+            ]
+          : [],
+      ),
+      ...(preview.attackerDies
+        ? [{ creditedId: defender.ownerId, victimOwnerId: attacker.ownerId }]
+        : []),
+    ]);
+    events.push(...plunder.events);
+    let players = plunder.players;
     if (preview.advances) {
       if (advanceReveal !== null && advanceReveal.revealed.length)
         events.push({
@@ -2587,6 +2662,52 @@ function applyAttack(
   }
 }
 
+/**
+ * Revision 17 Plunder: each credited death of a unit whose owner is hostile
+ * to the credited player earns that player its `plunderCoins` (Goblin
+ * Commerce). One `PLUNDER_AWARDED` per player with at least one plundered
+ * kill, in player-ID order. Other factions never have Plunder.
+ */
+function plunderAwardsV7(
+  state: GameStateV7,
+  players: readonly PlayerStateV7[],
+  deaths: readonly {
+    readonly creditedId: PlayerId;
+    readonly victimOwnerId: PlayerId;
+  }[],
+): {
+  readonly players: readonly PlayerStateV7[];
+  readonly events: readonly DomainEventV7[];
+} {
+  const kills = new Map<PlayerId, number>();
+  for (const death of deaths) {
+    const credited = requirePlayer(state, death.creditedId);
+    if (
+      technologyCapabilitiesV7(credited.researchedTechs, credited.faction)
+        .plunderCoins > 0 &&
+      arePlayersHostileV7(state, death.creditedId, death.victimOwnerId)
+    )
+      kills.set(death.creditedId, (kills.get(death.creditedId) ?? 0) + 1);
+  }
+  if (kills.size === 0) return { players, events: [] };
+  const events: DomainEventV7[] = [];
+  let next = players;
+  for (const [playerId, count] of [...kills].sort(([a], [b]) => a - b)) {
+    const player = requirePlayer(state, playerId);
+    const coins =
+      count *
+      technologyCapabilitiesV7(player.researchedTechs, player.faction)
+        .plunderCoins;
+    next = next.map((item) =>
+      item.id === playerId
+        ? { ...item, coins: nextSafeBy(item.coins, coins) }
+        : item,
+    );
+    events.push({ kind: "PLUNDER_AWARDED", playerId, kills: count, coins });
+  }
+  return { players: next, events };
+}
+
 function supportCaptain(
   original: GameStateV7,
   state: GameStateV7,
@@ -2619,23 +2740,11 @@ function applyRally(
     return rejected(original, "INTEGER_OVERFLOW");
   const result = supportCaptain(original, state, actor, unitId, "RALLY");
   if ("accepted" in result) return result;
+  // Revision 13 Frenzy eligibility: Rally targets also need ATTACK, which
+  // every Human non-support, non-siege land role has. Revision 17 WAAAGH!
+  // reaches radius 2 and includes support and siege roles.
   const targets = state.units
-    .filter((unit) => {
-      if (unit.hp <= 0 || unit.ownerId !== actor) return false;
-      const targetRule = unitRoleRuleV7(state, unit);
-      const tactical = targetRule.tacticalRole;
-      // Revision 13 Frenzy eligibility: Rally targets also need ATTACK, which
-      // every Human non-support, non-siege land role has.
-      return (
-        unit.form === "LAND" &&
-        unit.id !== result.captain.id &&
-        !unit.activation.inspired &&
-        tactical !== "SUPPORT" &&
-        tactical !== "SIEGE" &&
-        targetRule.abilities.includes("ATTACK") &&
-        chebyshev(result.captain.at, unit.at) === 1
-      );
-    })
+    .filter((unit) => isRallyTargetV7(state, result.captain, unit))
     .sort((a, b) => a.id - b.id);
   if (targets.length === 0) return rejected(original, "HEAL_TARGET_NOT_FOUND");
   const ids = new Set(targets.map((unit) => unit.id));
@@ -3196,7 +3305,8 @@ function applyFieldDefense(
     return rejected(original, "TECH_REQUIRED", { tech: "FORTIFICATION" });
   if (
     unit.form !== "LAND" ||
-    (unit.role !== "FIGHTER" && unit.role !== "GUARD") ||
+    // Revision 17: Fighter and Guard roles, except the Goblin Goblin.
+    !unitRoleMechanicsV7(state, unit).buildsFieldDefense ||
     tile === undefined ||
     tile.biome === null ||
     territory?.ownerId !== actor ||
@@ -4013,6 +4123,41 @@ function settleCityRewardsV7(
   return { state: { ...state, players, cities, pendingChoices: [] }, events };
 }
 
+/**
+ * The reward displacement rule: the first cell adjacent to `center` in (y, x)
+ * order that is land, enterable by `ownerId` (Mountain needs Engineering),
+ * has no treasure chest and no unit, and is not an ally's territory.
+ */
+function rewardDisplacementCellV7(
+  state: GameStateV7,
+  ownerId: PlayerId,
+  center: CoordV7,
+): CoordV7 | null {
+  const owner = requirePlayer(state, ownerId);
+  return (
+    adjacentCoords(state, center).find((at) => {
+      const tile = tileAtV7(state.board, at);
+      if (tile === undefined || tile.biome === null) return false;
+      if (state.treasureChests.some((chest) => same(chest, at))) return false;
+      if (
+        tile.terrain === "MOUNTAIN" &&
+        !owner.researchedTechs.includes("ENGINEERING")
+      )
+        return false;
+      const territoryOwner = state.cities.find(
+        (candidate) => candidate.id === tile.territoryCityId,
+      )?.ownerId;
+      if (
+        territoryOwner !== undefined &&
+        territoryOwner !== ownerId &&
+        arePlayersAlliedV7(state, ownerId, territoryOwner)
+      )
+        return false;
+      return !state.units.some((unit) => unit.hp > 0 && same(unit.at, at));
+    }) ?? null
+  );
+}
+
 function resolveCityCenterSpawnV7(
   state: GameStateV7,
   actor: PlayerId,
@@ -4026,31 +4171,10 @@ function resolveCityCenterSpawnV7(
   const occupant = state.units.find(
     (unit) => unit.hp > 0 && same(unit.at, city.at),
   );
-  const occupantPlayer = requirePlayer(state, occupant?.ownerId ?? actor);
   const destination =
     occupant === undefined
       ? null
-      : (adjacentCoords(state, city.at).find((at) => {
-          const tile = tileAtV7(state.board, at);
-          if (tile === undefined || tile.biome === null) return false;
-          if (state.treasureChests.some((chest) => same(chest, at)))
-            return false;
-          if (
-            tile.terrain === "MOUNTAIN" &&
-            !occupantPlayer.researchedTechs.includes("ENGINEERING")
-          )
-            return false;
-          const territoryOwner = state.cities.find(
-            (candidate) => candidate.id === tile.territoryCityId,
-          )?.ownerId;
-          if (
-            territoryOwner !== undefined &&
-            territoryOwner !== occupant.ownerId &&
-            arePlayersAlliedV7(state, occupant.ownerId, territoryOwner)
-          )
-            return false;
-          return !state.units.some((unit) => unit.hp > 0 && same(unit.at, at));
-        }) ?? null);
+      : rewardDisplacementCellV7(state, occupant.ownerId, city.at);
   const displaced =
     occupant === undefined || destination === null
       ? null

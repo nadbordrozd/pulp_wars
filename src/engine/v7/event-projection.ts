@@ -113,6 +113,18 @@ export function projectEventsV7(
       }
       continue;
     }
+    // Revision 17 Troll regeneration, projected like Windmill healing: the
+    // owner sees every entry; another viewer sees the Trolls it can see.
+    if (event.kind === "UNITS_REGENERATED") {
+      if (event.playerId === viewerId) projected.push(event);
+      else {
+        const results = event.results.filter((result) =>
+          afterVisible.has(result.unitId),
+        );
+        if (results.length > 0) projected.push({ ...event, results });
+      }
+      continue;
+    }
     const ids = unitIds(event);
     if (event.kind === "UNIT_MOVE_INTERRUPTED")
       for (const unit of afterState.units)
@@ -271,7 +283,9 @@ function eventVisible(
       );
     case "TREASURE_CAPTURED":
       return event.playerId === viewerId;
+    // Revision 17: Plunder Coins are owner-private like Spoils.
     case "SPOILS_AWARDED":
+    case "PLUNDER_AWARDED":
     case "CITY_REWARD_AUTOMATICALLY_GRANTED":
     case "ACHIEVEMENT_UNLOCKED":
       return event.playerId === viewerId;
@@ -313,6 +327,7 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
     case "WOUNDED_TENDED":
       return [event.captainId, ...event.results.map((result) => result.unitId)];
     case "WINDMILL_HEALING_RESOLVED":
+    case "UNITS_REGENERATED":
       return event.results.map((result) => result.unitId);
     case "UNIT_PUSHED":
       return [event.sourceUnitId, event.targetUnitId];

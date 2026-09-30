@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r16" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r17" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -27,12 +27,18 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r13",
   "pulp-wars-poc-7r14",
   "pulp-wars-poc-7r15",
+  "pulp-wars-poc-7r16",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r16.current" as const;
-export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL", "UNDEAD"] as const);
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r17.current" as const;
+export const FACTION_IDS_V7 = Object.freeze([
+  "ORIGINAL",
+  "UNDEAD",
+  "GOBLIN",
+] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
   "UNDEAD_BASELINE_V1",
+  "GOBLIN_BASELINE_V1",
 ] as const);
 export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
@@ -175,6 +181,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "PLAGUE_SPREAD",
   "PLAGUE_EXPIRED",
   "WINDMILL_HEALING_RESOLVED",
+  "UNITS_REGENERATED",
   "INCOME_AWARDED",
   "INCOME_PREVIEWED",
   "TURN_ENDED",
@@ -224,6 +231,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "IMPROVEMENT_PILLAGED",
   "UNIT_DISBANDED",
   "SPOILS_AWARDED",
+  "PLUNDER_AWARDED",
   "UNIT_RECOVERED",
   "UNIT_WAITED",
   "UNIT_PROMOTED",

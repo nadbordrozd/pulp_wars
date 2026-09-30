@@ -33,6 +33,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   PLAGUE_SPREAD: ["kind", "playerId", "results"],
   PLAGUE_EXPIRED: ["kind", "playerId", "unitIds"],
   WINDMILL_HEALING_RESOLVED: ["kind", "playerId", "cityId", "at", "results"],
+  UNITS_REGENERATED: ["kind", "playerId", "results"],
   INCOME_AWARDED: ["kind", "playerId", "totalCoins", "cities"],
   INCOME_PREVIEWED: ["kind", "playerId", "totalCoins", "cities"],
   TURN_ENDED: ["kind", "playerId"],
@@ -242,6 +243,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   UNIT_DISBANDED: ["kind", "playerId", "unitId", "role", "coinDelta"],
   SPOILS_AWARDED: ["kind", "playerId", "cityId", "coins"],
+  PLUNDER_AWARDED: ["kind", "playerId", "kills", "coins"],
   UNIT_RECOVERED: ["kind", "unitId", "amount", "automatic"],
   UNIT_WAITED: ["kind", "playerId", "unitId"],
   UNIT_PROMOTED: ["kind", "unitId", "maxHp"],
@@ -562,6 +564,8 @@ function validPayload(
         parseCoordV7(e.at) !== null &&
         healingResults(e.results)
       );
+    case "UNITS_REGENERATED":
+      return id(e.playerId) && healingResults(e.results);
     case "INCOME_AWARDED":
     case "INCOME_PREVIEWED":
       return id(e.playerId) && nn(e.totalCoins) && income(e.cities);
@@ -871,6 +875,8 @@ function validPayload(
       );
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
+    case "PLUNDER_AWARDED":
+      return id(e.playerId) && pos(e.kills) && e.coins === e.kills;
     case "UNIT_RECOVERED":
       return id(e.unitId) && pos(e.amount) && typeof e.automatic === "boolean";
     case "UNIT_WAITED":
@@ -939,6 +945,7 @@ function combat(input: unknown): boolean {
       "chargeApplied",
       "inspiredApplied",
       "inspiredConsumed",
+      "gangUp",
       "damageToAttacker",
       "damageToDefender",
       "defense2",
@@ -975,6 +982,7 @@ function combat(input: unknown): boolean {
       input.maximumRange,
     ].every(pos) &&
     isPositiveSafeIntegerV7(input.attacksUsed) &&
+    (input.gangUp === 0 || input.gangUp === 1 || input.gangUp === 2) &&
     (input.attacksRemaining === 0 || input.attacksRemaining === 1) &&
     input.overrunContinues === (input.attacksRemaining === 1) &&
     (!input.overrunContinues ||

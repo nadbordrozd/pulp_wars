@@ -15,6 +15,7 @@ import type {
   Ruleset7BrowserSnapshot,
 } from "../../app/v7-controller";
 import {
+  cityUnitCapacityForV7,
   effectiveRoleRuleV7,
   unitRoleRuleV7,
   unitRoleMechanicsV7,
@@ -1494,10 +1495,11 @@ export class Ruleset7DomAppView {
           (unit) =>
             unit.ownerId === view.viewer.id && unit.homeCityId === city.id,
         ).length;
-        const capacity =
-          city.level +
-          1 +
-          (view.viewer.researchedTechs.includes("PLANNING") ? 1 : 0);
+        const capacity = cityUnitCapacityForV7(
+          city.level,
+          view.viewer.researchedTechs,
+          view.viewer.faction,
+        );
         const units = el(this.#document, "div", "v7-city-stat");
         units.dataset.stat = "units";
         units.title = "Units supported by this city";
@@ -3563,7 +3565,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r16",
+    rulesetId: "pulp-wars-poc-7r17",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -3692,6 +3694,10 @@ function effectDescription(
       return "Captains Rally or Tend nearby troops";
     case "NECROMANCER_SUPPORT":
       return "Necromancers Frenzy nearby troops or Raise Dead";
+    case "WAAAGH_SUPPORT":
+      return "Orc Warbosses WAAAGH! troops within 2 tiles";
+    case "PLUNDER":
+      return `+${effect.coins} Coin for each enemy unit your units or blasts kill`;
     case "OVERRUN":
       return "Knights advance after a kill and may attack again";
     case "CHARGE_BONUS":
@@ -3810,6 +3816,8 @@ function technologyEffectGroupIdV7(
     case "SEA_TRADE_INCOME":
     case "CAPTAIN_SUPPORT":
     case "NECROMANCER_SUPPORT":
+    case "WAAAGH_SUPPORT":
+    case "PLUNDER":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":

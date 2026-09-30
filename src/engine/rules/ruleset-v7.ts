@@ -95,9 +95,13 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "ARMS_INDUSTRY_DISCOUNT"; readonly coins: 1 }
   | { readonly kind: "LAND_TRADE_INCOME"; readonly coins: 1 }
   | { readonly kind: "SEA_TRADE_INCOME"; readonly coins: 1 }
+  /** Revision 17 Goblins: 1 Coin for each credited hostile kill. */
+  | { readonly kind: "PLUNDER"; readonly coins: 1 }
   | { readonly kind: "CAPTAIN_SUPPORT" }
   /** Revision 13 Undead: Necromancer Frenzy (Rally) and Raise Dead. */
   | { readonly kind: "NECROMANCER_SUPPORT" }
+  /** Revision 17 Goblins: the Orc Warboss's WAAAGH! (Rally, radius 2). */
+  | { readonly kind: "WAAAGH_SUPPORT" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -136,7 +140,11 @@ export type UnitRoleAbilityV7 =
   // living land units; a Vampire attack receives no retaliation.
   | "PLAGUE"
   | "BITE"
-  | "UNANSWERED";
+  | "UNANSWERED"
+  // Revision 17 Goblins: goblin-crewed units may blow themselves up (the
+  // command lands with pulp_wars-0ao.3); the Troll regenerates.
+  | "KABOOM"
+  | "REGENERATE";
 
 export interface EffectiveRoleRuleV7 {
   readonly role: UnitRoleIdV7;
@@ -174,6 +182,21 @@ export interface RoleMechanicsV7 {
   readonly advancesAfterKill: boolean;
   /** An attack splashes onto hostile units around the primary target. */
   readonly splash: boolean;
+  /**
+   * Revision 17: the role may `BUILD_FIELD_DEFENSE` (with Fortification):
+   * the Fighter and Guard roles of every faction except the Goblin Goblin.
+   */
+  readonly buildsFieldDefense: boolean;
+  /** Revision 17: Rally (Frenzy, WAAAGH!) reach in Chebyshev distance. */
+  readonly rallyRadius: 1 | 2;
+  /** Revision 17: Rally also reaches `SUPPORT` and `SIEGE` roles (WAAAGH!). */
+  readonly rallyReachesSupportAndSiege: boolean;
+  /** Revision 17: fixed Kaboom damage, or null without Kaboom. */
+  readonly kaboomDamage: number | null;
+  /** Revision 17: fixed death-blast damage, or null for a non-exploder. */
+  readonly deathBlastDamage: number | null;
+  /** Revision 17: HP regenerated at its owner's Start Turn (the Troll). */
+  readonly regeneration: number;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -784,6 +807,12 @@ const mechanics = (
         {
           advancesAfterKill: true,
           splash: false,
+          buildsFieldDefense: roleId === "FIGHTER" || roleId === "GUARD",
+          rallyRadius: 1,
+          rallyReachesSupportAndSiege: false,
+          kaboomDamage: null,
+          deathBlastDamage: null,
+          regeneration: 0,
           ...overrides[roleId],
         },
       ]),
@@ -963,16 +992,236 @@ export const UNDEAD_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
   roleMechanics: UNDEAD_ROLE_MECHANICS_V7,
 });
 
+/**
+ * Revision 17 Goblin technology graph: identical to ORIGINAL_BASELINE_V5
+ * except that Administration grants WAAAGH! support instead of Captain
+ * support and Commerce (displayed as Plunder) grants Plunder instead of land
+ * trade. Chivalry keeps Overrun (displayed as Ram).
+ */
+export const GOBLIN_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
+  ORIGINAL_BASELINE_V5_NODES.map((original) =>
+    node(
+      original.id,
+      original.branch,
+      original.tier,
+      original.prerequisites,
+      original.unlocks.map((unlock): TechnologyUnlockV7 =>
+        unlock.kind === "CAPTAIN_SUPPORT"
+          ? { kind: "WAAAGH_SUPPORT" }
+          : unlock.kind === "LAND_TRADE_INCOME"
+            ? { kind: "PLUNDER", coins: 1 }
+            : unlock,
+      ),
+    ),
+  ),
+);
+
+/** Revision 17 section 3: the Goblin roster. */
+export const GOBLIN_ROLE_RULES_V7: Readonly<
+  Record<UnitRoleIdV7, EffectiveRoleRuleV7>
+> = deepFreeze({
+  FIGHTER: role({
+    role: "FIGHTER",
+    label: "Goblin",
+    tacticalRole: "LINE",
+    cost: 1,
+    maxHp: 6,
+    attack2: 4,
+    defense2: 2,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "KABOOM"],
+  }),
+  RAIDER: role({
+    role: "RAIDER",
+    label: "Wolf Rider",
+    tacticalRole: "SKIRMISHER",
+    cost: 3,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 2,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "SCOUTING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "CHARGE", "KABOOM"],
+  }),
+  MARKSMAN: role({
+    role: "MARKSMAN",
+    label: "Bomb Chucker",
+    tacticalRole: "RANGED",
+    cost: 3,
+    maxHp: 8,
+    attack2: 4,
+    defense2: 2,
+    move: 1,
+    range: 2,
+    minimumRange: 2,
+    sightRadius: 1,
+    technology: "MARKSMANSHIP",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "KABOOM"],
+  }),
+  GUARD: role({
+    role: "GUARD",
+    label: "Orc Brute",
+    tacticalRole: "DEFENDER",
+    cost: 3,
+    maxHp: 15,
+    attack2: 4,
+    defense2: 5,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "DRILL",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+  CAPTAIN: role({
+    role: "CAPTAIN",
+    label: "Orc Warboss",
+    tacticalRole: "SUPPORT",
+    cost: 5,
+    maxHp: 12,
+    attack2: 4,
+    defense2: 2,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "ADMINISTRATION",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "RALLY"],
+  }),
+  CATAPULT: role({
+    role: "CATAPULT",
+    label: "Rocket Cart",
+    tacticalRole: "SIEGE",
+    cost: 7,
+    maxHp: 8,
+    attack2: 7,
+    defense2: 1,
+    move: 1,
+    range: 3,
+    minimumRange: 2,
+    sightRadius: 1,
+    technology: "SAWMILLING",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "KABOOM"],
+  }),
+  KNIGHT: role({
+    role: "KNIGHT",
+    label: "Scrap Buggy",
+    tacticalRole: "BREAKTHROUGH",
+    cost: 8,
+    maxHp: 10,
+    attack2: 6,
+    defense2: 2,
+    move: 3,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "CHIVALRY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "OVERRUN", "KABOOM"],
+  }),
+  JUGGERNAUT: role({
+    role: "JUGGERNAUT",
+    label: "Troll",
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: 40,
+    attack2: 8,
+    defense2: 6,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "PUSH", "REGENERATE"],
+  }),
+  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
+  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+});
+
+/**
+ * Revision 17 Goblin engine mechanics: only the Orc Brute builds Field
+ * Defense; the Orc Warboss's WAAAGH! reaches radius 2 including support and
+ * siege roles; goblin-crewed roles carry Kaboom damage and the Bomb Chucker,
+ * Rocket Cart, and Scrap Buggy death-blast damage (resolved from
+ * `pulp_wars-0ao.3`); the Troll regenerates 4 HP. Boats are Human boats.
+ *
+ * TODO(pulp_wars-0ao.3): the Bomb Chucker bomb splash (friendly fire, splash
+ * target mode `ALL`). Until then a Bomb Chucker attack is ordinary targeted
+ * damage without splash.
+ */
+export const GOBLIN_ROLE_MECHANICS_V7 = mechanics({
+  FIGHTER: { buildsFieldDefense: false, kaboomDamage: 4 },
+  RAIDER: { kaboomDamage: 4 },
+  MARKSMAN: { kaboomDamage: 4, deathBlastDamage: 3 },
+  CAPTAIN: { rallyRadius: 2, rallyReachesSupportAndSiege: true },
+  CATAPULT: { advancesAfterKill: false, kaboomDamage: 5, deathBlastDamage: 5 },
+  KNIGHT: { kaboomDamage: 5, deathBlastDamage: 5 },
+  JUGGERNAUT: { regeneration: 4 },
+  BATTLESHIP: { splash: true },
+});
+
+export const GOBLIN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "GOBLIN_BASELINE_V1",
+  faction: "GOBLIN",
+  startingTechIds: [],
+  nodes: GOBLIN_BASELINE_V1_NODES,
+  roleRules: GOBLIN_ROLE_RULES_V7,
+  roleMechanics: GOBLIN_ROLE_MECHANICS_V7,
+});
+
 /** Frozen faction registrations; there is no cross-faction fallback. */
 export const FACTION_TREES_V7: Readonly<
   Record<FactionIdV7, FactionTechnologyTreeV7>
 > = deepFreeze({
   ORIGINAL: ORIGINAL_BASELINE_V5_TREE,
   UNDEAD: UNDEAD_BASELINE_V1_TREE,
+  GOBLIN: GOBLIN_BASELINE_V1_TREE,
 });
 
 export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
-  deepFreeze({ ORIGINAL: "Human", UNDEAD: "Undead" });
+  deepFreeze({ ORIGINAL: "Human", UNDEAD: "Undead", GOBLIN: "Goblin" });
+
+/**
+ * Revision 17: per-faction technology display names. Serialized technology
+ * IDs never change; only Goblin Commerce is renamed (Plunder).
+ */
+export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
+  Record<FactionIdV7, Readonly<Partial<Record<TechnologyIdV7, string>>>>
+> = deepFreeze({
+  ORIGINAL: {},
+  UNDEAD: {},
+  GOBLIN: { COMMERCE: "Plunder" },
+});
+
+/** A technology's display name for a viewer of `faction`. */
+export function technologyDisplayNameV7(
+  tech: TechnologyIdV7,
+  faction: FactionIdV7,
+): string {
+  const override = TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7[faction][tech];
+  return (
+    override ??
+    tech
+      .toLowerCase()
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+  );
+}
 
 export function factionTreeV7(faction: FactionIdV7): FactionTechnologyTreeV7 {
   const tree = Object.hasOwn(FACTION_TREES_V7, faction)
@@ -994,12 +1243,20 @@ export interface FactionRulesV7 {
    * (explicit Recover is illegal elsewhere; idle recovery is 0 there).
    */
   readonly restless: boolean;
+  /** Revision 17 Warrens: extra unit capacity of every city the seat owns. */
+  readonly cityCapacityBonus: 0 | 1;
+  /**
+   * Revision 17 Gang Up: a land-form attack gains +1 Attack for each other
+   * own unit adjacent to its target, up to this maximum (0 disables it).
+   */
+  readonly gangUpMaximum: 0 | 2;
 }
 
 export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
   deepFreeze({
-    ORIGINAL: { restless: false },
-    UNDEAD: { restless: true },
+    ORIGINAL: { restless: false, cityCapacityBonus: 0, gangUpMaximum: 0 },
+    UNDEAD: { restless: true, cityCapacityBonus: 0, gangUpMaximum: 0 },
+    GOBLIN: { restless: false, cityCapacityBonus: 1, gangUpMaximum: 2 },
   });
 
 export function factionRulesV7(faction: FactionIdV7): FactionRulesV7 {
@@ -1009,6 +1266,25 @@ export function factionRulesV7(faction: FactionIdV7): FactionRulesV7 {
   if (rules === undefined)
     throw new RangeError(`Unknown v7 faction: ${String(faction)}`);
   return rules;
+}
+
+/**
+ * City unit capacity (revision 17 section 5.1): `level + 1`, +1 with
+ * Planning, +1 Warrens when the current owner's faction is Goblin. Every
+ * capacity surface (training, treasure placement, previews, the city panel,
+ * and the Normal AI) uses this formula.
+ */
+export function cityUnitCapacityForV7(
+  level: number,
+  ownerResearchedTechs: readonly string[],
+  ownerFaction: FactionIdV7,
+): number {
+  return (
+    level +
+    1 +
+    (ownerResearchedTechs.includes("PLANNING") ? 1 : 0) +
+    factionRulesV7(ownerFaction).cityCapacityBonus
+  );
 }
 
 /**
@@ -1141,6 +1417,51 @@ export function unitRoleMechanicsV7(
   return roleMechanicsV7(unit.role, playerFactionV7(roster, unit.ownerId));
 }
 
+/** The unit facts Rally eligibility reads (state units and public units). */
+export interface RallyUnitV7 {
+  readonly id: number;
+  readonly ownerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  readonly form: "LAND" | "EMBARKED" | "NAVAL";
+  readonly at: { readonly x: number; readonly y: number };
+  readonly hp: number;
+  readonly activation: { readonly inspired: boolean };
+}
+
+/**
+ * Whether `target` gains Inspired from `captain`'s Rally (Human Rally, Undead
+ * Frenzy, Goblin WAAAGH!): another own land-form unit with `ATTACK`, not
+ * already Inspired, within the captain's rally radius, and (except for
+ * WAAAGH!) not a `SUPPORT` or `SIEGE` role. Resolved through the owners'
+ * registrations.
+ */
+export function isRallyTargetV7(
+  roster: FactionRosterV7,
+  captain: RallyUnitV7,
+  target: RallyUnitV7,
+): boolean {
+  if (
+    target.hp <= 0 ||
+    target.ownerId !== captain.ownerId ||
+    target.form !== "LAND" ||
+    target.id === captain.id ||
+    target.activation.inspired
+  )
+    return false;
+  const mechanics = unitRoleMechanicsV7(roster, captain);
+  const targetRule = unitRoleRuleV7(roster, target);
+  const tactical = targetRule.tacticalRole;
+  return (
+    (mechanics.rallyReachesSupportAndSiege ||
+      (tactical !== "SUPPORT" && tactical !== "SIEGE")) &&
+    targetRule.abilities.includes("ATTACK") &&
+    Math.max(
+      Math.abs(captain.at.x - target.at.x),
+      Math.abs(captain.at.y - target.at.y),
+    ) <= mechanics.rallyRadius
+  );
+}
+
 export function requireTechnologyNodeV7(
   id: TechnologyIdV7,
   faction: FactionIdV7,
@@ -1178,6 +1499,8 @@ export interface TechnologyCapabilitiesV7 {
   readonly landTradeIncomeCoins: 0 | 1;
   readonly seaTradeIncomeCoins: 0 | 1;
   readonly hostileCaptureSpoilsCoins: 0 | 2;
+  /** Revision 17 Goblin Plunder: Coins per credited hostile kill. */
+  readonly plunderCoins: 0 | 1;
 }
 
 export function technologyCapabilitiesV7(
@@ -1215,6 +1538,7 @@ export function technologyCapabilitiesV7(
   let landTradeIncomeCoins: 0 | 1 = 0;
   let seaTradeIncomeCoins: 0 | 1 = 0;
   let hostileCaptureSpoilsCoins: 0 | 2 = 0;
+  let plunderCoins: 0 | 1 = 0;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -1274,8 +1598,12 @@ export function technologyCapabilitiesV7(
       case "FIRST_HOSTILE_CAPTURE_SPOILS":
         hostileCaptureSpoilsCoins = 2;
         break;
+      case "PLUNDER":
+        plunderCoins = 1;
+        break;
       case "CAPTAIN_SUPPORT":
       case "NECROMANCER_SUPPORT":
+      case "WAAAGH_SUPPORT":
       case "OVERRUN":
       case "CHARGE_BONUS":
       case "MELEE_FIELD_DEMOLITION":
@@ -1311,6 +1639,7 @@ export function technologyCapabilitiesV7(
     landTradeIncomeCoins,
     seaTradeIncomeCoins,
     hostileCaptureSpoilsCoins,
+    plunderCoins,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

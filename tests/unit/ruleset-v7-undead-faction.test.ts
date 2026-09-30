@@ -80,21 +80,27 @@ const READY: UnitStateV7["activation"] = {
 };
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
-  it("pins the r15 identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r16");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r16.current");
-    expect(FACTION_IDS_V7).toEqual(["ORIGINAL", "UNDEAD"]);
+  it("pins the current identity, frozen faction and tree orders, and bindings", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r17");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r17.current");
+    expect(FACTION_IDS_V7).toEqual(["ORIGINAL", "UNDEAD", "GOBLIN"]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
       "UNDEAD_BASELINE_V1",
+      "GOBLIN_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("ORIGINAL")).toBe("ORIGINAL_BASELINE_V5");
     expect(factionTreeIdV7("UNDEAD")).toBe("UNDEAD_BASELINE_V1");
     expect(FACTION_DISPLAY_NAMES_V7).toEqual({
       ORIGINAL: "Human",
       UNDEAD: "Undead",
+      GOBLIN: "Goblin",
     });
-    expect(Object.keys(RULESET_7.factionTrees)).toEqual(["ORIGINAL", "UNDEAD"]);
+    expect(Object.keys(RULESET_7.factionTrees)).toEqual([
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+    ]);
     expect(FACTION_TREES_V7.UNDEAD.faction).toBe("UNDEAD");
     expect(() => assertRuleset7Registry()).not.toThrow();
     expect(() => factionTreeV7("CANDY" as FactionIdV7)).toThrow(RangeError);
@@ -103,18 +109,19 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r15 and preserves the r16 save", () => {
+  it("cleans obsolete keys through v7r16 and preserves the r17 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r15.current",
+      "pulpWars.save.v7r16.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(15);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(16);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
       ["pulpWars.save.v7r13.current", "r13"],
       ["pulpWars.save.v7r14.current", "r14"],
       ["pulpWars.save.v7r15.current", "r15"],
-      [SAVE_STORAGE_KEY_V7, "r16"],
+      ["pulpWars.save.v7r16.current", "r16"],
+      [SAVE_STORAGE_KEY_V7, "r17"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -124,8 +131,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r13.current",
         "pulpWars.save.v7r14.current",
         "pulpWars.save.v7r15.current",
+        "pulpWars.save.v7r16.current",
       ],
-      removedCount: 4,
+      removedCount: 5,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1424,6 +1432,10 @@ describe("ruleset-7 all-Human parity digests", () => {
   // revision-16b digests exactly. Map and post-generation PRNG digests,
   // rounds, and terminations are unchanged; seed 7 has 238 commands (was
   // 241) and seed 1234 has 362 (was 363).
+  // Revision 17 (`pulp_wars-0ao.2`, identity `pulp-wars-poc-7r17`) reproduces
+  // every digest below unchanged: its only all-Human difference is the
+  // neutral combat-preview field `gangUp: 0`, removed before hashing like the
+  // revision-13 and revision-14 neutral fields.
   const BASELINE = [
     {
       seed: 7,
@@ -1547,9 +1559,11 @@ describe("ruleset-7 all-Human parity digests", () => {
           defenderBitten,
           attackerBittenRises,
           defenderBittenRises,
+          gangUp,
           ...preview
         } = event.preview;
         expect({
+          gangUp,
           attackerHeal,
           defenderHeal,
           attackerInfected,
@@ -1560,6 +1574,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           attackerBittenRises,
           defenderBittenRises,
         }).toEqual({
+          gangUp: 0,
           attackerHeal: 0,
           defenderHeal: 0,
           attackerInfected: false,

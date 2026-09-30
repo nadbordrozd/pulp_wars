@@ -118,7 +118,7 @@ for (const [width, aiCount] of setups) {
     grandWorks: 0,
   };
   const setup = (seed: number, mode: "RIVAL" | "COOPERATIVE") => ({
-    rulesetId: "pulp-wars-poc-7r16" as const,
+    rulesetId: "pulp-wars-poc-7r17" as const,
     seed,
     width,
     height: width,
@@ -366,7 +366,7 @@ for (const [width, aiCount] of setups) {
 console.log(
   JSON.stringify(
     {
-      rulesetId: "pulp-wars-poc-7r16",
+      rulesetId: "pulp-wars-poc-7r17",
       seeds: "0..999",
       setups: report,
       failures,

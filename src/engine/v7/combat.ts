@@ -1,8 +1,11 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
+  factionRulesV7,
+  playerFactionV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type EffectiveRoleRuleV7,
+  type FactionRosterV7,
 } from "../rules/ruleset-v7";
 import { afflictionCombatEffectsV7 } from "./afflictions";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
@@ -54,6 +57,35 @@ export function fortificationLevelForUnitV7(
   return level;
 }
 
+/**
+ * Revision 17 Gang Up (section 5.2): a land-form attacker whose owner's
+ * faction has Gang Up gains +1 Attack for each other unit its owner has on
+ * the eight cells around the target (any role and form; allies never count),
+ * up to the faction maximum. Own units are always visible to their owner, so
+ * the public preview passes its visible units and is exact.
+ */
+export function gangUpBonusV7(
+  roster: FactionRosterV7,
+  units: readonly Pick<UnitStateV7, "id" | "ownerId" | "at" | "hp">[],
+  attacker: Pick<UnitStateV7, "id" | "ownerId" | "form">,
+  target: Pick<UnitStateV7, "id" | "at">,
+): 0 | 1 | 2 {
+  if (attacker.form !== "LAND") return 0;
+  const maximum = factionRulesV7(
+    playerFactionV7(roster, attacker.ownerId),
+  ).gangUpMaximum;
+  if (maximum === 0) return 0;
+  const helpers = units.filter(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.ownerId === attacker.ownerId &&
+      unit.id !== attacker.id &&
+      unit.id !== target.id &&
+      chebyshev(unit.at, target.at) === 1,
+  ).length;
+  return Math.min(maximum, helpers) as 0 | 1 | 2;
+}
+
 /** Exact BigInt-backed v7 combat calculation used by resolution and queries. */
 export function calculateCombatPreviewV7(
   state: GameStateV7,
@@ -78,12 +110,14 @@ export function calculateCombatPreviewV7(
   const inspiredApplied =
     attacker.activation.inspired && attacker.activation.attacksUsed === 0;
   const inspiredConsumed = attacker.activation.inspired;
+  const gangUp = gangUpBonusV7(state, state.units, attacker, defender);
   const attack2 =
     attacker.form === "EMBARKED"
       ? 0
       : attackerRule.attack2 +
         (chargeApplied ? 2 : 0) +
-        (inspiredApplied ? 2 : 0);
+        (inspiredApplied ? 2 : 0) +
+        gangUp * 2;
   const fortificationLevel = fortificationLevelForUnitV7(state, defender);
   const defense2 =
     defender.form === "EMBARKED"
@@ -207,6 +241,7 @@ export function calculateCombatPreviewV7(
     chargeApplied,
     inspiredApplied,
     inspiredConsumed,
+    gangUp,
     breachApplied,
     defenseBonusNumerator: bonus.numerator,
     defenseBonusDenominator: bonus.denominator,

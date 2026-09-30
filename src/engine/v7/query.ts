@@ -11,6 +11,8 @@ import {
   technologyCapabilitiesV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
+  cityUnitCapacityForV7,
+  isRallyTargetV7,
   isResourceRevealedV7,
   playerTechnologyResearchCostV7,
   technologyResearchCostV7,
@@ -32,7 +34,11 @@ import {
 import { raiseDeadGravesV7 } from "./graves";
 import { applyCommandV7 } from "./reducer";
 import { afflictionCombatEffectsV7 } from "./afflictions";
-import { calculateCombatPreviewV7, undeadCombatEffectsV7 } from "./combat";
+import {
+  calculateCombatPreviewV7,
+  gangUpBonusV7,
+  undeadCombatEffectsV7,
+} from "./combat";
 import type { CombatPreviewV7, DomainEventV7 } from "./events";
 import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
@@ -357,8 +363,11 @@ function appendPublicCityCommandsV7(
   if (city.ownerId !== player.id || publicCityBesieged(view, city.at)) return;
   if (city.cityActionAvailable !== true) return;
   const centerBlocked = view.units.some((unit) => same(unit.at, city.at));
-  const capacity =
-    city.level + 1 + (player.researchedTechs.includes("PLANNING") ? 1 : 0);
+  const capacity = cityUnitCapacityForV7(
+    city.level,
+    player.researchedTechs,
+    player.faction,
+  );
   const assigned = view.units.filter(
     (unit) => unit.ownerId === player.id && unit.homeCityId === city.id,
   ).length;
@@ -398,7 +407,9 @@ function appendPublicCityCommandsV7(
       role !== "PATROL_BOAT" &&
       role !== "BATTLESHIP" &&
       rule.cost !== null &&
-      rule.cost - (forgeDiscount ? 1 : 0) <= player.coins &&
+      // The Forge discount never lowers a cost below 1 (revision 17: the
+      // 1-Coin Goblin stays at 1), exactly as the reducer charges it.
+      Math.max(1, rule.cost - (forgeDiscount ? 1 : 0)) <= player.coins &&
       (rule.technology === null ||
         player.researchedTechs.includes(rule.technology))
     )
@@ -596,20 +607,7 @@ function appendPublicUnitCommandsV7(
     primaryReady &&
     unit.form === "LAND" &&
     rule.abilities.includes("RALLY") &&
-    view.units.some((target) => {
-      if (target.ownerId !== player.id) return false;
-      const targetRule = unitRoleRuleV7(view, target);
-      const targetRole = targetRule.tacticalRole;
-      return (
-        target.form === "LAND" &&
-        target.id !== unit.id &&
-        !target.activation.inspired &&
-        targetRole !== "SUPPORT" &&
-        targetRole !== "SIEGE" &&
-        targetRule.abilities.includes("ATTACK") &&
-        chebyshev(unit.at, target.at) === 1
-      );
-    })
+    view.units.some((target) => isRallyTargetV7(view, unit, target))
   )
     candidates.push({ kind: "RALLY", unitId: unit.id });
   if (
@@ -687,7 +685,8 @@ function appendPublicUnitCommandsV7(
     !unit.activation.moved &&
     !primaryUsedForQuery(unit) &&
     unit.form === "LAND" &&
-    (unit.role === "FIGHTER" || unit.role === "GUARD") &&
+    // Revision 17: the Goblin Goblin cannot build Field Defense.
+    unitRoleMechanicsV7(view, unit).buildsFieldDefense &&
     player.researchedTechs.includes("FORTIFICATION") &&
     tile?.explored === true &&
     tile.biome !== null &&
@@ -1633,6 +1632,8 @@ type PublicEconomyGraphV7 = {
   readonly ownerId: PlayerId;
   readonly originalCapitalCityId: CityId;
   readonly researchedTechs: PlayerViewV7["viewer"]["researchedTechs"];
+  /** Revision 17: the viewer's faction resolves its technology capabilities. */
+  readonly faction: PlayerViewV7["viewer"]["faction"];
   readonly activePortKeys: ReadonlySet<string>;
   readonly resolvedPendingCityIds: ReadonlySet<CityId>;
   readonly remainingMonumentEntitlements: number;
@@ -1777,6 +1778,7 @@ function* createPublicPlanningFactKeyWorkV7(
       id: view.viewer.id,
       originalCapitalCityId: view.viewer.originalCapitalCityId,
       researchedTechs: view.viewer.researchedTechs,
+      faction: view.viewer.faction,
       achievementEntitlements: view.viewer.achievementEntitlements,
     },
     pendingChoices: view.pendingChoices,
@@ -1868,6 +1870,7 @@ function publicEconomyGraph(view: PlayerViewV7): PublicEconomyGraphV7 {
     ownerId: view.viewer.id,
     originalCapitalCityId: view.viewer.originalCapitalCityId,
     researchedTechs: view.viewer.researchedTechs,
+    faction: view.viewer.faction,
     activePortKeys: new Set(
       view.naval.ownedPorts
         .filter((port) => port.status === "ACTIVE")
@@ -2176,9 +2179,12 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
         queue.push(next);
       }
   }
-  const landTrade = graph.researchedTechs.includes("COMMERCE")
-    ? new Set([...network].filter((cityId) => !roots.includes(cityId)))
-    : new Set<CityId>();
+  // Revision 17: land trade is a technology capability of the viewer's tree.
+  const landTrade =
+    technologyCapabilitiesV7(graph.researchedTechs, graph.faction)
+      .landTradeIncomeCoins === 1
+      ? new Set([...network].filter((cityId) => !roots.includes(cityId)))
+      : new Set<CityId>();
   const seaTrade = new Set(
     ownedCities
       .map((city) => city.id)
@@ -2809,6 +2815,7 @@ class IncrementalPublicRedevelopmentPossibilityWorkV7 implements PublicRedevelop
           ownerId: this.view.viewer.id,
           originalCapitalCityId: this.view.viewer.originalCapitalCityId,
           researchedTechs: this.view.viewer.researchedTechs,
+          faction: this.view.viewer.faction,
           activePortKeys: new Set(),
           resolvedPendingCityIds: new Set(),
           remainingMonumentEntitlements: this.remainingMonumentEntitlements,
@@ -4390,7 +4397,9 @@ function publicCombatPreview(
   const defense = defenseStats.stats.find((stat) => stat.id === "DEFENSE");
   if (attack === undefined || defense === undefined) return null;
   if (defense.visibility === "BASE_ONLY") return null;
-  const attack2 = rationalToHalfUnits(attack.total);
+  // Revision 17 Gang Up counts only the viewer's own (always visible) units.
+  const gangUp = gangUpBonusV7(view, view.units, attacker, target);
+  const attack2 = rationalToHalfUnits(attack.total) + gangUp * 2;
   const targetTile = tileAtView(view, target.at);
   if (targetTile?.explored !== true) return null;
   const fortificationLevel =
@@ -4524,6 +4533,7 @@ function publicCombatPreview(
     inspiredApplied:
       attacker.activation.inspired && attacker.activation.attacksUsed === 0,
     inspiredConsumed: attacker.activation.inspired,
+    gangUp,
     breachApplied,
     defenseBonusNumerator: applied.numerator,
     defenseBonusDenominator: applied.denominator,

@@ -1,6 +1,7 @@
 import {
   EMBARKED_MOVE_V7,
   technologyCapabilitiesV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../rules/ruleset-v7";
 import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
@@ -46,6 +47,19 @@ export interface PublicUnitStatBreakdownV7 {
   /** Omitted means the exact historical contract; BASE_ONLY redacts position. */
   readonly visibility?: "BASE_ONLY";
 }
+/**
+ * Revision 17 Goblin role mechanics from the owner's registration: Kaboom
+ * and death-blast damage (null when the role has none), the WAAAGH! radius
+ * (0 without Rally), Start Turn regeneration, and whether the role may build
+ * Field Defense.
+ */
+export interface PublicGoblinMechanicsV7 {
+  readonly kaboomDamage: number | null;
+  readonly deathBlastDamage: number | null;
+  readonly rallyRadius: number;
+  readonly regeneration: number;
+  readonly buildsFieldDefense: boolean;
+}
 export interface PublicUnitStatsV7 {
   readonly unitId: UnitStateV7["id"];
   readonly minimumRange: number;
@@ -53,6 +67,8 @@ export interface PublicUnitStatsV7 {
   readonly stats: readonly PublicUnitStatBreakdownV7[];
   readonly abilities: readonly string[];
   readonly statuses: readonly string[];
+  /** Revision 17: present exactly for units owned by a Goblin seat. */
+  readonly goblin?: PublicGoblinMechanicsV7;
 }
 
 export function publicUnitStatsV7(
@@ -69,6 +85,9 @@ export function publicUnitStatsV7(
   );
   // Revision 13: Undead support labels Rally as Frenzy and Inspired as Frenzied.
   const frenzied = owner.faction === "UNDEAD";
+  // Revision 17: Goblins label Rally as WAAAGH! and Overrun as Ram.
+  const goblin = owner.faction === "GOBLIN";
+  const mechanics = unitRoleMechanicsV7(state, unit);
   const promotion = unit.maxHp - role.maxHp;
   const charge =
     !embarked &&
@@ -146,10 +165,12 @@ export function publicUnitStatsV7(
                 modifier(
                   inspired,
                   "INSPIRED",
-                  frenzied ? "Frenzied" : "Inspired",
+                  frenzied ? "Frenzied" : goblin ? "WAAAGH!" : "Inspired",
                   frenzied
                     ? "Necromancer Frenzy adds 1 Attack to the next attack this turn."
-                    : "Captain Rally adds 1 Attack to the next attack this turn.",
+                    : goblin
+                      ? "Orc Warboss WAAAGH! adds 1 Attack to the next attack this turn."
+                      : "Captain Rally adds 1 Attack to the next attack this turn.",
                   2,
                 ),
               ]
@@ -210,12 +231,33 @@ export function publicUnitStatsV7(
     abilities: embarked ? [] : role.abilities,
     statuses: [
       ...(unit.activation.inspired && unit.activation.attacksUsed === 0
-        ? [frenzied ? "Frenzied: +1 next Attack" : "Inspired: +1 next Attack"]
+        ? [
+            frenzied
+              ? "Frenzied: +1 next Attack"
+              : goblin
+                ? "WAAAGH!: +1 Attack on the next attack"
+                : "Inspired: +1 next Attack",
+          ]
         : []),
       ...(unit.activation.tendedThisTurn ? ["Tended this turn"] : []),
-      ...(unit.activation.overrunActive ? ["Overrun: attack again"] : []),
+      ...(unit.activation.overrunActive
+        ? [goblin ? "Ram: attack again" : "Overrun: attack again"]
+        : []),
       ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
     ],
+    ...(goblin
+      ? {
+          goblin: {
+            kaboomDamage: mechanics.kaboomDamage,
+            deathBlastDamage: mechanics.deathBlastDamage,
+            rallyRadius: role.abilities.includes("RALLY")
+              ? mechanics.rallyRadius
+              : 0,
+            regeneration: mechanics.regeneration,
+            buildsFieldDefense: mechanics.buildsFieldDefense,
+          },
+        }
+      : {}),
   };
 }
 

@@ -1,4 +1,9 @@
 import type { CityId, PlayerId } from "../model/ids";
+import {
+  cityUnitCapacityForV7,
+  technologyCapabilitiesV7,
+  unitRoleMechanicsV7,
+} from "../rules/ruleset-v7";
 import { hasAcceptedStateCertificateV7 } from "./accepted-state-certificate";
 import type { DomainEventV7 } from "./events";
 import { spatialContributionAtV7 } from "./spatial-economy";
@@ -71,10 +76,12 @@ export function cityUnitCapacityV7(
   state: Pick<GameStateV7, "board" | "players">,
   city: Pick<CityStateV7, "id" | "level" | "ownerId">,
 ): number {
-  const fortified = state.players
-    .find((player) => player.id === city.ownerId)
-    ?.researchedTechs.includes("PLANNING");
-  const result = city.level + 1 + (fortified ? 1 : 0);
+  const owner = state.players.find((player) => player.id === city.ownerId);
+  // Revision 17 Warrens: the current owner's faction bonus (Goblins +1).
+  const result =
+    owner === undefined
+      ? city.level + 1
+      : cityUnitCapacityForV7(city.level, owner.researchedTechs, owner.faction);
   if (!Number.isSafeInteger(result)) throw new RangeError("INTEGER_OVERFLOW");
   return result;
 }
@@ -427,7 +434,14 @@ export function landTradeCityIdsV7(
 ): ReadonlySet<CityId> {
   seaTradeCityIdsV7(state, playerId);
   const player = state.players.find((candidate) => candidate.id === playerId);
-  if (!player?.researchedTechs.includes("COMMERCE")) return new Set();
+  // Revision 17: land trade is the Commerce capability of the owner's tree
+  // (Goblin Commerce grants Plunder instead).
+  if (
+    player === undefined ||
+    technologyCapabilitiesV7(player.researchedTechs, player.faction)
+      .landTradeIncomeCoins === 0
+  )
+    return new Set();
   const connected = landConnectedCityIdsV7(state, playerId);
   return new Set(
     [...connected].filter((cityId) => cityId !== player.originalCapitalCityId),
@@ -825,13 +839,14 @@ export function startTurnEconomyV7(
       ? { state: reset, events: [] }
       : beforeHealing(reset);
   const healing = resolveWindmillHealingV7(afflicted.state, player.id);
-  const income = playerIncomeV7(healing.state, player.id);
+  const regeneration = resolveRegenerationV7(healing.state, player.id);
+  const income = playerIncomeV7(regeneration.state, player.id);
   const coins = player.coins + income.totalCoins;
   if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
   return {
     state: {
-      ...healing.state,
-      players: healing.state.players.map((item) =>
+      ...regeneration.state,
+      players: regeneration.state.players.map((item) =>
         item.id === player.id ? { ...item, coins } : item,
       ),
     },
@@ -839,6 +854,7 @@ export function startTurnEconomyV7(
       { kind: "TURN_STARTED", playerId: player.id, coins },
       ...afflicted.events,
       ...healing.events,
+      ...regeneration.events,
       {
         kind: "INCOME_AWARDED",
         playerId: player.id,
@@ -846,6 +862,48 @@ export function startTurnEconomyV7(
         cities: income.cities,
       },
     ],
+  };
+}
+
+/**
+ * Revision 17 Troll regeneration (section 7.2): after Windmill healing and
+ * before income, every unit of the player whose role regenerates (the Goblin
+ * Troll) heals `min(amount, maxHp - hp)` in any form and on any tile. It
+ * cures nothing; one event lists the units that healed, in unit-ID order.
+ */
+function resolveRegenerationV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): {
+  readonly state: GameStateV7;
+  readonly events: readonly Extract<
+    DomainEventV7,
+    { readonly kind: "UNITS_REGENERATED" }
+  >[];
+} {
+  const results = state.units
+    .filter((unit) => unit.ownerId === playerId && unit.hp > 0)
+    .sort((left, right) => left.id - right.id)
+    .flatMap((unit) => {
+      const amount = Math.min(
+        unitRoleMechanicsV7(state, unit).regeneration,
+        unit.maxHp - unit.hp,
+      );
+      return amount > 0
+        ? [{ unitId: unit.id, amount, hpAfter: unit.hp + amount }]
+        : [];
+    });
+  if (results.length === 0) return { state, events: [] };
+  const healed = new Map(results.map((entry) => [entry.unitId, entry]));
+  return {
+    state: {
+      ...state,
+      units: state.units.map((unit) => {
+        const entry = healed.get(unit.id);
+        return entry === undefined ? unit : { ...unit, hp: entry.hpAfter };
+      }),
+    },
+    events: [{ kind: "UNITS_REGENERATED", playerId, results }],
   };
 }
 

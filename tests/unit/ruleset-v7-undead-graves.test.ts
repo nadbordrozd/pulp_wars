@@ -776,10 +776,14 @@ describe("ruleset-7 revision-13 Restless recovery", () => {
   }
 
   it("registers Restless for the Undead faction only", () => {
-    expect(FACTION_RULES_V7).toEqual({
-      ORIGINAL: { restless: false },
-      UNDEAD: { restless: true },
-    });
+    expect(
+      Object.fromEntries(
+        Object.entries(FACTION_RULES_V7).map(([faction, rules]) => [
+          faction,
+          rules.restless,
+        ]),
+      ),
+    ).toEqual({ ORIGINAL: false, UNDEAD: true, GOBLIN: false });
   });
 
   it("allows explicit Recover only in own territory and offers nothing elsewhere", () => {

@@ -23,6 +23,12 @@ export interface CombatPreviewV7 {
   readonly chargeApplied: boolean;
   readonly inspiredApplied: boolean;
   readonly inspiredConsumed: boolean;
+  /**
+   * Revision 17 Gang Up: whole Attack (0, 1, or 2) a Goblin land-form
+   * attacker gains from other own units adjacent to the target; included in
+   * `attack2`. Always 0 for every non-Goblin or naval attacker.
+   */
+  readonly gangUp: 0 | 1 | 2;
   readonly breachApplied: boolean;
   readonly defenseBonusNumerator: number;
   readonly defenseBonusDenominator: number;
@@ -128,6 +134,19 @@ export type DomainEventV7 =
       readonly playerId: PlayerId;
       readonly cityId: CityId;
       readonly at: CoordV7;
+      readonly results: readonly {
+        readonly unitId: UnitId;
+        readonly amount: number;
+        readonly hpAfter: number;
+      }[];
+    }
+  | {
+      /**
+       * Revision 17: Trolls of `playerId` regenerated at its Start Turn,
+       * after Windmill healing; only Trolls that healed, in unit-ID order.
+       */
+      readonly kind: "UNITS_REGENERATED";
+      readonly playerId: PlayerId;
       readonly results: readonly {
         readonly unitId: UnitId;
         readonly amount: number;
@@ -477,6 +496,16 @@ export type DomainEventV7 =
       readonly playerId: PlayerId;
       readonly cityId: CityId;
       readonly coins: 2;
+    }
+  | {
+      /**
+       * Revision 17 Plunder: Coins `playerId` gained for `kills` credited
+       * hostile kills in one command or Start Turn. Owner-only, no victims.
+       */
+      readonly kind: "PLUNDER_AWARDED";
+      readonly playerId: PlayerId;
+      readonly kills: number;
+      readonly coins: number;
     }
   | {
       readonly kind: "UNIT_RECOVERED";

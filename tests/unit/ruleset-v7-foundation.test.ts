@@ -37,11 +37,12 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r16");
-    expect(FACTION_IDS_V7).toEqual(["ORIGINAL", "UNDEAD"]);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r17");
+    expect(FACTION_IDS_V7).toEqual(["ORIGINAL", "UNDEAD", "GOBLIN"]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
       "UNDEAD_BASELINE_V1",
+      "GOBLIN_BASELINE_V1",
     ]);
     expect(RESOURCE_IDS_V7).toEqual([
       "FRUIT",
@@ -79,15 +80,17 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
     expect(COMMAND_KIND_ORDER_V7).toHaveLength(42);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(66);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(68);
     // Revision 14 inserts the Start Turn Plague events after TURN_STARTED;
-    // revision 15 adds PLAGUE_EXPIRED after PLAGUE_SPREAD.
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 6)).toEqual([
+    // revision 15 adds PLAGUE_EXPIRED after PLAGUE_SPREAD; revision 17 adds
+    // Troll regeneration after Windmill healing.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 7)).toEqual([
       "TURN_STARTED",
       "PLAGUE_DAMAGED",
       "PLAGUE_SPREAD",
       "PLAGUE_EXPIRED",
       "WINDMILL_HEALING_RESOLVED",
+      "UNITS_REGENERATED",
       "INCOME_AWARDED",
     ]);
     expect(PLAYER_EVENT_KIND_ORDER_V7.slice(-3)).toEqual([

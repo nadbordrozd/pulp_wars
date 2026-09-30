@@ -1878,7 +1878,12 @@ function initialMapStateFromV7(
 ): CreateInitialMapStateResultV7 {
   if (!generated.ok) return generated;
   const players = createPlayers(setup);
-  const entities = createEntities(players, generated.map.capitalAssignments);
+  const entities = createEntities(
+    players,
+    generated.map.capitalAssignments,
+    generated.map.board,
+    generated.map.treasureChests,
+  );
   const board = assignTerritories(generated.map.board, entities.cities);
   const explored = players.map((player, seat) => ({
     ...player,
@@ -1945,9 +1950,60 @@ function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
     };
   });
 }
+/**
+ * Revision 17 section 2.2: the number of starting `FIGHTER` units of a seat.
+ * A Goblin seat starts with two Goblins; every other faction with one.
+ */
+export const STARTING_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
+  deepFreeze({ ORIGINAL: 1, UNDEAD: 1, GOBLIN: 2 });
+
+/**
+ * Revision 17 section 2.2: the cell of a Goblin seat's second starting
+ * Goblin: the first cell of the capital's eight-cell ring in (y, x) order
+ * that is land, not Mountain, and has no unit and no treasure chest, or null
+ * (the seat then starts with one Goblin and no compensation).
+ */
+export function startingCompanionCellV7(
+  board: BoardStateV7,
+  capital: CoordV7,
+  occupied: readonly CoordV7[],
+  treasureChests: readonly CoordV7[],
+): CoordV7 | null {
+  return (
+    neighbors8(board.width, board.height, capital).find((candidate) => {
+      const tile = board.tiles[candidate.y * board.width + candidate.x];
+      return (
+        tile !== undefined &&
+        (tile.terrain === "GRASS" || tile.terrain === "FOREST") &&
+        !occupied.some((at) => same(at, candidate)) &&
+        !treasureChests.some((chest) => same(chest, candidate))
+      );
+    }) ?? null
+  );
+}
+
+function freshStartActivation(): UnitStateV7["activation"] {
+  return {
+    moved: false,
+    movedPathLength: 0,
+    attacked: false,
+    attacksUsed: 0,
+    tendedThisTurn: false,
+    inspired: false,
+    overrunActive: false,
+    escapeAvailable: false,
+    recovered: false,
+    captured: false,
+    handled: false,
+    specialActed: false,
+  };
+}
+
 function createEntities(
   players: readonly PlayerStateV7[],
   capitals: readonly CoordV7[],
+  board: BoardStateV7,
+  treasureChests: readonly CoordV7[],
 ) {
   const cities: CityStateV7[] = [];
   const units: UnitStateV7[] = [];
@@ -1986,20 +2042,41 @@ function createEntities(
       kills: 0,
       veteran: false,
       captureEligible: false,
-      activation: {
-        moved: false,
-        movedPathLength: 0,
-        attacked: false,
-        attacksUsed: 0,
-        tendedThisTurn: false,
-        inspired: false,
-        overrunActive: false,
-        escapeAvailable: false,
-        recovered: false,
-        captured: false,
-        handled: false,
-        specialActed: false,
-      },
+      activation: freshStartActivation(),
+    });
+  });
+  // Revision 17: a Goblin seat's second Goblin is created after every seat's
+  // first start unit (in seat order), so capital, city, and first-unit IDs
+  // equal those of an all-Human setup. It stands on the first capital-ring
+  // cell in (y, x) order that is land, not Mountain, and has no unit and no
+  // treasure chest; without one the seat starts with one Goblin.
+  players.forEach((player, index) => {
+    if (STARTING_FIGHTERS_V7[player.faction] < 2) return;
+    const capital = capitals[index] as CoordV7;
+    const city = cities[index] as CityStateV7;
+    const at = startingCompanionCellV7(
+      board,
+      capital,
+      units.map((unit) => unit.at),
+      treasureChests,
+    );
+    if (at === null) return;
+    const unit = allocateUnitId(nextEntityId);
+    nextEntityId = unit.nextEntityId;
+    const startRule = effectiveRoleRuleV7("FIGHTER", player.faction);
+    units.push({
+      id: unit.id,
+      ownerId: player.id,
+      homeCityId: city.id,
+      role: "FIGHTER",
+      form: "LAND",
+      at,
+      hp: startRule.maxHp,
+      maxHp: startRule.maxHp,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation: freshStartActivation(),
     });
   });
   return { cities, units, nextEntityId };

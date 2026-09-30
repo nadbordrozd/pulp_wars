@@ -3,7 +3,9 @@ import {
   EMBARKED_LANDING_MAX_SPENT_V7,
   EMBARKED_MOVE_V7,
   effectiveRoleRuleV7,
+  cityUnitCapacityForV7,
   factionTreeV7,
+  isRallyTargetV7,
   technologyCapabilitiesV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -1452,7 +1454,8 @@ function* roadCorridorWorkV7(
     // for the non-capital city; published Market income remains in city value.
     const populationBenefit = 2 as const;
     const commerceIncomeBenefit = Number(
-      view.viewer.researchedTechs.includes("COMMERCE"),
+      technologyCapabilitiesV7(view.viewer.researchedTechs, view.viewer.faction)
+        .landTradeIncomeCoins === 1,
     ) as 0 | 1;
     const benefit =
       populationBenefit * 4 +
@@ -3072,10 +3075,11 @@ function* sharedCityContextWorkV7(
     const free =
       city === undefined
         ? 0
-        : city.level +
-          1 +
-          Number(view.viewer.researchedTechs.includes("PLANNING")) -
-          (assignedByCity.get(cityId) ?? 0);
+        : cityUnitCapacityForV7(
+            city.level,
+            view.viewer.researchedTechs,
+            view.viewer.faction,
+          ) - (assignedByCity.get(cityId) ?? 0);
     const needsCenterDefender =
       city !== undefined && threatened && !ownedAt.has(coordKey(city.at));
     let best: SharedCityCommandV7 | null = null;
@@ -3763,16 +3767,10 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "RALLY" && actor !== undefined) {
-    const targets = view.units.filter(
-      (unit) =>
-        unit.ownerId === view.viewer.id &&
-        unit.id !== actor.id &&
-        unit.form === "LAND" &&
-        !unit.activation.inspired &&
-        !["SUPPORT", "SIEGE"].includes(
-          unitRoleRuleV7(view, unit).tacticalRole,
-        ) &&
-        distance(unit.at, actor.at) === 1,
+    // Revision 17: the owner's Rally reach (WAAAGH! radius 2 including
+    // support and siege roles); Human and Undead Rally are unchanged.
+    const targets = view.units.filter((unit) =>
+      isRallyTargetV7(view, actor, unit),
     );
     strategicValue = targets.length * 12;
     priority = targets.length >= 2 ? 1235 : 720;
@@ -6268,8 +6266,11 @@ function freeCapacity(view: PlayerViewV7, cityId: CityId | null): number {
     (item) => item.id === cityId && item.ownerId === view.viewer.id,
   );
   if (city === undefined) return 0;
-  const capacity =
-    city.level + 1 + Number(view.viewer.researchedTechs.includes("PLANNING"));
+  const capacity = cityUnitCapacityForV7(
+    city.level,
+    view.viewer.researchedTechs,
+    view.viewer.faction,
+  );
   const assigned = view.units.filter(
     (unit) => unit.ownerId === view.viewer.id && unit.homeCityId === cityId,
   ).length;
