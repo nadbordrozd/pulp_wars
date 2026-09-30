@@ -26,6 +26,9 @@ function context(
         if (key === "canvas") return canvas;
         if (key === "drawImage") return drawImage;
         if (key === "clearRect") return clearRect;
+        // Attack preview labels measure their text (bead pulp_wars-nbl).
+        if (key === "measureText")
+          return (text: string) => ({ width: text.length * 6 });
         if (key === "getTransform")
           return () => ({
             a: pixelScale(),

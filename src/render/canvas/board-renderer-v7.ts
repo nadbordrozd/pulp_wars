@@ -35,7 +35,8 @@ import {
   drawAbilityTargetV7,
   afflictionSubjectV7,
   drawAfflictionMarkerV7,
-  drawCombatPreviewNoteV7,
+  drawPreviewTextStackV7,
+  type PreviewTextBoxV7,
   drawGraveMarkerV7,
   drawUndeadBadgeV7,
   type AbilityPreviewStyleV7,
@@ -63,6 +64,11 @@ import {
   type TileEdge,
 } from "./geometry";
 import { readinessUnitStyleV6 } from "./readiness-presentation";
+import {
+  PREVIEW_EDGE_MARGIN_CSS_PX_V7,
+  PreviewLabelPlacerV7,
+  type PreviewRectV7,
+} from "./preview-label-layout-v7";
 import { selectionJumpOffsetCssPx } from "./selection-jump-presentation";
 import { RULESET7_TACTICAL_UI_SYMBOL_BY_ID } from "../../assets/ruleset7-tactical-ui-symbols";
 import { tacticalAttachmentsV7 } from "../tactical-presentation-v7";
@@ -795,6 +801,12 @@ export function drawBoardV7(input: {
   readonly afflictionArt?: (
     subject: AfflictionSubjectV7,
   ) => CanvasImageSource | null;
+  /**
+   * The part of the viewport (CSS px) not covered by the HUD and the dock,
+   * as the start-camera framing measures it. Preview labels are clamped
+   * inside it; omitted, they are clamped inside the whole viewport.
+   */
+  readonly labelSafeArea?: LabelSafeAreaV7 | null;
 }): void {
   const { context, viewport, devicePixelRatio } = input;
   const chibiArt = input.artSet === "CHIBI" ? input.chibiArt : undefined;
@@ -1523,11 +1535,29 @@ export function drawBoardV7(input: {
     for (const link of publicLinks) drawPublicLink(context, camera, link);
     context.restore();
   }
+  // Preview labels and notes stay inside the visible, unobscured band and
+  // off each other; one placer serves every preview box of this frame.
+  // Every label is queued and drawn after every outline and area fill, so
+  // no later target's outline or splash ring crosses an earlier label.
+  const placer = new PreviewLabelPlacerV7(
+    previewSafeRectV7(viewport, input.labelSafeArea),
+  );
+  const labels: (() => void)[] = [];
+  const defer = (draw: () => void): void => {
+    labels.push(draw);
+  };
   for (const target of input.plan.entries) {
     if (target.kind !== "TARGET") continue;
-    drawMapTarget(context, camera, target);
+    drawMapTarget(context, camera, target, placer, defer);
   }
-  drawSplashPreviewV7(context, camera, input.plan, input.previewFocus ?? null);
+  drawSplashPreviewV7(
+    context,
+    camera,
+    input.plan,
+    input.previewFocus ?? null,
+    placer,
+    defer,
+  );
   for (const entry of input.plan.entries) {
     if (entry.kind !== "ABILITY_TARGET" || entry.abilityStyle === undefined)
       continue;
@@ -1539,8 +1569,11 @@ export function drawBoardV7(input: {
       entry.abilityStyle,
       entry.label ?? "",
       entry.lethal === true,
+      placer,
+      defer,
     );
   }
+  for (const draw of labels) draw();
   const statusPulse = input.statusPulse;
   if (
     statusPulse !== null &&
@@ -1742,10 +1775,40 @@ function targetStroke(
   return "#64e6cf";
 }
 
+/** Vertical band (and optional side insets) preview labels must stay in. */
+export interface LabelSafeAreaV7 {
+  readonly top: number;
+  readonly bottom: number;
+  readonly left?: number;
+  readonly right?: number;
+}
+
+/** The clamp rectangle for preview boxes, inset by the edge margin. */
+export function previewSafeRectV7(
+  viewport: Size,
+  area: LabelSafeAreaV7 | null | undefined,
+): PreviewRectV7 {
+  const margin = PREVIEW_EDGE_MARGIN_CSS_PX_V7;
+  const top = Math.max(0, area?.top ?? 0);
+  const bottom = Math.min(viewport.height, area?.bottom ?? viewport.height);
+  // A degenerate band (a dock taller than the canvas) falls back to the
+  // whole viewport, as the start-camera framing does.
+  const band =
+    bottom - top >= 1 ? { top, bottom } : { top: 0, bottom: viewport.height };
+  return {
+    left: Math.max(0, area?.left ?? 0) + margin,
+    right: Math.min(viewport.width, area?.right ?? viewport.width) - margin,
+    top: band.top + margin,
+    bottom: band.bottom - margin,
+  };
+}
+
 function drawMapTarget(
   context: CanvasRenderingContext2D,
   camera: CameraState,
   entry: BoardRenderPlanEntryV7,
+  placer: PreviewLabelPlacerV7,
+  defer: (draw: () => void) => void,
 ): void {
   const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
   const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
@@ -1755,29 +1818,35 @@ function drawMapTarget(
   context.setLineDash([9 * camera.zoom, 5 * camera.zoom]);
   for (const edge of entry.targetEdges ?? TILE_EDGES)
     strokeTileEdge(context, camera, entry.at, edge);
-  if (entry.target?.previewLabel !== undefined) {
-    context.setLineDash([]);
-    context.fillStyle = "#171722dd";
-    context.fillRect(
-      x - 45 * camera.zoom,
-      y + 39 * camera.zoom,
-      90 * camera.zoom,
-      18 * camera.zoom,
-    );
-    context.fillStyle = "#fff8df";
-    context.font = `${700} ${10 * camera.zoom}px system-ui`;
-    context.textAlign = "center";
-    context.fillText(entry.target.previewLabel, x, y + 52 * camera.zoom);
-  }
-  if (entry.target?.previewNote !== undefined)
-    drawCombatPreviewNoteV7(
-      context,
-      x,
-      y,
-      camera.zoom,
-      entry.target.previewNote,
-    );
   context.restore();
+  const boxes: PreviewTextBoxV7[] = [
+    ...(entry.target?.previewLabel === undefined
+      ? []
+      : [
+          {
+            text: entry.target.previewLabel,
+            fill: "#171722dd",
+            color: "#fff8df",
+            lineBox: 1.8,
+            baseline: 1.3,
+          },
+        ]),
+    ...(entry.target?.previewNote === undefined
+      ? []
+      : [
+          {
+            text: entry.target.previewNote,
+            fill: "#2a1633ee",
+            color: "#f3dcff",
+            lineBox: 1.6,
+            baseline: 1.2,
+          },
+        ]),
+  ];
+  if (boxes.length > 0)
+    defer(() => {
+      drawPreviewTextStackV7(context, x, y, camera.zoom, boxes, placer);
+    });
 }
 
 /** Faint area fills and outer edges of the selected unit's ability preview. */
@@ -1820,6 +1889,8 @@ function drawSplashPreviewV7(
   camera: CameraState,
   plan: BoardRenderPlanV7,
   focus: CoordV7 | null,
+  placer: PreviewLabelPlacerV7,
+  defer: (draw: () => void) => void,
 ): void {
   const splashTargets = plan.targets.filter(
     (target) => target.family === "ATTACK" && target.splash !== undefined,
@@ -1857,6 +1928,8 @@ function drawSplashPreviewV7(
       "SPLASH",
       item.plagued === true ? `−${item.damage} · Plague` : `−${item.damage}`,
       item.dies,
+      placer,
+      defer,
     );
 }
 

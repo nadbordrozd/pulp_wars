@@ -1972,10 +1972,15 @@
   color: #cfe6a6;
 }
 
+/*
+ * The Undead bite palette (docs/art/factions/UNDEAD.md): slate jaws with
+ * ivory teeth, as on the STATUS:BITTEN marker, and no red that could read as
+ * the Coral player colour.
+ */
 .v7-affliction-chip[data-unit-status="bitten"] {
-  border: 1px solid #f0d6c066;
-  background: #3d1216;
-  color: #f7ddd0;
+  border: 1px solid #7f8ca0aa;
+  background: #2f3746;
+  color: #ece6d2;
 }
 
 .v7-context-action[data-disabled-reason="plagued"],

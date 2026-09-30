@@ -5,6 +5,12 @@
  * both art sets share them.
  */
 
+import {
+  PREVIEW_TEXT_MIN_FONT_CSS_PX_V7,
+  wrapPreviewTextV7,
+  type PreviewLabelPlacerV7,
+} from "./preview-label-layout-v7";
+
 export type AbilityPreviewStyleV7 =
   "WAIL" | "RAISE" | "DEVOUR" | "SPLASH" | "TEND";
 
@@ -416,7 +422,11 @@ export function abilityAreaStrokeV7(style: AbilityPreviewStyleV7): string {
 
 /**
  * A previewed ability target: a solid inner outline plus a short label such
- * as `−3`, `Rise` or `+4 HP`. Lethal damage uses a red label.
+ * as `−3`, `Rise` or `+4 HP`. Lethal damage uses a red label. With a
+ * `placer`, the label box is clamped into the visible board band and nudged
+ * off earlier preview boxes; the outline stays on its cell. With `defer`, the
+ * label is queued so the board can draw every preview label above every
+ * preview outline and area fill.
  */
 export function drawAbilityTargetV7(
   context: CanvasRenderingContext2D,
@@ -426,6 +436,8 @@ export function drawAbilityTargetV7(
   style: AbilityPreviewStyleV7,
   label: string,
   lethal: boolean,
+  placer?: PreviewLabelPlacerV7,
+  defer?: (draw: () => void) => void,
 ): void {
   const size = 128 * zoom;
   context.save();
@@ -438,43 +450,122 @@ export function drawAbilityTargetV7(
     size - 18 * zoom,
     size - 18 * zoom,
   );
-  // Labels stay legible at the smallest zoom: never below 11 CSS px.
-  const font = Math.max(11, 15 * zoom);
-  const top = y - size / 2 + 2 * zoom;
-  context.font = `${800} ${font}px system-ui`;
-  context.textAlign = "center";
-  const width = Math.max(
-    font * 2.6,
-    context.measureText(label).width + font * 0.7,
-  );
-  context.fillStyle = lethal ? "#8f1f22ee" : "#171722e6";
-  context.fillRect(x - width / 2, top, width, font * 1.4);
-  context.strokeStyle = STYLE_COLORS[style].stroke;
-  context.lineWidth = Math.max(1, 1.5 * zoom);
-  context.strokeRect(x - width / 2, top, width, font * 1.4);
-  context.fillStyle = "#fff8df";
-  context.fillText(label, x, top + font * 1.05);
   context.restore();
+  const drawLabel = (): void => {
+    context.save();
+    // Labels stay legible at the smallest zoom: never below 11 CSS px.
+    const font = Math.max(11, 15 * zoom);
+    context.font = `${800} ${font}px system-ui`;
+    context.textAlign = "center";
+    const width = Math.max(
+      font * 2.6,
+      context.measureText(label).width + font * 0.7,
+    );
+    const height = font * 1.4;
+    const natural = { left: x - width / 2, top: y - size / 2 + 2 * zoom };
+    const { left, top } =
+      placer === undefined
+        ? natural
+        : placer.place(
+            { ...natural, width, height },
+            {
+              left: x - size / 2,
+              top: y - size / 2,
+              right: x + size / 2,
+              bottom: y + size / 2,
+            },
+          );
+    context.fillStyle = lethal ? "#8f1f22ee" : "#171722e6";
+    context.fillRect(left, top, width, height);
+    context.strokeStyle = STYLE_COLORS[style].stroke;
+    context.lineWidth = Math.max(1, 1.5 * zoom);
+    context.setLineDash([]);
+    context.strokeRect(left, top, width, height);
+    context.fillStyle = "#fff8df";
+    context.fillText(label, left + width / 2, top + font * 1.05);
+    context.restore();
+  };
+  if (defer === undefined) drawLabel();
+  else defer(drawLabel);
 }
 
-/** Second attack-preview line for Lifesteal and Infect outcomes. */
-export function drawCombatPreviewNoteV7(
+/** One box of an attack or landing preview stacked under its target. */
+export interface PreviewTextBoxV7 {
+  readonly text: string;
+  readonly fill: string;
+  readonly color: string;
+  /** Box height of one line, in fonts (a 10 px font in an 18 px box: 1.8). */
+  readonly lineBox: number;
+  /** First baseline below the box top, in fonts. */
+  readonly baseline: number;
+}
+
+/**
+ * Draws a target's preview label and optional note (Lifesteal, Infect,
+ * Plague and Bitten outcomes) as one stack under the cell centre. At zoom 1
+ * and above this matches the original layout (a 10 px label in a box at
+ * least 90 px wide, widened only for a text that overflowed it)
+ * at y + 39, the note right below it. Smaller zooms keep a
+ * PREVIEW_TEXT_MIN_FONT_CSS_PX_V7 font and wrap a text wider than 1.5 cells
+ * onto two lines; the placer keeps the stack inside the visible band.
+ */
+export function drawPreviewTextStackV7(
   context: CanvasRenderingContext2D,
   x: number,
   y: number,
   zoom: number,
-  note: string,
+  boxes: readonly PreviewTextBoxV7[],
+  placer?: PreviewLabelPlacerV7,
 ): void {
+  if (boxes.length === 0) return;
+  const font = Math.max(PREVIEW_TEXT_MIN_FONT_CSS_PX_V7, 10 * zoom);
+  const lineStep = font * 1.2;
   context.save();
-  context.font = `${700} ${10 * zoom}px system-ui`;
+  context.font = `${700} ${font}px system-ui`;
   context.textAlign = "center";
-  const width = Math.max(
-    90 * zoom,
-    context.measureText(note).width + 10 * zoom,
-  );
-  context.fillStyle = "#2a1633ee";
-  context.fillRect(x - width / 2, y + 57 * zoom, width, 16 * zoom);
-  context.fillStyle = "#f3dcff";
-  context.fillText(note, x, y + 69 * zoom);
+  const measure = (line: string): number => context.measureText(line).width;
+  const cell = 128 * zoom;
+  // One and a half cells: 192 px at zoom 1, so a label there keeps its line;
+  // at the smallest zooms a long attack label wraps instead of spanning
+  // three cells and colliding with its neighbours' labels.
+  const wrapWidth = Math.max(90 * zoom, 1.5 * cell);
+  const laid = boxes.map((box) => {
+    const lines = wrapPreviewTextV7(box.text, wrapWidth, measure);
+    return {
+      box,
+      lines,
+      width: Math.max(90 * zoom, Math.max(...lines.map(measure)) + font),
+      height: font * box.lineBox + (lines.length - 1) * lineStep,
+    };
+  });
+  const stackWidth = Math.max(...laid.map((entry) => entry.width));
+  const stackHeight = laid.reduce((sum, entry) => sum + entry.height, 0);
+  const natural = { left: x - stackWidth / 2, top: y + 39 * zoom };
+  const placed =
+    placer === undefined
+      ? natural
+      : placer.place(
+          { ...natural, width: stackWidth, height: stackHeight },
+          {
+            left: x - cell / 2,
+            top: y - cell / 2,
+            right: x + cell / 2,
+            bottom: y + cell / 2,
+          },
+        );
+  const centre = placed.left + stackWidth / 2;
+  let top = placed.top;
+  for (const entry of laid) {
+    context.fillStyle = entry.box.fill;
+    context.fillRect(centre - entry.width / 2, top, entry.width, entry.height);
+    context.fillStyle = entry.box.color;
+    for (const [index, line] of entry.lines.entries())
+      context.fillText(
+        line,
+        centre,
+        top + font * entry.box.baseline + index * lineStep,
+      );
+    top += entry.height;
+  }
   context.restore();
 }

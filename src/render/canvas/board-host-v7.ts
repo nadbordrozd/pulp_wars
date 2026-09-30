@@ -700,6 +700,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#drawSerial += 1;
     const now = this.#now();
     const jump = this.#selectionJump;
+    // Preview labels stay clear of the HUD and the open dock (the band the
+    // start-camera framing uses); measured only when a preview is offered.
+    const labelSafeArea =
+      this.#presentedView === null && model.offeredCommands.length > 0
+        ? this.#unobscuredBand()
+        : null;
     const renderView = (
       view: PlayerViewV7,
       clear: boolean,
@@ -739,6 +745,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         artSet: this.#artSet(),
         chibiArt: this.#chibiArt,
         previewFocus: this.#hovered ?? this.#focused,
+        labelSafeArea,
         selectionJump:
           jump === null
             ? null
