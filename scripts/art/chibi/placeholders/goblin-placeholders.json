@@ -1,0 +1,270 @@
+{
+  "kind": "PROGRAMMATIC_PLACEHOLDER",
+  "bead": "pulp_wars-0ao.4",
+  "replacedBy": "pulp_wars-0ao.8",
+  "generator": "scripts/art/chibi/goblin-placeholders.ts",
+  "command": "npm run art:goblin-placeholders",
+  "pixelLab": false,
+  "palette": {
+    "key": "#d8262c",
+    "black": "#000000",
+    "goblinSkin": "#9aa83e",
+    "goblinShade": "#6c7a2a",
+    "orcSkin": "#6f7a52",
+    "orcShade": "#4d5639",
+    "trollSkin": "#8a9488",
+    "trollShade": "#5f685e",
+    "moss": "#56642c",
+    "ironDark": "#3a4250",
+    "ironMid": "#6d7684",
+    "ironLight": "#aeb6c2",
+    "charcoal": "#33363d",
+    "cream": "#efe6c8",
+    "spark": "#fff8d0"
+  },
+  "assets": [
+    {
+      "id": "chibi-goblin-placeholder-goblin",
+      "subject": "UNIT:GOBLIN:FIGHTER",
+      "role": "FIGHTER",
+      "name": "Goblin",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "anchor": "default",
+      "cue": "big sideways ears and a raised jagged dagger",
+      "status": "PLACEHOLDER",
+      "replacedBy": "pulp_wars-0ao.8",
+      "master": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-goblin.png",
+        "sha256": "eaf4a1eb8cd184fd36f8ab852748d269320fca3713c7c6aacfaf530b04355578",
+        "pixelSha256": "2cd3dbf44cc6293f4751d20f10389cbd42db29dc48275f42d7277ac16c4fbf60"
+      },
+      "mask": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-goblin.mask.png",
+        "sha256": "547796582c8438104f3dca3a9012a12ef39863c6cfa02579b249b0cdcd2126da",
+        "pixelSha256": "32832b2856ee2af9d0a79d0359e72ad72fc87d2c0564427742fa1fbeb8972e6f"
+      },
+      "maskQa": {
+        "status": "PASS",
+        "opaquePixels": 2080,
+        "ownerPixels": 570,
+        "coverage": 0.274,
+        "coverageOnTarget": true
+      }
+    },
+    {
+      "id": "chibi-goblin-placeholder-wolf-rider",
+      "subject": "UNIT:GOBLIN:RAIDER",
+      "role": "RAIDER",
+      "name": "Wolf Rider",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": "default",
+      "cue": "a low wide wolf with open jaws and a small goblin rider",
+      "status": "PLACEHOLDER",
+      "replacedBy": "pulp_wars-0ao.8",
+      "master": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-wolf-rider.png",
+        "sha256": "efa395ce661b26f3dbbbea3862cac77c8f5359b73c525b364c9a4e33034a26cb",
+        "pixelSha256": "10d281d8371beb5be229488ac9fcc35226287e45c387116ae02280ed73ca17ac"
+      },
+      "mask": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-wolf-rider.mask.png",
+        "sha256": "b74f929f4c5833c4a83bf3a07e3e8ce7079ed09e8d856db9186dd5ed028b11ba",
+        "pixelSha256": "693378043f3ba1f99bd1b809e2b570fb7bcaddd4b68ebeefa12eff2052997858"
+      },
+      "maskQa": {
+        "status": "PASS",
+        "opaquePixels": 2664,
+        "ownerPixels": 627,
+        "coverage": 0.2354,
+        "coverageOnTarget": true
+      }
+    },
+    {
+      "id": "chibi-goblin-placeholder-bomb-chucker",
+      "subject": "UNIT:GOBLIN:MARKSMAN",
+      "role": "MARKSMAN",
+      "name": "Bomb Chucker",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "anchor": "default",
+      "cue": "a round black bomb raised overhead with a lit fuse",
+      "status": "PLACEHOLDER",
+      "replacedBy": "pulp_wars-0ao.8",
+      "master": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-bomb-chucker.png",
+        "sha256": "715114d167f44376a14395d4341e6b46c7318e8c29fd073208052b5d2ae208f5",
+        "pixelSha256": "97240dae18fe9155c123e9376fdcee091271083e31be4ba6099d748777c1e7e4"
+      },
+      "mask": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-bomb-chucker.mask.png",
+        "sha256": "3f2bbcb5b0e8fd8cd3f5ec43fb970b3df95c436a445aee2ea7f8d2ac8c4bce06",
+        "pixelSha256": "e1db3bac72d5fdce18fece23fd157eccb06295ff258cd1f390f777f5c0482c85"
+      },
+      "maskQa": {
+        "status": "PASS",
+        "opaquePixels": 2218,
+        "ownerPixels": 468,
+        "coverage": 0.211,
+        "coverageOnTarget": true
+      }
+    },
+    {
+      "id": "chibi-goblin-placeholder-orc-brute",
+      "subject": "UNIT:GOBLIN:GUARD",
+      "role": "GUARD",
+      "name": "Orc Brute",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "anchor": "default",
+      "cue": "a broad orc with a round spiked shield and a raised cleaver",
+      "status": "PLACEHOLDER",
+      "replacedBy": "pulp_wars-0ao.8",
+      "master": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-orc-brute.png",
+        "sha256": "046499ce125bd9c38a7a8c3caa3c09de60c7ca6fd3f0748d5502cf5d3caf62b4",
+        "pixelSha256": "b2d9fe8bc796f1603fb721f56c2d69fa04e77e52241f93169cfd586cce5f6ffa"
+      },
+      "mask": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-orc-brute.mask.png",
+        "sha256": "f6285e748bd8a601aa70cbbaeb883211c3d12531be3104d023301f869fead974",
+        "pixelSha256": "c117238783a815a25f1a56f8f5a72f9d5b978f9582b31d3bd24f76e90c95673d"
+      },
+      "maskQa": {
+        "status": "PASS",
+        "opaquePixels": 2890,
+        "ownerPixels": 684,
+        "coverage": 0.2367,
+        "coverageOnTarget": true
+      }
+    },
+    {
+      "id": "chibi-goblin-placeholder-orc-warboss",
+      "subject": "UNIT:GOBLIN:CAPTAIN",
+      "role": "CAPTAIN",
+      "name": "Orc Warboss",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "anchor": "default",
+      "cue": "a horned helmet and a megaphone at the mouth",
+      "status": "PLACEHOLDER",
+      "replacedBy": "pulp_wars-0ao.8",
+      "master": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-orc-warboss.png",
+        "sha256": "f903c5bd46fd24e89cd422fdb0f5af027ab53f7372217560da86ff9895de60e7",
+        "pixelSha256": "79060816407f4f225a8f57a342dc05bd6ea49c4f106c1ad561c9a20e6d768a22"
+      },
+      "mask": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-orc-warboss.mask.png",
+        "sha256": "db0bfe6e82aceb3bb179ccf648ca2ba45c5d9459b734191794f16b90e62b49bb",
+        "pixelSha256": "b75b476f6a39528338663053758673fb4e22cee453a6fc3f48b03e50a5d8141d"
+      },
+      "maskQa": {
+        "status": "PASS",
+        "opaquePixels": 3058,
+        "ownerPixels": 800,
+        "coverage": 0.2616,
+        "coverageOnTarget": true
+      }
+    },
+    {
+      "id": "chibi-goblin-placeholder-rocket-cart",
+      "subject": "UNIT:GOBLIN:CATAPULT",
+      "role": "CATAPULT",
+      "name": "Rocket Cart",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": "default",
+      "cue": "two spiked wheels under one long diagonal rocket",
+      "status": "PLACEHOLDER",
+      "replacedBy": "pulp_wars-0ao.8",
+      "master": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-rocket-cart.png",
+        "sha256": "53d7f6c26665ab5956968ad2e5109b6eb8579837060c290ad39c5b12616392e9",
+        "pixelSha256": "22773894bac21a4fbe52f8387adb4f8aa2981a311162ee8a60571643e246871c"
+      },
+      "mask": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-rocket-cart.mask.png",
+        "sha256": "32690ade0370038393c0725b6a2d354e9bef78c4f278877c52fa7341f2de9d50",
+        "pixelSha256": "7ec5bdeec32a00c9bb9bcb181cb23190d88743127d4c744e1074dd86ce7d5258"
+      },
+      "maskQa": {
+        "status": "PASS",
+        "opaquePixels": 2407,
+        "ownerPixels": 653,
+        "coverage": 0.2713,
+        "coverageOnTarget": true
+      }
+    },
+    {
+      "id": "chibi-goblin-placeholder-scrap-buggy",
+      "subject": "UNIT:GOBLIN:KNIGHT",
+      "role": "KNIGHT",
+      "name": "Scrap Buggy",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 33,
+        "y": 48
+      },
+      "cue": "a low spiky car with a front ram and an exhaust soot puff",
+      "status": "PLACEHOLDER",
+      "replacedBy": "pulp_wars-0ao.8",
+      "master": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-scrap-buggy.png",
+        "sha256": "4d4e09942a1463509d4e7f04d668f91456b7f83f3818f2d0661d7c254c7e0ad5",
+        "pixelSha256": "fc658fd16e457a521913e88ebdd3373e41ecbbcb1d4044ac528d0360d77b82ae"
+      },
+      "mask": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-scrap-buggy.mask.png",
+        "sha256": "d171db2decf846534e8feca275a85a57950dc16c59e3ff5eb0346765b1bb5d01",
+        "pixelSha256": "0b4d08c3787ea57f74d93ea868ee6a97cd0f0357146f344b390f9ea4e4ede84e"
+      },
+      "maskQa": {
+        "status": "PASS",
+        "opaquePixels": 2979,
+        "ownerPixels": 751,
+        "coverage": 0.2521,
+        "coverageOnTarget": true
+      }
+    },
+    {
+      "id": "chibi-goblin-placeholder-troll",
+      "subject": "UNIT:GOBLIN:JUGGERNAUT",
+      "role": "JUGGERNAUT",
+      "name": "Troll",
+      "assetClass": "GIANT_UNIT",
+      "width": 88,
+      "height": 104,
+      "anchor": "default",
+      "cue": "a huge hunched grey-green lump with a stone club on its shoulder",
+      "status": "PLACEHOLDER",
+      "replacedBy": "pulp_wars-0ao.8",
+      "master": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-troll.png",
+        "sha256": "ce3b5fc0dc60321a6ac11957307573ca31d728864b6e1c230075d33704d59eee",
+        "pixelSha256": "9d045da026820f3c2b0a1bbc84be52282388c8d68fc56b87aad0f2ebd973de7d"
+      },
+      "mask": {
+        "path": "public/assets/chibi/placeholders/chibi-goblin-placeholder-troll.mask.png",
+        "sha256": "880434e1ece2886f11f3d443fa34d50b84d6798c8fa61909f671f06b80102bdf",
+        "pixelSha256": "ff798a730e959259753817510575bd32d8cb0b515de6f6f1396caf529de1d201"
+      },
+      "maskQa": {
+        "status": "PASS",
+        "opaquePixels": 4530,
+        "ownerPixels": 1597,
+        "coverage": 0.3525,
+        "coverageOnTarget": true
+      }
+    }
+  ]
+}

@@ -25,6 +25,8 @@ export type ArtSubjectV7 =
   | `IMPROVEMENT:${ImprovementIdV7}`
   | `UNIT:${UnitRoleIdV7 | "EMBARKED_TRANSPORT"}`
   | `UNIT:UNDEAD:${UndeadArtRoleV7}`
+  /** Revision 17: placeholders until bead pulp_wars-0ao.8 (GOBLIN.md). */
+  | `UNIT:GOBLIN:${GoblinArtRoleV7}`
   | `CITY:${1 | 2 | 3}`
   | "SITE:VILLAGE"
   | "TREASURE"
@@ -77,6 +79,12 @@ export type UndeadArtRoleV7 = Exclude<
   "PATROL_BOAT" | "BATTLESHIP"
 >;
 
+/**
+ * Roles with their own Goblin art (docs/art/factions/GOBLIN.md): the same
+ * land roles as the Undead; Goblin ships reuse the Human ship art.
+ */
+export type GoblinArtRoleV7 = UndeadArtRoleV7;
+
 const SHARED_ART_ROLES_V7: readonly UnitRoleIdV7[] = [
   "PATROL_BOAT",
   "BATTLESHIP",
@@ -92,8 +100,11 @@ export function unitArtSubjectV7(unit: {
   readonly faction: FactionIdV7;
 }): ArtSubjectV7 {
   if (unit.form === "EMBARKED") return "UNIT:EMBARKED_TRANSPORT";
-  if (unit.faction === "UNDEAD" && !SHARED_ART_ROLES_V7.includes(unit.role))
+  if (SHARED_ART_ROLES_V7.includes(unit.role)) return `UNIT:${unit.role}`;
+  if (unit.faction === "UNDEAD")
     return `UNIT:UNDEAD:${unit.role as UndeadArtRoleV7}`;
+  if (unit.faction === "GOBLIN")
+    return `UNIT:GOBLIN:${unit.role as GoblinArtRoleV7}`;
   return `UNIT:${unit.role}`;
 }
 
@@ -101,14 +112,16 @@ export function unitArtSubjectV7(unit: {
  * The subject whose art stands in while a faction subject has no usable
  * raster: `UNIT:UNDEAD:<ROLE>` falls back to the Human `UNIT:<ROLE>` (drawn
  * with the Undead badge), and likewise `PORTRAIT:UNDEAD:<ROLE>` and
- * `ICON:ACTION:UNDEAD:RALLY`. Every other subject has no fallback.
+ * `ICON:ACTION:UNDEAD:RALLY`; `UNIT:GOBLIN:<ROLE>` falls back to the Human
+ * sprite with the Goblin badge. Every other subject has no fallback.
  */
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
 ): ArtSubjectV7 | null {
-  return subject.includes(":UNDEAD:")
-    ? (subject.replace(":UNDEAD:", ":") as ArtSubjectV7)
-    : null;
+  for (const faction of [":UNDEAD:", ":GOBLIN:"])
+    if (subject.includes(faction))
+      return subject.replace(faction, ":") as ArtSubjectV7;
+  return null;
 }
 
 export type ChibiAssetClassV7 =
@@ -172,6 +185,19 @@ export interface ChibiArtAssetV7 {
    * Master = body over ground, pixel for pixel (checked by art:validate).
    */
   readonly layers?: ChibiTallTerrainLayersV7;
+  /**
+   * Set on a programmatic placeholder (not PixelLab art): it is checked
+   * against its generator's records instead of the pipeline records, and
+   * the named bead replaces it with reviewed art.
+   */
+  readonly placeholder?: ChibiPlaceholderV7;
+}
+
+export interface ChibiPlaceholderV7 {
+  /** The checked-in generator's records file. */
+  readonly records: string;
+  /** The bead that replaces the placeholder with reviewed PixelLab art. */
+  readonly replacedBy: string;
 }
 
 export interface ChibiTallTerrainLayersV7 {

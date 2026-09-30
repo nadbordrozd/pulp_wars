@@ -92,6 +92,25 @@ is the unowned Grave marker: RESOURCE, 40 x 40, centred, no mask; without a
 raster (and in LEGACY) the code-drawn marker stays. Prompts and recipes:
 [UNDEAD.md](factions/UNDEAD.md) and `scripts/art/chibi/batches/batch-undead.json`.
 
+**Goblin subjects (revision 17, placeholders from bead `pulp_wars-0ao.4`).**
+A Goblin land unit asks for `UNIT:GOBLIN:<ROLE>` (Goblin `FIGHTER`, Wolf
+Rider `RAIDER`, Bomb Chucker `MARKSMAN`, Orc Brute `GUARD`, Orc Warboss
+`CAPTAIN`, Rocket Cart `CATAPULT`, Scrap Buggy `KNIGHT`, Troll
+`JUGGERNAUT`) with the canvas, class and mask of the Human role above; the
+Scrap Buggy's anchor sits 3 px right of the default so its soot cloud and
+rear wheel clear the HP bar and seat badge. Until bead `pulp_wars-0ao.8`
+registers PixelLab art, these subjects are programmatic placeholders drawn
+by [`goblin-placeholders.ts`](../../scripts/art/chibi/goblin-placeholders.ts)
+(`npm run art:goblin-placeholders`, then `-- check` and `-- sheet`) into
+`public/assets/chibi/placeholders/`, recorded in
+[`goblin-placeholders.json`](../../scripts/art/chibi/placeholders/goblin-placeholders.json)
+and marked with `placeholder` in the runtime manifest. Without a usable
+raster (and always in LEGACY) a Goblin unit draws the Human sprite of its
+role with the Goblin badge, an olive goblin head on a charcoal disc in the
+Undead badge's corner. Goblin Patrol Boats, Battleships and embarked
+transports use the Human subjects, with the badge. Review evidence:
+`art/pixellab/reviews/chibi-goblin-placeholders/`.
+
 ## Map overlays drawn in code (no raster today)
 
 | Overlay                                                   | Drawn by                                         | Plan batch     | Notes                                                                                 |

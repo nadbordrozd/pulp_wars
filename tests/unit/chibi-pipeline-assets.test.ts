@@ -1195,6 +1195,10 @@ describe("chibi runtime registry", () => {
           });
     }
     for (const entry of CHIBI_ART_ASSETS_V7) {
+      // Programmatic placeholders (the Goblin units, pulp_wars-0ao.4) are
+      // checked against their generator's records in
+      // chibi-goblin-placeholder-assets.test.ts.
+      if (entry.placeholder !== undefined) continue;
       const record = accepted.get(entry.id);
       expect(record, entry.id).toBeDefined();
       expect(

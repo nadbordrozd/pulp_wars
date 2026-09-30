@@ -43,6 +43,7 @@ import {
   type AbilityPreviewStyleV7,
   type AfflictionSubjectV7,
 } from "./undead-canvas-v7";
+import { drawGoblinBadgeV7 } from "./goblin-canvas-v7";
 import {
   RULESET6_UNIT_ART_GEOMETRY,
   RULESET7_CAPTAIN_ART_GEOMETRY,
@@ -203,10 +204,11 @@ export interface BoardRenderPlanEntryV7 {
   /** CITY only: the owner's capital (marked by a crown in the CHIBI art set). */
   readonly capital?: boolean;
   /**
-   * UNIT only: an Undead-owned unit. It is drawn with the Undead faction
-   * badge unless the CHIBI art set shows its own Undead raster.
+   * UNIT only: an Undead- or Goblin-owned unit. It is drawn with its
+   * faction badge unless the CHIBI art set shows its own faction raster
+   * (for Goblins, the pulp_wars-0ao.4 placeholders).
    */
-  readonly faction?: "UNDEAD";
+  readonly faction?: "UNDEAD" | "GOBLIN";
   /**
    * UNIT only, revision 14: the public Plague and Bitten statuses, drawn as
    * small markers in the piece's overlay frame (absent when there are none).
@@ -418,8 +420,8 @@ export function buildBoardRenderPlanV7(
   const bittenIds = new Set(view.bitten.map((entry) => entry.unitId));
   for (const unit of view.units) {
     const faction = playerFactionV7(view, unit.ownerId);
-    const undead = faction === "UNDEAD";
-    const undeadLabel = undead ? unitRoleRuleV7(view, unit).label : null;
+    const factionUnit = faction === "UNDEAD" || faction === "GOBLIN";
+    const factionLabel = factionUnit ? unitRoleRuleV7(view, unit).label : null;
     const afflictions: AfflictionIdV7[] = [];
     if (plaguedIds.has(unit.id)) afflictions.push("PLAGUE");
     if (bittenIds.has(unit.id)) afflictions.push("BITTEN");
@@ -436,20 +438,21 @@ export function buildBoardRenderPlanV7(
         unit.form === "EMBARKED"
           ? "unit-shared-embarked-transport"
           : RULESET7_UNIT_ART_IDS[unit.role],
-      // Undead land units ask for their own art first (UNIT:UNDEAD:<ROLE>);
-      // without it the renderer falls back to the Human sprite plus badge.
+      // Undead and Goblin land units ask for their own art first
+      // (UNIT:<FACTION>:<ROLE>); without it the renderer falls back to the
+      // Human sprite plus the faction badge.
       artSubject: unitArtSubjectV7({ ...unit, faction }),
       label:
         unit.form === "EMBARKED"
-          ? `Embarked Transport · ${undeadLabel ?? title(unit.role)} passenger`
-          : (undeadLabel ?? title(unit.role)),
+          ? `Embarked Transport · ${factionLabel ?? title(unit.role)} passenger`
+          : (factionLabel ?? title(unit.role)),
       ready:
         unit.ownerId === view.viewer.id &&
         !unit.activation.handled &&
         commands.some(
           (command) => command.kind === "MOVE" && command.unitId === unit.id,
         ),
-      ...(undead ? { faction: "UNDEAD" as const } : {}),
+      ...(faction === "UNDEAD" || faction === "GOBLIN" ? { faction } : {}),
       ...(afflictions.length > 0 ? { afflictions } : {}),
     });
   }
@@ -1165,7 +1168,8 @@ export function drawBoardV7(input: {
       // A unit or city drawn with (or loading) a registered chibi raster uses
       // the chibi overlay frame; legacy fallbacks keep the legacy overlays.
       let chibiPiece = false;
-      // An Undead unit shown with its own Undead raster needs no badge.
+      // An Undead or Goblin unit shown with its own faction raster needs no
+      // badge.
       let factionArt = false;
       if (entry.assetId !== undefined) {
         const resolved = resolveChibiEntry(entry);
@@ -1330,6 +1334,8 @@ export function drawBoardV7(input: {
         }
         if (entry.kind === "UNIT" && entry.faction === "UNDEAD" && !factionArt)
           drawUndeadBadgeV7(context, x, y, camera.zoom, chibiPiece);
+        if (entry.kind === "UNIT" && entry.faction === "GOBLIN" && !factionArt)
+          drawGoblinBadgeV7(context, x, y, camera.zoom, chibiPiece);
         if (entry.kind === "UNIT")
           for (const [slot, affliction] of (
             entry.afflictions ?? []

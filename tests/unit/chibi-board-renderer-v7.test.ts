@@ -25,6 +25,7 @@ import {
 } from "../../src/render/canvas/chibi-geometry-v7";
 import { RULESET7_PLAYER_COLORS } from "../../src/render/canvas/owner-recolour-v7";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
+import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
 
 type LogEntry = readonly unknown[];
 
@@ -658,6 +659,75 @@ describe("CHIBI board rendering", () => {
         }
       expect({ id: asset.id, covered }).toEqual({ id: asset.id, covered: [] });
     }
+  });
+
+  it("labels Goblin units, asks for UNIT:GOBLIN art and badges them only over Human art (pulp_wars-0ao.4)", () => {
+    const state = goblinArenaV7(
+      ["GOBLIN", "ORIGINAL"],
+      [
+        { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
+        { seat: 0, role: "JUGGERNAUT", at: { x: 6, y: 3 } },
+        { seat: 1, role: "FIGHTER", at: { x: 4, y: 5 } },
+      ],
+    );
+    const view = viewForV7(state, state.humanPlayerId);
+    const units = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    }).entries.filter((candidate) => candidate.kind === "UNIT");
+    const at = (x: number, y: number) =>
+      units.find((candidate) => candidate.at.x === x && candidate.at.y === y);
+    expect(at(4, 3)).toMatchObject({
+      faction: "GOBLIN",
+      label: "Goblin",
+      artSubject: "UNIT:GOBLIN:FIGHTER",
+      assetId: at(4, 5)?.assetId,
+    });
+    expect(at(6, 3)).toMatchObject({
+      faction: "GOBLIN",
+      label: "Troll",
+      artSubject: "UNIT:GOBLIN:JUGGERNAUT",
+    });
+    expect(at(4, 5)?.faction).toBeUndefined();
+    expect(at(4, 5)?.label).toBe("Fighter");
+    const goblin = at(4, 3);
+    if (goblin === undefined) throw new Error("Goblin missing");
+    const placeholder = chibiAsset(
+      "UNIT:GOBLIN:FIGHTER",
+      "STANDARD_UNIT",
+      56,
+      80,
+    );
+    const fighter = chibiAsset("UNIT:FIGHTER", "STANDARD_UNIT", 56, 80);
+    const discs = (
+      artSet: "LEGACY" | "CHIBI",
+      ready: readonly ChibiArtAssetV7[],
+    ) => {
+      const { context, log } = recordingContext();
+      drawBoardV7({
+        context,
+        viewport: { width: 800, height: 600 },
+        devicePixelRatio: 1,
+        camera: { offsetX: 40, offsetY: 40, zoom: chibiCameraZoom(1) },
+        plan: plan([{ ...goblin, at: { x: 1, y: 1 } }]),
+        images: legacyImages,
+        artSet,
+        chibiArt: fakeChibi(ready),
+      });
+      return {
+        drawn: images(log).map((call) => call[1]),
+        arcs: log.filter((call) => call[0] === "arc").length,
+      };
+    };
+    // LEGACY: the Human sprite plus the Goblin badge (a disc).
+    const legacy = discs("LEGACY", [placeholder]);
+    expect(legacy.drawn).toEqual([{ legacy: goblin.assetId }]);
+    expect(legacy.arcs).toBeGreaterThan(0);
+    // CHIBI with the placeholder registered: the placeholder, no badge.
+    const own = discs("CHIBI", [placeholder, fighter]);
+    expect(own.drawn).toEqual([{ chibi: placeholder.id }]);
+    expect(own.arcs).toBe(0);
   });
 
   it("draws a giant's HP bar, seat badge and Undead badge after its sprite", () => {

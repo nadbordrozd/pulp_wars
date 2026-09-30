@@ -308,6 +308,11 @@ stable, so they should already carry the silhouette key of each unit:
 A crude but correct silhouette beats a detailed one: the placeholders are
 what balance and UI testers will learn the roster from.
 
+They are drawn by `scripts/art/chibi/goblin-placeholders.ts` (`npm run
+art:goblin-placeholders`) and registered with a `placeholder` marker; the
+[asset inventory](../CHIBI_ASSET_INVENTORY.md) lists the files, and the
+sprite bead replaces every marked entry.
+
 ### Explosion effects
 
 Explosions are unowned, so no effect uses the key red, and none uses
