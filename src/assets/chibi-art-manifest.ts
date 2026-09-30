@@ -250,12 +250,14 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     url: chibiArtUrl("assets/chibi/resources/chibi-game.png"),
   },
   {
-    id: "chibi-ore",
+    // Bead pulp_wars-pa3 (batch ore-2): copper-orange Ore that reads on the
+    // grey Mountains; it replaces batch 3's chibi-ore.
+    id: "chibi-ore-2",
     subject: "RESOURCE:ORE",
     assetClass: "RESOURCE",
     width: 40,
     height: 40,
-    url: chibiArtUrl("assets/chibi/resources/chibi-ore.png"),
+    url: chibiArtUrl("assets/chibi/resources/chibi-ore-2.png"),
   },
   {
     id: "chibi-fish",

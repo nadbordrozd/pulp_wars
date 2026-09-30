@@ -1,0 +1,799 @@
+{
+  "schemaVersion": 1,
+  "batch": "ore-2",
+  "recipes": {
+    "ore-2-a": {
+      "id": "ore-2-a",
+      "asset": "chibi-ore-2",
+      "jobId": "sync-6c2bca8f-e88d-40fc-8e0b-1e3ada1f43c6",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "ore-2",
+        "asset": "chibi-ore-2",
+        "subject": "RESOURCE:ORE",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 71401,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky cluster of three or four big lumpy copper-orange metal ore nuggets with a few small bright pale-yellow shiny glints, packed onto one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore cluster is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cluster of three or four big lumpy copper-orange metal ore nuggets with a few small bright pale-yellow shiny glints, packed onto one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore cluster is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cluster of three or four big lumpy copper-orange metal ore nuggets with a few small bright pale-yellow shiny glints, packed onto one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore cluster is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red."
+      },
+      "submittedAt": "2026-09-30T09:20:16.428Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-ore-2/ore-2-a.png",
+      "rawSheetSha256": "5f046c0b42ef48106aaee9ae78a069225cc43da5ccbad1b4f73aadaf1cd202c9",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:20:44.499Z",
+      "usageUsd": 0.00789304166369968,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Rust-red round nuggets on a grey stone plate: plate is a hard reject, and the red-brown sits too close to Coral.",
+        "reviewedAt": "2026-09-30T09:28:22.269Z"
+      }
+    },
+    "ore-2-b": {
+      "id": "ore-2-b",
+      "asset": "chibi-ore-2",
+      "jobId": "sync-77896fe7-20f1-41bd-a877-222618be4dc2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "ore-2",
+        "asset": "chibi-ore-2",
+        "subject": "RESOURCE:ORE",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 71402,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky cluster of three or four big lumpy copper-orange metal ore nuggets with a few small bright pale-yellow shiny glints, packed onto one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore cluster is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cluster of three or four big lumpy copper-orange metal ore nuggets with a few small bright pale-yellow shiny glints, packed onto one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore cluster is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cluster of three or four big lumpy copper-orange metal ore nuggets with a few small bright pale-yellow shiny glints, packed onto one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore cluster is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red."
+      },
+      "submittedAt": "2026-09-30T09:20:44.512Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-ore-2/ore-2-b.png",
+      "rawSheetSha256": "9c3ff1922785d781a6a4571cdd27c3e4ef49501b23238a87c8487a9dbcda3ea8",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7188,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:22:20.122Z",
+      "usageUsd": 0.012393588966793484,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Orange balls on a black rock ringed by a white ellipse (a plate/rim); round shapes read as oranges, not ore.",
+        "reviewedAt": "2026-09-30T09:28:22.787Z"
+      }
+    },
+    "ore-2-c": {
+      "id": "ore-2-c",
+      "asset": "chibi-ore-2",
+      "jobId": "sync-e8650ba4-44b1-410a-9e67-0e5d2f1d2113",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "ore-2",
+        "asset": "chibi-ore-2",
+        "subject": "RESOURCE:ORE",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 71403,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky cluster of three or four big lumpy copper-orange metal ore nuggets with a few small bright pale-yellow shiny glints, packed onto one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore cluster is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cluster of three or four big lumpy copper-orange metal ore nuggets with a few small bright pale-yellow shiny glints, packed onto one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore cluster is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cluster of three or four big lumpy copper-orange metal ore nuggets with a few small bright pale-yellow shiny glints, packed onto one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore cluster is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red."
+      },
+      "submittedAt": "2026-09-30T09:22:20.124Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-ore-2/ore-2-c.png",
+      "rawSheetSha256": "61c3d62e7db003eac13c7e5ff651cfee4b8ca8161526158a63663f0baa25e137",
+      "plateHints": [
+        {
+          "bandRows": 4,
+          "groundShare": 0.1026,
+          "footprintWidthShare": 0.7917,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:22:56.797Z",
+      "usageUsd": 0.007678970681296455,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Clear orange on grey rock, but a pile of shiny round balls reads as oranges or cannonballs rather than ore.",
+        "reviewedAt": "2026-09-30T09:28:23.312Z"
+      }
+    },
+    "ore-2-d": {
+      "id": "ore-2-d",
+      "asset": "chibi-ore-2",
+      "jobId": "sync-ba7000af-2cc5-4415-9d2d-272529854e77",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "ore-2",
+        "asset": "chibi-ore-2",
+        "subject": "RESOURCE:ORE",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 71404,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim."
+      },
+      "submittedAt": "2026-09-30T09:23:38.711Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-ore-2/ore-2-d.png",
+      "rawSheetSha256": "e6ce364a7064575ab506171d092d8cc87b9d5de4b1e5026c9ef0e7ad937d13df",
+      "plateHints": [
+        {
+          "bandRows": 4,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8261,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:24:03.832Z",
+      "usageUsd": 0.007081122371885512,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "One muddy rust-red blob with a grey patch: weak shape, and the red-brown drifts towards Coral.",
+        "reviewedAt": "2026-09-30T09:28:23.825Z"
+      }
+    },
+    "ore-2-e": {
+      "id": "ore-2-e",
+      "asset": "chibi-ore-2",
+      "jobId": "sync-41e9ca56-0a44-486e-918d-9db24dc210b6",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "ore-2",
+        "asset": "chibi-ore-2",
+        "subject": "RESOURCE:ORE",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 71405,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim."
+      },
+      "submittedAt": "2026-09-30T09:24:03.835Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-ore-2/ore-2-e.png",
+      "rawSheetSha256": "6cc24e6772ee928b78bebd5eb7feed910be5c1d7ec7c4e82edeb2801c1965966",
+      "plateHints": [
+        {
+          "bandRows": 5,
+          "groundShare": 0,
+          "footprintWidthShare": 0.96,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:24:27.923Z",
+      "usageUsd": 0.007149197657903035,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Four faceted copper-orange ore chunks around a small dark blue-grey rock, thick black outline, no plate. Warm orange (hue about 26) against the cool grey of both Mountain variants: unmistakable at 1:1 and zoom 0.75, where the batch-3 grey-and-pale-blue Ore blended into the rock. About 25 x 27 px of the 40 x 40 canvas, clearly smaller than a unit; orange sits between Coral (hue 2, salmon) and Gold (hue 44, mustard) and matches neither, and is far from Teal and Violet.",
+        "reviewedAt": "2026-09-30T09:28:26.504Z"
+      }
+    },
+    "ore-2-f": {
+      "id": "ore-2-f",
+      "asset": "chibi-ore-2",
+      "jobId": "sync-64448bfc-442f-4e41-b692-fbd5cdf62dde",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "ore-2",
+        "asset": "chibi-ore-2",
+        "subject": "RESOURCE:ORE",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 71406,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim."
+      },
+      "submittedAt": "2026-09-30T09:24:27.928Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-ore-2/ore-2-f.png",
+      "rawSheetSha256": "3b88c9a97da186d54e4d25f9d7218d82abbb3f11064e672f6ca936bf33283667",
+      "plateHints": [
+        {
+          "bandRows": 4,
+          "groundShare": 0.0196,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:25:11.433Z",
+      "usageUsd": 0.008572798569997151,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Tiny: two orange balls and a grey ball, too small and round to read as ore at zoom 0.75.",
+        "reviewedAt": "2026-09-30T09:28:24.350Z"
+      }
+    },
+    "ore-2-g": {
+      "id": "ore-2-g",
+      "asset": "chibi-ore-2",
+      "jobId": "sync-a63d23f6-606c-460e-90b0-783dec6f66e3",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "ore-2",
+        "asset": "chibi-ore-2",
+        "subject": "RESOURCE:ORE",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 71407,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The ore heap is wide and fills most of the image width.",
+            "negative": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image. The ore heap is wide and fills most of the image width.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image. The ore heap is wide and fills most of the image width. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim."
+      },
+      "submittedAt": "2026-09-30T09:25:41.438Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-ore-2/ore-2-g.png",
+      "rawSheetSha256": "85a544c91b94d2b6d659fea27aae9a3b7419d359702048fd470838e0f466d987",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.0486,
+          "footprintWidthShare": 0.9706,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:26:14.366Z",
+      "usageUsd": 0.007868770625856187,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Reads on the mountain, but the big tan chunks look like bread loaves and the grey boulder merges with mountain rock.",
+        "reviewedAt": "2026-09-30T09:28:24.918Z"
+      }
+    },
+    "ore-2-h": {
+      "id": "ore-2-h",
+      "asset": "chibi-ore-2",
+      "jobId": "sync-83535b34-8d47-443c-b40e-af6e2588fb0b",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "ore-2",
+        "asset": "chibi-ore-2",
+        "subject": "RESOURCE:ORE",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 71408,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The ore heap is wide and fills most of the image width.",
+            "negative": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image. The ore heap is wide and fills most of the image width.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image. The ore heap is wide and fills most of the image width. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim."
+      },
+      "submittedAt": "2026-09-30T09:26:14.369Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-ore-2/ore-2-h.png",
+      "rawSheetSha256": "fb81f1fbbc2a5c7d12d295d101f8af1e673073824aab943bee5a2da71fccc432",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:26:55.872Z",
+      "usageUsd": 0.0084226442972819,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Red-orange chunks with sparkle dots: the main tone is red enough to sit near Coral; weaker than ore-2-e.",
+        "reviewedAt": "2026-09-30T09:28:25.445Z"
+      }
+    },
+    "ore-2-i": {
+      "id": "ore-2-i",
+      "asset": "chibi-ore-2",
+      "jobId": "sync-5f3435c5-ce76-4a2b-80e3-2cf9b65cf49b",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "ore-2",
+        "asset": "chibi-ore-2",
+        "subject": "RESOURCE:ORE",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 71409,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The ore heap is wide and fills most of the image width.",
+            "negative": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image. The ore heap is wide and fills most of the image width.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky heap of three or four jagged angular chunks of raw copper-orange metal ore with sharp flat faceted faces and a few tiny bright pale-yellow glints, wedged into one small dark charcoal-black rock; warm burnt-orange metal with a dark brown shadow tone, so it stands out clearly against cool grey mountain stone; the ore heap is the only thing in the image. The ore heap is wide and fills most of the image width. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, mine cart, pickaxe, person, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim."
+      },
+      "submittedAt": "2026-09-30T09:26:55.875Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-ore-2/ore-2-i.png",
+      "rawSheetSha256": "e5dcb8ca7b52887813600ac5ccbc2287b03dfd6c836eefeceeaf83b491afd4e0",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8684,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:27:23.161Z",
+      "usageUsd": 0.007107967800564236,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Coral-red faceted lumps: too close to the Coral player colour.",
+        "reviewedAt": "2026-09-30T09:28:25.976Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-ore-2": {
+      "id": "chibi-ore-2",
+      "subject": "RESOURCE:ORE",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "ore-2-e",
+      "candidate": 0,
+      "candidateSha256": "6cc24e6772ee928b78bebd5eb7feed910be5c1d7ec7c4e82edeb2801c1965966",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-ore-2.png",
+        "sha256": "6cc24e6772ee928b78bebd5eb7feed910be5c1d7ec7c4e82edeb2801c1965966",
+        "pixelSha256": "ef990e75c30f91c3b0321fae4aaafa6cb5aa5a67cd75e604e8eaae749291dab3",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 5,
+        "groundShare": 0,
+        "footprintWidthShare": 0.96,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Four faceted copper-orange ore chunks around a small dark blue-grey rock, thick black outline, no plate. Warm orange (hue about 26) against the cool grey of both Mountain variants: unmistakable at 1:1 and zoom 0.75, where the batch-3 grey-and-pale-blue Ore blended into the rock. About 25 x 27 px of the 40 x 40 canvas, clearly smaller than a unit; orange sits between Coral (hue 2, salmon) and Gold (hue 44, mustard) and matches neither, and is far from Teal and Violet.",
+      "acceptedAt": "2026-09-30T09:28:26.504Z"
+    }
+  }
+}

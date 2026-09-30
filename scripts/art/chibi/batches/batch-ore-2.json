@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "batch": "ore-2",
+  "title": "Chibi Ore, second version: warm ore that reads on grey mountains",
+  "bead": "pulp_wars-pa3",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-ore-2",
+      "subject": "RESOURCE:ORE",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "ore-2-a",
+      "asset": "chibi-ore-2",
+      "endpoint": "create-image-pixen",
+      "seed": 71401,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red"
+    },
+    {
+      "id": "ore-2-b",
+      "asset": "chibi-ore-2",
+      "endpoint": "create-image-pixen",
+      "seed": 71402,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red"
+    },
+    {
+      "id": "ore-2-c",
+      "asset": "chibi-ore-2",
+      "endpoint": "create-image-pixen",
+      "seed": 71403,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red"
+    },
+    {
+      "id": "ore-2-d",
+      "asset": "chibi-ore-2",
+      "endpoint": "create-image-pixen",
+      "seed": 71404,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+      "notes": "Second subject text: jagged angular ore chunks (the round nuggets of ore-2-a..c read as oranges)."
+    },
+    {
+      "id": "ore-2-e",
+      "asset": "chibi-ore-2",
+      "endpoint": "create-image-pixen",
+      "seed": 71405,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+      "notes": "Second subject text: jagged angular ore chunks (the round nuggets of ore-2-a..c read as oranges)."
+    },
+    {
+      "id": "ore-2-f",
+      "asset": "chibi-ore-2",
+      "endpoint": "create-image-pixen",
+      "seed": 71406,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+      "notes": "Second subject text: jagged angular ore chunks (the round nuggets of ore-2-a..c read as oranges)."
+    },
+    {
+      "id": "ore-2-g",
+      "asset": "chibi-ore-2",
+      "endpoint": "create-image-pixen",
+      "seed": 71407,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "The ore heap is wide and fills most of the image width.",
+      "negativeAddendum": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+      "notes": "Second subject text, asking for a wider heap than ore-2-e."
+    },
+    {
+      "id": "ore-2-h",
+      "asset": "chibi-ore-2",
+      "endpoint": "create-image-pixen",
+      "seed": 71408,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "The ore heap is wide and fills most of the image width.",
+      "negativeAddendum": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+      "notes": "Second subject text, asking for a wider heap than ore-2-e."
+    },
+    {
+      "id": "ore-2-i",
+      "asset": "chibi-ore-2",
+      "endpoint": "create-image-pixen",
+      "seed": 71409,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "The ore heap is wide and fills most of the image width.",
+      "negativeAddendum": "mine cart, pickaxe, person, character, coins, treasure chest, glowing aura, blue crystals, grey heap, red, round balls, spheres, fruit, oranges, white ring, rim",
+      "notes": "Second subject text, asking for a wider heap than ore-2-e."
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+{
+  "batch": "ore-2",
+  "bead": "pulp_wars-pa3",
+  "title": "Chibi Ore, second version: warm ore that reads on grey mountains",
+  "dryRun": false,
+  "faction": "ORIGINAL",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-ore-2",
+      "subject": "RESOURCE:ORE",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "ore-2-e",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-ore-2.png",
+        "sha256": "6cc24e6772ee928b78bebd5eb7feed910be5c1d7ec7c4e82edeb2801c1965966",
+        "pixelSha256": "ef990e75c30f91c3b0321fae4aaafa6cb5aa5a67cd75e604e8eaae749291dab3",
+        "width": 40,
+        "height": 40
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 5,
+        "groundShare": 0,
+        "footprintWidthShare": 0.96,
+        "suspect": false
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/sheet-1x.png",
+      "width": 1042,
+      "height": 244,
+      "sha256": "d47f06c734e97f96689a69d98710bc120c809f90a4a5114d7e9e49bc7d424df4"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/sheet-x4.png",
+      "width": 2370,
+      "height": 580,
+      "sha256": "92f7846bcd2e5bc81d41d952d4c21ee565c7c5f583c5f88be03cd1df50128f7a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/phone-mock.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "f04b1ca882cbeb09fcb248a5911301cf29f59a7dd52b11d175aae41858f7a643"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/desktop-mock.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "35a3a146ae67bd98b66bcf26259e0bbddd48f5f54db22cec147dde54bd48f553"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a8e5970a61a673a975e28ae67ac6e7d1ee524355d9141dc73e3037e706bfcc83"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e73405843219dd8db95fffb80ddd2292a928901b0844be4156f937e7194216bb"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-scene-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "975098ff4e76653a2eb19c53225dd066ce75791c9a2b25e0338afaf72c02ef1e"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-scene-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ee183a4e51917be86b0fcc0fc66a9bce59e80df2bb832c8c5ebed4c65861725c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "4084cde2dabc98ba1bb7a960ec6df4e4d137bd996799dc8b5030bd19d9c77509"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "f8332a360ed94134c7e7d9bcbcd1ea5695464448c80948851c30713259d1dea3"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-scene-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "061d81dd0dd6ceb3da73b0b1fd9242078ef568a58fef45a0f7716090e6ef9b26"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-scene-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "97ec537f2fb1fe520af0101c34a74bed60e6f68aaf4ec899da0c96736718cda5"
+    }
+  ],
+  "captures": {
+    "note": "Captured from the running game with ?art=chibi; subjects without a registered chibi raster still draw their legacy art.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-scene-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic showcase)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-scene-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic showcase)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-scene-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic showcase)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-ore-2/ingame-scene-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic showcase)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-ore-2/phone-links.md"
+}
