@@ -6,8 +6,8 @@ The production policy consumes only the legal public schema, commands, and
 previews under `pulp-wars-poc-7r17`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
-duration valuation, and the endgame siege mode (`pulp_wars-1mc`) are
-summarized below.
+duration valuation, the endgame siege mode (`pulp_wars-1mc`), and the
+revision-17 Goblin play (`pulp_wars-0ao.6`) are summarized below.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
@@ -408,6 +408,90 @@ elapsed-time input, or work units, and are bounded scans of the view
   spreading Plague, and below every attack, so a unit in range fires first
   (a kill on the source Lich stays at 1285). A Raider with an Escape pending
   keeps its escape rule.
+
+## Revision-17 Goblin play (`pulp_wars-0ao.6`)
+
+Every Goblin heuristic lives behind one gate: the match has a Goblin seat
+(`src/ai/v7-goblin.ts`, `goblinMatchForPolicyV7`). A match without one
+never evaluates any of it (no Goblin unit can Kaboom, explode, Gang Up, or
+friendly-splash there), so Human and Undead decisions and pinned hashes are
+unchanged; a fresh 16-match Human/Undead parity run is byte-identical to the
+`0ao.3` policy. The helpers read only the public view, public commands, and
+the public previews (`previewKaboomV7`, `previewAttackExplosionsV7`,
+`queryCombatPreviewV7` with its `gangUp` field). They add no PRNG use, no
+elapsed-time input, and no work units: each is a bounded scan of the view
+inside an existing scoring step. Values are in the policy's usual units: a
+hostile unit is worth its target value (cost × 4 + HP), an own or allied
+unit its retained value, damage a proportional share, a Coin 4.
+
+As Goblins:
+
+- **Kaboom** is scored from the exact `previewKaboomV7` chain: hostile damage
+  and kills, plus 4 per Plunder Coin, 6 per hostile unit killed on a hostile
+  city center, 40 when that clears the center for an own capturer that can
+  still step in, and 20 when it kills a unit threatening an own city; minus
+  own and allied damage and kills and the exploder's value (a third of it
+  when visible enemies can kill it anyway; plus a 22-point Zombie when it is
+  Bitten by a hostile biter). A net value of 0 or less is never a candidate,
+  nor a Kaboom that leaves a threatened own center without killing a
+  threatening unit. Priorities: clearing a center for capture 1347, a city
+  save 1279, two or more kills 1181 (above a single-kill attack, so the unit
+  does not spend its action on one kill), one kill 1178 (after the turn's
+  attack kills), a doomed exploder 935 (above Recover), otherwise a chip
+  Kaboom worth at least 4 at 895 (after chip attacks soften its targets).
+  A unit that can still act moves where its one-wave Kaboom (visible units)
+  would kill and beat its current Kaboom at 1177.
+- **Gang Up**: a Move that adds a helper next to a visible hostile that
+  another own unit can attack scores 1185 when it turns that attack into a
+  kill and 905 (above chip attacks) when it only adds damage, both projected
+  with the public combat preview; a unit that can attack after moving moves
+  next to a target it cannot reach now when its Gang Up attack from there
+  kills (1179). Attacks gain 2 per Gang Up, so targets with more helpers
+  rank first.
+- **Bombs and blasts**: a Bomb Chucker splash on own or allied units costs
+  (−12 per damage, −24 per death, and its retained value) instead of scoring
+  (the pre-revision-17 sum counted every splash as a gain). An attack whose
+  splash or previewed death blasts hurt own or allied units must win at
+  least twice that value from hostile units, unless it saves a city, clears
+  a hostile center, or is the endgame combined kill. Every attack in a
+  Goblin match adds the value of the death-blast chain it sets off (hostile
+  minus friendly) and its Plunder Coins.
+- **Spacing**: an own exploding unit (Bomb Chucker, Rocket Cart, Scrap
+  Buggy) that visible enemies can kill does not end a routine Move (below 1100) next to own or allied units, and no own unit ends one next to such an
+  exploder, unless the Move sets up a kill or the danger is no worse than
+  where it stands; a unit standing in such danger moves out at 760. Both
+  costs also reduce the Move's strategic value.
+- **Economy**: Plunder (the Goblin `COMMERCE`) is researched at 1070 while at
+  least two visible hostile units are within three tiles of own units or
+  cities; WAAAGH! is used like Rally, at 1235 when at least two units in its
+  radius can still attack a visible enemy this turn (720 for one, never for
+  none); a Troll (regeneration) recovers or seeks a Windmill urgently only
+  below a quarter of its HP; the Goblin (`FIGHTER`) gains a horde training
+  bias of 8 × (1 + min(4, owned Goblins)), so Warrens capacity fills with
+  cheap Goblins while the per-role repetition cost still brings in other
+  roles; the living-seat Captain cure bias does not apply (the Warboss
+  cannot tend).
+- **Turn cap**: the shared scheduler (`chooseNormalTurnCommandV7`) still
+  reserves the End Turn slot, so a large horde's turn always closes within
+  128 accepted commands.
+
+Against Goblins (every seat in such a match):
+
+- threat evaluation adds a hostile Goblin attacker's Gang Up from its
+  owner's units around the tile, Bomb Chucker splash (as Battleship and
+  Lich splash), and the Kaboom of an embarked goblin-crewed unit that can
+  land (after at most one sailing step) next to the tile; its threatened
+  tiles include that landing reach;
+- a routine Move does not end in a clump (two or more own or allied units)
+  that a visible goblin-crewed unit could Kaboom at a profit next turn (its
+  best Kaboom from an empty land cell within its Move, valued as above from
+  its side), unless it sets up a kill or the unit is already that exposed;
+  the exposure also reduces the Move's strategic value;
+- killing an exploding unit uses `previewAttackExplosionsV7`: the chain is
+  valued in the attack score, and a kill whose blast kills own units must
+  be worth it (for a hostile unit that could Kaboom the same units on its own
+  turn, blast chip damage alone is no extra cost and killed own units count
+  once).
 
 ## Revision-8 merged industry and processor adjacency
 

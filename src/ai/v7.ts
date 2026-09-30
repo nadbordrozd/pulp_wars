@@ -18,7 +18,9 @@ import {
   createPublicCommandWorkV7,
   createPublicPlanningWorkV7,
   createPublicRedevelopmentPossibilityWorkV7,
+  previewAttackExplosionsV7,
   previewEconomicV7,
+  previewKaboomV7,
   previewMonumentV7,
   queryAiReadyCommandsV7,
   queryCombatPreviewV7,
@@ -51,6 +53,35 @@ import {
   endgameTargetDistanceV7,
   type EndgamePlanV7,
 } from "./v7-endgame";
+import {
+  COIN_STRATEGIC_VALUE_V7,
+  FRIENDLY_FIRE_TRADE_FACTOR_V7,
+  GANG_UP_KILL_SETUP_PRIORITY_V7,
+  GANG_UP_SETUP_PRIORITY_V7,
+  GANG_UP_STRIKE_PRIORITY_V7,
+  GOBLIN_HORDE_TRAINING_BIAS_V7,
+  GOBLIN_HORDE_TRAINING_MAXIMUM_V7,
+  GOBLIN_TRAINING_BIAS_V7,
+  KABOOM_CAPTURE_PRIORITY_V7,
+  KABOOM_CAPTURE_VALUE_V7,
+  KABOOM_CHIP_MARGIN_V7,
+  KABOOM_CHIP_PRIORITY_V7,
+  KABOOM_CITY_SAVE_PRIORITY_V7,
+  KABOOM_CITY_SAVE_VALUE_V7,
+  KABOOM_DOOMED_PRIORITY_V7,
+  KABOOM_KILL_PRIORITY_V7,
+  KABOOM_MULTI_KILL_PRIORITY_V7,
+  KABOOM_SETUP_PRIORITY_V7,
+  deathBlastDamageV7,
+  explosionChainValueV7,
+  gangUpForPolicyV7,
+  goblinMatchForPolicyV7,
+  hostileKaboomExposureV7,
+  hypotheticalBlastV7,
+  kaboomDamageV7,
+  regenerationV7,
+  type ExplosionChainValueV7,
+} from "./v7-goblin";
 import {
   normalOpeningResearchPendingV7,
   normalOpeningTechnologyV7,
@@ -171,6 +202,14 @@ interface PolicyContextV7 {
   readonly undead: boolean;
   /** Revision 14: public Plague and Bitten statuses (empty without Undead). */
   readonly afflictions: PublicAfflictionsV7;
+  /**
+   * Revision 17 (`pulp_wars-0ao.6`): a seat is Goblin; all Goblin heuristics
+   * are gated on it.
+   */
+  readonly goblin: boolean;
+  /** Goblin matches: per-decision caches of public attack and danger facts. */
+  readonly goblinAttackFacts: Map<string, GoblinAttackFactsV7>;
+  readonly goblinDoomed: Map<UnitId, boolean>;
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
   readonly commands: readonly CommandV7[];
@@ -1057,6 +1096,9 @@ function bareContext(
     view,
     undead: undeadMatchForPolicyV7(view),
     afflictions: publicAfflictionsV7(view),
+    goblin: goblinMatchForPolicyV7(view),
+    goblinAttackFacts: new Map(),
+    goblinDoomed: new Map(),
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
     commands,
     openingGrowthHarvest: commands.some((command) =>
@@ -2148,6 +2190,11 @@ function* publicThreatenedTilesWorkV7(
 ): Generator<void, readonly CoordV7[]> {
   const rule = unitRoleRuleV7(view, unit);
   const facts = publicCombatFacts(view, unit, policyLookup);
+  // Revision 17 (`pulp_wars-0ao.6`): an embarked goblin-crewed unit may land
+  // (after at most one sailing step) and Kaboom the same turn, threatening
+  // every tile within Chebyshev 1 of a landing tile.
+  if (unit.form === "EMBARKED" && kaboomDamageV7(view, unit) > 0)
+    return yield* embarkedKaboomReachWorkV7(view, unit, lookup);
   // Revision 13: a hostile Banshee's Wail threatens a living viewer within
   // Chebyshev 2 of every tile it can reach (it may Wail after moving).
   const wail = publicWailThreatV7(view, unit);
@@ -2250,6 +2297,39 @@ function* publicThreatenedTilesWorkV7(
 }
 
 const WAIL_THREAT_RADIUS_V7 = 2;
+
+function* embarkedKaboomReachWorkV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  lookup: PublicThreatLookupV7,
+): Generator<void, readonly CoordV7[]> {
+  const open = (at: CoordV7) =>
+    !(lookup.occupantsByKey.get(coordKey(at)) ?? []).some(
+      (occupant) => occupant.id !== unit.id,
+    );
+  // One sailing step leaves the landing point (revision 16).
+  const waters = [unit.at];
+  if (EMBARKED_LANDING_MAX_SPENT_V7 >= 1)
+    for (const next of neighbors8V7(view, unit.at)) {
+      const tile = tileAtPublicV7(view, next);
+      if (publicMovementTilePossible(view, unit, tile, lookup) && open(next))
+        waters.push(next);
+    }
+  const landed: PublicUnitV7 = { ...unit, form: "LAND" };
+  const reach = new Map<string, CoordV7>();
+  for (const water of waters) {
+    for (const landing of neighbors8V7(view, water)) {
+      const tile = tileAtPublicV7(view, landing);
+      if (!publicMovementTilePossible(view, landed, tile, lookup)) continue;
+      if (!open(landing)) continue;
+      reach.set(coordKey(landing), landing);
+      for (const around of neighbors8V7(view, landing))
+        reach.set(coordKey(around), around);
+    }
+    yield;
+  }
+  return [...reach.values()];
+}
 
 /** A visible hostile land Banshee threatens a living viewer (section 6.6). */
 function publicWailThreatV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
@@ -2487,8 +2567,10 @@ function isLowValueAttackV7(
     vampireAttackExposedV7(context, command, actor, preview)
   )
     return true;
+  if (context.goblin && goblinFriendlyFireRejectedV7(context, command, preview))
+    return true;
   const immediate =
-    combatImmediateValue(preview) +
+    combatImmediateValue(preview, context.view) +
     (context.undead ? biteHarmAdjustmentV7(context, actor, preview) : 0);
   const harmful =
     (!preview.defenderDies && preview.attackerDies) ||
@@ -2938,9 +3020,23 @@ function* sharedCityContextWorkV7(
     ? null
     : view.viewer.faction === "UNDEAD"
       ? undeadTrainingAdjustmentsV7(view)
-      : livingTrainingAdjustmentsV7(view, context.afflictions);
+      : view.viewer.faction === "GOBLIN"
+        ? null
+        : livingTrainingAdjustmentsV7(view, context.afflictions);
+  // Revision 17 (`pulp_wars-0ao.6`): the Goblin horde.
+  const goblinTraining =
+    context.goblin && view.viewer.faction === "GOBLIN"
+      ? goblinTrainingAdjustmentsV7()
+      : null;
   const trainingAdjustment = (role: UnitRoleIdV7): number =>
-    undeadTraining?.get(role) ?? 0;
+    (undeadTraining?.get(role) ?? 0) + (goblinTraining?.get(role) ?? 0);
+  // Revision 17: the first Goblins of the horde do not pay the per-role
+  // repetition cost of the preferred-role choice.
+  const hordeAdjustment = (role: UnitRoleIdV7, count: number): number =>
+    goblinTraining !== null && role === "FIGHTER"
+      ? GOBLIN_HORDE_TRAINING_BIAS_V7 *
+        Math.min(GOBLIN_HORDE_TRAINING_MAXIMUM_V7, count)
+      : 0;
   const endgameCaptureShortfall =
     context.endgame !== null &&
     endgameRoutedUnitsV7(context, (unit) => canCaptureV7(view, unit)) <
@@ -3051,6 +3147,7 @@ function* sharedCityContextWorkV7(
         2 * (effectiveRoleRuleV7(command.role, view.viewer.faction).cost ?? 0) -
         8 * count +
         trainingAdjustment(command.role) +
+        hordeAdjustment(command.role, count) +
         cityAdjustment(command.role);
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
@@ -3549,6 +3646,14 @@ function scoreCommandWithContext(
     priority = research.priority;
     strategicValue = research.strategic;
     immediateValue = -research.cost;
+    if (view.viewer.faction === "GOBLIN" && command.tech === "COMMERCE") {
+      // Revision 17: Plunder pays a Coin per kill (`pulp_wars-0ao.6`).
+      const plunder = plunderResearchValueV7(context);
+      if (plunder !== null && plunder.priority > priority) {
+        priority = plunder.priority;
+        strategicValue = plunder.strategic;
+      }
+    }
     if (
       !view.viewer.researchedTechs.includes("ENGINEERING") &&
       command.tech === "ENGINEERING"
@@ -3647,7 +3752,7 @@ function scoreCommandWithContext(
       command.targetUnitId,
     );
     if (preview !== null) {
-      immediateValue = combatImmediateValue(preview);
+      immediateValue = combatImmediateValue(preview, view);
       const threatening = context.threats.some(
         (item) => item.unitId === command.targetUnitId,
       );
@@ -3741,6 +3846,12 @@ function scoreCommandWithContext(
         )
           priority = Math.max(priority, 1285);
       }
+      if (context.goblin) {
+        // Revision 17: death blasts, Gang Up, and Plunder (`pulp_wars-0ao.6`).
+        const goblin = goblinAttackValueV7(context, command, preview);
+        strategicValue += goblin.strategic;
+        immediateValue += goblin.immediate;
+      }
     }
   }
 
@@ -3791,6 +3902,10 @@ function scoreCommandWithContext(
       const frenzy = undeadFrenzyValueV7(context, actor);
       strategicValue = frenzy.strategic;
       priority = frenzy.priority;
+    } else if (view.viewer.faction === "GOBLIN") {
+      const waaagh = waaaghValueV7(context, actor);
+      strategicValue = waaagh.strategic;
+      priority = waaagh.priority;
     }
   }
 
@@ -3841,6 +3956,14 @@ function scoreCommandWithContext(
     immediateValue =
       actor === undefined ? 0 : Math.min(2, actor.maxHp - actor.hp) * 8;
     if (actor !== undefined && actor.hp * 2 < actor.maxHp) priority = 930;
+    // Revision 17: a regenerating Troll keeps fighting until a quarter HP.
+    if (
+      actor !== undefined &&
+      context.goblin &&
+      regenerationV7(view, actor) > 0 &&
+      actor.hp * 4 >= actor.maxHp
+    )
+      priority = 300;
   }
 
   if (command.kind === "PROMOTE") {
@@ -3909,7 +4032,17 @@ function scoreCommandWithContext(
       }
       const windmillGain = windmillStagingGainV7(view, actor, resultAt);
       if (windmillGain > 0) {
-        priority = Math.max(priority, actor.hp * 2 < actor.maxHp ? 940 : 715);
+        priority = Math.max(
+          priority,
+          actor.hp * 2 < actor.maxHp &&
+            !(
+              context.goblin &&
+              regenerationV7(view, actor) > 0 &&
+              actor.hp * 4 >= actor.maxHp
+            )
+            ? 940
+            : 715,
+        );
         strategicValue += windmillGain;
       }
       const destinationCity =
@@ -4000,6 +4133,11 @@ function scoreCommandWithContext(
       priority = plague.priority;
       strategicValue += plague.strategic;
     }
+    if (context.goblin && resultAt !== null) {
+      const goblin = goblinMoveValueV7(context, actor, resultAt, priority);
+      priority = goblin.priority;
+      strategicValue += goblin.strategic;
+    }
   }
 
   if (command.kind === "PILLAGE" && actor !== undefined) {
@@ -4017,6 +4155,14 @@ function scoreCommandWithContext(
     immediateValue = Math.floor((unitRoleRuleV7(view, actor).cost ?? 0) / 2);
     strategicValue = freeCapacity(view, actor.homeCityId) <= 0 ? 6 : 0;
     priority = 1090;
+  }
+
+  if (command.kind === "KABOOM" && actor !== undefined && context.goblin) {
+    // Revision 17: Kaboom by previewed net value (`pulp_wars-0ao.6`).
+    const kaboom = kaboomScoreV7(context, actor);
+    priority = kaboom.priority;
+    strategicValue = kaboom.strategic;
+    immediateValue = kaboom.immediate;
   }
 
   if (command.kind === "END_TURN") priority = 0;
@@ -4038,6 +4184,7 @@ function scoreCommandWithContext(
     actor === undefined ||
     resultAt === null ||
     command.kind === "ATTACK" ||
+    command.kind === "KABOOM" ||
     (command.kind === "MOVE" &&
       actor.role === "KNIGHT" &&
       precomputedKnightOverrun !== undefined)
@@ -5029,6 +5176,727 @@ function endgameMoveValueV7(
   };
 }
 
+// ---------------------------------------------------------------------------
+// Revision 17 Goblin play (`pulp_wars-0ao.6`). Everything below runs only in
+// a match with a Goblin seat (`context.goblin`), reads only the public view,
+// public commands, and the public previews, and adds no PRNG use,
+// elapsed-time input, or work units: each helper is a bounded scan of the
+// view inside an existing scoring step.
+
+interface GoblinAttackFactsV7 {
+  /** The previewed death-blast chain the attack sets off (null: none). */
+  readonly chain: ExplosionChainValueV7 | null;
+  /** The viewer's Plunder Coins from its own units' blasts in that chain. */
+  readonly chainPlunder: number;
+  readonly hostileSplashValue: number;
+  readonly hostileSplashKills: number;
+  readonly friendlySplashValue: number;
+}
+
+function friendlyOwnerV7(view: PlayerViewV7, ownerId: PlayerId): boolean {
+  return publicPlayersAllied(view, view.viewer.id, ownerId);
+}
+
+/** Realized loss of a hostile unit, in target strategic value. */
+function hostileLossValueV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+  damage: number,
+  dies: boolean,
+): number {
+  const value = targetStrategicValue(context.view, unit.id, context.lookup);
+  return dies || unit.hp <= 0
+    ? value
+    : Math.floor((value * Math.min(damage, unit.hp)) / unit.hp);
+}
+
+/** Realized loss of an own or allied unit, in retained unit value. */
+function friendlyLossValueV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  damage: number,
+  dies: boolean,
+): number {
+  const value = retainedUnitValue(view, unit);
+  return dies || unit.hp <= 0
+    ? value
+    : Math.floor((value * Math.min(damage, unit.hp)) / unit.hp);
+}
+
+/** Splash entries that name an own or allied unit (Goblin bombs only). */
+function friendlySplashUnitV7(
+  view: PlayerViewV7 | undefined,
+  unitId: UnitId,
+): PublicUnitV7 | undefined {
+  if (view === undefined) return undefined;
+  const unit = view.units.find((item) => item.id === unitId);
+  return unit !== undefined && !isHostile(view, unit.ownerId)
+    ? unit
+    : undefined;
+}
+
+function goblinAttackFactsV7(
+  context: PolicyContextV7,
+  command: AttackCommandV7,
+  preview: CombatPreviewV7,
+): GoblinAttackFactsV7 {
+  const key = `${command.unitId}:${command.targetUnitId}`;
+  const cached = context.goblinAttackFacts.get(key);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  const exploding = (unitId: UnitId): boolean => {
+    const unit = context.lookup.unitsById.get(unitId);
+    return unit !== undefined && deathBlastDamageV7(view, unit) > 0;
+  };
+  let hostileSplashValue = 0;
+  let hostileSplashKills = 0;
+  let friendlySplashValue = 0;
+  let exploderDies =
+    (preview.defenderDies && exploding(command.targetUnitId)) ||
+    (preview.attackerDies && exploding(command.unitId));
+  for (const splash of preview.splash) {
+    const unit = context.lookup.unitsById.get(splash.unitId);
+    if (unit === undefined) continue;
+    if (splash.dies && exploding(unit.id)) exploderDies = true;
+    if (isHostile(view, unit.ownerId)) {
+      hostileSplashValue += hostileLossValueV7(
+        context,
+        unit,
+        splash.damage,
+        splash.dies,
+      );
+      if (splash.dies) hostileSplashKills += 1;
+    } else if (friendlyOwnerV7(view, unit.ownerId))
+      friendlySplashValue += friendlyLossValueV7(
+        view,
+        unit,
+        splash.damage,
+        splash.dies,
+      );
+  }
+  let chain: ExplosionChainValueV7 | null = null;
+  let chainPlunder = 0;
+  if (exploderDies) {
+    const explosions = previewAttackExplosionsV7(
+      view,
+      command.unitId,
+      command.targetUnitId,
+    );
+    if (explosions !== null && explosions.explosions.length > 0) {
+      chain = explosionChainValueV7(
+        view,
+        explosions,
+        (owner) => isHostile(view, owner),
+        (unit, damage, dies) => hostileLossValueV7(context, unit, damage, dies),
+        (unit, damage, dies) => friendlyLossValueV7(view, unit, damage, dies),
+      );
+      chainPlunder = explosions.totals.plunderCoins;
+    }
+  }
+  const facts: GoblinAttackFactsV7 = {
+    chain,
+    chainPlunder,
+    hostileSplashValue,
+    hostileSplashKills,
+    friendlySplashValue,
+  };
+  context.goblinAttackFacts.set(key, facts);
+  return facts;
+}
+
+/**
+ * Goblin-match attack value: death blasts the kill sets off (hostile minus
+ * friendly), Gang Up (prefer targets with more own units adjacent), and the
+ * Plunder Coins the kills pay.
+ */
+function goblinAttackValueV7(
+  context: PolicyContextV7,
+  command: AttackCommandV7,
+  preview: CombatPreviewV7,
+): { readonly strategic: number; readonly immediate: number } {
+  const view = context.view;
+  const facts = goblinAttackFactsV7(context, command, preview);
+  let strategic = 2 * preview.gangUp;
+  let immediate = 0;
+  const chain = facts.chain;
+  if (chain !== null) {
+    strategic += chain.hostileValue - chain.friendlyValue;
+    immediate +=
+      10 * chain.hostileDamage +
+      20 * chain.hostileKills -
+      12 * chain.friendlyDamage -
+      24 * chain.friendlyKills;
+  }
+  const plunder = technologyCapabilitiesV7(
+    view.viewer.researchedTechs,
+    view.viewer.faction,
+  ).plunderCoins;
+  if (plunder > 0) {
+    const coins =
+      plunder * (Number(preview.defenderDies) + facts.hostileSplashKills) +
+      facts.chainPlunder;
+    immediate += coins;
+    strategic += COIN_STRATEGIC_VALUE_V7 * coins;
+  }
+  return { strategic, immediate };
+}
+
+/**
+ * Goblin-match harm test: an attack whose bomb splash or death-blast chain
+ * hurts own or allied units must win at least twice that value from hostile
+ * units (for the blast of a hostile Kaboom unit, which could blow up there on
+ * its own turn: nothing unless it kills own units, then once), unless it
+ * saves a city, clears a hostile city center, or is part of the endgame
+ * combined kill.
+ */
+function goblinFriendlyFireRejectedV7(
+  context: PolicyContextV7,
+  command: AttackCommandV7,
+  preview: CombatPreviewV7,
+): boolean {
+  const facts = goblinAttackFactsV7(context, command, preview);
+  const chainLoss = facts.chain?.friendlyValue ?? 0;
+  if (facts.friendlySplashValue + chainLoss <= 0) return false;
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (target === undefined) return false;
+  // A hostile land-form unit with Kaboom can blow up next to the same units
+  // on its own turn anyway: the blast its death sets off is no extra cost
+  // unless it kills own units, and then counts once. Own bomb splash and any
+  // other blast count twice.
+  const inevitable =
+    preview.defenderDies &&
+    target.form === "LAND" &&
+    kaboomDamageV7(context.view, target) >=
+      deathBlastDamageV7(context.view, target);
+  const chainFactor = !inevitable
+    ? FRIENDLY_FIRE_TRADE_FACTOR_V7
+    : (facts.chain?.friendlyKills ?? 0) > 0
+      ? 1
+      : 0;
+  const friendlyLoss =
+    FRIENDLY_FIRE_TRADE_FACTOR_V7 * facts.friendlySplashValue +
+    chainFactor * chainLoss;
+  if (friendlyLoss <= 0) return false;
+  const hostileGain =
+    hostileLossValueV7(
+      context,
+      target,
+      preview.damageToDefender,
+      preview.defenderDies,
+    ) +
+    facts.hostileSplashValue +
+    (facts.chain?.hostileValue ?? 0);
+  if (hostileGain >= friendlyLoss) return false;
+  const city = context.lookup.citiesByKey.get(coordKey(target.at));
+  if (
+    preview.defenderDies &&
+    city !== undefined &&
+    isHostile(context.view, city.ownerId)
+  )
+    return false;
+  if (attackPurposeFactsV7(context, command, preview).savesCity) return false;
+  return !endgameCombinedKillV7(context, command, preview);
+}
+
+/** Visible enemies can kill `unit` at `at` next turn (public estimate). */
+function goblinDoomedAtV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+): boolean {
+  if (same(unit.at, at)) {
+    const cached = context.goblinDoomed.get(unit.id);
+    if (cached !== undefined) return cached;
+    const doomed =
+      visibleImmediateDamage(context.view, unit, at, context) >= unit.hp;
+    context.goblinDoomed.set(unit.id, doomed);
+    return doomed;
+  }
+  return visibleImmediateDamage(context.view, unit, at, context) >= unit.hp;
+}
+
+/**
+ * Kaboom (section 6.2) by previewed net value: hostile damage and kills
+ * (target value) plus Plunder, a city save, or a cleared hostile center for
+ * an own capturer, minus own and allied damage and kills and the exploder
+ * itself (a third of it when visible enemies would kill it anyway; plus the
+ * enemy Zombie a Bitten exploder would rise as). Never net-negative.
+ */
+function kaboomScoreV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+): {
+  readonly priority: number;
+  readonly strategic: number;
+  readonly immediate: number;
+} {
+  const view = context.view;
+  const none = { priority: -1, strategic: 0, immediate: 0 };
+  const preview = previewKaboomV7(view, actor.id);
+  if (preview === null) return none;
+  const chain = explosionChainValueV7(
+    view,
+    preview,
+    (owner) => isHostile(view, owner),
+    (unit, damage, dies) => hostileLossValueV7(context, unit, damage, dies),
+    (unit, damage, dies) => friendlyLossValueV7(view, unit, damage, dies),
+  );
+  const doomed = goblinDoomedAtV7(context, actor, actor.at);
+  let exploder = retainedUnitValue(view, actor);
+  if (doomed) exploder = Math.floor(exploder / 3);
+  const biter = context.afflictions.bitten.get(actor.id);
+  if (biter !== undefined && isHostile(view, biter))
+    exploder += BITTEN_RISING_VALUE_V7;
+  const excluded = new Set<UnitId>([actor.id, ...chain.friendlyKilledIds]);
+  let capture = false;
+  let siege = 0;
+  for (const unitId of chain.hostileKilledIds) {
+    const unit = context.lookup.unitsById.get(unitId);
+    const city =
+      unit === undefined
+        ? undefined
+        : context.lookup.citiesByKey.get(coordKey(unit.at));
+    if (unit === undefined || city === undefined) continue;
+    if (!isHostile(view, city.ownerId)) continue;
+    siege += 6;
+    if (freshCapturerNextToV7(context, city.at, excluded) !== undefined)
+      capture = true;
+  }
+  const savesCity = context.threats.some((threat) =>
+    chain.hostileKilledIds.includes(threat.unitId),
+  );
+  const city = context.lookup.citiesByKey.get(coordKey(actor.at));
+  if (
+    city !== undefined &&
+    city.ownerId === view.viewer.id &&
+    threatenedCity(context, city.id) &&
+    !savesCity
+  )
+    return none;
+  const coins = preview.totals.plunderCoins;
+  const net =
+    chain.hostileValue -
+    chain.friendlyValue -
+    exploder +
+    COIN_STRATEGIC_VALUE_V7 * coins +
+    siege +
+    (capture ? KABOOM_CAPTURE_VALUE_V7 : 0) +
+    (savesCity ? KABOOM_CITY_SAVE_VALUE_V7 : 0);
+  if (net <= 0) return none;
+  const priority = capture
+    ? KABOOM_CAPTURE_PRIORITY_V7
+    : savesCity
+      ? KABOOM_CITY_SAVE_PRIORITY_V7
+      : chain.hostileKills >= 2
+        ? KABOOM_MULTI_KILL_PRIORITY_V7
+        : chain.hostileKills > 0
+          ? KABOOM_KILL_PRIORITY_V7
+          : doomed
+            ? KABOOM_DOOMED_PRIORITY_V7
+            : net >= KABOOM_CHIP_MARGIN_V7
+              ? KABOOM_CHIP_PRIORITY_V7
+              : -1;
+  return {
+    priority,
+    strategic: net,
+    immediate:
+      10 * chain.hostileDamage +
+      20 * chain.hostileKills -
+      12 * chain.friendlyDamage -
+      24 * chain.friendlyKills +
+      coins,
+  };
+}
+
+/** Own offered attacks by target, built once per decision (Goblin viewer). */
+function goblinAttacksOnV7(
+  context: PolicyContextV7,
+  targetId: UnitId,
+): readonly AttackCommandV7[] {
+  let byTarget = goblinAttacksByTargetV7.get(context);
+  if (byTarget === undefined) {
+    byTarget = new Map();
+    for (const command of context.commands)
+      if (command.kind === "ATTACK") {
+        const list = byTarget.get(command.targetUnitId) ?? [];
+        list.push(command);
+        byTarget.set(command.targetUnitId, list);
+      }
+    goblinAttacksByTargetV7.set(context, byTarget);
+  }
+  return byTarget.get(targetId) ?? [];
+}
+
+const goblinAttacksByTargetV7 = new WeakMap<
+  PolicyContextV7,
+  Map<UnitId, AttackCommandV7[]>
+>();
+
+function primaryReadyForPolicyV7(unit: PublicUnitV7): boolean {
+  return (
+    !unit.activation.attacked &&
+    !unit.activation.recovered &&
+    !unit.activation.captured &&
+    !unit.activation.specialActed
+  );
+}
+
+/**
+ * Gang Up setup (section 5.2): the mover steps next to a visible hostile
+ * that another own unit can attack this turn, adding a helper to that attack.
+ * Returns the best gain over such attacks and whether it turns one into a
+ * kill (projected with the public combat preview).
+ */
+function gangUpSetupValueV7(
+  context: PolicyContextV7,
+  mover: PublicUnitV7,
+  to: CoordV7,
+  projected: () => PlayerViewV7,
+): { readonly kill: boolean; readonly value: number } {
+  const view = context.view;
+  let kill = false;
+  let value = 0;
+  for (const hostile of context.lookup.visibleHostiles) {
+    if (distance(hostile.at, to) !== 1 || distance(hostile.at, mover.at) === 1)
+      continue;
+    for (const attack of goblinAttacksOnV7(context, hostile.id)) {
+      if (attack.unitId === mover.id) continue;
+      const before = queryCombatPreviewV7(view, attack.unitId, hostile.id);
+      if (before === null || before.gangUp >= 2 || before.defenderDies)
+        continue;
+      const after = queryCombatPreviewV7(
+        projected(),
+        attack.unitId,
+        hostile.id,
+      );
+      if (after === null) continue;
+      if (after.defenderDies && !after.attackerDies) {
+        kill = true;
+        value = Math.max(
+          value,
+          targetStrategicValue(view, hostile.id, context.lookup),
+        );
+      } else
+        value = Math.max(
+          value,
+          2 * (after.damageToDefender - before.damageToDefender),
+        );
+    }
+  }
+  return { kill, value };
+}
+
+/**
+ * The mover's own Gang Up strike: after this Move it can attack a visible
+ * hostile with at least one own helper beside it and kill it.
+ */
+function gangUpStrikeValueV7(
+  context: PolicyContextV7,
+  mover: PublicUnitV7,
+  to: CoordV7,
+  projected: () => PlayerViewV7,
+): number {
+  const view = context.view;
+  const rule = unitRoleRuleV7(view, mover);
+  if (
+    !rule.mayUsePrimaryActionAfterMove ||
+    !rule.abilities.includes("ATTACK") ||
+    !primaryReadyForPolicyV7(mover)
+  )
+    return 0;
+  let best = 0;
+  for (const hostile of context.lookup.visibleHostiles) {
+    const range = distance(hostile.at, to);
+    if (range < rule.minimumRange || range > rule.range) continue;
+    // A target already in range needs no Move first.
+    const current = distance(hostile.at, mover.at);
+    if (current >= rule.minimumRange && current <= rule.range) continue;
+    if (gangUpForPolicyV7(view, mover, hostile.at, new Set([hostile.id])) === 0)
+      continue;
+    const preview = queryCombatPreviewV7(projected(), mover.id, hostile.id);
+    if (preview === null || !preview.defenderDies || preview.attackerDies)
+      continue;
+    best = Math.max(
+      best,
+      targetStrategicValue(view, hostile.id, context.lookup),
+    );
+  }
+  return best;
+}
+
+/**
+ * A Move after which the mover's Kaboom (one wave, visible units) kills a
+ * hostile unit and is net-positive against the mover's full value.
+ */
+function kaboomSetupValueV7(
+  context: PolicyContextV7,
+  mover: PublicUnitV7,
+  to: CoordV7,
+): number {
+  const view = context.view;
+  const damage = kaboomDamageV7(view, mover);
+  if (damage <= 0 || !primaryReadyForPolicyV7(mover)) return 0;
+  const tile = findPublicTileV7(view, to);
+  if (tile?.explored !== true || tile.biome === null) return 0;
+  if (
+    !context.lookup.visibleHostiles.some((unit) => distance(unit.at, to) <= 1)
+  )
+    return 0;
+  const blast = hypotheticalBlastV7(
+    view,
+    to,
+    damage,
+    mover.id,
+    (owner) => isHostile(view, owner),
+    (owner) => friendlyOwnerV7(view, owner),
+    (unit, hit, dies) => hostileLossValueV7(context, unit, hit, dies),
+    (unit, hit, dies) => friendlyLossValueV7(view, unit, hit, dies),
+  );
+  const net =
+    blast.hostileValue - blast.friendlyValue - retainedUnitValue(view, mover);
+  if (blast.hostileKills === 0 || net <= 0) return 0;
+  // Only a better Kaboom than the one available where the mover stands.
+  const here = hypotheticalBlastV7(
+    view,
+    mover.at,
+    damage,
+    mover.id,
+    (owner) => isHostile(view, owner),
+    (owner) => friendlyOwnerV7(view, owner),
+    (unit, hit, dies) => hostileLossValueV7(context, unit, hit, dies),
+    (unit, hit, dies) => friendlyLossValueV7(view, unit, hit, dies),
+  );
+  const hereNet =
+    here.hostileValue - here.friendlyValue - retainedUnitValue(view, mover);
+  return net > hereNet ? net - Math.max(0, hereNet) : 0;
+}
+
+/**
+ * Exploder spacing: the value own and allied units would lose to death
+ * blasts if `unit` stood at `at` — its own blast when it is an exploding
+ * unit visible enemies can kill there, plus the blasts of adjacent own
+ * exploding units that visible enemies can kill where they stand.
+ */
+function exploderSpacingLossV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+): number {
+  const view = context.view;
+  let loss = 0;
+  const blast = deathBlastDamageV7(view, unit);
+  const own = (owner: PlayerId) => friendlyOwnerV7(view, owner);
+  if (blast > 0 && own(unit.ownerId) && goblinDoomedAtV7(context, unit, at))
+    for (const other of view.units) {
+      if (other.id === unit.id || !own(other.ownerId)) continue;
+      if (distance(other.at, at) !== 1) continue;
+      const hit = Math.min(blast, other.hp);
+      loss += friendlyLossValueV7(view, other, hit, hit >= other.hp);
+    }
+  for (const other of view.units) {
+    if (other.id === unit.id || other.ownerId !== view.viewer.id) continue;
+    if (distance(other.at, at) !== 1) continue;
+    const otherBlast = deathBlastDamageV7(view, other);
+    if (otherBlast <= 0 || !goblinDoomedAtV7(context, other, other.at))
+      continue;
+    const hit = Math.min(otherBlast, unit.hp);
+    loss += friendlyLossValueV7(view, unit, hit, hit >= unit.hp);
+  }
+  return loss;
+}
+
+/** The best Kaboom visible hostile goblin-crewed units have against `at`. */
+function kaboomExposureV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+) {
+  const view = context.view;
+  return hostileKaboomExposureV7(
+    view,
+    unit,
+    at,
+    context.lookup.visibleHostiles,
+    (owner) => friendlyOwnerV7(view, owner),
+    (center) => {
+      const tile = findPublicTileV7(view, center);
+      return (
+        tile?.explored === true &&
+        tile.biome !== null &&
+        !(context.threatLookup.occupantsByKey.get(coordKey(center)) ?? []).some(
+          (occupant) => occupant.id !== unit.id,
+        )
+      );
+    },
+    (center) => {
+      const near: PublicUnitV7[] = [];
+      for (let y = center.y - 1; y <= center.y + 1; y += 1)
+        for (let x = center.x - 1; x <= center.x + 1; x += 1)
+          near.push(
+            ...(context.threatLookup.occupantsByKey.get(coordKey({ x, y })) ??
+              []),
+          );
+      return near;
+    },
+    (other, hit, dies) => friendlyLossValueV7(view, other, hit, dies),
+    (other, hit, dies) => hostileLossValueV7(context, other, hit, dies),
+  );
+}
+
+const GOBLIN_ROUTINE_MOVE_PRIORITY_V7 = 1100;
+const GOBLIN_SPACING_PRIORITY_V7 = 760;
+
+/**
+ * Goblin-match movement: Gang Up setups and strikes and Kaboom setups (Goblin
+ * viewer), exploder spacing, and staying out of clumps a hostile Kaboom
+ * would profit from (every viewer). A routine Move (below 1100) that makes
+ * either danger worse is not taken, unless it sets up a kill; only a kill
+ * setup revives a Move the other rules did not score.
+ */
+function goblinMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  const routine = priority < GOBLIN_ROUTINE_MOVE_PRIORITY_V7;
+  let strategic = 0;
+  let setupKill = false;
+  let raised = priority;
+  if (
+    view.viewer.faction === "GOBLIN" &&
+    actor.form === "LAND" &&
+    !same(actor.at, to)
+  ) {
+    let projectedView: PlayerViewV7 | null = null;
+    const projected = () =>
+      (projectedView ??= projectPublicUnitForPolicyV7(view, actor.id, {
+        at: to,
+        activation: {
+          ...actor.activation,
+          moved: true,
+          movedPathLength: Math.max(1, distance(actor.at, to)),
+        },
+      }));
+    const setup = gangUpSetupValueV7(context, actor, to, projected);
+    if (setup.kill) {
+      setupKill = true;
+      raised = Math.max(raised, GANG_UP_KILL_SETUP_PRIORITY_V7);
+    } else if (setup.value > 0)
+      raised = Math.max(raised, GANG_UP_SETUP_PRIORITY_V7);
+    strategic += setup.value;
+    const strike = gangUpStrikeValueV7(context, actor, to, projected);
+    if (strike > 0) {
+      setupKill = true;
+      raised = Math.max(raised, GANG_UP_STRIKE_PRIORITY_V7);
+      strategic += strike;
+    }
+    const kaboom = kaboomSetupValueV7(context, actor, to);
+    if (kaboom > 0) {
+      setupKill = true;
+      raised = Math.max(raised, KABOOM_SETUP_PRIORITY_V7);
+      strategic += kaboom;
+    }
+  }
+  // Only a kill setup revives a Move the other rules did not score.
+  if (priority < 0 && !setupKill) return { priority, strategic: 0 };
+  const onOwnCenter =
+    context.lookup.citiesByKey.get(coordKey(actor.at))?.ownerId ===
+    view.viewer.id;
+  const spacingThere = exploderSpacingLossV7(context, actor, to);
+  const spacingHere = exploderSpacingLossV7(context, actor, actor.at);
+  strategic -= spacingThere;
+  if (routine && !setupKill && spacingThere > spacingHere)
+    return { priority: -1, strategic };
+  if (spacingHere > spacingThere && !onOwnCenter) {
+    raised = Math.max(raised, GOBLIN_SPACING_PRIORITY_V7);
+    strategic += spacingHere - spacingThere;
+  }
+  const there = kaboomExposureV7(context, actor, to);
+  if (there.enemyNet > 0 && there.ownHits >= 2) {
+    strategic -= Math.ceil(there.ownLoss / 2);
+    if (routine && !setupKill) {
+      const here = kaboomExposureV7(context, actor, actor.at);
+      if (
+        !(here.enemyNet > 0 && here.ownHits >= 2) ||
+        there.ownLoss > here.ownLoss
+      )
+        return { priority: -1, strategic };
+    }
+  }
+  return { priority: raised, strategic };
+}
+
+/**
+ * WAAAGH! (section 7.1) is used like Rally, counting only units in its
+ * radius that can still attack a visible enemy this turn.
+ */
+function waaaghValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  let eligible = 0;
+  let useful = 0;
+  for (const unit of view.units) {
+    if (!isRallyTargetV7(view, actor, unit)) continue;
+    if (unit.activation.attacked || !primaryReadyForPolicyV7(unit)) continue;
+    eligible += 1;
+    const rule = unitRoleRuleV7(view, unit);
+    const reach =
+      rule.range +
+      (!unit.activation.moved && rule.mayUsePrimaryActionAfterMove
+        ? rule.move
+        : 0);
+    if (
+      context.lookup.visibleHostiles.some(
+        (hostile) => distance(hostile.at, unit.at) <= reach,
+      )
+    )
+      useful += 1;
+  }
+  return {
+    priority: useful >= 2 ? 1235 : useful === 1 ? 720 : -1,
+    strategic: useful * 12 + (eligible - useful) * 2,
+  };
+}
+
+/**
+ * Goblin training: the cheap Goblin horde fills Warrens capacity. The Goblin
+ * gains a small bias in both the preferred-role value and the city-action
+ * utility; the horde adjustment (in `sharedCityContextWorkV7`) also waives
+ * the repetition cost of the first four Goblins in the preferred-role
+ * choice. The Orc Warboss cannot tend, so the living-seat cure bias never
+ * applies.
+ */
+function goblinTrainingAdjustmentsV7(): ReadonlyMap<UnitRoleIdV7, number> {
+  return new Map<UnitRoleIdV7, number>([["FIGHTER", GOBLIN_TRAINING_BIAS_V7]]);
+}
+
+/**
+ * Plunder (the Goblin Commerce) pays a Coin per kill: research it by visible
+ * combat, the hostile units within three tiles of own units and cities.
+ */
+function plunderResearchValueV7(
+  context: PolicyContextV7,
+): { readonly priority: number; readonly strategic: number } | null {
+  const view = context.view;
+  const own = [
+    ...view.units
+      .filter((unit) => unit.ownerId === view.viewer.id)
+      .map((unit) => unit.at),
+    ...view.cities
+      .filter((city) => city.ownerId === view.viewer.id)
+      .map((city) => city.at),
+  ];
+  const contact = context.lookup.visibleHostiles.filter((hostile) =>
+    own.some((at) => distance(at, hostile.at) <= 3),
+  ).length;
+  if (contact < 2) return null;
+  return { priority: 1070, strategic: 4 * Math.min(6, contact) };
+}
+
 function captureEndsMatchV7(
   view: PlayerViewV7,
   targetOwnerId: PlayerId,
@@ -5144,7 +6012,7 @@ function* bestKnightOverrunSequenceSteps(
     return { immediate: -10_000, strategic: 0, safety: -10_000, spacing: 0 };
   const afterFirst = projectKnightOverrunAttack(view, actor, target, preview);
   const base: KnightOverrunSequenceValue = {
-    immediate: combatImmediateValue(preview),
+    immediate: combatImmediateValue(preview, view),
     strategic: combatTargetStrategicValue(view, target, preview),
     ...knightOverrunLeafValue(afterFirst, actor.id, context),
   };
@@ -5178,7 +6046,7 @@ function* bestKnightOverrunSequenceSteps(
       secondPreview,
     );
     const candidate: KnightOverrunSequenceValue = {
-      immediate: base.immediate + combatImmediateValue(secondPreview),
+      immediate: base.immediate + combatImmediateValue(secondPreview, view),
       strategic:
         base.strategic +
         combatTargetStrategicValue(afterFirst, secondTarget, secondPreview),
@@ -5270,14 +6138,22 @@ function projectKnightOverrunAttack(
   return projectPublicUnits(view, units, [actor.id, target.id]);
 }
 
-function combatImmediateValue(preview: CombatPreviewV7): number {
+function combatImmediateValue(
+  preview: CombatPreviewV7,
+  view?: PlayerViewV7,
+): number {
   return (
     20 * Number(preview.defenderDies) -
     16 * Number(preview.attackerDies) +
     10 * preview.damageToDefender -
     8 * preview.damageToAttacker +
+    // Revision 17: a Goblin bomb also splashes own and allied units, which
+    // costs rather than scores (Battleship and Lich splash is hostile-only).
     preview.splash.reduce(
-      (value, splash) => value + 10 * splash.damage + 20 * Number(splash.dies),
+      (value, splash) =>
+        friendlySplashUnitV7(view, splash.unitId) === undefined
+          ? value + 10 * splash.damage + 20 * Number(splash.dies)
+          : value - 12 * splash.damage - 24 * Number(splash.dies),
       0,
     ) +
     // Revision 13 Lifesteal (always 0 outside Undead matches): a heal offsets
@@ -5310,6 +6186,16 @@ function combatStrategicValue(
   for (const splash of preview.splash) {
     const splashTarget = context.lookup.unitsById.get(splash.unitId);
     if (splashTarget === undefined) continue;
+    // Revision 17: friendly bomb splash is a loss, not a gain.
+    if (!isHostile(context.view, splashTarget.ownerId)) {
+      value -= friendlyLossValueV7(
+        context.view,
+        splashTarget,
+        splash.damage,
+        splash.dies,
+      );
+      continue;
+    }
     const retained = targetStrategicValue(
       context.view,
       splash.unitId,
@@ -5860,6 +6746,9 @@ function visibleImmediateDamage(
     view.units.filter((unit) => isHostile(view, unit.ownerId));
   // Revision 13 (Undead matches only): Wail, Lich splash, and Infect.
   const undead = context?.undead ?? undeadMatchForPolicyV7(view);
+  // Revision 17 (Goblin matches only): bomb splash, Gang Up, and the Kaboom
+  // of an embarked goblin-crewed unit that lands next to the actor.
+  const goblin = context?.goblin ?? goblinMatchForPolicyV7(view);
   for (const hostile of hostiles) {
     const facts = publicCombatFacts(view, hostile, effectiveLookup);
     const wail =
@@ -5867,6 +6756,16 @@ function visibleImmediateDamage(
       hostile.form === "LAND" &&
       isBansheeV7(view, hostile) &&
       isLivingOwnerV7(view, actor.ownerId);
+    if (goblin && hostile.form === "EMBARKED") {
+      const kaboom = kaboomDamageV7(view, hostile);
+      if (
+        kaboom > 0 &&
+        (context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ??
+          distance(hostile.at, at) <= 3)
+      )
+        total += Math.min(kaboom, actor.hp);
+      continue;
+    }
     if (!wail && (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0))
       continue;
     const d = distance(hostile.at, at);
@@ -5877,8 +6776,9 @@ function visibleImmediateDamage(
       context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false;
     if (!directlyThreatened && !reachableThreat) {
       // pulp_wars-vkq.21: Battleship splash counts like Lich splash (Liches
-      // died one after another to it on naval maps).
-      if (undead && isSplashAttackerV7(view, hostile))
+      // died one after another to it on naval maps); revision 17 adds the
+      // Bomb Chucker's bomb.
+      if ((undead || goblin) && isSplashAttackerV7(view, hostile))
         total += publicSplashDangerV7(
           view,
           hostile,
@@ -5894,7 +6794,17 @@ function visibleImmediateDamage(
       hostile,
       actor,
       at,
-      { maximumCharge: !directlyThreatened },
+      {
+        maximumCharge: !directlyThreatened,
+        // Revision 17: a hostile Goblin attacker gains Gang Up from its
+        // owner's units around the actor's tile.
+        ...(goblin && hostile.form === "LAND"
+          ? {
+              bonusAttack2:
+                2 * gangUpForPolicyV7(view, hostile, at, new Set([actor.id])),
+            }
+          : {}),
+      },
       effectiveLookup,
     );
     // Revision 17: a goblin-crewed land unit's Kaboom reach (included in its
@@ -5979,6 +6889,8 @@ function publicProjectedDamageWithLookupV7(
   defenderAt: CoordV7,
   options: {
     readonly maximumCharge?: boolean;
+    /** Revision 17 Gang Up estimate (Goblin matches only). */
+    readonly bonusAttack2?: number;
   },
   lookup?: PolicyLookupV7,
 ): number {
@@ -5987,11 +6899,11 @@ function publicProjectedDamageWithLookupV7(
   const attackFacts = publicCombatFacts(view, attacker, lookup);
   const publishedAttack2 = attackFacts.attack2;
   const attack2 =
-    options.maximumCharge &&
+    (options.maximumCharge &&
     attacker.form === "LAND" &&
     attackFacts.abilities.includes("CHARGE")
       ? Math.max(publishedAttack2, attackRule.attack2 + 2)
-      : publishedAttack2;
+      : publishedAttack2) + (options.bonusAttack2 ?? 0);
   if (!Number.isInteger(attack2)) return 0;
   const bonus = projectedDefenseBonus(view, defender, defenderAt);
   const defenderTile = findPublicTileV7(view, defenderAt);

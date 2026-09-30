@@ -96,12 +96,46 @@ countervariant where it matters:
     seeds and map types that reach an outcome without errors or stalls and
     use Raise Dead, Devour, Wail, and Frenzy.
 
+## Revision-17 Goblin scenarios
+
+`tests/unit/ruleset-v7-goblin-ai.test.ts` adds the Goblin semantic
+scenarios (`pulp_wars-0ao.6`,
+[revision 17 section 10](../product/RULESET_7_REVISION_17_GOBLINS.md#10-normal-ai-requirements))
+on strictly parsed seed-2 arenas, with countervariants:
+
+1. a net-positive Kaboom taken: a Goblin between three wounded enemies
+   Kabooms instead of spending its action on one kill;
+2. a friendly-fire Kaboom declined: a Goblin inside its own horde next to one
+   enemy, and a lone Goblin next to a healthy Guard, never Kaboom; a doomed
+   Goblin that still hurts enemies Kabooms before it dies;
+3. a Kaboom that clears a hostile city center next to an own capturer;
+4. a Bomb Chucker that will not bomb a target next to its own Goblins but
+   bombs a clear one, and still bombs a wounded Knight whose kill is worth a
+   little friendly splash;
+5. a Gang Up ordering: a helper steps next to the target before the attack,
+   which then has Gang Up; attacks prefer targets with helpers; a hostile
+   Goblin's Gang Up raises the threat of stepping next to it;
+6. an exploder not parked in a clump: a killable Rocket Cart does not stop
+   next to own Goblins and own units do not stop next to it, while the same
+   moves are fine when no visible enemy can reach it;
+7. an opponent declining a melee kill whose death blast would kill its own
+   units (taken when the blast only chips them), not clumping inside the
+   reach of a profitable hostile Kaboom (clumping is fine next to a Goblin
+   unit that cannot Kaboom), and counting the Kaboom reach of an embarked
+   Goblin that can land;
+8. WAAAGH! only when two units in its radius can attack, a wounded Troll that
+   keeps fighting where a Juggernaut would recover, and Plunder research
+   under visible combat; and
+9. a 55-Goblin horde whose turn ends within the 128-command cap, and ends
+   exactly at a smaller cap it would exceed.
+
 The frozen benchmark below compares the pinned revision-11 policy with the
 current one on two fixed all-Human public views; it is a performance and
 decision-parity artifact, not a scenario suite, and its pinned baseline has
-no Undead tactics to compare. Undead coverage therefore lives in the
-semantic scenarios above, and the frozen benchmark is unchanged: all-Human
-decisions are unaffected by the Undead gate.
+no Undead or Goblin tactics to compare. Undead and Goblin coverage therefore
+lives in the semantic scenarios above, and the frozen benchmark is
+unchanged: all-Human decisions are unaffected by the Undead and Goblin
+gates.
 
 ## Frozen benchmark
 
