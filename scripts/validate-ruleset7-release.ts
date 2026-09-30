@@ -14,9 +14,9 @@ import {
   canonicalHash,
   generateInitialMapV6,
   generateInitialMapV7,
-  toV6Setup,
   type AiCountV7,
   type BoardSizeV7,
+  type MatchSetupV6,
   type MatchSetupV7,
 } from "../src/engine/index";
 import { normalAiRuntimeFingerprint } from "./ruleset-v7-normal-ai-matrix-evidence";
@@ -612,6 +612,23 @@ function setupV7(
     aiMode,
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
+    mapGenerationRevision: "SPATIAL_ECONOMY",
+  };
+}
+
+// Local copy of the revision-2 engine helper removed in 521c3da; the archived
+// v6-parity map matrix was generated through exactly this mapping.
+function toV6Setup(setup: MatchSetupV7): MatchSetupV6 {
+  return {
+    rulesetId: "pulp-wars-poc-6",
+    seed: setup.seed,
+    width: setup.width,
+    height: setup.height,
+    aiCount: setup.aiCount,
+    aiDifficulty: "NORMAL",
+    aiMode: setup.aiMode,
+    humanColor: setup.humanColor,
+    factions: setup.factions,
     mapGenerationRevision: "SPATIAL_ECONOMY",
   };
 }
