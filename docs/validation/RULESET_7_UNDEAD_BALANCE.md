@@ -850,3 +850,122 @@ A further Undead nerf would need a larger sample to measure: at 480 games a
 4-point change is inside the interval. Candidates for a later revision are
 a lower Zombie Defense or cost change, or making the AI's Zombie training
 less HP-driven; none is applied here.
+
+## 13. Endgame siege (`pulp_wars-1mc`)
+
+Bead `pulp_wars-1mc`: the Normal AI's last-city stall, which sections 6,
+8.7, and 12 left as the cause of most round caps. The policy change is
+described in
+[Normal AI: endgame siege](../architecture/NORMAL_AI.md#endgame-siege-pulp_wars-1mc);
+rules are unchanged (revision 15). Sections 1–12 stay as recorded.
+
+### 13.1 Reproduction
+
+The full section-2 matrix: seeds 0–29 of every 1v1 cell (HU, UH, UU, HH ×
+five maps × 11 and 14; 1,200 games) plus the four-seat extra (HUHU, UHUH,
+seeds 0–3; 40 games), 150/120-round caps. Before is main `c7b1849`; its
+seeds 0–11 reproduce all 520 final state hashes of
+[RULESET_7_UNDEAD_BALANCE_R15_AFTER.json](RULESET_7_UNDEAD_BALANCE_R15_AFTER.json).
+
+```bash
+# After (this bead's policy):
+npm run balance:ruleset7-undead -- --seeds 30 --jobs 5 --output docs/validation/RULESET_7_UNDEAD_BALANCE_ENDGAME_AFTER.json --detail-output after-detail.json
+# Before: the same command on a copy of main c7b1849, writing
+# RULESET_7_UNDEAD_BALANCE_ENDGAME_BEFORE.json
+```
+
+Outputs: [before](RULESET_7_UNDEAD_BALANCE_ENDGAME_BEFORE.json) and
+[after](RULESET_7_UNDEAD_BALANCE_ENDGAME_AFTER.json) (6,282 s and 3,454 s
+wall, run concurrently with `--jobs 5` each on a shared 10-core laptop).
+Neither run had an error, stall, or exception. The stall categories below
+come from a scratch replay of every round-capped 1v1 game that records the
+last 30 rounds (not checked in): the leader is the seat with more cities, the
+target its opponent's remaining cities.
+
+### 13.2 Why games stalled
+
+Of the 194 round-capped 1v1 games before, 171 (88%) were last-city stalls:
+the leader held at least twice the loser's one or two cities and could not
+finish. Every pairing stalled at a similar rate (Human mirror 20%, mixed
+15%, Undead mirror 14%).
+
+Categories are checked in this order; "near" means within Chebyshev 3 of a
+target center.
+
+| Stall (state at round 150 and the leader's last 30 rounds)                                                                                                             | Before | After |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -----: | ----: |
+| Not a last-city stall: the loser holds two or more cities and more than half as many as the leader                                                                     |     23 |    16 |
+| **Squatter:** a leader Captain, Necromancer, or Catapult stands on the besieged center (the loser earns nothing, but nothing can capture)                              |     24 |     1 |
+| **Fortified giant:** a Juggernaut or Abomination holds the center and recovers faster than the attacks the policy will make                                            |      4 |     0 |
+| **Defender killed, no capturer next to the center:** the leader kills five or more center defenders (up to one a turn as the loser retrains) without capturing         |     62 |    11 |
+| **Army never closes:** at most two leader land units near the target (capturers walled in behind their own Catapults, kept home, embarked, or the city never explored) |     64 |     6 |
+| **Siege without a kill:** more leader units near the target, but fewer than five center kills (for example Guards chipping a walled, fortified defender that recovers) |     17 |     6 |
+| Total round caps                                                                                                                                                       |    194 |    40 |
+
+Contributing policy rules: movement toward an objective used Chebyshev
+progress only, so a capturer behind its own siege line never stepped
+sideways; a siege unit would not stand 2–3 from the objective without a
+durable screen; a non-capturing unit that reached a hostile center had no
+reason to leave; the harmful-attack test only excused an attack with a
+single lethal follow-up, never several combined attacks; and Pillage (1170)
+outranked every move, so units cycled Pillage against the loser's rebuilds.
+
+### 13.3 Results
+
+Decided games; 95% Wilson intervals.
+
+| Pairing   | Round caps before → after | Decided rounds mean / median / p90 | All games mean rounds | Undead win before → after | Seat-0 win before → after |
+| --------- | ------------------------- | ---------------------------------- | --------------------- | ------------------------- | ------------------------- |
+| HU        | 44 → 8 (14.7% → 2.7%)     | 37.1/34/56 → 33.4/31/49            | 53.8 → 36.6           | 58% [52–64] → 56% [50–62] | 42% → 44%                 |
+| UH        | 46 → 6 (15.3% → 2.0%)     | 36.3/32/58 → 31.5/30/46            | 53.9 → 33.9           | 65% [59–71] → 62% [56–67] | 65% → 62%                 |
+| Mixed     | 90 → 14 (15.0% → 2.3%)    | 36.7/33/57 → 32.5/31/48            | 53.9 → 35.2           | 61% [57–65] → 59% [55–63] | 54% → 53%                 |
+| UU        | 43 → 10 (14.3% → 3.3%)    | 33.1/31/50 → 31.8/29/45            | 50.0 → 35.8           | —                         | 52% [46–58] → 52% [46–57] |
+| HH        | 61 → 16 (20.3% → 5.3%)    | 38.6/35/60 → 33.3/31/49            | 61.4 → 39.5           | —                         | 55% [48–61] → 55% [49–60] |
+| All 1v1   | 194 → 40 (16.2% → 3.3%)   | 36.2/33/57 → 32.5/30/48            | 54.8 → 36.4           | —                         | 53% → 53%                 |
+| Four-seat | 27 → 13 of 40             | —                                  | 92.6 → 67.4           | —                         | —                         |
+
+Round caps by board (1v1, before → after): Dry Land 11: 3 → 2, 14: 17 → 7;
+Pangea 11: 21 → 0, 14: 33 → 3; Continents 11: 25 → 4, 14: 15 → 4;
+Archipelago 11: 7 → 3, 14: 25 → 8; Lakes 11: 11 → 3, 14: 37 → 6.
+
+Game by game (1v1): 164 of the 194 formerly capped games are decided
+(median round 37, p90 64), 30 stay capped, and 10 games decided before now
+reach the cap. Of the 996 games decided in both runs, 593 end sooner, 192
+end in the same round, and 35 (3.5%) change winner: the endgame starts
+before the game is over (often around round 8–20 on 11 × 11, when the
+leader has taken every reachable village and holds three cities against
+one), and a losing seat sometimes wins the race it opens.
+
+Per mixed game, trained Catapults fall from 5.9 to 2.4, Liches from 2.2 to
+1.5, and rounds with Plague damage from 9.6 to 3.1: most of that volume was
+produced by round-capped games (sections 11.2 and 12.2).
+
+What changed:
+
+- **Round caps fall by 79%** in the 1v1 matrix and by half in the four-seat
+  extra, in every pairing; Pangea 11 has no cap left. Games are shorter
+  (all-games mean 54.8 → 36.4 rounds) mostly because the stalled tail is
+  gone; decided games also end about four rounds sooner.
+- **Win rates do not move beyond noise.** The mixed Undead win rate is 59%
+  [55–63] after against 61% [57–65] before; seat and first-mover rates are
+  unchanged.
+- **Human mirror.** The endgame mode is not faction-gated, so all-Human play
+  changes once a seat reaches the endgame: HH caps fall from 61 to 16 and
+  decided HH games end 5 rounds sooner, with seat 0 still winning 55%. Only
+  22 of 300 HH final state hashes are unchanged (the others enter the
+  endgame before they end). Decisions outside the endgame are unchanged:
+  every non-endgame decision along 12 sampled matches (2,951 decisions,
+  every pairing) and every decision of the pinned Cooperative parity match
+  is byte-identical to the `c7b1849` policy's decision for the same view.
+
+### 13.4 Remaining caps
+
+Of the 40 remaining 1v1 caps, 16 are not last-city stalls (the loser still
+holds two or three cities against three or four; the endgame mode does not
+start). The rest are mostly real sieges the leader loses: the loser's
+Catapults or Liches kill the leader's approaching or freshly trained units
+every turn (Undead leaders feed Zombies and Necromancers into a walled
+defender), or the leader's army is on another landmass and the naval plan
+never lands it. A later bead could teach the Normal AI to invade a last city
+across water deliberately and to stop training into a center inside visible
+lethal reach for all roles, not only siege units.

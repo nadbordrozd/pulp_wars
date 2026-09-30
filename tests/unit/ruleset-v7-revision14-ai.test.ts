@@ -343,9 +343,12 @@ describe("ruleset-7 Normal AI: Land Grant neutral count", () => {
 
 describe("ruleset-7 revision-14 Normal AI: headless play", () => {
   it("trains a Lich and plagues in a deterministic mixed match", () => {
+    // pulp_wars-1mc: the seed-3 Continents match used before now enters the
+    // Human seat's endgame siege at round 9 (three cities against one) and
+    // the Undead seat never reaches a Lich; seed 5 Pangea still does.
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 3,
+      seed: 5,
       width: 11,
       height: 11,
       aiCount: 1,
@@ -353,7 +356,7 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
       aiMode: "RIVAL",
       humanColor: "CORAL",
       factions: ["UNDEAD", "ORIGINAL"],
-      mapType: "CONTINENTS",
+      mapType: "PANGEA",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     };
     const first = runAiMatchV7(setup, { maxRounds: 40 });

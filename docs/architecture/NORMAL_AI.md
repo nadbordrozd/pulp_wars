@@ -5,8 +5,9 @@
 The production policy consumes only the legal public schema, commands, and
 previews under `pulp-wars-poc-7r15`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics, the revision-14
-Plague, Bitten, Tend-cure, and Vampire play, and the revision-15 Plague
-duration valuation are summarized below.
+Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
+duration valuation, and the endgame siege mode (`pulp_wars-1mc`) are
+summarized below.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
@@ -267,6 +268,83 @@ spread it only on the first. The policy reads the public
 - Plague application value (8 per hostile victim, 4 per healthy hostile
   neighbour) is unchanged: a fresh Plague still deals up to 6 damage and
   spreads once.
+
+## Endgame siege (`pulp_wars-1mc`)
+
+About 80% of round-capped Normal-vs-Normal games were last-city stalls in
+every pairing, the Human mirror included
+([balance report §13](../validation/RULESET_7_UNDEAD_BALANCE.md#13-endgame-siege-pulp_wars-1mc)).
+The winning seat surrounded the losing seat's last city and never took it:
+a Captain, Necromancer, or Catapult sat on the besieged center where no
+capturer could step in; Catapults killed the defender every turn while the
+capturers waited behind their own siege line (greedy Chebyshev movement
+cannot step sideways around it); the army never left home, or the last city
+had never been explored; and a lone melee attack on a fortified defender was
+always rejected as harmful.
+
+The policy now has an **endgame siege mode** (`src/ai/v7-endgame.ts`), for
+every faction and match. It reads only public facts: the leaderboard's city
+and living-unit counts, visible cities and units, and explored tiles. It is
+on for a viewer when
+
+- the viewer holds at least three cities, and
+- a living hostile seat holds one or two cities, the viewer at least twice
+  as many, and at least as many living units as that seat, and
+- no explored, empty, neutral village can be reached over explored land by an
+  own land unit (expansion comes first; a village only reachable by sea, or
+  one a unit already stands on, does not hold the endgame back).
+
+The targets are that seat's visible cities. The plan holds one breadth-first
+route field: steps from each explored, enterable, unoccupied land tile to the
+nearest target center, with every occupied tile a wall (Mountains need
+Engineering). If a target seat's city has never been explored and every
+living hostile seat is a target, the field's sources are the unexplored
+tiles within two of that seat's explored territory (the city is there), or
+the unexplored map edge when none is known. Everything below is gated on the
+plan, so a position outside the endgame keeps its decision exactly: all
+2,951 non-endgame decisions along 12 sampled 1v1 matches (every pairing),
+and every decision of the pinned Cooperative three-seat parity match, are
+byte-identical to the `c7b1849` policy's decisions for the same views.
+
+In the endgame:
+
+- **Squatters leave.** A non-capturing land unit on a target center moves off
+  at priority 1291 (just before a capturer's 1290 move onto a hostile city)
+  when an own capturer that can still move stands next to it. While any own
+  capturer can route to a target, a non-capturing unit does not end a move on
+  the eight tiles around a target center, and one standing there moves away
+  at 1291; a non-capturing unit does not move onto a target center while an
+  own capturer is within two tiles.
+- **Capturers close in.** A capturer's move that shortens its route distance
+  to a target scores priority 1105 (above routine moves at 700–850) and
+  `2 × min(3, progress)` strategic value, when the destination is outside
+  visible lethal reach. A capturer that has not moved and still has route
+  progress to make does not Pillage (it may Pillage after moving), which ends
+  the Pillage-and-rebuild cycling around the last city.
+- **Siege units close in.** A Catapult or Lich moves toward a target by route
+  and into its 2–3 ring (+8) at 1105 when the destination is outside visible
+  lethal reach; in the endgame the ring does not need a durable screen.
+- **Combined attacks.** An attack on the defender of a target center that is
+  otherwise rejected as harmful (including one that would feed a Zombie) is
+  allowed when this attack plus the other offered attacks on that defender
+  this turn kill it (applied greedily, strongest first, each previewed
+  against the projected wounded defender) and a fresh own capturer outside
+  that fire stands next to the center. Such an attack takes priority 1344
+  (1343 when the attacker dies, so unanswered hits go first).
+- **Landing.** An embarked capturer may disembark within three route steps of
+  a target (priority 1105, `10 − 2 × route` value) even while a naval plan is
+  active, when the landing tile is outside visible lethal reach.
+- **Training.** A city on the targets' route field gives capture-capable
+  roles +16 in its shared city-action choice while fewer than four own
+  capturers can route to a target, and siege roles (Catapult, Lich) +16 while
+  fewer than three own siege units can (a walled, fortified defender that
+  heals 4 a turn outlasts Guard chip damage; a Catapult or Lich hit also
+  strips Field Defense).
+
+The mode adds no PRNG use, elapsed-time input, or work units: the plan is
+built once per decision with the bare context, and each helper is a bounded
+scan of the view (the combined-attack check previews at most
+`attackers²` attacks on one defender).
 
 ## Revision-8 merged industry and processor adjacency
 

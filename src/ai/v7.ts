@@ -37,6 +37,15 @@ import {
 } from "../engine/v7/spatial-economy";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 import {
+  ENDGAME_APPROACH_PRIORITY_V7,
+  ENDGAME_VACATE_PRIORITY_V7,
+  endgamePlanForPolicyV7,
+  endgameRouteDistanceV7,
+  endgameTargetAtV7,
+  endgameTargetDistanceV7,
+  type EndgamePlanV7,
+} from "./v7-endgame";
+import {
   normalOpeningResearchPendingV7,
   normalOpeningTechnologyV7,
 } from "./v7-opening";
@@ -150,6 +159,8 @@ interface PolicyContextV7 {
   readonly undead: boolean;
   /** Revision 14: public Plague and Bitten statuses (empty without Undead). */
   readonly afflictions: PublicAfflictionsV7;
+  /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
+  readonly endgame: EndgamePlanV7 | null;
   readonly commands: readonly CommandV7[];
   readonly threats: ThreatV7[];
   readonly threatenedTiles: ReadonlyMap<UnitId, ReadonlySet<string>>;
@@ -1029,6 +1040,7 @@ function bareContext(
     view,
     undead: undeadMatchForPolicyV7(view),
     afflictions: publicAfflictionsV7(view),
+    endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
     commands,
     threats,
     threatenedTiles,
@@ -2299,7 +2311,8 @@ function isPolicyCandidate(
       unitRoleRuleV7(context.view, actor).tacticalRole === "SIEGE" &&
       distance(to, objective) >= 2 &&
       distance(to, objective) <= 3 &&
-      !hasReachableScreenAtV7(context, actor, to)
+      !hasReachableScreenAtV7(context, actor, to) &&
+      !endgameSiegeTileV7(context, actor, to)
     )
       return false;
   }
@@ -2308,7 +2321,10 @@ function isPolicyCandidate(
   const autoembark = isAutoembarkMoveV7(context, command);
   if (autoembark && !context.naval.active) return false;
   if (command.kind === "DISEMBARK" && context.naval.active)
-    return context.naval.landing.some((at) => same(at, command.at));
+    return (
+      context.naval.landing.some((at) => same(at, command.at)) ||
+      endgameLandingValueV7(context, command) > 0
+    );
   if (autoembark && context.naval.retainLandedUnitIds.has(command.unitId))
     return false;
   if (
@@ -2436,6 +2452,7 @@ function isLowValueAttackV7(
     (!preview.defenderDies && immediate <= 0);
   if (!harmful) return false;
   if (attackPurposeExceptionV7(context, command, preview)) return false;
+  if (endgameCombinedKillV7(context, command, preview)) return false;
   return true;
 }
 
@@ -2451,7 +2468,11 @@ function feedsZombieV7(
 ): boolean {
   if (!preview.attackerInfected) return false;
   const facts = attackPurposeFactsV7(context, command, preview);
-  return !facts.savesCity && !facts.opensLethalFollowUp;
+  return (
+    !facts.savesCity &&
+    !facts.opensLethalFollowUp &&
+    !endgameCombinedKillV7(context, command, preview)
+  );
 }
 
 /**
@@ -2877,6 +2898,19 @@ function* sharedCityContextWorkV7(
       : livingTrainingAdjustmentsV7(view, context.afflictions);
   const trainingAdjustment = (role: UnitRoleIdV7): number =>
     undeadTraining?.get(role) ?? 0;
+  const endgameCaptureShortfall =
+    context.endgame !== null &&
+    endgameRoutedUnitsV7(context, (unit) => canCaptureV7(view, unit)) <
+      ENDGAME_CAPTURER_TARGET_V7;
+  const endgameSiegeShortfall =
+    context.endgame !== null &&
+    context.endgame.targets.length > 0 &&
+    endgameRoutedUnitsV7(
+      context,
+      (unit) =>
+        unit.form === "LAND" &&
+        unitRoleRuleV7(view, unit).tacticalRole === "SIEGE",
+    ) < ENDGAME_SIEGE_TARGET_V7;
   const threatenedCityIds = new Set<CityId>();
   for (const threat of context.threats) {
     threatenedCityIds.add(threat.cityId);
@@ -2936,8 +2970,23 @@ function* sharedCityContextWorkV7(
         (command) => command.role === "CATAPULT",
       ) &&
       freshUnitInLethalReachV7(context, city, "CATAPULT");
-    const cityAdjustment = (role: UnitRoleIdV7) =>
-      siegeExposed && role === "CATAPULT" ? -40 : 0;
+    // pulp_wars-1mc: a city on an endgame target's landmass trains
+    // capturers while fewer than four, and siege units while fewer than
+    // three, can route to a target.
+    const endgameCity =
+      city !== undefined &&
+      context.endgame?.routeDistanceByKey.has(coordKey(city.at)) === true;
+    const cityAdjustment = (role: UnitRoleIdV7) => {
+      const rule = effectiveRoleRuleV7(role, view.viewer.faction);
+      return (
+        (siegeExposed && role === "CATAPULT" ? -40 : 0) +
+        (endgameCity &&
+        ((endgameCaptureShortfall && rule.abilities.includes("CAPTURE")) ||
+          (endgameSiegeShortfall && rule.tacticalRole === "SIEGE"))
+          ? ENDGAME_TRAINING_BIAS_V7
+          : 0)
+      );
+    };
     for (const command of landByCity.get(cityId) ?? []) {
       const count = ownedRoleCounts.get(command.role) ?? 0;
       const value =
@@ -3470,6 +3519,12 @@ function scoreCommandWithContext(
       context.naval.target === null
         ? publicRevealGain(view, actor, command.at, context.lookup)
         : 100 - distance(command.at, context.naval.target);
+    // pulp_wars-1mc: an embarked capturer lands next to an endgame target.
+    const landing = endgameLandingValueV7(context, command);
+    if (landing > 0) {
+      priority = Math.max(priority, ENDGAME_APPROACH_PRIORITY_V7);
+      strategicValue += landing;
+    }
   }
 
   if (command.kind === "LAND_GRANT") {
@@ -3532,6 +3587,11 @@ function scoreCommandWithContext(
       if (opensCaptureFollowUp) {
         priority = Math.max(priority, preview.attackerDies ? 1346 : 1345);
         strategicValue += 45;
+      } else if (endgameCombinedKillV7(context, command, preview)) {
+        // pulp_wars-1mc: this turn's combined fire clears the last city's
+        // center for an adjacent capturer; unanswered hits go first.
+        priority = Math.max(priority, preview.attackerDies ? 1343 : 1344);
+        strategicValue += 40;
       }
       if (targetUnit?.form === "EMBARKED") {
         priority = Math.max(priority, 1275);
@@ -3827,6 +3887,11 @@ function scoreCommandWithContext(
       strategicValue += 18;
       priority = Math.max(priority, 850);
     }
+    if (context.endgame !== null && resultAt !== null) {
+      const endgame = endgameMoveValueV7(context, actor, resultAt, priority);
+      priority = endgame.priority;
+      strategicValue += endgame.strategic;
+    }
     if (context.undead && resultAt !== null) {
       const undead = undeadMoveValueV7(context, actor, resultAt, priority);
       priority = undead.priority;
@@ -3844,6 +3909,9 @@ function scoreCommandWithContext(
     strategicValue = 12 * (live ?? 0) + 1 - survival;
     immediateValue = 1 + 5 * (live ?? 0);
     priority = strategicValue > 0 ? 1170 : -1;
+    // pulp_wars-1mc: in the endgame a capturer approaches first; Pillage
+    // (which may follow a Move) no longer spends its turn far from the siege.
+    if (endgameCapturerShouldApproachV7(context, actor)) priority = -1;
   }
 
   if (command.kind === "DISBAND" && actor !== undefined) {
@@ -4317,6 +4385,274 @@ function raiderEscapeRetreatValueV7(
     tile?.explored === true &&
     (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
   return 10 * (dangerHere - dangerThere) + (friendly ? 4 : 0) + (cover ? 2 : 0);
+}
+
+/**
+ * `pulp_wars-1mc` endgame siege. Every helper returns the ordinary behavior
+ * (false / unchanged) when `context.endgame` is null, so positions outside
+ * the endgame keep their decisions.
+ */
+function canCaptureV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
+  return (
+    unit.form === "LAND" &&
+    unitRoleRuleV7(view, unit).abilities.includes("CAPTURE")
+  );
+}
+
+/** An own capturer next to `center` that can still step onto it this turn. */
+function freshCapturerNextToV7(
+  context: PolicyContextV7,
+  center: CoordV7,
+  excluded: ReadonlySet<UnitId>,
+): PublicUnitV7 | undefined {
+  const view = context.view;
+  return view.units.find(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      !excluded.has(unit.id) &&
+      distance(unit.at, center) === 1 &&
+      !unit.activation.moved &&
+      !unit.activation.attacked &&
+      !unit.activation.recovered &&
+      !unit.activation.captured &&
+      !unit.activation.specialActed &&
+      canCaptureV7(view, unit),
+  );
+}
+
+/** A siege unit may stand 2–3 from an endgame target without a screen. */
+function endgameSiegeTileV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  const plan = context.endgame;
+  if (plan === null) return false;
+  const range = endgameTargetDistanceV7(plan, to);
+  return (
+    range >= 2 &&
+    range <= 3 &&
+    visibleImmediateDamage(context.view, actor, to, context) < actor.hp
+  );
+}
+
+/**
+ * The defender on an endgame target's center dies to this attack plus the
+ * other offered attacks on it this turn (applied greedily, strongest first,
+ * each previewed against the projected wounded defender), and an own
+ * capturer outside that fire stands next to the center ready to step in.
+ */
+function endgameCombinedKillV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  preview: CombatPreviewV7,
+): boolean {
+  const plan = context.endgame;
+  if (plan === null || preview.defenderDies || preview.damageToDefender <= 0)
+    return false;
+  const view = context.view;
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (target === undefined) return false;
+  const city = endgameTargetAtV7(plan, target.at);
+  if (city === undefined) return false;
+  const capturer = freshCapturerNextToV7(
+    context,
+    city.at,
+    new Set([command.unitId]),
+  );
+  if (capturer === undefined) return false;
+  const pool = new Set<UnitId>();
+  for (const candidate of context.commands)
+    if (
+      candidate.kind === "ATTACK" &&
+      candidate.targetUnitId === target.id &&
+      candidate.unitId !== command.unitId &&
+      candidate.unitId !== capturer.id
+    )
+      pool.add(candidate.unitId);
+  let hp = target.hp - preview.damageToDefender;
+  while (pool.size > 0) {
+    const projected = projectPublicUnitForPolicyV7(view, target.id, { hp });
+    let best: {
+      readonly id: UnitId;
+      readonly damage: number;
+      readonly dies: boolean;
+    } | null = null;
+    for (const unitId of pool) {
+      const shot = queryCombatPreviewV7(projected, unitId, target.id);
+      if (shot === null) continue;
+      if (
+        best === null ||
+        shot.damageToDefender > best.damage ||
+        (shot.damageToDefender === best.damage && unitId < best.id)
+      )
+        best = {
+          id: unitId,
+          damage: shot.damageToDefender,
+          dies: shot.defenderDies,
+        };
+    }
+    if (best === null || best.damage <= 0) return false;
+    if (best.dies) return true;
+    hp -= best.damage;
+    pool.delete(best.id);
+  }
+  return false;
+}
+
+/** Endgame training: capturers and siege units wanted near the targets. */
+const ENDGAME_CAPTURER_TARGET_V7 = 4;
+const ENDGAME_SIEGE_TARGET_V7 = 3;
+const ENDGAME_TRAINING_BIAS_V7 = 16;
+
+/** Own units matching `wanted` that can route to an endgame target. */
+function endgameRoutedUnitsV7(
+  context: PolicyContextV7,
+  wanted: (unit: PublicUnitV7) => boolean,
+): number {
+  const plan = context.endgame;
+  if (plan === null) return 0;
+  const view = context.view;
+  return view.units.filter(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      wanted(unit) &&
+      Number.isFinite(endgameRouteDistanceV7(plan, view, unit.at)),
+  ).length;
+}
+
+/** An own capturer off every target center can still route to a target. */
+function endgameCapturersWaitingV7(context: PolicyContextV7): boolean {
+  const plan = context.endgame;
+  if (plan === null) return false;
+  const view = context.view;
+  return view.units.some(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      canCaptureV7(view, unit) &&
+      endgameTargetAtV7(plan, unit.at) === undefined &&
+      Number.isFinite(endgameRouteDistanceV7(plan, view, unit.at)),
+  );
+}
+
+/** Landing value for an embarked capturer within three route steps. */
+function endgameLandingValueV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "DISEMBARK" }>,
+): number {
+  const plan = context.endgame;
+  if (plan === null) return 0;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (
+    actor === undefined ||
+    !unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")
+  )
+    return 0;
+  const route = plan.routeDistanceByKey.get(coordKey(command.at));
+  if (route === undefined || route > 3) return 0;
+  const landed: PublicUnitV7 = { ...actor, form: "LAND", at: command.at };
+  if (visibleImmediateDamage(view, landed, command.at, context) >= actor.hp)
+    return 0;
+  return 10 - 2 * route;
+}
+
+/** A capturer that has not moved and can still route closer to a target. */
+function endgameCapturerShouldApproachV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+): boolean {
+  const plan = context.endgame;
+  if (
+    plan === null ||
+    actor.activation.moved ||
+    !canCaptureV7(context.view, actor)
+  )
+    return false;
+  const route = endgameRouteDistanceV7(plan, context.view, actor.at);
+  return Number.isFinite(route) && route > 1;
+}
+
+/**
+ * Endgame movement: a non-capturing unit leaves a target center for a fresh
+ * adjacent capturer and does not squat on one near capturers; capturers and
+ * siege units close in along public land routes (units are walls) as long
+ * as the destination is not in visible lethal reach.
+ */
+function endgameMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  basePriority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const plan = context.endgame;
+  const unchanged = { priority: basePriority, strategic: 0 };
+  if (plan === null || actor.form !== "LAND") return unchanged;
+  const view = context.view;
+  const capture = canCaptureV7(view, actor);
+  const here = endgameTargetAtV7(plan, actor.at);
+  if (here !== undefined) {
+    if (
+      capture ||
+      freshCapturerNextToV7(context, here.at, new Set([actor.id])) === undefined
+    )
+      return unchanged;
+    return {
+      priority: Math.max(basePriority, ENDGAME_VACATE_PRIORITY_V7),
+      strategic: -visibleImmediateDamage(view, actor, to, context),
+    };
+  }
+  const onto = endgameTargetAtV7(plan, to);
+  if (onto !== undefined) {
+    if (capture) return unchanged;
+    return view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.id !== actor.id &&
+        distance(unit.at, onto.at) <= 2 &&
+        canCaptureV7(view, unit),
+    )
+      ? { priority: -1, strategic: 0 }
+      : unchanged;
+  }
+  if (!capture && endgameCapturersWaitingV7(context)) {
+    // The eight tiles around a target center are the capturers' approach:
+    // non-capturing units neither take one nor keep one.
+    const rangeFrom = endgameTargetDistanceV7(plan, actor.at);
+    const rangeTo = endgameTargetDistanceV7(plan, to);
+    if (rangeTo <= 1) return { priority: -1, strategic: 0 };
+    if (rangeFrom <= 1)
+      return {
+        priority: Math.max(basePriority, ENDGAME_VACATE_PRIORITY_V7),
+        strategic: -visibleImmediateDamage(view, actor, to, context),
+      };
+  }
+  const siege = unitRoleRuleV7(view, actor).tacticalRole === "SIEGE";
+  if (!capture && !siege) return unchanged;
+  const next = plan.routeDistanceByKey.get(coordKey(to));
+  if (next === undefined) return unchanged;
+  let ring = false;
+  if (siege) {
+    // Siege units stop 2–3 from the target (minimum range 2).
+    const rangeFrom = endgameTargetDistanceV7(plan, actor.at);
+    const rangeTo = endgameTargetDistanceV7(plan, to);
+    if (
+      !Number.isFinite(rangeTo) ||
+      (rangeFrom >= 2 && rangeFrom <= 3) ||
+      rangeTo < 2
+    )
+      return unchanged;
+    ring = rangeTo <= 3;
+  }
+  const from = endgameRouteDistanceV7(plan, view, actor.at);
+  const progress = Number.isFinite(from) ? from - next : 1;
+  if (progress <= 0 && !ring) return unchanged;
+  if (visibleImmediateDamage(view, actor, to, context) >= actor.hp)
+    return unchanged;
+  return {
+    priority: Math.max(basePriority, ENDGAME_APPROACH_PRIORITY_V7),
+    strategic: 2 * Math.max(0, Math.min(3, progress)) + (ring ? 8 : 0),
+  };
 }
 
 function captureEndsMatchV7(

@@ -78,6 +78,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/v7/types",
       "../engine/v7/spatial-economy",
       "../engine/v7/view",
+      "./v7-endgame",
       "./v7-opening",
       "./v7-undead",
     ]);
@@ -706,13 +707,17 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       targetUnitId: 34,
     });
     expect(sliced.candidates).toHaveLength(28);
+    // pulp_wars-1mc: this view is an endgame (4 cities against 1), so its
+    // capturers' approach MOVEs rise from 700 to 1105 (was 5c8816…e1b3); the
+    // command and every non-MOVE candidate below keep their pinned values.
     expect(canonicalHash(sliced)).toBe(
-      "5c881651b464d3015786c45232d63880473df3c83031bbe199bc600996bbe1b3",
+      "9b3587746c908ddff6597df763892c7fa10a63af8e2e18706856676bfe6acbec",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
-    // (spec section 8); with revision-12 ordinals the value is unchanged.
+    // (spec section 8); with revision-12 ordinals the value was 8936ff…1156
+    // before the pulp_wars-1mc endgame MOVE priorities above.
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(sliced))).toBe(
-      "8936ff96987a899bb2e8a462fc026461796a6a3cac50b87054b656cc11d11156",
+      "41418b921a55aa2350074cf495c8ced6b20febd44f48631a9d69d3cbf444e607",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',

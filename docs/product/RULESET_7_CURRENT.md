@@ -800,6 +800,13 @@ units on the tile receive none. There is no other city-center defense bonus.
   only uses an escape Move to a strictly safer visible tile (less projected
   visible damage), preferring own territory and Forest/Mountain cover;
   otherwise ordinary Move scoring applies.
+- **Endgame siege:** once expansion is over (no reachable empty neutral
+  village), a seat with at least three cities that faces a hostile seat on one
+  or two cities (half or fewer of its own, with no more living units) closes
+  on that seat's last cities along land routes, clears non-capturing units off
+  their centers and approach tiles for its capturers, and commits a combined
+  attack when this turn's offered attacks kill the center's defender next to a
+  ready capturer (`src/ai/v7-endgame.ts`).
 - One city action is compared across land training, every dock, and Land
   Grant. Roads are built only along one corridor of at most eight missing tiles
   from the original capital to a chosen city.
