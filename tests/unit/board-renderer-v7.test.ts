@@ -1259,7 +1259,7 @@ describe("Ruleset 7 board renderer", () => {
     ).toHaveLength(9);
   });
 
-  it("uses sprite-attached readiness rhythm only for units with offered Move", () => {
+  it("uses the attached readiness outline only for units with offered Move", () => {
     const state = exploredAllV7(initialV7(1524));
     const view = viewForV7(state, state.humanPlayerId);
     const owned = view.units.find((unit) => unit.ownerId === view.viewer.id);
@@ -1309,11 +1309,11 @@ describe("Ruleset 7 board renderer", () => {
       reducedMotion: false,
       highContrast: false,
     });
-    expect(drawImage.mock.calls[0]?.[3]).toBeCloseTo(64 * 1.08);
-    expect(drawImage.mock.calls[0]?.[4]).toBeCloseTo(74 * 1.08);
-    expect(alphaValues.some((alpha) => Math.abs(alpha - 0.62) < 0.00001)).toBe(
-      true,
-    );
+    // pulp_wars-q8b: the outline alone carries readiness; the LEGACY sprite
+    // is neither enlarged nor faded at mid-pulse.
+    expect(drawImage.mock.calls[0]?.[3]).toBeCloseTo(64);
+    expect(drawImage.mock.calls[0]?.[4]).toBeCloseTo(74);
+    expect(alphaValues.every((alpha) => alpha > 0.99)).toBe(true);
     expect(ellipse).not.toHaveBeenCalled();
 
     const selectedImage = vi.fn();

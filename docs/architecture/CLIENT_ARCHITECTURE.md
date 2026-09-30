@@ -1046,6 +1046,20 @@ at 800 ms, and 1 at 1,600 ms. Harmless rerenders, selection, dock changes, and
 camera changes do not restart it. Resume/reload has no serialized phase and
 starts a fresh cycle at opacity 1; this cannot affect rules or hashes.
 
+Ruleset 7 (pulp_wars-q8b) replaces the sprite pulse with a thick attached
+silhouette outline in both art sets, so a ready sprite is never faded or
+scaled and the city under a garrison stays readable. The sprite silhouette is
+dilated into a warm-white band (`#fff6cf`, at least 3 CSS px and 4 CSS px per
+unit of sprite scale) with a dark rim (`#2b1a00`) outside it, over a soft gold
+aura (`#ffc83d`); the silhouette itself is removed from both layers. Widths
+follow the sprite's own display scale (the CHIBI zoom step, or the LEGACY
+camera zoom), so the cue stays legible at the smallest zoom. The two layer
+rasters are phase-free and cached per sprite size; the shared 1.6-second loop
+changes only their composite opacity (aura 0.3 to 1, band 0.88 to 1). Reduced
+motion draws one static strong frame. High contrast uses a solid white band
+with a thicker black rim at full opacity. The outline is attached to the
+sprite, not a detached ring or tile badge.
+
 `COMBAT_RESOLVED` presentation plans retain public pre/post render snapshots.
 When the public attacker archetype is Archer, Full/Normal motion draws a
 code-native projectile from its manifest weapon attachment to the target torso

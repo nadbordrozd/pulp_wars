@@ -355,7 +355,7 @@ describe("CHIBI board rendering", () => {
         images: legacyImages,
         artSet: "CHIBI",
         chibiArt,
-        // Mid-pulse: LEGACY is at its most translucent and enlarged here.
+        // Mid-pulse: the pre-q8b LEGACY pulse was most translucent here.
         readinessElapsedMs: 800,
       });
       return log;
@@ -396,7 +396,8 @@ describe("CHIBI board rendering", () => {
           true,
         );
     }
-    // A legacy-fallback unit in the CHIBI set keeps the legacy pulse.
+    // A legacy-fallback unit in the CHIBI set is opaque and unscaled too
+    // (pulp_wars-q8b): the outline alone carries readiness.
     const fallback = draw(fakeChibi([]), 1);
     const legacyUnit = images(fallback).find(
       (call) =>
@@ -406,7 +407,7 @@ describe("CHIBI board rendering", () => {
     const fallbackAlpha = fallback
       .slice(0, fallbackIndex)
       .filter((call) => call[0] === "set" && call[1] === "globalAlpha");
-    expect(Number(fallbackAlpha.at(-1)?.[2])).toBeLessThan(1);
+    expect(fallbackAlpha.at(-1)?.[2]).toBe(1);
   });
 
   it("draws a CHIBI unit on a city or village centre smaller in the front-right and leaves other units and LEGACY unchanged", () => {
@@ -795,12 +796,13 @@ describe("CHIBI board rendering", () => {
         juggernaut,
         1,
       );
+      // Two outline layers each (aura, then band).
+      const knightRect = rect(knight, { x: centre.x + cell, y: centre.y });
       expect(glowDraws.map((call) => [call[2], call[3]])).toEqual([
         [`chibi:${juggernaut.id}`, garrison],
-        [
-          `chibi:${knight.id}`,
-          rect(knight, { x: centre.x + cell, y: centre.y }),
-        ],
+        [`chibi:${juggernaut.id}`, garrison],
+        [`chibi:${knight.id}`, knightRect],
+        [`chibi:${knight.id}`, knightRect],
       ]);
       const juggernautDraw = images(log).find(
         (call) => (call[1] as { chibi?: string }).chibi === juggernaut.id,

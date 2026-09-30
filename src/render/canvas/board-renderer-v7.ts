@@ -54,8 +54,7 @@ import {
   cityArtLevel,
   type SourceGeometry,
 } from "./board-art-geometry";
-import { drawRegisteredImageGlow } from "./board-renderer-v6";
-import type { BoardGlowCacheV7 } from "./glow-cache-v7";
+import { drawUncachedGlowV7, type BoardGlowCacheV7 } from "./glow-cache-v7";
 import {
   TILE_HEIGHT,
   TILE_WIDTH,
@@ -63,7 +62,7 @@ import {
   type Size,
   type TileEdge,
 } from "./geometry";
-import { readinessUnitStyleV6 } from "./readiness-presentation";
+import { readinessUnitStyleV7 } from "./readiness-presentation";
 import {
   PREVIEW_EDGE_MARGIN_CSS_PX_V7,
   PreviewLabelPlacerV7,
@@ -1191,16 +1190,21 @@ export function drawBoardV7(input: {
                   );
           let alpha = 1;
           if (entry.kind === "UNIT") {
+            // The ready cue is the attached outline alone: in both art sets
+            // the sprite stays opaque at its own size, so neither it nor the
+            // city under it is hidden. Widths follow the sprite's own scale.
             const readiness = entry.ready
-              ? readinessUnitStyleV6(
+              ? readinessUnitStyleV7(
                   input.readinessElapsedMs ?? 0,
                   input.reducedMotion ?? false,
                   input.highContrast ?? false,
+                  chibiReady === null
+                    ? camera.zoom
+                    : chibiMasterScale(camera) *
+                        (garrisoned ? CHIBI_GARRISON_SCALE : 1),
                 )
               : null;
-            // CHIBI: the ready cue is the glow alone, so the sprite stays
-            // opaque at its 1:1 canvas and the city under it stays readable.
-            const scale = chibiPiece ? 1 : (readiness?.scale ?? 1);
+            const scale = readiness?.scale ?? 1;
             const jump =
               input.selectionJump?.unitId === Number(entry.key.slice(5))
                 ? selectionJumpOffsetCssPx(
@@ -1215,24 +1219,35 @@ export function drawBoardV7(input: {
               width: rect.width * scale,
               height: rect.height * scale,
             };
-            alpha = chibiPiece ? 1 : (readiness?.opacity ?? 1);
-            if (readiness !== null) {
-              const glow = {
-                color: readiness.glow.color,
-                alpha: readiness.glow.alpha,
-                blur: readiness.glow.blurCssPx * camera.zoom,
-              };
-              if (input.glowCache === undefined)
-                drawRegisteredImageGlow(context, image, rect, glow);
-              else
-                input.glowCache.draw(
-                  context,
-                  image,
-                  chibiReady?.cacheKey ?? entry.assetId,
-                  rect,
-                  glow,
-                );
-            }
+            alpha = readiness?.opacity ?? 1;
+            if (readiness !== null)
+              for (const layer of [readiness.halo, readiness.core]) {
+                // Each layer raster is phase-free and cached; only its
+                // composite opacity pulses.
+                const glow = {
+                  color: layer.color,
+                  alpha: 1,
+                  blur: layer.blurCssPx,
+                  outline: {
+                    width: layer.widthCssPx,
+                    rim: layer.rimCssPx,
+                    rimColor: layer.rimColor,
+                  },
+                };
+                context.save();
+                context.globalAlpha = layer.alpha * sceneAlpha;
+                if (input.glowCache === undefined)
+                  drawUncachedGlowV7(context, image, rect, glow);
+                else
+                  input.glowCache.draw(
+                    context,
+                    image,
+                    chibiReady?.cacheKey ?? entry.assetId,
+                    rect,
+                    glow,
+                  );
+                context.restore();
+              }
           }
           context.save();
           context.globalAlpha = alpha * sceneAlpha;
