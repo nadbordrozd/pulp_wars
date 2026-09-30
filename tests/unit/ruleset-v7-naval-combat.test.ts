@@ -16,7 +16,8 @@ describe("ruleset-7 naval combat", () => {
       maxHp: 10,
       attack2: 4,
       defense2: 4,
-      move: 3,
+      // Revision 16: Patrol Boat Move 2 (was 3).
+      move: 2,
       range: 1,
       mayUsePrimaryActionAfterMove: true,
     });
@@ -106,7 +107,7 @@ describe("ruleset-7 naval combat", () => {
     ).toMatchObject({ accepted: false });
   });
 
-  it("gives transports Defense 1, Move 3, Sight 1, no attack, range, abilities, or retaliation", () => {
+  it("gives transports Defense 1, Move 2, Sight 1, no attack, range, abilities, or retaliation", () => {
     const fixture = withPortV7(9203);
     const passenger = fixture.state.units.find(
       (unit) => unit.ownerId !== fixture.state.humanPlayerId,
@@ -178,7 +179,7 @@ describe("ruleset-7 naval combat", () => {
     ).toMatchObject({
       ATTACK: 0,
       DEFENSE: 1,
-      MOVE: 3,
+      MOVE: 2,
       RANGE: 0,
       SIGHT: 1,
     });

@@ -15,7 +15,8 @@ counts the remaining turns), and the
 [revision-16 overlay](../product/RULESET_7_REVISION_16.md) (so far
 `pulp_wars-wwc`: orthogonal Shallow Water, the capital growth floor, and the
 growth-first Normal AI opening; Help on naval maps explains the Shallow
-rule; the Plague and Bitten UI
+rule; `pulp_wars-zsa`: 2-tile boats and the landing preview described below;
+the Plague and Bitten UI
 surfaces are described in the
 [Screen Flow revision-14 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-14-plague-and-bitten-overlay)
 and read only the public `plagued` and `bitten` view lists, previews, and
@@ -57,7 +58,14 @@ disembark movement, visible enemy Port/ship actions, and Battleship fire use the
 ordinary presentation queue; projection removes concealed coordinates before
 the queue sees them. DOM actions dispatch only exact public commands, including
 the selected active Port for naval recruitment and selected passenger for a
-landing target.
+landing target. Revision 16 (`pulp_wars-zsa`) adds a landing preview from the
+public `queryLandingPreviewV7`: for a selected embarked unit that has not
+moved, the board marks direct landing cells ("Land now", teal dashes) and
+cells reached by one water step then landing ("Move 1, then land", amber
+dots), and the selection dock shows a legend for both. A two-step target
+carries the one-cell `MOVE` plus a follow-up `DISEMBARK`; the DOM sends the
+landing only when the accepted Move left the unit embarked on that water cell
+and the landing is still offered.
 
 **Status:** frozen Ruleset-6 compatibility architecture below the current
 Ruleset-7 boundary

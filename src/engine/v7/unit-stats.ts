@@ -1,4 +1,8 @@
-import { technologyCapabilitiesV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
+import {
+  EMBARKED_MOVE_V7,
+  technologyCapabilitiesV7,
+  unitRoleRuleV7,
+} from "../rules/ruleset-v7";
 import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
 import { tileAtV7 } from "./spatial-economy";
 import type { GameStateV7, UnitStateV7 } from "./types";
@@ -176,7 +180,7 @@ export function publicUnitStatsV7(
         "MOVE",
         "Move",
         null,
-        base(labelText, "Move", embarked ? 3 : role.move),
+        base(labelText, "Move", embarked ? EMBARKED_MOVE_V7 : role.move),
         [],
       ),
       stat(

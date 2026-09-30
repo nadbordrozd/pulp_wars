@@ -20,6 +20,7 @@ import {
   queryPlayerCommandsV7,
   unitId,
   viewForV7,
+  type CommandV7,
   type PlayerViewV7,
   type GameStateV7,
   type PlayerId,
@@ -167,6 +168,52 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       unitId: transportId,
       at: { x: 7, y: 5 },
     });
+  });
+
+  it("takes the one-cell approach that still leaves the landing point (revision 16)", () => {
+    // From (5, 5) the landing water beside the capital at (7, 4) is one cell
+    // away. A one-cell Move keeps the second point for DISEMBARK; a two-cell
+    // Move along the same coast gets no closer and cannot land this turn.
+    const { view: base, transportId } = occupiedCoastalObjectiveView();
+    const view = projectPublicUnitForPolicyV7(base, unitId(transportId), {
+      at: { x: 5, y: 5 },
+    });
+    const moves = queryPlayerCommandsV7(view).flatMap((command) =>
+      command.kind === "MOVE" && command.unitId === transportId
+        ? [command]
+        : [],
+    );
+    expect(moves.some((command) => command.path.length === 2)).toBe(true);
+    const oneCell = {
+      kind: "MOVE",
+      unitId: transportId,
+      path: [{ x: 6, y: 5 }],
+    };
+    const twoCell = {
+      kind: "MOVE",
+      unitId: transportId,
+      path: [
+        { x: 5, y: 4 },
+        { x: 6, y: 3 },
+      ],
+    };
+    expect(moves).toContainEqual(oneCell);
+    expect(moves).toContainEqual(twoCell);
+    const one = scoreCommandV7(view, oneCell as CommandV7);
+    const two = scoreCommandV7(view, twoCell as CommandV7);
+    expect(one.priority).toBe(1230);
+    expect(two.priority).toBe(1230);
+    expect(one.objectiveValue).toBe(two.objectiveValue + 1);
+    const decision = chooseNormalCommandV7(view);
+    expect(decision.command).toMatchObject({
+      kind: "MOVE",
+      unitId: transportId,
+      path: [expect.anything()],
+    });
+    if (decision.command?.kind !== "MOVE") throw new Error("move missing");
+    const via = decision.command.path[0];
+    expect(via !== undefined && Math.abs(via.x - 7) <= 1).toBe(true);
+    expect(via !== undefined && Math.abs(via.y - 4) <= 1).toBe(true);
   });
 
   it("holds extra transports while a visible capture unit claims the target and restores landing afterward", () => {
@@ -644,8 +691,9 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
   });
 
   it("moves onto a useful visible hostile Port when no defense is needed", () => {
+    // Revision 16: the Patrol Boat (Move 2) starts two water cells away.
     const view = fleetPolicyView({
-      ownAt: { x: 3, y: 1 },
+      ownAt: { x: 4, y: 1 },
       hostileAt: { x: 9, y: 9 },
       hostileForm: "LAND",
     });
@@ -831,15 +879,17 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       expect(result.metrics.commandsByKind[kind]).toBe(0);
   });
 
-  it("avoids redundant landing and reboarding on the cooperative seed-0 Continents map", () => {
+  it("avoids redundant landing and reboarding on the cooperative seed-7 Continents map", () => {
     const result = runAiMatchV7(
       {
-        ...setupV7(0, 3),
+        ...setupV7(7, 3),
         aiMode: "COOPERATIVE",
         mapType: "CONTINENTS",
       },
-      // Revision 12's free opener shifts the natural timeline: the first
-      // landed capture happens after round 25 (accepted command 760).
+      // Revision 16 (`pulp_wars-zsa`): 2-tile boats slow the seed-0 invasion
+      // past this window (no landed capture by accepted command 800, nor by
+      // 1,200), so the natural-play seed is 7 (was 0); its first landed
+      // capture is accepted command 345.
       { maxRounds: 30, maxCommands: 800 },
     );
     expect(result.errors).toEqual([]);

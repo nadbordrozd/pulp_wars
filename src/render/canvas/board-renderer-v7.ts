@@ -19,6 +19,7 @@ import {
   previewTendWoundedV7,
   previewWailV7,
   queryCombatPreviewV7,
+  queryLandingPreviewV7,
   unitRoleRuleV7,
   WAIL_RADIUS_V7,
 } from "../../engine/index";
@@ -102,10 +103,24 @@ export interface BoardRenderInteractionV7 {
   readonly cursor?: CoordV7 | null;
 }
 
+/**
+ * Revision 16 landing preview marker labels (section 8): a direct landing
+ * cell, and a cell reached by one water step then landing.
+ */
+export const LANDING_NOW_LABEL_V7 = "Land now";
+export const LANDING_AFTER_MOVE_LABEL_V7 = "Move 1, then land";
+
 export interface MapCommandTargetV7 {
   readonly at: CoordV7;
   readonly command: CommandV7;
-  readonly family: "MOVE" | "ATTACK" | "MONUMENT" | "DISEMBARK";
+  readonly family:
+    "MOVE" | "ATTACK" | "MONUMENT" | "DISEMBARK" | "LANDING_AFTER_MOVE";
+  /**
+   * Revision 16: a two-command landing. `command` is the one-cell Move to
+   * the intermediate water cell; the UI sends this `DISEMBARK` only when that
+   * Move reaches the cell and the landing is still offered.
+   */
+  readonly followUp?: Extract<CommandV7, { kind: "DISEMBARK" }>;
   readonly previewLabel?: string;
   readonly semanticLabel?: string;
   /** Revision 13: Lifesteal and Infect outcome line (Undead matches only). */
@@ -1780,6 +1795,9 @@ function mapTargetEdges(
 
 function targetPriority(family: MapCommandTargetV7["family"]): number {
   if (family === "ATTACK") return 6;
+  // Revision 16: a two-step landing cell keeps its whole dotted outline
+  // where it touches a "Land now" or Move target.
+  if (family === "LANDING_AFTER_MOVE") return 3;
   if (family === "MONUMENT") return 2;
   return 1;
 }
@@ -1788,7 +1806,15 @@ function targetStroke(
   family: MapCommandTargetV7["family"] | undefined,
 ): string {
   if (family === "ATTACK") return "#ff655f";
+  if (family === "LANDING_AFTER_MOVE") return "#f4c95d";
   return "#64e6cf";
+}
+
+/** Dash pattern in CSS pixels; the two-step landing marker is dotted. */
+function targetDash(
+  family: MapCommandTargetV7["family"] | undefined,
+): readonly [number, number] {
+  return family === "LANDING_AFTER_MOVE" ? [3, 6] : [9, 5];
 }
 
 /** Vertical band (and optional side insets) preview labels must stay in. */
@@ -1831,7 +1857,8 @@ function drawMapTarget(
   context.save();
   context.lineWidth = 4 * camera.zoom;
   context.strokeStyle = targetStroke(entry.target?.family);
-  context.setLineDash([9 * camera.zoom, 5 * camera.zoom]);
+  const [dash, gap] = targetDash(entry.target?.family);
+  context.setLineDash([dash * camera.zoom, gap * camera.zoom]);
   for (const edge of entry.targetEdges ?? TILE_EDGES)
     strokeTileEdge(context, camera, entry.at, edge);
   context.restore();
@@ -2387,6 +2414,40 @@ function mapTargets(
   commands: readonly CommandV7[],
   selectedUnitId: number | null,
 ): MapCommandTargetV7[] {
+  return [
+    ...commandMapTargets(view, commands, selectedUnitId),
+    ...landingAfterMoveTargets(view, commands, selectedUnitId),
+  ];
+}
+
+/** Revision 16: cells reached by one water step, then `DISEMBARK`. */
+function landingAfterMoveTargets(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  selectedUnitId: number | null,
+): MapCommandTargetV7[] {
+  const unit = view.units.find((candidate) => candidate.id === selectedUnitId);
+  if (unit === undefined) return [];
+  const preview = queryLandingPreviewV7(view, unit.id, commands);
+  if (preview === null) return [];
+  return preview.afterMove.map((landing) => {
+    const via = landing.move.path[0] as CoordV7;
+    return {
+      at: landing.at,
+      command: landing.move,
+      followUp: landing.disembark,
+      family: "LANDING_AFTER_MOVE",
+      previewLabel: LANDING_AFTER_MOVE_LABEL_V7,
+      semanticLabel: `Landing after one water step: moves to ${via.x}, ${via.y}, then lands here. Landing ends this unit's activation; capture is available after the ordinary wait.`,
+    };
+  });
+}
+
+function commandMapTargets(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  selectedUnitId: number | null,
+): MapCommandTargetV7[] {
   const undeadMatch = matchHasUndeadV7(view);
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
@@ -2454,9 +2515,9 @@ function mapTargets(
           at: command.at,
           command,
           family: "DISEMBARK",
-          previewLabel: "Land transport",
+          previewLabel: LANDING_NOW_LABEL_V7,
           semanticLabel:
-            "Legal landing tile. Landing ends this unit's activation; capture is available after the ordinary wait.",
+            "Legal landing tile: land now. Landing ends this unit's activation; capture is available after the ordinary wait.",
         },
       ];
     return [];

@@ -1,5 +1,7 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
+  EMBARKED_LANDING_MAX_SPENT_V7,
+  EMBARKED_MOVE_V7,
   effectiveRoleRuleV7,
   factionTreeV7,
   technologyCapabilitiesV7,
@@ -3879,6 +3881,7 @@ function scoreCommandWithContext(
           context,
           actor,
           resultAt,
+          command.path.length,
         );
         if (navalValue > 0) {
           objectiveValue += navalValue;
@@ -5709,11 +5712,24 @@ function navalMovementObjectiveValueV7(
   context: PolicyContextV7,
   actor: PublicUnitV7,
   to: CoordV7 | null,
+  pathLength: number,
 ): number {
   if (to === null) return 0;
   const view = context.view;
   if (actor.form === "EMBARKED") {
-    return routeProgress(context.naval.waterDistanceByKey, actor.at, to);
+    const progress = routeProgress(
+      context.naval.waterDistanceByKey,
+      actor.at,
+      to,
+    );
+    // Revision 16: landing spends one of the two embarked movement points, so
+    // an approach that still leaves a landing this turn is worth one more
+    // step than a longer approach to the same coast.
+    const landsThisTurn =
+      progress > 0 &&
+      pathLength <= EMBARKED_LANDING_MAX_SPENT_V7 &&
+      context.naval.landing.some((at) => distance(at, to) === 1);
+    return progress + Number(landsThisTurn);
   }
   if (actor.form === "NAVAL") {
     return routeProgress(context.naval.fleetDistanceByKey, actor.at, to);
@@ -6005,7 +6021,10 @@ function publicCombatFacts(
   const facts: PublicCombatFactsV7 = {
     attack2:
       unit.form === "EMBARKED" ? 0 : (total("ATTACK") ?? role.attack2 / 2) * 2,
-    move: unit.form === "EMBARKED" ? 3 : (total("MOVE") ?? role.move),
+    move:
+      unit.form === "EMBARKED"
+        ? EMBARKED_MOVE_V7
+        : (total("MOVE") ?? role.move),
     minimumRange:
       unit.form === "EMBARKED"
         ? 0
@@ -6386,7 +6405,7 @@ function projectPublicUnits(
                       2,
                     )
                   : stat.id === "MOVE"
-                    ? statValue(stat, embarked ? 3 : role.move)
+                    ? statValue(stat, embarked ? EMBARKED_MOVE_V7 : role.move)
                     : stat.id === "RANGE"
                       ? statValue(stat, embarked ? 0 : role.range)
                       : stat.id === "SIGHT"

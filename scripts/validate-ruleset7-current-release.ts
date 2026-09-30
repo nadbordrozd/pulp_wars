@@ -65,10 +65,12 @@ const result = spawnSync(
     "tests/unit/ruleset-v7-revision14.test.ts",
     "tests/unit/ruleset-v7-revision15.test.ts",
     "tests/unit/ruleset-v7-revision16.test.ts",
+    "tests/unit/ruleset-v7-revision16-naval.test.ts",
     "tests/unit/ruleset-v7-save.test.ts",
     "tests/unit/persistence-v7.test.ts",
     "tests/integration/ruleset7-biome-browser.test.ts",
     "tests/integration/ruleset7-dom-shell.test.ts",
+    "tests/integration/ruleset7-landing-dom.test.ts",
     "--maxWorkers=1",
   ],
   { cwd: root, stdio: "inherit" },
@@ -76,5 +78,5 @@ const result = spawnSync(
 if (result.status !== 0)
   throw new Error("Current revision-16 release contract tests failed");
 process.stdout.write(
-  "ruleset-7 current release PASS: revision-16a identity, orthogonal Shallow Water with the 25% Shallow minimum, capital growth floor and CAPITAL_GROWTH, Normal AI growth-first opening; revision-15 three-turn Plague with first-turn spread, Zombie 18 HP; revision-14 Plague, Bitten, unanswered Vampire, Lich Attack 3, village table, and income caps; revision-13 faction registration (Human and Undead rosters), revision-12 rules (free opening research, Fertile Ground mask, Raider Escape), roster, economy, naval, logistics, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
+  "ruleset-7 current release PASS: revision-16a identity, orthogonal Shallow Water with the 25% Shallow minimum, capital growth floor and CAPITAL_GROWTH, Normal AI growth-first opening; revision-16b 2-tile boats (Patrol Boat and embarked Move 2, DISEMBARK spends one point) and the landing preview; revision-15 three-turn Plague with first-turn spread, Zombie 18 HP; revision-14 Plague, Bitten, unanswered Vampire, Lich Attack 3, village table, and income caps; revision-13 faction registration (Human and Undead rosters), revision-12 rules (free opening research, Fertile Ground mask, Raider Escape), roster, economy, naval, logistics, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
 );

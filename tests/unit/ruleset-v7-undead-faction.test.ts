@@ -515,7 +515,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         10,
         4,
         4,
-        3,
+        2,
         1,
         1,
         2,
@@ -607,7 +607,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       ["Catapult", 8, 10, 7, 1, 1, 3, 2, "ATTACK"],
       ["Knight", 9, 10, 6, 2, 3, 1, 1, "ATTACK+OVERRUN"],
       ["Juggernaut", null, 40, 8, 8, 1, 1, 1, "ATTACK+CAPTURE+PUSH"],
-      ["Patrol Boat", 5, 10, 4, 4, 3, 1, 1, "ATTACK"],
+      ["Patrol Boat", 5, 10, 4, 4, 2, 1, 1, "ATTACK"],
       ["Battleship", 16, 25, 12, 8, 2, 3, 1, "ATTACK"],
     ]);
   });
@@ -1411,6 +1411,13 @@ describe("ruleset-7 all-Human parity digests", () => {
   // matches still reproduced the revision-12 digests exactly, so the command,
   // event, state, and view digests below are re-recorded from the revision-16
   // code while the map and post-generation PRNG digests are unchanged.
+  // Revision 16b (`pulp_wars-zsa`) changes them again only through 2-tile
+  // boats (Patrol Boat and embarked Move 2, DISEMBARK spending one point, and
+  // the Normal AI's one-cell landing approach, section 5): with Move 3, no
+  // landing budget, and no approach bonus restored, both matches reproduced
+  // the revision-16a digests exactly. The map and post-generation PRNG
+  // digests are unchanged; seed 7 no longer ends by round 17 (its Continents
+  // invasion is slower) and now reaches the 30-round cap.
   const BASELINE = [
     {
       seed: 7,
@@ -1419,23 +1426,23 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "RIVAL",
       mapType: "CONTINENTS",
       maxRounds: 30,
-      acceptedCommands: 156,
-      rounds: 17,
-      termination: "OUTCOME",
+      acceptedCommands: 241,
+      rounds: 31,
+      termination: "ROUND_CAP",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "74a32308a5e2f6df47b39ecd31e6fc31a3f51e92df57771cf0ecced3501e9136",
+        "d49112565ebd2fc88f466d580dd42dbac3bce9e31535d7441860026941990b1b",
       eventHash:
-        "9f4ab09b0dd277978e5e37de59838f728af28c560db33d8628a7ac33453a6c5b",
+        "e54453a96a12224b7cd5c2ac8efb90f2dbdda47e341eb262c26e275d80776814",
       normalizedFinalStateHash:
-        "0b3a706922080459de1efde7e24e474107ef7cdd4faf4e44056afc5a89103f06",
+        "42414aaf115a2bc657c78f3b58b2e94d302621a3167b69212d721458ed902ee6",
       normalizedHumanViewHash:
-        "b32dd2ad803f38250958b4fdde08e25ca66fba74e52208db23d80a8a8f71363e",
+        "1243e8df7e74f51ba7821de426c1f44c329f6b5dc7bdc087f118bcf52f4932c5",
       normalizedHumanCommandsHash:
-        "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "2bd526a33ddeece81ed8e7d5542abfb07d0e8785421a132046fffd9eee754973",
     },
     {
       seed: 1234,
@@ -1444,7 +1451,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "COOPERATIVE",
       mapType: "ARCHIPELAGO",
       maxRounds: 18,
-      acceptedCommands: 383,
+      acceptedCommands: 363,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1452,15 +1459,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "02fca080970c53f664626275b56dc06dde4cac8952b9c4f2aa1e176ada684b44",
+        "1f9e25f0762fe2ceb256bf014d02a105275481816ea70a8e4ec464acbd417b0f",
       eventHash:
-        "bacafa6d2b0c5176a62f62f05b6478f4e253be825c7e6f746e62d9bc100dad9a",
+        "5b5d015ee4ee683a91f990d3707fe65e848d2ded8b7873aa5f25c62d82e09ed9",
       normalizedFinalStateHash:
-        "9d1622d5a6b347aa2e5223ef6023eb611a243747975ca3ede0ae45a3e5963b78",
+        "094619ca5c39d02f72b71b837674be61cd61ed7b3f12c28eadc15cd87445b239",
       normalizedHumanViewHash:
-        "415aed46a5cc8d020e025b0d3f5fc4da659b3a5c39020c4c70c55e982d68d940",
+        "a882a841452892b6afd6bb750af7c78e57f3e9ac5991119a1fb0028e5f0a6add",
       normalizedHumanCommandsHash:
-        "caf917c1a39bd0245652dfa31c047a21e1e99ddcf943a0b1001e53f85d9eb4d5",
+        "73e389b86d0098c4b5b8b24d015e609b9c7b9b956643d72fe139f2415db889f0",
     },
   ] as const;
 

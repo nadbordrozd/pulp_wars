@@ -440,7 +440,13 @@ wait. Known Deep Water adds Navigation. Visible afloat danger holds departure
 for a Patrol Boat escort, while a defended coast can add Naval Engineering and
 Battleship bombardment. Landed capture units continue a known objective on
 their new landmass before embarking again. Cooperative planning excludes allied
-land, water, and Ports.
+land, water, and Ports. Revision 16 (`pulp_wars-zsa`): embarked reach uses
+Move 2 (the shared `EMBARKED_MOVE_V7`), and `DISEMBARK` is a candidate only
+when the public query offers it, which requires at most one point spent. An
+embarked Move that makes route progress, spends one cell, and ends next to a
+planned landing cell gains one objective point, so a transport one cell from
+the landing coast moves one cell and lands the same turn instead of taking a
+two-cell Move along the same coast.
 
 The authoritative
 [Ruleset-7 revision-4 biome-economy specification](../product/RULESET_7_REVISION_4_BIOME_ECONOMY.md)

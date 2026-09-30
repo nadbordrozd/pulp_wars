@@ -23,6 +23,7 @@ import {
   previewTendWoundedV7,
   previewWailV7,
   previewEconomicV7,
+  queryLandingPreviewV7,
   queryTechnologyTreeV7,
   type CommandV7,
   type CoordV7,
@@ -46,7 +47,11 @@ import {
 } from "../../persistence/index";
 import { CanvasBoardHostV7, type BoardHostV7 } from "../canvas/board-host-v7";
 import type { BoardSelectionV7 } from "../canvas/board-renderer-v7";
-import type { MapCommandTargetV7 } from "../canvas/board-renderer-v7";
+import {
+  LANDING_AFTER_MOVE_LABEL_V7,
+  LANDING_NOW_LABEL_V7,
+  type MapCommandTargetV7,
+} from "../canvas/board-renderer-v7";
 import { technologyTreeLayoutV7 } from "./technology-tree-layout-v7";
 import { createTacticalSymbolV7 } from "./tactical-symbol-v7";
 import type { TacticalSymbolTheme } from "../../assets/ruleset7-tactical-ui-symbols";
@@ -138,6 +143,8 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "RESEARCH",
   "CHOOSE_CITY_REWARD",
 ]);
+/** Revision 16 (section 5.4) unit and help text for boats and transports. */
+export const AT_SEA_MOVE_TEXT_V7 = "At sea: Move 2; landing uses 1 of it.";
 
 export interface MountRuleset7AppOptions {
   readonly boardHost?: BoardHostV7;
@@ -1153,6 +1160,7 @@ export class Ruleset7DomAppView {
               : "Carrying troops that can't capture. Pick a highlighted shore tile to land.",
             "v7-transport-passenger",
           ),
+          text(this.#document, "p", AT_SEA_MOVE_TEXT_V7, "v7-transport-move"),
         );
       if (unit.role === "KNIGHT" && unit.activation.overrunActive) {
         const state = el(this.#document, "section", "v7-tactical-state");
@@ -1336,6 +1344,8 @@ export class Ruleset7DomAppView {
       }
       if (unit.activation.handled && unit.ownerId === view.viewer.id)
         dock.dataset.handled = "true";
+      const legend = this.#landingLegend(view, unit.id);
+      if (legend !== null) dock.append(legend);
       const actions = this.#commandButtons(
         (command) =>
           "unitId" in command &&
@@ -1978,7 +1988,59 @@ export class Ruleset7DomAppView {
     const view = this.#snapshot.view;
     if (view === null) return;
     const command = target.command;
-    await this.#dispatch(command);
+    const moved = await this.#dispatch(command);
+    // Revision 16 two-step landing: land only when the one-cell Move reached
+    // its water cell and the landing is still offered there.
+    const followUp = target.followUp;
+    if (!moved || followUp === undefined || command.kind !== "MOVE") return;
+    const via = command.path.at(-1);
+    const after = this.#snapshot;
+    const unit = after.view?.units.find(
+      (candidate) => candidate.id === followUp.unitId,
+    );
+    if (
+      this.#destroyed ||
+      via === undefined ||
+      unit === undefined ||
+      unit.form !== "EMBARKED" ||
+      !same(unit.at, via) ||
+      !after.offeredCommands.some(
+        (offered) =>
+          offered.kind === "DISEMBARK" &&
+          offered.unitId === followUp.unitId &&
+          same(offered.at, followUp.at),
+      )
+    )
+      return;
+    await this.#dispatch(followUp);
+  }
+
+  /** Revision 16 legend for the landing preview's two marker styles. */
+  #landingLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    const preview = queryLandingPreviewV7(
+      view,
+      unitId,
+      this.#snapshot.offeredCommands,
+    );
+    if (
+      preview === null ||
+      (preview.direct.length === 0 && preview.afterMove.length === 0)
+    )
+      return null;
+    const legend = el(this.#document, "ul", "v7-landing-legend");
+    legend.setAttribute("aria-label", "Landing markers");
+    for (const [marker, label] of [
+      ["now", LANDING_NOW_LABEL_V7],
+      ["after-move", LANDING_AFTER_MOVE_LABEL_V7],
+    ] as const) {
+      const item = el(this.#document, "li", "v7-landing-legend-item");
+      item.dataset.landingMarker = marker;
+      const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
+      swatch.setAttribute("aria-hidden", "true");
+      item.append(swatch, text(this.#document, "span", label));
+      legend.append(item);
+    }
+    return legend;
   }
 
   #tacticalTheme(): TacticalSymbolTheme {
@@ -2036,6 +2098,7 @@ export class Ruleset7DomAppView {
       "Move a land unit onto your port to put it to sea.",
       ...(view !== null && view.setup.mapType !== "DRY_LAND"
         ? [
+            AT_SEA_MOVE_TEXT_V7,
             "Shallow Water: water that shares an edge with land. Water touching land only at a corner is Deep Water.",
           ]
         : []),
@@ -2869,8 +2932,9 @@ export class Ruleset7DomAppView {
     this.#notice = "Game saved.";
     this.#render();
   }
-  async #dispatch(command: CommandV7): Promise<void> {
-    if (this.#localBusy()) return;
+  /** Resolves true when the command was accepted and its presentation ran. */
+  async #dispatch(command: CommandV7): Promise<boolean> {
+    if (this.#localBusy()) return false;
     const restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
@@ -2881,12 +2945,12 @@ export class Ruleset7DomAppView {
     } finally {
       this.#humanDispatchPending = false;
     }
-    if (this.#destroyed) return;
+    if (this.#destroyed) return false;
     if (!result.accepted) {
       this.#presentationActive = false;
       this.#error = `Can't do that right now (${result.error?.code ?? result.reason}).`;
       this.#render();
-      return;
+      return false;
     }
     this.#error = "";
     const notice = boundaryNoticeV7(
@@ -2921,20 +2985,21 @@ export class Ruleset7DomAppView {
     await this.#presentationTail;
     if (this.#destroyed) {
       this.#humanDispatchSettling = false;
-      return;
+      return false;
     }
     this.#presentationActive = false;
     this.#pendingFocusAction = restoreAction;
     this.#render();
     this.#humanDispatchSettling = false;
     await this.#progressAi();
-    if (this.#destroyed) return;
+    if (this.#destroyed) return false;
     if (
       restoreAction === null &&
       this.#screen === "MATCH" &&
       this.#snapshot.view?.pendingChoices.length === 0
     )
       this.#queueBoardFocus();
+    return true;
   }
   async #progressAi(): Promise<void> {
     if (this.#destroyed) return;

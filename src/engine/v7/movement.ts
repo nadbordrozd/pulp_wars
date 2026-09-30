@@ -1,5 +1,9 @@
 import type { PlayerId } from "../model/ids";
-import { technologyCapabilitiesV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
+import {
+  EMBARKED_MOVE_V7,
+  technologyCapabilitiesV7,
+  unitRoleRuleV7,
+} from "../rules/ruleset-v7";
 import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
@@ -67,7 +71,7 @@ export function validateMovementPathV7(
     player.researchedTechs,
     player.faction,
   );
-  const budget2 = (unit.form === "EMBARKED" ? 3 : rule.move) * 2;
+  const budget2 = (unit.form === "EMBARKED" ? EMBARKED_MOVE_V7 : rule.move) * 2;
   const knownBeforeCommand = player.explored;
   let explored = player.explored;
   const revealed: CoordV7[] = [];
@@ -366,7 +370,7 @@ function validatePlayerMovementPathWithContextV7(
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const role = unitRoleRuleV7(view, unit);
   const capabilities = context.capabilities;
-  const budget2 = (unit.form === "EMBARKED" ? 3 : role.move) * 2;
+  const budget2 = (unit.form === "EMBARKED" ? EMBARKED_MOVE_V7 : role.move) * 2;
   let current = unit.at;
   let spentPoints2 = 0;
   const traversedPath: CoordV7[] = [];

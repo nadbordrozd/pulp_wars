@@ -6,7 +6,8 @@ import {
   type GameStateV7,
   type UnitId,
 } from "../../src/engine/index";
-import { checkedV7, exploredAllV7, initialV7 } from "./v7-builders";
+import { checkedV7, exploredAllV7, initialV7, setupV7 } from "./v7-builders";
+import { revision13MapStateV7 } from "./v7-revision13-map";
 
 export function coastalV7(
   seed = 9001,
@@ -173,4 +174,180 @@ export function battleshipBombardmentV7(
     ),
   });
   return { state, attackerId: attacker.id, defenderId: defender.id };
+}
+
+/** A ready activation (nothing spent this turn). */
+export const READY_ACTIVATION_V7: GameStateV7["units"][number]["activation"] = {
+  moved: false,
+  movedPathLength: 0,
+  attacked: false,
+  attacksUsed: 0,
+  tendedThisTurn: false,
+  inspired: false,
+  overrunActive: false,
+  escapeAvailable: false,
+  recovered: false,
+  captured: false,
+  handled: false,
+  specialActed: false,
+};
+
+export interface EmbarkedLandingFixtureV7 {
+  readonly state: GameStateV7;
+  readonly unitId: UnitId;
+  /** The embarked unit's start-of-turn water cell `S`. */
+  readonly start: CoordV7;
+  /** The water row east of `S`: one, two, and three cells away. */
+  readonly water: readonly [CoordV7, CoordV7, CoordV7];
+  /** Land north of `S`: a direct landing cell. */
+  readonly direct: CoordV7;
+  /** Land north of the first water cell only: Move 1, then land. */
+  readonly afterMove: CoordV7;
+  /** Land north of the second water cell only: out of landing reach. */
+  readonly beyond: CoordV7;
+}
+
+/**
+ * Revision 16 landing geometry on a Continents-labelled board with every
+ * technology researched and the whole map explored by the human:
+ *
+ * ```text
+ *   y-1   L  D  L  A  B  L
+ *   y     L  S  W1 W2 W3 L
+ *   y+1   L  L  L  L  L  L
+ * ```
+ *
+ * `S` holds the human's first unit, embarked and ready; every other block
+ * cell is neutral, empty Grass; the block lies at least four cells from every
+ * other human unit and city and two from every other piece.
+ */
+export function embarkedLandingV7(
+  seed = 9601,
+  faction: "ORIGINAL" | "UNDEAD" = "ORIGINAL",
+): EmbarkedLandingFixtureV7 {
+  const setup = {
+    ...setupV7(seed, 2),
+    factions: [faction, "ORIGINAL", "ORIGINAL"],
+  } as const;
+  const base = revision13MapStateV7(setup);
+  const mover = base.units.find((unit) => unit.ownerId === base.humanPlayerId);
+  if (mover === undefined) throw new Error("human unit missing");
+  const contributed = new Set(
+    base.populationContributions.map((entry) => coordKey(entry.source.at)),
+  );
+  const tileAt = (at: CoordV7) =>
+    at.x >= 0 &&
+    at.y >= 0 &&
+    at.x < base.board.width &&
+    at.y < base.board.height
+      ? base.board.tiles[at.y * base.board.width + at.x]
+      : undefined;
+  const pieces = [
+    ...base.units
+      .filter((unit) => unit.id !== mover.id)
+      .map((unit) => ({
+        at: unit.at,
+        own: unit.ownerId === base.humanPlayerId,
+      })),
+    ...base.cities.map((city) => ({
+      at: city.at,
+      own: city.ownerId === base.humanPlayerId,
+    })),
+  ];
+  for (let ay = 1; ay < base.board.height - 1; ay += 1)
+    for (let ax = 1; ax < base.board.width - 4; ax += 1) {
+      const block: CoordV7[] = [];
+      for (let y = ay - 1; y <= ay + 1; y += 1)
+        for (let x = ax - 1; x <= ax + 4; x += 1) block.push({ x, y });
+      const fits = block.every((at) => {
+        const tile = tileAt(at);
+        return (
+          tile !== undefined &&
+          tile.site === null &&
+          tile.improvement === null &&
+          tile.territoryCityId === null &&
+          !contributed.has(coordKey(at)) &&
+          !base.treasureChests.some((chest) => sameCoordV7(chest, at)) &&
+          pieces.every(
+            (piece) =>
+              Math.max(
+                Math.abs(piece.at.x - at.x),
+                Math.abs(piece.at.y - at.y),
+              ) >= (piece.own ? 4 : 2),
+          )
+        );
+      });
+      if (!fits) continue;
+      const start = { x: ax, y: ay };
+      const water = [
+        { x: ax + 1, y: ay },
+        { x: ax + 2, y: ay },
+        { x: ax + 3, y: ay },
+      ] as const;
+      const waterKeys = new Set([start, ...water].map(coordKey));
+      const blockKeys = new Set(block.map(coordKey));
+      const state = checkedV7({
+        ...base,
+        setup: { ...base.setup, mapType: "CONTINENTS" },
+        activeSeatIndex: base.turnOrder.indexOf(base.humanPlayerId),
+        players: base.players.map((player) =>
+          player.id === base.humanPlayerId
+            ? {
+                ...player,
+                researchedTechs: TECHNOLOGY_IDS_V7,
+                explored: base.board.tiles.map((tile) => tile.at),
+              }
+            : player,
+        ),
+        board: {
+          ...base.board,
+          tiles: base.board.tiles.map((tile) =>
+            !blockKeys.has(coordKey(tile.at))
+              ? tile
+              : waterKeys.has(coordKey(tile.at))
+                ? {
+                    ...tile,
+                    biome: null,
+                    terrain: "SHALLOW_WATER" as const,
+                    resource: null,
+                    road: false,
+                    fieldDefense: false,
+                  }
+                : {
+                    ...tile,
+                    biome: tile.biome ?? ("PLAINS" as const),
+                    terrain: "GRASS" as const,
+                    resource: null,
+                    road: false,
+                    fieldDefense: false,
+                  },
+          ),
+        },
+        units: base.units.map((unit) =>
+          unit.id === mover.id
+            ? {
+                ...unit,
+                at: start,
+                form: "EMBARKED" as const,
+                captureEligible: false,
+                activation: READY_ACTIVATION_V7,
+              }
+            : unit,
+        ),
+      });
+      return {
+        state,
+        unitId: mover.id,
+        start,
+        water,
+        direct: { x: ax, y: ay - 1 },
+        afterMove: { x: ax + 2, y: ay - 1 },
+        beyond: { x: ax + 3, y: ay - 1 },
+      };
+    }
+  throw new Error(`no embarked landing geometry for seed ${seed}`);
+}
+
+function coordKey(at: CoordV7): string {
+  return `${at.x},${at.y}`;
 }

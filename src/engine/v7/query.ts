@@ -3,7 +3,9 @@ import {
   BASIC_ECONOMIC_ACTIONS_V7,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TECHNOLOGY_BRANCH_IDS_V7,
+  EMBARKED_LANDING_MAX_SPENT_V7,
   effectiveRoleRuleV7,
+  embarkedMovementSpentV7,
   factionRulesV7,
   factionTreeV7,
   technologyCapabilitiesV7,
@@ -426,6 +428,116 @@ function appendPublicCityCommandsV7(
   }
 }
 
+/**
+ * Public landing tiles for an own embarked unit standing at `from`: adjacent,
+ * explored land, enterable (Mountain needs Engineering), outside formal
+ * allied territory, and with no visible occupant.
+ */
+function publicLandingTilesV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+  from: CoordV7,
+): PlayerTileViewV7[] {
+  const player = view.viewer;
+  return adjacentPublicTiles(view, from).filter(
+    (tile) =>
+      tile.explored &&
+      tile.biome !== null &&
+      !(
+        tile.terrain === "MOUNTAIN" &&
+        !player.researchedTechs.includes("ENGINEERING")
+      ) &&
+      (tile.territoryOwnerId === null ||
+        tile.territoryOwnerId === player.id ||
+        !publicAllied(view, player.id, tile.territoryOwnerId)) &&
+      !view.units.some(
+        (candidate) => candidate.id !== unit.id && same(candidate.at, tile.at),
+      ),
+  );
+}
+
+export interface PublicLandingAfterMoveV7 {
+  /** The land cell the unit would land on. */
+  readonly at: CoordV7;
+  /** The one-cell Move to the intermediate water cell. */
+  readonly move: Extract<CommandV7, { kind: "MOVE" }>;
+  /** The landing sent after the Move reaches that cell. */
+  readonly disembark: Extract<CommandV7, { kind: "DISEMBARK" }>;
+}
+
+export interface PublicLandingPreviewV7 {
+  readonly unitId: UnitId;
+  /** Offered `DISEMBARK` cells ("Land now"), in `(y, x)` order. */
+  readonly direct: readonly CoordV7[];
+  /** Cells reached by one water step then landing, in `(y, x)` order. */
+  readonly afterMove: readonly PublicLandingAfterMoveV7[];
+}
+
+/**
+ * Revision 16 landing preview (section 5.4) for an own embarked unit. Direct
+ * cells are the offered `DISEMBARK` targets. While the unit has not moved,
+ * `afterMove` adds each other legal landing cell adjacent to an offered
+ * one-cell Move destination; its intermediate water cell is the first such
+ * destination in `(y, x)` order. Null for any other unit.
+ */
+export function queryLandingPreviewV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  commands: readonly CommandV7[] = queryPlayerCommandsV7(view),
+): PublicLandingPreviewV7 | null {
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (
+    unit === undefined ||
+    unit.ownerId !== view.viewer.id ||
+    unit.form !== "EMBARKED"
+  )
+    return null;
+  const byCoord = (left: CoordV7, right: CoordV7) =>
+    left.y - right.y || left.x - right.x;
+  const direct = commands
+    .flatMap((command) =>
+      command.kind === "DISEMBARK" && command.unitId === unitId
+        ? [command.at]
+        : [],
+    )
+    .sort(byCoord);
+  const afterMove = new Map<string, PublicLandingAfterMoveV7>();
+  // A one-cell Move spends one point; landing then spends the other.
+  if (!unit.activation.moved) {
+    const moves = commands
+      .flatMap((command) =>
+        command.kind === "MOVE" &&
+        command.unitId === unitId &&
+        command.path.length === 1
+          ? [command]
+          : [],
+      )
+      .sort((left, right) =>
+        byCoord(left.path[0] as CoordV7, right.path[0] as CoordV7),
+      );
+    const directKeys = new Set(direct.map((at) => `${at.x},${at.y}`));
+    for (const move of moves) {
+      const via = move.path[0] as CoordV7;
+      for (const tile of publicLandingTilesV7(view, unit, via)) {
+        const key = `${tile.at.x},${tile.at.y}`;
+        if (directKeys.has(key) || afterMove.has(key)) continue;
+        afterMove.set(key, {
+          at: tile.at,
+          move,
+          disembark: { kind: "DISEMBARK", unitId, at: tile.at },
+        });
+      }
+    }
+  }
+  return {
+    unitId,
+    direct,
+    afterMove: [...afterMove.values()].sort((left, right) =>
+      byCoord(left.at, right.at),
+    ),
+  };
+}
+
 function appendPublicUnitCommandsV7(
   view: PlayerViewV7,
   unit: PlayerViewV7["units"][number],
@@ -434,21 +546,15 @@ function appendPublicUnitCommandsV7(
   const player = view.viewer;
   if (unit.ownerId !== player.id) return;
   const overrun = unit.activation.overrunActive;
-  if (!overrun && unit.form === "EMBARKED" && !unit.activation.handled)
-    for (const tile of adjacentPublicTiles(view, unit.at))
-      if (
-        tile.explored &&
-        tile.biome !== null &&
-        !(
-          tile.terrain === "MOUNTAIN" &&
-          !player.researchedTechs.includes("ENGINEERING")
-        ) &&
-        (tile.territoryOwnerId === null ||
-          tile.territoryOwnerId === player.id ||
-          !publicAllied(view, player.id, tile.territoryOwnerId)) &&
-        !view.units.some((candidate) => same(candidate.at, tile.at))
-      )
-        candidates.push({ kind: "DISEMBARK", unitId: unit.id, at: tile.at });
+  if (
+    !overrun &&
+    unit.form === "EMBARKED" &&
+    !unit.activation.handled &&
+    // Revision 16: landing needs one of the two embarked points left.
+    embarkedMovementSpentV7(unit.activation) <= EMBARKED_LANDING_MAX_SPENT_V7
+  )
+    for (const tile of publicLandingTilesV7(view, unit, unit.at))
+      candidates.push({ kind: "DISEMBARK", unitId: unit.id, at: tile.at });
   if (
     unit.activation.escapeAvailable ||
     (!overrun && !unit.activation.moved && !primaryUsedForQuery(unit))

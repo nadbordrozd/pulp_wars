@@ -4,7 +4,9 @@
 implemented by three beads in order: `pulp_wars-wwc` (identity, capital
 growth guarantee, orthogonal shallow water; implemented, see
 [section 13](#13-implementation-record)), `pulp_wars-zsa`
-(2-tile boats and landing reach), and `pulp_wars-4gc` (economy deflation);
+(2-tile boats and landing reach; implemented, see
+[section 13.5](#135-revision-16b-2-tile-boats-pulp_wars-zsa)), and
+`pulp_wars-4gc` (economy deflation);
 see [section 9](#9-implementation-split-and-sequencing). Until revisions 13–16
 are folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (`pulp_wars-vkq.16`), this overlay together with
@@ -733,3 +735,84 @@ the closest any sweep came to the candidate budget.
   Fruit or Game on capital rings and the chests that move with them, and 27
   accept a different candidate because the floor or `CAPITAL_GROWTH` changes
   which candidates pass; the per-attempt PRNG states match revision 15.
+
+### 13.5 Revision 16b: 2-tile boats (`pulp_wars-zsa`)
+
+- **Engine** (`src/engine/rules/ruleset-v7.ts`, `src/engine/v7/`). Patrol
+  Boat `move: 2` (both factions share the rule); `EMBARKED_MOVE_V7 = 2`
+  replaces the three hard-coded embarked `3`s (canonical and public movement
+  budgets, public unit stats); `embarkedMovementSpentV7` is section 5.2's
+  `spent`, and `EMBARKED_LANDING_MAX_SPENT_V7 = 1`. `DISEMBARK` is rejected
+  with `MOVEMENT_ILLEGAL` (state unchanged) when `spent > 1`, and the public
+  query offers it only when `spent <= 1`. No identity, state, command, event,
+  or view shape changed.
+- **Landing preview.** `queryLandingPreviewV7(view, unitId, commands?)`
+  returns the offered direct landing cells and, for an embarked unit that has
+  not moved, each other legal landing cell next to an offered one-cell Move
+  destination, paired with that Move (the first such destination in
+  `(y, x)` order) and its `DISEMBARK`. Legal cells use the same public test as
+  the query.
+- **UI.** Direct targets are labelled "Land now" (teal dashes); two-step
+  targets are a new `LANDING_AFTER_MOVE` family labelled "Move 1, then land"
+  (amber dots) whose command is the Move and whose `followUp` is the landing.
+  The DOM sends the landing only when the accepted Move left the unit
+  embarked on that water cell and the landing is still offered. The
+  selection dock of an embarked unit with landing markers shows a legend for
+  both; the embarked unit's details and the naval-map Help read "At sea:
+  Move 2; landing uses 1 of it." Patrol Boat stats show Move 2 through the
+  role rule.
+- **Normal AI** (`src/ai/v7.ts`). Embarked combat facts and projected stats
+  use `EMBARKED_MOVE_V7`. The planner already lands only on offered
+  `DISEMBARK` commands, so it never issues a rejected landing. One addition:
+  an embarked Move with route progress, at most one cell, and a destination
+  next to a planned landing cell gains one objective point, so a transport one
+  cell from the landing coast moves one cell and lands the same turn instead
+  of taking an equal-progress two-cell Move (which the deterministic
+  tie-break used to prefer). Priorities are otherwise unchanged.
+- **Tests.** `tests/unit/ruleset-v7-revision16-naval.test.ts` (Move values,
+  the three-cell `BUDGET_EXCEEDED`, direct and Move-then-land landings,
+  `MOVEMENT_ILLEGAL` after two cells, landings after `OCCUPIED` and `ZOC`
+  interruptions, ZOC not blocking landing, capture eligibility, query and
+  engine agreement at 0/1/2 points spent, the landing preview, board markers,
+  AI matches that never land with more than one point spent, and a
+  save/replay round trip through AI move-then-land turns) and
+  `tests/integration/ruleset7-landing-dom.test.ts` (legend, two-command
+  landing, no landing after an interrupted Move) join the release contract;
+  `tests/unit/ruleset-v7-naval-ai.test.ts` pins the one-cell approach.
+
+Re-pinned artifacts, each shown to change only through this bead: with
+Patrol Boat and embarked Move 3, no landing budget, and no approach bonus
+restored, every one of them reproduced its revision-16a value.
+
+- **Roster values** (Patrol Boat Move 2) in the technology, Undead-faction,
+  and naval-combat tests; the transport statistics test now expects Move 2.
+- **All-Human digests** (`ruleset-v7-undead-faction.test.ts`): map and
+  post-generation PRNG digests unchanged; command, event, state, view, and
+  command-list digests re-recorded. Seed 7 (11 × 11 Continents) no longer
+  ends in round 17 and reaches its 30-round cap (241 commands); seed 1234
+  (14 × 14 Archipelago, cooperative) still caps at round 19 (363 commands,
+  was 383). The rules alone (without the approach bonus) already changed
+  both.
+- **Natural-play seed.** The cooperative Continents landing test moves from
+  seed 0 to seed 7: seed 0 no longer has a landed capture within 800 (or
+  1,200) accepted commands; seed 7's first landed capture is command 345.
+- **Fixtures.** The hidden-ZOC observation scenario walks a Raider along a
+  neutral Road (three Road steps) instead of a Patrol Boat along three water
+  cells; the fleet Port test starts the Patrol Boat two cells from the Port.
+
+Headless sample (section 10.2): Normal-against-Normal, Archipelago and
+Continents, 11 × 11 and 14 × 14, seeds 0–11, Human mirror (`HH`) and Undead
+seat 0 against Human (`UH`), 96 matches with a 150-round cap
+(`balance:ruleset7-undead -- --seeds 12 --sizes 11,14 --maps
+continents,archipelago --pairings HH,UH`), revision 16a against 16b on
+identical seeds. No match had a policy error or stall in either run.
+
+| Map         | Mean / median rounds, 16a → 16b | Round-cap rate, 16a → 16b |
+| ----------- | ------------------------------: | ------------------------: |
+| Archipelago |           39.5 / 32 → 49.0 / 37 |       2.1% → 6.2% (1 → 3) |
+| Continents  |       38.5 / 33.5 → 40.9 / 34.5 |       4.2% → 4.2% (2 → 2) |
+| Both        |           39.0 / 32 → 44.9 / 36 |       3.1% → 5.2% (3 → 5) |
+
+The Archipelago cap rate rose by 4.1 points, under the 5-point threshold that
+would file an AI follow-up. The largest slowdown is 14 × 14 Archipelago (mean
+42.1 → 55.8 rounds, 0 → 1 capped).

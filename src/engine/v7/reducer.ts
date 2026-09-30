@@ -7,6 +7,8 @@ import {
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   effectiveRoleRuleV7,
+  EMBARKED_LANDING_MAX_SPENT_V7,
+  embarkedMovementSpentV7,
   factionRulesV7,
   playerFactionV7,
   technologyCapabilitiesV7,
@@ -1419,6 +1421,8 @@ function applyDisembark(
   if (
     unit.form !== "EMBARKED" ||
     unit.activation.handled ||
+    // Revision 16: landing spends one of the embarked unit's two points.
+    embarkedMovementSpentV7(unit.activation) > EMBARKED_LANDING_MAX_SPENT_V7 ||
     chebyshev(unit.at, command.at) !== 1 ||
     tile === undefined ||
     tile.biome === null ||

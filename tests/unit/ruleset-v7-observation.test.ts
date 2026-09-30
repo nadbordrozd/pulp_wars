@@ -940,6 +940,8 @@ function hiddenZocAfterRevealScenario(): {
           return (
             tile?.site === null &&
             tile.improvement === null &&
+            tile.biome !== null &&
+            tile.territoryCityId === null &&
             !contributed.has(coordKey(at)) &&
             !base.treasureChests.some((chest) => same(chest, at))
           );
@@ -950,7 +952,10 @@ function hiddenZocAfterRevealScenario(): {
       }
     }
   if (geometry === undefined) throw new Error("No hidden ZOC geometry");
-  const water = new Set(
+  // Revision 16 gives Patrol Boats Move 2, so the three-step line is a
+  // neutral Road walked by a Raider (Move 2, Sight 2; three Road steps cost
+  // three half-points).
+  const road = new Set(
     [geometry.start, ...geometry.path, geometry.hostileAt].map(coordKey),
   );
   const state = checkedV7({
@@ -959,14 +964,13 @@ function hiddenZocAfterRevealScenario(): {
     board: {
       ...base.board,
       tiles: base.board.tiles.map((tile) =>
-        water.has(coordKey(tile.at))
+        road.has(coordKey(tile.at))
           ? {
               ...tile,
-              biome: null,
-              terrain: "SHALLOW_WATER" as const,
+              terrain: "GRASS" as const,
               resource: null,
               improvement: null,
-              road: false,
+              road: true,
               site: null,
             }
           : tile,
@@ -990,8 +994,8 @@ function hiddenZocAfterRevealScenario(): {
       unit.id === mover.id
         ? {
             ...unit,
-            role: "PATROL_BOAT" as const,
-            form: "NAVAL" as const,
+            role: "RAIDER" as const,
+            form: "LAND" as const,
             at: geometry.start,
             hp: 10,
             maxHp: 10,
@@ -1000,8 +1004,8 @@ function hiddenZocAfterRevealScenario(): {
         : unit.id === hostile.id
           ? {
               ...unit,
-              role: "PATROL_BOAT" as const,
-              form: "NAVAL" as const,
+              role: "RAIDER" as const,
+              form: "LAND" as const,
               at: geometry.hostileAt,
               hp: 10,
               maxHp: 10,
@@ -1010,7 +1014,7 @@ function hiddenZocAfterRevealScenario(): {
           : unit,
     ),
     treasureChests: base.treasureChests.filter(
-      (chest) => !water.has(coordKey(chest)),
+      (chest) => !road.has(coordKey(chest)),
     ),
   });
   return {

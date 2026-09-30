@@ -590,6 +590,22 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
   ),
 ] as const);
 
+/**
+ * Revision 16 (2-tile boats): an embarked land unit has Move 2 on water, and
+ * `DISEMBARK` spends one of those points, so it is legal only while the
+ * unit's Move this turn has spent at most `EMBARKED_LANDING_MAX_SPENT_V7`.
+ */
+export const EMBARKED_MOVE_V7 = 2;
+export const EMBARKED_LANDING_MAX_SPENT_V7 = EMBARKED_MOVE_V7 - 1;
+
+/** Movement points an embarked unit's Move has spent this turn (section 5.2). */
+export function embarkedMovementSpentV7(activation: {
+  readonly moved: boolean;
+  readonly movedPathLength: number;
+}): number {
+  return activation.moved ? activation.movedPathLength : 0;
+}
+
 const role = (input: EffectiveRoleRuleV7): EffectiveRoleRuleV7 =>
   deepFreeze(input);
 export const ORIGINAL_ROLE_RULES_V7: Readonly<
@@ -731,7 +747,8 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     maxHp: 10,
     attack2: 4,
     defense2: 4,
-    move: 3,
+    // Revision 16 (2-tile boats): Move 2 (was 3).
+    move: 2,
     range: 1,
     minimumRange: 1,
     sightRadius: 2,

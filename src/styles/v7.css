@@ -1113,8 +1113,43 @@
 }
 
 .v7-unit-ability span,
-.v7-transport-passenger {
+.v7-transport-passenger,
+.v7-transport-move {
   color: var(--muted);
+}
+
+/* Revision 16: legend for the two landing preview marker styles. */
+.v7-landing-legend {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.v7-landing-legend-item {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.v7-landing-legend-swatch {
+  flex: none;
+  width: 0.95rem;
+  height: 0.95rem;
+  border: 2px dashed #64e6cf;
+  border-radius: 3px;
+}
+
+.v7-landing-legend-item[data-landing-marker="after-move"]
+  .v7-landing-legend-swatch {
+  border-style: dotted;
+  border-color: #f4c95d;
 }
 
 .v7-tactical-state {

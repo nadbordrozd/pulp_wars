@@ -105,7 +105,7 @@ describe("ruleset-7 technology", () => {
       ["CATAPULT", 8, 10, 7, 1, 1, 3, 2, "SAWMILLING", false],
       ["KNIGHT", 9, 10, 6, 2, 3, 1, 1, "CHIVALRY", true],
       ["JUGGERNAUT", null, 40, 8, 8, 1, 1, 1, null, true],
-      ["PATROL_BOAT", 5, 10, 4, 4, 3, 1, 1, "SHORECRAFT", true],
+      ["PATROL_BOAT", 5, 10, 4, 4, 2, 1, 1, "SHORECRAFT", true],
       ["BATTLESHIP", 16, 25, 12, 8, 2, 3, 1, "NAVAL_ENGINEERING", false],
     ]);
     expect(Object.isFrozen(ORIGINAL_ROLE_RULES_V7)).toBe(true);
