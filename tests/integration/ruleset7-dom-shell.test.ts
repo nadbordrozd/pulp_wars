@@ -654,11 +654,11 @@ describe("Ruleset 7 DOM shell", () => {
 
     const beforeIndex = initial.view.commandIndex;
     const beforeCoins = initial.view.viewer.coins;
-    const actionRow = document.querySelector<HTMLElement>(
-      '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
+    const cityDock = document.querySelector<HTMLElement>(
+      '.v7-selection-dock[data-selection-kind="city"]',
     );
-    if (actionRow === null) throw new Error("city action row missing");
-    actionRow.scrollLeft = 123;
+    if (cityDock === null) throw new Error("city dock missing");
+    cityDock.scrollTop = 123;
     const help = requiredButton('[data-action="train-help-knight"]');
     help.focus();
     help.click();
@@ -692,12 +692,12 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.activeElement?.getAttribute("data-action")).toBe(
       "train-help-knight",
     );
-    const restoredRow = document.querySelector<HTMLElement>(
-      '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
+    const restoredDock = document.querySelector<HTMLElement>(
+      '.v7-selection-dock[data-selection-kind="city"]',
     );
-    expect(restoredRow?.scrollLeft).toBe(123);
+    expect(restoredDock).not.toBe(cityDock);
+    expect(restoredDock?.scrollTop).toBe(123);
 
-    if (restoredRow === null) throw new Error("restored action row missing");
     requiredButton('[data-action="train-help-knight"]').click();
     await Promise.resolve();
     requiredButton('[data-action="close-recruit-help"]').click();
@@ -706,17 +706,17 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.activeElement?.getAttribute("data-action")).toBe(
       "train-help-knight",
     );
-    const rowAfterClose = document.querySelector<HTMLElement>(
-      '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
+    const dockAfterClose = document.querySelector<HTMLElement>(
+      '.v7-selection-dock[data-selection-kind="city"]',
     );
-    if (rowAfterClose === null) throw new Error("closed action row missing");
-    rowAfterClose.scrollLeft = 37;
+    if (dockAfterClose === null) throw new Error("closed city dock missing");
+    dockAfterClose.scrollTop = 37;
     requiredButton('[data-action="compact-menu"]').click();
     await Promise.resolve();
     expect(
       document.querySelector<HTMLElement>(
-        '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
-      )?.scrollLeft,
+        '.v7-selection-dock[data-selection-kind="city"]',
+      )?.scrollTop,
     ).not.toBe(123);
 
     const train = requiredButton(".v7-train-action");
@@ -1092,46 +1092,6 @@ describe("Ruleset 7 DOM shell", () => {
     );
     expect(cityDock).not.toBeNull();
     expect(cityActions).not.toBeNull();
-    if (cityActions == null) throw new Error("City action row missing");
-    Object.defineProperties(cityActions, {
-      clientWidth: { configurable: true, value: 176 },
-      scrollWidth: { configurable: true, value: 704 },
-      scrollLeft: { configurable: true, value: 0, writable: true },
-      getBoundingClientRect: {
-        configurable: true,
-        value: () => ({ left: 0, right: 176 }),
-      },
-    });
-    const finalTrain =
-      document.querySelectorAll<HTMLElement>(".v7-train-action")[
-        trainableRoles.length - 1
-      ];
-    if (finalTrain === undefined) throw new Error("Final Train action missing");
-    Object.defineProperty(finalTrain, "getBoundingClientRect", {
-      configurable: true,
-      value: () => ({ left: 352, right: 528 }),
-    });
-    finalTrain.focus();
-    expect(cityActions.scrollLeft).toBe(352);
-    cityActions.scrollLeft = 0;
-    const wheel = new WheelEvent("wheel", {
-      bubbles: true,
-      cancelable: true,
-      deltaY: 80,
-    });
-    cityActions.dispatchEvent(wheel);
-    expect(wheel.defaultPrevented).toBe(true);
-    expect(cityActions.scrollLeft).toBe(80);
-    cityActions.scrollLeft = 0;
-    const zoomWheel = new WheelEvent("wheel", {
-      bubbles: true,
-      cancelable: true,
-      ctrlKey: true,
-      deltaY: 80,
-    });
-    cityActions.dispatchEvent(zoomWheel);
-    expect(zoomWheel.defaultPrevented).toBe(false);
-    expect(cityActions.scrollLeft).toBe(0);
     const statsWithModifier = view.unitStats.find((stats) =>
       stats.stats.some((stat) => stat.modifiers.length > 0),
     );

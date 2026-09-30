@@ -222,8 +222,8 @@ export class Ruleset7DomAppView {
   #selectedRecruitHelp: UnitRoleIdV7 | null = null;
   #selectedUnitHelpId: number | null = null;
   #unitHelpModal: HTMLElement | null = null;
-  #cityActionScrollLeft: number | null = null;
-  #clearCityActionScrollAfterRestore = false;
+  #cityDockScrollTop: number | null = null;
+  #clearCityDockScrollAfterRestore = false;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
   #notice = "";
@@ -752,8 +752,8 @@ export class Ruleset7DomAppView {
           this.#selection = selection;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
-          this.#cityActionScrollLeft = null;
-          this.#clearCityActionScrollAfterRestore = false;
+          this.#cityDockScrollTop = null;
+          this.#clearCityDockScrollAfterRestore = false;
           this.#selectedModifier = null;
           this.#render();
         },
@@ -772,8 +772,8 @@ export class Ruleset7DomAppView {
     if (view.pendingChoices.length > 0) {
       this.#selectedRecruitHelp = null;
       this.#selectedUnitHelpId = null;
-      this.#cityActionScrollLeft = null;
-      this.#clearCityActionScrollAfterRestore = false;
+      this.#cityDockScrollTop = null;
+      this.#clearCityDockScrollAfterRestore = false;
     }
     const activeId = view.turnOrder[view.activeSeatIndex];
     const active = view.players.find((player) => player.id === activeId);
@@ -1011,18 +1011,22 @@ export class Ruleset7DomAppView {
           .querySelector<HTMLButtonElement>(`[data-action="${focusAction}"]`)
           ?.focus();
       });
-    if (this.#cityActionScrollLeft !== null) {
-      const scrollLeft = this.#cityActionScrollLeft;
-      const clearAfterRestore = this.#clearCityActionScrollAfterRestore;
+    // Every render rebuilds the dock. On narrow screens a city dock can
+    // exceed its height cap and scroll vertically, so a Train help round trip
+    // puts the dock back where the player left it (after the focus restore,
+    // which only scrolls the help button into view).
+    if (this.#cityDockScrollTop !== null) {
+      const scrollTop = this.#cityDockScrollTop;
+      const clearAfterRestore = this.#clearCityDockScrollAfterRestore;
       queueMicrotask(() => {
         if (this.#destroyed) return;
-        const row = main.querySelector<HTMLElement>(
-          '.v7-selection-dock[data-selection-kind="city"] > .v7-context-actions',
+        const dock = main.querySelector<HTMLElement>(
+          '.v7-selection-dock[data-selection-kind="city"]',
         );
-        if (row !== null) row.scrollLeft = scrollLeft;
+        if (dock !== null) dock.scrollTop = scrollTop;
         if (clearAfterRestore) {
-          this.#cityActionScrollLeft = null;
-          this.#clearCityActionScrollAfterRestore = false;
+          this.#cityDockScrollTop = null;
+          this.#clearCityDockScrollAfterRestore = false;
         }
       });
     }
@@ -1752,29 +1756,6 @@ export class Ruleset7DomAppView {
 
   #commandButtons(predicate: (command: CommandV7) => boolean): HTMLElement {
     const actions = el(this.#document, "div", "v7-context-actions");
-    actions.addEventListener("focusin", (event) => {
-      if (!(event.target instanceof HTMLElement)) return;
-      const rowBounds = actions.getBoundingClientRect();
-      const actionBounds = event.target.getBoundingClientRect();
-      if (actionBounds.right > rowBounds.right)
-        actions.scrollLeft += actionBounds.right - rowBounds.right;
-      else if (actionBounds.left < rowBounds.left)
-        actions.scrollLeft -= rowBounds.left - actionBounds.left;
-    });
-    actions.addEventListener(
-      "wheel",
-      (event) => {
-        if (
-          event.ctrlKey ||
-          actions.scrollWidth <= actions.clientWidth ||
-          Math.abs(event.deltaY) <= Math.abs(event.deltaX)
-        )
-          return;
-        event.preventDefault();
-        actions.scrollLeft += event.deltaY;
-      },
-      { passive: false },
-    );
     for (const command of this.#snapshot.offeredCommands.filter(
       (candidate) =>
         predicate(candidate) && !NON_BUTTON_COMMANDS.has(candidate.kind),
@@ -1968,8 +1949,10 @@ export class Ruleset7DomAppView {
         help.disabled = this.#localBusy();
         help.onclick = () => {
           this.#selectedRecruitHelp = command.role;
-          this.#cityActionScrollLeft = actions.scrollLeft;
-          this.#clearCityActionScrollAfterRestore = false;
+          this.#cityDockScrollTop =
+            actions.closest<HTMLElement>(".v7-selection-dock")?.scrollTop ??
+            null;
+          this.#clearCityDockScrollAfterRestore = false;
           this.#render();
         };
         card.append(action, help);
@@ -3156,7 +3139,7 @@ export class Ruleset7DomAppView {
     this.#selectedRecruitHelp = null;
     this.#pendingFocusAction =
       role === null ? null : `train-help-${role.toLowerCase()}`;
-    this.#clearCityActionScrollAfterRestore = true;
+    this.#clearCityDockScrollAfterRestore = true;
     this.#render();
   }
 
