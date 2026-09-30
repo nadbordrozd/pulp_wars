@@ -7,7 +7,9 @@ instructions that gives it its own identity without breaking the shared rules.
 The baseline faction is the Human faction, [`ORIGINAL`](ORIGINAL.md). The
 user has named the Undead faction (epic `pulp_wars-vkq`); its fragment is
 bead `pulp_wars-vkq.11` and must follow the rules below. The user approved
-it on 2026-09-29: [`UNDEAD`](UNDEAD.md).
+it on 2026-09-29: [`UNDEAD`](UNDEAD.md). The Goblin faction (epic
+`pulp_wars-0ao`) has its fragment in bead `pulp_wars-0ao.10`:
+[`GOBLIN`](GOBLIN.md), approved by the root on 2026-09-30.
 
 ## How the layers combine
 
