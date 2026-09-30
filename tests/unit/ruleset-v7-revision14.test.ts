@@ -4,6 +4,7 @@ import {
   CITY_LEVEL_INCOME_CAP_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
   PLAGUE_DAMAGE_V7,
+  PLAGUE_DURATION_TURNS_V7,
   RULESET_7_ID,
   SAVE_STORAGE_KEY_V7,
   TECHNOLOGY_IDS_V7,
@@ -90,18 +91,24 @@ interface ArenaOptions {
   /** The seat whose turn it is (seat 0 by default). */
   readonly activeSeat?: number;
   /** Plagued pieces (by coordinate) and the coordinate of their source. */
-  readonly plagued?: readonly { at: CoordV7; source: CoordV7 }[];
+  readonly plagued?: readonly {
+    at: CoordV7;
+    source: CoordV7;
+    /** Revision 15 remaining Plague turns (default 3, freshly applied). */
+    turnsRemaining?: number;
+  }[];
   /** Bitten pieces (by coordinate) and the coordinate of their biter. */
   readonly bitten?: readonly { at: CoordV7; biter: CoordV7 }[];
 }
 
 describe("ruleset-7 revision-14 identity and roster", () => {
-  it("pins the r14 identity and cleans the r13 save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r14");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r14.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  it("keeps rejecting r13 after the r15 identity and cleans the r13 and r14 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r15");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r15.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r13.current",
-    );
+      "pulpWars.save.v7r14.current",
+    ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(
       parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r13" }),
@@ -148,7 +155,9 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind);
     expect(at("PLAGUE_DAMAGED")).toBe(at("TURN_STARTED") + 1);
     expect(at("PLAGUE_SPREAD")).toBe(at("TURN_STARTED") + 2);
-    expect(at("WINDMILL_HEALING_RESOLVED")).toBe(at("TURN_STARTED") + 3);
+    // Revision 15 inserts PLAGUE_EXPIRED after PLAGUE_SPREAD.
+    expect(at("PLAGUE_EXPIRED")).toBe(at("TURN_STARTED") + 3);
+    expect(at("WINDMILL_HEALING_RESOLVED")).toBe(at("TURN_STARTED") + 4);
     expect(at("UNIT_INFECTED")).toBe(at("UNIT_DIED") + 1);
     expect(at("GRAVE_CREATED")).toBe(at("UNIT_DIED") + 2);
     expect(at("BITTEN_UNIT_RISEN")).toBe(at("GRAVE_CREATED") + 1);
@@ -181,16 +190,16 @@ describe("ruleset-7 revision-14 Plague", () => {
     // The defender first, then surviving splash targets; the dead one is not.
     expect(preview.plagued).toEqual([guard.id, fighter.id]);
     expect(result.state.plagued).toEqual([
-      { unitId: guard.id, sourceUnitId: lich.id },
-      { unitId: fighter.id, sourceUnitId: lich.id },
+      { unitId: guard.id, sourceUnitId: lich.id, turnsRemaining: 3 },
+      { unitId: fighter.id, sourceUnitId: lich.id, turnsRemaining: 3 },
     ]);
     expect(
       queryCombatPreviewV7(state, state.humanPlayerId, lich.id, guard.id),
     ).toEqual(preview);
     const view = viewForV7(result.state, result.state.humanPlayerId);
     expect(view.plagued).toEqual([
-      { unitId: guard.id, sourceUnitId: lich.id },
-      { unitId: fighter.id, sourceUnitId: lich.id },
+      { unitId: guard.id, sourceUnitId: lich.id, turnsRemaining: 3 },
+      { unitId: fighter.id, sourceUnitId: lich.id, turnsRemaining: 3 },
     ]);
   });
 
@@ -222,7 +231,7 @@ describe("ruleset-7 revision-14 Plague", () => {
     const second = attack(first.state, { x: 1, y: 3 }, juggernaut.at);
     expect(combatPreview(second.events).plagued).toEqual([]);
     expect(second.state.plagued).toEqual([
-      { unitId: juggernaut.id, sourceUnitId: firstLich.id },
+      { unitId: juggernaut.id, sourceUnitId: firstLich.id, turnsRemaining: 3 },
     ]);
 
     // A retaliating Lich plagues nothing.
@@ -320,9 +329,14 @@ describe("ruleset-7 revision-14 Plague", () => {
         { unitId: foreignNeighbour.id, at: foreignNeighbour.at },
       ],
     });
+    // Revision 15: the sufferer counts one turn down; spread starts at 3.
     expect(ended.state.plagued).toEqual(
       [sufferer, ownNeighbour, foreignNeighbour]
-        .map((unit) => ({ unitId: unit.id, sourceUnitId: lich.id }))
+        .map((unit) => ({
+          unitId: unit.id,
+          sourceUnitId: lich.id,
+          turnsRemaining: unit.id === sufferer.id ? 2 : 3,
+        }))
         .sort((left, right) => left.unitId - right.unitId),
     );
     expect(unitById(ended.state, sufferer.id).hp).toBe(
@@ -588,7 +602,8 @@ describe("ruleset-7 revision-14 Bitten", () => {
       form: "LAND",
       at: victim.at,
       hp: BITTEN_RISING_HP_V7,
-      maxHp: 20,
+      // Revision 15: the Zombie's maximum HP (18, was 20).
+      maxHp: effectiveRoleRuleV7("GUARD", "UNDEAD").maxHp,
       kills: 0,
       captureEligible: false,
       activation: { handled: true, attacked: true },
@@ -843,10 +858,14 @@ describe("ruleset-7 revision-14 fog and state", () => {
     const human = seatPlayer(state, 1);
     const sufferer = unitAt(state, { x: 4, y: 3 });
     expect(viewForV7(state, human).plagued).toEqual([
-      { unitId: sufferer.id, sourceUnitId: null },
+      { unitId: sufferer.id, sourceUnitId: null, turnsRemaining: 3 },
     ]);
     expect(viewForV7(state, state.humanPlayerId).plagued).toEqual([
-      { unitId: sufferer.id, sourceUnitId: unitAt(state, { x: 0, y: 0 }).id },
+      {
+        unitId: sufferer.id,
+        sourceUnitId: unitAt(state, { x: 0, y: 0 }).id,
+        turnsRemaining: 3,
+      },
     ]);
 
     const ended = endTurnUntil(state, human);
@@ -901,12 +920,20 @@ describe("ruleset-7 revision-14 fog and state", () => {
       canonicalHash({ ...state, plagued: [], bitten: [] }),
     );
     for (const invalid of [
-      { plagued: [{ unitId: zombie.id, sourceUnitId: lich.id }] },
-      { plagued: [{ unitId: fighter.id, sourceUnitId: zombie.id }] },
       {
         plagued: [
-          { unitId: fighter.id, sourceUnitId: lich.id },
-          { unitId: fighter.id, sourceUnitId: lich.id },
+          { unitId: zombie.id, sourceUnitId: lich.id, turnsRemaining: 3 },
+        ],
+      },
+      {
+        plagued: [
+          { unitId: fighter.id, sourceUnitId: zombie.id, turnsRemaining: 3 },
+        ],
+      },
+      {
+        plagued: [
+          { unitId: fighter.id, sourceUnitId: lich.id, turnsRemaining: 3 },
+          { unitId: fighter.id, sourceUnitId: lich.id, turnsRemaining: 3 },
         ],
       },
       {
@@ -1182,6 +1209,7 @@ function arena(
       .map((entry) => ({
         unitId: idAt(entry.at),
         sourceUnitId: idAt(entry.source),
+        turnsRemaining: entry.turnsRemaining ?? PLAGUE_DURATION_TURNS_V7,
       }))
       .sort((left, right) => left.unitId - right.unitId),
     bitten: (options.bitten ?? [])

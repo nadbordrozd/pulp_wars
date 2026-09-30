@@ -855,7 +855,8 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     label: "Zombie",
     tacticalRole: "DEFENDER",
     cost: 3,
-    maxHp: 20,
+    // Revision 15 (Undead fragility): 18 HP (was 20); risings keep 10 HP.
+    maxHp: 18,
     attack2: 4,
     defense2: 4,
     move: 1,

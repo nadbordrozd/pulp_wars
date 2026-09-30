@@ -200,7 +200,9 @@ try {
       JSON.stringify(warrior.markers) !==
         JSON.stringify(AFFLICTION_HUMAN_MARKERS_V7) ||
       warrior.chips.length !== 1 ||
-      !warrior.chips[0]?.startsWith("Plague. Plague from Player 2's Lich") ||
+      !warrior.chips[0]?.startsWith(
+        "Plague · 3 turns. Plague from Player 2's Lich",
+      ) ||
       warrior.disband !== "Disband unavailable. Plagued units can't Disband." ||
       warrior.disbandDisabled !== "true"
     )

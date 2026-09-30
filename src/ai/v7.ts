@@ -45,10 +45,12 @@ import {
   BITTEN_RISING_VALUE_V7,
   DEVOUR_MINIMUM_HEAL_V7,
   PLAGUE_EXPOSURE_COST_V7,
+  PLAGUE_DURATION_TURNS_V7,
   PLAGUE_SOURCE_TARGET_VALUE_V7,
+  PLAGUE_TURNS_WORTH_CURING_V7,
   RAISE_DEAD_SKELETON_VALUE_V7,
   TEND_BITTEN_CURE_VALUE_V7,
-  TEND_PLAGUE_CURE_VALUE_V7,
+  TEND_PLAGUE_TURN_CURE_VALUE_V7,
   devourHealV7,
   healthyLivingNeighboursV7,
   isNewBiteV7,
@@ -3120,7 +3122,12 @@ function livingTrainingAdjustmentsV7(
   let captains = 0;
   for (const unit of view.units) {
     if (unit.ownerId !== view.viewer.id) continue;
-    if (afflictions.plagued.has(unit.id) || afflictions.bitten.has(unit.id))
+    // Revision 15: Plague on its last turn is not worth a Captain.
+    if (
+      (afflictions.turnsRemaining.get(unit.id) ?? 0) >=
+        PLAGUE_TURNS_WORTH_CURING_V7 ||
+      afflictions.bitten.has(unit.id)
+    )
       afflicted += 1;
     if (unitRoleRuleV7(view, unit).abilities.includes("TEND_WOUNDED"))
       captains += 1;
@@ -3604,13 +3611,15 @@ function scoreCommandWithContext(
       : 650;
     if (context.undead) {
       // Revision 14: Tend also cures Plague and Bitten (exact preview).
+      // Revision 15: a Plague cure is worth its remaining turns, and one
+      // with a single turn left (2 HP) is no more urgent than a heal.
       const tend = publicTendValueV7(view, context.afflictions, actor);
       immediateValue =
         tend.heal * 8 +
-        tend.plagueCures * TEND_PLAGUE_CURE_VALUE_V7 +
+        tend.plagueTurns * TEND_PLAGUE_TURN_CURE_VALUE_V7 +
         tend.bittenCures * TEND_BITTEN_CURE_VALUE_V7;
-      if (tend.plagueCures > 0)
-        priority = Math.max(priority, tend.plagueCures >= 2 ? 1272 : 1262);
+      if (tend.plagueTurns >= PLAGUE_TURNS_WORTH_CURING_V7)
+        priority = Math.max(priority, tend.plagueTurns >= 5 ? 1272 : 1262);
       else if (tend.bittenCures > 0) priority = Math.max(priority, 1175);
     }
   }
@@ -4128,7 +4137,9 @@ function afflictionMoveValueV7(
     (dangerThere ??= visibleImmediateDamage(view, actor, to, context)) <=
     (dangerHere ??= visibleImmediateDamage(view, actor, actor.at, context));
   if (afflictions.plagued.size > 0) {
-    if (afflictions.plagued.has(actor.id)) {
+    // Revision 15: only a unit on its first plagued turn spreads, so only
+    // such a unit isolates itself, and only spreaders are avoided.
+    if (afflictions.spreading.has(actor.id)) {
       const here = healthyLivingNeighboursV7(
         view,
         afflictions,
@@ -4147,6 +4158,11 @@ function afflictionMoveValueV7(
       if (there > here && basePriority < 1100) priority = -1;
       else if (there < here && !garrison && saferOrEqual())
         priority = Math.max(priority, 1150);
+    }
+    if (
+      (afflictions.turnsRemaining.get(actor.id) ?? 0) >=
+      PLAGUE_TURNS_WORTH_CURING_V7
+    ) {
       const captainThere = view.units.some(
         (unit) =>
           unit.ownerId === actor.ownerId &&
@@ -4165,7 +4181,7 @@ function afflictionMoveValueV7(
         priority = Math.max(priority, 1155);
         strategic += 15;
       }
-    } else {
+    } else if (!afflictions.plagued.has(actor.id)) {
       const here = plaguedNeighboursV7(view, afflictions, actor.at, actor.id);
       const there = plaguedNeighboursV7(view, afflictions, to, actor.id);
       if (there > 0) {
@@ -4183,9 +4199,12 @@ function afflictionMoveValueV7(
     rule.abilities.includes("TEND_WOUNDED") &&
     isPrimaryUnusedV7(actor)
   ) {
+    // Revision 15: a fresh Plague (3 turns) weighs 2, a bite 1.
     const cures = (at: CoordV7) => {
       const tend = publicTendValueV7(view, afflictions, actor, at);
-      return 2 * tend.plagueCures + tend.bittenCures;
+      return (
+        (2 * tend.plagueTurns) / PLAGUE_DURATION_TURNS_V7 + tend.bittenCures
+      );
     };
     const gain = cures(to) - cures(actor.at);
     if (
@@ -5482,7 +5501,12 @@ function targetStrategicValue(
         Math.min(
           6,
           view.plagued.filter((entry) => {
-            if (entry.sourceUnitId !== unit.id) return false;
+            // Revision 15: a victim on its last Plague turn gains little.
+            if (
+              entry.sourceUnitId !== unit.id ||
+              entry.turnsRemaining < PLAGUE_TURNS_WORTH_CURING_V7
+            )
+              return false;
             const victim =
               lookup?.unitsById.get(entry.unitId) ??
               view.units.find((item) => item.id === entry.unitId);

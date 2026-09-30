@@ -226,10 +226,15 @@ export interface PlayerViewV7 {
   readonly outcome: MatchOutcomeV7 | null;
 }
 
-/** Revision 14 public Plague status of a visible unit. */
+/**
+ * Revision 14 public Plague status of a visible unit. Revision 15:
+ * `turnsRemaining` (1–3) is how many more of its owner's Start Turns deal
+ * Plague damage; the unit spreads Plague only while it is 3.
+ */
 export interface PublicPlagueStatusV7 {
   readonly unitId: UnitId;
   readonly sourceUnitId: UnitId | null;
+  readonly turnsRemaining: number;
 }
 
 /** Revision 14 public Bitten status: whose Zombie the unit would rise as. */
@@ -621,6 +626,8 @@ export function viewForV7(
         sourceUnitId: visibleUnitIds.has(entry.sourceUnitId)
           ? entry.sourceUnitId
           : null,
+        // Revision 15: the remaining Plague turns are public.
+        turnsRemaining: entry.turnsRemaining,
       })),
     bitten: state.bitten
       .filter((entry) => visibleUnitIds.has(entry.unitId))

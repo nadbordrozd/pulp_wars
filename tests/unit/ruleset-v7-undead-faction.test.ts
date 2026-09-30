@@ -80,9 +80,9 @@ const READY: UnitStateV7["activation"] = {
 };
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
-  it("pins the r14 identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r14");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r14.current");
+  it("pins the r15 identity, frozen faction and tree orders, and bindings", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r15");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r15.current");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL", "UNDEAD"]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -103,16 +103,17 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r13 and preserves the r14 save", () => {
+  it("cleans obsolete keys through v7r14 and preserves the r15 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r13.current",
+      "pulpWars.save.v7r14.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(13);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(14);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
       ["pulpWars.save.v7r13.current", "r13"],
-      [SAVE_STORAGE_KEY_V7, "r14"],
+      ["pulpWars.save.v7r14.current", "r14"],
+      [SAVE_STORAGE_KEY_V7, "r15"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -120,8 +121,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       removedKeys: [
         "pulpWars.save.v7r12.current",
         "pulpWars.save.v7r13.current",
+        "pulpWars.save.v7r14.current",
       ],
-      removedCount: 2,
+      removedCount: 3,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -436,7 +438,8 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       GUARD: [
         "Zombie",
         3,
-        20,
+        // Revision 15 (Undead fragility): 18 HP.
+        18,
         4,
         4,
         1,
@@ -1346,7 +1349,7 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
     );
     const zombie = ownUnit(state, "GUARD");
     const guard = enemyUnitAt(state, { x: 5, y: 5 });
-    expect([zombie.maxHp, guard.maxHp]).toEqual([20, 15]);
+    expect([zombie.maxHp, guard.maxHp]).toEqual([18, 15]);
     const patched = (id: UnitStateV7["id"], patch: Partial<UnitStateV7>) =>
       parseGameStateV7({
         ...state,
@@ -1355,9 +1358,9 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
         ),
       });
     expect(patched(zombie.id, { maxHp: 15, hp: 15 })).toBeNull();
-    expect(patched(guard.id, { maxHp: 20, hp: 20 })).toBeNull();
+    expect(patched(guard.id, { maxHp: 18, hp: 18 })).toBeNull();
     expect(
-      patched(zombie.id, { veteran: true, kills: 3, maxHp: 25 }),
+      patched(zombie.id, { veteran: true, kills: 3, maxHp: 23 }),
     ).not.toBeNull();
 
     const layout: readonly UnitSpec[] = [

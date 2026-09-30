@@ -61,6 +61,8 @@ describe("ruleset-7 revision-13 Normal AI: public boundary", () => {
       "../engine/model/ids",
       "../engine/rules/ruleset-v7",
       "../engine/v7/query",
+      // Revision 15: only the public Plague duration constant.
+      "../engine/v7/afflictions",
       "../engine/v7/types",
       "../engine/v7/view",
       "../engine/v7/wail",

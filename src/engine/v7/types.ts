@@ -5,8 +5,8 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r14" as const;
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r14.current" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r15" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r15.current" as const;
 export const FACTION_IDS_V7 = Object.freeze(["ORIGINAL", "UNDEAD"] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
@@ -151,6 +151,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "TURN_STARTED",
   "PLAGUE_DAMAGED",
   "PLAGUE_SPREAD",
+  "PLAGUE_EXPIRED",
   "WINDMILL_HEALING_RESOLVED",
   "INCOME_AWARDED",
   "INCOME_PREVIEWED",
@@ -444,10 +445,16 @@ export interface GameStateV7 {
   readonly outcome: MatchOutcomeV7 | null;
 }
 
-/** Revision 14: a living unit plagued by the Lich `sourceUnitId`. */
+/**
+ * Revision 14: a living unit plagued by the Lich `sourceUnitId`. Revision 15:
+ * `turnsRemaining` is the number of its owner's Start Turn Plague steps still
+ * to resolve (3 when applied; the entry expires when it reaches 0), and the
+ * unit spreads Plague only on the step where it is still 3.
+ */
 export interface PlagueStatusV7 {
   readonly unitId: UnitId;
   readonly sourceUnitId: UnitId;
+  readonly turnsRemaining: number;
 }
 
 /**

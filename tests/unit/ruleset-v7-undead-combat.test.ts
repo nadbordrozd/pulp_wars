@@ -143,7 +143,7 @@ describe("ruleset-7 revision-13 Infect", () => {
         form: "LAND",
         at: { x: 3, y: 3 },
         hp: INFECT_RISING_HP_V7,
-        maxHp: 20,
+        maxHp: 18,
         kills: 0,
         veteran: false,
         captureEligible: false,
@@ -196,7 +196,7 @@ describe("ruleset-7 revision-13 Infect", () => {
       role: "GUARD",
       at: { x: 2, y: 3 },
       hp: 10,
-      maxHp: 20,
+      maxHp: 18,
       activation: EXHAUSTED,
       captureEligible: false,
     });
@@ -486,7 +486,8 @@ describe("ruleset-7 revision-13 Infect", () => {
     expect(promoted.events).toContainEqual({
       kind: "UNIT_PROMOTED",
       unitId: zombie.id,
-      maxHp: 25,
+      // Revision 15 Zombie 18 HP + 5.
+      maxHp: 23,
     });
   });
 

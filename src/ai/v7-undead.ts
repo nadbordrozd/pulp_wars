@@ -9,6 +9,7 @@ import {
   previewRaiseDeadV7,
   previewWailV7,
 } from "../engine/v7/query";
+import { PLAGUE_DURATION_TURNS_V7 } from "../engine/v7/afflictions";
 import type { CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 import {
@@ -380,18 +381,43 @@ function same(left: CoordV7, right: CoordV7): boolean {
 /** Public Plague and Bitten statuses of the view, indexed once per decision. */
 export interface PublicAfflictionsV7 {
   readonly plagued: ReadonlySet<UnitId>;
-  /** Visible plagued units by their visible source Lich. */
+  /**
+   * Revision 15: plagued units still on their first plagued turn, the only
+   * ones that spread at their owner's next Start Turn.
+   */
+  readonly spreading: ReadonlySet<UnitId>;
+  /** Revision 15: public remaining Plague turns (1–3) per plagued unit. */
+  readonly turnsRemaining: ReadonlyMap<UnitId, number>;
+  /**
+   * Visible plagued units by their visible source Lich, only those with at
+   * least two turns left (revision 15: curing a last turn saves just 2 HP).
+   */
   readonly plaguedBySource: ReadonlyMap<UnitId, readonly UnitId[]>;
   /** Bitten units and the player their death would rise for. */
   readonly bitten: ReadonlyMap<UnitId, PlayerId>;
 }
 
+/** Revision 15 public Plague duration, re-exported for the policy. */
+export { PLAGUE_DURATION_TURNS_V7 };
+
+/** Revision 15: remaining Plague turns worth a cure or a Lich hunt. */
+export const PLAGUE_TURNS_WORTH_CURING_V7 = 2;
+
 export function publicAfflictionsV7(view: PlayerViewV7): PublicAfflictionsV7 {
   const plagued = new Set<UnitId>();
+  const spreading = new Set<UnitId>();
+  const turnsRemaining = new Map<UnitId, number>();
   const plaguedBySource = new Map<UnitId, UnitId[]>();
   for (const entry of view.plagued) {
     plagued.add(entry.unitId);
-    if (entry.sourceUnitId === null) continue;
+    turnsRemaining.set(entry.unitId, entry.turnsRemaining);
+    if (entry.turnsRemaining >= PLAGUE_DURATION_TURNS_V7)
+      spreading.add(entry.unitId);
+    if (
+      entry.sourceUnitId === null ||
+      entry.turnsRemaining < PLAGUE_TURNS_WORTH_CURING_V7
+    )
+      continue;
     const list = plaguedBySource.get(entry.sourceUnitId) ?? [];
     list.push(entry.unitId);
     plaguedBySource.set(entry.sourceUnitId, list);
@@ -399,10 +425,13 @@ export function publicAfflictionsV7(view: PlayerViewV7): PublicAfflictionsV7 {
   const bitten = new Map<UnitId, PlayerId>();
   for (const entry of view.bitten)
     bitten.set(entry.unitId, entry.biterPlayerId);
-  return { plagued, plaguedBySource, bitten };
+  return { plagued, spreading, turnsRemaining, plaguedBySource, bitten };
 }
 
-/** One newly plagued hostile unit: about 2 damage a turn for a few turns. */
+/**
+ * One newly plagued hostile unit: 2 damage on each of its owner's next three
+ * turns (revision 15), at most 6.
+ */
 export const PLAGUE_UNIT_VALUE_V7 = 8;
 /** Each healthy living neighbour a new Plague may spread to next turn. */
 export const PLAGUE_SPREAD_VALUE_V7 = 4;
@@ -412,8 +441,13 @@ export const PLAGUE_EXPOSURE_COST_V7 = 12;
 export const PLAGUE_SOURCE_TARGET_VALUE_V7 = 10;
 /** A new bite on a hostile unit: its later death may rise as a Zombie. */
 export const BITE_VALUE_V7 = 6;
-/** Tend Wounded cure values (in immediate-value units, 8 per HP). */
+/**
+ * Tend Wounded cure values (in immediate-value units, 8 per HP). Revision 15:
+ * a Plague cure is worth 10 per remaining Plague turn (30 for a fresh one).
+ */
 export const TEND_PLAGUE_CURE_VALUE_V7 = 30;
+export const TEND_PLAGUE_TURN_CURE_VALUE_V7 =
+  TEND_PLAGUE_CURE_VALUE_V7 / PLAGUE_DURATION_TURNS_V7;
 export const TEND_BITTEN_CURE_VALUE_V7 = 14;
 
 /**
@@ -466,6 +500,7 @@ export function plagueApplicationValueV7(
 /**
  * Visible plagued units a Lich sources whose owner `counts` (for a living
  * viewer: its own and allied units; the Lich's death cures them all).
+ * Revision 15: only victims with at least two Plague turns left count.
  */
 export function plagueSourceVictimsV7(
   view: PlayerViewV7,
@@ -484,9 +519,11 @@ export function plagueSourceVictimsV7(
 }
 
 /**
- * Plagued visible units adjacent to `at`, other than `excluded`. A healthy
- * living unit that ends its turn there is plagued at that plagued unit's
- * owner's next Start Turn (spread ignores ownership).
+ * Spreading plagued visible units adjacent to `at`, other than `excluded`. A
+ * healthy living unit that ends its turn there is plagued at that plagued
+ * unit's owner's next Start Turn (spread ignores ownership). Revision 15:
+ * only a unit on its first plagued turn spreads, so older Plague is harmless
+ * to stand next to.
  */
 export function plaguedNeighboursV7(
   view: PlayerViewV7,
@@ -494,12 +531,12 @@ export function plaguedNeighboursV7(
   at: CoordV7,
   excluded: UnitId,
 ): number {
-  if (afflictions.plagued.size === 0) return 0;
+  if (afflictions.spreading.size === 0) return 0;
   let total = 0;
   for (const unit of view.units)
     if (
       unit.id !== excluded &&
-      afflictions.plagued.has(unit.id) &&
+      afflictions.spreading.has(unit.id) &&
       chebyshev(unit.at, at) === 1
     )
       total += 1;
@@ -543,6 +580,8 @@ export function isNewBiteV7(
 export interface TendValueV7 {
   readonly heal: number;
   readonly plagueCures: number;
+  /** Revision 15: the remaining Plague turns those cures remove. */
+  readonly plagueTurns: number;
   readonly bittenCures: number;
 }
 
@@ -560,6 +599,7 @@ export function publicTendValueV7(
 ): TendValueV7 {
   let heal = 0;
   let plagueCures = 0;
+  let plagueTurns = 0;
   let bittenCures = 0;
   for (const target of view.units) {
     if (
@@ -575,7 +615,8 @@ export function publicTendValueV7(
     if (target.hp >= target.maxHp && !plagued && !bitten) continue;
     heal += Math.min(2, target.maxHp - target.hp);
     plagueCures += Number(plagued);
+    plagueTurns += afflictions.turnsRemaining.get(target.id) ?? 0;
     bittenCures += Number(bitten);
   }
-  return { heal, plagueCures, bittenCures };
+  return { heal, plagueCures, plagueTurns, bittenCures };
 }

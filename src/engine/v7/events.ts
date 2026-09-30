@@ -114,6 +114,16 @@ export type DomainEventV7 =
       }[];
     }
   | {
+      /**
+       * Revision 15: at the start of `playerId`'s turn these of its units
+       * (sorted IDs) survived their third and last Plague damage, so their
+       * Plague ended. They may be plagued again later.
+       */
+      readonly kind: "PLAGUE_EXPIRED";
+      readonly playerId: PlayerId;
+      readonly unitIds: readonly UnitId[];
+    }
+  | {
       readonly kind: "WINDMILL_HEALING_RESOLVED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;

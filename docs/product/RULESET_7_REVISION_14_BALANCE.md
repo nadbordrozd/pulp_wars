@@ -11,6 +11,11 @@ game.
 
 **Ruleset ID:** `pulp-wars-poc-7r14`
 
+**Superseded in part:** [revision 15](RULESET_7_REVISION_15_BALANCE.md)
+(`pulp-wars-poc-7r15`) limits Plague to three of its owner's turns, lets a unit
+spread it only on the first, and lowers the Zombie to 18 HP; every other rule
+here stays in force.
+
 **Map-generation revision:** `REGIONAL_BIOMES_NAVAL_V2` (label unchanged;
 the neutral village counts change, see [section 8](#8-villages))
 

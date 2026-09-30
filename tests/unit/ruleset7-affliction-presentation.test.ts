@@ -196,11 +196,27 @@ describe("Revision 14 Plague and Bitten presentation", () => {
     expect(unitAfflictionsV7(view, warrior.id)).toEqual([
       {
         id: "PLAGUE",
-        chip: "Plague",
+        chip: "Plague · 3 turns",
         explanation:
-          "Plague from Player 2's Lich: −2 HP at the start of each of its turns, spreading to adjacent living units, until that Lich dies or a Captain tends it.",
+          "Plague from Player 2's Lich: −2 HP at the start of each of its next 3 turns, then it ends; at the first it spreads to adjacent living units. It ends sooner if that Lich dies or a Captain tends it.",
       },
     ]);
+    // Revision 15: the chip and sentence count the remaining turns down, and
+    // only a first-turn Plague still spreads.
+    const later = (turnsRemaining: number): PlayerViewV7 => ({
+      ...view,
+      plagued: view.plagued.map((entry) => ({ ...entry, turnsRemaining })),
+    });
+    expect(unitAfflictionsV7(later(2), warrior.id)[0]).toMatchObject({
+      chip: "Plague · 2 turns",
+      explanation:
+        "Plague from Player 2's Lich: −2 HP at the start of each of its next 2 turns, then it ends. It ends sooner if that Lich dies or a Captain tends it.",
+    });
+    expect(unitAfflictionsV7(later(1), warrior.id)[0]).toMatchObject({
+      chip: "Plague · 1 turn",
+      explanation:
+        "Plague from Player 2's Lich: −2 HP at the start of its next turn, then it ends. It ends sooner if that Lich dies or a Captain tends it.",
+    });
     const archer = unitAt(view, HUMAN.bittenArcher);
     expect(unitAfflictionsV7(view, archer.id)).toEqual([
       {
@@ -413,6 +429,33 @@ describe("Revision 14 Plague and Bitten presentation", () => {
     expect(notice.text).toMatch(
       /^Plague hit 2 of your units · Plague spread to \d units?$/,
     );
+
+    // Revision 15: Plague on its last turn deals its damage, spreads no more,
+    // and wears off with the cure sparkle.
+    const lastTurn = checkedV7({
+      ...ended,
+      plagued: ended.plagued.map((entry) => ({ ...entry, turnsRemaining: 1 })),
+    });
+    const expiry = boundaryFor(lastTurn, aiId, { kind: "END_TURN" }, humanId);
+    const expiryKinds = expiry.events.events.map((event) => event.kind);
+    expect(expiryKinds).toContain("PLAGUE_EXPIRED");
+    expect(expiryKinds).not.toContain("PLAGUE_SPREAD");
+    expect(
+      corePresentationPlanV7(expiry.before, expiry.events, expiry.after),
+    ).toContainEqual(
+      expect.objectContaining({
+        kind: "SUPPORT",
+        effect: "CURE",
+        actor: expect.objectContaining({ at: damaged[0] }),
+        recipients: [expect.objectContaining({ at: damaged[1] })],
+      }),
+    );
+    expect(
+      undeadBoundaryNoticeV7(expiry.events.events, expiry.before, expiry.after),
+    ).toEqual({
+      text: "Plague hit 2 of your units · Plague wore off 2 of your units",
+      toast: true,
+    });
 
     // A Captain's Tend cures Plague and a bite.
     const captain = unitAt(viewForV7(humanState, humanId), HUMAN.captain);

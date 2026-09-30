@@ -752,3 +752,101 @@ unrestricted spread (measured on an earlier build of this policy) behaved
 like P1 within noise. Recommendation: adopt P1 in a ruleset revision (it adds
 a state field, so it needs an identity and schema change) and fix
 `pulp_wars-1mc` for the stall.
+
+## 12. Revision 15
+
+Bead `pulp_wars-vkq.20`: [revision 15](../product/RULESET_7_REVISION_15_BALANCE.md)
+adopts P1 from section 11.5 (Plague lasts three of its owner's Start Turns
+and spreads only on the first) and lowers the Zombie from 20 to 18 HP, with
+the Normal AI valuing Plague by its public remaining turns. Sections 1–11
+stay as recorded.
+
+### 12.1 Reproduction
+
+Seeds 0–11 of every 1v1 cell (HU, UH, UU, HH × five maps × 11 and 14; 480
+games) plus the four-seat extra (HUHU, UHUH, seeds 0–3; 40 games), the
+section-2 round caps (150/120). Before is main `2c41035` (revision 14 with
+the `pulp_wars-vkq.18` policy); after is this revision. A third run changed
+only the Zombie to 19 HP to test the milder value the bead allowed.
+
+```bash
+# After (this revision):
+npm run balance:ruleset7-undead -- --seeds 12 --jobs 4 --output docs/validation/RULESET_7_UNDEAD_BALANCE_R15_AFTER.json --detail-output after-detail.json --markdown
+# Before: the same command on a checkout of main 2c41035
+# (git archive 2c41035 | tar -x -C before), writing RULESET_7_UNDEAD_BALANCE_R15_BEFORE.json
+# Zombie 19: the same command on a copy of this revision with the Zombie's
+# maxHp set to 19 in src/engine/rules/ruleset-v7.ts (not kept)
+```
+
+Outputs: [before](RULESET_7_UNDEAD_BALANCE_R15_BEFORE.json) and
+[after](RULESET_7_UNDEAD_BALANCE_R15_AFTER.json) (2,742 s, 3,315 s, and
+2,525 s wall for before, after, and Zombie 19 with `--jobs 4` on a shared
+10-core laptop). The tables come from the `--detail-output` files with a
+scratch summarizer. No run had an error, stall, or exception.
+
+### 12.2 Results
+
+Decided games; 95% Wilson intervals. Mixed = HU + UH (240 games per run).
+
+| Measure                                                    | Before (r14)          | After (r15, Zombie 18)   | Zombie 19 (not adopted)  |
+| ---------------------------------------------------------- | --------------------- | ------------------------ | ------------------------ |
+| Undead win, mixed                                          | 62% [56–69] (131/210) | 59% [52–66] (122/206)    | 60% [53–66] (124/208)    |
+| Undead win, HU / UH                                        | 60% / 65%             | 56% / 62%                | 58% / 61%                |
+| Seat-0 win, UU / HH                                        | 51% / 53%             | 55% / 53%                | 52% / 53%                |
+| Round caps, mixed / UU / HH (of 240 / 120 / 120)           | 30 / 11 / 19          | 34 / 14 / 19             | 32 / 11 / 19             |
+| Decided rounds, mixed mean / median / p90                  | 36.0 / 33 / 56        | 34.7 / 32 / 53           | 36.4 / 33 / 58           |
+| Decided rounds, UU mean / median / p90                     | 35.2 / 32 / 55        | 31.1 / 30 / 45           | 32.8 / 32 / 51           |
+| Plagued unit-turns per mixed game                          | 58.2                  | 39.9 (−31%)              | 42.9                     |
+| … in capped / decided games                                | 338.7 / 18.2          | 219.3 / 10.3             | 213.5 / 16.7             |
+| Plague turns per plagued unit                              | 5.6                   | 3.5                      | 3.9                      |
+| Most plagued at once, mean / p90 / max (games with Plague) | 7.5 / 17 / 28         | 7.3 / 16 / 24            | 6.8 / 17 / 24            |
+| Rounds with Plague, mean / p90                             | 28.5 / 107            | 25.2 / 88                | 25.1 / 97                |
+| Longest unbroken Plague run, mean / max                    | 21.3 / 121            | 16.0 / 117               | 16.9 / 112               |
+| Mixed games with Plague                                    | 85                    | 83                       | 85                       |
+| Units plagued by Lich / by spread, per game                | 8.3 / 9.2             | 13.5 / 11.1              | 14.0 / 12.0              |
+| Plague damage / deaths, per game                           | 115.1 / 3.3           | 78.6 / 2.6               | 84.4 / 3.2               |
+| Ended by dead Lich / expiry / Tend, per game               | 2.0 / 0 / 3.8         | 1.9 / 8.2 / 3.8          | 1.7 / 9.1 / 4.7          |
+| Infections ended after 0 / 1 / 2 / 3 turns (all games)     | —                     | 1264 / 1770 / 707 / 2113 | 1399 / 1693 / 768 / 2348 |
+| Bites / Bitten risings, per game                           | 4.5 / 1.0             | 4.0 / 1.1                | 4.1 / 1.0                |
+| Undead Zombies trained per mixed game                      | 15.9                  | 10.6                     | 11.9                     |
+| Four-seat: Undead wins / decided / capped (of 40)          | 1 / 1 / 23            | 1 / 1 / 27               | 1 / 3 / 23               |
+
+"Plague turns per plagued unit" is Plague damage entries per distinct plagued
+unit (a unit plagued again after expiry counts once). "Ended after 0 turns"
+counts infections whose unit died, was tended, or lost its Lich before its
+owner's next Start Turn.
+
+What changed:
+
+- **Plague extent falls as P1 predicted.** Plagued unit-turns fall by 31%,
+  turns per plagued unit from 5.6 to 3.5, the p90 of Plague rounds from 107
+  to 88, and the longest unbroken run by a quarter on average. The p90 of the
+  most plagued units at once barely moves (17 → 16): the first-turn spread
+  still sweeps a clump once, which keeps the dramatic moment. Liches
+  re-plague expired units (applications 8.3 → 13.5 per game), so capped
+  games still carry most Plague (219 unit-turns per capped game); that stall
+  is `pulp_wars-1mc`.
+- **Undead win rate moves toward the target but not significantly.** The
+  mixed Undead win rate falls from 62% to 59% [52–66]; both seat orders fall
+  by 3–4 points and the intervals overlap, so, as with vkq.18, this is
+  suggestive rather than significant at 480 games. Zombie 19 gives 60%
+  [53–66], indistinguishable from 18. 18 did not overshoot below 50%, so the
+  bead's fallback does not apply and revision 15 keeps 18, the value that
+  best matches "easily overrun".
+- **Zombie count.** The Normal AI's training score still favours maximum HP
+  (section 11.2), so an 18-HP Zombie is chosen less often: 10.6 Zombies per
+  mixed game instead of 15.9 (Zombie 19: 11.9).
+  Undead-mirror games get shorter (decided mean 35.2 → 31.1 rounds).
+- **Caps and game length** move within noise (mixed caps 30 → 34, decided
+  mixed mean 36.0 → 34.7 rounds).
+- **All-Human play is unchanged:** all 120 HH games have the same command
+  count, rounds, winner, seat results, and faction statistics in both runs
+  (their final state hashes differ because the state carries the ruleset
+  identity).
+
+### 12.3 Remaining gap to ~55%
+
+A further Undead nerf would need a larger sample to measure: at 480 games a
+4-point change is inside the interval. Candidates for a later revision are
+a lower Zombie Defense or cost change, or making the AI's Zombie training
+less HP-driven; none is applied here.

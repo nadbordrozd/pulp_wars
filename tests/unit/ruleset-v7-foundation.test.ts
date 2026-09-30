@@ -37,7 +37,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r14");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r15");
     expect(FACTION_IDS_V7).toEqual(["ORIGINAL", "UNDEAD"]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -79,12 +79,14 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
     expect(COMMAND_KIND_ORDER_V7).toHaveLength(42);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(65);
-    // Revision 14 inserts the Start Turn Plague events after TURN_STARTED.
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 5)).toEqual([
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(66);
+    // Revision 14 inserts the Start Turn Plague events after TURN_STARTED;
+    // revision 15 adds PLAGUE_EXPIRED after PLAGUE_SPREAD.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 6)).toEqual([
       "TURN_STARTED",
       "PLAGUE_DAMAGED",
       "PLAGUE_SPREAD",
+      "PLAGUE_EXPIRED",
       "WINDMILL_HEALING_RESOLVED",
       "INCOME_AWARDED",
     ]);

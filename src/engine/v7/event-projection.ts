@@ -73,7 +73,8 @@ export function projectEventsV7(
   for (const event of events) {
     // Revision 14 afflictions: each entry is projected to a viewer that owns
     // its unit or sees it (before the command for damage, before or after for
-    // spread and clearing); an event with no remaining entry is dropped.
+    // spread, clearing, and revision-15 expiry); an event with no remaining
+    // entry is dropped.
     if (event.kind === "PLAGUE_DAMAGED") {
       const results = event.results.filter(
         (entry) =>
@@ -92,7 +93,7 @@ export function projectEventsV7(
       if (results.length > 0) projected.push({ ...event, results });
       continue;
     }
-    if (event.kind === "PLAGUE_CLEARED") {
+    if (event.kind === "PLAGUE_CLEARED" || event.kind === "PLAGUE_EXPIRED") {
       const unitIds = event.unitIds.filter(
         (unitId) =>
           ownedBeforeOrAfter(unitId) ||

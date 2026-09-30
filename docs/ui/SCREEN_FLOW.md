@@ -147,6 +147,15 @@ cures`) and a full `aria-label` of its exact heals and cures, and selecting
 - **Economy text (E2, every match).** The Coins tooltip ends "Commerce earns
   trade. City levels above 5 add no more income." and Commerce no longer
   lists "Market income is doubled".
+- **Revision 15 duration** ([overlay](../product/RULESET_7_REVISION_15_BALANCE.md#7-ui-text)).
+  The Plague chip reads "Plague · N turns" (N = the public remaining turns,
+  3 to 1) and its sentence says "−2 HP at the start of each of its next N
+  turns, then it ends", adding "at the first it spreads to adjacent living
+  units" only while N is 3, and ends "It ends sooner if that Lich dies or a
+  Captain tends it." The Lich ability text and both help tips say Plague
+  lasts 3 turns and spreads on the first. `PLAGUE_EXPIRED` plays the cure
+  ring and is announced "Plague wore off N of your units" (or "Player N's
+  units"); it toasts for the viewer's own units.
 
 ## 0. Ruleset-6 replacement contract
 

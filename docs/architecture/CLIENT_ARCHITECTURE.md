@@ -2,12 +2,15 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r14` (autosave
-`pulpWars.save.v7r14.current`), whose rules are described by
+The current client runs `pulp-wars-poc-7r15` (autosave
+`pulpWars.save.v7r15.current`), whose rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) plus the in-progress
-[revision-13 Undead overlay](../product/RULESET_7_REVISION_13_UNDEAD.md) and
+[revision-13 Undead overlay](../product/RULESET_7_REVISION_13_UNDEAD.md),
 [revision-14 balance overlay](../product/RULESET_7_REVISION_14_BALANCE.md)
-(Plague, Bitten, and the income, village, Vampire, and Lich changes; its UI
+(Plague, Bitten, and the income, village, Vampire, and Lich changes), and
+[revision-15 overlay](../product/RULESET_7_REVISION_15_BALANCE.md) (three-turn
+Plague that spreads only on its first turn, 18-HP Zombies; the Plague chip
+counts the remaining turns; its UI
 surfaces are described in the
 [Screen Flow revision-14 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-14-plague-and-bitten-overlay)
 and read only the public `plagued` and `bitten` view lists, previews, and

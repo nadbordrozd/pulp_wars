@@ -3,9 +3,10 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r14`. Role facts resolve through the owner's
-faction registration; the revision-13 Undead tactics and the revision-14
-Plague, Bitten, Tend-cure, and Vampire play are summarized below.
+previews under `pulp-wars-poc-7r15`. Role facts resolve through the owner's
+faction registration; the revision-13 Undead tactics, the revision-14
+Plague, Bitten, Tend-cure, and Vampire play, and the revision-15 Plague
+duration valuation are summarized below.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
@@ -242,6 +243,30 @@ tiles whose territory owner is known although the city is not visible (the
 hash; together they change 48 of 300 Human-mirror matrix games without moving
 the aggregate results
 ([balance report §11.4](../validation/RULESET_7_UNDEAD_BALANCE.md#114-all-human-decisions)).
+
+## Revision-15 Plague duration (`pulp_wars-vkq.20`)
+
+Revision 15 limits Plague to three of its owner's turns and lets a unit
+spread it only on the first. The policy reads the public
+`view.plagued[].turnsRemaining` (still only in matches with an Undead seat):
+
+- **Spread discipline** avoids and isolates only _spreading_ Plague (a unit
+  with all three turns left); standing next to older Plague is harmless, so
+  healthy units no longer flee it and a plagued unit that can no longer
+  spread no longer separates itself.
+- **Cures.** Tend Wounded values a Plague cure at 10 per remaining turn (30
+  for a fresh Plague, as before); cure priority 1262 needs at least two
+  remaining Plague turns among the targets (1272 at five or more), so a last
+  turn (2 HP) is tended like a heal. The Captain's approach weighs a Plague
+  cure `2 × turns / 3` against a bite's 1, and a plagued unit walks to an own
+  Captain only with two or more turns left. The Captain training bias counts
+  only such units (and bitten ones).
+- **Kill the source.** A Lich's extra target value, its kill priority 1285,
+  and its own retreat logic count only sourced victims with two or more
+  turns left.
+- Plague application value (8 per hostile victim, 4 per healthy hostile
+  neighbour) is unchanged: a fresh Plague still deals up to 6 damage and
+  spreads once.
 
 ## Revision-8 merged industry and processor adjacency
 

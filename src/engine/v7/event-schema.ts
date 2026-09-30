@@ -31,6 +31,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   TURN_STARTED: ["kind", "playerId", "coins"],
   PLAGUE_DAMAGED: ["kind", "playerId", "results"],
   PLAGUE_SPREAD: ["kind", "playerId", "results"],
+  PLAGUE_EXPIRED: ["kind", "playerId", "unitIds"],
   WINDMILL_HEALING_RESOLVED: ["kind", "playerId", "cityId", "at", "results"],
   INCOME_AWARDED: ["kind", "playerId", "totalCoins", "cities"],
   INCOME_PREVIEWED: ["kind", "playerId", "totalCoins", "cities"],
@@ -552,6 +553,8 @@ function validPayload(
       );
     case "PLAGUE_SPREAD":
       return id(e.playerId) && spreadResults(e.results);
+    case "PLAGUE_EXPIRED":
+      return id(e.playerId) && orderedIds(e.unitIds);
     case "WINDMILL_HEALING_RESOLVED":
       return (
         id(e.playerId) &&

@@ -2043,7 +2043,7 @@ export class Ruleset7DomAppView {
             ...(view !== null && matchHasUndeadV7(view)
               ? [
                   "Units that fall in battle on land leave Graves. Undead raise or devour them, and Zombie kills rise as Zombies.",
-                  "Lich shots plague your units: −2 HP each turn, spreading to neighbours, until the Lich dies or a Captain tends them.",
+                  "Lich shots plague your units for 3 turns: −2 HP each turn, spreading to neighbours on the first. Killing the Lich or a Captain's Tend ends it sooner.",
                   "Zombie bites make your units rise as enemy Zombies when they die; a Captain's Tend cures bites.",
                   "Your units can't strike back at a Vampire's attack.",
                 ]
@@ -3509,7 +3509,7 @@ function setupFrom(draft: DraftV7, undeadSetup: boolean): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r14",
+    rulesetId: "pulp-wars-poc-7r15",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -4345,7 +4345,7 @@ const UNDEAD_HELP_TIPS: readonly string[] = [
   "A Banshee can't attack; it Wails at every visible living enemy within 2 tiles.",
   "Zombie kills rise as your Zombies, Vampires heal from damage they deal, and Lich shots splash.",
   "Restless: your units recover only inside your territory.",
-  "A Lich's shots plague living units: −2 HP each turn, spreading to neighbours, until the Lich dies or a Captain tends them.",
+  "A Lich's shots plague living units for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if the Lich dies or a Captain tends them.",
   "Zombies bite living land units; a bitten unit that dies rises as the biter's Zombie unless a Captain tends it first.",
   "Enemies can't strike back at a Vampire's attack.",
 ];

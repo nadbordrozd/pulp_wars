@@ -1,6 +1,7 @@
-import { allocateUnitId, type PlayerId } from "../model/ids";
+import { allocateUnitId, type PlayerId, type UnitId } from "../model/ids";
 import {
   PLAGUE_DAMAGE_V7,
+  PLAGUE_DURATION_TURNS_V7,
   biteOfV7,
   isLivingOwnerV7,
   recordBittenRisingV7,
@@ -24,17 +25,20 @@ import type {
 /**
  * Revision 14 Start Turn Plague (section 3.3), resolved for the player whose
  * turn starts, after activations and city actions reset and before Windmill
- * healing:
+ * healing, with the revision-15 duration:
  *
  * 1. every plagued unit the player owns takes `min(2, hp)` damage, applied
  *    together from the pre-Plague state (`PLAGUE_DAMAGED`);
  * 2. each death, in (y, x, id) order, emits `UNIT_DIED` cause `PLAGUE` and
  *    either rises as a Bitten Zombie or leaves a Grave under the ordinary
  *    rules; no one gains kill credit;
- * 3. every surviving plagued unit of the player, in unit-ID order, spreads its
- *    source to every adjacent living, non-plagued unit of any owner
- *    (`PLAGUE_SPREAD`); newly plagued units do not spread this turn;
- * 4. risings reveal their sight for their owners, and the live economy is
+ * 3. every surviving plagued unit of the player on its first plagued turn
+ *    (`turnsRemaining` still 3), in unit-ID order, spreads its source to
+ *    every adjacent living, non-plagued unit of any owner (`PLAGUE_SPREAD`);
+ *    newly plagued units start with 3 turns and do not spread this turn;
+ * 4. every surviving damaged entry loses one remaining turn; entries that
+ *    reach 0 expire (`PLAGUE_EXPIRED`), so a unit can be plagued again later;
+ * 5. risings reveal their sight for their owners, and the live economy is
  *    recomputed when a unit died.
  */
 export function resolveStartTurnPlagueV7(
@@ -98,14 +102,22 @@ export function resolveStartTurnPlagueV7(
   const dead = new Set(
     results.filter((entry) => entry.dies).map((entry) => entry.unitId),
   );
+  const damaged = new Set(results.map((entry) => entry.unitId));
   const survivingPlague = state.plagued.filter(
     (entry) => !dead.has(entry.unitId),
   );
   const alreadyPlagued = new Set(survivingPlague.map((entry) => entry.unitId));
+  // Revision 15: only a unit on its first plagued turn spreads.
   const sourceOf = new Map(
-    survivingPlague.map((entry) => [entry.unitId, entry.sourceUnitId] as const),
+    survivingPlague
+      .filter(
+        (entry) =>
+          damaged.has(entry.unitId) &&
+          entry.turnsRemaining === PLAGUE_DURATION_TURNS_V7,
+      )
+      .map((entry) => [entry.unitId, entry.sourceUnitId] as const),
   );
-  const spread: PlagueStatusV7[] = [];
+  const spread: Pick<PlagueStatusV7, "unitId" | "sourceUnitId">[] = [];
   const spreaders = units
     .filter((unit) => unit.ownerId === playerId && sourceOf.has(unit.id))
     .sort((left, right) => left.id - right.id);
@@ -141,6 +153,17 @@ export function resolveStartTurnPlagueV7(
         ),
     });
   }
+  // Revision 15: every damaged survivor counts one turn down; at 0 it expires.
+  const counted: PlagueStatusV7[] = [];
+  const expired: UnitId[] = [];
+  for (const entry of survivingPlague) {
+    if (!damaged.has(entry.unitId)) counted.push(entry);
+    else if (entry.turnsRemaining > 1)
+      counted.push({ ...entry, turnsRemaining: entry.turnsRemaining - 1 });
+    else expired.push(entry.unitId);
+  }
+  if (expired.length > 0)
+    events.push({ kind: "PLAGUE_EXPIRED", playerId, unitIds: expired });
   let players = state.players;
   for (const risen of risings) {
     // Revision 13 section 5.4: a rising reveals its sight for its owner.
@@ -169,7 +192,7 @@ export function resolveStartTurnPlagueV7(
     players,
     units,
     graves,
-    plagued: withPlaguedV7(survivingPlague, spread),
+    plagued: withPlaguedV7(counted, spread),
     bitten: state.bitten.filter((entry) => !dead.has(entry.unitId)),
   };
   if (dead.size > 0) {

@@ -1,5 +1,6 @@
 import {
   FACTION_DISPLAY_NAMES_V7,
+  PLAGUE_DURATION_TURNS_V7,
   factionRulesV7,
   gravesEnabledV7,
   playerFactionV7,
@@ -132,7 +133,7 @@ export function undeadAbilityDescriptionV7(
     case "LIFESTEAL":
       return "Heals by the damage it deals when it survives the fight.";
     case "PLAGUE":
-      return "Living units its attacks hit are plagued: −2 HP each turn, spreading to neighbours, until this Lich dies or a Captain tends them.";
+      return "Living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies or a Captain tends them.";
     case "BITE":
       return "Living land units it damages are bitten and rise as your Zombies when they die.";
     case "UNANSWERED":
@@ -236,7 +237,8 @@ export type AfflictionIdV7 = "PLAGUE" | "BITTEN";
 
 export interface UnitAfflictionV7 {
   readonly id: AfflictionIdV7;
-  readonly chip: "Plague" | "Bitten";
+  /** "Bitten", or revision 15 "Plague · N turns" (turns still to come). */
+  readonly chip: string;
   readonly explanation: string;
 }
 
@@ -255,10 +257,21 @@ export function unitAfflictionsV7(
       source === undefined
         ? "a hidden Lich"
         : `${possessive(view, source.ownerId)} ${unitLabelV7(view, source)}`;
+    // Revision 15: Plague lasts `turnsRemaining` more of the unit's owner's
+    // turns and spreads only at the first of the three.
+    const turns = plague.turnsRemaining;
+    const damage =
+      turns === 1
+        ? "−2 HP at the start of its next turn, then it ends"
+        : `−2 HP at the start of each of its next ${turns} turns, then it ends`;
+    const spread =
+      turns >= PLAGUE_DURATION_TURNS_V7
+        ? "; at the first it spreads to adjacent living units"
+        : "";
     result.push({
       id: "PLAGUE",
-      chip: "Plague",
-      explanation: `Plague from ${lich}: −2 HP at the start of each of its turns, spreading to adjacent living units, until that Lich dies or a Captain tends it.`,
+      chip: `Plague · ${turns} ${turns === 1 ? "turn" : "turns"}`,
+      explanation: `Plague from ${lich}: ${damage}${spread}. It ends sooner if that Lich dies or a Captain tends it.`,
     });
   }
   const bite = view.bitten.find((entry) => entry.unitId === unitId);
@@ -516,6 +529,13 @@ export function undeadBoundaryNoticeV7(
       const count = event.unitIds.length;
       parts.push(
         `Plague lifted from ${count} ${count === 1 ? "unit" : "units"}`,
+      );
+    } else if (event.kind === "PLAGUE_EXPIRED") {
+      // Revision 15: three turns of Plague ran out.
+      if (event.playerId === viewerId) toast = true;
+      const count = event.unitIds.length;
+      parts.push(
+        `Plague wore off ${count} of ${possessive(after, event.playerId)} ${count === 1 ? "unit" : "units"}`,
       );
     } else if (event.kind === "BITTEN_UNIT_RISEN") {
       toast = true;

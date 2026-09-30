@@ -3,7 +3,7 @@ import { unitRoleRuleV7 } from "../rules/ruleset-v7";
 import type { DomainEventV7 } from "./events";
 import type { GameStateV7, UnitStateV7 } from "./types";
 
-/** Revision 13 section 6.4: an Infect rising has 10 HP out of the Zombie's 20. */
+/** Revision 13 section 6.4: an Infect rising has 10 HP (revision 15: of the Zombie's 18). */
 export const INFECT_RISING_HP_V7 = 10;
 
 /**

@@ -26,6 +26,7 @@ import {
   type PlayerViewV7,
   type UnitRoleIdV7,
   type UnitStateV7,
+  PLAGUE_DURATION_TURNS_V7,
 } from "../../src/engine/index";
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { checkedV7 } from "../fixtures/v7-builders";
@@ -377,7 +378,12 @@ interface Piece {
 interface ArenaOptions {
   readonly graves?: readonly CoordV7[];
   /** Plagued pieces (by coordinate) and the coordinate of their source. */
-  readonly plagued?: readonly { at: CoordV7; source: CoordV7 }[];
+  readonly plagued?: readonly {
+    at: CoordV7;
+    source: CoordV7;
+    /** Revision 15 remaining Plague turns (default 3, freshly applied). */
+    turnsRemaining?: number;
+  }[];
   /** Bitten pieces (by coordinate) and the coordinate of their biter. */
   readonly bitten?: readonly { at: CoordV7; biter: CoordV7 }[];
 }
@@ -463,6 +469,7 @@ function arena(
       .map((entry) => ({
         unitId: idAt(entry.at),
         sourceUnitId: idAt(entry.source),
+        turnsRemaining: entry.turnsRemaining ?? PLAGUE_DURATION_TURNS_V7,
       }))
       .sort((left, right) => left.unitId - right.unitId),
     bitten: (options.bitten ?? [])

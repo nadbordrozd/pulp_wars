@@ -26,6 +26,13 @@ import type {
 /** Revision 14 section 3.3: Plague deals 2 damage at its owner's Start Turn. */
 export const PLAGUE_DAMAGE_V7 = 2;
 
+/**
+ * Revision 15: Plague resolves on at most three of the plagued unit's owner's
+ * Start Turns (at most 6 damage) and then expires; the unit spreads it only
+ * on the first of them.
+ */
+export const PLAGUE_DURATION_TURNS_V7 = 3;
+
 /** Revision 14 section 4.3: a bitten victim rises as a 10-HP Zombie. */
 export const BITTEN_RISING_HP_V7 = 10;
 
@@ -121,10 +128,14 @@ export function afflictionCombatEffectsV7(input: {
   };
 }
 
-/** Adds plague entries; a unit keeps its first source (no stacking). */
+/**
+ * Adds fresh plague entries (revision 15: the full three turns remaining); a
+ * unit already plagued keeps its source and its remaining turns (no stacking,
+ * no reset).
+ */
 export function withPlaguedV7(
   plagued: readonly PlagueStatusV7[],
-  added: readonly PlagueStatusV7[],
+  added: readonly Pick<PlagueStatusV7, "unitId" | "sourceUnitId">[],
 ): readonly PlagueStatusV7[] {
   if (added.length === 0) return plagued;
   const byId = new Map(plagued.map((entry) => [entry.unitId, entry] as const));
@@ -133,6 +144,7 @@ export function withPlaguedV7(
       byId.set(entry.unitId, {
         unitId: entry.unitId,
         sourceUnitId: entry.sourceUnitId,
+        turnsRemaining: PLAGUE_DURATION_TURNS_V7,
       });
   return [...byId.values()].sort((left, right) => left.unitId - right.unitId);
 }

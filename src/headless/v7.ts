@@ -39,6 +39,7 @@ import {
   type ReplayFileV7,
   type ReplayRunResultV7,
 } from "../engine/v7/replay";
+import { PLAGUE_DURATION_TURNS_V7 } from "../engine/v7/afflictions";
 import { spatialContributionAtV7 } from "../engine/v7/spatial-economy";
 import {
   COMMAND_KIND_ORDER_V7,
@@ -86,7 +87,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r14";
+  readonly rulesetId: "pulp-wars-poc-7r15";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -280,6 +281,14 @@ export interface UndeadMetricsV7 {
   plagueDeaths: number;
   /** Revision 14: Plague ended because the source Lich left the board. */
   plagueCleared: number;
+  /** Revision 15: Plague ended after its third and last Start Turn. */
+  plagueExpired: number;
+  /**
+   * Revision 15 Plague duration: index `n` counts infections that ended
+   * (death, expiry, cure, or source loss) after `n` Start Turn damage steps
+   * (0–3). Infections still in force at the end are not counted.
+   */
+  plagueTurnsAtEnd: number[];
   /** Revision 14: Tend Wounded cures. */
   plagueCures: number;
   bittenCures: number;
@@ -758,7 +767,7 @@ export async function runAiBatchV7(
             Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r14",
+              rulesetId: "pulp-wars-poc-7r15",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -837,6 +846,8 @@ interface TelemetryStateV7 {
   readonly raisedSkeletons: Set<UnitId>;
   readonly risings: Set<UnitId>;
   readonly centerRisings: Set<UnitId>;
+  /** Revision 15: Start Turn Plague damage steps of each current infection. */
+  readonly plagueTurns: Map<UnitId, number>;
 }
 
 function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
@@ -851,6 +862,7 @@ function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
     raisedSkeletons: new Set(),
     risings: new Set(),
     centerRisings: new Set(),
+    plagueTurns: new Map(),
   };
 }
 
@@ -859,7 +871,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r14",
+    rulesetId: "pulp-wars-poc-7r15",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -987,6 +999,11 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       plagueDamage: 0,
       plagueDeaths: 0,
       plagueCleared: 0,
+      plagueExpired: 0,
+      plagueTurnsAtEnd: Array.from(
+        { length: PLAGUE_DURATION_TURNS_V7 + 1 },
+        () => 0,
+      ),
       plagueCures: 0,
       bittenCures: 0,
       bites: 0,
@@ -1358,6 +1375,11 @@ function recordEventsV7(
     }
     if (event.kind === "GRAVE_CREATED") metrics.undead.gravesCreated += 1;
     if (event.kind === "PLAGUE_DAMAGED") {
+      for (const entry of event.results)
+        telemetry.plagueTurns.set(
+          entry.unitId,
+          (telemetry.plagueTurns.get(entry.unitId) ?? 0) + 1,
+        );
       metrics.undead.plagueDamageEntries += event.results.length;
       metrics.undead.plagueDamage += sum(
         event.results.map((entry) => entry.damage),
@@ -1370,6 +1392,8 @@ function recordEventsV7(
       metrics.undead.plagueSpreads += event.results.length;
     if (event.kind === "PLAGUE_CLEARED")
       metrics.undead.plagueCleared += event.unitIds.length;
+    if (event.kind === "PLAGUE_EXPIRED")
+      metrics.undead.plagueExpired += event.unitIds.length;
     if (event.kind === "BITTEN_UNIT_RISEN") {
       metrics.undead.bittenRisings += 1;
       telemetry.risings.add(event.unitId);
@@ -1459,6 +1483,21 @@ function recordEventsV7(
     }
     if (event.kind === "CITY_CAPTURED")
       recordMonumentOwnershipChange(before, after, event.cityId, metrics);
+  }
+  // Revision 15 Plague duration: an infection ends when its entry leaves
+  // canonical state (Plague never ends and restarts within one transition).
+  if (before.plagued.length > 0) {
+    const current = new Set(after.plagued.map((entry) => entry.unitId));
+    for (const entry of before.plagued) {
+      if (current.has(entry.unitId)) continue;
+      const turns = Math.min(
+        PLAGUE_DURATION_TURNS_V7,
+        telemetry.plagueTurns.get(entry.unitId) ?? 0,
+      );
+      metrics.undead.plagueTurnsAtEnd[turns] =
+        (metrics.undead.plagueTurnsAtEnd[turns] ?? 0) + 1;
+      telemetry.plagueTurns.delete(entry.unitId);
+    }
   }
 }
 

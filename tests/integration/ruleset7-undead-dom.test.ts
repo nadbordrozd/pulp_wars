@@ -277,14 +277,15 @@ describe("Revision 13 Undead DOM", () => {
     const app = mount(controller, host);
     const at = AFFLICTION_SHOWCASE_V7.human;
     const plague =
-      "Plague from Player 2's Lich: −2 HP at the start of each of its turns, spreading to adjacent living units, until that Lich dies or a Captain tends it.";
+      "Plague from Player 2's Lich: −2 HP at the start of each of its next 3 turns, then it ends; at the first it spreads to adjacent living units. It ends sooner if that Lich dies or a Captain tends it.";
 
     selectUnitAt(controller, host, at.plaguedWarrior);
     const chip = requiredElement<HTMLElement>(
       '.v7-selection-dock [data-unit-status="plague"]',
     );
-    expect(chip.textContent).toBe("Plague");
-    expect(chip.getAttribute("aria-label")).toBe(`Plague. ${plague}`);
+    // Revision 15: the chip counts the remaining Plague turns.
+    expect(chip.textContent).toBe("Plague · 3 turns");
+    expect(chip.getAttribute("aria-label")).toBe(`Plague · 3 turns. ${plague}`);
     expect(chip.querySelector('svg[data-icon="plague"]')).not.toBeNull();
     expect(
       document.querySelector('.v7-selection-dock [data-unit-status="bitten"]'),
@@ -304,7 +305,7 @@ describe("Revision 13 Undead DOM", () => {
     requiredButton("unit-help").click();
     expect(
       document.querySelector('[data-tactical-state="plague"]')?.textContent,
-    ).toBe(`Plague${plague}`);
+    ).toBe(`Plague · 3 turns${plague}`);
     requiredButton("close-unit-help").click();
 
     selectUnitAt(controller, host, at.bittenArcher);
@@ -324,7 +325,7 @@ describe("Revision 13 Undead DOM", () => {
       Array.from(
         document.querySelectorAll(".v7-selection-dock .v7-affliction-chip"),
       ).map((node) => node.textContent),
-    ).toEqual(["Plague", "Bitten"]);
+    ).toEqual(["Plague · 3 turns", "Bitten"]);
     expect(requiredButton("affliction-disband").dataset.disabledReason).toBe(
       "plagued",
     );
@@ -341,7 +342,7 @@ describe("Revision 13 Undead DOM", () => {
     expect(
       requiredElement<HTMLElement>(".v7-unit-help-dialog").textContent,
     ).toContain(
-      "Living units its attacks hit are plagued: −2 HP each turn, spreading to neighbours, until this Lich dies or a Captain tends them.",
+      "Living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies or a Captain tends them.",
     );
     requiredButton("close-unit-help").click();
     selectUnitAt(controller, host, at.captain);
@@ -376,7 +377,7 @@ describe("Revision 13 Undead DOM", () => {
     const helpText =
       requiredElement<HTMLElement>(".v7-help-tips").textContent ?? "";
     expect(helpText).toContain(
-      "Lich shots plague your units: −2 HP each turn, spreading to neighbours, until the Lich dies or a Captain tends them.",
+      "Lich shots plague your units for 3 turns: −2 HP each turn, spreading to neighbours on the first. Killing the Lich or a Captain's Tend ends it sooner.",
     );
     expect(helpText).toContain(
       "Your units can't strike back at a Vampire's attack.",

@@ -390,6 +390,7 @@ function withAfflictionsV7(
       .map(([unit, source]) => ({
         unitId: id(unit),
         sourceUnitId: id(source),
+        turnsRemaining: 3,
       }))
       .sort((left, right) => left.unitId - right.unitId),
     bitten: bitten

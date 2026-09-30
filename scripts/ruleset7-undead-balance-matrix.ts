@@ -1,6 +1,7 @@
 /**
  * Ruleset 7 Human-vs-Undead balance matrix (`pulp_wars-vkq.10`), run on the
- * current identity (revision 14 adds Plague and Bitten counters).
+ * current identity (revision 14 adds Plague and Bitten counters; revision 15
+ * adds Plague expiry and per-infection duration).
  *
  * Runs deterministic headless Normal-vs-Normal matches for Human-vs-Undead in
  * both seat orders, Undead mirror, and Human mirror across map types and
@@ -255,7 +256,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r14",
+    rulesetId: "pulp-wars-poc-7r15",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: cell.seed,
     width: cell.size,
@@ -819,7 +820,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r14",
+          rulesetId: "pulp-wars-poc-7r15",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -1039,12 +1040,20 @@ export function summarize(entries: readonly MatrixEntry[]) {
     return Object.fromEntries(
       keys.map((key) => [
         key,
-        key === "maximumSkeletonsPerRaise" ||
-        key === "gravesMaximum" ||
-        key === "plaguedMaximum" ||
-        key === "bittenMaximum"
-          ? Math.max(0, ...group.map((entry) => entry.undead[key]))
-          : sum(group.map((entry) => entry.undead[key])),
+        key === "plagueTurnsAtEnd"
+          ? group.reduce<number[]>(
+              (total, entry) =>
+                entry.undead.plagueTurnsAtEnd.map(
+                  (value, index) => value + (total[index] ?? 0),
+                ),
+              [],
+            )
+          : key === "maximumSkeletonsPerRaise" ||
+              key === "gravesMaximum" ||
+              key === "plaguedMaximum" ||
+              key === "bittenMaximum"
+            ? Math.max(0, ...group.map((entry) => entry.undead[key]))
+            : sum(group.map((entry) => entry.undead[key])),
       ]),
     );
   };
@@ -1186,6 +1195,16 @@ export function summarize(entries: readonly MatrixEntry[]) {
         group.map((entry) => entry.plague.unitsFivePlusTurns),
       ),
       plaguedUnits: sum(group.map((entry) => entry.plague.units)),
+      // Revision 15: Start Turn damage entries per distinct plagued unit.
+      turnsPerPlaguedUnit:
+        sum(group.map((entry) => entry.plague.units)) === 0
+          ? null
+          : Math.round(
+              (10 *
+                sum(group.map((entry) => entry.undead.plagueDamageEntries))) /
+                sum(group.map((entry) => entry.plague.units)),
+            ) / 10,
+      plagueExpired: sum(group.map((entry) => entry.undead.plagueExpired)),
       gamesWithPlagueTwentyPlusRounds: withPlague.filter(
         (entry) => entry.plague.rounds >= 20,
       ).length,
@@ -1347,9 +1366,9 @@ function markdown(summary: ReturnType<typeof summarize>): string {
     `Undead moves first: ${pct(summary.duel.undeadWinUndeadMovesFirst)}`,
     `Human moves first: ${pct(summary.duel.undeadWinHumanMovesFirst)}`,
     "",
-    `Plague (mixed): ${summary.duel.abilities.mixed.plagueApplications ?? 0} applied, ${summary.duel.abilities.mixed.plagueSpreads ?? 0} spread, ${summary.duel.abilities.mixed.plagueDamage ?? 0} damage, ${summary.duel.abilities.mixed.plagueDeaths ?? 0} deaths, ${summary.duel.abilities.mixed.plagueCleared ?? 0} cleared, ${summary.duel.abilities.mixed.plagueCures ?? 0} cured; games with Plague ${summary.duel.abilities.gamesWithPlague}/${summary.duel.abilities.undeadGames}`,
+    `Plague (mixed): ${summary.duel.abilities.mixed.plagueApplications ?? 0} applied, ${summary.duel.abilities.mixed.plagueSpreads ?? 0} spread, ${summary.duel.abilities.mixed.plagueDamage ?? 0} damage, ${summary.duel.abilities.mixed.plagueDeaths ?? 0} deaths, ${summary.duel.abilities.mixed.plagueCleared ?? 0} cleared, ${summary.duel.abilities.mixed.plagueExpired ?? 0} expired, ${summary.duel.abilities.mixed.plagueCures ?? 0} cured; infections ended after 0/1/2/3 turns ${[summary.duel.abilities.mixed.plagueTurnsAtEnd ?? []].flat().join("/")}; games with Plague ${summary.duel.abilities.gamesWithPlague}/${summary.duel.abilities.undeadGames}`,
     `Bitten (mixed): ${summary.duel.abilities.mixed.bites ?? 0} bites, ${summary.duel.abilities.mixed.bittenRisings ?? 0} risings, ${summary.duel.abilities.mixed.bittenCures ?? 0} cured; games with a Bitten rising ${summary.duel.abilities.gamesWithBittenRising}/${summary.duel.abilities.undeadGames}; unanswered attacks ${summary.duel.abilities.mixed.unansweredAttacks ?? 0}`,
-    `Plague duration (mixed games with Plague ${summary.duel.plague.gamesWithPlague}/${summary.duel.plague.games}): most plagued at once mean ${summary.duel.plague.plaguedMaximum.mean} p90 ${summary.duel.plague.plaguedMaximum.p90}; rounds with Plague mean ${summary.duel.plague.plagueRounds.mean} p90 ${summary.duel.plague.plagueRounds.p90}; longest streak mean ${summary.duel.plague.longestStreak.mean}; longest single-unit Plague mean ${summary.duel.plague.longestUnitTurns.mean} turns; plagued unit-turns per game ${summary.duel.plague.plaguedUnitTurnsPerGame}`,
+    `Plague duration (mixed games with Plague ${summary.duel.plague.gamesWithPlague}/${summary.duel.plague.games}): most plagued at once mean ${summary.duel.plague.plaguedMaximum.mean} p90 ${summary.duel.plague.plaguedMaximum.p90}; rounds with Plague mean ${summary.duel.plague.plagueRounds.mean} p90 ${summary.duel.plague.plagueRounds.p90}; longest streak mean ${summary.duel.plague.longestStreak.mean}; longest single-unit Plague mean ${summary.duel.plague.longestUnitTurns.mean} turns; plagued unit-turns per game ${summary.duel.plague.plaguedUnitTurnsPerGame}; turns per plagued unit ${summary.duel.plague.turnsPerPlaguedUnit}`,
     "",
     "| Pairing | Games | Undead win | Seat-0 win | First mover win | Rounds mean/median/p90 | Cap rate |",
     "| --- | ---: | --- | --- | --- | --- | ---: |",

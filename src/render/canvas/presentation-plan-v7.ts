@@ -75,7 +75,10 @@ export type SupportEffectV7 =
   | "GRAVE"
   /** Revision 14: Plague damage or spread on the listed units. */
   | "PLAGUE"
-  /** Revision 14: Plague lifted because its source Lich left the board. */
+  /**
+   * Revision 14: Plague lifted because its source Lich left the board;
+   * revision 15 also plays it when Plague expires after three turns.
+   */
   | "CURE"
   /** Revision 14: a bitten victim rose as the biter's Zombie. */
   | "BITTEN"
@@ -417,7 +420,12 @@ export function corePresentationPlanV7(
               lethal: result.dies,
               durationMs: 100,
             });
-    } else if (event.kind === "PLAGUE_CLEARED") {
+    } else if (
+      event.kind === "PLAGUE_CLEARED" ||
+      event.kind === "PLAGUE_EXPIRED"
+    ) {
+      // Revision 14 source-Lich clearing and revision 15 expiry lift Plague
+      // with the same cure sparkle.
       const [first, ...rest] = event.unitIds.flatMap((unitId) => {
         const unit =
           after.units.find((candidate) => candidate.id === unitId) ??

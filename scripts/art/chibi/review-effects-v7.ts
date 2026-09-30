@@ -228,6 +228,7 @@ export function chibiEffectsReviewViewV7(live: PlayerViewV7): {
       plagued: flagged("plagued").map((unitId) => ({
         unitId,
         sourceUnitId: unitAt(8, 3)?.id ?? null,
+        turnsRemaining: 3,
       })),
       bitten: flagged("bitten").map((unitId) => ({
         unitId,

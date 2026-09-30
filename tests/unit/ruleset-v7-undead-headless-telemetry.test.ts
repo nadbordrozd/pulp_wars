@@ -53,9 +53,10 @@ describe("ruleset-7 revision-13 headless Undead telemetry", () => {
     expect(Object.keys(metrics.capacity.overcapacityStatesByFaction)).toEqual(
       FACTION_IDS_V7,
     );
-    expect(Object.values(metrics.undead).every((value) => value === 0)).toBe(
-      true,
-    );
+    // Revision 15: the Plague duration histogram is a zero-filled list.
+    const { plagueTurnsAtEnd, ...counters } = metrics.undead;
+    expect(plagueTurnsAtEnd).toEqual([0, 0, 0, 0]);
+    expect(Object.values(counters).every((value) => value === 0)).toBe(true);
   });
 
   it("credits Wail damage and kills to the Banshee role and Undead faction", () => {

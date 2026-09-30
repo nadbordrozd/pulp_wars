@@ -42,6 +42,7 @@ import {
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "./types";
+import { PLAGUE_DURATION_TURNS_V7 } from "./afflictions";
 import { parseMatchSetupV7 } from "./setup";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { roadPopulationForCityV7 } from "./economy";
@@ -851,22 +852,33 @@ function parseOutcome(input: unknown): MatchOutcomeV7 | null | undefined {
   return undefined;
 }
 
-/** Revision 14 Plague entries, strictly ascending by unit ID. */
+/**
+ * Revision 14 Plague entries, strictly ascending by unit ID; revision 15 adds
+ * `turnsRemaining`, an integer from 1 to 3.
+ */
 function parsePlagued(input: unknown): readonly PlagueStatusV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: PlagueStatusV7[] = [];
   for (const candidate of input) {
-    if (!hasExactKeysV7(candidate, ["sourceUnitId", "unitId"])) return null;
+    if (
+      !hasExactKeysV7(candidate, ["sourceUnitId", "turnsRemaining", "unitId"])
+    )
+      return null;
     const unitId = parseUnitIdV7(candidate.unitId);
     const sourceUnitId = parseUnitIdV7(candidate.sourceUnitId);
+    const turnsRemaining = candidate.turnsRemaining;
     if (
       unitId === null ||
       sourceUnitId === null ||
       unitId === sourceUnitId ||
+      typeof turnsRemaining !== "number" ||
+      !Number.isInteger(turnsRemaining) ||
+      turnsRemaining < 1 ||
+      turnsRemaining > PLAGUE_DURATION_TURNS_V7 ||
       (values.length > 0 && (values.at(-1) as PlagueStatusV7).unitId >= unitId)
     )
       return null;
-    values.push({ unitId, sourceUnitId });
+    values.push({ unitId, sourceUnitId, turnsRemaining });
   }
   return values;
 }
