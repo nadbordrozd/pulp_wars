@@ -117,8 +117,9 @@ describe("ruleset-7 pure public economy", () => {
       ok: true,
       preview: {
         capitalRoadConnected: true,
-        // Revision 14 (E2): Commerce no longer doubles the Market (4, not 8).
-        coinIncomeDeltaByCity: [{ cityId: capital.id, delta: 4 }],
+        // Revision 14 (E2): Commerce no longer doubles the Market; revision
+        // 16 caps it at 3 (the raw 1 + 3 families is 4).
+        coinIncomeDeltaByCity: [{ cityId: capital.id, delta: 3 }],
       },
     });
     const result = applyCommandV7(state, base.humanPlayerId, {
@@ -131,9 +132,9 @@ describe("ruleset-7 pure public economy", () => {
       result.events.find((event) => event.kind === "ECONOMIC_BUILDING_BUILT"),
     ).toMatchObject({
       improvement: "MARKET",
-      marketIncome: 4,
+      marketIncome: 3,
     });
-    expect(marketIncomeForCityV7(result.state, capital)).toBe(4);
+    expect(marketIncomeForCityV7(result.state, capital)).toBe(3);
   });
 
   it("routes authoritative compatibility calls through the same PlayerView calculation", () => {
@@ -818,12 +819,13 @@ describe("ruleset-7 pure public economy", () => {
         candidate.id === city.id
           ? {
               ...candidate,
-              // Revision 14 (E2) caps the level term at 5, so one more
-              // permanent population keeps this capital exactly at the floor.
+              // Revision 16 caps the level term at 4 (revision 14: 5), so
+              // 4 + capital 1 + Market 2 - 6 keeps this capital exactly at the
+              // floor.
               level: 6,
-              permanentPopulation: 13,
+              permanentPopulation: 14,
               economicPopulation: 0,
-              population: -7,
+              population: -6,
               rewards: [
                 { reachedLevel: 2, reward: "STOCKPILE" },
                 { reachedLevel: 3, reward: "WALLS" },

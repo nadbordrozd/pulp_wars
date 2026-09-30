@@ -1,12 +1,12 @@
 # Ruleset 7 revision 16: starting growth, economy deflation, 2-tile boats, and orthogonal shallow water
 
-**Status:** contract (`pulp_wars-72r`), partly implemented. It is
-implemented by three beads in order: `pulp_wars-wwc` (identity, capital
-growth guarantee, orthogonal shallow water; implemented, see
-[section 13](#13-implementation-record)), `pulp_wars-zsa`
-(2-tile boats and landing reach; implemented, see
+**Status:** contract (`pulp_wars-72r`), implemented. It is implemented by
+three beads in order: `pulp_wars-wwc` (identity, capital growth guarantee,
+orthogonal shallow water; see [section 13](#13-implementation-record)),
+`pulp_wars-zsa` (2-tile boats and landing reach; see
 [section 13.5](#135-revision-16b-2-tile-boats-pulp_wars-zsa)), and
-`pulp_wars-4gc` (economy deflation);
+`pulp_wars-4gc` (economy deflation; see
+[section 13.6](#136-revision-16c-economy-deflation-pulp_wars-4gc));
 see [section 9](#9-implementation-split-and-sequencing). Until revisions 13–16
 are folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (`pulp_wars-vkq.16`), this overlay together with
@@ -386,7 +386,9 @@ unit-limited).
 
 ### 6.2 Decided numbers
 
-Three levers, all numeric:
+Three levers, all numeric. These are the final values: `pulp_wars-4gc`
+measured them against every section 6.4 target and they passed without
+tuning (section 13.6), so no section 6.5 parameter moved.
 
 ```text
 tier 1 = 5  + 1 * (C - 1)        (unchanged)
@@ -424,7 +426,10 @@ schemas (which carry reward coin literals) untouched.
 
 ### 6.3 Measured effect of the decided numbers
 
-Same seeds, same scratch harness, revision 15 → decided numbers:
+Same seeds, same scratch harness, revision 15 → decided numbers (the
+full-matrix measurement of `pulp_wars-4gc`, which replaces these scratch
+numbers, is in the
+[balance report section 15](../validation/RULESET_7_UNDEAD_BALANCE.md#15-revision-16c-economy-deflation-pulp_wars-4gc)):
 
 | Measure                                  |                  1v1 11/14 (80 games) |                1v1 20 × 20 (15 games) |
 | ---------------------------------------- | ------------------------------------: | ------------------------------------: |
@@ -816,3 +821,80 @@ identical seeds. No match had a policy error or stall in either run.
 The Archipelago cap rate rose by 4.1 points, under the 5-point threshold that
 would file an AI follow-up. The largest slowdown is 14 × 14 Archipelago (mean
 42.1 → 55.8 rounds, 0 → 1 capped).
+
+### 13.6 Revision 16c: economy deflation (`pulp_wars-4gc`)
+
+- **Engine** (`src/engine/rules/ruleset-v7.ts`, `src/engine/v7/economy.ts`).
+  `TECHNOLOGY_RESEARCH_COST_V7` holds each tier's `base` and `step`
+  (tier 1 `5`/`1`, tier 2 `7`/`3`, tier 3 `12`/`5`), and
+  `technologyResearchCostV7` computes `base + step * (C - 1)` from it; the
+  free opener in `playerTechnologyResearchCostV7` is unchanged.
+  `CITY_LEVEL_INCOME_CAP_V7 = 4`, and the new `MARKET_INCOME_CAP_V7 = 3`
+  bounds `marketCoinsV7`. Research offers, previews, income events,
+  `ECONOMIC_BUILDING_BUILT.marketIncome`, and public improvement values
+  pick the numbers up through these functions. No identity, state, command,
+  event, or view shape changed.
+- **Normal AI** (`src/ai/v7.ts`). Its copy of the level income cap is 4.
+  Research costs come from the public tree, so no other AI estimate changed.
+- **UI** (`src/render/dom/app-view-v7.ts`). The Coins tooltip ends "City
+  income: Level (max 4) + capital + trade + Markets." and the Market formula
+  reads "Market: 1–3 Coins (1 + adjacent families, max 3)", both derived
+  from the engine constants. The per-city income in the city panel and the
+  projected income now cap the level term (they used the raw level, which
+  overstated the income of a level-6+ city since revision 14); the new
+  preview test pins them to the Start Turn income.
+- **Headless telemetry** (`src/headless/v7.ts`). Improvement outage
+  tracking values a Market with `marketCoinsV7` instead of a stale
+  revision-13 doubling; only zero versus non-zero is used, so no metric
+  changed.
+- **Balance matrix.** Technologies, income, and banked Coins at rounds
+  10/20/30/40/50 and the tree-completion round per seat, with
+  `seatEconomy.all` and `treeCompletion` summaries.
+- **Tests.** `tests/unit/ruleset-v7-revision16-economy.test.ts`: the
+  section 6.2 cost table at `C` = 1–8, the free opener at every `C`, the
+  whole-tree prices of the section 6.2 table, public tree offers and charged
+  costs, the level term capped at 4 in `cityIncomeV7`, Markets paying 2, 3,
+  and 3 for one to three families (preview, event, city income) with and
+  without Commerce and 1 without contributors, and a 20 × 20 Normal match in
+  which every `INCOME_PREVIEWED`, every DOM income projection, and every
+  Start Turn award agree while level-5+ cities and 3-Coin Markets are
+  present.
+
+Measurement ([balance report section 15](../validation/RULESET_7_UNDEAD_BALANCE.md#15-revision-16c-economy-deflation-pulp_wars-4gc)):
+the full 1v1 matrix and the 20 × 20 check, before (revision 16b, `cc5c184`)
+and after on identical seeds. Every section 6.4 target is met with the
+decided numbers, so they are final and no section 6.5 tuning was needed:
+
+| #   | Result (revision 16b → 16c)                                                    |
+| --- | ------------------------------------------------------------------------------ |
+| T1  | Round-10 income 98.9%, technologies 100.2% (20 × 20: 100%, 100%)               |
+| T2  | Round-20 income 86.9%                                                          |
+| T3  | Round-30 income 87.5%                                                          |
+| T4  | Coins carried into round 40: 1v1 31.0 → 4.9 (16%); 20 × 20 133.9 → 4.8 (4%)    |
+| T5  | 20 × 20 Coins carried into round 50: 555.7 → 112.3 (20%)                       |
+| T6  | Completion median / earliest: 1v1 38 / 28 → 47 / 36; 20 × 20 37 / 30 → 47 / 39 |
+| T7  | Cap rate 4.3% → 3.3%; Undead win 59.8% → 59.7%; first-mover win 50.3% → 51.6%  |
+
+Re-pinned artifacts, each shown to change only through this bead: every one
+of them passes unchanged on the `cc5c184` tree (the revision-16b economy
+numbers), and each re-pinned natural-play seed was chosen from a seed scan
+on this revision.
+
+- **Cost literals.** The whole-tree research test costs 191 Coins (was
+  164); the formula test expects `[5, 7, 12]` at one city and `[8, 16, 27]`
+  at four; the revision-14 E2 test expects the level cap 4 and the Market
+  cap 3; public-economy Market previews expect 3 (raw 4) and the
+  partially hidden floor fixture keeps its capital at the floor with the
+  level term 4; the scripted persistence scenarios fund a tier-3 technology
+  with `technologyResearchCostV7(3, 1)` Coins (12, was 9).
+- **Planning hash.** The captured command-425 public-planning result hash
+  (`209b3326…` → `749e1adf…`); with the Market cap set back to 4 the old
+  hash returns.
+- **All-Human digests** (`ruleset-v7-undead-faction.test.ts`): map and
+  post-generation PRNG digests, rounds, and terminations unchanged; seed 7
+  has 238 commands (was 241), seed 1234 has 362 (was 363); command, event,
+  state, view, and command-list digests re-recorded.
+- **Natural-play seeds.** Plague and Bitten round trip, Lich splash round
+  trip, and the Undead telemetry match 16 → 15; Lich-and-Plague match
+  (Pangea) 5 → 4; Infect and Lifesteal round trip 3 → 2; Graves round trip
+  4 → 6; the whole-kit Devour case (Pangea, Human seat 0) 0 → 13.

@@ -345,10 +345,11 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
   it("trains a Lich and plagues in a deterministic mixed match", () => {
     // pulp_wars-1mc: the seed-3 Continents match used before now enters the
     // Human seat's endgame siege at round 9 (three cities against one) and
-    // the Undead seat never reaches a Lich; seed 5 Pangea still does.
+    // the Undead seat never reaches a Lich; seed 5 Pangea still did until the
+    // revision-16 economy numbers, and seed 4 Pangea does with them.
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 5,
+      seed: 4,
       width: 11,
       height: 11,
       aiCount: 1,

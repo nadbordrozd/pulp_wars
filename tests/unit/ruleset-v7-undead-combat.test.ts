@@ -843,8 +843,9 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
   });
 
   it("round-trips Infect and Lifesteal through replay, checkpoints, and save", () => {
-    // Seed 3 shows Infect and Lifesteal within 20 rounds on revision-14 maps.
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 3);
+    // Seed 2 shows Infect and Lifesteal within 20 rounds with the revision-16
+    // economy numbers (seed 3 did on revision-14 maps before them).
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 2);
     const match = runAiMatchV7(setup, { maxRounds: 20 });
     expect(match.errors).toEqual([]);
     expect(match.metrics.eventsByKind.UNIT_INFECTED).toBeGreaterThan(0);

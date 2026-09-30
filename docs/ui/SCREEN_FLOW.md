@@ -144,9 +144,12 @@ cures`) and a full `aria-label` of its exact heals and cures, and selecting
   Plague" (`UNIT_DIED` cause `PLAGUE`), "Plague lifted from N units", "A bitten
   Fighter rose as Player N's Zombie" and "Tend cured Plague on N and a bite";
   Plague damage and spread toast only when they reach the viewer's units.
-- **Economy text (E2, every match).** The Coins tooltip ends "Commerce earns
-  trade. City levels above 5 add no more income." and Commerce no longer
-  lists "Market income is doubled".
+- **Economy text (E2, every match; revision 16 numbers).** The Coins tooltip
+  ends "Commerce earns trade. City income: Level (max 4) + capital + trade +
+  Markets." and Commerce no longer lists "Market income is doubled". The
+  Market formula reads "Market: 1–3 Coins (1 + adjacent families, max 3)".
+  The per-city income shown in the city panel and the Coins projection use the
+  capped level term, so they equal the Start Turn income.
 - **Revision 15 duration** ([overlay](../product/RULESET_7_REVISION_15_BALANCE.md#7-ui-text)).
   The Plague chip reads "Plague · N turns" (N = the public remaining turns,
   3 to 1) and its sentence says "−2 HP at the start of each of its next N

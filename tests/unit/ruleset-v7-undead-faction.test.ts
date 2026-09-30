@@ -1418,6 +1418,12 @@ describe("ruleset-7 all-Human parity digests", () => {
   // the revision-16a digests exactly. The map and post-generation PRNG
   // digests are unchanged; seed 7 no longer ends by round 17 (its Continents
   // invasion is slower) and now reaches the 30-round cap.
+  // Revision 16c (`pulp_wars-4gc`) changes them again only through the
+  // economy numbers (research cost slopes, level income cap 4, Market cap
+  // 3): the cc5c184 tree with the revision-16b numbers reproduced the
+  // revision-16b digests exactly. Map and post-generation PRNG digests,
+  // rounds, and terminations are unchanged; seed 7 has 238 commands (was
+  // 241) and seed 1234 has 362 (was 363).
   const BASELINE = [
     {
       seed: 7,
@@ -1426,7 +1432,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "RIVAL",
       mapType: "CONTINENTS",
       maxRounds: 30,
-      acceptedCommands: 241,
+      acceptedCommands: 238,
       rounds: 31,
       termination: "ROUND_CAP",
       mapHash:
@@ -1434,15 +1440,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "d49112565ebd2fc88f466d580dd42dbac3bce9e31535d7441860026941990b1b",
+        "5d3c1466a272a403979e43806c2770bc8a755b7c36ceed19e71f0ac04b46e4b7",
       eventHash:
-        "e54453a96a12224b7cd5c2ac8efb90f2dbdda47e341eb262c26e275d80776814",
+        "c3b4210bbd23193ccc4d4bf81bc45fa0db4a75e8883f227a82f21f27b8a96128",
       normalizedFinalStateHash:
-        "42414aaf115a2bc657c78f3b58b2e94d302621a3167b69212d721458ed902ee6",
+        "9f75de766fda8fb1954bada46226f5ddb100141a1877c50e2260f4fcdd3a04e1",
       normalizedHumanViewHash:
-        "1243e8df7e74f51ba7821de426c1f44c329f6b5dc7bdc087f118bcf52f4932c5",
+        "7d64e7604b184097f51f7d92d6119c38494f83fbc63ec69c59041085b4047e69",
       normalizedHumanCommandsHash:
-        "2bd526a33ddeece81ed8e7d5542abfb07d0e8785421a132046fffd9eee754973",
+        "bc161528d660a647697cabfec3526b9a6fcc5951280f8e692ad67ed8047ab703",
     },
     {
       seed: 1234,
@@ -1451,7 +1457,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "COOPERATIVE",
       mapType: "ARCHIPELAGO",
       maxRounds: 18,
-      acceptedCommands: 363,
+      acceptedCommands: 362,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1459,15 +1465,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "1f9e25f0762fe2ceb256bf014d02a105275481816ea70a8e4ec464acbd417b0f",
+        "30324e124ff71f75fb31a74824d21f838c6ba16a6d1936643f70f7e9966f5b2a",
       eventHash:
-        "5b5d015ee4ee683a91f990d3707fe65e848d2ded8b7873aa5f25c62d82e09ed9",
+        "07337b7fd4170ff0a9bc94415ac86b0f2235079818f4458bd43414aa51e8087e",
       normalizedFinalStateHash:
-        "094619ca5c39d02f72b71b837674be61cd61ed7b3f12c28eadc15cd87445b239",
+        "c2c3b97ca95a6f3e45f498196141c0bf06494ac87e8e3c1097ac51052021fe33",
       normalizedHumanViewHash:
-        "a882a841452892b6afd6bb750af7c78e57f3e9ac5991119a1fb0028e5f0a6add",
+        "538a2b1c582b816de4609be7e74db4cf97c8b74058902ed8747deded51c1d244",
       normalizedHumanCommandsHash:
-        "73e389b86d0098c4b5b8b24d015e609b9c7b9b956643d72fe139f2415db889f0",
+        "aa1fdc255f928c60a2658c35eaac4a01f51f24ec796504baf812ed82260a77d5",
     },
   ] as const;
 

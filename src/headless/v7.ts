@@ -1624,17 +1624,11 @@ function currentContributions(state: GameStateV7) {
       tile.at,
       tile.improvement,
     );
-    const city = state.cities.find(
-      (candidate) => candidate.id === tile.territoryCityId,
-    );
-    const commerce = state.players
-      .find((player) => player.id === city?.ownerId)
-      ?.researchedTechs.includes("COMMERCE");
     result.set(coordKey(tile.at), {
       improvement: tile.improvement,
       value:
         tile.improvement === "MARKET"
-          ? Math.min(4, contribution.marketIncome) * (commerce ? 2 : 1)
+          ? marketCoinsV7(contribution.marketIncome)
           : contribution.population,
     });
   }

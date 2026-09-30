@@ -623,7 +623,8 @@ describe("Ruleset 7 public presentation", () => {
       "Sawmill: +1 per adjacent lumber camp",
       "Forge: +1 per adjacent mine",
       "Workshop: grows with varied neighbors",
-      "Market: coins from nearby industry",
+      // Revision 16 (economy deflation): the Market pays 1-3 Coins.
+      "Market: 1–3 Coins (1 + adjacent families, max 3)",
     ]);
   });
 

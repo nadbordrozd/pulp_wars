@@ -547,7 +547,8 @@ describe("Ruleset 7 DOM shell", () => {
       .map((node) => node.getAttribute("aria-label") ?? "")
       .find((label) => label.includes("Next income"));
     expect(income).toContain(
-      "Commerce earns trade. City levels above 5 add no more income.",
+      // Revision 16 (economy deflation): the level term caps at 4.
+      "Commerce earns trade. City income: Level (max 4) + capital + trade + Markets.",
     );
     expect(income).not.toContain("doubles Markets");
     requiredButton('[data-action="tech-drill"]').click();

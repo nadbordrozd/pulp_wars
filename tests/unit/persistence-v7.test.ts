@@ -12,6 +12,7 @@ import {
   queryPlayerCommandsV7,
   runReplayV7,
   isAcceptedStateCertificateV7,
+  technologyResearchCostV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -38,6 +39,8 @@ const setup: MatchSetupV7 = {
   mapType: "DRY_LAND",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
 };
+/** A one-city tier-3 technology (revision 16: 12 Coins, was 9). */
+const TIER_3_COST = technologyResearchCostV7(3, 1);
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
@@ -130,7 +133,7 @@ describe("ruleset-7 save and replay foundation", () => {
     accept({ kind: "RESEARCH", tech: "SCOUTING" });
     fundHuman(7);
     accept({ kind: "RESEARCH", tech: "RAIDING" });
-    fundHuman(9);
+    fundHuman(TIER_3_COST);
     accept({ kind: "RESEARCH", tech: "CHIVALRY" });
     fundHuman(9);
     const city = required(
@@ -520,7 +523,7 @@ describe("ruleset-7 save and replay foundation", () => {
     apply({ kind: "RESEARCH", tech: "FARMING" });
     fundHuman(7);
     apply({ kind: "RESEARCH", tech: "ADMINISTRATION" });
-    fundHuman(9);
+    fundHuman(TIER_3_COST);
     apply({ kind: "RESEARCH", tech: "PLANNING" });
     const farmAt = required(
       state.board.tiles.find(
@@ -676,7 +679,7 @@ describe("ruleset-7 save and replay foundation", () => {
       reachedLevel: 2,
       reward: "STOCKPILE",
     });
-    fundHuman(9);
+    fundHuman(TIER_3_COST);
     apply({ kind: "RESEARCH", tech: "MILLING" });
     fundHuman(5);
     apply({ kind: "BUILD_WINDMILL", at: windmillTile.at });

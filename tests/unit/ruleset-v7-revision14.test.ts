@@ -1033,10 +1033,12 @@ describe("ruleset-7 revision-14 villages and economy", () => {
     });
   });
 
-  it("caps the level term at 5 and stops Commerce doubling Markets", () => {
-    expect(CITY_LEVEL_INCOME_CAP_V7).toBe(5);
-    expect([1, 4, 5, 6, 9].map(cityLevelIncomeV7)).toEqual([1, 4, 5, 5, 5]);
-    expect([1, 3, 4, 7].map(marketCoinsV7)).toEqual([1, 3, 4, 4]);
+  it("caps the level term and stops Commerce doubling Markets", () => {
+    // Revision 14 (E2) capped the level term at 5 and the Market at 4;
+    // revision 16 (economy deflation) lowers them to 4 and 3.
+    expect(CITY_LEVEL_INCOME_CAP_V7).toBe(4);
+    expect([1, 4, 5, 6, 9].map(cityLevelIncomeV7)).toEqual([1, 4, 4, 4, 4]);
+    expect([1, 3, 4, 7].map(marketCoinsV7)).toEqual([1, 3, 3, 3]);
     expect(
       factionTreeV7("ORIGINAL")
         .nodes.find((node) => node.id === "COMMERCE")
@@ -1048,14 +1050,15 @@ describe("ruleset-7 revision-14 villages and economy", () => {
     );
     const at = (level: number) =>
       cityIncomeV7(state, { ...capital, level, population: 0 });
-    // Level + capital: 5 + 1 at level 5 and at every level above it.
-    expect([at(4), at(5), at(6), at(8)]).toEqual([5, 6, 6, 6]);
+    // Level + capital: 4 + 1 at level 4 and at every level above it.
+    expect([at(3), at(4), at(5), at(8)]).toEqual([4, 5, 5, 5]);
   });
 });
 
 describe("ruleset-7 revision-14 natural play and persistence", () => {
   it("round-trips Plague and Bitten from ordinary Normal AI play", () => {
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 16);
+    // Seed 15 (revision-16 economy numbers; seed 16 no longer plagues).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 15);
     const match = runAiMatchV7(setup, { maxRounds: 45 });
     expect(match.errors).toEqual([]);
     expect(match.stalls).toEqual([]);

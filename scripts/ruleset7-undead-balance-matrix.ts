@@ -42,6 +42,7 @@ import {
   type MatchSetupV7,
   type UnitRoleIdV7,
 } from "../src/engine/v7/types";
+import { factionTreeV7 } from "../src/engine/rules/ruleset-v7";
 
 const MAP_TYPES: readonly MapTypeV7[] = [
   "DRY_LAND",
@@ -379,7 +380,7 @@ export function runCell(cell: MatrixCell): MatrixEntry {
   };
 }
 
-interface SeatEconomy {
+interface SeatEconomy extends SeatSnapshots {
   income: number;
   rewardCoins: number;
   treasureCoins: number;
@@ -391,17 +392,30 @@ interface SeatEconomy {
   cityCaptures: number;
   citiesRound15: number | null;
   citiesRound30: number | null;
-  /** Coins carried into the seat's turn (before income) in rounds 10–40. */
-  bankRound10: number | null;
-  bankRound20: number | null;
-  bankRound30: number | null;
-  bankRound40: number | null;
-  /** Turn income awarded in rounds 10–40. */
-  incomeRound10: number | null;
-  incomeRound20: number | null;
-  incomeRound30: number | null;
-  incomeRound40: number | null;
+  /** Technologies in the seat's tree on this map (Dry Land has no Naval). */
+  treeSize: number;
+  /** Round in which the seat researched its whole tree (null if never). */
+  treeCompletionRound: number | null;
 }
+
+/**
+ * Rounds whose economy is snapshotted per seat (`pulp_wars-4gc` adds round 50
+ * and the technology counts).
+ */
+const SNAPSHOT_ROUNDS = [10, 20, 30, 40, 50] as const;
+type SnapshotRound = (typeof SNAPSHOT_ROUNDS)[number];
+
+/**
+ * Per-round snapshots taken when the seat's turn income is awarded in that
+ * round: Coins carried into the turn (before income), the income, and the
+ * technologies researched so far. `null` when the seat had no turn then.
+ */
+type SeatSnapshots = Record<
+  | `bankRound${SnapshotRound}`
+  | `incomeRound${SnapshotRound}`
+  | `techsRound${SnapshotRound}`,
+  number | null
+>;
 
 function emptyEconomy(): SeatEconomy {
   return {
@@ -416,14 +430,15 @@ function emptyEconomy(): SeatEconomy {
     cityCaptures: 0,
     citiesRound15: null,
     citiesRound30: null,
-    bankRound10: null,
-    bankRound20: null,
-    bankRound30: null,
-    bankRound40: null,
-    incomeRound10: null,
-    incomeRound20: null,
-    incomeRound30: null,
-    incomeRound40: null,
+    treeSize: 0,
+    treeCompletionRound: null,
+    ...(Object.fromEntries(
+      SNAPSHOT_ROUNDS.flatMap((round) => [
+        [`bankRound${round}`, null],
+        [`incomeRound${round}`, null],
+        [`techsRound${round}`, null],
+      ]),
+    ) as SeatSnapshots),
   };
 }
 
@@ -552,6 +567,17 @@ function analyzeLog(
     if (record !== undefined) record[by] = (record[by] ?? 0) + 1;
   };
   const pendingBank = new Map<number, number>();
+  // `pulp_wars-4gc`: technologies per seat and the size of its tree here.
+  const techCount = new Map<number, number>();
+  for (const player of state.players) {
+    const tree = factionTreeV7(player.faction);
+    techCount.set(player.id, tree.startingTechIds.length);
+    const economy = seats.get(player.id);
+    if (economy !== undefined)
+      economy.treeSize = tree.nodes.filter(
+        (node) => state.setup.mapType !== "DRY_LAND" || node.branch !== "NAVAL",
+      ).length;
+  }
   const snapshotCities = (key: "citiesRound15" | "citiesRound30") => {
     for (const [playerId, economy] of seats)
       economy[key] = [...cityOwner.values()].filter(
@@ -609,21 +635,12 @@ function analyzeLog(
           economy.income += event.totalCoins;
           const bank =
             (pendingBank.get(event.playerId) ?? 0) - event.totalCoins;
-          if (round === 10) {
-            economy.bankRound10 = bank;
-            economy.incomeRound10 = event.totalCoins;
-          }
-          if (round === 20) {
-            economy.bankRound20 = bank;
-            economy.incomeRound20 = event.totalCoins;
-          }
-          if (round === 30) {
-            economy.bankRound30 = bank;
-            economy.incomeRound30 = event.totalCoins;
-          }
-          if (round === 40) {
-            economy.bankRound40 = bank;
-            economy.incomeRound40 = event.totalCoins;
+          const snapshot = SNAPSHOT_ROUNDS.find((item) => item === round);
+          if (snapshot !== undefined) {
+            economy[`bankRound${snapshot}`] = bank;
+            economy[`incomeRound${snapshot}`] = event.totalCoins;
+            economy[`techsRound${snapshot}`] =
+              techCount.get(event.playerId) ?? 0;
           }
         }
       }
@@ -651,9 +668,13 @@ function analyzeLog(
             0,
             event.kind === "SPOILS_AWARDED" ? event.coins : event.coinDelta,
           );
-        if (event.kind === "TECH_RESEARCHED")
+        if (event.kind === "TECH_RESEARCHED") {
           gainer.researchCoins += event.cost;
-        else if (
+          const count = (techCount.get(event.playerId) ?? 0) + 1;
+          techCount.set(event.playerId, count);
+          if (count === gainer.treeSize && gainer.treeCompletionRound === null)
+            gainer.treeCompletionRound = round;
+        } else if (
           event.kind === "UNIT_TRAINED" ||
           event.kind === "NAVAL_UNIT_TRAINED"
         ) {
@@ -1097,6 +1118,16 @@ function groupBy<T>(
   return groups;
 }
 
+/** Tree-completion rounds: distribution, earliest, and completing share. */
+function completion(rounds: readonly number[], seats: number) {
+  return {
+    ...stats(rounds),
+    earliest: rounds.length === 0 ? null : Math.min(...rounds),
+    completedShare:
+      seats === 0 ? null : Math.round((1000 * rounds.length) / seats) / 1000,
+  };
+}
+
 const undeadWon = (entry: MatrixEntry) => entry.winnerFaction === "UNDEAD";
 const seatZeroWon = (entry: MatrixEntry) => entry.winnerSeat === 0;
 const firstSeatWon = (entry: MatrixEntry) =>
@@ -1200,9 +1231,15 @@ export function summarize(entries: readonly MatrixEntry[]) {
     };
   };
   const undeadGames = duel.filter((entry) => entry.pairing !== "HH");
-  const seatMeans = (group: readonly MatrixEntry[], faction: FactionIdV7) => {
+  /** Seat means for one faction's seats, or every seat when `null`. */
+  const seatMeans = (
+    group: readonly MatrixEntry[],
+    faction: FactionIdV7 | null,
+  ) => {
     const seats = group.flatMap((entry) =>
-      entry.seats.filter((seat) => seat.faction === faction),
+      entry.seats.filter(
+        (seat) => faction === null || seat.faction === faction,
+      ),
     );
     const mean = (values: readonly number[]) =>
       values.length === 0
@@ -1226,14 +1263,19 @@ export function summarize(entries: readonly MatrixEntry[]) {
       cityCaptures: numeric("cityCaptures"),
       citiesRound15: numeric("citiesRound15"),
       citiesRound30: numeric("citiesRound30"),
-      bankRound10: numeric("bankRound10"),
-      bankRound20: numeric("bankRound20"),
-      bankRound30: numeric("bankRound30"),
-      bankRound40: numeric("bankRound40"),
-      incomeRound10: numeric("incomeRound10"),
-      incomeRound20: numeric("incomeRound20"),
-      incomeRound30: numeric("incomeRound30"),
-      incomeRound40: numeric("incomeRound40"),
+      ...(Object.fromEntries(
+        SNAPSHOT_ROUNDS.flatMap((round) =>
+          (["bankRound", "incomeRound", "techsRound"] as const).map((key) => [
+            `${key}${round}`,
+            numeric(`${key}${round}`),
+          ]),
+        ),
+      ) as Record<keyof SeatSnapshots, number | null>),
+      // `pulp_wars-4gc`: whole-tree completion over the seats that did it.
+      treeCompletion: completion(
+        present(seats.map((seat) => seat.treeCompletionRound)),
+        seats.length,
+      ),
       techs: numeric("techs"),
     };
   };
@@ -1422,6 +1464,8 @@ export function summarize(entries: readonly MatrixEntry[]) {
         mixedUndead: seatMeans(mixed, "UNDEAD"),
         humanMirror: seatMeans(byPairing.HH ?? [], "ORIGINAL"),
         undeadMirror: seatMeans(byPairing.UU ?? [], "UNDEAD"),
+        // `pulp_wars-4gc`: every 1v1 seat of every pairing.
+        all: seatMeans(duel, null),
       },
       knights: {
         mixedHuman: knightTotals(mixed, "ORIGINAL"),

@@ -1028,6 +1028,20 @@ export const RULESET_7 = deepFreeze({
   factionTrees: FACTION_TREES_V7,
 });
 
+/**
+ * Revision 16 (economy deflation, `pulp_wars-4gc`): a technology of tier `t`
+ * costs `base + step * (C - 1)` Coins, `C` being the researcher's owned city
+ * count. Tier 1 is `5 + 1(C - 1)` (unchanged); tier 2 `7 + 3(C - 1)` (was
+ * `7 + 2(C - 1)`); tier 3 `12 + 5(C - 1)` (was `9 + 3(C - 1)`).
+ */
+export const TECHNOLOGY_RESEARCH_COST_V7: Readonly<
+  Record<1 | 2 | 3, { readonly base: number; readonly step: number }>
+> = deepFreeze({
+  1: { base: 5, step: 1 },
+  2: { base: 7, step: 3 },
+  3: { base: 12, step: 5 },
+});
+
 export function technologyResearchCostV7(
   tier: 1 | 2 | 3,
   ownedCityCount: number,
@@ -1038,9 +1052,8 @@ export function technologyResearchCostV7(
     ownedCityCount < 1
   )
     throw new RangeError("INVALID_CITY_COUNT");
-  const value =
-    BigInt(tier === 1 ? 5 : tier === 2 ? 7 : 9) +
-    BigInt(tier) * BigInt(ownedCityCount - 1);
+  const { base, step } = TECHNOLOGY_RESEARCH_COST_V7[tier];
+  const value = BigInt(base) + BigInt(step) * BigInt(ownedCityCount - 1);
   if (value > BigInt(Number.MAX_SAFE_INTEGER))
     throw new RangeError("INTEGER_OVERFLOW");
   return Number(value);

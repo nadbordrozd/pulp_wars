@@ -61,8 +61,10 @@ describe("ruleset-7 exact public-planning performance", () => {
       view: () => captured(425),
       commandHash:
         "4cdd217f92eb085b3365e9a3f7795cc32a8fcfbe52e2809327b66f5598326c86",
+      // Revision 16 caps a Market at 3 Coins; with the cap at 4 the
+      // revision-15 value 209b3326… returns.
       resultHash:
-        "209b33269c98db4bc8897a452355327a51f393fb4fbe3b36d57f2b6b27bbb82a",
+        "749e1adf0999320ae10e56db10cb45e7088e9e21658543c4e53c371db3d25f43",
       operations: 94_408,
     },
   ] as const;

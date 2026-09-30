@@ -24,6 +24,9 @@ import {
   previewWailV7,
   previewEconomicV7,
   queryLandingPreviewV7,
+  CITY_LEVEL_INCOME_CAP_V7,
+  MARKET_INCOME_CAP_V7,
+  cityLevelIncomeV7,
   queryTechnologyTreeV7,
   type CommandV7,
   type CoordV7,
@@ -3603,7 +3606,7 @@ export function cityIncomeForViewerV7(
     )?.level ?? 0;
   const before = Math.max(
     1,
-    city.level +
+    cityLevelIncomeV7(city.level) +
       (city.isCapital ? 1 : 0) +
       Number(view.naval.landTradeCityIds.includes(city.id)) +
       Number(view.naval.seaTradeCityIds.includes(city.id)) +
@@ -3645,7 +3648,7 @@ function trainingCostForViewV7(
 }
 function incomeDescription(view: PlayerViewV7): string {
   const cities = view.cities.filter((city) => city.ownerId === view.viewer.id);
-  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, land trade, sea trade, Market, population deficit, and siege effects. Connected cities grow with Roads; Commerce earns trade. City levels above 5 add no more income.`;
+  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, land trade, sea trade, Market, population deficit, and siege effects. Connected cities grow with Roads; Commerce earns trade. City income: Level (max ${CITY_LEVEL_INCOME_CAP_V7}) + capital + trade + Markets.`;
 }
 function tileCity(view: PlayerViewV7, at: CoordV7): number | null {
   const tile = view.board.tiles.find((entry) => same(entry.at, at));
@@ -3939,7 +3942,7 @@ export function economicFormulaV7(
     return "Forge: +1 per adjacent mine";
   if (improvement === "WORKSHOP" && formula === "DISTINCT_BASIC_TYPES")
     return "Workshop: grows with varied neighbors";
-  return "Market: coins from nearby industry";
+  return `Market: 1–${MARKET_INCOME_CAP_V7} Coins (1 + adjacent families, max ${MARKET_INCOME_CAP_V7})`;
 }
 export function monumentSourceForViewerV7(
   view: PlayerViewV7,

@@ -136,8 +136,8 @@ describe("ruleset-7 revision-13 headless Undead telemetry", () => {
   });
 
   it("reconciles role damage with every combat, splash, and Wail event in an AI match", () => {
-    // Seed 16 fields Lich splashes within 45 rounds (see the area-attack tests).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 16), {
+    // Seed 15 fields Lich splashes within 45 rounds (see the area-attack tests).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 15), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

@@ -787,10 +787,11 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
   }, 60_000);
 
   it("round-trips Lich splash from ordinary Normal AI play", () => {
-    // Seed 16 fields a Lich that splashes within 45 rounds of Normal play on
-    // revision-16 maps (seed 11 did on revision-14/15 maps, seed 3 on
-    // revision-13 maps).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 16), {
+    // Seed 15 fields a Lich that splashes within 45 rounds of Normal play
+    // with the revision-16 economy numbers (seed 16 did on revision-16 maps
+    // before them, seed 11 on revision-14/15 maps, seed 3 on revision-13
+    // maps).
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 15), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

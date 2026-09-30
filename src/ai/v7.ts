@@ -6112,7 +6112,7 @@ function attributableCityIncome(
             same(tile.at, item.at),
         ),
     )?.level ?? 0;
-  // Revision 14 (E2): the level term of city income is capped at 5.
+  // Revision 16: the level term of city income is capped at 4.
   return Math.max(
     1,
     Math.min(city.level, CITY_LEVEL_INCOME_CAP_V7) +
@@ -6244,8 +6244,11 @@ function targetStrategicValue(
 }
 
 const NECROMANCER_TARGET_BONUS_V7 = 12;
-/** Revision 14 (E2): the level term of city income is capped at 5. */
-const CITY_LEVEL_INCOME_CAP_V7 = 5;
+/**
+ * Revision 16 (economy deflation): the level term of city income is capped at
+ * 4 (revision 14: 5). A copy of the engine's constant in `economy.ts`.
+ */
+const CITY_LEVEL_INCOME_CAP_V7 = 4;
 
 function cityFootprintFullyExplored(
   view: PlayerViewV7,

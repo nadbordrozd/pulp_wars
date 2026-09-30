@@ -1084,3 +1084,132 @@ caps across water are unaffected). Hunters approach a plaguing Lich only
 from within six tiles of a firing position and never into visible lethal
 reach, so a Lich screened by its own line is still out of reach; the main
 effect is to push sources back rather than to kill them.
+
+## 15. Revision 16c: economy deflation (`pulp_wars-4gc`)
+
+Bead `pulp_wars-4gc` applies the numeric economy deflation of
+[revision 16 section 6](../product/RULESET_7_REVISION_16.md#6-economy-deflation):
+tier-2 research costs `7 + 3(C − 1)` (was `7 + 2(C − 1)`), tier-3
+`12 + 5(C − 1)` (was `9 + 3(C − 1)`), the level term of city income is
+capped at 4 (was 5), and a Market pays `min(3, 1 + distinct adjacent
+families)` (was 4). Nothing else changes: no mechanics, and the identity
+stays `pulp-wars-poc-7r16`. The decided numbers met every section 6.4 target
+on the first full measurement, so no tuning inside the section 6.5 bounds
+was needed and the decided numbers are final. Sections 1–14 stay as
+recorded.
+
+### 15.1 Reproduction
+
+The matrix script gained telemetry that does not change play: per seat, the
+income, the Coins carried into the turn (before income), and the
+technologies researched at rounds 10, 20, 30, 40, and 50 (round 50 and the
+technology counts are new), the tree size on the map (23, or 20 on Dry
+Land), and the round in which the seat completed its tree. The summary adds
+`seatEconomy.all` (every 1v1 seat) and a `treeCompletion` block
+(distribution over completing seats, earliest round, completing share).
+
+**Before is revision 16b, not revision 15.** It is commit `cc5c184`
+(revision 16a maps and 16b boats with the old economy numbers) plus this
+bead's matrix script, so the comparison isolates the economy numbers from
+the 16a map changes and the 16b boat rules, both of which had already moved
+the baselines. After is this bead's tree. Both runs use identical seeds.
+
+```bash
+# After (this bead):
+npm run balance:ruleset7-undead -- --jobs 8 --output docs/validation/RULESET_7_UNDEAD_BALANCE_R16C_AFTER.json --detail-output after-detail.json
+npm run balance:ruleset7-undead -- --jobs 8 --sizes 20 --seeds 3 --max-rounds 80 --pairings HH --multi-seeds 0 --output docs/validation/RULESET_7_UNDEAD_BALANCE_R16C_20X20_AFTER.json --detail-output after-20-detail.json
+# Before: the same two commands on a copy of cc5c184 (git archive cc5c184)
+# with this bead's scripts/ruleset7-undead-balance-matrix.ts, writing
+# RULESET_7_UNDEAD_BALANCE_R16C_BEFORE.json and
+# RULESET_7_UNDEAD_BALANCE_R16C_20X20_BEFORE.json
+```
+
+Outputs: full matrix [before](RULESET_7_UNDEAD_BALANCE_R16C_BEFORE.json) and
+[after](RULESET_7_UNDEAD_BALANCE_R16C_AFTER.json) (seeds 0–29 of every 1v1
+cell, 1,200 games, 150-round cap, plus the four-seat extra of 40 games);
+20 × 20 check [before](RULESET_7_UNDEAD_BALANCE_R16C_20X20_BEFORE.json) and
+[after](RULESET_7_UNDEAD_BALANCE_R16C_20X20_AFTER.json) (Human mirror, seeds
+0–2 of each map type, 15 games, 80-round cap). Wall time 2,348 s and 475 s
+before, 2,230 s and 462 s after, with `--jobs 8` on a 10-core laptop. No run
+had an error, stall, or exception. The p90 values and the game-reach counts
+come from the `--detail-output` files with a scratch summarizer.
+
+"Income at round R" and "Coins carried into round R" average the seats that
+had a turn in round R, so later rounds describe the longer games only (1v1:
+313 games reached round 40 before, 387 after). "Completion round" is over
+the seats that completed the whole tree.
+
+### 15.2 Results
+
+| Measure (1v1 matrix, 2,400 seats)          |         Revision 16b |         Revision 16c |  Ratio |
+| ------------------------------------------ | -------------------: | -------------------: | -----: |
+| Income at round 10                         |                 5.36 |                 5.30 |  98.9% |
+| Income at round 20                         |                13.26 |                11.52 |  86.9% |
+| Income at round 30                         |                20.96 |                18.33 |  87.5% |
+| Income at round 40                         |                23.82 |                19.45 |  81.7% |
+| Income at round 50                         |                24.89 |                20.76 |  83.4% |
+| Technologies at round 10 / 20              |          4.09 / 8.44 |          4.10 / 7.76 |        |
+| Technologies at round 30 / 40 / 50         |   15.6 / 20.8 / 22.4 |   13.4 / 18.1 / 21.1 |        |
+| Coins carried into round 30                |                  2.4 |                  3.2 |        |
+| Coins carried into round 40 (mean / p90)   |           31.0 / 101 |             4.9 / 15 |  16.0% |
+| Coins carried into round 50 (mean / p90)   |          166.7 / 362 |           36.9 / 114 |  22.2% |
+| Seats completing the tree                  |          549 (22.9%) |          324 (13.5%) |        |
+| Completion round, median / earliest        |              38 / 28 |              47 / 36 |        |
+| Income per seat and game                   |                541.6 |                469.6 | −13.3% |
+| Research Coins per seat and game           |                147.3 |                168.3 | +14.3% |
+| Coins left at the end                      |                170.1 |                 96.8 |        |
+| Round caps (of 1,200)                      |            51 (4.3%) |            39 (3.3%) |        |
+| Round caps HU / UH / UU / HH (of 300 each) |     9 / 11 / 13 / 18 |       6 / 6 / 19 / 8 |        |
+| Decided games, mean rounds                 |                 33.6 |                 34.9 |        |
+| Undead win, mixed                          |    59.8% [55.8–63.7] |    59.7% [55.7–63.6] |        |
+| First-mover win, all 1v1                   | 50.3% (578 of 1,149) | 51.6% (599 of 1,161) |        |
+| Four-seat extra: capped (of 40)            |                   16 |                   20 |        |
+
+| Measure (20 × 20 check, 30 seats)        |            Revision 16b |            Revision 16c |           Ratio |
+| ---------------------------------------- | ----------------------: | ----------------------: | --------------: |
+| Income at round 10                       |                    6.10 |                    6.10 |          100.0% |
+| Income at round 20 / 30 / 40             |      23.3 / 51.6 / 61.4 |      16.9 / 40.3 / 47.1 | 73% / 78% / 77% |
+| Technologies at round 10 / 20 / 30 / 40  | 3.6 / 7.4 / 15.6 / 21.3 | 3.6 / 6.5 / 12.0 / 18.5 |                 |
+| Coins carried into round 40 (mean / p90) |             133.9 / 423 |                4.8 / 20 |            3.6% |
+| Coins carried into round 50 (mean / p90) |           555.7 / 1,085 |             112.3 / 312 |           20.2% |
+| Seats completing the tree                |                27 of 30 |                28 of 30 |                 |
+| Completion round, median / earliest      |                 37 / 30 |                 47 / 39 |                 |
+| Research Coins per seat and game         |                   380.8 |                   550.6 |          +44.6% |
+| Round caps (of 15, 80-round cap)         |                      11 |                      13 |                 |
+
+### 15.3 Targets (revision 16 section 6.4)
+
+| #   | Target                                                                    | Result                                                                                                                   | Met |
+| --- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --- |
+| T1  | Round-10 income and technologies within ±5%                               | 1v1: income 98.9%, technologies 100.2%; 20 × 20: 100.0% and 100.0%                                                       | yes |
+| T2  | Round-20 income at least 85% (1v1)                                        | 86.9% (13.26 → 11.52)                                                                                                    | yes |
+| T3  | Round-30 income 80–95% (1v1)                                              | 87.5% (20.96 → 18.33)                                                                                                    | yes |
+| T4  | Coins carried into round 40 at most 50%, 1v1 and 20 × 20                  | 1v1 16.0% (31.0 → 4.9); 20 × 20 3.6% (133.9 → 4.8)                                                                       | yes |
+| T5  | 20 × 20: Coins carried into round 50 at most 40%                          | 20.2% (555.7 → 112.3)                                                                                                    | yes |
+| T6  | Median and earliest completion at least 5 rounds later, both runs         | 1v1: median 38 → 47 (+9), earliest 28 → 36 (+8); 20 × 20: median 37 → 47 (+10), earliest 30 → 39 (+9)                    | yes |
+| T7  | Cap rate at most 3 points higher; Undead and first-mover win rates stable | Cap rate 4.3% → 3.3% (−1.0 point); Undead 59.8% → 59.7% (two-proportion z = −0.05); first mover 50.3% → 51.6% (z = 0.62) | yes |
+
+T2 has the least margin (1.9 points above its bound). No tuning was tried:
+the decided numbers meet every target, and moving any bounded parameter
+towards less deflation would only spend the T4–T6 margins.
+
+### 15.4 Observations
+
+- **The early game is untouched and the middle game is slower.** Round-10
+  income and technology counts are unchanged; from round 20 a seat has
+  about 13% less income and is 0.7–2.7 technologies behind. The scratch
+  estimate of revision 16 section 6.3 (−10%, −11%, −16% at rounds 20, 30,
+  and 40 with a 70-round cap) is close to the measured −13%, −13%, −18%.
+- **The bank no longer runs away by round 40,** and at round 50 it is about
+  a fifth of what it was. On 20 × 20 it still grows once the tree is done
+  (112 Coins carried into round 50, p90 312): the late-surplus concern of
+  revision 16 section 12 remains.
+- **Fewer seats finish the tree** (1v1: 22.9% → 13.5% of seats) and those
+  that do finish about nine rounds later. Research takes a larger share of
+  a smaller income (+14% research Coins per 1v1 seat, +45% on 20 × 20).
+- **Game length and balance hold.** Decided 1v1 games are 1.3 rounds
+  longer; fewer 1v1 games reach the 150-round cap overall (the Undead
+  mirror rises from 13 to 19, the Human mirror falls from 18 to 8). On
+  20 × 20 (80-round cap) 13 of 15 games cap instead of 11, and the
+  four-seat extra caps 20 of 40 instead of 16; both are small samples with
+  long games and are not targets.

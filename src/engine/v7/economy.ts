@@ -168,22 +168,26 @@ export function isCityBesiegedV7(
 }
 
 /**
- * Revision 14 (E2): the level term of city income is capped at 5; levels 6+
- * still grant rewards and capacity.
+ * Revision 16 (economy deflation): the level term of city income is capped at
+ * 4 (revision 14 E2 capped it at 5); levels 5+ still grant rewards, capacity,
+ * and Juggernauts.
  */
-export const CITY_LEVEL_INCOME_CAP_V7 = 5;
+export const CITY_LEVEL_INCOME_CAP_V7 = 4;
 
-/** Revision 14 (E2): the level term of a city's income. */
+/** The level term of a city's income. */
 export function cityLevelIncomeV7(level: number): number {
   return Math.min(level, CITY_LEVEL_INCOME_CAP_V7);
 }
 
 /**
- * Revision 14 (E2): one Market pays `min(4, 1 + distinct adjacent families)`
- * Coins; Commerce no longer doubles it.
+ * Revision 16 (economy deflation): one Market pays at most 3 Coins (revision
+ * 14 E2: 4). Commerce does not double it (revision 14).
  */
+export const MARKET_INCOME_CAP_V7 = 3;
+
+/** One Market pays `min(3, 1 + distinct adjacent families)` Coins. */
 export function marketCoinsV7(marketIncome: number): number {
-  return Math.min(4, marketIncome);
+  return Math.min(MARKET_INCOME_CAP_V7, marketIncome);
 }
 
 export function marketIncomeForCityV7(
