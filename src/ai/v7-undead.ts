@@ -31,6 +31,8 @@ export const RAISE_DEAD_SKELETON_VALUE_V7 = 14;
 export const NECROMANCER_GRAVE_REACH_V7 = 3;
 /** Devour heals at least this much before a Ghoul spends its action on it. */
 export const DEVOUR_MINIMUM_HEAL_V7 = 3;
+/** A 10-HP Zombie rising (Infect or Bitten): Zombie cost 3 x 4 + 10 HP. */
+export const BITTEN_RISING_VALUE_V7 = 22;
 
 /** True when any seat is Undead; every Undead heuristic is gated on it. */
 export function undeadMatchForPolicyV7(view: PlayerViewV7): boolean {
@@ -168,6 +170,14 @@ export function raiseDeadCountV7(view: PlayerViewV7, unitId: UnitId): number {
   return previewRaiseDeadV7(view, unitId)?.graves.length ?? 0;
 }
 
+/** The Graves an offered Raise Dead raises (public preview), else none. */
+export function raiseDeadGravesV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): readonly CoordV7[] {
+  return previewRaiseDeadV7(view, unitId)?.graves ?? [];
+}
+
 /** Exact Devour heal (public preview), or null when Devour is not offered. */
 export function devourHealV7(
   view: PlayerViewV7,
@@ -251,6 +261,7 @@ export function offeredWailSummaryV7(
       damage: target.damage,
       dies: target.dies,
       leavesGrave: target.leavesGrave,
+      bittenRises: target.bittenRises,
     })),
     unitValue,
   );
@@ -272,14 +283,21 @@ export function projectedWailSummaryV7(
     view,
     publicWailTargetsV7(view, moved).map((target) => {
       const unit = view.units.find((item) => item.id === target.unitId);
+      const bittenRises =
+        target.dies &&
+        unit !== undefined &&
+        unit.form === "LAND" &&
+        view.bitten.some((entry) => entry.unitId === unit.id);
       return {
         unitId: target.unitId,
         damage: target.damage,
         dies: target.dies,
         leavesGrave:
           target.dies &&
+          !bittenRises &&
           unit !== undefined &&
           publicWailLeavesGraveV7(view, unit),
+        bittenRises,
       };
     }),
     unitValue,
@@ -293,6 +311,7 @@ function summarizeWail(
     readonly damage: number;
     readonly dies: boolean;
     readonly leavesGrave: boolean;
+    readonly bittenRises: boolean;
   }[],
   unitValue: (unit: PublicUnitV7) => number,
 ): WailSummaryV7 {
@@ -307,6 +326,16 @@ function summarizeWail(
     graves += Number(target.leavesGrave);
     value += 10 * target.damage + 20 * Number(target.dies);
     value += 4 * Number(target.leavesGrave);
+    // Revision 14: a bitten victim rises as its biter's Zombie.
+    if (
+      target.bittenRises &&
+      view.bitten.some(
+        (entry) =>
+          entry.unitId === target.unitId &&
+          entry.biterPlayerId === view.viewer.id,
+      )
+    )
+      value += BITTEN_RISING_VALUE_V7;
     if (unit !== undefined && unit.hp > 0)
       value += target.dies
         ? unitValue(unit)
@@ -338,4 +367,215 @@ function chebyshev(left: CoordV7, right: CoordV7): number {
 
 function same(left: CoordV7, right: CoordV7): boolean {
   return left.x === right.x && left.y === right.y;
+}
+
+// ---------------------------------------------------------------------------
+// Revision 14 (`pulp_wars-vkq.18`): Plague, Bitten, Tend cures.
+//
+// Every helper reads only the public statuses (`view.plagued`, whose source
+// is named only for a Lich the viewer sees, and `view.bitten`) and visible
+// units. The policy calls them only in a match with an Undead seat; without
+// one both status lists are empty and every value below is 0.
+
+/** Public Plague and Bitten statuses of the view, indexed once per decision. */
+export interface PublicAfflictionsV7 {
+  readonly plagued: ReadonlySet<UnitId>;
+  /** Visible plagued units by their visible source Lich. */
+  readonly plaguedBySource: ReadonlyMap<UnitId, readonly UnitId[]>;
+  /** Bitten units and the player their death would rise for. */
+  readonly bitten: ReadonlyMap<UnitId, PlayerId>;
+}
+
+export function publicAfflictionsV7(view: PlayerViewV7): PublicAfflictionsV7 {
+  const plagued = new Set<UnitId>();
+  const plaguedBySource = new Map<UnitId, UnitId[]>();
+  for (const entry of view.plagued) {
+    plagued.add(entry.unitId);
+    if (entry.sourceUnitId === null) continue;
+    const list = plaguedBySource.get(entry.sourceUnitId) ?? [];
+    list.push(entry.unitId);
+    plaguedBySource.set(entry.sourceUnitId, list);
+  }
+  const bitten = new Map<UnitId, PlayerId>();
+  for (const entry of view.bitten)
+    bitten.set(entry.unitId, entry.biterPlayerId);
+  return { plagued, plaguedBySource, bitten };
+}
+
+/** One newly plagued hostile unit: about 2 damage a turn for a few turns. */
+export const PLAGUE_UNIT_VALUE_V7 = 8;
+/** Each healthy living neighbour a new Plague may spread to next turn. */
+export const PLAGUE_SPREAD_VALUE_V7 = 4;
+/** A healthy own (or allied) living unit adjacent to a plagued unit. */
+export const PLAGUE_EXPOSURE_COST_V7 = 12;
+/** Each visible plagued living unit a Lich sources (killing it cures all). */
+export const PLAGUE_SOURCE_TARGET_VALUE_V7 = 10;
+/** A new bite on a hostile unit: its later death may rise as a Zombie. */
+export const BITE_VALUE_V7 = 6;
+/** Tend Wounded cure values (in immediate-value units, 8 per HP). */
+export const TEND_PLAGUE_CURE_VALUE_V7 = 30;
+export const TEND_BITTEN_CURE_VALUE_V7 = 14;
+
+/**
+ * Value of the Plague an attack newly applies (`preview.plagued`): each
+ * hostile living victim is worth a few turns of damage plus its healthy
+ * hostile living neighbours (spread next turn); spread onto the viewer's own
+ * or allied living units (Cooperative allies) and plaguing a friendly unit
+ * cost as much. Returns the value and the number of hostile victims.
+ */
+export function plagueApplicationValueV7(
+  view: PlayerViewV7,
+  afflictions: PublicAfflictionsV7,
+  newlyPlagued: readonly UnitId[],
+  hostile: (ownerId: PlayerId) => boolean,
+): { readonly value: number; readonly hostileVictims: number } {
+  if (newlyPlagued.length === 0) return { value: 0, hostileVictims: 0 };
+  const fresh = new Set(newlyPlagued);
+  let value = 0;
+  let hostileVictims = 0;
+  for (const unitId of newlyPlagued) {
+    const victim = view.units.find((unit) => unit.id === unitId);
+    if (victim === undefined) continue;
+    if (!hostile(victim.ownerId)) {
+      value -= PLAGUE_UNIT_VALUE_V7 + PLAGUE_SPREAD_VALUE_V7;
+      continue;
+    }
+    hostileVictims += 1;
+    let hostileNeighbours = 0;
+    let friendlyNeighbours = 0;
+    for (const unit of view.units) {
+      if (
+        unit.id === victim.id ||
+        chebyshev(unit.at, victim.at) !== 1 ||
+        fresh.has(unit.id) ||
+        afflictions.plagued.has(unit.id) ||
+        !isLivingOwnerV7(view, unit.ownerId)
+      )
+        continue;
+      if (hostile(unit.ownerId)) hostileNeighbours += 1;
+      else friendlyNeighbours += 1;
+    }
+    value +=
+      PLAGUE_UNIT_VALUE_V7 +
+      PLAGUE_SPREAD_VALUE_V7 * Math.min(4, hostileNeighbours) -
+      PLAGUE_EXPOSURE_COST_V7 * Math.min(4, friendlyNeighbours);
+  }
+  return { value, hostileVictims };
+}
+
+/**
+ * Visible plagued units a Lich sources whose owner `counts` (for a living
+ * viewer: its own and allied units; the Lich's death cures them all).
+ */
+export function plagueSourceVictimsV7(
+  view: PlayerViewV7,
+  afflictions: PublicAfflictionsV7,
+  lichId: UnitId,
+  counts: (ownerId: PlayerId) => boolean,
+): number {
+  const victims = afflictions.plaguedBySource.get(lichId);
+  if (victims === undefined) return 0;
+  let total = 0;
+  for (const unitId of victims) {
+    const unit = view.units.find((item) => item.id === unitId);
+    if (unit !== undefined && counts(unit.ownerId)) total += 1;
+  }
+  return total;
+}
+
+/**
+ * Plagued visible units adjacent to `at`, other than `excluded`. A healthy
+ * living unit that ends its turn there is plagued at that plagued unit's
+ * owner's next Start Turn (spread ignores ownership).
+ */
+export function plaguedNeighboursV7(
+  view: PlayerViewV7,
+  afflictions: PublicAfflictionsV7,
+  at: CoordV7,
+  excluded: UnitId,
+): number {
+  if (afflictions.plagued.size === 0) return 0;
+  let total = 0;
+  for (const unit of view.units)
+    if (
+      unit.id !== excluded &&
+      afflictions.plagued.has(unit.id) &&
+      chebyshev(unit.at, at) === 1
+    )
+      total += 1;
+  return total;
+}
+
+/**
+ * Healthy living units a plagued unit standing on `at` would spread to,
+ * counting only units whose owner `counts` accepts.
+ */
+export function healthyLivingNeighboursV7(
+  view: PlayerViewV7,
+  afflictions: PublicAfflictionsV7,
+  at: CoordV7,
+  excluded: UnitId,
+  counts: (ownerId: PlayerId) => boolean,
+): number {
+  let total = 0;
+  for (const unit of view.units)
+    if (
+      unit.id !== excluded &&
+      chebyshev(unit.at, at) === 1 &&
+      !afflictions.plagued.has(unit.id) &&
+      isLivingOwnerV7(view, unit.ownerId) &&
+      counts(unit.ownerId)
+    )
+      total += 1;
+  return total;
+}
+
+/** A bite on `unitId` by `biterPlayerId` that is not already recorded. */
+export function isNewBiteV7(
+  afflictions: PublicAfflictionsV7,
+  unitId: UnitId,
+  biterPlayerId: PlayerId,
+): boolean {
+  return afflictions.bitten.get(unitId) !== biterPlayerId;
+}
+
+/** What an own Captain's Tend Wounded heals and cures. */
+export interface TendValueV7 {
+  readonly heal: number;
+  readonly plagueCures: number;
+  readonly bittenCures: number;
+}
+
+/**
+ * Public Tend Wounded results of an own Captain standing on `at`, exactly as
+ * `previewTendWoundedV7` computes them for the offered command (without
+ * regenerating commands): adjacent own land units, other than the Captain
+ * and not tended this turn, that are damaged, plagued, or bitten.
+ */
+export function publicTendValueV7(
+  view: PlayerViewV7,
+  afflictions: PublicAfflictionsV7,
+  captain: PublicUnitV7,
+  at: CoordV7 = captain.at,
+): TendValueV7 {
+  let heal = 0;
+  let plagueCures = 0;
+  let bittenCures = 0;
+  for (const target of view.units) {
+    if (
+      target.ownerId !== captain.ownerId ||
+      target.form !== "LAND" ||
+      target.id === captain.id ||
+      target.activation.tendedThisTurn ||
+      chebyshev(target.at, at) !== 1
+    )
+      continue;
+    const plagued = afflictions.plagued.has(target.id);
+    const bitten = afflictions.bitten.has(target.id);
+    if (target.hp >= target.maxHp && !plagued && !bitten) continue;
+    heal += Math.min(2, target.maxHp - target.hp);
+    plagueCures += Number(plagued);
+    bittenCures += Number(bitten);
+  }
+  return { heal, plagueCures, bittenCures };
 }

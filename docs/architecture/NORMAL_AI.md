@@ -4,9 +4,8 @@
 
 The production policy consumes only the legal public schema, commands, and
 previews under `pulp-wars-poc-7r14`. Role facts resolve through the owner's
-faction registration; the revision-13 Undead tactics are summarized below.
-The revision-14 Plague, Bitten, Tend cures, and unanswered Vampire attacks
-are not yet valued by the policy (`pulp_wars-vkq.18`).
+faction registration; the revision-13 Undead tactics and the revision-14
+Plague, Bitten, Tend-cure, and Vampire play are summarized below.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
@@ -159,6 +158,90 @@ Against Undead (any seat in such a match):
   reachable tile (for a living viewer), Lich splash onto a unit next to a
   friendly unit the Lich can target, and a lethal Zombie hit counting the
   victim's HP again (the rising).
+
+## Revision-14 Plague, Bitten, and Vampire play (`pulp_wars-vkq.18`)
+
+Revision-14 heuristics share the revision-13 gate (a match with an Undead
+seat) and read only the public statuses `view.plagued` (whose source Lich is
+named only when the viewer sees it) and `view.bitten`, visible units, and the
+public previews (`queryCombatPreviewV7` `plagued`, `attackerBitten`,
+`defenderBitten`, `attackerBittenRises`, `defenderBittenRises`; the Wail
+preview's `bittenRises`; Tend results computed exactly as
+`previewTendWoundedV7`). They add no PRNG use, no elapsed-time input, and no
+work units; every helper is a bounded scan of the view inside an existing
+scoring step (`src/ai/v7-undead.ts`, revision-14 section).
+
+As Undead:
+
+- **Plague targeting.** An attack's new Plague adds 8 per hostile victim
+  plus 4 per healthy hostile living neighbour of a victim (the spread next
+  turn, at most 4 per victim), and costs 12 per healthy own or allied living
+  neighbour (Cooperative allies are living) and 12 for any friendly victim.
+  A volley that plagues three or more hostile units takes priority 1182
+  (above a plain kill, 1180).
+- **Lich care.** A Lich never moves into visible lethal reach unless that is
+  strictly safer than staying (fresh Liches stepping toward their siege
+  objective fed enemy Catapults one Lich a turn in long games). A Lich that is
+  the visible source of two or more plagued hostile units (its death cures
+  them all) also retreats from lethal reach at priority 1150 (+8 per sourced
+  unit).
+- **Bitten.** A new bite on a hostile unit adds 6 plus a fifth of its target
+  value, and a new bite also counts 12 in the harm test so a trading Zombie
+  attack is not rejected. A death that rises for the viewer or an ally (the
+  preview's `*BittenRises`, splash deaths of bitten units, Wail
+  `bittenRises`) is worth an Infect rising (22); one that rises for a hostile
+  player costs 22. A death that rises leaves no Grave, so it earns no Grave
+  value.
+- **Raise Dead** counts only Graves whose 5-HP Skeleton would survive the
+  visible enemies' next turn (or stands beside a threatened own city); with
+  none it is not used, and each doomed Skeleton costs 6. The Necromancer's
+  Grave approach uses the same survivable count. This ends the revision-13
+  feeding loop.
+- **Training.** Lich +16 (the vkq.10 L2 bias) while fewer than three own
+  Liches exist, else the revision-13 +4 (uncapped, the bias made the Lich the
+  best base value and produced armies of dozens of Liches in long games); a
+  Lich is not preferred in a city whose center is inside visible lethal reach
+  for a fresh Lich (−40; Liches trained there died before acting). Vampire
+  +20 while none is owned and the treasury holds at least 18 Coins.
+
+Every living seat in such a match:
+
+- **Kill the source.** A hostile Lich's target value gains 10 per visible
+  plagued own or allied unit it sources (at most 6), and a kill of such a
+  Lich takes priority 1285.
+- **Tend Wounded** values each Plague cure 30 and each Bitten cure 14 (in
+  immediate-value units, 8 per HP healed); a plague cure takes priority 1262
+  (1272 for two or more), a Bitten-only cure 1175. A Captain with an unused
+  action moves where it cures more (Plague counts double) at priority 1160
+  when the tile is outside visible lethal reach.
+- **Spread discipline.** A healthy unit never ends a routine move (priority
+  below 1100) next to a plagued unit, and one standing next to a plagued unit
+  moves away at priority 1150 when that is no more dangerous; a plagued unit
+  moves away from healthy own and allied units the same way and toward an own
+  Captain that can still tend (1155). Units on an own city center stay.
+- **Bites.** A living attacker that a surviving Zombie would bite costs
+  8 plus a quarter of its retained value (halved when an own Captain within 3
+  tiles can cure it); in the harm test the cost counts double, so a melee chip
+  on a Zombie needs a real exchange advantage. Ranged fire draws no
+  retaliation and no bite.
+- **Training.** A Captain gains 6 per afflicted own unit (at most 18) while
+  the seat owns none. Knights get no bias: in measurement, a rich-treasury
+  Knight bias large enough to matter replaced Catapults with Knights that
+  fed the Zombies bites and Infect risings.
+
+AI fixes from the vkq.10 report, applied in Undead matches only so that
+all-Human decisions stay pinned: a city whose center is garrisoned can only
+offer naval training, which filled spare capacity with Patrol Boats (about
+15 per game), so beyond two owned naval units the policy trains only the
+naval role its naval plan asks for.
+
+Changes for every match: the income estimate caps the level term at 5
+(revision-14 E2), and the Land Grant neutral-tile count excludes explored
+tiles whose territory owner is known although the city is not visible (the
+`pulp_wars-9jp` stale-view case). Neither changes a pinned all-Human decision
+hash; together they change 48 of 300 Human-mirror matrix games without moving
+the aggregate results
+([balance report §11.4](../validation/RULESET_7_UNDEAD_BALANCE.md#114-all-human-decisions)).
 
 ## Revision-8 merged industry and processor adjacency
 

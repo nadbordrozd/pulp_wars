@@ -666,9 +666,10 @@ them.
   the income tooltip in `src/render/dom/app-view-v7.ts`) and does not yet show
   Plague, Bitten, the new events, or `UNANSWERED`; this is
   `pulp_wars-vkq.19`.
-- **Normal AI** does not yet value Plague, Bitten, Tend cures, or unanswered
-  Vampire attacks, and its income estimate in `src/ai/v7.ts` still uses the
-  uncapped level term; this is `pulp_wars-vkq.18`.
+- **Normal AI** values Plague, Bitten, Tend cures, and unanswered Vampire
+  attacks and caps its income estimate's level term since
+  `pulp_wars-vkq.18` ([Normal AI](../architecture/NORMAL_AI.md#revision-14-plague-bitten-and-vampire-play-pulp_wars-vkq18);
+  measured in the [balance report](../validation/RULESET_7_UNDEAD_BALANCE.md#11-revision-14)).
 - **Plague on allies.** Spread ignores ownership, so a Lich next to its own
   living allies (Cooperative mode) can plague them; this is literal to the
   design and worth watching.

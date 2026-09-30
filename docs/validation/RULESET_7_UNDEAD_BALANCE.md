@@ -576,3 +576,179 @@ revision as VL, then re-run this matrix; the cap rate is the number to watch.
   came from a treasure chest) and builds 15 Patrol Boats per long game.
 - `pulp_wars-1mc` (last-city stall) causes about 80% of round caps in every
   pairing.
+
+## 11. Revision 14
+
+Bead `pulp_wars-vkq.18`: the Normal AI update for revision 14 (Plague,
+Bitten, Tend cures, unanswered Vampire attacks, E2 income; see
+[Normal AI](../architecture/NORMAL_AI.md#revision-14-plague-bitten-and-vampire-play-pulp_wars-vkq18))
+measured with the full section-2 matrix before and after. Sections 1–10
+above describe revision 13 and stay as recorded.
+
+### 11.1 Reproduction
+
+Same parameters as section 2 (seeds 0–29 per 1v1 cell, 1,200 games; four-seat
+seeds 0–3, 40 games; caps 150/120 rounds), revision-14 rules on both sides
+of the comparison; only the policy differs. The matrix script gained
+telemetry that does not change play: Coins carried into and income at round
+40, and per-match Plague duration (`plague`: rounds with Start Turn Plague
+damage, the longest unbroken run of such rounds, distinct plagued units, the
+most Plague turns of one unit, and units plagued on five or more turns).
+
+```bash
+# After (this bead's policy):
+npm run balance:ruleset7-undead -- --jobs 6 --output docs/validation/RULESET_7_UNDEAD_BALANCE_R14_AFTER.json --markdown
+# Before: the same command on a tree whose src/ai is main fa8d3b1's
+# (git checkout fa8d3b1 -- src/ai), writing RULESET_7_UNDEAD_BALANCE_R14_BEFORE.json
+```
+
+Outputs: [before](RULESET_7_UNDEAD_BALANCE_R14_BEFORE.json) and
+[after](RULESET_7_UNDEAD_BALANCE_R14_AFTER.json) (5,878 s and 4,183 s wall
+with `--jobs 6` on a shared 10-core laptop). The per-game tables below come
+from the script's `--detail-output` file with a scratch summarizer.
+
+### 11.2 Results
+
+Decided games; 95% Wilson intervals.
+
+| Pairing | Undead win before | Undead win after      | Seat-0 win before | Seat-0 win after | Decided rounds mean/median/p90 | Cap rate      |
+| ------- | ----------------- | --------------------- | ----------------- | ---------------- | ------------------------------ | ------------- |
+| HU      | 58% [52–64]       | 62% [56–68] (162/262) | 42% [36–48]       | 38% [32–44]      | 36.9/34/53 → 38.2/35/63        | 15.0% → 12.7% |
+| UH      | 62% [56–68]       | 66% [60–72] (168/254) | 62% [56–68]       | 66% [60–72]      | 36.0/32/55 → 35.7/32/55        | 21.3% → 15.3% |
+| UU      | —                 | —                     | 52% [46–58]       | 50% [44–56]      | 37.1/33/58 → 37.4/33/60        | 14.3% → 9.3%  |
+| HH      | —                 | —                     | 56% [49–62]       | 55% [49–61]      | 38.1/35/58 → 38.1/34/59        | 21.3% → 21.0% |
+| Mixed   | 60% [56–64]       | 64% [60–68] (330/516) |                   |                  |                                | 109 → 84 caps |
+
+No stalls in either run. The policy errors are the known stale-view
+`LAND_GRANT` rejection (`pulp_wars-9jp`, fixed in the query separately): 5
+before, 6 after (the extra one is `HH` Lakes 11 seed 29, an all-Human game
+changed by the E2 and Land Grant scoring, section 11.4). Four-seat: 25 → 23
+of 40 capped.
+
+Per mixed 1v1 game (600 games):
+
+| Measure                                                       |                     Before |                        After |
+| ------------------------------------------------------------- | -------------------------: | ---------------------------: |
+| Human Guards / Fighters / Catapults / Captains / Knights      | 12.6 / 7.2 / 4.7 / 0.1 / 0 |   13.7 / 6.9 / 5.6 / 1.3 / 0 |
+| Undead Zombies / Skeletons / Liches / Vampires / Necromancers | 18.5 / 5.2 / 0.9 / 0 / 2.0 | 15.5 / 5.1 / 2.5 / 1.4 / 1.7 |
+| Patrol Boats, Human / Undead                                  |                18.5 / 19.7 |                  10.4 / 11.5 |
+| Units plagued by Lich attacks / by spread                     |                  3.4 / 8.2 |                    8.3 / 8.8 |
+| Plagued unit-turns (Start Turn damage entries)                |                       83.4 |                         55.9 |
+| Plague turns per plagued unit                                 |                        8.9 |                          5.2 |
+| Most plagued at once, mean / p90 / max                        |             11.1 / 30 / 44 |                6.9 / 17 / 30 |
+| Rounds with Plague damage, mean / p90                         |                  26.4 / 91 |                    25.7 / 99 |
+| Plague deaths; cleared by a dead Lich; cured by Tend          |              2.7; 2.5; 0.0 |                3.4; 2.2; 3.0 |
+| Games with Plague                                             |                 152 of 600 |                   239 of 600 |
+| Bites / Bitten risings / Bitten cures                         |            6.0 / 0.9 / 0.0 |              4.4 / 1.2 / 0.2 |
+| Infect risings                                                |                        2.9 |                          2.2 |
+| Unanswered Vampire attacks                                    |                        0.8 |                          1.2 |
+| Raise Dead Skeletons raised / lost                            |                11.9 / 10.6 |                    4.2 / 3.0 |
+| Lich splash damage                                            |                       32.1 |                         41.5 |
+
+Economy per seat (Coins carried into the turn before income, and that turn's
+income):
+
+| Measure                       | Human (mixed)                           | Undead (mixed)                          | Human mirror              | Undead mirror                           |
+| ----------------------------- | --------------------------------------- | --------------------------------------- | ------------------------- | --------------------------------------- |
+| Carried into round 20 / 30    | 1.5 / 2.2 → 1.5 / 2.3                   | 1.5 / 2.4 → 1.4 / 2.5                   | 1.4 / 2.3 → same          | 1.3 / 2.2 → 1.4 / 2.4                   |
+| Carried into round 40         | 34.4 → 45.1                             | 51.1 → 43.8                             | 36.0 → 36.3               | 41.4 → 39.5                             |
+| Income at rounds 20 / 30 / 40 | 12.2 / 19.7 / 24.5 → 12.4 / 19.9 / 25.2 | 13.8 / 22.2 / 25.5 → 13.8 / 23.1 / 24.8 | 13.1 / 21.0 / 24.3 → same | 12.9 / 20.8 / 24.4 → 12.9 / 21.3 / 25.0 |
+| Income over the game          | 963 → 899                               | 1,067 → 935                             | 1,140 → 1,123             | 897 → 770                               |
+| Coins at the end              | 486 → 446                               | 579 → 463                               | 607 → 595                 | 454 → 354                               |
+
+Round-40 rows cover the seats whose game reached round 40 (mixed Human seats:
+265 before, 249 after).
+
+What changed:
+
+- **Composition.** The Undead now train Liches (0.9 → 2.5 per game; 2.1 per
+  seat in the Undead mirror) and Vampires (0 → 1.4) and fewer Zombies (18.5 →
+  15.5). Humans train a Captain when afflicted (0.1 → 1.3) and cure 3.0
+  Plagues per game. Patrol Boats fall by 44% in every Undead match; the Human
+  mirror is deliberately untouched (18.3 per seat).
+- **Plague extent is down; duration in stalls is not.** Plagued unit-turns
+  fall by a third and the most plagued at once by 38% (p90 30 → 17), because
+  Humans separate from plagued units, tend, and kill source Liches. But most
+  Plague still happens in round-capped games (78% of plagued unit-turns
+  after, 86% before): in the 84 capped mixed games Plague damage resolves in
+  44% of all rounds (311 plagued unit-turns and 38 Lich applications per
+  game), against 17% of rounds and 14 unit-turns in decided games.
+- **Skeleton feeding loop fixed.** Raise Dead Skeletons fall from 11.9 to 4.2
+  per game and their losses from 10.6 to 3.0.
+- **Undead win rate** rises from 60% to 64% [60–68]; both seat orders move by
+  about 4 points and the intervals overlap, so this is suggestive rather than
+  significant. The Undead edge is now larger than the first-mover edge (Human
+  mirror 55%). The revision-14 spec defers Undead fragility tuning to this
+  measurement; it is worth a follow-up, not part of this AI bead.
+- **Caps** fall in the mixed and Undead-mirror pairings (109 → 84 and 43 → 28) and are unchanged in the Human mirror; the remaining caps are the
+  `pulp_wars-1mc` last-city stall.
+
+### 11.3 Residual AI weaknesses
+
+- **Siege replacement loops in stalled games.** A Lich no longer walks into
+  visible lethal reach and is not trained on a center inside it, but in 36 of
+  900 Undead 1v1 games (all long; 11 above 30 Liches, up to 75 across both
+  seats of an Undead mirror) Liches still die one after another, mostly to
+  Battleship splash on naval maps: the policy's splash threat covers Lich
+  splash only, not Battleship splash.
+- **Trained Vampires trade one unanswered hit for their life** in stalled
+  games (842 trained; 654 of all 1,033 Vampires died having attacked at most
+  once, against 31 of 186 treasure Vampires before): the policy attacks from
+  a tile inside enemy Catapult reach. A follow-up could require a kill or a
+  survivable tile for a Vampire's attack.
+- **Humans do not hunt a source Lich beyond range.** A plague-source Lich is
+  a priority target (10 per sourced unit, kill priority 1285), but no unit
+  moves toward it, so Plague is cleared by a Lich death only 2.2 times per
+  game.
+
+### 11.4 All-Human decisions
+
+Two policy changes reach all-Human play: the income estimate's level term is
+capped at 5 (E2, which the rules already apply), and the Land Grant neutral
+count excludes explored tiles whose territory owner is known although the
+city is hidden (the `pulp_wars-9jp` stale-view case). In the `HH` pairing 48
+of 300 final state hashes differ from the before run. Replaying those 48
+with one change reverted at a time, 27 return to their before hash without
+the E2 cap, 18 without the Land Grant fix, and 3 only with both reverted, so
+no other change reaches all-Human play. Aggregate Human-mirror results do
+not move (seat 0 56% → 55%, caps 64 → 63). Every pinned decision hash in the
+Normal-policy, tactical, revision-12, and revision-13 parity tests is
+unchanged; every other policy change is gated on a match with an Undead
+seat.
+
+### 11.5 Plague tuning proposal (not applied)
+
+The user does not want a prolonged static grind. With the AI counterplay,
+Plague is short where the game moves (decided games: 14 plagued unit-turns
+per game, Plague in 17% of rounds) and long where it does not: in stalled,
+round-capped games a Lich re-plagues the same static line every turn, so
+Plague is present in 44% of rounds and the longest unbroken Plague run
+reaches 123 rounds.
+
+Measured proposal **P1: Plague lasts three of its owner's Start Turns (at
+most 6 damage), and a unit spreads it only at its first plagued Start Turn.**
+Throwaway rule change (a per-entry turn counter in `plagued`) with this
+bead's policy, `HU` and `UH` seeds 0–11 (240 games), against the same games
+under the current rule:
+
+| Measure (per mixed game)                      |  Current rule |            P1 |
+| --------------------------------------------- | ------------: | ------------: |
+| Undead win (decided)                          |   62% [56–69] |   61% [54–68] |
+| Round caps (of 240); decided game mean rounds |      30; 36.0 |      31; 35.4 |
+| Plagued unit-turns                            |          58.2 |          37.4 |
+| Plague turns per plagued unit                 |           5.6 |           3.5 |
+| Most plagued at once, mean / p90 / max        | 7.5 / 17 / 28 | 6.3 / 13 / 25 |
+| Rounds with Plague, mean / p90                |    28.5 / 107 |     25.3 / 85 |
+| Lich applications per capped game             |          42.8 |          60.8 |
+
+P1 cuts Plague volume by 36% and bounds every infection to six damage
+without changing win rates, caps, or game length; spread still sweeps a
+clump once, which keeps the dramatic moment. It cannot stop a Lich from
+re-applying Plague every turn to a static line (applications in capped games
+rise), so the stall itself remains the `pulp_wars-1mc` problem. Spreading
+only to the plagued unit's own owner, the other candidate, changes nothing
+in 1v1, where only one living seat exists. A three-turn limit with
+unrestricted spread (measured on an earlier build of this policy) behaved
+like P1 within noise. Recommendation: adopt P1 in a ruleset revision (it adds
+a state field, so it needs an identity and schema change) and fix
+`pulp_wars-1mc` for the stall.

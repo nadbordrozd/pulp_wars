@@ -117,6 +117,37 @@ export interface MatrixEntry extends MatrixCell {
   readonly trench: Partial<Record<FactionIdV7, TrenchStats>>;
   /** Round of the last city capture (0 when none). */
   readonly lastCaptureRound: number;
+  /** Revision 14 Plague extent and duration from the event log. */
+  readonly plague: PlagueDuration;
+}
+
+/** Plague duration statistics for one match (revision 14). */
+interface PlagueDuration {
+  /** Rounds in which any Start Turn Plague damage resolved. */
+  rounds: number;
+  /** Longest run of consecutive such rounds. */
+  longestStreak: number;
+  /** Distinct units that took Plague damage at least once. */
+  units: number;
+  /** Most Start Turn Plague damage entries taken by one unit. */
+  longestUnitTurns: number;
+  /** Units that took Plague damage on 5 or more of their turns. */
+  unitsFivePlusTurns: number;
+  /** First and last round with Plague damage (0 when none). */
+  firstRound: number;
+  lastRound: number;
+}
+
+function emptyPlague(): PlagueDuration {
+  return {
+    rounds: 0,
+    longestStreak: 0,
+    units: 0,
+    longestUnitTurns: 0,
+    unitsFivePlusTurns: 0,
+    firstRound: 0,
+    lastRound: 0,
+  };
 }
 
 const args = process.argv.slice(2);
@@ -294,6 +325,7 @@ export function runCell(cell: MatrixCell): MatrixEntry {
     knights: analysis.knights,
     trench: analysis.trench,
     lastCaptureRound: analysis.lastCaptureRound,
+    plague: analysis.plague,
   };
 }
 
@@ -309,14 +341,16 @@ interface SeatEconomy {
   cityCaptures: number;
   citiesRound15: number | null;
   citiesRound30: number | null;
-  /** Coins carried into the seat's turn (before income) in rounds 10/20/30. */
+  /** Coins carried into the seat's turn (before income) in rounds 10–40. */
   bankRound10: number | null;
   bankRound20: number | null;
   bankRound30: number | null;
-  /** Turn income awarded in rounds 10/20/30. */
+  bankRound40: number | null;
+  /** Turn income awarded in rounds 10–40. */
   incomeRound10: number | null;
   incomeRound20: number | null;
   incomeRound30: number | null;
+  incomeRound40: number | null;
 }
 
 function emptyEconomy(): SeatEconomy {
@@ -335,9 +369,11 @@ function emptyEconomy(): SeatEconomy {
     bankRound10: null,
     bankRound20: null,
     bankRound30: null,
+    bankRound40: null,
     incomeRound10: null,
     incomeRound20: null,
     incomeRound30: null,
+    incomeRound40: null,
   };
 }
 
@@ -409,6 +445,7 @@ interface LogAnalysis {
   readonly knights: Partial<Record<FactionIdV7, KnightStats>>;
   readonly trench: Partial<Record<FactionIdV7, TrenchStats>>;
   readonly lastCaptureRound: number;
+  readonly plague: PlagueDuration;
 }
 
 /**
@@ -445,6 +482,8 @@ function analyzeLog(
   const first = state.turnOrder[0];
   let round = 1;
   let lastCaptureRound = 0;
+  const plagueRounds = new Set<number>();
+  const plagueTurnsByUnit = new Map<number, number>();
   const pendingBank = new Map<number, number>();
   const snapshotCities = (key: "citiesRound15" | "citiesRound30") => {
     for (const [playerId, economy] of seats)
@@ -513,6 +552,10 @@ function analyzeLog(
           if (round === 30) {
             economy.bankRound30 = bank;
             economy.incomeRound30 = event.totalCoins;
+          }
+          if (round === 40) {
+            economy.bankRound40 = bank;
+            economy.incomeRound40 = event.totalCoins;
           }
         }
       }
@@ -649,6 +692,14 @@ function analyzeLog(
         for (const rising of event.results)
           unitAt.set(rising.unitId, rising.at);
       if (event.kind === "UNIT_INFECTED") unitAt.set(event.unitId, event.at);
+      if (event.kind === "PLAGUE_DAMAGED" && event.results.length > 0) {
+        plagueRounds.add(round);
+        for (const entry of event.results)
+          plagueTurnsByUnit.set(
+            entry.unitId,
+            (plagueTurnsByUnit.get(entry.unitId) ?? 0) + 1,
+          );
+      }
       if (event.kind === "UNIT_DIED") {
         const stats = knightStats(event.unitId);
         if (stats !== undefined && event.cause !== "ELIMINATION") {
@@ -662,7 +713,23 @@ function analyzeLog(
       }
     }
   }
-  return { seats, knights, trench, lastCaptureRound };
+  const plague = emptyPlague();
+  const plaguedRounds = [...plagueRounds].sort((left, right) => left - right);
+  plague.rounds = plaguedRounds.length;
+  plague.firstRound = plaguedRounds[0] ?? 0;
+  plague.lastRound = plaguedRounds.at(-1) ?? 0;
+  let streak = 0;
+  for (const [index, value] of plaguedRounds.entries()) {
+    streak =
+      index > 0 && plaguedRounds[index - 1] === value - 1 ? streak + 1 : 1;
+    plague.longestStreak = Math.max(plague.longestStreak, streak);
+  }
+  plague.units = plagueTurnsByUnit.size;
+  for (const turns of plagueTurnsByUnit.values()) {
+    plague.longestUnitTurns = Math.max(plague.longestUnitTurns, turns);
+    plague.unitsFivePlusTurns += Number(turns >= 5);
+  }
+  return { seats, knights, trench, lastCaptureRound, plague };
 }
 
 const coordKey = (at: { readonly x: number; readonly y: number }) =>
@@ -1043,9 +1110,11 @@ export function summarize(entries: readonly MatrixEntry[]) {
       bankRound10: numeric("bankRound10"),
       bankRound20: numeric("bankRound20"),
       bankRound30: numeric("bankRound30"),
+      bankRound40: numeric("bankRound40"),
       incomeRound10: numeric("incomeRound10"),
       incomeRound20: numeric("incomeRound20"),
       incomeRound30: numeric("incomeRound30"),
+      incomeRound40: numeric("incomeRound40"),
       techs: numeric("techs"),
     };
   };
@@ -1089,6 +1158,40 @@ export function summarize(entries: readonly MatrixEntry[]) {
               (10 * sum(capped.map((entry) => entry.lastCaptureRound))) /
                 capped.length,
             ) / 10,
+    };
+  };
+  const plagueSummary = (group: readonly MatrixEntry[]) => {
+    const withPlague = group.filter((entry) => entry.plague.rounds > 0);
+    const meanOf = (values: readonly number[]) =>
+      values.length === 0
+        ? null
+        : Math.round((10 * sum(values)) / values.length) / 10;
+    return {
+      games: group.length,
+      gamesWithPlague: withPlague.length,
+      plaguedMaximum: stats(
+        withPlague.map((entry) => entry.undead.plaguedMaximum),
+      ),
+      plagueRounds: stats(withPlague.map((entry) => entry.plague.rounds)),
+      longestStreak: stats(
+        withPlague.map((entry) => entry.plague.longestStreak),
+      ),
+      longestUnitTurns: stats(
+        withPlague.map((entry) => entry.plague.longestUnitTurns),
+      ),
+      plaguedUnitTurnsPerGame: meanOf(
+        group.map((entry) => entry.undead.plagueDamageEntries),
+      ),
+      unitsFivePlusTurns: sum(
+        group.map((entry) => entry.plague.unitsFivePlusTurns),
+      ),
+      plaguedUnits: sum(group.map((entry) => entry.plague.units)),
+      gamesWithPlagueTwentyPlusRounds: withPlague.filter(
+        (entry) => entry.plague.rounds >= 20,
+      ).length,
+      gamesWithTenPlusPlagued: withPlague.filter(
+        (entry) => entry.undead.plaguedMaximum >= 10,
+      ).length,
     };
   };
   const multiByFaction = Object.fromEntries(
@@ -1198,6 +1301,7 @@ export function summarize(entries: readonly MatrixEntry[]) {
         0,
         ...duel.map((entry) => entry.maximumOvercapacity),
       ),
+      plague: plagueSummary(mixed),
     },
     multi: {
       games: multi.length,
@@ -1245,6 +1349,7 @@ function markdown(summary: ReturnType<typeof summarize>): string {
     "",
     `Plague (mixed): ${summary.duel.abilities.mixed.plagueApplications ?? 0} applied, ${summary.duel.abilities.mixed.plagueSpreads ?? 0} spread, ${summary.duel.abilities.mixed.plagueDamage ?? 0} damage, ${summary.duel.abilities.mixed.plagueDeaths ?? 0} deaths, ${summary.duel.abilities.mixed.plagueCleared ?? 0} cleared, ${summary.duel.abilities.mixed.plagueCures ?? 0} cured; games with Plague ${summary.duel.abilities.gamesWithPlague}/${summary.duel.abilities.undeadGames}`,
     `Bitten (mixed): ${summary.duel.abilities.mixed.bites ?? 0} bites, ${summary.duel.abilities.mixed.bittenRisings ?? 0} risings, ${summary.duel.abilities.mixed.bittenCures ?? 0} cured; games with a Bitten rising ${summary.duel.abilities.gamesWithBittenRising}/${summary.duel.abilities.undeadGames}; unanswered attacks ${summary.duel.abilities.mixed.unansweredAttacks ?? 0}`,
+    `Plague duration (mixed games with Plague ${summary.duel.plague.gamesWithPlague}/${summary.duel.plague.games}): most plagued at once mean ${summary.duel.plague.plaguedMaximum.mean} p90 ${summary.duel.plague.plaguedMaximum.p90}; rounds with Plague mean ${summary.duel.plague.plagueRounds.mean} p90 ${summary.duel.plague.plagueRounds.p90}; longest streak mean ${summary.duel.plague.longestStreak.mean}; longest single-unit Plague mean ${summary.duel.plague.longestUnitTurns.mean} turns; plagued unit-turns per game ${summary.duel.plague.plaguedUnitTurnsPerGame}`,
     "",
     "| Pairing | Games | Undead win | Seat-0 win | First mover win | Rounds mean/median/p90 | Cap rate |",
     "| --- | ---: | --- | --- | --- | --- | ---: |",

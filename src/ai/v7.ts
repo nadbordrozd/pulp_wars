@@ -41,9 +41,24 @@ import {
   normalOpeningTechnologyV7,
 } from "./v7-opening";
 import {
+  BITE_VALUE_V7,
+  BITTEN_RISING_VALUE_V7,
   DEVOUR_MINIMUM_HEAL_V7,
+  PLAGUE_EXPOSURE_COST_V7,
+  PLAGUE_SOURCE_TARGET_VALUE_V7,
   RAISE_DEAD_SKELETON_VALUE_V7,
+  TEND_BITTEN_CURE_VALUE_V7,
+  TEND_PLAGUE_CURE_VALUE_V7,
   devourHealV7,
+  healthyLivingNeighboursV7,
+  isNewBiteV7,
+  plagueApplicationValueV7,
+  plagueSourceVictimsV7,
+  plaguedNeighboursV7,
+  publicAfflictionsV7,
+  publicTendValueV7,
+  raiseDeadGravesV7,
+  type PublicAfflictionsV7,
   hasLivingHostileSeatV7,
   hostileNecromancersNearV7,
   inOwnTerritoryForPolicyV7,
@@ -131,6 +146,8 @@ interface PolicyContextV7 {
   readonly view: PlayerViewV7;
   /** Revision 13: a seat is Undead; all Undead heuristics are gated on it. */
   readonly undead: boolean;
+  /** Revision 14: public Plague and Bitten statuses (empty without Undead). */
+  readonly afflictions: PublicAfflictionsV7;
   readonly commands: readonly CommandV7[];
   readonly threats: ThreatV7[];
   readonly threatenedTiles: ReadonlyMap<UnitId, ReadonlySet<string>>;
@@ -1009,6 +1026,7 @@ function bareContext(
   return {
     view,
     undead: undeadMatchForPolicyV7(view),
+    afflictions: publicAfflictionsV7(view),
     commands,
     threats,
     threatenedTiles,
@@ -2408,9 +2426,12 @@ function isLowValueAttackV7(
   const actor = context.lookup.unitsById.get(command.unitId);
   if (preview === null || actor === undefined) return true;
   if (context.undead && feedsZombieV7(context, command, preview)) return true;
+  const immediate =
+    combatImmediateValue(preview) +
+    (context.undead ? biteHarmAdjustmentV7(context, actor, preview) : 0);
   const harmful =
     (!preview.defenderDies && preview.attackerDies) ||
-    (!preview.defenderDies && combatImmediateValue(preview) <= 0);
+    (!preview.defenderDies && immediate <= 0);
   if (!harmful) return false;
   if (attackPurposeExceptionV7(context, command, preview)) return false;
   return true;
@@ -2492,9 +2513,41 @@ function undeadAttackValueV7(
   if (zombieChipExposureV7(context, actor, target, preview))
     value -= INFECT_RISING_VALUE_V7;
   const undeadViewer = view.viewer.faction === "UNDEAD";
+  const afflictions = context.afflictions;
+  // Revision 14 Bitten: a new bite on a hostile unit may later rise for us;
+  // our attacker bitten by a surviving Zombie may later rise for the enemy.
+  if (
+    preview.defenderBitten &&
+    isNewBiteV7(afflictions, target.id, actor.ownerId)
+  )
+    value +=
+      BITE_VALUE_V7 +
+      Math.floor(targetStrategicValue(view, target.id, context.lookup) / 5);
+  if (
+    preview.attackerBitten &&
+    isNewBiteV7(afflictions, actor.id, target.ownerId)
+  )
+    value -= biteExposureCostV7(context, actor);
+  if (preview.defenderBittenRises)
+    value += bittenRisingValueV7(context, afflictions.bitten.get(target.id));
+  if (preview.attackerBittenRises)
+    value += bittenRisingValueV7(context, afflictions.bitten.get(actor.id));
+  for (const splash of preview.splash) {
+    const unit = context.lookup.unitsById.get(splash.unitId);
+    if (splash.dies && unit?.form === "LAND")
+      value += bittenRisingValueV7(context, afflictions.bitten.get(unit.id));
+  }
+  // Revision 14 Plague: victims plus their healthy living neighbours.
+  value += plagueApplicationValueV7(
+    view,
+    afflictions,
+    preview.plagued,
+    (owner) => isHostile(view, owner),
+  ).value;
   if (
     preview.defenderDies &&
     !preview.defenderInfected &&
+    !preview.defenderBittenRises &&
     !preview.advances &&
     publicDeathLeavesGraveV7(view, target)
   ) {
@@ -2513,11 +2566,76 @@ function undeadAttackValueV7(
       if (
         splash.dies &&
         unit !== undefined &&
+        !afflictions.bitten.has(unit.id) &&
         publicDeathLeavesGraveV7(view, unit)
       )
         value += 4;
     }
   return value;
+}
+
+/**
+ * Revision 14 Bitten rising for a death whose recorded biter is `biter`: a
+ * Zombie for the viewer or an ally is worth an Infect rising; one for a
+ * hostile player costs as much.
+ */
+function bittenRisingValueV7(
+  context: PolicyContextV7,
+  biter: PlayerId | undefined,
+): number {
+  if (biter === undefined) return 0;
+  return isHostile(context.view, biter)
+    ? -BITTEN_RISING_VALUE_V7
+    : BITTEN_RISING_VALUE_V7;
+}
+
+/**
+ * Revision 14: a living attacker that survives a Zombie's retaliation is
+ * bitten; if it later dies it rises for the enemy. Costlier for valuable
+ * units; halved when an own Captain within 3 tiles can cure it.
+ */
+function biteExposureCostV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+): number {
+  const view = context.view;
+  const cost = 8 + Math.floor(retainedUnitValue(view, actor) / 4);
+  const curable = view.units.some(
+    (unit) =>
+      unit.ownerId === actor.ownerId &&
+      unit.id !== actor.id &&
+      distance(unit.at, actor.at) <= 3 &&
+      unitRoleRuleV7(view, unit).abilities.includes("TEND_WOUNDED"),
+  );
+  return curable ? Math.floor(cost / 2) : cost;
+}
+
+/**
+ * Revision 14 harm test adjustment (Undead matches): a Zombie's new bite
+ * makes a trading attack worthwhile; a living attacker that would be bitten
+ * by a chip on a Zombie needs to deal more to justify it.
+ */
+function biteHarmAdjustmentV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  preview: CombatPreviewV7,
+): number {
+  if (preview.defenderDies || preview.attackerDies) return 0;
+  const afflictions = context.afflictions;
+  let adjustment = 0;
+  if (
+    preview.defenderBitten &&
+    isNewBiteV7(afflictions, preview.targetUnitId, actor.ownerId)
+  )
+    adjustment += 2 * BITE_VALUE_V7;
+  const target = context.lookup.unitsById.get(preview.targetUnitId);
+  if (
+    preview.attackerBitten &&
+    target !== undefined &&
+    isNewBiteV7(afflictions, actor.id, target.ownerId)
+  )
+    adjustment -= 2 * biteExposureCostV7(context, actor);
+  return adjustment;
 }
 
 /** A 10-HP Zombie rising: Zombie cost 3 x 4 + 10 HP. */
@@ -2750,8 +2868,11 @@ function* sharedCityContextWorkV7(
       defendedLanding = true;
     yield;
   }
-  const undeadTraining =
-    view.viewer.faction === "UNDEAD" ? undeadTrainingAdjustmentsV7(view) : null;
+  const undeadTraining = !context.undead
+    ? null
+    : view.viewer.faction === "UNDEAD"
+      ? undeadTrainingAdjustmentsV7(view)
+      : livingTrainingAdjustmentsV7(view, context.afflictions);
   const trainingAdjustment = (role: UnitRoleIdV7): number =>
     undeadTraining?.get(role) ?? 0;
   const threatenedCityIds = new Set<CityId>();
@@ -2768,6 +2889,7 @@ function* sharedCityContextWorkV7(
         city !== undefined &&
         tile.explored &&
         tile.territoryCityId === null &&
+        tile.territoryOwnerId === null &&
         distance(tile.at, city.at) <= 2
       )
         neutral += 1;
@@ -2802,6 +2924,18 @@ function* sharedCityContextWorkV7(
     const landOrder = threatened ? THREATENED_ROLE_ORDER : GENERAL_ROLE_ORDER;
     let preferredLand: Extract<CommandV7, { kind: "TRAIN" }> | null = null;
     let preferredLandValue = Number.NEGATIVE_INFINITY;
+    // Revision 14 (Undead matches): a fragile siege unit trained on a center
+    // inside visible lethal reach dies before it acts (the vkq.18 Lich
+    // feeding loop against Catapults); prefer anything else there.
+    const siegeExposed =
+      context.undead &&
+      city !== undefined &&
+      (landByCity.get(cityId) ?? []).some(
+        (command) => command.role === "CATAPULT",
+      ) &&
+      freshUnitInLethalReachV7(context, city, "CATAPULT");
+    const cityAdjustment = (role: UnitRoleIdV7) =>
+      siegeExposed && role === "CATAPULT" ? -40 : 0;
     for (const command of landByCity.get(cityId) ?? []) {
       const count = ownedRoleCounts.get(command.role) ?? 0;
       const value =
@@ -2811,7 +2945,8 @@ function* sharedCityContextWorkV7(
         20 * Number(count === 0) -
         2 * (effectiveRoleRuleV7(command.role, view.viewer.faction).cost ?? 0) -
         8 * count +
-        trainingAdjustment(command.role);
+        trainingAdjustment(command.role) +
+        cityAdjustment(command.role);
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
         preferredLand === null ||
@@ -2887,9 +3022,18 @@ function* sharedCityContextWorkV7(
             ) &&
             (!spendsReserve || threatened) &&
             !worsens
-          : !spendsReserve ||
-            (context.naval.visibleNavalDanger &&
-              command.role === "PATROL_BOAT"));
+          : (!spendsReserve ||
+              (context.naval.visibleNavalDanger &&
+                command.role === "PATROL_BOAT")) &&
+            // Revision 14 AI fix (Undead matches): a garrisoned center only
+            // offers naval training, which filled every spare slot with
+            // Patrol Boats (~15 per game); beyond two naval units, train
+            // only the naval role the plan asks for.
+            !(
+              context.undead &&
+              preferredNaval !== command.role &&
+              patrolBoats + battleships >= 2
+            ));
       if (eligible) {
         const utility =
           command.kind === "LAND_GRANT"
@@ -2898,7 +3042,8 @@ function* sharedCityContextWorkV7(
               ? (effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp +
                   Number(command.role === "GUARD" && threatened) * 20 +
                   Number(command.role === "CATAPULT" && durableScreen) * 12 +
-                  trainingAdjustment(command.role)) *
+                  trainingAdjustment(command.role) +
+                  cityAdjustment(command.role)) *
                   3 -
                 cost * 4 +
                 Number(preferredLand?.role === command.role) * 18
@@ -2939,7 +3084,49 @@ function undeadTrainingAdjustmentsV7(
     hasLivingHostileSeatV7(view, (owner) => isHostile(view, owner)) ? 8 : -30,
   );
   adjustments.set("CAPTAIN", 4 * Math.min(3, view.graves.length));
-  adjustments.set("CATAPULT", 4);
+  // Revision 14: the Lich is the Undead siege and Plague carrier. vkq.10
+  // measured +16 (L2) at about Catapult-rate Liches, but an uncapped bias
+  // makes the Lich the best base value and armies of dozens of Liches in
+  // long games; so +16 only while fewer than three own Liches exist, else the
+  // revision-13 +4.
+  const owned = (role: UnitRoleIdV7) =>
+    view.units.filter(
+      (unit) => unit.ownerId === view.viewer.id && unit.role === role,
+    ).length;
+  adjustments.set("CATAPULT", owned("CATAPULT") < 3 ? 16 : 4);
+  // Revision 14: unanswered attacks make one Vampire worth its 9 Coins once
+  // the treasury can spare them.
+  if (view.viewer.coins >= RICH_TREASURY_COINS_V7 && owned("KNIGHT") === 0)
+    adjustments.set("KNIGHT", 20);
+  return adjustments;
+}
+
+/** Coins at which expensive breakthrough units become worth training. */
+const RICH_TREASURY_COINS_V7 = 18;
+
+/**
+ * Revision 14 training for a living seat in a match with an Undead seat: a
+ * Captain cures Plague and Bitten, so one is worth training while own units
+ * are afflicted and no own Captain exists. (Knights get no bias: a rich-
+ * treasury bias large enough to matter replaced Catapults with Knights that
+ * fed Zombies bites and Infect risings.)
+ */
+function livingTrainingAdjustmentsV7(
+  view: PlayerViewV7,
+  afflictions: PublicAfflictionsV7,
+): ReadonlyMap<UnitRoleIdV7, number> {
+  const adjustments = new Map<UnitRoleIdV7, number>();
+  let afflicted = 0;
+  let captains = 0;
+  for (const unit of view.units) {
+    if (unit.ownerId !== view.viewer.id) continue;
+    if (afflictions.plagued.has(unit.id) || afflictions.bitten.has(unit.id))
+      afflicted += 1;
+    if (unitRoleRuleV7(view, unit).abilities.includes("TEND_WOUNDED"))
+      captains += 1;
+  }
+  if (captains === 0 && afflicted > 0)
+    adjustments.set("CAPTAIN", 6 * Math.min(3, afflicted));
   return adjustments;
 }
 
@@ -3287,6 +3474,7 @@ function scoreCommandWithContext(
             (tile) =>
               tile.explored &&
               tile.territoryCityId === null &&
+              tile.territoryOwnerId === null &&
               Math.abs(tile.at.x - city.at.x) <= 2 &&
               Math.abs(tile.at.y - city.at.y) <= 2,
           ).length;
@@ -3365,8 +3553,32 @@ function scoreCommandWithContext(
         safetyValue = sequence.safety;
         objectiveValue = sequence.spacing;
       }
-      if (context.undead && actor !== undefined)
+      if (context.undead && actor !== undefined) {
         strategicValue += undeadAttackValueV7(context, command, actor, preview);
+        // Revision 14: a Lich volley that plagues three or more hostile
+        // units outranks an ordinary kill; killing a Lich that plagues our
+        // units cures them all.
+        if (
+          plagueApplicationValueV7(
+            view,
+            context.afflictions,
+            preview.plagued,
+            (owner) => isHostile(view, owner),
+          ).hostileVictims >= 3
+        )
+          priority = Math.max(priority, 1182);
+        if (
+          preview.defenderDies &&
+          targetUnit !== undefined &&
+          plagueSourceVictimsV7(
+            view,
+            context.afflictions,
+            targetUnit.id,
+            (owner) => !isHostile(view, owner),
+          ) > 0
+        )
+          priority = Math.max(priority, 1285);
+      }
     }
   }
 
@@ -3390,6 +3602,17 @@ function scoreCommandWithContext(
     )
       ? 1270
       : 650;
+    if (context.undead) {
+      // Revision 14: Tend also cures Plague and Bitten (exact preview).
+      const tend = publicTendValueV7(view, context.afflictions, actor);
+      immediateValue =
+        tend.heal * 8 +
+        tend.plagueCures * TEND_PLAGUE_CURE_VALUE_V7 +
+        tend.bittenCures * TEND_BITTEN_CURE_VALUE_V7;
+      if (tend.plagueCures > 0)
+        priority = Math.max(priority, tend.plagueCures >= 2 ? 1272 : 1262);
+      else if (tend.bittenCures > 0) priority = Math.max(priority, 1175);
+    }
   }
 
   if (command.kind === "RALLY" && actor !== undefined) {
@@ -3416,8 +3639,15 @@ function scoreCommandWithContext(
   if (command.kind === "RAISE_DEAD" && actor !== undefined) {
     // Revision 13: each eligible Grave rises as a free 5-HP Skeleton.
     const risen = raiseDeadCountV7(view, actor.id);
-    priority = risen > 0 ? 1237 : -1;
-    strategicValue = risen * RAISE_DEAD_SKELETON_VALUE_V7;
+    // Revision 14 AI fix: a 5-HP Skeleton raised inside visible lethal reach
+    // is a free kill for the enemy (the feeding loop); raise only when at
+    // least one Skeleton survives or screens a threatened own city.
+    const doomed = raiseDeadGravesV7(view, actor.id).filter((grave) =>
+      raisedSkeletonDoomedV7(context, actor, grave),
+    ).length;
+    const safe = risen - doomed;
+    priority = safe > 0 ? 1237 : -1;
+    strategicValue = safe * RAISE_DEAD_SKELETON_VALUE_V7 - doomed * 6;
     immediateValue = risen * 5;
   }
 
@@ -3593,6 +3823,9 @@ function scoreCommandWithContext(
       priority = undead.priority;
       strategicValue += undead.strategic;
       objectiveValue += undead.objective;
+      const plague = afflictionMoveValueV7(context, actor, resultAt, priority);
+      priority = plague.priority;
+      strategicValue += plague.strategic;
     }
   }
 
@@ -3800,10 +4033,37 @@ function undeadMoveValueV7(
     }
   }
 
+  // Revision 14: a Lich never walks into visible lethal reach unless that is
+  // strictly safer than staying (fresh Liches stepping toward their siege
+  // objective fed enemy Catapults one Lich a turn). One whose Plague holds
+  // two or more hostile units (its death cures them all) also retreats out of
+  // lethal reach.
+  if (isLichV7(view, actor)) {
+    const dangerHere = visibleImmediateDamage(view, actor, actor.at, context);
+    if (danger() >= actor.hp && danger() >= dangerHere) priority = -1;
+    const sourced = plagueSourceVictimsV7(
+      view,
+      context.afflictions,
+      actor.id,
+      hostile,
+    );
+    if (sourced >= 2) {
+      if (danger() >= actor.hp) strategic -= 8 * sourced;
+      else if (dangerHere >= actor.hp) {
+        priority = Math.max(priority, 1150);
+        strategic += 8 * sourced;
+      }
+    }
+  }
+
   if (isNecromancerV7(view, actor)) {
     if (primaryReady) {
-      const here = raisableGravesAtV7(view, actor.at, actor.id).length;
-      const there = raisableGravesAtV7(view, to, actor.id).length;
+      const survivable = (at: CoordV7) =>
+        raisableGravesAtV7(view, at, actor.id).filter(
+          (grave) => !raisedSkeletonDoomedV7(context, actor, grave),
+        ).length;
+      const here = survivable(actor.at);
+      const there = survivable(to);
       if (
         there > here &&
         (there >= 2 ? danger() < actor.hp : danger() * 2 < actor.hp)
@@ -3836,6 +4096,183 @@ function undeadMoveValueV7(
   }
   return { priority, strategic, objective };
 }
+
+/**
+ * Revision 14 Plague and Bitten movement for a living unit (any seat of a
+ * match with an Undead seat): keep healthy units off tiles next to plagued
+ * units, pull them away when they stand next to one, isolate a plagued unit
+ * from healthy own and allied units, bring it to an own Captain, and bring a
+ * Captain to plagued or bitten units it can cure this turn.
+ */
+function afflictionMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  basePriority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  const afflictions = context.afflictions;
+  let priority = basePriority;
+  let strategic = 0;
+  if (
+    (afflictions.plagued.size === 0 && afflictions.bitten.size === 0) ||
+    !isLivingOwnerV7(view, actor.ownerId)
+  )
+    return { priority, strategic };
+  const friendly = (owner: PlayerId) => !isHostile(view, owner);
+  const garrison =
+    cityAt(view, actor.at, context.lookup)?.ownerId === view.viewer.id;
+  let dangerHere: number | null = null;
+  let dangerThere: number | null = null;
+  const saferOrEqual = () =>
+    (dangerThere ??= visibleImmediateDamage(view, actor, to, context)) <=
+    (dangerHere ??= visibleImmediateDamage(view, actor, actor.at, context));
+  if (afflictions.plagued.size > 0) {
+    if (afflictions.plagued.has(actor.id)) {
+      const here = healthyLivingNeighboursV7(
+        view,
+        afflictions,
+        actor.at,
+        actor.id,
+        friendly,
+      );
+      const there = healthyLivingNeighboursV7(
+        view,
+        afflictions,
+        to,
+        actor.id,
+        friendly,
+      );
+      strategic += PLAGUE_EXPOSURE_COST_V7 * (here - there);
+      if (there > here && basePriority < 1100) priority = -1;
+      else if (there < here && !garrison && saferOrEqual())
+        priority = Math.max(priority, 1150);
+      const captainThere = view.units.some(
+        (unit) =>
+          unit.ownerId === actor.ownerId &&
+          unit.id !== actor.id &&
+          distance(unit.at, to) === 1 &&
+          isPrimaryUnusedV7(unit) &&
+          unitRoleRuleV7(view, unit).abilities.includes("TEND_WOUNDED"),
+      );
+      if (
+        captainThere &&
+        actor.form === "LAND" &&
+        !garrison &&
+        priority >= 0 &&
+        saferOrEqual()
+      ) {
+        priority = Math.max(priority, 1155);
+        strategic += 15;
+      }
+    } else {
+      const here = plaguedNeighboursV7(view, afflictions, actor.at, actor.id);
+      const there = plaguedNeighboursV7(view, afflictions, to, actor.id);
+      if (there > 0) {
+        strategic -= PLAGUE_EXPOSURE_COST_V7;
+        if (here === 0 && basePriority < 1100) priority = -1;
+      } else if (here > 0 && !garrison && saferOrEqual()) {
+        priority = Math.max(priority, 1150);
+        strategic += PLAGUE_EXPOSURE_COST_V7;
+      }
+    }
+  }
+  const rule = unitRoleRuleV7(view, actor);
+  if (
+    actor.form === "LAND" &&
+    rule.abilities.includes("TEND_WOUNDED") &&
+    isPrimaryUnusedV7(actor)
+  ) {
+    const cures = (at: CoordV7) => {
+      const tend = publicTendValueV7(view, afflictions, actor, at);
+      return 2 * tend.plagueCures + tend.bittenCures;
+    };
+    const gain = cures(to) - cures(actor.at);
+    if (
+      gain > 0 &&
+      (dangerThere ??= visibleImmediateDamage(view, actor, to, context)) <
+        actor.hp
+    ) {
+      priority = Math.max(priority, 1160);
+      strategic += 15 * gain;
+    }
+  }
+  return { priority, strategic };
+}
+
+/**
+ * Revision 14 AI fix: a 5-HP Skeleton rising on `grave` dies to visible
+ * enemies next turn, unless it stands beside a threatened own city center
+ * (it screens the city).
+ */
+function raisedSkeletonDoomedV7(
+  context: PolicyContextV7,
+  necromancer: PublicUnitV7,
+  grave: CoordV7,
+): boolean {
+  const view = context.view;
+  if (
+    context.threats.some((threat) => {
+      const city = context.lookup.citiesById.get(threat.cityId);
+      return city !== undefined && distance(city.at, grave) <= 1;
+    })
+  )
+    return false;
+  const rule = effectiveRoleRuleV7("FIGHTER", view.viewer.faction);
+  const skeleton: PublicUnitV7 = {
+    ...necromancer,
+    role: "FIGHTER",
+    at: grave,
+    hp: Math.min(RAISED_SKELETON_HP_V7, rule.maxHp),
+    maxHp: rule.maxHp,
+    kills: 0,
+  };
+  return visibleImmediateDamage(view, skeleton, grave, context) >= skeleton.hp;
+}
+
+/**
+ * Whether a full-HP unit of `role` trained on `city`'s center would stand in
+ * visible lethal reach (it is exhausted until its owner's next turn).
+ */
+function freshUnitInLethalReachV7(
+  context: PolicyContextV7,
+  city: PlayerViewV7["cities"][number],
+  role: UnitRoleIdV7,
+): boolean {
+  const view = context.view;
+  const rule = effectiveRoleRuleV7(role, view.viewer.faction);
+  const fresh: PublicUnitV7 = {
+    id: -1 as UnitId,
+    ownerId: view.viewer.id,
+    homeCityId: city.id,
+    role,
+    form: "LAND",
+    at: city.at,
+    hp: rule.maxHp,
+    maxHp: rule.maxHp,
+    kills: 0,
+    veteran: false,
+    captureEligible: false,
+    activation: {
+      moved: false,
+      movedPathLength: 0,
+      attacked: false,
+      attacksUsed: 0,
+      tendedThisTurn: false,
+      inspired: false,
+      overrunActive: false,
+      escapeAvailable: false,
+      recovered: false,
+      captured: false,
+      handled: true,
+      specialActed: false,
+    },
+  };
+  return visibleImmediateDamage(view, fresh, city.at, context) >= fresh.hp;
+}
+
+/** Raise Dead creates 5-HP Skeletons (revision 13 section 6.2). */
+const RAISED_SKELETON_HP_V7 = 5;
 
 /**
  * Revision 12 Raider Escape. While the Raider stands where visible enemies can
@@ -4935,9 +5372,13 @@ function attributableCityIncome(
             same(tile.at, item.at),
         ),
     )?.level ?? 0;
+  // Revision 14 (E2): the level term of city income is capped at 5.
   return Math.max(
     1,
-    city.level + Number(city.isCapital) + market + Math.min(0, city.population),
+    Math.min(city.level, CITY_LEVEL_INCOME_CAP_V7) +
+      Number(city.isCapital) +
+      market +
+      Math.min(0, city.population),
   );
 }
 
@@ -5032,15 +5473,34 @@ function targetStrategicValue(
     ? NECROMANCER_TARGET_BONUS_V7 +
       4 * Math.min(3, raisableGravesAtV7(view, unit.at, unit.id).length)
     : 0;
+  // Revision 14: killing a Lich cures every unit it plagued; each visible
+  // plagued own or allied unit it sources raises its value (0 without
+  // Plague, so all-Human values are unchanged).
+  const plagueSource =
+    view.plagued.length > 0 && rule.abilities.includes("PLAGUE")
+      ? PLAGUE_SOURCE_TARGET_VALUE_V7 *
+        Math.min(
+          6,
+          view.plagued.filter((entry) => {
+            if (entry.sourceUnitId !== unit.id) return false;
+            const victim =
+              lookup?.unitsById.get(entry.unitId) ??
+              view.units.find((item) => item.id === entry.unitId);
+            return victim !== undefined && !isHostile(view, victim.ownerId);
+          }).length,
+        )
+      : 0;
   return unit.role === "JUGGERNAUT"
     ? 40 +
         rule.attack2 +
         rule.defense2 +
         (rule.abilities.includes("PUSH") ? 8 : 0)
-    : (rule.cost ?? 0) * 4 + unit.hp + necromancer;
+    : (rule.cost ?? 0) * 4 + unit.hp + necromancer + plagueSource;
 }
 
 const NECROMANCER_TARGET_BONUS_V7 = 12;
+/** Revision 14 (E2): the level term of city income is capped at 5. */
+const CITY_LEVEL_INCOME_CAP_V7 = 5;
 
 function cityFootprintFullyExplored(
   view: PlayerViewV7,
