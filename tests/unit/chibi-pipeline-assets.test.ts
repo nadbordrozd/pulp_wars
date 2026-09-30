@@ -628,6 +628,44 @@ describe("chibi prompt layering and manifests", async () => {
     );
   });
 
+  it("prompts a resource variant with its own subject text (pulp_wars-glz)", async () => {
+    const variants = await loadBatchManifest(ROOT, "resource-variants");
+    expect(
+      batchManifestProblems(variants, fragments, "resource-variants"),
+    ).toEqual([]);
+    const boar = variants.assets.find(
+      (asset) => asset.id === "chibi-game-boar",
+    );
+    if (boar === undefined) throw new Error("boar variant lost");
+    expect(boar).toMatchObject({
+      subject: "RESOURCE:GAME",
+      subjectKey: "RESOURCE:GAME/BOAR",
+    });
+    const subject = layeredPrompt(fragments, variants, boar, {}).layers.find(
+      (layer) => layer.layer === "subject",
+    );
+    expect(subject?.source).toBe("scripts/art/chibi/subjects/SHARED.json");
+    expect(subject?.text).toContain("wild boar");
+    expect(subject?.text).not.toContain("deer");
+    const problems = (subjectKey: string) =>
+      batchManifestProblems(
+        {
+          ...variants,
+          assets: variants.assets.map((asset) =>
+            asset.id === boar.id ? { ...asset, subjectKey } : asset,
+          ),
+        },
+        fragments,
+        "resource-variants",
+      ).join("\n");
+    expect(problems("RESOURCE:FRUIT/PEAR")).toContain(
+      "subjectKey must look like RESOURCE:GAME/<VARIANT>",
+    );
+    expect(problems("RESOURCE:GAME/WOLF")).toContain(
+      "no subject text for RESOURCE:GAME/WOLF",
+    );
+  });
+
   it("sends a checked-in forced palette and validates terrain variant windows", async () => {
     const batch1 = await loadBatchManifest(ROOT, "1");
     expect(batchManifestProblems(batch1, fragments, "1")).toEqual([]);

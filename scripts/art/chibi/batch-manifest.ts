@@ -328,6 +328,12 @@ export interface ChibiAssetSpec {
   readonly ownerColour?: boolean;
   /** Appended to the subject layer for this asset (for example a variant). */
   readonly subjectAddendum?: string;
+  /**
+   * The subject text to use instead of the subject's own, for a variant that
+   * depicts something else (a boar as a variant of `RESOURCE:GAME`): a key
+   * `<subject>/<VARIANT>` in the subjects file.
+   */
+  readonly subjectKey?: string;
   /** ground-composite only: accepted TERRAIN asset drawn in the bottom cell. */
   readonly groundAsset?: string;
   /**
@@ -537,10 +543,11 @@ export function layeredPrompt(
   }
   push("class", fragments.classes[asset.recipeClass]);
   if (assetOwned(asset)) push("owner", fragments.owner);
-  const subject = subjectText(fragments, manifest.faction, asset.subject);
+  const subjectKey = asset.subjectKey ?? asset.subject;
+  const subject = subjectText(fragments, manifest.faction, subjectKey);
   if (subject === null)
     throw new Error(
-      `${asset.id}: no subject text for ${asset.subject} (faction ${manifest.faction})`,
+      `${asset.id}: no subject text for ${subjectKey} (faction ${manifest.faction})`,
     );
   push("subject", {
     source: subject.source,
@@ -868,8 +875,16 @@ export function batchManifestProblems(
       ...(owned ? { ownerMaskUrl: "contract-check" } : {}),
     }))
       problems.push(`${at}: ${problem}`);
-    if (subjectText(fragments, manifest.faction, asset.subject) === null)
-      problems.push(`${label}: no subject text for ${asset.subject}`);
+    if (
+      asset.subjectKey !== undefined &&
+      !new RegExp(`^${asset.subject}/[A-Z_]+$`).test(asset.subjectKey)
+    )
+      problems.push(
+        `${label}: subjectKey must look like ${asset.subject}/<VARIANT>`,
+      );
+    const subjectKey = asset.subjectKey ?? asset.subject;
+    if (subjectText(fragments, manifest.faction, subjectKey) === null)
+      problems.push(`${label}: no subject text for ${subjectKey}`);
     if (classRecipe.derivation === "palette-map") {
       const palette = asset.palette;
       if (palette === undefined)

@@ -1,0 +1,319 @@
+{
+  "batch": "resource-variants",
+  "bead": "pulp_wars-glz",
+  "title": "Chibi resource variants: two more Game animals and two more Fruit plants",
+  "dryRun": false,
+  "faction": "ORIGINAL",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-game-boar",
+      "subject": "RESOURCE:GAME",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "game-boar-a-edit-3",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-game-boar.png",
+        "sha256": "338b3cdf4459a5b9fe36bb8e9092a8e9e2d0a8105aa55ac53b749b976d81f9b8",
+        "pixelSha256": "2a183dd8423107c105d23aeabccdaadedb3cb6128e5fc1fb0fc4d7cd346436a9",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.4884,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-game-rabbit",
+      "subject": "RESOURCE:GAME",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "game-rabbit-a-edit",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-game-rabbit.png",
+        "sha256": "9ea500c62c1585758113855e1a3c9c563cd8b9e731140181d8dec09bfd36e1c5",
+        "pixelSha256": "544c7b5e4493b7ae14e5c8a1358ecd63092da0b0366140540b6db8c3048a0622",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.1387,
+        "footprintWidthShare": 0.75,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-fruit-blueberry",
+      "subject": "RESOURCE:FRUIT",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fruit-blueberry-a-edit",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fruit-blueberry.png",
+        "sha256": "31b30d51b8fdc07d4ed72313d3d50ea272815c0d2ee3f33ec6628b0fd8fbb35a",
+        "pixelSha256": "9116d1dfeb848e8bc2f04007d913a06526de48e2d9ea2e676bd2440bff9829e7",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6875,
+        "suspect": false
+      }
+    },
+    {
+      "id": "chibi-fruit-pear",
+      "subject": "RESOURCE:FRUIT",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fruit-pear-a-edit",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fruit-pear.png",
+        "sha256": "1110ccfdb4154bac6ceea59d7c0704a82e90bbb940c46402da690b395acb1893",
+        "pixelSha256": "e708f560a433a15887994c084885bf3f50ba0e2988da242e6146f2962801fffb",
+        "width": 48,
+        "height": 48
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.0286,
+        "footprintWidthShare": 0.4828,
+        "suspect": false
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/sheet-1x.png",
+      "width": 1042,
+      "height": 628,
+      "sha256": "f7970a859cd566c9c2f72847651207188c58fd85c8b79959dfbcf5fd076a5eab"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/sheet-x4.png",
+      "width": 2370,
+      "height": 1972,
+      "sha256": "9f9bac0a645ad5dccc4c396ea0c5d164251692a76fa8fc264182c1d39d842cca"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/phone-mock.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "0e2db32b9d11fed7aedf77d17d7e86e21d4cd3a2c7bb1a922d1ec5dec471e69d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/desktop-mock.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "58bf97925316ad14e9eff277c92040ce979536fda7b9bbd3bf611112b2a54013"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d3f61c3e5c2e0c4b48f80ba296ece644cf10aa9ca93126277b139fe697f716f5"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cad46ae09901c61ccd88002d2569d64d2c663801fd558f5979b3304d9e5e95ed"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-scene-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d3026dd4f28234fdb0e6fb452218fe04b2453eb232ad43956a340cb3c682b713"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-scene-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9b45d2c4c4b91747470c55fecbd457cca7a162cfe5a473af0aa1079c77835751"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "08852c0e6808390b0c0ed3ae43be2b2f7c10081878115a5f314d13aeadad3329"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "cb3ec7478bfc57757876fa54372f66df393a8b669a50ac1b393f4f99df597a6e"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-scene-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "b10374159ee8919e8e1fceefdd381d84ebd5a446ecaa23616cd746b07eb2316d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-scene-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "b43a845c47386c958539f39dd31a98841bea5eb61ce1ba7eaf335fc702a5efff"
+    }
+  ],
+  "captures": {
+    "note": "Captured from the running game with ?art=chibi; subjects without a registered chibi raster still draw their legacy art.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-scene-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic resource field)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-scene-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic resource field)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-scene-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic resource field)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-resource-variants/ingame-scene-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic resource field)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-resource-variants/phone-links.md"
+}

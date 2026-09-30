@@ -1,0 +1,36 @@
+{
+  "id": "game-boar-a-edit-2",
+  "jobId": "3c58a127-7b92-4ff0-ab03-4b5544d13e25",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "resource-variants",
+    "asset": "chibi-game-boar",
+    "subject": "RESOURCE:GAME",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 71303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the salmon ear insides and the reddish-brown shading on the belly, chest and legs to dark taupe grey. The big snout and nose stay dark charcoal grey and the cheeks stay grey, never pink. Keep the boar, cream tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves."
+      }
+    ],
+    "prompt": "Recolour only the salmon ear insides and the reddish-brown shading on the belly, chest and legs to dark taupe grey. The big snout and nose stay dark charcoal grey and the cheeks stay grey, never pink. Keep the boar, cream tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "negativePrompt": "",
+    "description": "Recolour only the salmon ear insides and the reddish-brown shading on the belly, chest and legs to dark taupe grey. The big snout and nose stay dark charcoal grey and the cheeks stay grey, never pink. Keep the boar, cream tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "editInstruction": "Recolour only the salmon ear insides and the reddish-brown shading on the belly, chest and legs to dark taupe grey. The big snout and nose stay dark charcoal grey and the cheeks stay grey, never pink. Keep the boar, cream tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "source": {
+      "recipe": "game-boar-a",
+      "candidate": 0,
+      "sha256": "0c3b9f64fbda7e76c72a770886c592592b3fff4d746a7d548423ea76934bdcd4"
+    }
+  }
+}

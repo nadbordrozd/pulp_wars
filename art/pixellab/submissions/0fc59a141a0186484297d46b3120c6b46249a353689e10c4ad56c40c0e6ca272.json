@@ -1,0 +1,36 @@
+{
+  "id": "game-boar-a-edit-3",
+  "jobId": "c76b16b6-8cbc-4363-b016-7f8d52222d3f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "resource-variants",
+    "asset": "chibi-game-boar",
+    "subject": "RESOURCE:GAME",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 71304,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint the inside of the ear the same dark charcoal grey as the snout, so no pink or salmon is left on the ear. Change nothing else: keep the boar, snout, tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves."
+      }
+    ],
+    "prompt": "Paint the inside of the ear the same dark charcoal grey as the snout, so no pink or salmon is left on the ear. Change nothing else: keep the boar, snout, tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "negativePrompt": "",
+    "description": "Paint the inside of the ear the same dark charcoal grey as the snout, so no pink or salmon is left on the ear. Change nothing else: keep the boar, snout, tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "editInstruction": "Paint the inside of the ear the same dark charcoal grey as the snout, so no pink or salmon is left on the ear. Change nothing else: keep the boar, snout, tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "source": {
+      "recipe": "game-boar-a-edit-2",
+      "candidate": 0,
+      "sha256": "1471beaa05a20959d7ff2aca929e0cd2f0278acda1228c48160f54609fabb7cc"
+    }
+  }
+}

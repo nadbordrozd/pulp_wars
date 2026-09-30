@@ -1,0 +1,36 @@
+{
+  "id": "fruit-pear-a-edit",
+  "jobId": "ab21dd45-adc3-42ac-9476-694cdc0441c4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "resource-variants",
+    "asset": "chibi-fruit-pear",
+    "subject": "RESOURCE:FRUIT",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 71202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the round green grass disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leafy crown, pale green pears, trunk, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the round green grass disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leafy crown, pale green pears, trunk, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the round green grass disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leafy crown, pale green pears, trunk, outline and art style exactly the same.",
+    "editInstruction": "Remove the round green grass disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leafy crown, pale green pears, trunk, outline and art style exactly the same.",
+    "source": {
+      "recipe": "fruit-pear-a",
+      "candidate": 0,
+      "sha256": "299e1d8f8862fbb382a4af67feda9bccedd3053034111a0583d5347c7157720e"
+    }
+  }
+}

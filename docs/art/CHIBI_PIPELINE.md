@@ -167,6 +167,22 @@ Plague, Lifesteal; scene B: Raise Dead, Bitten and Infect risings, cure).
   `accept --id <recipe> --asset <variant>`. Pixflux is not deterministic
   per seed, so a repeated request is not a way to get the same field.
 
+## Resource variants
+
+Batch `resource-variants` (bead `pulp_wars-glz`) adds a Boar and a Rabbit
+to `RESOURCE:GAME` and a Blueberry shrub and a Pear tree to
+`RESOURCE:FRUIT`. An asset's `subjectKey` (`<subject>/<VARIANT>`, for
+example `RESOURCE:GAME/BOAR`) names the subject text in `SHARED.json` that
+replaces the subject's own, so a variant that depicts something else is
+still registered under its subject. The runtime registers them after the
+batch-3 Deer and Peach Tree, and `chibiVariantV7` picks one per tile from
+its coordinates, the same hash as terrain and the LEGACY Game and Fruit
+variants. A review of a batch whose subjects are all resources captures
+the resource field of
+[`review-scene-v7.ts`](../../scripts/art/chibi/review-scene-v7.ts): Game on
+Forest and Fruit on Grass in runs of three, with a Fighter of each of the
+four player colours.
+
 ## Owner masks
 
 Owned assets (units, cities, and improvements that opt in) get a

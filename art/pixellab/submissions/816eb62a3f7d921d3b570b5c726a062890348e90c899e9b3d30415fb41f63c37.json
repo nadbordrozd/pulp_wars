@@ -1,0 +1,36 @@
+{
+  "id": "game-rabbit-a-edit",
+  "jobId": "c1299f48-4e09-49a5-b506-99c247f796ec",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "resource-variants",
+    "asset": "chibi-game-rabbit",
+    "subject": "RESOURCE:GAME",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 71402,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make both eyes small solid black dots with a tiny white shine instead of red, and recolour the pink ear insides pale cream. Keep the rabbit, grey fur, cream belly and tail, pose, outline and art style exactly the same, on a transparent background with nothing under it."
+      }
+    ],
+    "prompt": "Make both eyes small solid black dots with a tiny white shine instead of red, and recolour the pink ear insides pale cream. Keep the rabbit, grey fur, cream belly and tail, pose, outline and art style exactly the same, on a transparent background with nothing under it.",
+    "negativePrompt": "",
+    "description": "Make both eyes small solid black dots with a tiny white shine instead of red, and recolour the pink ear insides pale cream. Keep the rabbit, grey fur, cream belly and tail, pose, outline and art style exactly the same, on a transparent background with nothing under it.",
+    "editInstruction": "Make both eyes small solid black dots with a tiny white shine instead of red, and recolour the pink ear insides pale cream. Keep the rabbit, grey fur, cream belly and tail, pose, outline and art style exactly the same, on a transparent background with nothing under it.",
+    "source": {
+      "recipe": "game-rabbit-a",
+      "candidate": 0,
+      "sha256": "5f960737d8de8dede85e7bc483e885013c08a18f390d1a45b97cb7f13f05dce0"
+    }
+  }
+}

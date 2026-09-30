@@ -1,0 +1,998 @@
+{
+  "schemaVersion": 1,
+  "batch": "resource-variants",
+  "recipes": {
+    "fruit-blueberry-a": {
+      "id": "fruit-blueberry-a",
+      "asset": "chibi-fruit-blueberry",
+      "jobId": "sync-dd4dd959-8673-4959-bb3b-8ff04c5030ad",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-fruit-blueberry",
+        "subject": "RESOURCE:FRUIT",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71101,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small low wide blueberry shrub with no visible trunk, soft dark blue-green leaves in four big simple blobs, dotted with clusters of big round dusty indigo-blue blueberries; muted, calm colours; the shrub is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "tree trunk, basket, crate, pot, person, character, purple, violet, red berries, flowers"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small low wide blueberry shrub with no visible trunk, soft dark blue-green leaves in four big simple blobs, dotted with clusters of big round dusty indigo-blue blueberries; muted, calm colours; the shrub is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, tree trunk, basket, crate, pot, person, purple, violet, red berries, flowers",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small low wide blueberry shrub with no visible trunk, soft dark blue-green leaves in four big simple blobs, dotted with clusters of big round dusty indigo-blue blueberries; muted, calm colours; the shrub is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, tree trunk, basket, crate, pot, person, purple, violet, red berries, flowers."
+      },
+      "submittedAt": "2026-09-30T09:21:48.134Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/fruit-blueberry-a.png",
+      "rawSheetSha256": "e6df7288adf232cc82338bb4d12a4445435f6a2400f2b3541fc5459203269413",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.1353,
+          "footprintWidthShare": 0.9375,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:22:14.545Z",
+      "usageUsd": 0.007336499240663317,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Good blueberry bush on a grass and soil block; accepted through fruit-blueberry-a-edit.",
+        "reviewedAt": "2026-09-30T09:32:40.751Z"
+      }
+    },
+    "fruit-blueberry-a-edit": {
+      "id": "fruit-blueberry-a-edit",
+      "asset": "chibi-fruit-blueberry",
+      "jobId": "59dc43df-36ee-428b-9bd4-e7e04fe791c2",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-fruit-blueberry",
+        "subject": "RESOURCE:FRUIT",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71102,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove all ground: erase the grass and brown soil block under the bush so the leaves and blueberries stand directly on a transparent background with nothing at all under them. Keep the green leaves, blue berries, outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Remove all ground: erase the grass and brown soil block under the bush so the leaves and blueberries stand directly on a transparent background with nothing at all under them. Keep the green leaves, blue berries, outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove all ground: erase the grass and brown soil block under the bush so the leaves and blueberries stand directly on a transparent background with nothing at all under them. Keep the green leaves, blue berries, outline and art style exactly the same.",
+        "editInstruction": "Remove all ground: erase the grass and brown soil block under the bush so the leaves and blueberries stand directly on a transparent background with nothing at all under them. Keep the green leaves, blue berries, outline and art style exactly the same.",
+        "source": {
+          "recipe": "fruit-blueberry-a",
+          "candidate": 0,
+          "sha256": "e6df7288adf232cc82338bb4d12a4445435f6a2400f2b3541fc5459203269413"
+        }
+      },
+      "submittedAt": "2026-09-30T09:25:38.143Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/fruit-blueberry-a-edit.png",
+      "rawSheetSha256": "2c5c3c56461fb71b0694fa6507a26cb79f0f7fffde1baa0b4d0b1b5bbbfa1989",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6875,
+          "suspect": false
+        },
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6875,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:26:40.096Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Low blueberry shrub: green leaves around three big dusty-blue berries, soil block removed. Low wide silhouette distinct from the peach tree; blue is neither Teal nor Violet; about 32 x 30 px.",
+        "reviewedAt": "2026-09-30T09:32:43.305Z"
+      }
+    },
+    "fruit-pear-a": {
+      "id": "fruit-pear-a",
+      "asset": "chibi-fruit-pear",
+      "jobId": "sync-c549c9a3-3c3d-46db-9c4d-a090d88ff203",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-fruit-pear",
+        "subject": "RESOURCE:FRUIT",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71201,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small young pear tree with a short thin trunk and a tall oval crown of soft sage-green leaves, with four big teardrop-shaped pale lime-green pears hanging on it; muted, calm colours; the tree is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "basket, crate, pot, person, character, red apples, orange fruit, yellow fruit, flowers"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small young pear tree with a short thin trunk and a tall oval crown of soft sage-green leaves, with four big teardrop-shaped pale lime-green pears hanging on it; muted, calm colours; the tree is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, basket, crate, pot, person, red apples, orange fruit, yellow fruit, flowers",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small young pear tree with a short thin trunk and a tall oval crown of soft sage-green leaves, with four big teardrop-shaped pale lime-green pears hanging on it; muted, calm colours; the tree is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, basket, crate, pot, person, red apples, orange fruit, yellow fruit, flowers."
+      },
+      "submittedAt": "2026-09-30T09:22:14.548Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/fruit-pear-a.png",
+      "rawSheetSha256": "299e1d8f8862fbb382a4af67feda9bccedd3053034111a0583d5347c7157720e",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.5422,
+          "footprintWidthShare": 0.8276,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-09-30T09:22:47.874Z",
+      "usageUsd": 0.007927595191531711,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Good pear tree on a round grass disc; accepted through fruit-pear-a-edit.",
+        "reviewedAt": "2026-09-30T09:32:41.348Z"
+      }
+    },
+    "fruit-pear-a-edit": {
+      "id": "fruit-pear-a-edit",
+      "asset": "chibi-fruit-pear",
+      "jobId": "ab21dd45-adc3-42ac-9476-694cdc0441c4",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-fruit-pear",
+        "subject": "RESOURCE:FRUIT",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71202,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the round green grass disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leafy crown, pale green pears, trunk, outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Remove the round green grass disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leafy crown, pale green pears, trunk, outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove the round green grass disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leafy crown, pale green pears, trunk, outline and art style exactly the same.",
+        "editInstruction": "Remove the round green grass disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leafy crown, pale green pears, trunk, outline and art style exactly the same.",
+        "source": {
+          "recipe": "fruit-pear-a",
+          "candidate": 0,
+          "sha256": "299e1d8f8862fbb382a4af67feda9bccedd3053034111a0583d5347c7157720e"
+        }
+      },
+      "submittedAt": "2026-09-30T09:26:40.102Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/fruit-pear-a-edit.png",
+      "rawSheetSha256": "5e5a27ff6f042639298acd52d65337a22664b87dfc597b558cc10e4c1d4bf4bc",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0286,
+          "footprintWidthShare": 0.4828,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.0286,
+          "footprintWidthShare": 0.4828,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:27:44.477Z",
+      "usageUsd": 0.010522095123926798,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Young pear tree with a dark sage dome crown, brown trunk and pale lime-green teardrop pears, grass disc removed. Slim trunk and hanging pears distinct from the round peach tree; about 29 x 39 px.",
+        "reviewedAt": "2026-09-30T09:32:43.994Z"
+      }
+    },
+    "game-boar-a": {
+      "id": "game-boar-a",
+      "asset": "chibi-game-boar",
+      "jobId": "sync-5d042eed-82be-4e9c-bede-4398cc256007",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-game-boar",
+        "subject": "RESOURCE:GAME",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71301,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky cute wild boar standing and looking to the lower right, with a big head, a short blunt snout with a dark grey nose, two tiny cream tusks, short stubby legs and a stiff dark crest of bristles along its back, soft ash-grey and dusky taupe fur with a pale cream snout; muted, calm colours; the boar is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "hunter, person, character, saddle, harness, pink, red nose, pig, farm pig, mud"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cute wild boar standing and looking to the lower right, with a big head, a short blunt snout with a dark grey nose, two tiny cream tusks, short stubby legs and a stiff dark crest of bristles along its back, soft ash-grey and dusky taupe fur with a pale cream snout; muted, calm colours; the boar is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, hunter, person, saddle, harness, pink, red nose, pig, farm pig, mud",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cute wild boar standing and looking to the lower right, with a big head, a short blunt snout with a dark grey nose, two tiny cream tusks, short stubby legs and a stiff dark crest of bristles along its back, soft ash-grey and dusky taupe fur with a pale cream snout; muted, calm colours; the boar is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, hunter, person, saddle, harness, pink, red nose, pig, farm pig, mud."
+      },
+      "submittedAt": "2026-09-30T09:20:16.564Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/game-boar-a.png",
+      "rawSheetSha256": "0c3b9f64fbda7e76c72a770886c592592b3fff4d746a7d548423ea76934bdcd4",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4884,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:21:13.018Z",
+      "usageUsd": 0.00911719905005561,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Right chunky grey boar, but salmon ear insides and red-brown belly and leg shading (8% reddish pixels, close to Coral); fixed through game-boar-a-edit-2 and -edit-3.",
+        "reviewedAt": "2026-09-30T09:32:37.148Z"
+      }
+    },
+    "game-boar-a-edit": {
+      "id": "game-boar-a-edit",
+      "asset": "chibi-game-boar",
+      "jobId": "4836b4cf-4484-4fae-ab60-066f1e63a7b1",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-game-boar",
+        "subject": "RESOURCE:GAME",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71302,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour the pink ear insides, the pink cheek and mouth and the reddish belly and leg shading to soft dusky grey-taupe, so no pink or red is left anywhere. Keep the boar, tusks, bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves."
+          }
+        ],
+        "prompt": "Recolour the pink ear insides, the pink cheek and mouth and the reddish belly and leg shading to soft dusky grey-taupe, so no pink or red is left anywhere. Keep the boar, tusks, bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+        "negativePrompt": "",
+        "description": "Recolour the pink ear insides, the pink cheek and mouth and the reddish belly and leg shading to soft dusky grey-taupe, so no pink or red is left anywhere. Keep the boar, tusks, bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+        "editInstruction": "Recolour the pink ear insides, the pink cheek and mouth and the reddish belly and leg shading to soft dusky grey-taupe, so no pink or red is left anywhere. Keep the boar, tusks, bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+        "source": {
+          "recipe": "game-boar-a",
+          "candidate": 0,
+          "sha256": "0c3b9f64fbda7e76c72a770886c592592b3fff4d746a7d548423ea76934bdcd4"
+        }
+      },
+      "submittedAt": "2026-09-30T09:24:03.077Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/game-boar-a-edit.png",
+      "rawSheetSha256": "607a0a10dbc209f140dc223806c36a615e02cfcdbebe2a5fdec3b118ec785923",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4884,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.0824,
+          "footprintWidthShare": 0.4884,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:24:43.679Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Recolour turned the snout and cheeks pink: reads as a farm pig.",
+        "reviewedAt": "2026-09-30T09:32:37.858Z"
+      }
+    },
+    "game-boar-a-edit-2": {
+      "id": "game-boar-a-edit-2",
+      "asset": "chibi-game-boar",
+      "jobId": "3c58a127-7b92-4ff0-ab03-4b5544d13e25",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-game-boar",
+        "subject": "RESOURCE:GAME",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71303,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the salmon ear insides and the reddish-brown shading on the belly, chest and legs to dark taupe grey. The big snout and nose stay dark charcoal grey and the cheeks stay grey, never pink. Keep the boar, cream tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves."
+          }
+        ],
+        "prompt": "Recolour only the salmon ear insides and the reddish-brown shading on the belly, chest and legs to dark taupe grey. The big snout and nose stay dark charcoal grey and the cheeks stay grey, never pink. Keep the boar, cream tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+        "negativePrompt": "",
+        "description": "Recolour only the salmon ear insides and the reddish-brown shading on the belly, chest and legs to dark taupe grey. The big snout and nose stay dark charcoal grey and the cheeks stay grey, never pink. Keep the boar, cream tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+        "editInstruction": "Recolour only the salmon ear insides and the reddish-brown shading on the belly, chest and legs to dark taupe grey. The big snout and nose stay dark charcoal grey and the cheeks stay grey, never pink. Keep the boar, cream tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+        "source": {
+          "recipe": "game-boar-a",
+          "candidate": 0,
+          "sha256": "0c3b9f64fbda7e76c72a770886c592592b3fff4d746a7d548423ea76934bdcd4"
+        }
+      },
+      "submittedAt": "2026-09-30T09:28:35.837Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/game-boar-a-edit-2.png",
+      "rawSheetSha256": "30e00a72395d826678d4f6521798b8fee46d3160cadbc370fc3bc13acf359374",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4884,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4884,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:29:15.117Z",
+      "usageUsd": 0.00787221015824212,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Snout dark grey and belly clean, but the ear insides stay salmon pink; fixed in game-boar-a-edit-3.",
+        "reviewedAt": "2026-09-30T09:32:38.515Z"
+      }
+    },
+    "game-boar-a-edit-3": {
+      "id": "game-boar-a-edit-3",
+      "asset": "chibi-game-boar",
+      "jobId": "c76b16b6-8cbc-4363-b016-7f8d52222d3f",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-game-boar",
+        "subject": "RESOURCE:GAME",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71304,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Paint the inside of the ear the same dark charcoal grey as the snout, so no pink or salmon is left on the ear. Change nothing else: keep the boar, snout, tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves."
+          }
+        ],
+        "prompt": "Paint the inside of the ear the same dark charcoal grey as the snout, so no pink or salmon is left on the ear. Change nothing else: keep the boar, snout, tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+        "negativePrompt": "",
+        "description": "Paint the inside of the ear the same dark charcoal grey as the snout, so no pink or salmon is left on the ear. Change nothing else: keep the boar, snout, tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+        "editInstruction": "Paint the inside of the ear the same dark charcoal grey as the snout, so no pink or salmon is left on the ear. Change nothing else: keep the boar, snout, tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+        "source": {
+          "recipe": "game-boar-a-edit-2",
+          "candidate": 0,
+          "sha256": "1471beaa05a20959d7ff2aca929e0cd2f0278acda1228c48160f54609fabb7cc"
+        }
+      },
+      "submittedAt": "2026-09-30T09:29:57.997Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/game-boar-a-edit-3.png",
+      "rawSheetSha256": "e268af7dbf6e474bf850708b7167d48fa0f84d9e102051da2d95112b835f5880",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4884,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4884,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:30:32.662Z",
+      "usageUsd": 0.007789616690741645,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Chunky ash-grey wild boar with a brown bristle crest, cream tusks and a charcoal snout; ears, cheeks and belly carry no pink or red. Distinct low wide silhouette from the deer; bulkier than the deer (about 43 x 42 px) but grey and calm, so it never rivals a unit. Nothing under its hooves.",
+        "reviewedAt": "2026-09-30T09:32:41.986Z"
+      }
+    },
+    "game-boar-b": {
+      "id": "game-boar-b",
+      "asset": "chibi-game-boar",
+      "jobId": "sync-467a622a-9c81-4583-9afc-c5f824869ec2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-game-boar",
+        "subject": "RESOURCE:GAME",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71305,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky cute wild boar standing and looking to the lower right, with a big head, a short blunt snout with a dark grey nose, two tiny cream tusks, short stubby legs and a stiff dark crest of bristles along its back, soft ash-grey and dusky taupe fur with a pale cream snout; muted, calm colours; the boar is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The boar is small and compact, only about two thirds of the image wide and tall, with empty transparent space all around it. Its ear insides are dark grey.",
+            "negative": "hunter, person, character, saddle, harness, pink, pink ears, pink snout, red nose, pig, farm pig, piglet stripes, mud"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cute wild boar standing and looking to the lower right, with a big head, a short blunt snout with a dark grey nose, two tiny cream tusks, short stubby legs and a stiff dark crest of bristles along its back, soft ash-grey and dusky taupe fur with a pale cream snout; muted, calm colours; the boar is the only thing in the image. The boar is small and compact, only about two thirds of the image wide and tall, with empty transparent space all around it. Its ear insides are dark grey.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, hunter, person, saddle, harness, pink, pink ears, pink snout, red nose, pig, farm pig, piglet stripes, mud",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cute wild boar standing and looking to the lower right, with a big head, a short blunt snout with a dark grey nose, two tiny cream tusks, short stubby legs and a stiff dark crest of bristles along its back, soft ash-grey and dusky taupe fur with a pale cream snout; muted, calm colours; the boar is the only thing in the image. The boar is small and compact, only about two thirds of the image wide and tall, with empty transparent space all around it. Its ear insides are dark grey. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, hunter, person, saddle, harness, pink, pink ears, pink snout, red nose, pig, farm pig, piglet stripes, mud."
+      },
+      "submittedAt": "2026-09-30T09:31:16.774Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/game-boar-b.png",
+      "rawSheetSha256": "c551d8c9c21fbde3824950198f0a42553a8e92aa26feeed3421b9fb47e31a27c",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4889,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:31:42.721Z",
+      "usageUsd": 0.007181565629111396,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Not more compact (about the same bulk as game-boar-a) and brings back pink ears and a red eye.",
+        "reviewedAt": "2026-09-30T09:32:39.421Z"
+      }
+    },
+    "game-rabbit-a": {
+      "id": "game-rabbit-a",
+      "asset": "chibi-game-rabbit",
+      "jobId": "sync-abb6904c-84e0-4d96-ba50-8a3b58622ffe",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-game-rabbit",
+        "subject": "RESOURCE:GAME",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71401,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+            "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+            "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small chunky cute wild rabbit sitting up and looking to the lower right, with a big round head, two long upright ears with pale cream insides, a tiny dark grey nose, a round fluffy white tail, soft light grey fur with a cream belly and muzzle; muted, calm colours; the rabbit is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "hunter, person, character, carrot, pink ears, pink nose, red eyes, hat, clothes"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cute wild rabbit sitting up and looking to the lower right, with a big round head, two long upright ears with pale cream insides, a tiny dark grey nose, a round fluffy white tail, soft light grey fur with a cream belly and muzzle; muted, calm colours; the rabbit is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, hunter, person, carrot, pink ears, pink nose, red eyes, hat, clothes",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small chunky cute wild rabbit sitting up and looking to the lower right, with a big round head, two long upright ears with pale cream insides, a tiny dark grey nose, a round fluffy white tail, soft light grey fur with a cream belly and muzzle; muted, calm colours; the rabbit is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, hunter, person, carrot, pink ears, pink nose, red eyes, hat, clothes."
+      },
+      "submittedAt": "2026-09-30T09:21:13.032Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/game-rabbit-a.png",
+      "rawSheetSha256": "5f960737d8de8dede85e7bc483e885013c08a18f390d1a45b97cb7f13f05dce0",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.1387,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:21:48.132Z",
+      "usageUsd": 0.008299155076344808,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Right cute grey rabbit, but red eyes and pink ear insides; fixed in game-rabbit-a-edit.",
+        "reviewedAt": "2026-09-30T09:32:40.152Z"
+      }
+    },
+    "game-rabbit-a-edit": {
+      "id": "game-rabbit-a-edit",
+      "asset": "chibi-game-rabbit",
+      "jobId": "c1299f48-4e09-49a5-b506-99c247f796ec",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "resource-variants",
+        "asset": "chibi-game-rabbit",
+        "subject": "RESOURCE:GAME",
+        "faction": "ORIGINAL",
+        "recipeClass": "resource",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 71402,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make both eyes small solid black dots with a tiny white shine instead of red, and recolour the pink ear insides pale cream. Keep the rabbit, grey fur, cream belly and tail, pose, outline and art style exactly the same, on a transparent background with nothing under it."
+          }
+        ],
+        "prompt": "Make both eyes small solid black dots with a tiny white shine instead of red, and recolour the pink ear insides pale cream. Keep the rabbit, grey fur, cream belly and tail, pose, outline and art style exactly the same, on a transparent background with nothing under it.",
+        "negativePrompt": "",
+        "description": "Make both eyes small solid black dots with a tiny white shine instead of red, and recolour the pink ear insides pale cream. Keep the rabbit, grey fur, cream belly and tail, pose, outline and art style exactly the same, on a transparent background with nothing under it.",
+        "editInstruction": "Make both eyes small solid black dots with a tiny white shine instead of red, and recolour the pink ear insides pale cream. Keep the rabbit, grey fur, cream belly and tail, pose, outline and art style exactly the same, on a transparent background with nothing under it.",
+        "source": {
+          "recipe": "game-rabbit-a",
+          "candidate": 0,
+          "sha256": "5f960737d8de8dede85e7bc483e885013c08a18f390d1a45b97cb7f13f05dce0"
+        }
+      },
+      "submittedAt": "2026-09-30T09:24:43.684Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-resource-variants/game-rabbit-a-edit.png",
+      "rawSheetSha256": "f579df0ee31116ca906dc2ba5515faaeba0e20bad303256427681b5ac54c4fee",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.1387,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.1387,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-09-30T09:25:38.136Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Cute sitting grey rabbit with long upright ears, cream belly, tail and ear insides, black eyes (game-rabbit-a had red eyes and pink ears). Tall-eared silhouette distinct from the deer and boar; no ground.",
+        "reviewedAt": "2026-09-30T09:32:42.721Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-fruit-blueberry": {
+      "id": "chibi-fruit-blueberry",
+      "subject": "RESOURCE:FRUIT",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fruit-blueberry-a-edit",
+      "candidate": 0,
+      "candidateSha256": "31b30d51b8fdc07d4ed72313d3d50ea272815c0d2ee3f33ec6628b0fd8fbb35a",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fruit-blueberry.png",
+        "sha256": "31b30d51b8fdc07d4ed72313d3d50ea272815c0d2ee3f33ec6628b0fd8fbb35a",
+        "pixelSha256": "9116d1dfeb848e8bc2f04007d913a06526de48e2d9ea2e676bd2440bff9829e7",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6875,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Low blueberry shrub: green leaves around three big dusty-blue berries, soil block removed. Low wide silhouette distinct from the peach tree; blue is neither Teal nor Violet; about 32 x 30 px.",
+      "acceptedAt": "2026-09-30T09:32:43.305Z"
+    },
+    "chibi-fruit-pear": {
+      "id": "chibi-fruit-pear",
+      "subject": "RESOURCE:FRUIT",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "fruit-pear-a-edit",
+      "candidate": 0,
+      "candidateSha256": "1110ccfdb4154bac6ceea59d7c0704a82e90bbb940c46402da690b395acb1893",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-fruit-pear.png",
+        "sha256": "1110ccfdb4154bac6ceea59d7c0704a82e90bbb940c46402da690b395acb1893",
+        "pixelSha256": "e708f560a433a15887994c084885bf3f50ba0e2988da242e6146f2962801fffb",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.0286,
+        "footprintWidthShare": 0.4828,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Young pear tree with a dark sage dome crown, brown trunk and pale lime-green teardrop pears, grass disc removed. Slim trunk and hanging pears distinct from the round peach tree; about 29 x 39 px.",
+      "acceptedAt": "2026-09-30T09:32:43.994Z"
+    },
+    "chibi-game-boar": {
+      "id": "chibi-game-boar",
+      "subject": "RESOURCE:GAME",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "game-boar-a-edit-3",
+      "candidate": 0,
+      "candidateSha256": "338b3cdf4459a5b9fe36bb8e9092a8e9e2d0a8105aa55ac53b749b976d81f9b8",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-game-boar.png",
+        "sha256": "338b3cdf4459a5b9fe36bb8e9092a8e9e2d0a8105aa55ac53b749b976d81f9b8",
+        "pixelSha256": "2a183dd8423107c105d23aeabccdaadedb3cb6128e5fc1fb0fc4d7cd346436a9",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.4884,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Chunky ash-grey wild boar with a brown bristle crest, cream tusks and a charcoal snout; ears, cheeks and belly carry no pink or red. Distinct low wide silhouette from the deer; bulkier than the deer (about 43 x 42 px) but grey and calm, so it never rivals a unit. Nothing under its hooves.",
+      "acceptedAt": "2026-09-30T09:32:41.986Z"
+    },
+    "chibi-game-rabbit": {
+      "id": "chibi-game-rabbit",
+      "subject": "RESOURCE:GAME",
+      "assetClass": "RESOURCE",
+      "status": "ACCEPTED",
+      "recipe": "game-rabbit-a-edit",
+      "candidate": 0,
+      "candidateSha256": "9ea500c62c1585758113855e1a3c9c563cd8b9e731140181d8dec09bfd36e1c5",
+      "master": {
+        "path": "public/assets/chibi/resources/chibi-game-rabbit.png",
+        "sha256": "9ea500c62c1585758113855e1a3c9c563cd8b9e731140181d8dec09bfd36e1c5",
+        "pixelSha256": "544c7b5e4493b7ae14e5c8a1358ecd63092da0b0366140540b6db8c3048a0622",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.1387,
+        "footprintWidthShare": 0.75,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Cute sitting grey rabbit with long upright ears, cream belly, tail and ear insides, black eyes (game-rabbit-a had red eyes and pink ears). Tall-eared silhouette distinct from the deer and boar; no ground.",
+      "acceptedAt": "2026-09-30T09:32:42.721Z"
+    }
+  }
+}

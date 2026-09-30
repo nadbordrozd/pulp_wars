@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "batch": "resource-variants",
+  "title": "Chibi resource variants: two more Game animals and two more Fruit plants",
+  "bead": "pulp_wars-glz",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-game-boar",
+      "subject": "RESOURCE:GAME",
+      "subjectKey": "RESOURCE:GAME/BOAR",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-game-rabbit",
+      "subject": "RESOURCE:GAME",
+      "subjectKey": "RESOURCE:GAME/RABBIT",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-fruit-blueberry",
+      "subject": "RESOURCE:FRUIT",
+      "subjectKey": "RESOURCE:FRUIT/BLUEBERRY",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-fruit-pear",
+      "subject": "RESOURCE:FRUIT",
+      "subjectKey": "RESOURCE:FRUIT/PEAR",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "game-boar-a",
+      "asset": "chibi-game-boar",
+      "endpoint": "create-image-pixen",
+      "seed": 71301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "hunter, person, character, saddle, harness, pink, red nose, pig, farm pig, mud"
+    },
+    {
+      "id": "game-rabbit-a",
+      "asset": "chibi-game-rabbit",
+      "endpoint": "create-image-pixen",
+      "seed": 71401,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "hunter, person, character, carrot, pink ears, pink nose, red eyes, hat, clothes"
+    },
+    {
+      "id": "fruit-blueberry-a",
+      "asset": "chibi-fruit-blueberry",
+      "endpoint": "create-image-pixen",
+      "seed": 71101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "tree trunk, basket, crate, pot, person, character, purple, violet, red berries, flowers"
+    },
+    {
+      "id": "fruit-pear-a",
+      "asset": "chibi-fruit-pear",
+      "endpoint": "create-image-pixen",
+      "seed": 71201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "basket, crate, pot, person, character, red apples, orange fruit, yellow fruit, flowers"
+    },
+    {
+      "id": "game-boar-a-edit",
+      "asset": "chibi-game-boar",
+      "endpoint": "edit-image-pixen",
+      "seed": 71302,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "game-boar-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the pink ear insides, the pink cheek and mouth and the reddish belly and leg shading to soft dusky grey-taupe, so no pink or red is left anywhere. Keep the boar, tusks, bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+      "notes": "game-boar-a is the right chunky boar, but its ear insides, cheek and belly shading are pink-red (8% reddish pixels), which could read as the Coral owner colour."
+    },
+    {
+      "id": "game-rabbit-a-edit",
+      "asset": "chibi-game-rabbit",
+      "endpoint": "edit-image-pixen",
+      "seed": 71402,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "game-rabbit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make both eyes small solid black dots with a tiny white shine instead of red, and recolour the pink ear insides pale cream. Keep the rabbit, grey fur, cream belly and tail, pose, outline and art style exactly the same, on a transparent background with nothing under it.",
+      "notes": "game-rabbit-a is the right cute rabbit, but its eyes are red and its ear insides pink."
+    },
+    {
+      "id": "fruit-blueberry-a-edit",
+      "asset": "chibi-fruit-blueberry",
+      "endpoint": "edit-image-pixen",
+      "seed": 71102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "fruit-blueberry-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and brown soil block under the bush so the leaves and blueberries stand directly on a transparent background with nothing at all under them. Keep the green leaves, blue berries, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of fruit-blueberry-a (a good blueberry bush on a soil block)."
+    },
+    {
+      "id": "fruit-pear-a-edit",
+      "asset": "chibi-fruit-pear",
+      "endpoint": "edit-image-pixen",
+      "seed": 71202,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "fruit-pear-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the round green grass disc under the trunk so the little tree stands directly on a transparent background with nothing at all under it. Keep the leafy crown, pale green pears, trunk, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of fruit-pear-a (a good pear tree on a grass disc)."
+    },
+    {
+      "id": "game-boar-a-edit-2",
+      "asset": "chibi-game-boar",
+      "endpoint": "edit-image-pixen",
+      "seed": 71303,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "game-boar-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the salmon ear insides and the reddish-brown shading on the belly, chest and legs to dark taupe grey. The big snout and nose stay dark charcoal grey and the cheeks stay grey, never pink. Keep the boar, cream tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+      "notes": "game-boar-a-edit turned the snout and cheeks pink (a farm pig); ask again with the snout named as dark grey."
+    },
+    {
+      "id": "game-boar-a-edit-3",
+      "asset": "chibi-game-boar",
+      "endpoint": "edit-image-pixen",
+      "seed": 71304,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "game-boar-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Paint the inside of the ear the same dark charcoal grey as the snout, so no pink or salmon is left on the ear. Change nothing else: keep the boar, snout, tusks, brown bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+      "notes": "game-boar-a-edit-2 fixed the snout and belly but the ear inside is still salmon pink, close to the Coral owner colour."
+    },
+    {
+      "id": "game-boar-b",
+      "asset": "chibi-game-boar",
+      "endpoint": "create-image-pixen",
+      "seed": 71305,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The boar is small and compact, only about two thirds of the image wide and tall, with empty transparent space all around it. Its ear insides are dark grey.",
+      "negativeAddendum": "hunter, person, character, saddle, harness, pink, pink ears, pink snout, red nose, pig, farm pig, piglet stripes, mud",
+      "notes": "game-boar-a (and its edits) fills the canvas: about 43 x 42 px and 1.5 times the deer area; ask for a compact boar nearer the deer and peach size."
+    }
+  ]
+}

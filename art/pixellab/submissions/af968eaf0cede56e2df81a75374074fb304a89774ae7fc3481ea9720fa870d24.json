@@ -1,0 +1,36 @@
+{
+  "id": "game-boar-a-edit",
+  "jobId": "4836b4cf-4484-4fae-ab60-066f1e63a7b1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "resource-variants",
+    "asset": "chibi-game-boar",
+    "subject": "RESOURCE:GAME",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 71302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the pink ear insides, the pink cheek and mouth and the reddish belly and leg shading to soft dusky grey-taupe, so no pink or red is left anywhere. Keep the boar, tusks, bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves."
+      }
+    ],
+    "prompt": "Recolour the pink ear insides, the pink cheek and mouth and the reddish belly and leg shading to soft dusky grey-taupe, so no pink or red is left anywhere. Keep the boar, tusks, bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "negativePrompt": "",
+    "description": "Recolour the pink ear insides, the pink cheek and mouth and the reddish belly and leg shading to soft dusky grey-taupe, so no pink or red is left anywhere. Keep the boar, tusks, bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "editInstruction": "Recolour the pink ear insides, the pink cheek and mouth and the reddish belly and leg shading to soft dusky grey-taupe, so no pink or red is left anywhere. Keep the boar, tusks, bristle crest, grey fur, pose, outline and art style exactly the same, on a transparent background with nothing under its hooves.",
+    "source": {
+      "recipe": "game-boar-a",
+      "candidate": 0,
+      "sha256": "0c3b9f64fbda7e76c72a770886c592592b3fff4d746a7d548423ea76934bdcd4"
+    }
+  }
+}

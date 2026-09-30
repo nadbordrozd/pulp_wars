@@ -22,6 +22,11 @@
  *   is Undead too, so both land rows show the Undead art, an extra Human
  *   seat owns the scale Fighter, and `GRAVE` places a bare Grave and one
  *   under the rival's Skeleton in the middle row.
+ * - RESOURCES (9 x 7): for a batch of resource subjects only (the Game and
+ *   Fruit variants, pulp_wars-glz): a field of Game on Forest and Fruit on
+ *   Grass in runs of three or more, so every coordinate-hashed variant shows
+ *   next to its neighbours, with a Fighter of each of the four player colours
+ *   (two extra seats) and a Marksman on a Game tile for scale and contrast.
  */
 import type {
   CoordV7,
@@ -46,10 +51,11 @@ interface Cell {
   readonly unit?: UnitRoleIdV7 | "EMBARKED_TRANSPORT";
   /**
    * Overrides the showcase's column rule (viewer left of the capital).
-   * HUMAN is an extra Human seat added for Undead rosters (its cells lie in
-   * the viewer's territory).
+   * HUMAN is an extra Human seat added for Undead rosters and the resource
+   * field, EXTRA a second one for the resource field (their cells lie in the
+   * viewer's territory).
    */
-  readonly owner?: "VIEWER" | "RIVAL" | "HUMAN";
+  readonly owner?: "VIEWER" | "RIVAL" | "HUMAN" | "EXTRA";
   /** A Grave marker on this cell (Undead rosters). */
   readonly grave?: true;
 }
@@ -154,6 +160,55 @@ const SHOWCASE: Layout = [
 /** The showcase's capital cell: column 4, row 3. */
 const SHOWCASE_CAPITAL = { x: 4, y: 3 } as const;
 
+const GAME: Cell = { terrain: F, resource: "GAME" };
+const FRUIT: Cell = { terrain: G, resource: "FRUIT" };
+
+/**
+ * The resource field: Game on Forest and Fruit on Grass in runs of three
+ * along rows and columns (each run shows all three variants, whatever the
+ * patch's origin), a Fighter of each player colour around the capital
+ * (column 4, row 3) where a phone sees them, and a Marksman on Game.
+ */
+const RESOURCE_FIELD: Layout = [
+  [GAME, GAME, GAME, FRUIT, FRUIT, FRUIT, GAME, GAME, GAME],
+  [FRUIT, FRUIT, FRUIT, GAME, GAME, GAME, FRUIT, FRUIT, FRUIT],
+  [
+    GAME,
+    GAME,
+    GAME,
+    { terrain: G, owner: "VIEWER", unit: "FIGHTER" },
+    FRUIT,
+    { terrain: G, owner: "RIVAL", unit: "FIGHTER" },
+    GAME,
+    GAME,
+    GAME,
+  ],
+  [FRUIT, FRUIT, FRUIT, GAME, { terrain: G }, GAME, FRUIT, FRUIT, FRUIT],
+  [
+    GAME,
+    GAME,
+    GAME,
+    { terrain: G, owner: "HUMAN", unit: "FIGHTER" },
+    FRUIT,
+    { terrain: G, owner: "EXTRA", unit: "FIGHTER" },
+    GAME,
+    GAME,
+    GAME,
+  ],
+  [
+    FRUIT,
+    FRUIT,
+    FRUIT,
+    GAME,
+    { ...GAME, owner: "VIEWER", unit: "MARKSMAN" },
+    GAME,
+    FRUIT,
+    FRUIT,
+    FRUIT,
+  ],
+  [GAME, GAME, GAME, FRUIT, FRUIT, FRUIT, GAME, GAME, GAME],
+];
+
 /** Every art subject the showcase already draws. */
 const SHOWCASE_SUBJECTS: ReadonlySet<string> = new Set(
   SHOWCASE.flatMap((row) =>
@@ -186,7 +241,7 @@ const ROSTER_COLUMNS = 9;
 const ROSTER_CAPITAL = { x: 4, y: 2 } as const;
 
 export interface ChibiReviewSceneLayoutV7 {
-  readonly kind: "SHOWCASE" | "ROSTER";
+  readonly kind: "SHOWCASE" | "ROSTER" | "RESOURCES";
   readonly layout: Layout;
   readonly capital: CoordV7;
   /** ROSTER only: the rival is drawn as Undead. */
@@ -196,7 +251,14 @@ export interface ChibiReviewSceneLayoutV7 {
    * owns a Fighter for scale.
    */
   readonly undeadViewer: boolean;
+  /**
+   * Extra Human seats, in colours no seat uses: HUMAN for Undead rosters,
+   * HUMAN and EXTRA for the resource field (all four player colours).
+   */
+  readonly extraSeats: readonly ExtraSeat[];
 }
+
+type ExtraSeat = "HUMAN" | "EXTRA";
 
 type Owner = "VIEWER" | "RIVAL";
 
@@ -253,6 +315,18 @@ function rosterRow(
 export function chibiReviewSceneLayoutV7(
   subjects: readonly string[],
 ): ChibiReviewSceneLayoutV7 {
+  if (
+    subjects.length > 0 &&
+    subjects.every((subject) => subject.startsWith("RESOURCE:"))
+  )
+    return {
+      kind: "RESOURCES",
+      layout: RESOURCE_FIELD,
+      capital: SHOWCASE_CAPITAL,
+      undeadRival: false,
+      undeadViewer: false,
+      extraSeats: ["HUMAN", "EXTRA"],
+    };
   const roster = subjects.filter(
     (subject) =>
       (subject.startsWith("UNIT:") || subject.startsWith("IMPROVEMENT:")) &&
@@ -265,6 +339,7 @@ export function chibiReviewSceneLayoutV7(
       capital: SHOWCASE_CAPITAL,
       undeadRival: false,
       undeadViewer: false,
+      extraSeats: [],
     };
   const land = roster.filter((subject) => !WATER_SUBJECTS.has(subject));
   const water = roster.filter((subject) => WATER_SUBJECTS.has(subject));
@@ -300,6 +375,7 @@ export function chibiReviewSceneLayoutV7(
     capital: ROSTER_CAPITAL,
     undeadRival: true,
     undeadViewer: undead,
+    extraSeats: undead ? ["HUMAN"] : [],
   };
 }
 
@@ -346,25 +422,27 @@ export function chibiReviewSceneViewV7(
   // The showcase splits owners by column; roster cells name their owner.
   // The extra Human seat's cells lie in the viewer's territory.
   const viewerOwns = (cell: Cell, x: number): boolean =>
-    cell.owner === undefined
-      ? x <= capitalCell.x
-      : cell.owner === "VIEWER" || cell.owner === "HUMAN";
+    cell.owner === undefined ? x <= capitalCell.x : cell.owner !== "RIVAL";
   // Undead rosters: an extra Human seat, in a colour no seat uses, owns the
-  // Fighter kept for scale.
+  // Fighter kept for scale; the resource field adds two, so all four player
+  // colours stand among the resources.
   const usedColors = new Set(live.players.map((player) => player.color));
-  const human = scene.undeadViewer
-    ? {
+  const freeColors = (["GOLD", "VIOLET", "TEAL", "CORAL"] as const).filter(
+    (color) => !usedColors.has(color),
+  );
+  const firstExtraId = Math.max(...live.players.map((player) => player.id)) + 1;
+  const extras = new Map(
+    scene.extraSeats.map((name, index) => [
+      name,
+      {
         ...rival,
-        id: (Math.max(...live.players.map((player) => player.id)) +
-          1) as typeof rival.id,
-        seat: live.players.length,
-        color:
-          (["GOLD", "VIOLET", "TEAL", "CORAL"] as const).find(
-            (color) => !usedColors.has(color),
-          ) ?? rival.color,
+        id: (firstExtraId + index) as typeof rival.id,
+        seat: live.players.length + index,
+        color: freeColors[index] ?? rival.color,
         faction: "ORIGINAL" as const,
-      }
-    : null;
+      },
+    ]),
+  );
   const tiles: Tile[] = live.board.tiles.map((tile) => {
     const cell = cellAt(tile.at);
     const viewerSide =
@@ -397,13 +475,17 @@ export function chibiReviewSceneViewV7(
             const embarked = cell.unit === "EMBARKED_TRANSPORT";
             const naval =
               cell.unit === "PATROL_BOAT" || cell.unit === "BATTLESHIP";
+            const extra =
+              cell.owner === "HUMAN" || cell.owner === "EXTRA"
+                ? extras.get(cell.owner)
+                : undefined;
             return [
               {
                 ...template,
                 id: (9000 + y * columns + x) as typeof template.id,
                 ownerId:
-                  cell.owner === "HUMAN" && human !== null
-                    ? human.id
+                  extra !== undefined
+                    ? extra.id
                     : viewerUnit
                       ? viewerId
                       : rival.id,
@@ -438,7 +520,7 @@ export function chibiReviewSceneViewV7(
               : player,
           )
         : live.players),
-      ...(human === null ? [] : [human]),
+      ...extras.values(),
     ],
     board: { ...live.board, tiles, territoryBorders: [] },
     cities: [{ ...capital, at: capitalAt }],

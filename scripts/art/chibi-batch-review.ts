@@ -25,6 +25,9 @@
  *                          showcase; others get a roster of their unit and
  *                          improvement subjects for the viewer and an Undead
  *                          rival, ships on water, with Fighters for scale
+ *                          (a batch of resource subjects only gets the
+ *                          resource field: Game and Fruit variants in runs,
+ *                          a Fighter of each of the four player colours)
  *   ingame-effects-*.png   effect batches (every asset a STATUS or EFFECT,
  *                          bead pulp_wars-vkq.14): the synthetic effects
  *                          scene (scripts/art/chibi/review-effects-v7.ts)
@@ -1603,7 +1606,7 @@ async function captureScene(
     await writeFile(file, Buffer.from(shot.data, "base64"));
     evidence.push({
       file: posix(file),
-      viewport: `${viewport.width}x${viewport.height} CSS at DPR ${viewport.dpr} (synthetic ${kind === "ROSTER" ? "roster" : "showcase"})`,
+      viewport: `${viewport.width}x${viewport.height} CSS at DPR ${viewport.dpr} (synthetic ${kind === "ROSTER" ? "roster" : kind === "RESOURCES" ? "resource field" : "showcase"})`,
       zoomStep,
       tileCssPx: await evaluate<string | null>(
         connection,

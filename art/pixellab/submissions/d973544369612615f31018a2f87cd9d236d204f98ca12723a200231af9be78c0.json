@@ -1,0 +1,36 @@
+{
+  "id": "fruit-blueberry-a-edit",
+  "jobId": "59dc43df-36ee-428b-9bd4-e7e04fe791c2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "resource-variants",
+    "asset": "chibi-fruit-blueberry",
+    "subject": "RESOURCE:FRUIT",
+    "faction": "ORIGINAL",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 71102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and brown soil block under the bush so the leaves and blueberries stand directly on a transparent background with nothing at all under them. Keep the green leaves, blue berries, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and brown soil block under the bush so the leaves and blueberries stand directly on a transparent background with nothing at all under them. Keep the green leaves, blue berries, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and brown soil block under the bush so the leaves and blueberries stand directly on a transparent background with nothing at all under them. Keep the green leaves, blue berries, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and brown soil block under the bush so the leaves and blueberries stand directly on a transparent background with nothing at all under them. Keep the green leaves, blue berries, outline and art style exactly the same.",
+    "source": {
+      "recipe": "fruit-blueberry-a",
+      "candidate": 0,
+      "sha256": "e6df7288adf232cc82338bb4d12a4445435f6a2400f2b3541fc5459203269413"
+    }
+  }
+}

@@ -1003,6 +1003,41 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 32,
     url: chibiArtUrl("assets/chibi/effects/chibi-effect-cure.png"),
   },
+  // Resource variants (pulp_wars-glz): more Game animals and Fruit plants.
+  // They follow the batch-3 Deer and Peach Tree in registry order, and each
+  // tile picks one by its coordinates (chibiVariantV7), as terrain does.
+  {
+    id: "chibi-game-boar",
+    subject: "RESOURCE:GAME",
+    assetClass: "RESOURCE",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/resources/chibi-game-boar.png"),
+  },
+  {
+    id: "chibi-game-rabbit",
+    subject: "RESOURCE:GAME",
+    assetClass: "RESOURCE",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/resources/chibi-game-rabbit.png"),
+  },
+  {
+    id: "chibi-fruit-blueberry",
+    subject: "RESOURCE:FRUIT",
+    assetClass: "RESOURCE",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/resources/chibi-fruit-blueberry.png"),
+  },
+  {
+    id: "chibi-fruit-pear",
+    subject: "RESOURCE:FRUIT",
+    assetClass: "RESOURCE",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/resources/chibi-fruit-pear.png"),
+  },
 ];
 
 export function chibiArtUrl(path: string): string {
