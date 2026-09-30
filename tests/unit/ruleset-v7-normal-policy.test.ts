@@ -20,6 +20,7 @@ import {
   createInitialMapStateV7,
   createPublicPlanningWorkV7,
   effectiveRoleRuleV7,
+  MARKET_INCOME_CAP_V7,
   previewEconomicV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
@@ -72,6 +73,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/model/ids",
       "../engine/rules/ruleset-v7",
       "../engine/v7/commands",
+      "../engine/v7/economy",
       "../engine/v7/events",
       "../engine/v7/movement",
       "../engine/v7/query",
@@ -422,6 +424,80 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     expect(chooseNormalCommandV7(equalView)).toEqual(
       chooseNormalCommandV7(hidden),
     );
+  });
+
+  it("caps an unpublished enemy Market's Pillage value at the engine's Market income cap", () => {
+    // pulp_wars-box: the engine pays min(3, 1 + adjacent families) for one
+    // Market (revision 16); an unpublished Market is valued the same way.
+    const state = exploredAllV7(allTechsV7(initialV7(7_711)));
+    const base = viewForV7(state, state.humanPlayerId);
+    const city = base.cities.find(
+      (candidate) => candidate.ownerId !== base.viewer.id,
+    );
+    const actor = base.units.find((unit) => unit.ownerId === base.viewer.id);
+    if (city === undefined || actor === undefined)
+      throw new Error("Market Pillage fixture missing");
+    const target = { x: city.at.x + 1, y: city.at.y };
+    const supports = [
+      { at: { x: city.at.x + 2, y: city.at.y }, improvement: "FARM" },
+      {
+        at: { x: city.at.x + 1, y: city.at.y + 1 },
+        improvement: "LUMBER_CAMP",
+      },
+      { at: { x: city.at.x + 1, y: city.at.y - 1 }, improvement: "MINE" },
+    ] as const;
+    const marketView = (families: number): PlayerViewV7 => ({
+      ...base,
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) => {
+          if (
+            Math.max(
+              Math.abs(tile.at.x - city.at.x),
+              Math.abs(tile.at.y - city.at.y),
+            ) > 2 ||
+            !tile.explored
+          )
+            return tile;
+          const support = supports
+            .slice(0, families)
+            .find((item) => same(item.at, tile.at));
+          return {
+            ...tile,
+            biome: "PLAINS" as const,
+            terrain: "GRASS" as const,
+            resource: null,
+            improvement: same(tile.at, target)
+              ? ("MARKET" as const)
+              : (support?.improvement ?? null),
+            road: false,
+            site: same(tile.at, city.at) ? tile.site : null,
+            territoryCityId: city.id,
+            territoryOwnerId: city.ownerId,
+          };
+        }),
+      },
+      units: base.units
+        .filter((unit) => !same(unit.at, target) || unit.id === actor.id)
+        .map((unit) =>
+          unit.id === actor.id
+            ? { ...unit, at: target, form: "LAND" as const, activation: READY }
+            : unit,
+        ),
+      improvementValues: [],
+      populationContributions: [],
+    });
+    const command = { kind: "PILLAGE" as const, unitId: actor.id };
+    const scoreWith = (families: number) => {
+      const view = marketView(families);
+      expect(queryPlayerCommandsV7(view)).toContainEqual(command);
+      return scoreCommandV7(view, command).immediateValue;
+    };
+    // Raw income 1 + families: 2, 3, then 4 capped to MARKET_INCOME_CAP_V7.
+    expect(MARKET_INCOME_CAP_V7).toBe(3);
+    expect(scoreWith(1)).toBe(1 + 5 * 2);
+    expect(scoreWith(2)).toBe(1 + 5 * 3);
+    expect(scoreWith(3)).toBe(1 + 5 * MARKET_INCOME_CAP_V7);
   });
 
   it.each(["PORT", "SHIPYARD"] as const)(

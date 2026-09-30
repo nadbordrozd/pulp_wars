@@ -8,6 +8,7 @@ import {
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
+import { marketCoinsV7 } from "../engine/v7/economy";
 import type { CombatPreviewV7 } from "../engine/v7/events";
 import { validatePlayerMovementPathV7 } from "../engine/v7/movement";
 import {
@@ -6091,8 +6092,9 @@ function visibleImprovementValueAt(
     cities: view.cities,
   };
   const contribution = spatialContributionAtV7(graph, at, tile.improvement);
+  // Revision 16: the engine pays `min(3, 1 + families)` for one Market.
   return tile.improvement === "MARKET"
-    ? contribution.marketIncome
+    ? marketCoinsV7(contribution.marketIncome)
     : contribution.population;
 }
 
