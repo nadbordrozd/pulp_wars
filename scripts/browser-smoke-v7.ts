@@ -560,7 +560,7 @@ try {
   }
 
   const chibi = await probeChibiArtSet(connection);
-  const undead = await probeUndeadFlag(connection);
+  const undead = await probeUndeadSetup(connection);
   await evaluate(
     connection,
     `localStorage.removeItem('pulpWars.save.current')`,
@@ -643,7 +643,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; ?undead=1 ${undead}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -789,18 +789,17 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
 }
 
 /**
- * Revision 13 development flag: `?undead=1` offers a faction per seat, an
- * Undead-vs-Undead match starts from the production setup and is played to
- * its outcome, the save resumes without the flag, and a replay-valid Undead
- * save resumes to a human turn where the offered Raise Dead command is
- * selected from the keyboard and dispatched from its dock button.
+ * Undead in the default route (pulp_wars-vkq.16): setup always offers a
+ * faction per seat, an Undead-vs-Undead match starts from the production
+ * setup and is played to its outcome, the save resumes on the default route,
+ * and a replay-valid Undead save resumes to a human turn where the offered
+ * Raise Dead command is selected from the keyboard and dispatched from its
+ * dock button.
  */
-async function probeUndeadFlag(connection: Connection): Promise<string> {
-  const flagUrl = (flag: boolean): string => {
+async function probeUndeadSetup(connection: Connection): Promise<string> {
+  const defaultUrl = (): string => {
     const url = new URL(baseUrl);
     url.searchParams.delete("art");
-    if (flag) url.searchParams.set("undead", "1");
-    else url.searchParams.delete("undead");
     return url.href;
   };
   const navigateFresh = async (
@@ -823,18 +822,7 @@ async function probeUndeadFlag(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(
-    flagUrl(false),
-    `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
-  );
-  if (
-    await evaluate<boolean>(
-      connection,
-      `document.querySelector('[data-v7-factions]') !== null`,
-    )
-  )
-    throw new Error("Setup without ?undead=1 offered faction choice");
-  await navigateFresh(
-    flagUrl(true),
+    defaultUrl(),
     `document.querySelector('[data-v7-factions]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
   );
   const labels = await evaluate<readonly string[]>(
@@ -843,7 +831,11 @@ async function probeUndeadFlag(connection: Connection): Promise<string> {
   );
   if (
     JSON.stringify(labels) !==
-    JSON.stringify(["Your faction", "Player 2 faction"])
+      JSON.stringify(["Your faction", "Player 2 faction"]) ||
+    (await evaluate<boolean>(
+      connection,
+      `Array.from(document.querySelectorAll('[data-v7-factions] select')).some((field) => field.value !== 'ORIGINAL')`,
+    ))
   )
     throw new Error(`Unexpected faction fields: ${JSON.stringify(labels)}`);
   for (const seat of [0, 1]) {
@@ -870,7 +862,7 @@ async function probeUndeadFlag(connection: Connection): Promise<string> {
       `document.querySelector('#v7-faction-${seat}')?.value === 'UNDEAD'`,
     );
   }
-  await capture(connection, "undead-flag-setup-desktop.png");
+  await capture(connection, "undead-setup-desktop.png");
   await replaceSeedInput(connection, "0");
   await launchWithFastForward(connection);
   await waitForExpression(
@@ -895,10 +887,10 @@ async function probeUndeadFlag(connection: Connection): Promise<string> {
     JSON.stringify(started.factions) !== JSON.stringify(["UNDEAD", "UNDEAD"]) ||
     started.viewer !== "UNDEAD"
   )
-    throw new Error(`?undead=1 launch failed: ${JSON.stringify(started)}`);
-  // The save resumes without the flag and keeps its Undead seats.
+    throw new Error(`Undead setup launch failed: ${JSON.stringify(started)}`);
+  // The save resumes on a fresh default-route load and keeps its Undead seats.
   await navigateFresh(
-    flagUrl(false),
+    defaultUrl(),
     `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
   );
   await touchClick(connection, '[data-action="resume"]');
@@ -907,11 +899,11 @@ async function probeUndeadFlag(connection: Connection): Promise<string> {
     `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && JSON.stringify(s.view?.setup.factions) === '["UNDEAD","UNDEAD"]'; })()`,
     900,
   );
-  let outcome = "launch and flagless resume";
+  let outcome = "launch and resume";
   if (!deployed) {
     const result = await driveDefaultMatchToOutcome(connection);
     outcome = `Undead-vs-Undead ${result.outcome} in round ${result.round}`;
-    await capture(connection, "undead-flag-outcome-desktop.png");
+    await capture(connection, "undead-outcome-desktop.png");
     const scripted = await evaluate<{
       readonly necromancerAt: { readonly x: number; readonly y: number };
       readonly cursorStart: { readonly x: number; readonly y: number };
@@ -926,7 +918,7 @@ async function probeUndeadFlag(connection: Connection): Promise<string> {
       true,
     );
     await navigateFresh(
-      flagUrl(false),
+      defaultUrl(),
       `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
     );
     await touchClick(connection, '[data-action="resume"]');
@@ -980,14 +972,14 @@ async function probeUndeadFlag(connection: Connection): Promise<string> {
     );
     await capture(connection, "undead-raise-dead-result-desktop.png");
     outcome += `; resumed Raise Dead dispatched (${preview.label})`;
-    outcome += `; ${await probeAfflictionFixture(connection, flagUrl(false))}`;
+    outcome += `; ${await probeAfflictionFixture(connection, defaultUrl())}`;
   }
   await evaluate(
     connection,
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(
-    flagUrl(false),
+    defaultUrl(),
     `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
   );
   return outcome;

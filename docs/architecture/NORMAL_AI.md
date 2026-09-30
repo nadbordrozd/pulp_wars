@@ -251,7 +251,7 @@ offer naval training, which filled spare capacity with Patrol Boats (about
 naval role its naval plan asks for.
 
 Changes for every match: the income estimate caps the level term at 5
-(revision-14 E2), and the Land Grant neutral-tile count excludes explored
+(revision-14 E2; revision 16: 4, `CITY_LEVEL_INCOME_CAP_V7`), and the Land Grant neutral-tile count excludes explored
 tiles whose territory owner is known although the city is not visible (the
 `pulp_wars-9jp` stale-view case). Neither changes a pinned all-Human decision
 hash; together they change 48 of 300 Human-mirror matrix games without moving

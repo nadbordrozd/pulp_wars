@@ -13,7 +13,7 @@ import {
 
 /**
  * Revision 13 Undead UI visual review (pulp_wars-vkq.8). It captures the
- * `?undead=1` setup and the Undead showcase fixture (Wail, Raise Dead,
+ * default-route per-seat faction setup and the Undead showcase fixture (Wail, Raise Dead,
  * Devour, Lich splash, Lifesteal, Infect, Restless, Graves) in the LEGACY and
  * CHIBI art sets at desktop and phone widths. It needs the Vite dev server,
  * because the showcase fixture is imported from `tests/fixtures`.
@@ -88,14 +88,20 @@ try {
   await connection.send("Page.enable");
   await connection.send("Runtime.enable");
 
-  // Setup with and without the development flag.
+  // Default-route setup with per-seat faction choice (pulp_wars-vkq.16).
   await viewport(connection, "desktop");
-  await navigate(connection, url({ undead: "1", art: "legacy" }));
+  await navigate(connection, url({ art: "legacy" }));
   await waitFor(
     connection,
     `document.querySelector('[data-v7-setup]') !== null`,
   );
-  evidence.flaggedSetup = await evaluate(
+  evidence.defaultSetupHasFactions = await evaluate(
+    connection,
+    `document.querySelector('[data-v7-factions]') !== null`,
+  );
+  if (evidence.defaultSetupHasFactions !== true)
+    throw new Error("Default setup does not offer faction choice");
+  evidence.factionSetup = await evaluate(
     connection,
     `(() => {
       const count = document.querySelector('#v7-ai-count');
@@ -107,21 +113,9 @@ try {
       return Array.from(document.querySelectorAll('[data-v7-factions] label')).map((label) => label.textContent);
     })()`,
   );
-  await capture(connection, "setup-undead-flag-desktop.png");
+  await capture(connection, "setup-undead-desktop.png");
   await viewport(connection, "phone");
-  await capture(connection, "setup-undead-flag-phone.png");
-  await viewport(connection, "desktop");
-  await navigate(connection, url({ art: "legacy" }));
-  await waitFor(
-    connection,
-    `document.querySelector('[data-v7-setup]') !== null`,
-  );
-  evidence.defaultSetupHasFactions = await evaluate(
-    connection,
-    `document.querySelector('[data-v7-factions]') !== null`,
-  );
-  if (evidence.defaultSetupHasFactions !== false)
-    throw new Error("Setup without ?undead=1 shows faction choice");
+  await capture(connection, "setup-undead-phone.png");
 
   for (const art of ["legacy", "chibi"] as const) {
     await viewport(connection, "desktop");

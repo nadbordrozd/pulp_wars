@@ -4,31 +4,34 @@
 
 The current client runs `pulp-wars-poc-7r16` (autosave
 `pulpWars.save.v7r16.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r15.current`), whose rules are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) plus the in-progress
+through `pulpWars.save.v7r15.current`), whose rules for both factions, Human and Undead, are described by
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). That document
+folds in the
 [revision-13 Undead overlay](../product/RULESET_7_REVISION_13_UNDEAD.md),
 [revision-14 balance overlay](../product/RULESET_7_REVISION_14_BALANCE.md)
 (Plague, Bitten, and the income, village, Vampire, and Lich changes),
 [revision-15 overlay](../product/RULESET_7_REVISION_15_BALANCE.md) (three-turn
 Plague that spreads only on its first turn, 18-HP Zombies; the Plague chip
 counts the remaining turns), and the
-[revision-16 overlay](../product/RULESET_7_REVISION_16.md) (so far
-`pulp_wars-wwc`: orthogonal Shallow Water, the capital growth floor, and the
-growth-first Normal AI opening; Help on naval maps explains the Shallow
-rule; `pulp_wars-zsa`: 2-tile boats and the landing preview described below;
-the Plague and Bitten UI
-surfaces are described in the
+[revision-16 overlay](../product/RULESET_7_REVISION_16.md) (`pulp_wars-wwc`:
+orthogonal Shallow Water, the capital growth floor, and the growth-first
+Normal AI opening; Help on naval maps explains the Shallow rule;
+`pulp_wars-zsa`: 2-tile boats and the landing preview described below;
+`pulp_wars-4gc`: economy deflation), which remain as history. The Plague and
+Bitten UI surfaces are described in the
 [Screen Flow revision-14 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-14-plague-and-bitten-overlay)
 and read only the public `plagued` and `bitten` view lists, previews, and
-projected events). The
-engine registers the Undead faction per seat. The setup UI offers a faction
-per seat only behind the `?undead=1` development flag, which the bootstrap
-reads (`src/app/undead-flag-v7.ts`) and never persists; saves with Undead
-seats load without it. Undead presentation reads only public views, previews
-and projected events (`src/render/undead-presentation-v7.ts`,
-`src/render/canvas/undead-canvas-v7.ts`): Human sprites plus a faction badge,
-a code-native Grave marker, and ability previews, as described in the
-[Screen Flow revision-13 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-13-undead-overlay-development-flag).
+projected events. The engine registers the faction per seat, and the setup UI
+always offers a Human/Undead choice for the human and each AI seat (all Human
+by default); there is no URL flag for it (`pulp_wars-vkq.16` removed the
+former `?undead=1` development flag and `src/app/undead-flag-v7.ts`). Saves
+with Undead seats load and resume like any other. Undead presentation reads
+only public views, previews and projected events
+(`src/render/undead-presentation-v7.ts`,
+`src/render/canvas/undead-canvas-v7.ts`): approved CHIBI Undead rasters, the
+LEGACY placeholder (Human sprites plus a faction badge and a code-native Grave
+marker), and ability previews, as described in the
+[Screen Flow revision-13 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-13-undead-overlay).
 Revision 12 adds
 no overlay document: the free opening technology, Fertile Ground mask, and
 Raider Escape are specified there. A Raider with `escapeAvailable` stays

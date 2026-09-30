@@ -3,11 +3,9 @@
 **Status:** contract for revision 14 (`pulp_wars-vkq.17`), implemented in the
 engine, map generation, persistence, public queries, and headless telemetry.
 The Normal AI update (`pulp_wars-vkq.18`) and the UI update
-(`pulp_wars-vkq.19`) follow in separate beads; until revision 13 and 14 are
-folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
-(`pulp_wars-vkq.16`), this overlay and
-[revision 13](RULESET_7_REVISION_13_UNDEAD.md) together describe the running
-game.
+(`pulp_wars-vkq.19`) followed in separate beads. `pulp_wars-vkq.16` folded
+revisions 13–16 into [Ruleset 7: current rules](RULESET_7_CURRENT.md), which
+now describes the running game; this overlay remains as history.
 
 **Ruleset ID:** `pulp-wars-poc-7r14`
 

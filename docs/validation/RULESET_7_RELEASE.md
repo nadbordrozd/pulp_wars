@@ -16,6 +16,41 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
+## Current release contract (revision 16, Human and Undead)
+
+The current runtime is `pulp-wars-poc-7r16` with two playable factions. The
+Undead are part of the default route: match setup always offers a
+Human/Undead choice for the human and each AI seat (all Human by default), and
+there is no `?undead=1` development flag (`pulp_wars-vkq.16` removed it).
+
+- `npm run validate:ruleset7-release`
+  (`scripts/validate-ruleset7-current-release.ts`) is the current release
+  contract. It checks the revision-16 identity (ruleset ID, autosave key, the
+  `ORIGINAL`/`UNDEAD` faction and tree orders, and a Human-against-Undead
+  setup), confirms that the archived corpus below still carries the
+  revision-2 identity, and runs the revision contract tests (including the
+  Undead faction, revisions 14–16, persistence, and the DOM shell and landing
+  tests). It keeps no checked corpus or fingerprint of its own and has no
+  `:refresh` variant, so a release has nothing to regenerate there.
+- `npm run smoke:browser` runs the default route with no `ruleset` parameter:
+  the natural Human match below, the CHIBI art-set probe, and an Undead probe
+  that finds the per-seat faction selects on the default setup (both Human),
+  picks Undead for both seats from the keyboard, plays the Undead-vs-Undead
+  match to its outcome, and resumes the save on a fresh default-route load.
+  Against a development server it then resumes a scripted Undead save to
+  dispatch Raise Dead and mounts the Plague and Bitten fixture; with
+  `--deployed` it stops after launch and resume.
+- The revision-2 sections below, `RULESET_7_RELEASE_CORPUS.json`, and the
+  archived browser evidence in `art/integration/reviews/ruleset7-preview/`
+  (whose `evidence.json` records `pulp-wars-poc-7r2` and a runtime
+  fingerprint bound into that corpus) are frozen history. They are not
+  refreshed for later revisions; in particular
+  `npm run smoke:browser -- --archive-evidence` is not a current release step,
+  because it would overwrite that revision-2 evidence with revision-16
+  captures. The revision-2 validator described below as
+  `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
+  and its `:refresh` variant no longer exists.
+
 For that revision-2 release, Ruleset 7 was the normal browser default and the
 supported Original-faction game. Exact `?ruleset=7` selected the same contract.
 Frozen Ruleset 6 remains a

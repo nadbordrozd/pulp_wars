@@ -159,11 +159,6 @@ export interface MountRuleset7AppOptions {
   readonly downloadDebugBundle?: (source: string, filename: string) => void;
   readonly settingsStorage?: StorageAdapter | null;
   readonly startupNotice?: string;
-  /**
-   * Revision 13 development flag (`?undead=1`): setup offers a faction for
-   * every seat. It never affects loading or playing a saved match.
-   */
-  readonly undeadSetup?: boolean;
 }
 
 export type Ruleset7ControllerPortV7 = Pick<
@@ -210,7 +205,6 @@ export class Ruleset7DomAppView {
   /** CHIBI interface art; null in LEGACY, which keeps its markup unchanged. */
   readonly #chibiDom: ChibiDomArtV7 | null;
   #chibiRenderQueued = false;
-  readonly #undeadSetup: boolean;
   #snapshot: Ruleset7BrowserSnapshot;
   #unsubscribe: (() => void) | null = null;
   #unsubscribeAcceptedBoundary: (() => void) | null = null;
@@ -292,7 +286,6 @@ export class Ruleset7DomAppView {
     // Every view claims the document's economy icons, so a LEGACY view never
     // inherits a CHIBI provider left by another view.
     CHIBI_ECONOMY_ICONS.set(documentRoot, this.#economyIcons);
-    this.#undeadSetup = options.undeadSetup === true;
     this.#notice = options.startupNotice ?? "";
     this.#motion =
       documentRoot.defaultView?.matchMedia?.("(prefers-reduced-motion: reduce)")
@@ -574,8 +567,7 @@ export class Ruleset7DomAppView {
         "v7-map-type-description",
       ),
     );
-    const factions = this.#undeadSetup ? this.#factionFields() : null;
-    if (factions !== null) form.append(factions);
+    form.append(this.#factionFields());
     const launch = button(
       this.#document,
       replace ? "Start new game" : "Play",
@@ -612,7 +604,7 @@ export class Ruleset7DomAppView {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.#readDraft(form);
-      const setup = setupFrom(this.#draft, this.#undeadSetup);
+      const setup = setupFrom(this.#draft);
       if (setup === null) {
         this.#error = "Seed must be a whole number (0–4294967295).";
         this.#render();
@@ -624,7 +616,7 @@ export class Ruleset7DomAppView {
     return main;
   }
 
-  /** Development-flag faction choice: one labelled select per seat. */
+  /** Per-seat faction choice (Human or Undead): one labelled select per seat. */
   #factionFields(): HTMLElement {
     const fieldset = el(this.#document, "fieldset", "v7-setup-factions");
     fieldset.dataset.v7Factions = "true";
@@ -3565,7 +3557,7 @@ function mapTypeDescriptionV7(mapType: MapTypeV7): string {
   if (mapType === "ARCHIPELAGO") return "Everyone starts on their own island.";
   return "Mostly land, broken up by lakes.";
 }
-function setupFrom(draft: DraftV7, undeadSetup: boolean): MatchSetupV7 | null {
+function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!/^\d+$/.test(draft.seedText)) return null;
   const seed = Number(draft.seedText);
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
@@ -3581,8 +3573,7 @@ function setupFrom(draft: DraftV7, undeadSetup: boolean): MatchSetupV7 | null {
     humanColor: draft.humanColor,
     factions: Array.from(
       { length: draft.aiCount + 1 },
-      (_, seat): FactionIdV7 =>
-        undeadSetup ? (draft.factions[seat] ?? "ORIGINAL") : "ORIGINAL",
+      (_, seat): FactionIdV7 => draft.factions[seat] ?? "ORIGINAL",
     ),
     mapType: draft.mapType,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",

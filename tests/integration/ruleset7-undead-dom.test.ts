@@ -39,9 +39,9 @@ beforeEach(() => {
 });
 
 describe("Revision 13 Undead DOM", () => {
-  it("offers per-seat faction choice only behind the development flag", async () => {
-    const flagged = new SetupController();
-    const app = mount(flagged, new RecordingBoardHost(), { undeadSetup: true });
+  it("offers per-seat faction choice in the default setup", async () => {
+    const chosen = new SetupController();
+    const app = mount(chosen, new RecordingBoardHost());
     expect(labelsIn("[data-v7-factions]")).toEqual([
       "Your faction",
       "Player 2 faction",
@@ -71,8 +71,8 @@ describe("Revision 13 Undead DOM", () => {
       field.dispatchEvent(new Event("change", { bubbles: true }));
     }
     requiredButton("launch").click();
-    await waitUntil(() => flagged.launched.length === 1);
-    expect(flagged.launched[0]?.factions).toEqual([
+    await waitUntil(() => chosen.launched.length === 1);
+    expect(chosen.launched[0]?.factions).toEqual([
       "UNDEAD",
       "ORIGINAL",
       "UNDEAD",
@@ -83,10 +83,17 @@ describe("Revision 13 Undead DOM", () => {
     document.body.innerHTML = '<div id="app"></div>';
     const plain = new SetupController();
     const defaultApp = mount(plain, new RecordingBoardHost());
-    expect(document.querySelector("[data-v7-factions]")).toBeNull();
+    // Untouched faction selects keep every seat Human.
     const plainCount = requiredElement<HTMLSelectElement>("#v7-ai-count");
     plainCount.value = "2";
     plainCount.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(
+      [
+        ...document.querySelectorAll<HTMLSelectElement>(
+          "[data-v7-factions] select",
+        ),
+      ].map((field) => field.value),
+    ).toEqual(["ORIGINAL", "ORIGINAL", "ORIGINAL"]);
     requiredButton("launch").click();
     await waitUntil(() => plain.launched.length === 1);
     expect(plain.launched[0]?.factions).toEqual([
@@ -614,13 +621,12 @@ function idleAi(): Ruleset7BrowserSnapshot["ai"] {
 function mount(
   controller: Ruleset7ControllerPortV7,
   host: BoardHostV7,
-  options: { readonly undeadSetup?: boolean } = {},
 ): Ruleset7DomAppView {
   return new Ruleset7DomAppView(
     document,
     requiredElement<HTMLElement>("#app"),
     controller,
-    { boardHost: host, settingsStorage: null, ...options },
+    { boardHost: host, settingsStorage: null },
   );
 }
 

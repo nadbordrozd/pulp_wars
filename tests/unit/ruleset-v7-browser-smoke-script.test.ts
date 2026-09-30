@@ -35,7 +35,7 @@ describe("Ruleset 7 browser smoke script", () => {
 
   it("arms transient controls before trusted pointer launch and waits for the native select to close", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
-    // Default match, its natural outcome, and the ?undead=1 Undead match.
+    // Default match, its natural outcome, and the default-route Undead match.
     expect(
       source.match(/await launchWithFastForward\(connection\)/g),
     ).toHaveLength(3);
@@ -65,7 +65,7 @@ describe("Ruleset 7 browser smoke script", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = source.slice(
       source.indexOf("async function probeChibiArtSet("),
-      source.indexOf("async function probeUndeadFlag("),
+      source.indexOf("async function probeUndeadSetup("),
     );
 
     expect(probe).toContain("await navigateFresh(artUrl(null), freshSetup)");
@@ -81,6 +81,26 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(
       probe.lastIndexOf("localStorage.removeItem(${JSON.stringify(artKey)})"),
     ).toBeGreaterThan(probe.indexOf('artUrl("chibi")'));
+  });
+  it("chooses Undead seats in the default-route setup without a development flag", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = source.slice(
+      source.indexOf("async function probeUndeadSetup("),
+      source.indexOf("async function probeAfflictionFixture("),
+    );
+
+    expect(source).not.toContain("undead=1");
+    expect(source).not.toContain('searchParams.set("undead"');
+    expect(source).toContain("await probeUndeadSetup(connection)");
+    expect(probe).toContain(
+      "document.querySelector('[data-v7-factions]') !== null",
+    );
+    expect(probe).toContain("field.value !== 'ORIGINAL'");
+    expect(probe).toContain(
+      "document.querySelector('#v7-faction-${seat}')?.value === 'UNDEAD'",
+    );
+    expect(probe).toContain('["UNDEAD","UNDEAD"]');
+    expect(probe).not.toContain("flagUrl");
   });
   it("waits for a fresh complete document and installed controller after reload", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
@@ -132,7 +152,7 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(BROWSER_RELEASE_SOURCE_PATHS_V7).toContain(
       "scripts/browser-smoke-output.ts",
     );
-    // Two release captures, four ?undead=1 probe captures, and one
+    // Two release captures, four Undead setup probe captures, and one
     // revision-14 Plague/Bitten fixture capture per art set (in a loop).
     expect(source.match(/await capture\(/g)).toHaveLength(7);
     expect(source).toContain("async function probeAfflictionFixture(");

@@ -13,7 +13,6 @@ import {
   type GameStateV7,
   type PlayerViewV7,
 } from "../../src/engine/index";
-import { undeadSetupFlagFromSearchV7 } from "../../src/app/undead-flag-v7";
 import {
   buildBoardRenderPlanV7,
   drawBoardV7,
@@ -45,20 +44,6 @@ const NO_SELECTION = {
 } as const;
 
 describe("Revision 13 Undead presentation", () => {
-  it("honours only an exact single ?undead=1 development flag", () => {
-    expect(undeadSetupFlagFromSearchV7("?undead=1")).toBe(true);
-    expect(undeadSetupFlagFromSearchV7("?art=chibi&undead=1")).toBe(true);
-    for (const search of [
-      "",
-      "?undead=0",
-      "?undead=true",
-      "?undead",
-      "?undead=1&undead=1",
-      "?Undead=1",
-    ])
-      expect(undeadSetupFlagFromSearchV7(search)).toBe(false);
-  });
-
   it("draws explored Graves between improvements and units and badges Undead units", () => {
     const state = undeadShowcaseFixtureV7();
     const view = viewForV7(state, state.humanPlayerId);

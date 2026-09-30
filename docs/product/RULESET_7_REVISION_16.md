@@ -7,12 +7,10 @@ orthogonal shallow water; see [section 13](#13-implementation-record)),
 [section 13.5](#135-revision-16b-2-tile-boats-pulp_wars-zsa)), and
 `pulp_wars-4gc` (economy deflation; see
 [section 13.6](#136-revision-16c-economy-deflation-pulp_wars-4gc));
-see [section 9](#9-implementation-split-and-sequencing). Until revisions 13–16
-are folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
-(`pulp_wars-vkq.16`), this overlay together with
-[revision 15](RULESET_7_REVISION_15_BALANCE.md),
-[revision 14](RULESET_7_REVISION_14_BALANCE.md), and
-[revision 13](RULESET_7_REVISION_13_UNDEAD.md) describes the running game.
+see [section 9](#9-implementation-split-and-sequencing). `pulp_wars-vkq.16`
+folded revisions 13–16 into [Ruleset 7: current rules](RULESET_7_CURRENT.md),
+which now describes the running game; this overlay remains as history and
+measurement record.
 
 **Ruleset ID:** `pulp-wars-poc-7r16`
 

@@ -52,17 +52,20 @@ sections below remain authoritative for the unchanged Ruleset 6 route.
   `Escape: may move again` plus an Escape status chip. The Raider `?` detail
   explains Escape. No new raster art is used.
 
-## Current Ruleset 7 revision 13 Undead overlay (development flag)
+## Current Ruleset 7 revision 13 Undead overlay
 
 This overlay implements
-[Undead spec section 10](../product/RULESET_7_REVISION_13_UNDEAD.md#10-ui-requirements).
-A match without an Undead seat looks and behaves exactly as in revision 12.
+[Undead spec section 10](../product/RULESET_7_REVISION_13_UNDEAD.md#10-ui-requirements);
+the Undead rules are part of
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). A match without
+an Undead seat looks and behaves exactly as in revision 12.
 
-- `?undead=1` (exactly one value, `1`; not persisted) adds a labelled
-  **Factions** group to setup with one Human/Undead select per seat ("Your
-  faction", "Player N faction"), all Human by default and resized with the
-  opponent count. Without the flag setup is unchanged and every seat is
-  Human. Saves with Undead seats resume and play without the flag.
+- Setup always shows a labelled **Factions** group with one Human/Undead
+  select per seat ("Your faction", "Player N faction"), all Human by default
+  and resized with the opponent count; the launched setup carries each seat's
+  choice. There is no URL parameter or development flag for it
+  (`pulp_wars-vkq.16` removed the former `?undead=1` flag). Saves with Undead
+  seats resume and play like any other save.
 - Every unit is named by its owner's registration (Skeleton, Ghoul, Banshee,
   Zombie, Necromancer, Lich, Vampire, Abomination) in the dock, `?` detail,
   training buttons and help, the map cursor description, and notifications.
@@ -70,14 +73,18 @@ A match without an Undead seat looks and behaves exactly as in revision 12.
   Abomination) and Help use the viewer's faction text. In a match with an
   Undead seat the leaderboard shows a faction chip per player and the turn
   status reads "Player N (Human|Undead) is playing…".
-- Placeholder art in both art sets: an Undead unit uses the Human sprite of
-  its role plus a bone skull badge on a near-black disc (legacy: right of the
-  sprite above the HP bar; CHIBI: the cell's top-left corner), distinct from
-  owner colour. DOM unit art, training buttons, recruit help and reward art
-  carry the same badge. An explored Grave is a code-drawn grey headstone with
-  a cross on a brown mound, drawn above terrain, resources and improvements
-  and below units; the tile dock shows a Grave chip and a unit standing on
-  one shows "On a Grave".
+- Art: CHIBI paints the approved Undead unit, portrait, Frenzy icon, and
+  Grave rasters ([Undead faction art](../art/factions/UNDEAD.md)). LEGACY,
+  and any CHIBI Undead subject without a usable raster (including the Patrol
+  Boat and Battleship, which share the Human ship art), uses the placeholder:
+  the Human sprite of the role plus a bone skull badge on a near-black disc
+  (legacy: right of the sprite above the HP bar; CHIBI: the cell's top-left
+  corner), distinct from owner colour. DOM unit art, training buttons,
+  recruit help and reward art follow the same rule. An explored Grave is
+  drawn above terrain, resources and improvements and below units; without
+  its CHIBI raster it is a code-drawn grey headstone with a cross on a brown
+  mound. The tile dock shows a Grave chip and a unit standing on one shows
+  "On a Grave".
 - Selecting an own unit previews its offered revision-13 command on the
   board: a Banshee's radius-2 Wail area with per-target damage (red for a
   kill), a Necromancer's Graves that will rise ("Rise"), and a Ghoul's

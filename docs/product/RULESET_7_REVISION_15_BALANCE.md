@@ -2,11 +2,9 @@
 
 **Status:** contract for revision 15 (`pulp_wars-vkq.20`), implemented in the
 engine, persistence, public queries, Normal AI, UI text, and headless
-telemetry. Until revisions 13–15 are folded into
-[Ruleset 7: current rules](RULESET_7_CURRENT.md) (`pulp_wars-vkq.16`), this
-overlay, [revision 14](RULESET_7_REVISION_14_BALANCE.md), and
-[revision 13](RULESET_7_REVISION_13_UNDEAD.md) together describe the running
-game.
+telemetry. `pulp_wars-vkq.16` folded revisions 13–16 into
+[Ruleset 7: current rules](RULESET_7_CURRENT.md), which now describes the
+running game; this overlay remains as history.
 
 **Ruleset ID:** `pulp-wars-poc-7r15`
 

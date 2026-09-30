@@ -1,10 +1,14 @@
 # Ruleset 7 revision 13: Undead faction
 
-**Status:** proposed contract for revision 13, awaiting the user review gate
-(`pulp_wars-vkq.2`). Not implemented. Until revision 13 ships and is folded
-into [Ruleset 7: current rules](RULESET_7_CURRENT.md) (`pulp_wars-vkq.16`),
-that document remains the authoritative description of the running game
-(`pulp-wars-poc-7r12`).
+**Status:** implemented and folded into
+[Ruleset 7: current rules](RULESET_7_CURRENT.md) by `pulp_wars-vkq.16`; that
+document is the authoritative description of the running game
+(`pulp-wars-poc-7r16`). This overlay remains as design history and exact
+schema detail. Revisions [14](RULESET_7_REVISION_14_BALANCE.md),
+[15](RULESET_7_REVISION_15_BALANCE.md), and [16](RULESET_7_REVISION_16.md)
+changed some of its values, and the development flag of
+[section 10.2](#102-development-flag-and-placeholder-art) has been removed:
+faction choice is always offered in setup.
 
 **Ruleset ID:** `pulp-wars-poc-7r13`
 
@@ -675,6 +679,7 @@ The browser UI (`pulp_wars-vkq.8`) must, at requirement level:
   a simple code-native marker. Human units and Human-only matches are
   unaffected.
 - `pulp_wars-vkq.16` removes the flag once the approved art is registered.
+  (Done: setup now always offers a faction per seat, with no flag.)
 
 ## 11. Unchanged Human behaviour
 
