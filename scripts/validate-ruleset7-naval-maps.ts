@@ -1,5 +1,5 @@
 import { strict as assert } from "node:assert";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import {
   RULESET_7_ID,
   canonicalHash,
@@ -32,15 +32,19 @@ const setups = [
   [25, 3],
 ] as const;
 const coastlineHashes = new Map<string, Set<string>>();
-const dryParity = JSON.parse(
-  readFileSync(
-    new URL(
-      "../docs/validation/RULESET_7_DRY_LAND_PARITY.json",
-      import.meta.url,
-    ),
-    "utf8",
-  ),
-) as Record<string, string>;
+// Dry Land parity pins the exact current DRY_LAND board, treasures, and
+// post-generation PRNG state of every width/AI/seed cell (both relationship
+// modes must agree). `--write` regenerates the file from the current
+// generator after every other check passes; review its diff deliberately.
+const dryParityPath = new URL(
+  "../docs/validation/RULESET_7_DRY_LAND_PARITY.json",
+  import.meta.url,
+);
+const writeDryParity = process.argv.includes("--write");
+const dryParity = writeDryParity
+  ? {}
+  : (JSON.parse(readFileSync(dryParityPath, "utf8")) as Record<string, string>);
+const dryParityActual: Record<string, string> = {};
 let cases = 0;
 for (const mapType of mapTypes)
   for (const [width, aiCount] of setups)
@@ -73,12 +77,22 @@ for (const mapType of mapTypes)
           canonicalMapRandomHashV7(second.map),
         );
         assert.deepEqual(first.map, second.map);
-        if (mapType === "DRY_LAND")
+        if (mapType === "DRY_LAND") {
+          const parityKey = `${width}/${aiCount}/${seed}`;
+          const parityHash = dryLandParityHash(first.map);
           assert.equal(
-            dryLandParityHash(first.map),
-            dryParity[`${width}/${aiCount}/${seed}`],
-            `DRY_LAND parity ${width}/${aiCount}/${seed}`,
+            parityHash,
+            dryParityActual[parityKey] ?? parityHash,
+            `DRY_LAND parity ${parityKey} differs between relationship modes`,
           );
+          dryParityActual[parityKey] = parityHash;
+          if (!writeDryParity)
+            assert.equal(
+              parityHash,
+              dryParity[parityKey],
+              `DRY_LAND parity ${parityKey}`,
+            );
+        }
         validate(first.map.board.tiles, width, mapType, aiCount + 1);
         // Revision 16: every capital is growth-ready (CAPITAL_GROWTH).
         for (const capital of first.map.capitals)
@@ -107,6 +121,15 @@ for (const mapType of mapTypes.slice(1))
       `${mapType}/${width}/${aiCount} coastline is seed invariant`,
     );
 assert.equal(cases, 960);
+assert.equal(Object.keys(dryParityActual).length, setups.length * 8);
+if (writeDryParity)
+  writeFileSync(dryParityPath, `${JSON.stringify(dryParityActual, null, 2)}\n`);
+else
+  assert.deepEqual(
+    Object.keys(dryParity).sort(),
+    Object.keys(dryParityActual).sort(),
+    "DRY_LAND parity file has missing or stale cells",
+  );
 console.log(
   JSON.stringify({ cases, exactRepeats: cases, mapTypes, status: "PASS" }),
 );

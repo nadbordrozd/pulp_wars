@@ -721,6 +721,15 @@ the closest any sweep came to the candidate budget.
   resume and Tech-screen tests 1 → 4 (seed 1 now opens with the AI). The
   headless command-cap test now expects Hunting and two Game hunts first.
 - **Validators.** `validate:ruleset7-naval-maps` checks the orthogonal rule,
-  the 25% minimum, and growth-ready capitals; its Dry Land parity file
-  (`RULESET_7_DRY_LAND_PARITY.json`, revision 6) has not matched since
-  revision 14's village change and is unchanged here.
+  the 25% minimum, and growth-ready capitals. Its Dry Land parity file
+  (`RULESET_7_DRY_LAND_PARITY.json`) held the revision-6 boards, which
+  stopped matching with revision 14's village change; `pulp_wars-vpe`
+  regenerated it from the revision-16 generator
+  (`npm run validate:ruleset7-naval-maps -- --write`), so it now pins the
+  current Dry Land boards. Before the refresh, all 96 old entries were still
+  reproduced by `generateInitialMapWithVillageCountV7` with the revision-13
+  village counts and `REVISION_15` rules. Of the 96 new entries, 7 equal the
+  revision-15 board (revision-14 counts), 62 differ only by growth-floor
+  Fruit or Game on capital rings and the chests that move with them, and 27
+  accept a different candidate because the floor or `CAPITAL_GROWTH` changes
+  which candidates pass; the per-attempt PRNG states match revision 15.
