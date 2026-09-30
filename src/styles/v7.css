@@ -529,7 +529,7 @@
   align-items: center;
   width: fit-content;
   min-width: min(14rem, calc(100% - 1.2rem));
-  max-width: calc(100% - 1.2rem);
+  max-width: min(calc(100% - 1.2rem), 90rem);
   max-height: min(45dvh, calc(100dvh - 8rem));
   margin-inline: auto;
   padding: 0.6rem 3.4rem 0.6rem 0.75rem;
@@ -537,6 +537,16 @@
   border-radius: 18px;
   background: var(--v7-glass-strong);
   box-shadow: var(--v7-shadow);
+}
+
+/*
+ * A dock with actions is a bottom bar: it spans the viewport less its
+ * margins (capped at 90rem on very wide screens) so the action row gets
+ * every column the portrait and the compact stat column leave. An
+ * information-only dock stays sized to its content.
+ */
+.v7-selection-dock[data-has-actions="true"] {
+  width: 100%;
 }
 
 .v7-selection-dock[data-selection-kind="tile"] {
@@ -662,10 +672,14 @@
   border-color: var(--paper);
 }
 
+/*
+ * The unit and city stats form a compact column beside the portrait (two
+ * narrow columns of small pills) so the action row keeps the dock's width.
+ */
 .v7-unit-stats {
   display: grid;
-  grid-template-columns: repeat(3, max-content);
-  gap: 0.3rem 0.5rem;
+  grid-template-columns: repeat(2, max-content);
+  gap: 0.25rem 0.35rem;
   align-content: center;
   margin: 0;
 }
@@ -674,9 +688,9 @@
   justify-self: start;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  min-height: 1.9rem;
-  padding: 0 0.55rem 0 0.4rem;
+  gap: 0.25rem;
+  min-height: 1.6rem;
+  padding: 0 0.5rem 0 0.35rem;
   border-radius: 999px;
   background: rgb(255 255 255 / 7%);
 }
@@ -758,11 +772,22 @@
 }
 
 .v7-city-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 0.25rem 0.3rem;
   align-content: center;
-  max-width: 24rem;
+  justify-items: start;
+  margin: 0;
+}
+
+/* Long facts take a whole row of the stat column. */
+.v7-city-stats > [data-stat="city-action"],
+.v7-city-stats > [data-stat="siege"],
+.v7-city-stats > [data-discount] {
+  grid-column: 1 / -1;
+}
+
+.v7-city-stats > .v7-chip {
   margin: 0;
 }
 
@@ -770,8 +795,8 @@
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  min-height: 1.9rem;
-  padding: 0 0.6rem;
+  min-height: 1.6rem;
+  padding: 0 0.55rem;
   border-radius: 999px;
   background: rgb(255 255 255 / 7%);
   font-weight: 800;
@@ -870,24 +895,24 @@
   filter: saturate(0.4) brightness(0.85);
 }
 
+/*
+ * The action area takes the rest of the dock: one left-aligned row when the
+ * buttons fit, wrapping onto another row (never a horizontal scroller) when
+ * they do not.
+ */
 .v7-context-actions {
   position: relative;
   z-index: 1;
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: stretch;
+  align-content: flex-start;
   justify-content: flex-start;
   gap: 0.45rem;
   min-width: 0;
   width: 100%;
   max-width: 100%;
   padding-block: 0.2rem;
-  overflow-x: auto;
-  overflow-y: hidden;
-  overscroll-behavior-x: contain;
-  scroll-padding-inline: 0.25rem;
-  touch-action: pan-x;
-  scrollbar-width: thin;
 }
 
 .v7-context-action,
@@ -895,6 +920,7 @@
   display: grid;
   flex: 0 0 5.4rem;
   grid-template-rows: 3rem auto auto;
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   align-content: start;
   gap: 0.15rem;
@@ -906,6 +932,17 @@
   background: rgb(255 255 255 / 6%);
   font-size: 0.78rem;
   line-height: 1.1;
+}
+
+/*
+ * A two-word label or a Tend/Wail/Raise Dead preview widens its tile a
+ * little instead of spilling over the next one.
+ */
+.v7-context-action {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 5.4rem;
+  max-width: 7.5rem;
 }
 
 .v7-context-action:hover:not(:disabled),
@@ -1745,6 +1782,40 @@
     grid-column: 1 / -1;
   }
 
+  /*
+   * Below the portrait and stats the action grid also uses the close
+   * button's gutter, and its equal columns fill the dock's width.
+   */
+  .v7-selection-dock > .v7-context-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4.9rem, 1fr));
+    width: auto;
+    max-width: none;
+    margin-right: -2.8rem;
+  }
+
+  .v7-selection-dock > .v7-context-actions > .v7-context-action,
+  .v7-selection-dock > .v7-context-actions > .v7-train-card {
+    width: auto;
+    min-width: 0;
+    max-width: none;
+  }
+
+  /* Keeps the longest one-word label (Necromancer) inside a phone column. */
+  .v7-selection-dock > .v7-context-actions .v7-context-action,
+  .v7-selection-dock > .v7-context-actions .v7-train-action {
+    padding-inline: 0.15rem;
+  }
+
+  .v7-selection-dock > .v7-context-actions .v7-action-label {
+    font-size: 0.72rem;
+  }
+
+  .v7-city-stats {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
   .v7-tech-graph {
     grid-template-columns: minmax(0, 1fr);
     overflow-x: visible;
@@ -1941,6 +2012,13 @@
   font-size: 0.7rem;
   font-weight: 800;
   white-space: nowrap;
+}
+
+/* In a narrow phone tile the preview wraps inside the button. */
+.v7-context-action > .v7-undead-preview-chip {
+  max-width: 100%;
+  text-align: center;
+  white-space: normal;
 }
 
 .v7-context-action[data-disabled-reason="restless"] {

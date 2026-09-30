@@ -2002,9 +2002,11 @@ resize or jump when dock content changes. Docks omit tile coordinates.
 The unit, city, and tile dock spans the full viewport width on desktop and
 compact layouts. Identity and semantic facts may reflow or scroll within that
 bottom bar, while its label-sized Close control remains reachable. Contextual
-and tactical action buttons share one left-aligned, nonwrapping horizontal row;
-only that row scrolls horizontally, by touch, pointer wheel, or focus-following
-keyboard navigation, without creating page-level horizontal overflow. This
+and tactical action buttons share one left-aligned row that wraps onto a
+further row instead of scrolling horizontally, without creating page-level
+horizontal overflow; the
+[UI art contract](../art/classes/ui.md#current-ruleset-7-compact-dock-and-economy-icons)
+governs the current bar width, stat column, and action layout. This
 Ruleset-7 layout specializes the otherwise retained screen-flow dock contract.
 On desktop (above 800 CSS pixels), every selection uses the same outer dock
 height: 280 CSS pixels, capped at 45% of the viewport height. Summary and unit
@@ -2020,8 +2022,8 @@ Road, Redevelop, Monument, Capture, Recover, Promote, Wait, Pillage, and Disband
 never ask for the same target again and never add confirmation.
 Training buttons dispatch their exact city/role immediately. Confirmation is
 used only where this contract explicitly names one. Buttons are 176 CSS pixels
-wide, at least 44 x 44, grow vertically, and remain in the dock's single
-horizontally scrolling action row rather than wrapping into a vertical list.
+wide, at least 44 x 44, grow vertically, and remain in the dock's left-aligned
+action row, wrapping onto a further row only when they do not fit.
 Every Train card has a sibling question-mark help control. It opens a read-only
 unit-help dialog containing the canonical recruit name, exact world sprite,
 HP/Attack/Defense/Move/Range/Sight values, and plain-language abilities and

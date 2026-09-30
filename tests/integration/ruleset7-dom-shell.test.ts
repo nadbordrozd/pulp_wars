@@ -280,7 +280,9 @@ describe("Ruleset 7 DOM shell", () => {
     expect(dockRule).toMatch(/\n {2}inset-inline: 0;/);
     expect(dockRule).toMatch(/\n {2}margin-inline: auto;/);
     expect(dockRule).toMatch(/\n {2}width: fit-content;/);
-    expect(dockRule).toMatch(/\n {2}max-width: calc\(100% - 1\.2rem\);/);
+    expect(dockRule).toMatch(
+      /\n {2}max-width: min\(calc\(100% - 1\.2rem\), 90rem\);/,
+    );
     expect(dockRule).not.toMatch(/\n {2}left:/);
     expect(dockRule).not.toMatch(/translateX/);
     // Where the stacked dock spans the map, the board host reserves its

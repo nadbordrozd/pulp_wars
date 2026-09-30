@@ -57,9 +57,10 @@ tap.
   the screen-reader live region. A short toast appears briefly for notable
   events such as a Treasury grant. Errors stay visible as a toast until the next
   action.
-- **Floating selection panel.** The dock is a rounded panel sized to its
-  content, centered at the bottom. The selected art is scaled from the existing
-  112 x 130 identity viewport. Unit stats are small icon pills (HP, attack,
+- **Floating selection panel.** The dock is a rounded panel centered at the
+  bottom: a full-width bar when it has actions, otherwise sized to its content
+  (see the compact dock section below). The selected art is scaled from the
+  existing 112 x 130 identity viewport. Unit stats are small icon pills (HP, attack,
   defense, move, range, sight) with accessible text labels. City facts are pills
   for level, a population pip meter, units/capacity, and income. Tile facts are
   pills.
@@ -77,16 +78,23 @@ tap.
 ## Current Ruleset 7 compact dock and economy icons
 
 Ruleset 7 uses one full-width bottom dock layout for selected units and cities:
-the selected world sprite or city art with a short label at left, compact public
-stats next, and one left-aligned, nonwrapping action row in the remaining width.
-The dock's desktop height follows its 112 x 130 CSS-pixel selected-art viewport,
-label, and modest padding. Context action art is scaled within compact buttons
-so it cannot increase dock height. The action row scrolls horizontally inside
-the dock at 1024 and 1440 CSS pixels without widening the page. The Canvas host
-and camera geometry remain fixed as selection changes. On narrow screens the
-action row may move below identity and stats and the dock may scroll vertically.
-This current contract supersedes the historical fixed-height desktop dock and
-112 x 130 action-art growth contract below for Ruleset 7 only.
+the selected world sprite or city art with a short label at left, a compact
+stat column next (unit stats and city facts as two narrow columns of small
+pills; the city-action, siege, and discount facts take a whole row), and an
+action area in all the remaining width. A dock with actions spans the viewport
+less its margins, capped at 90rem; an information-only dock stays sized to its
+content. The dock's desktop height follows its 112 x 130 CSS-pixel
+selected-art viewport, label, and modest padding. Context action art is scaled
+within compact buttons so it cannot increase dock height. Actions form one
+left-aligned row when they fit (every Human and Undead unit's actions, and up
+to seven Train cards at 1024 CSS pixels) and otherwise wrap onto another row;
+the action area never scrolls horizontally and never widens the page. The
+Canvas host and camera geometry remain fixed as selection changes. At 800 CSS
+pixels and narrower the actions move below identity and stats as an
+equal-column grid, and the dock scrolls vertically only past its maximum
+height. This current contract supersedes the historical fixed-height desktop
+dock, the nonwrapping horizontally scrolling action row, and the 112 x 130
+action-art growth contract below for Ruleset 7 only.
 
 Unit modifiers use the same font, size, and weight as their base stat values;
 only color distinguishes the signed bonus. A focusable or hovered bonus exposes
@@ -272,10 +280,11 @@ transparent viewport without cropping or distortion. The fixed 176 CSS-pixel
 button grows vertically around that art and readable label. A code-native
 fallback uses the same viewport with a visible high-contrast frame and the
 button's semantic accessible name. Frozen Ruleset 6 contextual lists continue
-to wrap without horizontal overflow. For Ruleset 7, every selected unit, city,
-and tile bar spans the viewport, and contextual plus tactical buttons stay in
-one left-aligned, nonwrapping, horizontally scrollable row without page-level
-horizontal overflow; identity and facts may reflow or scroll separately.
+to wrap without horizontal overflow. For Ruleset 7, the current compact dock
+contract above governs the bar width and action layout: contextual plus
+tactical buttons form one left-aligned row that wraps rather than scrolling
+horizontally, without page-level horizontal overflow; identity and facts may
+reflow or scroll separately.
 
 Required layer order is map ground/objects, sprite readiness plus
 selection/target effects,

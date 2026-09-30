@@ -175,9 +175,17 @@ and the projected next-turn income as `+N/turn`, using the public per-city incom
 calculation after population deficit, siege, and active Blackout effects. Gold
 coin and population icons accompany their signed values across current HUD,
 actions, research, rewards, stats, and summaries. Accessible names keep the
-currency and population units. The selected unit and city docks share a compact
-three-column desktop layout: selected art and short label, public stats, and a
-left-aligned horizontally scrollable action row. Unit abilities, tactical
+currency and population units. The selected unit and city docks share one
+bottom-bar layout: selected art and short label, a compact stat column (two
+narrow columns of small pills beside the portrait), and an action area that
+takes all remaining width. A dock with actions spans the viewport less its
+margins, capped at 90rem on very wide screens; an information-only dock (an
+enemy unit or city, or a tile with nothing to do) stays sized to its content.
+Actions sit in one left-aligned row when they fit and wrap onto a further row
+instead of scrolling sideways; a two-word label or Undead preview widens its
+tile slightly rather than spilling. At 800 CSS px and narrower the portrait
+and stats share the first row and the actions fill an equal-column grid below
+them, using the close button's gutter. Unit abilities, tactical
 explanations, and current status are available from the unit's question-mark
 dialog with focus return. A city shows compact population, capacity, income,
 and public state facts. The current Ruleset 7 layout is governed by the
@@ -879,7 +887,8 @@ The match root is always `100dvh`; its Canvas host fills that fixed root and is
 not a grid/flex row whose size depends on selection content. Top HUD and the
 selected tile/unit/city dock overlay it. A dock sits at `inset-inline: 0` and
 `bottom: env(safe-area-inset-bottom)`, wraps to its natural height, and may
-obscure the lower map. Opening it, adding a line, swapping a selection, or
+obscure the lower map. A dock with actions fills the width between its
+margins (up to 90rem) so its action area never scrolls sideways. Opening it, adding a line, swapping a selection, or
 closing it must preserve Canvas CSS/backing dimensions, camera center/zoom, and
 logical selection exactly. Normal layouts allow up to 45dvh without internal
 scroll. Only the accessibility fallback at 200% browser zoom or 320 CSS px may
