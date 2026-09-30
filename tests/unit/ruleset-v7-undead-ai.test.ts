@@ -540,6 +540,8 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
       { factions: ["UNDEAD", "UNDEAD"], seed: 4, mapType: "ARCHIPELAGO" },
       // Revision 14 AI (vkq.18): the earlier cases no longer reach a Devour.
       { factions: ["ORIGINAL", "UNDEAD"], seed: 7, mapType: "PANGEA" },
+      // pulp_wars-vkq.21 AI: the earlier cases no longer reach a Devour.
+      { factions: ["ORIGINAL", "UNDEAD"], seed: 0, mapType: "PANGEA" },
     ];
     const used: Record<string, number> = {
       RAISE_DEAD: 0,

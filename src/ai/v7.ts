@@ -80,7 +80,13 @@ import {
   isNecromancerV7,
   isPrimaryUnusedV7,
   isLichV7,
+  isLichRoleV7,
+  isSplashAttackerV7,
+  isVampireV7,
   isZombieV7,
+  PLAGUE_HUNT_RADIUS_V7,
+  firingGapV7,
+  plaguingLichesV7,
   offeredWailSummaryV7,
   ownNecromancersNearV7,
   projectedWailSummaryV7,
@@ -2320,6 +2326,8 @@ function isPolicyCandidate(
     return false;
   const autoembark = isAutoembarkMoveV7(context, command);
   if (autoembark && !context.naval.active) return false;
+  if (autoembark && context.undead && fragileCargoV7(context, command.unitId))
+    return false;
   if (command.kind === "DISEMBARK" && context.naval.active)
     return (
       context.naval.landing.some((at) => same(at, command.at)) ||
@@ -2444,6 +2452,11 @@ function isLowValueAttackV7(
   const actor = context.lookup.unitsById.get(command.unitId);
   if (preview === null || actor === undefined) return true;
   if (context.undead && feedsZombieV7(context, command, preview)) return true;
+  if (
+    context.undead &&
+    vampireAttackExposedV7(context, command, actor, preview)
+  )
+    return true;
   const immediate =
     combatImmediateValue(preview) +
     (context.undead ? biteHarmAdjustmentV7(context, actor, preview) : 0);
@@ -2970,6 +2983,16 @@ function* sharedCityContextWorkV7(
         (command) => command.role === "CATAPULT",
       ) &&
       freshUnitInLethalReachV7(context, city, "CATAPULT");
+    // pulp_wars-vkq.21: likewise a Vampire (trained Vampires died before
+    // or after one attack, and the policy trained the next one).
+    const vampireExposed =
+      context.undead &&
+      view.viewer.faction === "UNDEAD" &&
+      city !== undefined &&
+      (landByCity.get(cityId) ?? []).some(
+        (command) => command.role === "KNIGHT",
+      ) &&
+      freshUnitInLethalReachV7(context, city, "KNIGHT");
     // pulp_wars-1mc: a city on an endgame target's landmass trains
     // capturers while fewer than four, and siege units while fewer than
     // three, can route to a target.
@@ -2980,6 +3003,7 @@ function* sharedCityContextWorkV7(
       const rule = effectiveRoleRuleV7(role, view.viewer.faction);
       return (
         (siegeExposed && role === "CATAPULT" ? -40 : 0) +
+        (vampireExposed && role === "KNIGHT" ? -40 : 0) +
         (endgameCity &&
         ((endgameCaptureShortfall && rule.abilities.includes("CAPTURE")) ||
           (endgameSiegeShortfall && rule.tacticalRole === "SIEGE"))
@@ -3525,6 +3549,8 @@ function scoreCommandWithContext(
       priority = Math.max(priority, ENDGAME_APPROACH_PRIORITY_V7);
       strategicValue += landing;
     }
+    if (context.undead && fragileLandingExposedV7(context, actor, command.at))
+      priority = -1;
   }
 
   if (command.kind === "LAND_GRANT") {
@@ -3893,10 +3919,19 @@ function scoreCommandWithContext(
       strategicValue += endgame.strategic;
     }
     if (context.undead && resultAt !== null) {
-      const undead = undeadMoveValueV7(context, actor, resultAt, priority);
+      const undead = undeadMoveValueV7(
+        context,
+        actor,
+        resultAt,
+        priority,
+        autoembark,
+      );
       priority = undead.priority;
       strategicValue += undead.strategic;
       objectiveValue += undead.objective;
+      const hunt = plagueHuntMoveValueV7(context, actor, resultAt, priority);
+      priority = hunt.priority;
+      strategicValue += hunt.strategic;
       const plague = afflictionMoveValueV7(context, actor, resultAt, priority);
       priority = plague.priority;
       strategicValue += plague.strategic;
@@ -4029,6 +4064,7 @@ function undeadMoveValueV7(
   actor: PublicUnitV7,
   to: CoordV7,
   basePriority: number,
+  embarks = false,
 ): {
   readonly priority: number;
   readonly strategic: number;
@@ -4050,6 +4086,22 @@ function undeadMoveValueV7(
     hostileNecromancersNearV7(view, to, hostile, 2).length > 0
   )
     strategic += 4;
+  if (view.viewer.faction === "UNDEAD" && isVampireV7(view, actor)) {
+    const vampire = vampireMoveValueV7(context, actor, to, priority, embarks);
+    priority = vampire.priority;
+    strategic += vampire.strategic;
+  }
+  // pulp_wars-vkq.21: embarked Liches sailed into Battleship and Patrol Boat
+  // reach one after another on naval maps; afloat, a Lich keeps the same
+  // rule as on land (never into visible lethal reach unless strictly safer).
+  if (
+    view.viewer.faction === "UNDEAD" &&
+    actor.form === "EMBARKED" &&
+    isLichRoleV7(view, actor) &&
+    danger() >= actor.hp &&
+    danger() >= visibleImmediateDamage(view, actor, actor.at, context)
+  )
+    priority = -1;
   if (view.viewer.faction !== "UNDEAD" || actor.form !== "LAND")
     return { priority, strategic, objective };
   const primaryReady = isPrimaryUnusedV7(actor);
@@ -4117,7 +4169,16 @@ function undeadMoveValueV7(
   // lethal reach.
   if (isLichV7(view, actor)) {
     const dangerHere = visibleImmediateDamage(view, actor, actor.at, context);
-    if (danger() >= actor.hp && danger() >= dangerHere) priority = -1;
+    // pulp_wars-vkq.21: an embarking step is judged afloat (see below).
+    const dangerTo = embarks
+      ? visibleImmediateDamage(
+          view,
+          { ...actor, form: "EMBARKED" },
+          to,
+          context,
+        )
+      : danger();
+    if (dangerTo >= actor.hp && dangerTo >= dangerHere) priority = -1;
     const sourced = plagueSourceVictimsV7(
       view,
       context.afflictions,
@@ -4386,6 +4447,242 @@ function raiderEscapeRetreatValueV7(
     (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
   return 10 * (dangerHere - dangerThere) + (friendly ? 4 : 0) + (cover ? 2 : 0);
 }
+
+/**
+ * `pulp_wars-vkq.21` Vampire survival (Undead viewer). An attack must kill,
+ * or leave the Vampire (after its Lifesteal heal) where the visible enemies'
+ * projected damage next turn, ranged and splash included, stays below its HP.
+ */
+function vampireAttackAcceptableV7(
+  context: PolicyContextV7,
+  view: PlayerViewV7,
+  command: AttackCommandV7,
+): boolean {
+  const preview = queryCombatPreviewV7(
+    view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  if (preview === null) return false;
+  if (preview.defenderDies) return true;
+  const actor = view.units.find((unit) => unit.id === command.unitId);
+  const target = view.units.find((unit) => unit.id === command.targetUnitId);
+  if (actor === undefined || target === undefined) return false;
+  const hp = Math.min(
+    actor.maxHp,
+    actor.hp - preview.damageToAttacker + preview.attackerHeal,
+  );
+  if (hp <= 0) return false;
+  const after = projectPublicUnits(
+    view,
+    view.units.map((unit) =>
+      unit.id === actor.id
+        ? { ...unit, hp }
+        : unit.id === target.id
+          ? { ...unit, hp: target.hp - preview.damageToDefender }
+          : unit,
+    ),
+    [actor.id, target.id],
+  );
+  const wounded = after.units.find((unit) => unit.id === actor.id);
+  return (
+    wounded !== undefined &&
+    visibleImmediateDamage(after, wounded, wounded.at, context) < hp
+  );
+}
+
+/**
+ * An own Vampire's attack that neither kills nor leaves it alive (above) is
+ * not a candidate; the Vampire repositions instead. A proven city save or an
+ * endgame combined kill still excuses it.
+ */
+function vampireAttackExposedV7(
+  context: PolicyContextV7,
+  command: AttackCommandV7,
+  actor: PublicUnitV7,
+  preview: CombatPreviewV7,
+): boolean {
+  const view = context.view;
+  if (
+    actor.ownerId !== view.viewer.id ||
+    view.viewer.faction !== "UNDEAD" ||
+    !isVampireV7(view, actor) ||
+    preview.defenderDies ||
+    vampireAttackAcceptableV7(context, view, command)
+  )
+    return false;
+  return (
+    !attackPurposeFactsV7(context, command, preview).savesCity &&
+    !endgameCombinedKillV7(context, command, preview)
+  );
+}
+
+/**
+ * `pulp_wars-vkq.21` Vampire movement (Undead viewer, any form): never into
+ * visible lethal reach unless that is strictly safer than staying or the
+ * Vampire can strike from there (a kill or a survivable hit); out of lethal
+ * reach at priority 1150 when it stands in it. An embarking move is judged
+ * with the embarked defense.
+ */
+function vampireMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  basePriority: number,
+  embarks: boolean,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  const mover: PublicUnitV7 = embarks ? { ...actor, form: "EMBARKED" } : actor;
+  const dangerThere = visibleImmediateDamage(view, mover, to, context);
+  const dangerHere = visibleImmediateDamage(view, actor, actor.at, context);
+  if (dangerThere >= actor.hp) {
+    if (dangerThere < dangerHere || vampireStrikesFromV7(context, actor, to))
+      return { priority: basePriority, strategic: 0 };
+    return { priority: -1, strategic: 0 };
+  }
+  if (dangerHere >= actor.hp)
+    return {
+      priority: Math.max(basePriority, VAMPIRE_RETREAT_PRIORITY_V7),
+      strategic: dangerHere - dangerThere,
+    };
+  return { priority: basePriority, strategic: 0 };
+}
+
+const VAMPIRE_RETREAT_PRIORITY_V7 = 1150;
+
+/**
+ * `pulp_wars-vkq.21`: an own Lich or Vampire never boards a transport. It
+ * cannot capture, and afloat (Defense 1, no attack, sight 1) it met Patrol
+ * Boats and Battleships it could not see: about 70% of their deaths on the
+ * naval maps were at sea.
+ */
+function fragileCargoV7(context: PolicyContextV7, unitId: UnitId): boolean {
+  const view = context.view;
+  const unit = context.lookup.unitsById.get(unitId);
+  return (
+    unit !== undefined &&
+    view.viewer.faction === "UNDEAD" &&
+    unit.ownerId === view.viewer.id &&
+    (isLichRoleV7(view, unit) || isVampireV7(view, unit))
+  );
+}
+
+/**
+ * `pulp_wars-vkq.21`: an own Lich or Vampire does not land on a tile inside
+ * visible lethal reach unless staying afloat is no safer or (a Vampire) it
+ * can strike from there.
+ */
+function fragileLandingExposedV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  at: CoordV7,
+): boolean {
+  const view = context.view;
+  if (
+    view.viewer.faction !== "UNDEAD" ||
+    actor.ownerId !== view.viewer.id ||
+    (!isLichRoleV7(view, actor) && !isVampireV7(view, actor))
+  )
+    return false;
+  const landed: PublicUnitV7 = { ...actor, form: "LAND" };
+  const dangerThere = visibleImmediateDamage(view, landed, at, context);
+  if (dangerThere < actor.hp) return false;
+  if (dangerThere < visibleImmediateDamage(view, actor, actor.at, context))
+    return false;
+  return !isVampireV7(view, actor) || !vampireStrikesFromV7(context, actor, at);
+}
+
+/** A Vampire standing ashore on `to` could still make an acceptable attack. */
+function vampireStrikesFromV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  if (actor.activation.attacksUsed > 0) return false;
+  const view = context.view;
+  const tile = findPublicTileV7(view, to);
+  if (tile?.explored !== true || tile.biome === null) return false;
+  const moved = projectPublicUnitForPolicyV7(view, actor.id, {
+    at: to,
+    form: "LAND",
+    activation: {
+      ...actor.activation,
+      moved: true,
+      movedPathLength: Math.max(1, distance(actor.at, to)),
+    },
+  });
+  return moved.units.some(
+    (target) =>
+      isHostile(view, target.ownerId) &&
+      distance(target.at, to) === 1 &&
+      vampireAttackAcceptableV7(context, moved, {
+        kind: "ATTACK",
+        unitId: actor.id,
+        targetUnitId: target.id,
+      }),
+  );
+}
+
+/**
+ * `pulp_wars-vkq.21` Lich hunt (a living viewer in a match with an Undead
+ * seat). An own attack-capable land unit within six tiles of a firing
+ * position on a visible hostile Lich that plagues own or allied units moves
+ * closer to that position at priority 1095 (below the spread-discipline
+ * threshold of 1100, so it never ends next to spreading Plague), when the
+ * destination is outside visible lethal reach. Ranged and siege units close
+ * to their range band, so they can fire next turn. Garrisons stay.
+ */
+function plagueHuntMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  basePriority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  const unchanged = { priority: basePriority, strategic: 0 };
+  if (
+    context.afflictions.plagueSources.size === 0 ||
+    actor.form !== "LAND" ||
+    actor.ownerId !== view.viewer.id ||
+    !isLivingOwnerV7(view, actor.ownerId) ||
+    actor.activation.escapeAvailable
+  )
+    return unchanged;
+  const facts = publicCombatFacts(view, actor, context.lookup);
+  const rule = unitRoleRuleV7(view, actor);
+  if (
+    !facts.abilities.includes("ATTACK") ||
+    facts.attack2 <= 0 ||
+    rule.tacticalRole === "SUPPORT" ||
+    cityAt(view, actor.at, context.lookup)?.ownerId === view.viewer.id
+  )
+    return unchanged;
+  const liches = plaguingLichesV7(
+    view,
+    context.afflictions,
+    (owner) => isHostile(view, owner),
+    (owner) => !isHostile(view, owner),
+  );
+  if (liches.length === 0) return unchanged;
+  const gap = (at: CoordV7) =>
+    Math.min(
+      ...liches.map((lich) =>
+        firingGapV7(at, lich.at, facts.minimumRange, facts.maximumRange),
+      ),
+    );
+  const here = gap(actor.at);
+  const there = gap(to);
+  if (here > PLAGUE_HUNT_RADIUS_V7 || there >= here) return unchanged;
+  if (visibleImmediateDamage(view, actor, to, context) >= actor.hp)
+    return unchanged;
+  return {
+    priority: Math.max(basePriority, PLAGUE_HUNT_PRIORITY_V7),
+    strategic:
+      2 * (here - there) + (there === 0 && facts.maximumRange >= 2 ? 4 : 0),
+  };
+}
+
+const PLAGUE_HUNT_PRIORITY_V7 = 1095;
 
 /**
  * `pulp_wars-1mc` endgame siege. Every helper returns the ordinary behavior
@@ -4735,7 +5032,11 @@ function* bestKnightOverrunMoveSequenceSteps(
   });
   const attacks = yield* publicKnightOverrunAttacksSteps(moved, actor.id);
   let best: KnightOverrunSequenceValue | undefined;
+  // pulp_wars-vkq.21: a Vampire moves to attack only where the attack kills
+  // or leaves it alive through the visible enemies' next turn.
+  const vampire = context.undead && isVampireV7(view, actor);
   for (const attack of attacks) {
+    if (vampire && !vampireAttackAcceptableV7(context, moved, attack)) continue;
     const candidate = yield* bestKnightOverrunSequenceSteps(
       context,
       moved,
@@ -5485,7 +5786,9 @@ function visibleImmediateDamage(
     const reachableThreat =
       context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false;
     if (!directlyThreatened && !reachableThreat) {
-      if (undead && isLichV7(view, hostile))
+      // pulp_wars-vkq.21: Battleship splash counts like Lich splash (Liches
+      // died one after another to it on naval maps).
+      if (undead && isSplashAttackerV7(view, hostile))
         total += publicSplashDangerV7(
           view,
           hostile,
@@ -5519,8 +5822,9 @@ function visibleImmediateDamage(
 }
 
 /**
- * Revision 13 Lich splash threat: a Lich hitting a visible friendly unit
- * next to `at` splashes `max(1, ceil(damage / 2))` onto the actor.
+ * Revision 13 splash threat (a Lich, and since `pulp_wars-vkq.21` a
+ * Battleship): hitting a visible friendly unit next to `at` from where the
+ * splash unit stands splashes `max(1, ceil(damage / 2))` onto the actor.
  */
 function publicSplashDangerV7(
   view: PlayerViewV7,

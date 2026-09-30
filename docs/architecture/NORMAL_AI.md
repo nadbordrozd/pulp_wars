@@ -346,6 +346,56 @@ built once per decision with the bare context, and each helper is a bounded
 scan of the view (the combined-attack check previews at most
 `attackers²` attacks on one defender).
 
+## Lich safety, Vampire survival, and Lich hunts (`pulp_wars-vkq.21`)
+
+Three residual weaknesses from the revision-14 measurement
+([balance report §11.3](../validation/RULESET_7_UNDEAD_BALANCE.md#113-residual-ai-weaknesses)),
+fixed behind the same gate as every Undead heuristic (a match with an Undead
+seat), so all-Human decisions and pinned hashes are unchanged. All helpers
+read only the public view and public previews, add no PRNG use,
+elapsed-time input, or work units, and are bounded scans of the view
+([balance report §14](../validation/RULESET_7_UNDEAD_BALANCE.md#14-lich-safety-vampire-survival-and-lich-hunts-pulp_wars-vkq21)).
+
+- **Splash threat from Battleships.** Threat evaluation adds the splash of
+  every visible hostile splash unit (a Battleship of either faction, as well
+  as the Lich): a unit next to a friendly unit the splash unit can hit from
+  where it stands takes `max(1, ceil(damage / 2))`. This reaches every
+  safety test built on visible damage (Lich movement, fresh-unit training,
+  Raise Dead, and the rest).
+- **Liches and Vampires stay ashore.** The measured cause of the Lich and
+  Vampire replacement loops on naval maps was not splash but the sea: about
+  70% of their deaths were afloat, where they have no attack, Defense 1, and
+  sight 1, so Patrol Boats and Battleships they could not see sank them. An
+  own Lich or Vampire therefore never boards (an autoembarking Move is not a
+  candidate); neither can capture, so a naval invasion carries capturers
+  only. Should one be afloat anyway, it keeps the land rule (never into
+  visible lethal reach unless strictly safer), an embarking or landing step
+  is judged in the form it ends in, and it does not disembark onto a tile in
+  lethal reach (a Vampire may when it can strike from there, as below).
+- **Vampires attack only when they survive.** An own Vampire's attack must
+  kill, or leave the Vampire (after its Lifesteal heal) where the visible
+  enemies' projected damage next turn, ranged and splash included and the
+  wounded target's reply counted, stays below its HP. Otherwise the attack is
+  not a candidate (a proven city save or an endgame combined kill still
+  excuses it), and a Move-then-attack is valued only by attacks that pass the
+  same test. A Vampire never moves into visible lethal reach unless that is
+  strictly safer or it can make such an attack from there, and one standing
+  in lethal reach moves out at priority 1150 (a kill, 1180, still comes
+  first). A city whose center is in visible lethal reach for a fresh Vampire
+  scores the Vampire −40 in its training choice, as the Lich already was.
+- **Hunt a plaguing Lich.** For a living viewer, a visible hostile Lich that
+  sources a visible plagued own or allied unit (any remaining turn) is a hunt
+  target. An own attack-capable, non-support land unit off its own city
+  center, within six tiles of a firing position on that Lich (inside its
+  attack range band; Catapults need distance 2–3), scores a Move that closes
+  that gap at priority 1095 with `2 × progress` strategic value (+4 when a
+  ranged unit reaches its band, so it fires next turn without reply), when
+  the destination is outside visible lethal reach. 1095 is below the
+  spread-discipline threshold (1100), so a hunter never ends next to
+  spreading Plague, and below every attack, so a unit in range fires first
+  (a kill on the source Lich stays at 1285). A Raider with an Escape pending
+  keeps its escape rule.
+
 ## Revision-8 merged industry and processor adjacency
 
 The current Ruleset 7 policy uses the single

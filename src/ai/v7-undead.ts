@@ -112,6 +112,34 @@ export function isLichV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
   );
 }
 
+/**
+ * `pulp_wars-vkq.21`: a Lich in any form (land or embarked), for movement
+ * safety afloat.
+ */
+export function isLichRoleV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
+  return (
+    unit.form !== "NAVAL" &&
+    ownerIsUndeadV7(view, unit.ownerId) &&
+    unitRoleMechanicsV7(view, unit).splash
+  );
+}
+
+/**
+ * `pulp_wars-vkq.21`: any unit whose attack splashes onto the primary
+ * target's neighbours: the Lich and the Battleship of either faction.
+ */
+export function isSplashAttackerV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return unit.form !== "EMBARKED" && unitRoleMechanicsV7(view, unit).splash;
+}
+
+/** The Vampire: its attacks draw no retaliation (revision 14 V1). */
+export function isVampireV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
+  return unitRoleRuleV7(view, unit).abilities.includes("UNANSWERED");
+}
+
 /** Wail damages only living units (section 2.3): owner not Undead. */
 export function isLivingOwnerV7(
   view: PlayerViewV7,
@@ -393,6 +421,11 @@ export interface PublicAfflictionsV7 {
    * least two turns left (revision 15: curing a last turn saves just 2 HP).
    */
   readonly plaguedBySource: ReadonlyMap<UnitId, readonly UnitId[]>;
+  /**
+   * `pulp_wars-vkq.21`: every visible plagued unit by its visible source
+   * Lich, whatever its remaining turns (the Lich is plaguing that owner).
+   */
+  readonly plagueSources: ReadonlyMap<UnitId, readonly UnitId[]>;
   /** Bitten units and the player their death would rise for. */
   readonly bitten: ReadonlyMap<UnitId, PlayerId>;
 }
@@ -408,11 +441,17 @@ export function publicAfflictionsV7(view: PlayerViewV7): PublicAfflictionsV7 {
   const spreading = new Set<UnitId>();
   const turnsRemaining = new Map<UnitId, number>();
   const plaguedBySource = new Map<UnitId, UnitId[]>();
+  const plagueSources = new Map<UnitId, UnitId[]>();
   for (const entry of view.plagued) {
     plagued.add(entry.unitId);
     turnsRemaining.set(entry.unitId, entry.turnsRemaining);
     if (entry.turnsRemaining >= PLAGUE_DURATION_TURNS_V7)
       spreading.add(entry.unitId);
+    if (entry.sourceUnitId !== null) {
+      const sourced = plagueSources.get(entry.sourceUnitId) ?? [];
+      sourced.push(entry.unitId);
+      plagueSources.set(entry.sourceUnitId, sourced);
+    }
     if (
       entry.sourceUnitId === null ||
       entry.turnsRemaining < PLAGUE_TURNS_WORTH_CURING_V7
@@ -425,7 +464,14 @@ export function publicAfflictionsV7(view: PlayerViewV7): PublicAfflictionsV7 {
   const bitten = new Map<UnitId, PlayerId>();
   for (const entry of view.bitten)
     bitten.set(entry.unitId, entry.biterPlayerId);
-  return { plagued, spreading, turnsRemaining, plaguedBySource, bitten };
+  return {
+    plagued,
+    spreading,
+    turnsRemaining,
+    plaguedBySource,
+    plagueSources,
+    bitten,
+  };
 }
 
 /**
@@ -619,4 +665,50 @@ export function publicTendValueV7(
     bittenCures += Number(bitten);
   }
   return { heal, plagueCures, plagueTurns, bittenCures };
+}
+
+// ---------------------------------------------------------------------------
+// `pulp_wars-vkq.21`: hunting a plaguing Lich.
+
+/** Hunters start within this many tiles of a firing position on the Lich. */
+export const PLAGUE_HUNT_RADIUS_V7 = 6;
+
+/**
+ * Visible hostile Liches that source a visible plagued unit whose owner
+ * `counts` (for a living viewer: its own and allied units), at any remaining
+ * Plague turn: that Lich is plaguing the viewer's side.
+ */
+export function plaguingLichesV7(
+  view: PlayerViewV7,
+  afflictions: PublicAfflictionsV7,
+  hostile: (ownerId: PlayerId) => boolean,
+  counts: (ownerId: PlayerId) => boolean,
+): readonly PublicUnitV7[] {
+  if (afflictions.plagueSources.size === 0) return [];
+  return view.units.filter(
+    (unit) =>
+      hostile(unit.ownerId) &&
+      isLichV7(view, unit) &&
+      (afflictions.plagueSources.get(unit.id) ?? []).some((victimId) => {
+        const victim = view.units.find((item) => item.id === victimId);
+        return victim !== undefined && counts(victim.ownerId);
+      }),
+  );
+}
+
+/**
+ * Tiles still to cover before a unit with attack range
+ * `[minimumRange, maximumRange]` standing on `at` could fire at `target`:
+ * 0 inside that band, else the Chebyshev distance to it.
+ */
+export function firingGapV7(
+  at: CoordV7,
+  target: CoordV7,
+  minimumRange: number,
+  maximumRange: number,
+): number {
+  const d = chebyshev(at, target);
+  if (d > maximumRange) return d - maximumRange;
+  if (d < minimumRange) return minimumRange - d;
+  return 0;
 }

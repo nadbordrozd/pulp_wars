@@ -969,3 +969,118 @@ defender), or the leader's army is on another landmass and the naval plan
 never lands it. A later bead could teach the Normal AI to invade a last city
 across water deliberately and to stop training into a center inside visible
 lethal reach for all roles, not only siege units.
+
+## 14. Lich safety, Vampire survival, and Lich hunts (`pulp_wars-vkq.21`)
+
+Bead `pulp_wars-vkq.21`: the three residual AI weaknesses of section 11.3.
+The policy change is described in
+[Normal AI](../architecture/NORMAL_AI.md#lich-safety-vampire-survival-and-lich-hunts-pulp_wars-vkq21);
+rules are unchanged (revision 15). Sections 1–13 stay as recorded.
+
+### 14.1 Reproduction
+
+The full section-2 matrix (seeds 0–29 of every 1v1 cell, 1,200 games, plus
+the four-seat extra, 40 games), 150/120-round caps. Before is main
+`515be65`; its 1,240 final state hashes equal those of
+[RULESET_7_UNDEAD_BALANCE_ENDGAME_AFTER.json](RULESET_7_UNDEAD_BALANCE_ENDGAME_AFTER.json).
+The matrix script gained Lich telemetry that does not change play (`liches`
+per game: Liches created and killed, deaths to Battleship fire and splash,
+killers of Liches and Undead Vampires by role, and for every Lich that
+applied Plague whether and how many rounds after its first Plague it was
+killed), so both runs use this bead's script.
+
+```bash
+# After (this bead's policy):
+npm run balance:ruleset7-undead -- --seeds 30 --jobs 6 --output docs/validation/RULESET_7_UNDEAD_BALANCE_VKQ21_AFTER.json --detail-output after-detail.json
+# Before: the same command (--jobs 5) on a copy of main 515be65 with this
+# bead's scripts/ruleset7-undead-balance-matrix.ts, writing
+# RULESET_7_UNDEAD_BALANCE_VKQ21_BEFORE.json
+```
+
+Outputs: [before](RULESET_7_UNDEAD_BALANCE_VKQ21_BEFORE.json) and
+[after](RULESET_7_UNDEAD_BALANCE_VKQ21_AFTER.json) (4,564 s and 2,674 s wall
+on a shared 10-core laptop). Neither run had an error, stall, or exception.
+The tables come from the `--detail-output` files with a scratch summarizer;
+the at-sea counts come from a scratch replay of the 48 mixed games on
+Archipelago, Continents, and Lakes, seeds 0–3 (not checked in).
+
+### 14.2 Why Liches and Vampires died
+
+Battleship splash was a real gap (53 Lich deaths in the 600 mixed games
+before), but not the main one. In the naval-map sample 23 of 33 Lich deaths
+and 37 of 52 Undead Vampire deaths happened afloat: the naval plan boarded
+Liches and Vampires with the invasion, and an embarked unit (no attack,
+Defense 1, sight 1) met Patrol Boats and Battleships it could not see. The
+policy then trained the next one (the Lich bias while fewer than three are
+owned, the Vampire bias while none is). On land, Vampires attacked from
+tiles inside Catapult or Marksman reach and died the next turn: 291 of 375
+Vampire deaths in mixed games came after at most one attack. After this bead
+the same sample has 1 of 5 Lich deaths and none of 6 Vampire deaths afloat.
+
+### 14.3 Results
+
+Decided games; 95% Wilson intervals. Mixed = HU + UH (600 games).
+
+| Measure                                                | Before                | After                 |
+| ------------------------------------------------------ | --------------------- | --------------------- |
+| Undead win, mixed                                      | 59% [55–63] (345/586) | 59% [55–63] (344/587) |
+| Undead win, HU / UH                                    | 56% / 62%             | 56% / 62%             |
+| Seat-0 win, UU / HH                                    | 52% / 55%             | 55% / 55%             |
+| Round caps, mixed / UU / HH (of 600 / 300 / 300)       | 14 / 10 / 16          | 13 / 14 / 16          |
+| Decided rounds mean, HU / UH / UU                      | 33.4 / 31.5 / 31.8    | 33.4 / 31.8 / 31.3    |
+| Liches created / killed, mixed                         | 875 / 259             | 753 / 142             |
+| … killed by Battleship fire / Battleship splash        | 65 / 53               | 34 / 22               |
+| … killed by Patrol Boats / Human Catapults             | 32 / 63               | 18 / 23               |
+| Liches created / killed, UU                            | 1,158 / 606           | 909 / 351             |
+| Undead Vampires (trained + treasure), mixed            | 557 (373 + 184)       | 349 (164 + 185)       |
+| Vampires killed; survival to the end                   | 375; 33%              | 135; 61%              |
+| Vampires killed having attacked at most once           | 291                   | 61                    |
+| Vampire attacks / kills (attacks per Vampire)          | 925 / 522 (1.7)       | 1,177 / 775 (3.4)     |
+| Vampire survival, UU                                   | 26%                   | 48%                   |
+| Liches that applied Plague / killed later, mixed       | 369 / 138             | 376 / 116             |
+| Rounds from first Plague to the kill, mean             | 14.1                  | 12.6                  |
+| Plagued unit-turns per mixed game                      | 13.2                  | 8.6 (−35%)            |
+| Rounds with Plague damage, mean (games with Plague)    | 11.6                  | 10.0                  |
+| Most plagued at once, mean (games with Plague)         | 4.9                   | 4.8                   |
+| Four-seat: capped (of 40); plagued unit-turns per game | 13; 53.4              | 12; 76.4              |
+
+What changed:
+
+- **Lich losses nearly halve** (259 → 142 killed in mixed games, 606 → 351
+  in the Undead mirror), and fewer are trained to replace them (1.46 → 1.26
+  per mixed game). Battleship kills fall from 118 to 56 (splash 53 → 22);
+  most of the rest is Juggernauts and Catapults on land.
+- **Vampires live and fight.** Survival rises from 33% to 61%, attacks per
+  Vampire double (1.7 → 3.4), and deaths after at most one attack fall from
+  291 to 61. Fewer are trained (0.62 → 0.27 per mixed game) because the
+  living one is not replaced, yet they make 27% more attacks and 48% more
+  kills.
+- **Plague volume falls by a third** (13.2 → 8.6 plagued unit-turns per mixed
+  game). A hunted Lich is killed sooner (14.1 → 12.6 rounds from its first
+  Plague), but fewer are killed in total (138 → 116): Liches now avoid
+  lethal reach more often, and a hunter closing in makes a plague source
+  retreat (its revision-14 rule) instead of re-plaguing. A hunt ablation
+  (this policy without the hunt move, mixed seeds 0–3, 80 games) had 25.9
+  plagued unit-turns per game against 4.7 with it, the same Undead win count
+  (43), and more Lich deaths (25 against 8).
+- **Win rates, game length, and caps do not move beyond noise.** The mixed
+  Undead win rate stays 59% [55–63] in both seat orders; decided games keep
+  their length. Undead-mirror caps rise from 10 to 14 of 300 (Liches that no
+  longer sail cannot join an invasion across water); mixed caps fall from 14
+  to 13.
+- **Four-seat.** Plague volume rises (53 → 76 plagued unit-turns per game):
+  Liches that no longer die at sea keep plaguing in the long three-AI games;
+  caps are 13 → 12 of 40.
+- **All-Human play is unchanged:** all 300 HH games have byte-identical final
+  state hashes in both runs, and every pinned decision hash in the
+  Normal-policy, tactical, endgame, revision-14, and revision-15 tests is
+  unchanged.
+
+### 14.4 Remaining weaknesses
+
+Liches and Vampires no longer join naval invasions, so on Archipelago an
+Undead invasion lands without siege support (the section 13.4 last-city
+caps across water are unaffected). Hunters approach a plaguing Lich only
+from within six tiles of a firing position and never into visible lethal
+reach, so a Lich screened by its own line is still out of reach; the main
+effect is to push sources back rather than to kill them.

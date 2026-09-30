@@ -120,6 +120,54 @@ export interface MatrixEntry extends MatrixCell {
   readonly lastCaptureRound: number;
   /** Revision 14 Plague extent and duration from the event log. */
   readonly plague: PlagueDuration;
+  /** `pulp_wars-vkq.21` Lich lifecycles (Undead seats' `CATAPULT` role). */
+  readonly liches: LichStats;
+}
+
+/**
+ * Lich lifecycle statistics for one match (`pulp_wars-vkq.21`), summed over
+ * every Undead seat.
+ */
+interface LichStats {
+  units: number;
+  /** Deaths other than elimination. */
+  died: number;
+  /** Deaths from splash damage, and those from a Battleship's splash. */
+  diedToSplash: number;
+  diedToBattleshipSplash: number;
+  /** Deaths as the primary target of a Battleship attack. */
+  diedToBattleship: number;
+  /** Liches that newly plagued at least one unit. */
+  sources: number;
+  /** Of those, Liches killed (not eliminated) later. */
+  sourcesKilled: number;
+  /** Rounds from a source Lich's first Plague to its death, summed. */
+  sourceRoundsToKill: number;
+  /** Source Liches killed within three rounds of their first Plague. */
+  sourcesKilledWithinThree: number;
+  /**
+   * Lich and Undead Vampire deaths by killer: `<faction initial>:<role>` of
+   * the attacker (`:SPLASH` for splash, `:RETALIATION` for retaliation), or
+   * `WAIL`/`PLAGUE`.
+   */
+  lichKilledBy: Record<string, number>;
+  vampireKilledBy: Record<string, number>;
+}
+
+function emptyLiches(): LichStats {
+  return {
+    units: 0,
+    died: 0,
+    diedToSplash: 0,
+    diedToBattleshipSplash: 0,
+    diedToBattleship: 0,
+    sources: 0,
+    sourcesKilled: 0,
+    sourceRoundsToKill: 0,
+    sourcesKilledWithinThree: 0,
+    lichKilledBy: {},
+    vampireKilledBy: {},
+  };
 }
 
 /** Plague duration statistics for one match (revision 14). */
@@ -327,6 +375,7 @@ export function runCell(cell: MatrixCell): MatrixEntry {
     trench: analysis.trench,
     lastCaptureRound: analysis.lastCaptureRound,
     plague: analysis.plague,
+    liches: analysis.liches,
   };
 }
 
@@ -447,6 +496,7 @@ interface LogAnalysis {
   readonly trench: Partial<Record<FactionIdV7, TrenchStats>>;
   readonly lastCaptureRound: number;
   readonly plague: PlagueDuration;
+  readonly liches: LichStats;
 }
 
 /**
@@ -485,6 +535,22 @@ function analyzeLog(
   let lastCaptureRound = 0;
   const plagueRounds = new Set<number>();
   const plagueTurnsByUnit = new Map<number, number>();
+  const liches = emptyLiches();
+  const lichFirstPlague = new Map<number, number>();
+  const isLich = (unitId: number) =>
+    unitRole.get(unitId) === "CATAPULT" &&
+    factionOf.get(unitOwner.get(unitId) ?? -1) === "UNDEAD";
+  const killer = (unitId: number, suffix = "") =>
+    `${(factionOf.get(unitOwner.get(unitId) ?? -1) ?? "?").slice(0, 1)}:${unitRole.get(unitId) ?? "?"}${suffix}`;
+  const recordDeath = (unitId: number, by: string) => {
+    const record = isLich(unitId)
+      ? liches.lichKilledBy
+      : unitRole.get(unitId) === "KNIGHT" &&
+          factionOf.get(unitOwner.get(unitId) ?? -1) === "UNDEAD"
+        ? liches.vampireKilledBy
+        : undefined;
+    if (record !== undefined) record[by] = (record[by] ?? 0) + 1;
+  };
   const pendingBank = new Map<number, number>();
   const snapshotCities = (key: "citiesRound15" | "citiesRound30") => {
     for (const [playerId, economy] of seats)
@@ -500,6 +566,7 @@ function analyzeLog(
   ) => {
     unitOwner.set(unitId, playerId);
     unitRole.set(unitId, role);
+    if (isLich(unitId)) liches.units += 1;
     if (role !== "KNIGHT") return;
     const stats = knights[factionOf.get(playerId) ?? "ORIGINAL"];
     if (stats === undefined) return;
@@ -658,6 +725,31 @@ function analyzeLog(
           const splashed = knightStats(entry.unitId);
           if (splashed !== undefined) splashed.damageTaken += entry.damage;
         }
+        const battleship = unitRole.get(preview.attackerId) === "BATTLESHIP";
+        for (const entry of preview.splash)
+          if (entry.dies && isLich(entry.unitId)) {
+            liches.diedToSplash += 1;
+            liches.diedToBattleshipSplash += Number(battleship);
+          }
+        if (battleship && preview.defenderDies && isLich(preview.targetUnitId))
+          liches.diedToBattleship += 1;
+        if (preview.defenderDies)
+          recordDeath(preview.targetUnitId, killer(preview.attackerId));
+        if (preview.attackerDies)
+          recordDeath(
+            preview.attackerId,
+            killer(preview.targetUnitId, ":RETALIATION"),
+          );
+        for (const entry of preview.splash)
+          if (entry.dies)
+            recordDeath(entry.unitId, killer(preview.attackerId, ":SPLASH"));
+        if (
+          preview.plagued.length > 0 &&
+          !lichFirstPlague.has(preview.attackerId)
+        ) {
+          lichFirstPlague.set(preview.attackerId, round);
+          liches.sources += 1;
+        }
       }
       if (event.kind === "WAIL_RESOLVED")
         for (const entry of event.results) {
@@ -701,6 +793,24 @@ function analyzeLog(
             (plagueTurnsByUnit.get(entry.unitId) ?? 0) + 1,
           );
       }
+      if (
+        event.kind === "UNIT_DIED" &&
+        (event.cause === "WAIL" || event.cause === "PLAGUE")
+      )
+        recordDeath(event.unitId, event.cause);
+      if (
+        event.kind === "UNIT_DIED" &&
+        event.cause !== "ELIMINATION" &&
+        isLich(event.unitId)
+      ) {
+        liches.died += 1;
+        const plaguedAt = lichFirstPlague.get(event.unitId);
+        if (plaguedAt !== undefined) {
+          liches.sourcesKilled += 1;
+          liches.sourceRoundsToKill += round - plaguedAt;
+          liches.sourcesKilledWithinThree += Number(round - plaguedAt <= 3);
+        }
+      }
       if (event.kind === "UNIT_DIED") {
         const stats = knightStats(event.unitId);
         if (stats !== undefined && event.cause !== "ELIMINATION") {
@@ -730,7 +840,7 @@ function analyzeLog(
     plague.longestUnitTurns = Math.max(plague.longestUnitTurns, turns);
     plague.unitsFivePlusTurns += Number(turns >= 5);
   }
-  return { seats, knights, trench, lastCaptureRound, plague };
+  return { seats, knights, trench, lastCaptureRound, plague, liches };
 }
 
 const coordKey = (at: { readonly x: number; readonly y: number }) =>
@@ -1156,6 +1266,20 @@ export function summarize(entries: readonly MatrixEntry[]) {
     }
     return totals;
   };
+  const lichTotals = (group: readonly MatrixEntry[]) => {
+    const totals = emptyLiches();
+    for (const entry of group)
+      for (const key of Object.keys(totals) as (keyof LichStats)[]) {
+        const value = entry.liches[key];
+        const total = totals[key];
+        if (typeof value === "number" && typeof total === "number")
+          (totals[key] as number) = total + value;
+        else if (typeof value === "object" && typeof total === "object")
+          for (const [name, count] of Object.entries(value))
+            total[name] = (total[name] ?? 0) + count;
+      }
+    return totals;
+  };
   const cappedStall = (group: readonly MatrixEntry[]) => {
     const capped = group.filter((entry) => entry.termination === "ROUND_CAP");
     return {
@@ -1321,6 +1445,10 @@ export function summarize(entries: readonly MatrixEntry[]) {
         ...duel.map((entry) => entry.maximumOvercapacity),
       ),
       plague: plagueSummary(mixed),
+      liches: {
+        mixed: lichTotals(mixed),
+        undeadMirror: lichTotals(byPairing.UU ?? []),
+      },
     },
     multi: {
       games: multi.length,
