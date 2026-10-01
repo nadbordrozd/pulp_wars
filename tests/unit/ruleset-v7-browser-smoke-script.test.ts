@@ -165,7 +165,9 @@ describe("Ruleset 7 browser smoke script", () => {
     );
 
     expect(source).toContain("await probeGoblinMatch(connection)");
-    expect(probe).toContain('JSON.stringify(["Human", "Undead", "Goblin"])');
+    expect(probe).toContain(
+      'JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur"])',
+    );
     expect(probe).toContain(
       "document.querySelector('#v7-faction-0')?.value === 'GOBLIN'",
     );
@@ -185,6 +187,79 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe.indexOf("confirm-kaboom")).toBeLessThan(
       probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
     );
+    // No fixture import: the probe also runs against a deployed bundle.
+    expect(probe).not.toContain("/tests/fixtures/");
+  });
+  it("stampedes, lays an Egg, sees it hatch and resumes as Dinosaurs", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = source.slice(
+      source.indexOf("async function probeDinosaurMatch("),
+      source.indexOf("async function probeShowcaseMatch("),
+    );
+
+    expect(source).toContain("await probeDinosaurMatch(connection)");
+    expect(source).toContain("; Dinosaur ${dinosaur}; Showcase ${showcase}.");
+    // Setup: Dinosaur is offered, and chosen with three opponents on the
+    // Showcase, the one setup with a turn-1 lane and lay-able Eggs.
+    expect(probe).toContain(
+      'JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur"])',
+    );
+    expect(probe).toContain(
+      'await typeSelectValue(connection, "#v7-ai-count", "3")',
+    );
+    expect(probe).toContain(
+      "document.querySelector('#v7-faction-0')?.value === 'DINOSAUR'",
+    );
+    expect(probe).toContain(
+      'JSON.stringify(["DINOSAUR", "ORIGINAL", "ORIGINAL", "ORIGINAL"])',
+    );
+    // The human moves first, so the launch is a plain trusted click.
+    expect(probe).not.toContain("launchWithFastForward");
+    expect(probe).not.toContain("replaceSeedInput");
+    const launch = probe.indexOf(
+      `await pointerClick(connection, '[data-action="launch"]')`,
+    );
+    expect(launch).toBeGreaterThan(-1);
+    // Stampede from the board with the keyboard, then its log line.
+    const stampede = probe.indexOf(
+      `document.querySelector('[data-action^="command-stampede-"]:not(:disabled)') !== null`,
+    );
+    expect(stampede).toBeGreaterThan(launch);
+    expect(probe).toContain("includes('Your Triceratops stampeded')");
+    // Lay Egg through the card and a nest tile picked on the board.
+    const card = probe.indexOf(
+      `await pointerClick(connection, '[data-action="lay-egg-raider"]')`,
+    );
+    expect(card).toBeGreaterThan(stampede);
+    expect(probe).toContain(
+      `document.querySelector('[data-v7-lay-egg="picking"]')?.dataset.nestTiles !== undefined`,
+    );
+    expect(probe).toContain("includes('You laid a Raptor Egg')");
+    expect(probe).toContain(`egg.form !== "EGG" || egg.role !== "RAIDER"`);
+    // End Turn, then the Egg has hatched into a land-form Raptor.
+    const endTurn = probe.indexOf(
+      `await pointerClick(connection, '[data-action="end-turn"]')`,
+    );
+    expect(endTurn).toBeGreaterThan(card);
+    expect(
+      probe.indexOf("await evaluate(connection, armFastForwardExpression())"),
+    ).toBeLessThan(endTurn);
+    expect(probe).toContain(`hatched.form !== "LAND"`);
+    expect(probe).toContain("hatched.eggs !== 0");
+    // Save and resume on a fresh load with the Dinosaur seat.
+    expect(endTurn).toBeLessThan(
+      probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
+    );
+    expect(probe).toContain(`'["DINOSAUR","ORIGINAL","ORIGINAL","ORIGINAL"]'`);
+    expect(probe).toContain(
+      "JSON.stringify(resumed) !== JSON.stringify(hatched)",
+    );
+    for (const name of [
+      "dinosaur-setup-desktop.png",
+      "dinosaur-nest-picking-desktop.png",
+      "dinosaur-hatched-desktop.png",
+    ])
+      expect(probe).toContain(`await capture(connection, "${name}")`);
     // No fixture import: the probe also runs against a deployed bundle.
     expect(probe).not.toContain("/tests/fixtures/");
   });
@@ -288,9 +363,9 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     // Two release captures, four Undead setup probe captures, one
     // revision-14 Plague/Bitten fixture capture per art set (in a loop), and
-    // three revision-17 Goblin probe captures, and one revision-18 Showcase
-    // capture.
-    expect(source.match(/await capture\(/g)).toHaveLength(11);
+    // three revision-17 Goblin probe captures, three revision-19 Dinosaur
+    // probe captures, and one revision-18 Showcase capture.
+    expect(source.match(/await capture\(/g)).toHaveLength(14);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");

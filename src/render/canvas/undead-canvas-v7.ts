@@ -21,7 +21,11 @@ export type AbilityPreviewStyleV7 =
   /** Revision 17: a previewed blast area and the units it hits. */
   | "BLAST"
   /** Revision 17: an own or allied unit hit by a blast or bomb (warning). */
-  | "BLAST_FRIENDLY";
+  | "BLAST_FRIENDLY"
+  /** Revision 19: a legal nest tile of the Egg being laid. */
+  | "NEST"
+  /** Revision 19: an adjacent own Egg laid this turn (no Hatch yet). */
+  | "HATCH_BLOCKED";
 
 /** Legacy and CHIBI Undead badge frames, relative to the cell centre. */
 export const UNDEAD_BADGE_FRAME_V7 = {
@@ -445,6 +449,9 @@ const STYLE_COLORS: Readonly<
   // pale spark cream; friendly fire adds yellow-and-charcoal hazard stripes.
   BLAST: { fill: "rgba(255, 248, 208, 0.24)", stroke: "#fff8d0" },
   BLAST_FRIENDLY: { fill: "rgba(255, 216, 74, 0.2)", stroke: "#ffd84a" },
+  // Revision 19: unowned cream and grey cues (DINOSAUR.md).
+  NEST: { fill: "rgba(255, 248, 208, 0.28)", stroke: "#fff8d0" },
+  HATCH_BLOCKED: { fill: "rgba(174, 182, 194, 0.18)", stroke: "#aeb6c2" },
 };
 
 /** Dark stripes that turn the friendly-fire outline into a hazard band. */

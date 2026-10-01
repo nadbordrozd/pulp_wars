@@ -571,6 +571,7 @@ try {
   const chibi = await probeChibiArtSet(connection);
   const undead = await probeUndeadSetup(connection);
   const goblin = await probeGoblinMatch(connection);
+  const dinosaur = await probeDinosaurMatch(connection);
   const showcase = await probeShowcaseMatch(connection);
   await evaluate(
     connection,
@@ -654,7 +655,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Showcase ${showcase}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Showcase ${showcase}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -1106,7 +1107,10 @@ async function probeGoblinMatch(connection: Connection): Promise<string> {
     connection,
     `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
   );
-  if (JSON.stringify(options) !== JSON.stringify(["Human", "Undead", "Goblin"]))
+  if (
+    JSON.stringify(options) !==
+    JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur"])
+  )
     throw new Error(
       `Goblin faction option missing: ${JSON.stringify(options)}`,
     );
@@ -1267,6 +1271,282 @@ async function driveDefaultMatchToOutcome(
     }
   }
   throw new Error("Default v7 browser match exceeded 1,500 human boundaries");
+}
+
+/**
+ * Revision 19 Dinosaurs in the default route (pulp_wars-c87.4): setup offers
+ * Dinosaur for every seat; a Showcase with a Dinosaur seat and three Human
+ * opponents launches from the production setup (the only setup whose first
+ * turn has lay-able Eggs and a Triceratops with an open lane: the
+ * neighbouring strip's Captain stands three tiles east of it); the
+ * Triceratops performs that Stampede from its board target with the
+ * keyboard; North lays a Raptor Egg through its Lay Egg card and a nest tile
+ * picked on the board; one End Turn later the Egg has hatched into a Raptor;
+ * and the save resumes with its Dinosaur seat on a fresh default-route load.
+ * It uses no fixture, so it also runs against a deployed bundle.
+ */
+async function probeDinosaurMatch(connection: Connection): Promise<string> {
+  const defaultUrl = (): string => {
+    const url = new URL(baseUrl);
+    url.searchParams.delete("art");
+    return url.href;
+  };
+  const navigateFresh = async (readiness: string): Promise<void> => {
+    await evaluate(
+      connection,
+      `globalThis.__V7_DINOSAUR_PRIOR_DOCUMENT__ = true`,
+    );
+    await connection.send("Page.navigate", { url: defaultUrl() });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_DINOSAUR_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
+    );
+  };
+  const typeahead = async (selector: string, letter: string): Promise<void> => {
+    await evaluate(
+      connection,
+      `document.querySelector(${JSON.stringify(selector)}).focus()`,
+    );
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: letter,
+      code: `Key${letter}`,
+      text: letter,
+      windowsVirtualKeyCode: letter.charCodeAt(0),
+    });
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: letter,
+      code: `Key${letter}`,
+      windowsVirtualKeyCode: letter.charCodeAt(0),
+    });
+  };
+  const focusBoard = async (): Promise<void> => {
+    await evaluate(
+      connection,
+      `document.querySelector('canvas.board-canvas-v7').focus()`,
+    );
+  };
+  const arrows = async (dx: number, dy: number): Promise<void> => {
+    const horizontal = dx < 0 ? "ArrowLeft" : "ArrowRight";
+    const vertical = dy < 0 ? "ArrowUp" : "ArrowDown";
+    for (let step = 0; step < Math.abs(dx); step += 1)
+      await pressKey(connection, horizontal, horizontal);
+    for (let step = 0; step < Math.abs(dy); step += 1)
+      await pressKey(connection, vertical, vertical);
+  };
+  const saveKey = "pulpWars.save.v7r19.current";
+  const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(freshSetup);
+  const options = await evaluate<readonly string[]>(
+    connection,
+    `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
+  );
+  if (
+    JSON.stringify(options) !==
+    JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur"])
+  )
+    throw new Error(
+      `Dinosaur faction option missing: ${JSON.stringify(options)}`,
+    );
+  // Three opponents, the Showcase map, and a Dinosaur human seat, each
+  // chosen by keyboard on its focused, closed select.
+  await evaluate(connection, `document.querySelector('#v7-ai-count').focus()`);
+  await typeSelectValue(connection, "#v7-ai-count", "3");
+  await typeahead("#v7-map-type", "S");
+  await typeahead("#v7-faction-0", "D");
+  await waitForExpression(
+    connection,
+    `document.querySelector('#v7-map-type')?.value === 'SHOWCASE' && document.querySelector('#v7-faction-0')?.value === 'DINOSAUR' && document.querySelectorAll('[data-v7-factions] select').length === 4 && document.querySelector('#v7-faction-3')?.value === 'ORIGINAL'`,
+  );
+  await capture(connection, "dinosaur-setup-desktop.png");
+  await pointerClick(connection, '[data-action="launch"]');
+  const settled = `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId && v.pendingChoices.length === 0 && document.querySelector('[data-action="end-turn"]:not(:disabled)') !== null; })()`;
+  await waitForExpression(connection, settled, 900);
+  interface DinosaurStartV7 {
+    readonly factions: readonly string[];
+    readonly viewer: string;
+    readonly units: number;
+    readonly eggs: number;
+    readonly capital: { readonly x: number; readonly y: number };
+    readonly north: { readonly x: number; readonly y: number };
+    readonly triceratops: { readonly x: number; readonly y: number };
+  }
+  const started = await evaluate<DinosaurStartV7>(
+    connection,
+    `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const own = view.units.filter((unit) => unit.ownerId === view.viewer.id); const cities = view.cities.filter((city) => city.ownerId === view.viewer.id); return { factions: view.setup.factions, viewer: view.viewer.faction, units: own.length, eggs: view.eggs.length, capital: cities.find((city) => city.isCapital).at, north: cities.filter((city) => !city.isCapital).sort((a, b) => a.at.y - b.at.y)[0].at, triceratops: own.find((unit) => unit.role === 'CATAPULT').at }; })()`,
+  );
+  if (
+    JSON.stringify(started.factions) !==
+      JSON.stringify(["DINOSAUR", "ORIGINAL", "ORIGINAL", "ORIGINAL"]) ||
+    started.viewer !== "DINOSAUR" ||
+    started.units !== 10 ||
+    started.eggs !== 0
+  )
+    throw new Error(`Dinosaur setup launch failed: ${JSON.stringify(started)}`);
+  // Stampede: the board cursor starts on the capital; the Triceratops is
+  // selected with Enter and its offered lane target with Enter again.
+  await focusBoard();
+  await arrows(
+    started.triceratops.x - started.capital.x,
+    started.triceratops.y - started.capital.y,
+  );
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock h2')?.textContent === 'Triceratops' && document.querySelector('[data-action^="command-stampede-"]:not(:disabled)') !== null && document.querySelector('.v7-stampede-legend') !== null`,
+  );
+  const stampede = await evaluate<{
+    readonly label: string | null;
+    readonly target: { readonly x: number; readonly y: number } | null;
+  }>(
+    connection,
+    `(() => { const button = document.querySelector('[data-action^="command-stampede-"]'); const id = Number(button.dataset.action.slice('command-stampede-'.length)); const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; return { label: button.getAttribute('aria-label'), target: view.units.find((unit) => unit.id === id)?.at ?? null }; })()`,
+  );
+  if (
+    stampede.target === null ||
+    !/^Stampede · Runs [12] tiles?: \+[\d.]+ Attack\. Deals \d+ damage\. .+ No retaliation\./.test(
+      stampede.label ?? "",
+    )
+  )
+    throw new Error(`Stampede preview missing: ${JSON.stringify(stampede)}`);
+  await focusBoard();
+  await arrows(
+    stampede.target.x - started.triceratops.x,
+    stampede.target.y - started.triceratops.y,
+  );
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `(document.querySelector('#v7-live')?.textContent ?? '').includes('Your Triceratops stampeded') && globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 1 && ${settled}`,
+    300,
+  );
+  const stampedeNotice = await evaluate<string>(
+    connection,
+    `document.querySelector('#v7-live')?.textContent ?? ''`,
+  );
+  // Lay Egg: select North, choose the Raptor card, and pick the first legal
+  // nest tile on the board with the keyboard.
+  const cursor = await evaluate<{ readonly x: number; readonly y: number }>(
+    connection,
+    `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; return view.units.find((unit) => unit.ownerId === view.viewer.id && unit.role === 'CATAPULT').at; })()`,
+  );
+  await focusBoard();
+  await arrows(started.north.x - stampede.target.x, 0);
+  await arrows(0, started.north.y - stampede.target.y);
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock h2')?.textContent === 'City' && document.querySelector('[data-stat="units"]')?.dataset.capacity === 'slots' && document.querySelector('[data-action="lay-egg-raider"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
+  );
+  const slots = await evaluate<string>(
+    connection,
+    `document.querySelector('.v7-city-units')?.textContent ?? ''`,
+  );
+  if (!/^\d+\/\d+ slots$/.test(slots))
+    throw new Error(`Dinosaur city slots missing: ${slots}`);
+  await pointerClick(connection, '[data-action="lay-egg-raider"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-lay-egg="picking"]')?.dataset.nestTiles !== undefined`,
+  );
+  const nest = await evaluate<{ readonly x: number; readonly y: number }>(
+    connection,
+    `(() => { const [x, y] = document.querySelector('[data-v7-lay-egg="picking"]').dataset.nestTiles.split(' ')[0].split(',').map(Number); return { x, y }; })()`,
+  );
+  await capture(connection, "dinosaur-nest-picking-desktop.png");
+  await focusBoard();
+  await arrows(nest.x - started.north.x, nest.y - started.north.y);
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `(document.querySelector('#v7-live')?.textContent ?? '').includes('You laid a Raptor Egg') && globalThis.__PULP_WARS_APP__.controller.snapshot().view.eggs.length === 1 && ${settled}`,
+    300,
+  );
+  const egg = await evaluate<{
+    readonly unitId: number;
+    readonly turnsRemaining: number;
+    readonly form: string;
+    readonly role: string;
+  }>(
+    connection,
+    `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const entry = view.eggs[0]; const unit = view.units.find((candidate) => candidate.id === entry.unitId); return { unitId: entry.unitId, turnsRemaining: entry.turnsRemaining, form: unit.form, role: unit.role }; })()`,
+  );
+  if (egg.form !== "EGG" || egg.role !== "RAIDER" || egg.turnsRemaining < 1)
+    throw new Error(`Raptor Egg not laid: ${JSON.stringify(egg)}`);
+  // End Turn once per turn of the Egg's countdown (the engine's number, so
+  // a retuned hatch time needs no change here): the Normal AI plays three
+  // seats and the Egg hatches at the human's Start Turn.
+  const hatchRound = 1 + egg.turnsRemaining;
+  for (let round = 2; round <= hatchRound; round += 1) {
+    await evaluate(connection, armFastForwardExpression());
+    try {
+      await pointerClick(connection, '[data-action="end-turn"]');
+      await waitForExpression(
+        connection,
+        `globalThis.__V7_FAST_FORWARD_CONTROL__?.status === 'ERROR' || (${settled} && globalThis.__PULP_WARS_APP__.controller.snapshot().view.round === ${round})`,
+        1800,
+      );
+      const control = await evaluate<{
+        status: string;
+        detail: string | null;
+      }>(connection, `globalThis.__V7_FAST_FORWARD_CONTROL__`);
+      if (control.status === "ERROR")
+        throw new Error(`Dinosaur End Turn failed: ${control.detail}`);
+    } finally {
+      await evaluate(
+        connection,
+        `globalThis.__V7_FAST_FORWARD_CONTROL_CANCEL__?.()`,
+      );
+    }
+  }
+  const hatchedExpression = `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const unit = view.units.find((candidate) => candidate.id === ${egg.unitId}); return { eggs: view.eggs.length, form: unit?.form ?? null, role: unit?.role ?? null, hp: unit?.hp ?? null, commandIndex: view.commandIndex, round: view.round }; })()`;
+  interface DinosaurHatchedV7 {
+    readonly eggs: number;
+    readonly form: string | null;
+    readonly role: string | null;
+    readonly hp: number | null;
+    readonly commandIndex: number;
+    readonly round: number;
+  }
+  const hatched = await evaluate<DinosaurHatchedV7>(
+    connection,
+    hatchedExpression,
+  );
+  if (
+    hatched.eggs !== 0 ||
+    hatched.form !== "LAND" ||
+    hatched.role !== "RAIDER" ||
+    hatched.round !== hatchRound
+  )
+    throw new Error(`Raptor Egg did not hatch: ${JSON.stringify(hatched)}`);
+  await capture(connection, "dinosaur-hatched-desktop.png");
+  // The save resumes on a fresh default-route load with its Dinosaur seat.
+  await navigateFresh(
+    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
+  );
+  await touchClick(connection, '[data-action="resume"]');
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && JSON.stringify(s.view?.setup.factions) === '["DINOSAUR","ORIGINAL","ORIGINAL","ORIGINAL"]' && s.view.commandIndex === ${hatched.commandIndex}; })()`,
+    900,
+  );
+  const resumed = await evaluate<DinosaurHatchedV7>(
+    connection,
+    hatchedExpression,
+  );
+  if (JSON.stringify(resumed) !== JSON.stringify(hatched))
+    throw new Error(`Dinosaur save did not resume: ${JSON.stringify(resumed)}`);
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(freshSetup);
+  return `Showcase launch as Dinosaur vs three Humans, Stampede (${stampedeNotice.split(" · ")[0]}; Triceratops on ${cursor.x},${cursor.y}), Raptor Egg laid on ${nest.x},${nest.y} (${slots} before), hatched in round ${hatched.round} with ${hatched.hp} HP, and resume`;
 }
 
 /**

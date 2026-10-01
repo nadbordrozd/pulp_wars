@@ -11,20 +11,34 @@ import type {
   CoordV7,
   ImprovementIdV7,
   PlayerViewV7,
+  UnitRoleIdV7,
 } from "../../engine/index";
 import {
   playerFactionV7,
   previewAttackExplosionsV7,
+  previewHatchV7,
   previewKaboomV7,
   previewDevourV7,
   previewRaiseDeadV7,
+  previewStampedeV7,
   previewTendWoundedV7,
   previewWailV7,
   queryCombatPreviewV7,
   queryLandingPreviewV7,
+  unitGrowthStageV7,
   unitRoleRuleV7,
   WAIL_RADIUS_V7,
 } from "../../engine/index";
+import {
+  LAY_EGG_PROMPT_V7,
+  dinosaurCombatNoteV7,
+  dinosaurCombatSemanticNoteV7,
+  hatchBlockedEggsV7,
+  matchHasDinosaurV7,
+  stampedePreviewTextV7,
+  turnsTextV7,
+  unitDisplayNameV7,
+} from "../dinosaur-presentation-v7";
 import {
   combatPreviewNoteV7,
   combatPreviewSemanticNoteV7,
@@ -45,7 +59,14 @@ import {
   type AbilityPreviewStyleV7,
   type AfflictionSubjectV7,
 } from "./undead-canvas-v7";
-import { drawDinosaurBadgeV7 } from "./dinosaur-canvas-v7";
+import {
+  drawCodeEggV7,
+  drawDinosaurBadgeV7,
+  drawEggCountdownV7,
+  drawGrowthChevronsV7,
+  drawStampedeLaneCellV7,
+  growthSpriteScaleV7,
+} from "./dinosaur-canvas-v7";
 import { drawGoblinBadgeV7 } from "./goblin-canvas-v7";
 import {
   blastPreviewPresentationV7,
@@ -136,7 +157,25 @@ export interface BoardRenderInteractionV7 {
    * shows none.
    */
   readonly kaboomPreviewUnitId?: number | null;
+  /**
+   * Revision 19: the own city and egg-laid role whose nest tile is being
+   * picked. Its legal nest tiles become the only map targets; null or
+   * omitted picks none.
+   */
+  readonly layEgg?: {
+    readonly cityId: number;
+    readonly role: UnitRoleIdV7;
+  } | null;
+  /**
+   * Revision 19: the target of the selected Triceratops's armed Stampede
+   * (one that asks for confirmation). Its lane and preview are the only
+   * preview of that unit; null or omitted shows every lane.
+   */
+  readonly stampedeTargetUnitId?: number | null;
 }
+
+/** Revision 19: the ID of the legacy code-drawn Egg (no raster exists). */
+export const EGG_CODE_ART_ID_V7 = "unit-dinosaur-egg-code";
 
 /**
  * Revision 16 landing preview marker labels (section 8): a direct landing
@@ -149,7 +188,30 @@ export interface MapCommandTargetV7 {
   readonly at: CoordV7;
   readonly command: CommandV7;
   readonly family:
-    "MOVE" | "ATTACK" | "MONUMENT" | "DISEMBARK" | "LANDING_AFTER_MOVE";
+    | "MOVE"
+    | "ATTACK"
+    | "MONUMENT"
+    | "DISEMBARK"
+    | "LANDING_AFTER_MOVE"
+    /** Revision 19: a Triceratops Stampede target, 2 or 3 tiles away. */
+    | "STAMPEDE"
+    /** Revision 19: an adjacent own Egg a Shaman may hatch. */
+    | "HATCH"
+    /** Revision 19: a legal nest tile of the Egg being laid. */
+    | "LAY_EGG";
+  /**
+   * Revision 19 STAMPEDE: a death blast follows the kill, so the UI asks
+   * for confirmation instead of dispatching on the first activation.
+   */
+  readonly needsConfirmation?: boolean;
+  /**
+   * Revision 19 STAMPEDE: the Triceratops's tile and its lane (the run
+   * tiles in order; the last one is the stand tile).
+   */
+  readonly lane?: {
+    readonly from: CoordV7;
+    readonly tiles: readonly CoordV7[];
+  };
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -217,7 +279,9 @@ export interface BoardRenderPlanEntryV7 {
     | "CURSOR"
     | "GRAVE"
     | "ABILITY_AREA"
-    | "ABILITY_TARGET";
+    | "ABILITY_TARGET"
+    /** Revision 19: one tile of a Stampede lane (run or stand tile). */
+    | "LANE";
   readonly assetId?: string;
   /** Art-set-neutral subject; the CHIBI art set resolves its raster from it. */
   readonly artSubject?: ArtSubjectV7;
@@ -272,6 +336,22 @@ export interface BoardRenderPlanEntryV7 {
   readonly abilityStyle?: AbilityPreviewStyleV7;
   /** ABILITY_TARGET: lethal previewed damage. */
   readonly lethal?: boolean;
+  /**
+   * UNIT only, revision 19: a visible Egg of any owner and its public
+   * countdown (owner Start Turns until it hatches).
+   */
+  readonly egg?: { readonly turnsRemaining: number };
+  /** UNIT only, revision 19: a grown Dinosaur unit, Big (1) or Alpha (2). */
+  readonly growthStage?: 1 | 2;
+  /**
+   * LANE only: the run direction, and whether this is the stand tile (the
+   * last lane tile, next to the target).
+   */
+  readonly lane?: {
+    readonly dx: number;
+    readonly dy: number;
+    readonly stand: boolean;
+  };
 }
 
 export interface BoardRenderPlanV7 {
@@ -484,13 +564,20 @@ export function buildBoardRenderPlanV7(
     });
   const plaguedIds = new Set(view.plagued.map((entry) => entry.unitId));
   const bittenIds = new Set(view.bitten.map((entry) => entry.unitId));
+  const eggTurns = new Map(
+    view.eggs.map((entry) => [entry.unitId, entry.turnsRemaining] as const),
+  );
   for (const unit of view.units) {
     const faction = playerFactionV7(view, unit.ownerId);
-    const factionUnit = faction === "UNDEAD" || faction === "GOBLIN";
-    const factionLabel = factionUnit ? unitRoleRuleV7(view, unit).label : null;
+    const factionUnit =
+      faction === "UNDEAD" || faction === "GOBLIN" || faction === "DINOSAUR";
+    // Revision 19: an Egg is "{Unit} Egg".
+    const factionLabel = factionUnit ? unitDisplayNameV7(view, unit) : null;
     const afflictions: AfflictionIdV7[] = [];
     if (plaguedIds.has(unit.id)) afflictions.push("PLAGUE");
     if (bittenIds.has(unit.id)) afflictions.push("BITTEN");
+    const egg = unit.form === "EGG";
+    const growthStage = unitGrowthStageV7(view, unit);
     entries.push({
       key: `unit:${unit.id}`,
       kind: "UNIT",
@@ -500,8 +587,10 @@ export function buildBoardRenderPlanV7(
       ...ownerPresentation(view, unit.ownerId),
       hp: unit.hp,
       maxHp: unit.maxHp,
-      assetId:
-        unit.form === "EMBARKED"
+      // The Egg has no legacy raster: LEGACY draws it in code.
+      assetId: egg
+        ? EGG_CODE_ART_ID_V7
+        : unit.form === "EMBARKED"
           ? "unit-shared-embarked-transport"
           : RULESET7_UNIT_ART_IDS[unit.role],
       // Undead and Goblin land units ask for their own art first
@@ -522,6 +611,8 @@ export function buildBoardRenderPlanV7(
         ? { faction }
         : {}),
       ...(afflictions.length > 0 ? { afflictions } : {}),
+      ...(egg ? { egg: { turnsRemaining: eggTurns.get(unit.id) ?? 1 } } : {}),
+      ...(growthStage === 1 || growthStage === 2 ? { growthStage } : {}),
     });
   }
   for (const value of view.improvementValues)
@@ -647,9 +738,47 @@ export function buildBoardRenderPlanV7(
         command.kind === "KABOOM" &&
         command.unitId === interaction.kaboomPreviewUnitId,
     );
+  // Revision 19: while a nest tile is picked, the legal nest tiles of that
+  // city and role are the only targets.
+  const layEgg = interaction.layEgg ?? null;
   const targets = kaboomPreview
     ? []
-    : dedupeMapTargets(mapTargets(view, commands, interaction.selectedUnitId));
+    : layEgg !== null
+      ? layEggTargets(view, commands, layEgg)
+      : dedupeMapTargets(
+          mapTargets(
+            view,
+            commands,
+            interaction.selectedUnitId,
+            interaction.stampedeTargetUnitId ?? null,
+          ),
+        );
+  for (const target of targets) {
+    if (target.family === "LAY_EGG")
+      entries.push({
+        key: `ability-area:NEST:${coordKey(target.at)}`,
+        kind: "ABILITY_AREA",
+        layer: 7,
+        at: target.at,
+        abilityStyle: "NEST",
+        targetEdges: [],
+      });
+    const lane = target.lane;
+    if (lane === undefined) continue;
+    const last = lane.tiles.at(-1);
+    for (const at of lane.tiles)
+      entries.push({
+        key: `lane:${coordKey(target.at)}:${coordKey(at)}`,
+        kind: "LANE",
+        layer: 6.5,
+        at,
+        lane: {
+          dx: Math.sign(target.at.x - lane.from.x),
+          dy: Math.sign(target.at.y - lane.from.y),
+          stand: last !== undefined && same(at, last),
+        },
+      });
+  }
   const targetEdges = mapTargetEdges(targets);
   for (const target of targets)
     entries.push({
@@ -884,6 +1013,15 @@ export function boardSaturationGroupV7(
   return null;
 }
 
+/** Revision 19: one unit sprite's cue transform for a frame. */
+export interface UnitPulseV7 {
+  readonly unitId: number;
+  /** Sprite scale about the feet (1 = unchanged). */
+  readonly scale: number;
+  /** Sideways shift in CSS px (an Egg's wobble). */
+  readonly offsetXCssPx?: number;
+}
+
 export interface BoardImageResolverV7 {
   resolve(assetId: string): CanvasImageSource | null;
   /** Registered square ground used beneath a tall terrain body. */
@@ -920,6 +1058,12 @@ export function drawBoardV7(input: {
     readonly progress: number;
     readonly statusId: string;
   } | null;
+  /**
+   * Revision 19 cues (growth pulse, Egg bounce and wobble, hatchling
+   * growing in): unit sprites scaled about their feet and shifted sideways
+   * for this frame. Overlays do not move.
+   */
+  readonly unitPulses?: readonly UnitPulseV7[];
   /** LEGACY (default) or the opt-in CHIBI art set. */
   readonly artSet?: ArtSetV7;
   /** Required for CHIBI; subjects it cannot resolve draw their legacy asset. */
@@ -1082,7 +1226,8 @@ export function drawBoardV7(input: {
         entry.kind === "SELECTION" ||
         entry.kind === "CURSOR" ||
         entry.kind === "ABILITY_AREA" ||
-        entry.kind === "ABILITY_TARGET"
+        entry.kind === "ABILITY_TARGET" ||
+        entry.kind === "LANE"
       )
         continue;
       if (
@@ -1381,6 +1526,15 @@ export function drawBoardV7(input: {
       // An Undead or Goblin unit shown with its own faction raster needs no
       // badge.
       let factionArt = false;
+      // Revision 19: this frame's cue on this unit's sprite, if any.
+      const unitPulse =
+        entry.kind === "UNIT" &&
+        input.unitPulses !== undefined &&
+        input.unitPulses.length > 0
+          ? (input.unitPulses.find(
+              (pulse) => pulse.unitId === Number(entry.key.slice(5)),
+            ) ?? null)
+          : null;
       if (entry.assetId !== undefined) {
         const resolved = resolveChibiEntry(entry);
         const chibi = resolved?.resolution ?? null;
@@ -1435,6 +1589,15 @@ export function drawBoardV7(input: {
               rect,
               camera.zoom,
             );
+          // Revision 19: a Big or Alpha chibi sprite is drawn larger about
+          // its feet (DINOSAUR.md "Growth display"); a cue may scale it too.
+          const spriteScale =
+            (chibiReady === null
+              ? 1
+              : growthSpriteScaleV7(
+                  entry.growthStage,
+                  chibiReady.asset.width,
+                )) * (unitPulse?.scale ?? 1);
           if (entry.kind === "UNIT") {
             // The ready cue is the attached outline alone: in both art sets
             // the sprite stays opaque at its own size, so neither it nor the
@@ -1451,7 +1614,7 @@ export function drawBoardV7(input: {
                           (garrisoned ? CHIBI_GARRISON_SCALE : 1),
                   )
                 : null;
-            const scale = readiness?.scale ?? 1;
+            const scale = (readiness?.scale ?? 1) * spriteScale;
             const jump =
               input.selectionJump?.unitId === Number(entry.key.slice(5))
                 ? selectionJumpOffsetCssPx(
@@ -1461,7 +1624,10 @@ export function drawBoardV7(input: {
                   ) * camera.zoom
                 : 0;
             rect = {
-              x: rect.x - (rect.width * (scale - 1)) / 2,
+              x:
+                rect.x -
+                (rect.width * (scale - 1)) / 2 +
+                (unitPulse?.offsetXCssPx ?? 0),
               y: rect.y - rect.height * (scale - 1) + jump,
               width: rect.width * scale,
               height: rect.height * scale,
@@ -1501,14 +1667,16 @@ export function drawBoardV7(input: {
           if (chibiReady !== null) {
             // A garrisoned unit is smoothed unless its reduced scale still
             // lands on whole raster pixels (zoom 2 on a DPR 2 screen).
-            context.imageSmoothingEnabled = garrisoned
-              ? !isWholeScale(
-                  (chibiMasterScale(camera) *
-                    CHIBI_GARRISON_SCALE *
-                    devicePixelRatio) /
-                    chibiReady.density,
-                )
-              : chibiReady.smoothing;
+            // A grown sprite follows the same rule (never a second raster).
+            const drawnScale =
+              spriteScale * (garrisoned ? CHIBI_GARRISON_SCALE : 1);
+            context.imageSmoothingEnabled =
+              drawnScale === 1
+                ? chibiReady.smoothing
+                : !isWholeScale(
+                    (chibiMasterScale(camera) * drawnScale * devicePixelRatio) /
+                      chibiReady.density,
+                  );
             context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
           } else if (entry.sourceCrop === undefined)
             context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
@@ -1529,6 +1697,20 @@ export function drawBoardV7(input: {
       }
       const directedGarrison =
         entry.kind === "UNIT" && settlementCells.has(coordKey(entry.at));
+      // Revision 19: LEGACY has no Egg raster (and CHIBI may lack one), so
+      // the Egg is drawn in code, in its owner's colour.
+      if (entry.kind === "UNIT" && entry.egg !== undefined && !chibiPiece)
+        drawCodeEggV7(
+          context,
+          x + (unitPulse?.offsetXCssPx ?? 0),
+          y,
+          camera.zoom,
+          {
+            ownerColor: entry.ownerColor,
+            highContrast: input.highContrast ?? false,
+            scale: unitPulse?.scale ?? 1,
+          },
+        );
       const drawPieceOverlays = (): void => {
         const directed =
           direction === undefined || !chibiPiece
@@ -1651,11 +1833,32 @@ export function drawBoardV7(input: {
             );
           }
         }
+        // Revision 19: growth chevrons (one for Big, two for Alpha) and the
+        // Egg's countdown; an Egg shows its HP bar only when damaged.
+        if (entry.kind === "UNIT" && entry.growthStage !== undefined)
+          drawGrowthChevronsV7(context, x, y, camera.zoom, entry.growthStage, {
+            chibi: chibiPiece,
+            highContrast: input.highContrast ?? false,
+          });
+        if (entry.kind === "UNIT" && entry.egg !== undefined)
+          drawEggCountdownV7(
+            context,
+            x,
+            y,
+            camera.zoom,
+            entry.egg.turnsRemaining,
+            {
+              chibi: chibiPiece,
+              ownerColor: entry.ownerColor,
+              highContrast: input.highContrast ?? false,
+            },
+          );
         if (
           entry.kind === "UNIT" &&
           entry.hp !== undefined &&
           entry.maxHp !== undefined &&
-          directed?.hp !== true
+          directed?.hp !== true &&
+          (entry.egg === undefined || entry.hp < entry.maxHp)
         ) {
           const share = Math.max(0, Math.min(1, entry.hp / entry.maxHp));
           context.fillStyle = "#101718";
@@ -1765,6 +1968,17 @@ export function drawBoardV7(input: {
     context.restore();
   }
   drawAbilityAreasV7(context, camera, input.plan.entries);
+  // Revision 19: the run and stand tiles of every offered Stampede.
+  for (const entry of input.plan.entries)
+    if (entry.kind === "LANE" && entry.lane !== undefined)
+      drawStampedeLaneCellV7(
+        context,
+        camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
+        camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom,
+        camera.zoom,
+        entry.lane,
+        input.highContrast ?? false,
+      );
   // Selection and action outlines keep visual priority over ownership.
   for (const entry of input.plan.entries) {
     const size = TILE_WIDTH * camera.zoom;
@@ -2028,6 +2242,8 @@ function mapTargetEdges(
 
 function targetPriority(family: MapCommandTargetV7["family"]): number {
   if (family === "ATTACK") return 6;
+  if (family === "STAMPEDE") return 5;
+  if (family === "HATCH") return 4;
   // Revision 16: a two-step landing cell keeps its whole dotted outline
   // where it touches a "Land now" or Move target.
   if (family === "LANDING_AFTER_MOVE") return 3;
@@ -2038,8 +2254,10 @@ function targetPriority(family: MapCommandTargetV7["family"]): number {
 function targetStroke(
   family: MapCommandTargetV7["family"] | undefined,
 ): string {
-  if (family === "ATTACK") return "#ff655f";
+  if (family === "ATTACK" || family === "STAMPEDE") return "#ff655f";
   if (family === "LANDING_AFTER_MOVE") return "#f4c95d";
+  // Revision 19: Hatch and nest-tile targets use the unowned cue cream.
+  if (family === "HATCH" || family === "LAY_EGG") return "#fff8d0";
   return "#64e6cf";
 }
 
@@ -2259,8 +2477,11 @@ function drawAttackBlastPreviewV7(
   defer: (draw: () => void) => void,
   paintLater?: (paint: () => void) => void,
 ): void {
+  // Revision 19: a Stampede that kills an exploding unit previews its chain.
   const blastTargets = plan.targets.filter(
-    (target) => target.family === "ATTACK" && target.blast !== undefined,
+    (target) =>
+      (target.family === "ATTACK" || target.family === "STAMPEDE") &&
+      target.blast !== undefined,
   );
   const target =
     (focus === null
@@ -2712,6 +2933,18 @@ function addAbilityPreviews(
       });
     }
   }
+  // Revision 19: adjacent own Eggs laid this turn cannot be hatched yet.
+  for (const egg of commands.length === 0
+    ? []
+    : hatchBlockedEggsV7(view, unitId))
+    entries.push({
+      key: `ability-target:HATCH_BLOCKED:${egg.id}`,
+      kind: "ABILITY_TARGET",
+      layer: 7.5,
+      at: egg.at,
+      abilityStyle: "HATCH_BLOCKED",
+      label: "Next turn",
+    });
   if (offered("DEVOUR")) {
     const preview = previewDevourV7(view, unitId);
     if (preview !== null)
@@ -2783,11 +3016,58 @@ function mapTargets(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
   selectedUnitId: number | null,
+  stampedeTargetUnitId: number | null,
 ): MapCommandTargetV7[] {
+  // Revision 19: an armed Stampede is the only preview of its unit, so its
+  // Move, Attack and other Stampede targets step aside (as for Kaboom!).
+  const armed =
+    stampedeTargetUnitId !== null &&
+    commands.some(
+      (command) =>
+        command.kind === "STAMPEDE" &&
+        command.unitId === selectedUnitId &&
+        command.targetUnitId === stampedeTargetUnitId,
+    );
+  if (armed)
+    return commandMapTargets(
+      view,
+      commands.filter(
+        (command) =>
+          command.kind === "STAMPEDE" &&
+          command.targetUnitId === stampedeTargetUnitId,
+      ),
+      selectedUnitId,
+    );
   return [
     ...commandMapTargets(view, commands, selectedUnitId),
     ...landingAfterMoveTargets(view, commands, selectedUnitId),
   ];
+}
+
+/** Revision 19: the legal nest tiles of the Egg being laid. */
+function layEggTargets(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  pick: { readonly cityId: number; readonly role: UnitRoleIdV7 },
+): MapCommandTargetV7[] {
+  const label = unitRoleRuleV7(view, {
+    ownerId: view.viewer.id,
+    role: pick.role,
+  }).label;
+  return commands.flatMap((command): readonly MapCommandTargetV7[] =>
+    command.kind === "LAY_EGG" &&
+    command.cityId === pick.cityId &&
+    command.role === pick.role
+      ? [
+          {
+            at: command.at,
+            command,
+            family: "LAY_EGG",
+            semanticLabel: `Nest tile: lay the ${label} Egg here. ${LAY_EGG_PROMPT_V7}.`,
+          },
+        ]
+      : [],
+  );
 }
 
 /** Revision 16: cells reached by one water step, then `DISEMBARK`. */
@@ -2820,8 +3100,70 @@ function commandMapTargets(
 ): MapCommandTargetV7[] {
   const undeadMatch = matchHasUndeadV7(view);
   const goblinMatch = matchHasGoblinV7(view);
+  const dinosaurMatch = matchHasDinosaurV7(view);
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
+    // Revision 19: a Stampede target with its lane, the hit, the Push or
+    // advance, and any death-blast chain (the Goblin warning presentation).
+    if (command.kind === "STAMPEDE" && command.unitId === selectedUnitId) {
+      const target = view.units.find(
+        (unit) => unit.id === command.targetUnitId,
+      );
+      const preview = previewStampedeV7(
+        view,
+        command.unitId,
+        command.targetUnitId,
+      );
+      if (target === undefined || preview === null) return [];
+      const text = stampedePreviewTextV7(view, preview);
+      return [
+        {
+          at: target.at,
+          command,
+          family: "STAMPEDE",
+          previewLabel: text.boardLabel,
+          previewNote: text.boardNote,
+          semanticLabel: `Stampede preview. ${text.description}`,
+          lane: { from: preview.from, tiles: preview.lane },
+          ...(text.warnings.length === 0
+            ? {}
+            : { previewWarnings: text.warnings }),
+          ...(text.warnings.length === 0 || text.warningSummary === null
+            ? {}
+            : { previewWarningSummary: text.warningSummary }),
+          ...(preview.explosions.explosions.length === 0
+            ? {}
+            : {
+                blast: blastPreviewPresentationV7(
+                  view,
+                  preview.explosions,
+                  null,
+                  command.unitId,
+                ),
+              }),
+          ...(text.needsConfirmation ? { needsConfirmation: true } : {}),
+        },
+      ];
+    }
+    // Revision 19: an adjacent own Egg the selected Shaman may hatch.
+    if (command.kind === "HATCH" && command.unitId === selectedUnitId) {
+      const preview = previewHatchV7(view, command.unitId, command.eggUnitId);
+      if (preview === null) return [];
+      const label = unitRoleRuleV7(view, {
+        ownerId: view.viewer.id,
+        role: preview.role,
+      }).label;
+      return [
+        {
+          at: preview.at,
+          command,
+          family: "HATCH",
+          previewLabel: `Hatch ${label}`,
+          previewNote: "Cannot act this turn",
+          semanticLabel: `Hatch: a ${label} with ${preview.hp} HP appears here now, ${turnsTextV7(preview.turnsSaved)} early. It cannot act this turn.`,
+        },
+      ];
+    }
     if (command.kind === "MOVE" && command.unitId === selectedUnitId) {
       const at = command.path.at(-1);
       return at === undefined
@@ -2875,13 +3217,23 @@ function commandMapTargets(
                 )
                 .map((item) => item.unitId),
             );
-      const noteParts = [undeadNote, goblin?.gangUp ?? null].filter(
-        (part): part is string => part !== null,
-      );
+      // Revision 19 (Dinosaur matches only): Acid and Armoured.
+      const dinosaurNote =
+        dinosaurMatch && preview !== null
+          ? dinosaurCombatNoteV7(preview)
+          : null;
+      const noteParts = [
+        undeadNote,
+        goblin?.gangUp ?? null,
+        dinosaurNote,
+      ].filter((part): part is string => part !== null);
       const note = noteParts.length === 0 ? null : noteParts.join(" · ");
       const semanticParts = [
         undeadSemanticNote,
         goblin?.semantic ?? null,
+        dinosaurMatch && preview !== null
+          ? dinosaurCombatSemanticNoteV7(preview)
+          : null,
       ].filter((part): part is string => part !== null);
       const semanticNote =
         semanticParts.length === 0 ? null : semanticParts.join(" ");

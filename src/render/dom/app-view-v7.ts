@@ -27,7 +27,13 @@ import {
   previewTendWoundedV7,
   previewWailV7,
   previewEconomicV7,
+  isEggLaidRoleV7,
+  previewHatchV7,
+  previewLayEggV7,
+  previewStampedeV7,
   queryLandingPreviewV7,
+  unitCapacitySlotsV7,
+  UNIT_ROLE_IDS_V7,
   CITY_LEVEL_INCOME_CAP_V7,
   MARKET_INCOME_CAP_V7,
   cityLevelIncomeV7,
@@ -44,6 +50,7 @@ import {
   type AchievementIdV7,
   type UnitRoleIdV7,
   type UnitId,
+  type CityId,
   type FactionIdV7,
 } from "../../engine/index";
 import { downloadJsonFile } from "../../app/browser-download";
@@ -143,6 +150,43 @@ import {
   technologyNameV7,
   type KaboomPreviewTextV7,
 } from "../goblin-presentation-v7";
+import {
+  ABANDON_EGG_LABEL_V7,
+  DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7,
+  DINOSAUR_HELP_RULES_V7,
+  HATCH_LABEL_V7,
+  HATCH_NEW_EGG_V7,
+  HATCH_TOOLTIP_V7,
+  LAY_EGG_PROMPT_V7,
+  STAMPEDE_LABEL_V7,
+  STAMPEDE_TOOLTIP_V7,
+  abandonEggTooltipV7,
+  cityCapacityTextV7,
+  dinosaurAbilityDescriptionV7,
+  dinosaurAbilityNameV7,
+  dinosaurBoundaryNoticeV7,
+  dinosaurCommandLabelV7,
+  dinosaurFieldDefenseBlockedV7,
+  dinosaurRecruitNotesV7,
+  dinosaurRewardLabelV7,
+  dinosaurUnitInfoLinesV7,
+  eggCountdownTextV7,
+  eggInfoTextV7,
+  eggLaidRolesV7,
+  eggRefundV7,
+  eggTurnsRemainingV7,
+  growthChipTextV7,
+  growthTooltipV7,
+  hatchBlockedEggsV7,
+  layEggRowTextV7,
+  layEggUnavailableTextV7,
+  matchHasDinosaurV7,
+  slotCapacityTooltipV7,
+  slotsTextV7,
+  stampedePreviewTextV7,
+  stampedeUnavailableTextV7,
+  turnsTextV7,
+} from "../dinosaur-presentation-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -179,7 +223,12 @@ const COLOR_LABELS: Readonly<Record<string, string>> = {
   GOLD: "Gold",
   VIOLET: "Violet",
 };
-const FACTIONS: readonly FactionIdV7[] = ["ORIGINAL", "UNDEAD", "GOBLIN"];
+const FACTIONS: readonly FactionIdV7[] = [
+  "ORIGINAL",
+  "UNDEAD",
+  "GOBLIN",
+  "DINOSAUR",
+];
 const FACTION_LABELS: Readonly<Record<string, string>> = {
   ORIGINAL: "Human",
   UNDEAD: "Undead",
@@ -203,6 +252,9 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "DISEMBARK",
   "RESEARCH",
   "CHOOSE_CITY_REWARD",
+  // Revision 19: an Egg is laid from its city's Lay Egg cards, by picking a
+  // nest tile on the board (up to 40 commands per city are never buttons).
+  "LAY_EGG",
 ]);
 /** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
 export const OWN_UNIT_PASS_THROUGH_TEXT_V7 =
@@ -265,7 +317,7 @@ interface DraftV7 {
   readonly seedText: string;
   readonly humanColor: PlayerColorV7;
   readonly mapType: MapTypeV7;
-  /** Seat factions (seat 0 is the human): Human, Undead or Goblin. */
+  /** Seat factions (seat 0 is the human): Human, Undead, Goblin, Dinosaur. */
   readonly factions: readonly FactionIdV7[];
 }
 
@@ -314,6 +366,22 @@ export class Ruleset7DomAppView {
    */
   #kaboomArmedUnitId: number | null = null;
   #kaboomHoverUnitId: number | null = null;
+  /**
+   * Revision 19: the own city and egg-laid role whose nest tile is being
+   * picked on the board (Escape, Cancel or another selection leaves).
+   */
+  #layEggPick: {
+    readonly cityId: CityId;
+    readonly role: UnitRoleIdV7;
+  } | null = null;
+  /**
+   * Revision 19: the armed Stampede. One that sets off a death blast asks
+   * for confirmation in the dock, like Kaboom!.
+   */
+  #stampedeArmed: {
+    readonly unitId: UnitId;
+    readonly targetUnitId: UnitId;
+  } | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
@@ -507,6 +575,17 @@ export class Ruleset7DomAppView {
         this.#kaboomArmedUnitId = null;
         this.#kaboomHoverUnitId = null;
         this.#pendingFocusAction = "command-kaboom";
+        this.#render();
+        return;
+      } else if (this.#layEggPick !== null) {
+        // Revision 19: Escape first leaves the nest-tile picking.
+        this.#cancelLayEggPick();
+        return;
+      } else if (this.#stampedeArmed !== null) {
+        // Revision 19: Escape first disarms an armed Stampede.
+        const armed = this.#stampedeArmed;
+        this.#stampedeArmed = null;
+        this.#pendingFocusAction = `command-stampede-${armed.targetUnitId}`;
         this.#render();
         return;
       } else this.#selection = null;
@@ -961,6 +1040,8 @@ export class Ruleset7DomAppView {
           this.#selection = selection;
           this.#kaboomArmedUnitId = null;
           this.#kaboomHoverUnitId = null;
+          this.#layEggPick = null;
+          this.#stampedeArmed = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
           this.#selectedModifier = null;
@@ -1276,6 +1357,17 @@ export class Ruleset7DomAppView {
         ...(kaboomUnitId !== null && kaboomUnitId === selectedUnitId
           ? { kaboomPreviewUnitId: kaboomUnitId }
           : {}),
+        // Revision 19: the nest tiles of the Egg being laid, and the armed
+        // Stampede of the selected Triceratops.
+        ...(this.#layEggPick !== null &&
+        this.#selection?.kind === "CITY" &&
+        this.#selection.cityId === this.#layEggPick.cityId
+          ? { layEgg: this.#layEggPick }
+          : {}),
+        ...(this.#stampedeArmed !== null &&
+        this.#stampedeArmed.unitId === selectedUnitId
+          ? { stampedeTargetUnitId: this.#stampedeArmed.targetUnitId }
+          : {}),
       },
     };
   }
@@ -1290,6 +1382,8 @@ export class Ruleset7DomAppView {
     close.classList.add("close-button");
     close.onclick = () => {
       this.#selection = null;
+      this.#layEggPick = null;
+      this.#stampedeArmed = null;
       this.#render();
       this.#queueBoardFocus();
     };
@@ -1299,7 +1393,10 @@ export class Ruleset7DomAppView {
       );
       if (unit === undefined) return null;
       const roleRule = unitRoleRuleV7(view, unit);
-      const roleLabel = roleRule.label;
+      // Revision 19: an Egg is named after the unit inside ("Raptor Egg").
+      const egg = unit.form === "EGG";
+      const eggTurns = egg ? eggTurnsRemainingV7(view, unit.id) : null;
+      const roleLabel = egg ? `${roleRule.label} Egg` : roleRule.label;
       const undeadUnit = unitIsUndeadV7(view, unit);
       // Revision 17: every unit resolves through its owner's faction.
       const unitFaction = playerFactionV7(view, unit.ownerId);
@@ -1311,6 +1408,12 @@ export class Ruleset7DomAppView {
         CHIBI_DOM_BOXES_V7.dock,
         unitColour,
       );
+      // The Egg has no legacy raster: LEGACY (and CHIBI without its sprite)
+      // shows a code-drawn Egg in the owner's colour, and never a badge.
+      const eggFigure =
+        egg && dockArt === null
+          ? eggFigureV7(this.#document, unitColour)
+          : undefined;
       dock.append(
         identity(
           this.#document,
@@ -1319,8 +1422,9 @@ export class Ruleset7DomAppView {
             : RULESET7_UNIT_ART_IDS[unit.role],
           unit.form === "EMBARKED" ? `${roleLabel} (at sea)` : roleLabel,
           true,
-          dockArt?.factionArt === true ? null : unitBadge,
-          dockArt?.element,
+          dockArt?.factionArt === true || egg ? null : unitBadge,
+          dockArt?.element ?? eggFigure,
+          eggFigure === undefined ? "chibi" : "code",
         ),
       );
       if (unit.ownerId !== view.viewer.id) {
@@ -1348,14 +1452,15 @@ export class Ruleset7DomAppView {
         faction.dataset.faction = unitBadge.toLowerCase();
         identityColumn?.append(faction);
       }
-      identityColumn?.append(
-        text(
-          this.#document,
-          "span",
-          title(roleRule.tacticalRole),
-          "v7-tactical-role",
-        ),
-      );
+      if (!egg)
+        identityColumn?.append(
+          text(
+            this.#document,
+            "span",
+            title(roleRule.tacticalRole),
+            "v7-tactical-role",
+          ),
+        );
       const unitHelp = button(this.#document, "", "unit-help", "v7-unit-help");
       unitHelp.append(text(this.#document, "span", "?", "v7-unit-help-glyph"));
       unitHelp.setAttribute("aria-label", `About ${roleLabel}`);
@@ -1367,6 +1472,15 @@ export class Ruleset7DomAppView {
       };
       identityColumn?.append(unitHelp);
       const unitDetails = el(this.#document, "div", "v7-unit-help-details");
+      if (egg && eggTurns !== null)
+        unitDetails.append(
+          text(
+            this.#document,
+            "p",
+            eggInfoTextV7(roleRule.label, eggTurns),
+            "v7-egg-info",
+          ),
+        );
       if (unit.form === "EMBARKED")
         unitDetails.append(
           text(
@@ -1386,10 +1500,13 @@ export class Ruleset7DomAppView {
           text(
             this.#document,
             "strong",
-            // Revision 17: Overrun is labelled Ram for Scrap Buggies.
+            // Revision 17: Overrun is labelled Ram for Scrap Buggies;
+            // revision 19: Rampage for a T-Rex.
             unitFaction === "GOBLIN"
               ? "Ram: attack again"
-              : "Overrun: attack again",
+              : unitFaction === "DINOSAUR"
+                ? "Rampage: attack again"
+                : "Overrun: attack again",
           ),
         );
         unitDetails.append(state);
@@ -1447,6 +1564,44 @@ export class Ruleset7DomAppView {
         unitDetails.append(state);
       }
       const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
+      // Revision 19: the Egg's countdown, capacity slots, and the growth
+      // stage with the kills to the next one, from the public stats.
+      const dinosaur = stats?.dinosaur;
+      if (dinosaur !== undefined) {
+        if (egg && eggTurns !== null) {
+          const countdown = text(
+            this.#document,
+            "span",
+            eggCountdownTextV7(eggTurns),
+            "v7-chip v7-dinosaur-chip",
+          );
+          countdown.dataset.unitStatus = "egg-countdown";
+          identityColumn?.append(countdown);
+        }
+        if (egg || dinosaur.capacitySlots > 1) {
+          const slots = text(
+            this.#document,
+            "span",
+            slotsTextV7(dinosaur.capacitySlots),
+            "v7-chip v7-dinosaur-chip",
+          );
+          slots.dataset.unitStatus = "slots";
+          slots.title = `Takes ${slotsTextV7(dinosaur.capacitySlots)} in its city`;
+          identityColumn?.append(slots);
+        }
+        if (dinosaur.growthStage !== null) {
+          const growth = text(
+            this.#document,
+            "span",
+            growthChipTextV7(dinosaur.growthStage, dinosaur.killsToNextStage),
+            "v7-chip v7-dinosaur-chip",
+          );
+          growth.dataset.unitStatus = "growth";
+          growth.dataset.growthStage = String(dinosaur.growthStage);
+          growth.title = growthTooltipV7();
+          identityColumn?.append(growth);
+        }
+      }
       if (stats !== undefined) {
         if (stats.statuses.length > 0) {
           const cues = el(this.#document, "div", "v7-unit-status-cues");
@@ -1469,6 +1624,8 @@ export class Ruleset7DomAppView {
         }
         const rows = el(this.#document, "dl", "v7-unit-stats");
         for (const stat of stats.stats) {
+          // An Egg cannot move or fight: only its HP and Defense matter.
+          if (egg && stat.id !== "HP" && stat.id !== "DEFENSE") continue;
           const exact = stat.visibility !== "BASE_ONLY";
           const value = el(this.#document, "dd", "v7-stat-value");
           value.append(
@@ -1569,6 +1726,21 @@ export class Ruleset7DomAppView {
             abilities.append(entry);
           }
         }
+        // Revision 19: growth, a two-slot body and the Field Defense
+        // restriction from `stats.dinosaur`.
+        if (stats.dinosaur !== undefined)
+          for (const line of dinosaurUnitInfoLinesV7(
+            unit.role,
+            stats.dinosaur,
+          )) {
+            const entry = el(this.#document, "p", "v7-unit-ability");
+            entry.dataset.dinosaurInfo = line.id;
+            entry.append(
+              text(this.#document, "strong", line.name),
+              text(this.#document, "span", line.description),
+            );
+            abilities.append(entry);
+          }
         if (
           undeadUnit &&
           unit.role === "CATAPULT" &&
@@ -1587,16 +1759,115 @@ export class Ruleset7DomAppView {
         }
         if (abilities.childElementCount > 0) unitDetails.append(abilities);
       }
-      if (unit.activation.handled && unit.ownerId === view.viewer.id)
+      // An Egg is exhausted at all times; it is not dimmed as "done".
+      if (unit.activation.handled && unit.ownerId === view.viewer.id && !egg)
         dock.dataset.handled = "true";
       const legend = this.#landingLegend(view, unit.id);
       if (legend !== null) dock.append(legend);
+      // Revision 19: what an Egg is, in one sentence, right in its dock.
+      if (egg && eggTurns !== null) {
+        const info = text(
+          this.#document,
+          "p",
+          eggInfoTextV7(roleRule.label, eggTurns),
+          "v7-egg-info",
+        );
+        info.dataset.v7Egg = "info";
+        dock.append(info);
+      }
+      const stampedeLegend = this.#stampedeLegend(unit.id);
+      if (stampedeLegend !== null) dock.append(stampedeLegend);
       const actions = this.#commandButtons(
         (command) =>
           "unitId" in command &&
           command.unitId === unit.id &&
           !NON_BUTTON_COMMANDS.has(command.kind),
       );
+      // Revision 19: why this Triceratops has no Stampede, why an adjacent
+      // Egg cannot be hatched yet, and the Field Defense restriction.
+      // aria-disabled keeps each explanation reachable by keyboard.
+      const dinosaurBlocked: {
+        readonly action: string;
+        readonly label: string;
+        readonly reason: string;
+        readonly explanation: string;
+        readonly icon: "stampede" | "hatch" | null;
+      }[] = [];
+      const stampedeBlocked = stampedeUnavailableTextV7(
+        view,
+        unit.id,
+        this.#snapshot.offeredCommands.some(
+          (command) =>
+            command.kind === "STAMPEDE" && command.unitId === unit.id,
+        ),
+      );
+      if (stampedeBlocked !== null)
+        dinosaurBlocked.push({
+          action: "stampede-unavailable",
+          label: STAMPEDE_LABEL_V7,
+          reason: unit.activation.moved ? "stampede-moved" : "stampede-lane",
+          explanation: stampedeBlocked,
+          icon: "stampede",
+        });
+      if (hatchBlockedEggsV7(view, unit.id).length > 0)
+        dinosaurBlocked.push({
+          action: "hatch-unavailable",
+          label: HATCH_LABEL_V7,
+          reason: "hatch-new-egg",
+          explanation: HATCH_NEW_EGG_V7,
+          icon: "hatch",
+        });
+      if (dinosaurFieldDefenseBlockedV7(view, unit.id))
+        dinosaurBlocked.push({
+          action: "dinosaur-field-defense",
+          label: "Fortify",
+          reason: "dinosaur-field-defense",
+          explanation: DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7,
+          icon: null,
+        });
+      for (const entry of dinosaurBlocked) {
+        const blocked = button(
+          this.#document,
+          "",
+          entry.action,
+          "v7-context-action",
+        );
+        blocked.append(
+          entry.icon === null
+            ? createTacticalSymbolV7(
+                this.#document,
+                "ui-action-field-defense",
+                this.#tacticalTheme(),
+              )
+            : (this.#chibiArt(
+                entry.icon === "stampede"
+                  ? "ICON:ACTION:STAMPEDE"
+                  : "ICON:ACTION:HATCH",
+                CHIBI_DOM_BOXES_V7.action,
+              )?.element ??
+                uiIconV7(
+                  this.#document,
+                  entry.icon,
+                  "v7-ui-icon v7-command-icon",
+                )),
+          text(this.#document, "span", entry.label, "v7-action-label"),
+        );
+        blocked.setAttribute("aria-disabled", "true");
+        blocked.dataset.disabledReason = entry.reason;
+        blocked.title = entry.explanation;
+        blocked.setAttribute(
+          "aria-label",
+          `${entry.label} unavailable. ${entry.explanation}`,
+        );
+        // A tap (no hover on touch) shows the reason as a toast.
+        blocked.onclick = () => {
+          this.#notice = `${entry.explanation}.`;
+          this.#showToast(`${entry.explanation}.`);
+          this.#pendingFocusAction = entry.action;
+          this.#render();
+        };
+        actions.append(blocked);
+      }
       if (goblinFieldDefenseBlockedV7(view, unit.id)) {
         // Revision 17 (section 5.3): the Goblin never builds Field Defense;
         // aria-disabled keeps the explanation reachable by keyboard.
@@ -1675,6 +1946,8 @@ export class Ruleset7DomAppView {
       }
       const kaboomPanel = this.#kaboomPanel(view, unit.id);
       if (kaboomPanel !== null) dock.append(kaboomPanel);
+      const stampedePanel = this.#stampedePanel(view, unit.id);
+      if (stampedePanel !== null) dock.append(stampedePanel);
       if (this.#selectedUnitHelpId === unit.id) {
         const modal = el(this.#document, "section", "v7-unit-help-dialog");
         modal.setAttribute("role", "dialog");
@@ -1699,14 +1972,16 @@ export class Ruleset7DomAppView {
           factionBadgeArt(
             this.#document,
             helpArt?.element ??
-              art(
-                this.#document,
-                unit.form === "EMBARKED"
-                  ? "unit-shared-embarked-transport"
-                  : RULESET7_UNIT_ART_IDS[unit.role],
-                "",
-              ),
-            helpArt?.factionArt === true ? null : unitBadge,
+              (egg
+                ? eggFigureV7(this.#document, unitColour)
+                : art(
+                    this.#document,
+                    unit.form === "EMBARKED"
+                      ? "unit-shared-embarked-transport"
+                      : RULESET7_UNIT_ART_IDS[unit.role],
+                    "",
+                  )),
+            helpArt?.factionArt === true || egg ? null : unitBadge,
           ),
           text(this.#document, "h2", roleLabel),
         );
@@ -1785,23 +2060,41 @@ export class Ruleset7DomAppView {
       growth.append(text(this.#document, "dt", "Population"), growthValue);
       details.append(level, growth);
       if (owned) {
-        const assigned = view.units.filter(
-          (unit) =>
-            unit.ownerId === view.viewer.id && unit.homeCityId === city.id,
-        ).length;
+        // Revision 19 (section 5.1): used capacity is the slot sum of the
+        // units and Eggs homed here; it equals the unit count for every
+        // faction whose roles all use one slot.
+        const assigned = view.units
+          .filter(
+            (unit) =>
+              unit.ownerId === view.viewer.id && unit.homeCityId === city.id,
+          )
+          .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
         const capacity = cityUnitCapacityForV7(
           city.level,
           view.viewer.researchedTechs,
           view.viewer.faction,
         );
+        const slotCapacity = view.viewer.faction === "DINOSAUR";
         const units = el(this.#document, "div", "v7-city-stat");
         units.dataset.stat = "units";
-        units.title = "Units supported by this city";
+        units.title = slotCapacity
+          ? slotCapacityTooltipV7()
+          : "Units supported by this city";
         const unitsValue = el(this.#document, "dd", "v7-city-units");
         unitsValue.append(
           uiIconV7(this.#document, "units"),
-          `${assigned}/${capacity}`,
+          slotCapacity
+            ? `${assigned}/${capacity} slots`
+            : `${assigned}/${capacity}`,
         );
+        if (slotCapacity) {
+          units.dataset.capacity = "slots";
+          unitsValue.setAttribute(
+            "aria-label",
+            cityCapacityTextV7(assigned, capacity),
+          );
+          if (assigned > capacity) unitsValue.classList.add("is-over-capacity");
+        }
         // Revision 17 Warrens: a Goblin city holds one extra unit.
         const warrens = factionRulesV7(view.viewer.faction).cityCapacityBonus;
         if (warrens > 0) {
@@ -1817,7 +2110,10 @@ export class Ruleset7DomAppView {
           unitsValue.append(bonus);
           units.title = `Units supported by this city (includes +${warrens} Warrens)`;
         }
-        units.append(text(this.#document, "dt", "Units"), unitsValue);
+        units.append(
+          text(this.#document, "dt", slotCapacity ? "Slots" : "Units"),
+          unitsValue,
+        );
         const income = el(this.#document, "div", "v7-city-stat");
         income.dataset.stat = "income";
         income.title = "Coins per turn";
@@ -1829,8 +2125,9 @@ export class Ruleset7DomAppView {
         income.append(text(this.#document, "dt", "Income"), incomeValue);
         const cityAction = el(this.#document, "div", "v7-city-stat");
         cityAction.dataset.stat = "city-action";
-        cityAction.title =
-          "One shared city action covers land training, naval training, or Land Grant and resets at Start Turn";
+        cityAction.title = slotCapacity
+          ? "One shared city action covers land training, laying an Egg, naval training, or Land Grant and resets at Start Turn"
+          : "One shared city action covers land training, naval training, or Land Grant and resets at Start Turn";
         cityAction.append(
           text(this.#document, "dt", "City action"),
           text(
@@ -1869,12 +2166,13 @@ export class Ruleset7DomAppView {
           const discount = text(
             this.#document,
             "p",
-            "Land units −1",
+            slotCapacity ? "Land units and Eggs −1" : "Land units −1",
             "v7-chip",
           );
           discount.dataset.discount = "forge";
-          discount.title =
-            "Active Forge discounts land-unit training by 1 Coin";
+          discount.title = slotCapacity
+            ? "Active Forge discounts land-unit training and Eggs by 1 Coin"
+            : "Active Forge discounts land-unit training by 1 Coin";
           details.append(discount);
         }
       }
@@ -1889,12 +2187,37 @@ export class Ruleset7DomAppView {
       }
       dock.append(details);
       if (owned) {
-        this.#appendCommandArea(
-          dock,
-          (command) =>
-            (command.kind === "TRAIN" || command.kind === "LAND_GRANT") &&
-            command.cityId === city.id,
-        );
+        const picking =
+          this.#layEggPick !== null && this.#layEggPick.cityId === city.id
+            ? this.#layEggPickPanel(view, this.#layEggPick)
+            : null;
+        if (picking !== null) {
+          // Revision 19: while a nest tile is picked, the dock shows the
+          // prompt alone, so the board stays in view on a phone.
+          dock.dataset.hasActions = "true";
+          dock.append(picking);
+        } else {
+          const actions = this.#commandButtons(
+            (command) =>
+              (command.kind === "TRAIN" || command.kind === "LAND_GRANT") &&
+              command.cityId === city.id,
+          );
+          // Revision 19: the Lay Egg cards stand right after the train
+          // cards of the Caveman and the Shaman.
+          const eggCards = this.#layEggCards(view, city.id);
+          const lastTrain = [...actions.children]
+            .filter((child) => child.classList.contains("v7-train-card"))
+            .at(-1);
+          const before =
+            lastTrain === undefined
+              ? actions.firstChild
+              : lastTrain.nextSibling;
+          for (const card of eggCards) actions.insertBefore(card, before);
+          if (actions.childElementCount > 0) {
+            dock.dataset.hasActions = "true";
+            dock.append(actions);
+          }
+        }
       }
     } else {
       const tile = view.board.tiles.find((candidate) =>
@@ -2063,25 +2386,34 @@ export class Ruleset7DomAppView {
       (candidate) =>
         predicate(candidate) && !NON_BUTTON_COMMANDS.has(candidate.kind),
     )) {
+      // Revision 19: Disband on an own Egg is "Abandon Egg".
+      const abandonedEgg =
+        command.kind === "DISBAND"
+          ? this.#snapshot.view?.units.find(
+              (unit) => unit.id === command.unitId && unit.form === "EGG",
+            )
+          : undefined;
+      const label =
+        abandonedEgg === undefined
+          ? commandLabel(command, this.#viewerFaction())
+          : ABANDON_EGG_LABEL_V7;
       const action = button(
         this.#document,
         "",
         command.kind === "BUILD_MONUMENT"
           ? `command-build_monument-${command.achievement.toLowerCase()}`
-          : `command-${command.kind.toLowerCase()}`,
+          : // Revision 19: one button per Stampede target or hatchable Egg.
+            command.kind === "STAMPEDE"
+            ? `command-stampede-${command.targetUnitId}`
+            : command.kind === "HATCH"
+              ? `command-hatch-${command.eggUnitId}`
+              : `command-${command.kind.toLowerCase()}`,
         command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL"
           ? "v7-train-action"
           : "v7-context-action",
       );
-      action.append(
-        text(
-          this.#document,
-          "span",
-          commandLabel(command, this.#viewerFaction()),
-          "v7-action-label",
-        ),
-      );
-      action.title = commandLabel(command, this.#viewerFaction());
+      action.append(text(this.#document, "span", label, "v7-action-label"));
+      action.title = label;
       if (command.kind === "CULTIVATE_FOREST") {
         action.title =
           "Clear for farming · Removes Forest and creates Fertile Ground";
@@ -2097,9 +2429,7 @@ export class Ruleset7DomAppView {
         this.#viewerColour(),
       );
       const trainBadge: FactionBadgeV7 =
-        command.kind === "TRAIN" && this.#viewerFaction() !== "ORIGINAL"
-          ? (this.#viewerFaction() as "UNDEAD" | "GOBLIN")
-          : null;
+        command.kind === "TRAIN" ? factionBadgeV7(this.#viewerFaction()) : null;
       if (commandArt !== null)
         action.prepend(
           factionBadgeArt(
@@ -2141,6 +2471,25 @@ export class Ruleset7DomAppView {
           `Train ${rule.label} for ${cost} Coins`,
         );
         action.append(economyChips(this.#document, { cost }));
+        // Revision 19: a Dinosaur viewer counts capacity in slots, so every
+        // production row names its slots (trained units always use one).
+        if (view !== null && this.#viewerFaction() === "DINOSAUR") {
+          const slots = unitCapacitySlotsV7(view, {
+            ownerId: view.viewer.id,
+            role: command.role,
+          });
+          const facts = el(this.#document, "span", "v7-egg-facts");
+          const fact = text(
+            this.#document,
+            "span",
+            slotsTextV7(slots),
+            "v7-egg-fact",
+          );
+          fact.dataset.eggFact = "slots";
+          fact.dataset.slots = String(slots);
+          facts.append(fact);
+          action.append(facts);
+        }
       } else if (command.kind === "BUILD_MONUMENT") {
         action.setAttribute(
           "aria-label",
@@ -2193,6 +2542,24 @@ export class Ruleset7DomAppView {
         // Revision 17: the blast preview is shown on hover or focus and while
         // armed; activating the button arms it and asks for confirmation.
         this.#decorateKaboomButton(action, command.unitId);
+      } else if (command.kind === "STAMPEDE") {
+        // Revision 19: the same Stampede as the board target, with its
+        // preview in the accessible name.
+        this.#decorateStampedeButton(action, command);
+      } else if (command.kind === "HATCH") {
+        this.#decorateHatchButton(action, command);
+      } else if (abandonedEgg !== undefined) {
+        const refund = eggRefundV7(abandonedEgg.role, this.#viewerFaction());
+        action.title = abandonEggTooltipV7(refund);
+        action.setAttribute(
+          "aria-label",
+          `${ABANDON_EGG_LABEL_V7}. ${abandonEggTooltipV7(refund)}`,
+        );
+        const chip = el(this.#document, "span", "v7-command-economy");
+        const gain = el(this.#document, "span", "v7-economy-chip is-gain");
+        gain.append(`+${refund}`, economyIcon(this.#document, "coin"));
+        chip.append(gain);
+        action.append(chip);
       } else if (
         command.kind === "WAIL" ||
         command.kind === "RAISE_DEAD" ||
@@ -2245,7 +2612,9 @@ export class Ruleset7DomAppView {
       action.onclick =
         command.kind === "KABOOM"
           ? () => this.#toggleKaboom(command.unitId)
-          : () => void this.#dispatch(command);
+          : command.kind === "STAMPEDE"
+            ? () => this.#activateStampede(command, "button")
+            : () => void this.#dispatch(command);
       if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL") {
         const card = el(this.#document, "div", "v7-train-card");
         const help = button(
@@ -2288,6 +2657,14 @@ export class Ruleset7DomAppView {
     const view = this.#snapshot.view;
     if (view === null) return;
     const command = target.command;
+    // Revision 19: a Stampede that sets off a death blast is armed first
+    // (the dock asks for confirmation); activating its target again, or
+    // Confirm, performs it. Every other Stampede is one click, like an
+    // attack.
+    if (command.kind === "STAMPEDE") {
+      this.#activateStampede(command, "board");
+      return;
+    }
     const moved = await this.#dispatch(command);
     // Revision 16 two-step landing: land only when the one-cell Move reached
     // its water cell and the landing is still offered there.
@@ -2407,15 +2784,20 @@ export class Ruleset7DomAppView {
       "Select a unit, then a highlighted tile to move or attack.",
       OWN_UNIT_PASS_THROUGH_TEXT_V7,
       ROAD_MOVEMENT_TEXT_V7,
-      "Select your city to train units.",
+      // Revision 19: a Dinosaur city also lays Eggs.
+      view?.viewer.faction === "DINOSAUR"
+        ? "Select your city to train units and lay Eggs."
+        : "Select your city to train units.",
       "Select a tile in your land to harvest or build.",
       "Spend coins on technology to unlock more. Your first technology is free.",
       "Fruit is visible from the start; Gathering reveals Fertile Ground.",
       ...(view !== null && undeadViewer
         ? undeadHelpTipsV7(view)
         : [
-            // Revision 17: Goblin Wolf Riders have no Escape.
-            ...(view?.viewer.faction === "GOBLIN"
+            // Revision 17: Goblin Wolf Riders have no Escape; revision 19:
+            // neither have Dinosaur Raptors.
+            ...(view?.viewer.faction === "GOBLIN" ||
+            view?.viewer.faction === "DINOSAUR"
               ? []
               : ["A Raider that survives an attack may move again (Escape)."]),
             ...(view !== null && matchHasUndeadV7(view)
@@ -2475,6 +2857,18 @@ export class Ruleset7DomAppView {
         rules.append(item);
       }
       section.append(text(this.#document, "h3", "Goblins"), rules);
+    }
+    // Revision 19 (section 12.3): one sentence per Dinosaur rule, for every
+    // viewer of a match with a Dinosaur seat.
+    if (view !== null && matchHasDinosaurV7(view)) {
+      const rules = this.#document.createElement("ul");
+      rules.className = "v7-help-tips v7-help-goblin v7-help-dinosaur";
+      for (const [name, sentence] of DINOSAUR_HELP_RULES_V7) {
+        const item = el(this.#document, "li", "v7-help-rule");
+        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
+        rules.append(item);
+      }
+      section.append(text(this.#document, "h3", "Dinosaurs"), rules);
     }
     section.append(text(this.#document, "h3", "Keyboard"), keys);
     return section;
@@ -3388,7 +3782,9 @@ export class Ruleset7DomAppView {
           `#v7-faction-${seat}`,
         );
         if (field === null) return prior;
-        return field.value === "UNDEAD" || field.value === "GOBLIN"
+        return field.value === "UNDEAD" ||
+          field.value === "GOBLIN" ||
+          field.value === "DINOSAUR"
           ? field.value
           : "ORIGINAL";
       }),
@@ -3456,6 +3852,8 @@ export class Ruleset7DomAppView {
     if (this.#localBusy()) return false;
     this.#kaboomArmedUnitId = null;
     this.#kaboomHoverUnitId = null;
+    this.#layEggPick = null;
+    this.#stampedeArmed = null;
     const restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
@@ -3937,6 +4335,441 @@ export class Ruleset7DomAppView {
     return panel;
   }
 
+  /**
+   * Revision 19: the Lay Egg cards of an own Dinosaur city, one per
+   * researched egg-laid role (role portrait with an egg cue, cost, hatch
+   * time and slots). A card that cannot be used says why. Without any
+   * researched egg role a single hint names the first technology.
+   */
+  #layEggCards(view: PlayerViewV7, cityId: number): readonly HTMLElement[] {
+    const faction = view.viewer.faction;
+    if (faction !== "DINOSAUR" || this.#snapshot.offeredCommands.length === 0)
+      return [];
+    const city = view.cities.find((candidate) => candidate.id === cityId);
+    if (city === undefined) return [];
+    const cards: HTMLElement[] = [];
+    let locked: { readonly label: string; readonly tech: string } | null = null;
+    for (const role of eggLaidRolesV7(UNIT_ROLE_IDS_V7, faction)) {
+      const rule = effectiveRoleRuleV7(role, faction);
+      if (
+        rule.technology !== null &&
+        !view.viewer.researchedTechs.includes(rule.technology)
+      ) {
+        locked ??= {
+          label: rule.label,
+          tech: technologyNameV7(rule.technology, faction),
+        };
+        continue;
+      }
+      const preview = previewLayEggV7(view, city.id, role);
+      if (preview === null) continue;
+      const offered = this.#snapshot.offeredCommands.some(
+        (command) =>
+          command.kind === "LAY_EGG" &&
+          command.cityId === city.id &&
+          command.role === role,
+      );
+      const reason =
+        layEggUnavailableTextV7(preview, faction) ??
+        (offered ? null : "Not available right now");
+      const card = el(this.#document, "div", "v7-train-card v7-lay-egg-card");
+      card.dataset.layEggRole = role;
+      const action = button(
+        this.#document,
+        "",
+        `lay-egg-${role.toLowerCase()}`,
+        "v7-train-action v7-lay-egg-action",
+      );
+      const portrait = this.#chibiArt(
+        portraitSubjectV7(role, faction),
+        CHIBI_DOM_BOXES_V7.action,
+        this.#viewerColour(),
+      );
+      // The role portrait (never the Lay Egg icon), with a small egg cue.
+      const frame = el(this.#document, "span", "v7-egg-art");
+      frame.append(
+        factionBadgeArt(
+          this.#document,
+          portrait?.element ??
+            art(this.#document, RULESET7_UNIT_ART_IDS[role], ""),
+          portrait?.factionArt === true ? null : "DINOSAUR",
+        ),
+        uiIconV7(this.#document, "egg", "v7-egg-cue"),
+      );
+      const facts = el(this.#document, "span", "v7-egg-facts");
+      const hatch = text(
+        this.#document,
+        "span",
+        turnsTextV7(preview.turnsToHatch),
+        "v7-egg-fact",
+      );
+      hatch.dataset.eggFact = "hatch";
+      hatch.title = `Hatches in ${turnsTextV7(preview.turnsToHatch)}`;
+      const slots = text(
+        this.#document,
+        "span",
+        slotsTextV7(preview.slots),
+        "v7-egg-fact",
+      );
+      slots.dataset.eggFact = "slots";
+      slots.dataset.slots = String(preview.slots);
+      slots.title = `Uses ${slotsTextV7(preview.slots)} of the city's ${preview.capacity} (${preview.usedSlots} used)`;
+      facts.append(hatch, slots);
+      action.append(
+        frame,
+        text(this.#document, "span", `${rule.label} Egg`, "v7-action-label"),
+        economyChips(this.#document, { cost: preview.cost }),
+        facts,
+      );
+      const row = layEggRowTextV7(rule.label, preview);
+      action.title = reason === null ? row : `${row}. ${reason}`;
+      action.setAttribute(
+        "aria-label",
+        reason === null ? `Lay ${row}` : `Lay ${row}. Unavailable: ${reason}`,
+      );
+      const picking =
+        this.#layEggPick?.cityId === city.id && this.#layEggPick.role === role;
+      action.setAttribute("aria-pressed", String(picking));
+      if (reason === null) {
+        action.disabled = this.#localBusy();
+        action.onclick = () => this.#startLayEggPick(city.id, role);
+      } else {
+        // aria-disabled keeps the reason reachable by keyboard and touch.
+        action.setAttribute("aria-disabled", "true");
+        action.dataset.disabledReason = (
+          preview.unavailableReason ?? "NOT_OFFERED"
+        ).toLowerCase();
+        const why = text(this.#document, "span", reason, "v7-egg-reason");
+        action.append(why);
+      }
+      const help = button(
+        this.#document,
+        "",
+        `train-help-${role.toLowerCase()}`,
+        "v7-train-help",
+      );
+      help.append(text(this.#document, "span", "?", "v7-train-help-glyph"));
+      help.setAttribute("aria-label", `About ${rule.label}`);
+      help.disabled = this.#localBusy();
+      help.onclick = () => {
+        this.#selectedRecruitHelp = role;
+        this.#render();
+      };
+      card.append(action, help);
+      cards.push(card);
+    }
+    if (cards.length === 0 && locked !== null) {
+      const hint = text(
+        this.#document,
+        "p",
+        `Research ${locked.tech} to lay ${locked.label} Eggs here.`,
+        "v7-lay-egg-locked",
+      );
+      hint.dataset.v7LayEgg = "locked";
+      return [hint];
+    }
+    return cards;
+  }
+
+  /** Enters nest-tile picking for one role of one own city. */
+  #startLayEggPick(cityId: CityId, role: UnitRoleIdV7): void {
+    if (this.#localBusy()) return;
+    this.#layEggPick = { cityId, role };
+    this.#notice = `${LAY_EGG_PROMPT_V7}.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so the arrow keys and Enter pick a tile.
+    this.#queueBoardFocus();
+  }
+
+  /** Leaves nest-tile picking and returns focus to the role's card. */
+  #cancelLayEggPick(): void {
+    const pick = this.#layEggPick;
+    this.#layEggPick = null;
+    this.#pendingFocusAction =
+      pick === null ? null : `lay-egg-${pick.role.toLowerCase()}`;
+    this.#render();
+  }
+
+  /**
+   * Revision 19: the nest-tile prompt shown while an Egg's tile is picked:
+   * the hint line, the Egg being laid, and Cancel. Null (and the pick ends)
+   * when no tile is offered any more.
+   */
+  #layEggPickPanel(
+    view: PlayerViewV7,
+    pick: { readonly cityId: CityId; readonly role: UnitRoleIdV7 },
+  ): HTMLElement | null {
+    const tiles = this.#snapshot.offeredCommands.flatMap((command) =>
+      command.kind === "LAY_EGG" &&
+      command.cityId === pick.cityId &&
+      command.role === pick.role
+        ? [command.at]
+        : [],
+    );
+    const preview = previewLayEggV7(view, pick.cityId, pick.role);
+    if (tiles.length === 0 || preview === null) {
+      this.#layEggPick = null;
+      return null;
+    }
+    const label = effectiveRoleRuleV7(pick.role, view.viewer.faction).label;
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-lay-egg-pick",
+    );
+    panel.dataset.v7LayEgg = "picking";
+    panel.dataset.layEggRole = pick.role;
+    // The legal nest tiles in (y, x) order, for assistive tooling and tests.
+    panel.dataset.nestTiles = tiles.map((at) => `${at.x},${at.y}`).join(" ");
+    panel.setAttribute("aria-label", "Lay Egg: choose a tile");
+    panel.append(
+      text(this.#document, "p", LAY_EGG_PROMPT_V7, "v7-kaboom-summary"),
+      text(
+        this.#document,
+        "p",
+        `${layEggRowTextV7(label, preview)}. ${tiles.length === 1 ? "1 tile is" : `${tiles.length} tiles are`} highlighted.`,
+        "v7-lay-egg-detail",
+      ),
+    );
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "cancel-lay-egg",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelLayEggPick();
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /** Revision 19 legend for the Stampede lane markers of the selected unit. */
+  #stampedeLegend(unitId: UnitId): HTMLElement | null {
+    if (
+      !this.#snapshot.offeredCommands.some(
+        (command) => command.kind === "STAMPEDE" && command.unitId === unitId,
+      )
+    )
+      return null;
+    const legend = el(
+      this.#document,
+      "ul",
+      "v7-landing-legend v7-stampede-legend",
+    );
+    legend.setAttribute("aria-label", "Stampede lane markers");
+    for (const [marker, label] of [
+      ["run", "Run tile"],
+      ["stand", "Stops here"],
+      ["target", "Stampede target"],
+    ] as const) {
+      const item = el(this.#document, "li", "v7-landing-legend-item");
+      item.dataset.stampedeMarker = marker;
+      const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
+      swatch.setAttribute("aria-hidden", "true");
+      item.append(swatch, text(this.#document, "span", label));
+      legend.append(item);
+    }
+    return legend;
+  }
+
+  /**
+   * Revision 19: a Stampede button names its target and damage and carries
+   * the whole preview in its accessible name. One that sets off a death
+   * blast is armed (pressed) before it is confirmed.
+   */
+  #decorateStampedeButton(
+    action: HTMLButtonElement,
+    command: Extract<CommandV7, { kind: "STAMPEDE" }>,
+  ): void {
+    const view = this.#snapshot.view;
+    const preview =
+      view === null
+        ? null
+        : previewStampedeV7(view, command.unitId, command.targetUnitId);
+    action.title = STAMPEDE_TOOLTIP_V7;
+    if (view === null || preview === null) return;
+    const summary = stampedePreviewTextV7(view, preview);
+    action.setAttribute(
+      "aria-label",
+      `${STAMPEDE_LABEL_V7} · ${summary.description}`,
+    );
+    const armed =
+      this.#stampedeArmed?.unitId === command.unitId &&
+      this.#stampedeArmed.targetUnitId === command.targetUnitId;
+    action.dataset.stampede = armed ? "armed" : "ready";
+    if (summary.needsConfirmation)
+      action.setAttribute("aria-pressed", String(armed));
+    action.append(
+      text(
+        this.#document,
+        "span",
+        summary.chip,
+        "v7-undead-preview-chip v7-stampede-chip",
+      ),
+    );
+    if (summary.warnings.length > 0) {
+      const warning = text(
+        this.#document,
+        "span",
+        summary.needsConfirmation ? "Blast" : "Warning",
+        "v7-undead-preview-chip v7-kaboom-chip",
+      );
+      warning.dataset.friendlyFire = "true";
+      action.append(warning);
+    }
+  }
+
+  /** Revision 19: a Hatch button names the unit that appears at once. */
+  #decorateHatchButton(
+    action: HTMLButtonElement,
+    command: Extract<CommandV7, { kind: "HATCH" }>,
+  ): void {
+    const view = this.#snapshot.view;
+    const preview =
+      view === null
+        ? null
+        : previewHatchV7(view, command.unitId, command.eggUnitId);
+    action.title = HATCH_TOOLTIP_V7;
+    if (view === null || preview === null) return;
+    const label = effectiveRoleRuleV7(preview.role, view.viewer.faction).label;
+    action.dataset.hatchRole = preview.role;
+    action.setAttribute(
+      "aria-label",
+      `${HATCH_LABEL_V7} ${label} Egg: a ${label} with ${preview.hp} HP appears now, ${turnsTextV7(preview.turnsSaved)} early. The new unit cannot act this turn.`,
+    );
+    action.append(
+      text(
+        this.#document,
+        "span",
+        `${label} · now`,
+        "v7-undead-preview-chip v7-hatch-chip",
+      ),
+    );
+  }
+
+  /**
+   * Revision 19: performs a Stampede, or arms one that sets off a death
+   * blast. Activating the armed target on the board again (or Confirm)
+   * performs it; the armed button disarms it.
+   */
+  #activateStampede(
+    command: Extract<CommandV7, { kind: "STAMPEDE" }>,
+    source: "button" | "board",
+  ): void {
+    if (this.#localBusy()) return;
+    const view = this.#snapshot.view;
+    const preview =
+      view === null
+        ? null
+        : previewStampedeV7(view, command.unitId, command.targetUnitId);
+    const needsConfirmation =
+      view !== null &&
+      preview !== null &&
+      stampedePreviewTextV7(view, preview).needsConfirmation;
+    const armed =
+      this.#stampedeArmed?.unitId === command.unitId &&
+      this.#stampedeArmed.targetUnitId === command.targetUnitId;
+    if (!needsConfirmation || (armed && source === "board")) {
+      void this.#dispatch(command);
+      return;
+    }
+    this.#stampedeArmed = armed
+      ? null
+      : { unitId: command.unitId, targetUnitId: command.targetUnitId };
+    this.#pendingFocusAction = armed
+      ? `command-stampede-${command.targetUnitId}`
+      : "confirm-stampede";
+    this.#render();
+  }
+
+  /**
+   * The armed Stampede confirmation: the run, the damage, the outcome, the
+   * Field Defense lost, the death-blast and chain warnings, and Confirm and
+   * Cancel. Null unless this unit's Stampede is armed and still offered.
+   */
+  #stampedePanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    const armed = this.#stampedeArmed;
+    if (armed === null || armed.unitId !== unitId) return null;
+    const command = this.#snapshot.offeredCommands.find(
+      (candidate): candidate is Extract<CommandV7, { kind: "STAMPEDE" }> =>
+        candidate.kind === "STAMPEDE" &&
+        candidate.unitId === unitId &&
+        candidate.targetUnitId === armed.targetUnitId,
+    );
+    const preview =
+      command === undefined
+        ? null
+        : previewStampedeV7(view, unitId, armed.targetUnitId);
+    if (command === undefined || preview === null) {
+      this.#stampedeArmed = null;
+      return null;
+    }
+    const summary = stampedePreviewTextV7(view, preview);
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-stampede-preview",
+    );
+    panel.dataset.v7Stampede = "armed";
+    panel.setAttribute("aria-label", "Stampede preview");
+    panel.append(
+      text(
+        this.#document,
+        "p",
+        `${summary.run}. ${summary.damage}.`,
+        "v7-kaboom-summary",
+      ),
+    );
+    const lines = this.#document.createElement("ul");
+    lines.className = "v7-kaboom-lines";
+    const line = (
+      content: string | null,
+      id: string,
+      warning = false,
+    ): void => {
+      if (content === null) return;
+      const item = text(
+        this.#document,
+        "li",
+        content,
+        warning ? "v7-kaboom-line is-warning" : "v7-kaboom-line",
+      );
+      item.dataset.stampedeLine = id;
+      lines.append(item);
+    };
+    line(summary.outcome, "outcome");
+    line(summary.noRetaliation, "no-retaliation");
+    line(summary.fieldDefense, "field-defense");
+    line(summary.armoured, "armoured");
+    for (const warning of summary.warnings) line(warning, "warning", true);
+    panel.append(lines);
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const confirm = button(
+      this.#document,
+      "Confirm Stampede",
+      "confirm-stampede",
+      "destructive v7-kaboom-confirm",
+    );
+    confirm.setAttribute(
+      "aria-label",
+      `Confirm Stampede. ${summary.description}`,
+    );
+    confirm.disabled = this.#localBusy();
+    confirm.onclick = () => void this.#dispatch(command);
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "cancel-stampede",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#activateStampede(command, "button");
+    buttons.append(confirm, cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
   /** Redraws the board (for example a Kaboom! preview) without the DOM. */
   #syncBoard(): void {
     const view = this.#snapshot.view;
@@ -4212,11 +5045,13 @@ function identity(
   /** Undead or Goblin placeholder badge over Human art; null for none. */
   badge: FactionBadgeV7 = null,
   /** CHIBI art already sized for its box; replaces the legacy asset. */
-  chibiImage?: HTMLElement,
+  chibiImage?: HTMLElement | SVGElement,
+  /** "code" for a code-drawn figure (the LEGACY Egg) in the legacy frame. */
+  artSet: "chibi" | "code" = "chibi",
 ): HTMLElement {
   const identity = el(documentRoot, "div", "v7-identity");
   const viewport = el(documentRoot, "span", "v7-identity-art");
-  if (chibiImage !== undefined) viewport.dataset.artSet = "chibi";
+  if (chibiImage !== undefined) viewport.dataset.artSet = artSet;
   const image = chibiImage ?? art(documentRoot, assetId, "");
   const layout =
     chibiImage === undefined &&
@@ -4242,6 +5077,74 @@ function identity(
   identity.append(viewport, text(documentRoot, "h2", label));
   return identity;
 }
+/**
+ * Revision 19: the code-drawn Egg of the LEGACY interface (the dock and the
+ * unit dialog): a speckled cream egg with a painted band in its owner's
+ * colour, in a small dark nest. It matches the board's code-drawn Egg.
+ */
+function eggFigureV7(
+  documentRoot: Document,
+  ownerColor: string | undefined,
+): SVGSVGElement {
+  const namespace = "http://www.w3.org/2000/svg";
+  const svg = documentRoot.createElementNS(namespace, "svg");
+  svg.setAttribute("viewBox", "0 0 64 74");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  svg.setAttribute("class", "v7-art-frame v7-egg-figure");
+  svg.dataset.assetId = "unit-dinosaur-egg-code";
+  const shape = (
+    tag: "ellipse" | "path" | "circle" | "rect",
+    attributes: Readonly<Record<string, string>>,
+  ): void => {
+    const node = documentRoot.createElementNS(namespace, tag);
+    for (const [name, value] of Object.entries(attributes))
+      node.setAttribute(name, value);
+    svg.append(node);
+  };
+  const ink = "#1d1a17";
+  shape("ellipse", {
+    cx: "32",
+    cy: "62",
+    rx: "27",
+    ry: "9",
+    fill: "#33363d",
+    stroke: ink,
+    "stroke-width": "2",
+  });
+  shape("path", {
+    d: "M7 65 23 59M41 59 57 65M16 59 48 65",
+    fill: "none",
+    stroke: "#efe6c8",
+    "stroke-width": "2.4",
+    "stroke-linecap": "round",
+  });
+  shape("ellipse", { cx: "32", cy: "36", rx: "18", ry: "24", fill: "#efe6c8" });
+  // The painted owner band: the part of a strip inside the shell.
+  shape("path", {
+    d: "M14.1 35h35.8a18 24 0 0 1-.7 10H14.8a18 24 0 0 1-.7-10Z",
+    fill: ownerColor ?? "#5b616c",
+  });
+  for (const [cx, cy, r] of [
+    ["25", "24", "2.2"],
+    ["38", "21", "1.8"],
+    ["41", "30", "1.5"],
+    ["29", "52", "2"],
+    ["40", "51", "1.6"],
+  ] as const)
+    shape("circle", { cx, cy, r, fill: "#5b616c" });
+  shape("ellipse", {
+    cx: "32",
+    cy: "36",
+    rx: "18",
+    ry: "24",
+    fill: "none",
+    stroke: ink,
+    "stroke-width": "2.4",
+  });
+  return svg;
+}
+
 function art(
   documentRoot: Document,
   assetId: string,
@@ -4404,7 +5307,10 @@ function effectDescription(
     case "ADJACENT_START_TURN_HEALING":
       return `Windmills heal adjacent units for ${effect.amount} HP at Start Turn`;
     case "ARMS_INDUSTRY_DISCOUNT":
-      return `Forge training discount: ${effect.coins} Coin`;
+      // Revision 19: the Dinosaur Arms Industry also discounts Eggs.
+      return faction === "DINOSAUR"
+        ? `Forge discount: ${effect.coins} Coin off trained land units and Eggs`
+        : `Forge training discount: ${effect.coins} Coin`;
     case "LAND_TRADE_INCOME":
       return `Road-linked cities: +${effect.coins} Coin`;
     case "LAND_ROAD_POPULATION":
@@ -4519,7 +5425,18 @@ function technologyRoleDescriptionsV7(
   roleId: UnitRoleIdV7,
   faction: FactionIdV7,
 ): readonly string[] {
-  return [`Train ${effectiveRoleRuleV7(roleId, faction).label}`];
+  const label = effectiveRoleRuleV7(roleId, faction).label;
+  // Revision 19 (section 4): a Dinosaur egg-laid role is laid, not trained:
+  // "Raptor Egg", "Triceratops Egg (Stampede)".
+  if (isEggLaidRoleV7(roleId, faction))
+    return [
+      `${label} Egg${
+        effectiveRoleRuleV7(roleId, faction).abilities.includes("STAMPEDE")
+          ? " (Stampede)"
+          : ""
+      }`,
+    ];
+  return [`Train ${label}`];
 }
 
 function technologyEffectGroupIdV7(
@@ -4600,6 +5517,9 @@ export function recruitmentRolePresentationV7(
   // Revision 17: Kaboom, death blasts, bombs, regeneration, Gang Up and
   // the Field Defense restriction from the Goblin registration.
   restrictions.push(...goblinRecruitNotesV7(roleId, faction));
+  // Revision 19: hatch time, slots and the Field Defense restriction from
+  // the Dinosaur registration.
+  restrictions.push(...dinosaurRecruitNotesV7(roleId, faction));
   return {
     label: role.label,
     stats: [
@@ -4649,6 +5569,8 @@ function abilityDescription(
   if (undead !== null) return undead;
   const goblin = goblinAbilityDescriptionV7(ability, faction);
   if (goblin !== null) return goblin;
+  const dinosaur = dinosaurAbilityDescriptionV7(ability, faction);
+  if (dinosaur !== null) return dinosaur;
   switch (ability) {
     case "ATTACK":
       return minimum > 1
@@ -4754,14 +5676,23 @@ function boundaryNoticeV7(
   const undead = undeadBoundaryNoticeV7(events, before, after);
   // Revision 17: explosions, Plunder, Troll regeneration and WAAAGH!
   const goblin = goblinBoundaryNoticeV7(events, before, after);
-  const parts = [undead?.text ?? null, goblin?.text ?? null, special].filter(
-    (part): part is string => part !== null,
-  );
-  if (undead === null && goblin === null)
+  // Revision 19: Eggs laid, hatched and lost, growth, and Stampedes.
+  const dinosaur = dinosaurBoundaryNoticeV7(events, before, after);
+  const parts = [
+    undead?.text ?? null,
+    goblin?.text ?? null,
+    dinosaur?.text ?? null,
+    special,
+  ].filter((part): part is string => part !== null);
+  if (undead === null && goblin === null && dinosaur === null)
     return { text: special, toast: special !== null };
   return {
     text: parts.join(" · "),
-    toast: special !== null || undead?.toast === true || goblin?.toast === true,
+    toast:
+      special !== null ||
+      undead?.toast === true ||
+      goblin?.toast === true ||
+      dinosaur?.toast === true,
   };
 }
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
@@ -4783,6 +5714,11 @@ function rewardLabel(
     return ["Militia", "Two free Goblins"];
   if (faction === "GOBLIN" && reward === "JUGGERNAUT")
     return ["Troll", "A giant unit"];
+  // Revision 19: Dinosaur Militia is the registry's Cavemen; the giant is a
+  // Brontosaurus, named with its unit slots.
+  const dinosaur =
+    faction === "DINOSAUR" ? dinosaurRewardLabelV7(reward) : null;
+  if (dinosaur !== null) return dinosaur;
   if (reward === "SURVEY") return ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];
@@ -4832,6 +5768,8 @@ function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (undead !== null) return undead;
   const goblin = goblinCommandLabelV7(command.kind, faction);
   if (goblin !== null) return goblin;
+  const dinosaur = dinosaurCommandLabelV7(command.kind, faction);
+  if (dinosaur !== null) return dinosaur;
   if (command.kind === "BUILD_MONUMENT") return "Monument";
   return COMMAND_LABELS[command.kind] ?? title(command.kind);
 }
@@ -5149,6 +6087,8 @@ function abilityName(ability: string, faction: FactionIdV7): string {
   if (undead !== null) return undead;
   const goblin = goblinAbilityNameV7(ability, faction);
   if (goblin !== null) return goblin;
+  const dinosaur = dinosaurAbilityNameV7(ability, faction);
+  if (dinosaur !== null) return dinosaur;
   if (ability === "TEND_WOUNDED") return "Tend";
   return title(ability);
 }
@@ -5158,7 +6098,9 @@ function abilityName(ability: string, faction: FactionIdV7): string {
  * turn status name each player's faction.
  */
 function matchHasFactionsV7(view: PlayerViewV7): boolean {
-  return matchHasUndeadV7(view) || matchHasGoblinV7(view);
+  return (
+    matchHasUndeadV7(view) || matchHasGoblinV7(view) || matchHasDinosaurV7(view)
+  );
 }
 
 /**
@@ -5208,6 +6150,9 @@ const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   WAIL: "wail",
   // Revision 17: a round bomb with a lit fuse (GOBLIN.md Kaboom icon).
   KABOOM: "bomb",
+  // Revision 19: LEGACY glyphs (CHIBI draws the PixelLab action icons).
+  STAMPEDE: "stampede",
+  HATCH: "hatch",
 };
 
 function undeadCommandPreview(
@@ -5246,11 +6191,11 @@ function undeadCommandPreview(
  * Wraps Human placeholder art with the Undead (spec 10.2) or Goblin (revision
  * 17 section 11.4) faction badge; null keeps the art unwrapped.
  */
-function factionBadgeArt(
+function factionBadgeArt<Image extends HTMLElement | SVGElement>(
   documentRoot: Document,
-  image: HTMLElement,
+  image: Image,
   badge: FactionBadgeV7,
-): HTMLElement {
+): Image | HTMLElement {
   if (badge === null) return image;
   const frame = el(documentRoot, "span", "v7-undead-art");
   frame.dataset.faction = badge.toLowerCase();

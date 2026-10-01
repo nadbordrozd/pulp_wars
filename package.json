@@ -77,6 +77,7 @@
     "review:ruleset7-city-buff": "tsx scripts/browser-city-buff-review-v7.ts",
     "review:ruleset7-undead-ui": "tsx scripts/browser-undead-review-v7.ts",
     "review:ruleset7-goblin-ui": "tsx scripts/browser-goblin-review-v7.ts",
+    "review:ruleset7-dinosaur-ui": "tsx scripts/browser-dinosaur-review-v7.ts",
     "smoke:browser:legacy-v5": "tsx scripts/browser-smoke.ts http://localhost:6173/?legacy-v5=1",
     "review:faction-setup": "tsx scripts/browser-smoke.ts --faction-setup-review",
     "validate:poc": "tsx scripts/validate-poc.ts",

@@ -284,6 +284,149 @@ Wave 2` → `Yours −3` → `−3`), keeping its lethal red or hazard styling;
 - **Review.** `npm run review:ruleset7-goblin-ui` captures these surfaces in
   both art sets at desktop and phone widths (dev server only).
 
+## Current Ruleset 7 revision 19 Dinosaur overlay
+
+This overlay implements
+[Dinosaur spec section 12](../product/RULESET_7_REVISION_19_DINOSAURS.md#12-ui-requirements)
+(`pulp_wars-c87.4`) with the art of the
+[Dinosaur art fragment](../art/factions/DINOSAUR.md). Every cue reads only
+public views, public previews (`previewLayEggV7`, `previewHatchV7`,
+`previewStampedeV7`, `queryCombatPreviewV7`, `view.eggs`,
+`publicUnitStats.dinosaur`) and projected events. A match without a Dinosaur
+seat looks as in revision 18 apart from the extra faction option.
+
+- **Setup.** Every seat's faction select offers Human, Undead, Goblin and
+  Dinosaur (default Human); the launched setup, saves, resume and the
+  Showcase keep Dinosaur seats.
+- **Labels.** Units are named by their owner's registration (Caveman, Raptor,
+  Spitter, Ankylosaurus, Shaman, Triceratops, T-Rex, Brontosaurus) on the
+  board, in docks, previews, the log and the board's screen-reader text; an
+  Egg is "{Unit} Egg". The dock shows a "Dinosaur" faction chip. CHIBI paints
+  the PixelLab Dinosaur sprites and portraits; LEGACY (or a CHIBI subject
+  without a raster) draws the Human art with the dusty-blue footprint badge.
+  Rally reads "War Drums" (the `ICON:ACTION:DINOSAUR:RALLY` drum in CHIBI),
+  Inspired units show "War Drums", Overrun reads "Rampage" and Charge
+  "Pounce". Fortification is "Nesting" in the technology tree, its detail and
+  research actions ("Eggs have +4 HP and hatch one turn sooner"); unit
+  unlocks of egg-laid roles read "Raptor Egg", "Triceratops Egg (Stampede)"
+  and so on, and Metallurgy reads "Forge discount: 1 Coin off
+  trained land units and Eggs". Rewards read "A free Caveman" and
+  "Brontosaurus: A giant unit (2 slots)". In a match with a Dinosaur seat the
+  leaderboard and turn status name each player's faction.
+- **City panel.** A Dinosaur viewer's city shows capacity in slots: the stat
+  is labelled "Slots" and reads "5/7 slots" (accessible name "5 of 7 slots",
+  yellow when over capacity). Used slots are the slot sum of the units and
+  Eggs homed there; for the other factions the stat is unchanged. Caveman and
+  Shaman keep their train cards, which add a "1 slot" chip (as do the boats
+  at a Port). After the train cards stands one **Lay Egg card** per
+  researched egg-laid role: the role's portrait with a small egg cue (never
+  the Lay Egg icon), "{Unit} Egg", the cost, the hatch time ("2 turns") and
+  the slots ("2 slots" is highlighted for the two-slot Triceratops and
+  T-Rex), with the usual `?` recruit help. The accessible name is the
+  section 12.2 row: "Lay T-Rex Egg: 10 Coins, 2 slots, hatches in 2 turns".
+  A card that cannot be used is `aria-disabled`, keeps its place, and shows
+  why on the card itself (touch has no hover): "No free tile next to the
+  city", "Needs 2 free slots", "Needs 5 Coins", "City action spent", "The
+  city is besieged". Roles whose technology is missing have no card; with no
+  egg technology at all one line reads "Research Scouting to lay Raptor Eggs
+  here." The up to 40 offered `LAY_EGG` commands of a city are never buttons,
+  and a selected tile never lists them.
+- **Nest-tile picking.** Choosing a Lay Egg card enters picking for that
+  role: the dock replaces the cards with the prompt "Choose a tile next to
+  the city for the Egg", the row text with the number of highlighted tiles,
+  and Cancel; the board highlights exactly the legal nest tiles (cream fill
+  and dashed outline) as its only targets, pans the least distance to show
+  them above the dock (as for a Kaboom! preview), and takes keyboard focus.
+  A click, tap, or Enter on a highlighted tile lays the Egg: one command, no
+  second confirmation. **With exactly one legal tile the click is still
+  required**, so the player always sees where the Egg goes. Escape, Cancel,
+  or selecting anything else leaves the picking with the city still
+  selected.
+- **Eggs on the board.** Every visible Egg of any owner is drawn in its
+  owner's colour: CHIBI uses the `UNIT:DINOSAUR:EGG` sprite, LEGACY (and
+  CHIBI without the raster) a code-drawn speckled egg with a painted band in
+  a bone nest. A charcoal chip with an owner-colour ring beside it shows the
+  countdown number (never smaller than a 10 px number). An Egg shows its HP
+  bar only when damaged, wears its owner's seat badge and never a faction
+  badge. Selecting one opens its dock: "{Unit} Egg", the faction chip,
+  "Hatches in N turns", "N slots", HP and Defense only, the sentence "Hatches
+  into a {Unit} in N turns. Cannot move or fight.", and for an own Egg
+  (with Administration) **Abandon Egg** with its refund ("Remove this Egg
+  for 5 Coins"). Enemy Eggs are ordinary attack targets with ordinary attack
+  previews.
+- **Hatch.** A selected Shaman gets one "Hatch" button per adjacent own Egg
+  laid on an earlier turn (chip "{Unit} · now"; the tooltip is the section
+  12.2 sentence), and the same Egg is a board target labelled "Hatch {Unit}"
+  with the note "Cannot act this turn". An adjacent Egg laid this turn is
+  marked "Next turn" on the board, and the dock adds an `aria-disabled` Hatch
+  explaining "This Egg was laid this turn; it can be hatched from your next
+  turn".
+- **Stampede.** A selected Triceratops that has not moved shows every
+  offered Stampede at once: each target is outlined like an attack target,
+  and its lane is drawn in unowned cream: run tiles with two arrowheads along
+  the run, and the **stand tile** (where the Triceratops stops) with an inset
+  outline and one arrowhead. The dock adds a legend (Run tile, Stops here,
+  Stampede target) and one "Stampede" button per target with the chip
+  "{Unit} −damage" and the whole preview in its accessible name. The target's
+  label stack uses the attack-preview system, so labels never overlap: "Deal
+  14 · run +2", then the note ("Kills · advances", "Pushes back · follows",
+  "Not pushed · stops", or **"May be pushed"** when the tile behind the
+  target is a Mountain and the Push depends on the target owner's
+  Engineering; then "No retaliation", "Field Defense destroyed" and
+  "Armoured −1"), then the Goblin warning boxes for a death-blast chain and a
+  Bitten rising, with the blast areas and hit labels of the chain. The camera
+  pans the least distance to show the lanes and targets above the dock, once
+  per selection. Clicking a target (or its button) performs the Stampede at
+  once, like an attack. **A Stampede that sets off a death blast is armed
+  instead**: the board keeps only that lane and preview, and the dock shows
+  the run and damage, the outcome, "No retaliation", the Field Defense lost
+  and the warnings with Confirm Stampede / Cancel (the Kaboom! pattern).
+  Confirm, or activating the armed target on the board again, performs it;
+  Escape, Cancel, the armed button or a new selection disarm it. A
+  Triceratops that cannot Stampede shows an `aria-disabled` Stampede button
+  explaining "A Triceratops cannot Stampede after moving" or "No clear lane:
+  needs open ground in a straight line"; a tap shows the reason as a toast.
+- **Growth.** A Big unit wears one upward rank chevron and an Alpha two,
+  cream with a black outline, right of its HP bar in both art sets (the shape
+  carries the meaning, so it holds in high contrast and for every owner
+  colour). In CHIBI the sprite is also drawn x1.125 (Big) or x1.25 (Alpha)
+  about its feet, capped at a drawn width of 96 CSS px, so the Brontosaurus
+  stops at x1.09; overlays do not move. The dock shows "Grows · 1 kill to
+  Big", "Big · 2 kills to Alpha" or "Alpha", and "2 slots" for a two-slot
+  body; the `?` details add "Big: +4 HP. Alpha: +8 HP, +1 Attack. Next stage
+  in N kills." and the stat rows list the engine's "+4"/"+8" Growth and "+1"
+  Alpha modifiers. `UNIT_GREW` pulses the sprite to x1.2 and back over
+  300 ms and logs "Your T-Rex grew: Big".
+- **Acid and Armoured.** An attack preview's note adds "Acid: ignores cover
+  and fortification" for a Spitter and "Armoured −1" for a hit on an
+  Ankylosaurus ("Your armour −1" when the viewer's Ankylosaurus takes the
+  retaliation). The `?` details name Acid, Armoured, Stampede, Hatch, Grows,
+  Rampage, Pounce and War Drums, "Big body" for two slots, and "Wild" for the
+  Caveman and Ankylosaurus. Where a Human Fighter or Guard would be offered
+  Field Defense, they show an `aria-disabled` Fortify explaining "Dinosaurs
+  cannot build Field Defense".
+- **Feedback.** Cues are code-native and unowned (white, cream, light grey,
+  basalt grey, charcoal). A Stampede keeps the board before the hit while
+  the Triceratops slides along the lane with a dust puff behind each tile it
+  leaves, lunges from the stand tile, and flashes a spiky star with two
+  puffs on the target; a survivor then slides one tile back and the
+  Triceratops follows. A Spitter lobs a pale cream blob that lands in three
+  puffs. A laid Egg pops in with one bounce. A hatching Egg wobbles twice
+  and cracks, then its shell chips fly up while the unit grows in from
+  x0.6; the Shaman's Hatch first spreads two rings from the Shaman to the
+  Egg. A destroyed Egg scatters shell chips and one dust puff. War Drums use
+  the Rally cue. Reduced motion holds each drawn cue at its midpoint and
+  shows growth and a laid Egg at once. The live region and a toast announce
+  "You laid a Raptor Egg", "Your Raptor hatched", "Player 2's Raptor Egg was
+  destroyed", "2 Eggs were lost with your Capital", "Your T-Rex grew: Big"
+  and "Your Triceratops stampeded Player 2's Guard: 14 damage". Help adds a
+  "Dinosaurs" list with the eleven section 12.3 sentences in every match
+  with a Dinosaur seat; a Dinosaur viewer is told "Select your city to train
+  units and lay Eggs." and gets no Raider Escape tip.
+- **Review.** `npm run review:ruleset7-dinosaur-ui` captures these surfaces
+  (the setup, a Showcase with a Dinosaur seat, and the Dinosaur UI fixtures)
+  in both art sets at desktop and phone widths (dev server only).
+
 ## Current Ruleset 7 playtest round 3 interface overlay
 
 This overlay (`pulp_wars-6gd.4`) applies to the current Ruleset 7 route in

@@ -62,5 +62,8 @@ function inspiredLabelV7(
   // Revision 17: Goblin Inspired units show WAAAGH!.
   if (faction === "GOBLIN")
     return "WAAAGH! from an Orc Warboss: +1 next Attack";
+  // Revision 19: Dinosaur Inspired units show War Drums.
+  if (faction === "DINOSAUR")
+    return "War Drums from a Shaman: +1 Attack on the next attack";
   return "Inspired by Captain Rally: +1 next Attack";
 }

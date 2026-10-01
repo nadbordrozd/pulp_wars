@@ -27,7 +27,10 @@ export type UiIconIdV7 =
   | "bite"
   | "goblin"
   | "dinosaur"
-  | "bomb";
+  | "bomb"
+  | "egg"
+  | "hatch"
+  | "stampede";
 
 const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   hp: "M12 20.5 4.2 12.8a4.6 4.6 0 0 1 6.5-6.5L12 7.6l1.3-1.3a4.6 4.6 0 0 1 6.5 6.5Z",
@@ -69,6 +72,12 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   dinosaur:
     "M12 13a4 3.6 0 1 0 0 7.2 4 3.6 0 0 0 0-7.2ZM12 3.5 10.2 11h3.6ZM5.5 6.5 7.6 13l3-1.8ZM18.5 6.5 16.4 13l-3-1.8Z",
   bomb: "M12 8.8a6.6 6.6 0 1 0 0 13.2 6.6 6.6 0 0 0 0-13.2ZM10.5 8.8v-2h3v2M12 6.8c0-1.7.6-2.9 2-3.6",
+  // Revision 19: an egg (the Lay Egg cue, filled), an egg with a zigzag
+  // crack (Hatch), and a double chevron running into a bar (Stampede).
+  egg: "M12 2c-4.4 0-8 6-8 11.5a8 8 0 0 0 16 0C20 8 16.4 2 12 2Z",
+  hatch:
+    "M12 2c-4.4 0-8 6-8 11.5a8 8 0 0 0 16 0C20 8 16.4 2 12 2ZM4.3 12.5l3.4 2.3 3-3 3 3 5.9-2.8",
+  stampede: "M3.5 6.5 9 12l-5.5 5.5M10.5 6.5 16 12l-5.5 5.5M20 5v14",
 };
 
 /** One shape of a multi-part icon; `fill` may be a fixed colour. */
@@ -141,6 +150,7 @@ const FILLED: ReadonlySet<UiIconIdV7> = new Set([
   "defense",
   "skip",
   "units",
+  "egg",
 ]);
 
 export function uiIconV7(

@@ -899,13 +899,13 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Build market",
       "Shamans beat War Drums or Tend nearby troops, and Hatch Eggs",
     ]);
-    expect(text(0, "SAWMILLING")).toContain("Train Triceratops");
-    expect(text(0, "MARKSMANSHIP")).toEqual(["Train Spitter"]);
-    expect(text(0, "SCOUTING")).toEqual(["Train Raptor", "Raptor sight 2"]);
-    expect(text(0, "DRILL")).toContain("Train Ankylosaurus");
+    expect(text(0, "SAWMILLING")).toContain("Triceratops Egg (Stampede)");
+    expect(text(0, "MARKSMANSHIP")).toEqual(["Spitter Egg"]);
+    expect(text(0, "SCOUTING")).toEqual(["Raptor Egg", "Raptor sight 2"]);
+    expect(text(0, "DRILL")).toContain("Ankylosaurus Egg");
     expect(text(0, "CHIVALRY")).toEqual(
       expect.arrayContaining([
-        "Train T-Rex",
+        "T-Rex Egg",
         "Rampage: T-Rexes advance after a kill and may attack again",
       ]),
     );

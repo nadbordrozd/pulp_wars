@@ -10,10 +10,21 @@ import {
 } from "../undead-presentation-v7";
 import { unitIsGoblinV7 } from "../goblin-presentation-v7";
 import {
+  eggCountdownTextV7,
+  eggTurnsRemainingV7,
+  unitDisplayNameV7,
+  unitIsDinosaurV7,
+} from "../dinosaur-presentation-v7";
+import {
   drawBombProjectileV7,
   drawExplosionFeedbackV7,
   type ExplosionFeedbackV7,
 } from "./goblin-explosion-v7";
+import {
+  drawDinosaurFeedbackV7,
+  type DinosaurFeedbackV7,
+} from "./dinosaur-effects-v7";
+import { DINOSAUR_CUE_COLORS_V7 } from "./dinosaur-canvas-v7";
 import {
   MAX_ZOOM,
   MIN_ZOOM,
@@ -43,8 +54,12 @@ import {
   type BoardSelectionV7,
   type BoardRenderPlanV7,
   type MapCommandTargetV7,
+  type UnitPulseV7,
 } from "./board-renderer-v7";
-import { corePresentationPlanV7 } from "./presentation-plan-v7";
+import {
+  corePresentationPlanV7,
+  type CorePresentationStepV7,
+} from "./presentation-plan-v7";
 import { selectionJumpDurationMs } from "./selection-jump-presentation";
 import {
   archerProjectileEndpoints,
@@ -196,7 +211,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     readonly catapult: boolean;
     /** Revision 17: a Bomb Chucker's round black bomb. */
     readonly bomb?: boolean;
+    /** Revision 19: a Spitter's pale cream acid blob. */
+    readonly acid?: boolean;
   } | null = null;
+  /** Revision 19: the Dinosaur cue playing on the effects overlay. */
+  #dinosaurFeedback: DinosaurFeedbackV7 | null = null;
+  /** Review tooling only (pinDinosaurFeedback): cues frozen mid-animation. */
+  #pinnedDinosaurFeedback: readonly DinosaurFeedbackV7[] = [];
+  /** Revision 19: this frame's unit sprite cues (growth, Egg, hatchling). */
+  #unitPulses: readonly UnitPulseV7[] = [];
+  /**
+   * Revision 19: units of a Stampede boundary held where their next slide
+   * starts (the Triceratops on the stand tile, the survivor on its tile),
+   * so the board never shows them at their final tile early.
+   */
+  #heldUnits: ReadonlyMap<number, CoordV7> = new Map();
   #impact: {
     readonly at: CoordV7;
     readonly shakeCssPx: number;
@@ -390,21 +419,52 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
    */
   #frameKaboomPreview(model: BoardHostModelV7): void {
     const unitId = model.interaction.kaboomPreviewUnitId ?? null;
-    if (unitId === null) {
+    // Revision 19: the nest tiles of the Egg being laid and the lanes of the
+    // selected Triceratops are framed the same way, once per preview.
+    const layEgg = model.interaction.layEgg ?? null;
+    const plan =
+      unitId === null && layEgg === null && model.interactive
+        ? this.#planFor(model.view, model.offeredCommands)
+        : null;
+    const stampedeUnitId =
+      plan !== null &&
+      plan.targets.some((target) => target.family === "STAMPEDE")
+        ? model.interaction.selectedUnitId
+        : null;
+    const subject =
+      unitId !== null
+        ? String(unitId)
+        : layEgg !== null
+          ? `nest:${layEgg.cityId}:${layEgg.role}`
+          : stampedeUnitId !== null
+            ? `stampede:${stampedeUnitId}:${model.interaction.stampedeTargetUnitId ?? "all"}`
+            : null;
+    if (subject === null) {
       this.#kaboomFramedKey = null;
       return;
     }
     const band = this.#unobscuredBand();
-    const key = `${unitId}:${Math.round(band.top)}:${Math.round(band.bottom)}:${this.#viewport.width}x${this.#viewport.height}`;
+    const key = `${subject}:${Math.round(band.top)}:${Math.round(band.bottom)}:${this.#viewport.width}x${this.#viewport.height}`;
     if (key === this.#kaboomFramedKey) return;
     this.#kaboomFramedKey = key;
+    const framed = plan ?? this.#planFor(model.view, model.offeredCommands);
     const area = cellWorldBounds(
-      this.#planFor(model.view, model.offeredCommands)
-        .entries.filter(
-          (entry) =>
-            entry.kind === "ABILITY_AREA" && entry.abilityStyle === "BLAST",
-        )
-        .map((entry) => entry.at),
+      unitId !== null || layEgg !== null
+        ? framed.entries
+            .filter(
+              (entry) =>
+                entry.kind === "ABILITY_AREA" &&
+                entry.abilityStyle === (unitId !== null ? "BLAST" : "NEST"),
+            )
+            .map((entry) => entry.at)
+        : [
+            ...framed.entries
+              .filter((entry) => entry.kind === "LANE")
+              .map((entry) => entry.at),
+            ...framed.targets
+              .filter((target) => target.family === "STAMPEDE")
+              .map((target) => target.at),
+          ],
     );
     if (area === null) return;
     const delta = panToFrameArea(this.#camera, area, this.#viewport, band);
@@ -507,6 +567,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#windmillHealingFeedback = null;
     this.#explosionFeedback = null;
     this.#pinnedExplosionFeedback = [];
+    this.#dinosaurFeedback = null;
+    this.#pinnedDinosaurFeedback = [];
+    this.#unitPulses = [];
+    this.#heldUnits = new Map();
     this.#drawSupportOverlay();
     this.#crossfade = null;
     this.#selectionJump = null;
@@ -553,13 +617,33 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         (step) => step.kind === "WINDMILL_HEALING",
       );
       const explosionSteps = steps.filter((step) => step.kind === "EXPLOSION");
+      const dinosaurSteps = steps.filter((step) => step.kind === "DINOSAUR");
       if (
         supportSteps.length > 0 ||
         windmillSteps.length > 0 ||
-        explosionSteps.length > 0
+        explosionSteps.length > 0 ||
+        dinosaurSteps.length > 0
       ) {
         this.#presentedView = after;
         this.#draw();
+        // Revision 19: each Dinosaur cue holds its midpoint; growth and a
+        // laid Egg show their new sprite and marker at once.
+        for (const step of dinosaurSteps) {
+          if (step.followCamera === true && step.cells[0] !== undefined)
+            this.#followCamera(step.cells[0]);
+          if (step.effect === "GROW" || step.effect === "EGG_LAID") continue;
+          this.#dinosaurFeedback = {
+            effect: step.effect,
+            cells: step.cells,
+            ...(step.from === undefined ? {} : { from: step.from }),
+            progress: 0.5,
+          };
+          this.#draw();
+          await this.#animate(260 * durationScale, () => undefined);
+          if (token !== this.#presentationToken) return;
+          this.#dinosaurFeedback = null;
+          this.#drawSupportOverlay();
+        }
         // Revision 17: each explosion wave holds its midpoint burst, in
         // wave order, long enough to read.
         for (const step of explosionSteps) {
@@ -607,7 +691,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#drawSupportOverlay();
         }
         if (
-          supportSteps.length + windmillSteps.length + explosionSteps.length ===
+          supportSteps.length +
+            windmillSteps.length +
+            explosionSteps.length +
+            dinosaurSteps.length ===
           steps.length
         ) {
           this.#presentedView = null;
@@ -626,13 +713,25 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#draw();
       return;
     }
-    for (const step of steps) {
+    const stampedeBoundary = steps.some(
+      (step) => step.kind === "MOVE" && step.stampedeRun === true,
+    );
+    for (const [index, step] of steps.entries()) {
+      // Revision 19: in a Stampede boundary, a unit with a later slide
+      // waits where that slide starts.
+      this.#heldUnits = stampedeBoundary
+        ? heldUnitsAfterV7(steps, index)
+        : NO_HELD_UNITS;
       if (step.kind === "MOVE") {
-        this.#presentedView = after;
+        // The Stampede run keeps the board before the hit: the target is
+        // still standing, and dust rises behind the Triceratops.
+        const run = step.stampedeRun === true;
+        this.#presentedView = run ? before : after;
         const unit = before.units.find(
           (candidate) => candidate.id === step.unitId,
         );
         if (
+          !run &&
           step.followCamera &&
           unit !== undefined &&
           !after.units.some((candidate) => candidate.id === unit.id)
@@ -643,10 +742,57 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           step.path,
           step.durationMs * durationScale,
           step.followCamera === true,
+          run
+            ? (progress) => {
+                this.#dinosaurFeedback = {
+                  effect: "STAMPEDE_RUN",
+                  cells: step.path.slice(0, -1),
+                  progress,
+                };
+              }
+            : undefined,
         );
         if (token !== this.#presentationToken) return;
-        this.#animatedUnit = null;
+        if (run) {
+          // The Triceratops waits on the stand tile for the hit.
+          this.#dinosaurFeedback = null;
+          this.#drawSupportOverlay();
+        } else {
+          this.#animatedUnit = null;
+          this.#presentedView = after;
+        }
+      } else if (step.kind === "DINOSAUR") {
+        const first = step.cells[0];
+        if (first !== undefined && step.followCamera === true)
+          this.#followCamera(first);
+        // Hatching shows the Egg first; every other cue shows the result.
+        this.#presentedView = step.effect === "HATCH" ? before : after;
+        this.#draw();
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          this.#unitPulses = dinosaurUnitPulsesV7(
+            step,
+            progress,
+            this.#camera.zoom,
+          );
+          if (
+            step.effect === "HATCH" &&
+            progress >= 0.45 &&
+            this.#presentedView !== after
+          )
+            this.#presentedView = after;
+          this.#dinosaurFeedback = {
+            effect: step.effect,
+            cells: step.cells,
+            ...(step.from === undefined ? {} : { from: step.from }),
+            progress,
+          };
+          this.#draw();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#unitPulses = [];
+        this.#dinosaurFeedback = null;
         this.#presentedView = after;
+        this.#drawSupportOverlay();
       } else if (step.kind === "BUILD") {
         this.#followCamera(step.at);
         this.#crossfade = { before, after, progress: 0 };
@@ -677,6 +823,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             step.to,
             280 * durationScale,
             step.projectile === "BOMB",
+            step.projectile === "ACID",
           );
         if (token !== this.#presentationToken) return;
         this.#presentedView = after;
@@ -773,6 +920,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       if (token !== this.#presentationToken) return;
     }
     this.#animatedUnit = null;
+    this.#heldUnits = NO_HELD_UNITS;
     this.#presentedView = null;
     this.#draw();
   }
@@ -923,16 +1071,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#presentedView === null ? model.offeredCommands : NO_COMMANDS,
       );
       const animated = this.#animatedUnit;
+      const held = this.#heldUnits;
       const presented =
-        animated === null
+        animated === null && held.size === 0
           ? plan
           : {
               ...plan,
-              entries: plan.entries.map((entry) =>
-                entry.kind === "UNIT" && entry.key === `unit:${animated.id}`
-                  ? { ...entry, at: animated.at }
-                  : entry,
-              ),
+              entries: plan.entries.map((entry) => {
+                if (entry.kind !== "UNIT") return entry;
+                if (animated !== null && entry.key === `unit:${animated.id}`)
+                  return { ...entry, at: animated.at };
+                const hold = held.get(Number(entry.key.slice(5)));
+                return hold === undefined ? entry : { ...entry, at: hold };
+              }),
             };
       drawBoardV7({
         context,
@@ -949,6 +1100,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         sceneAlpha,
         impact: this.#impact,
         statusPulse: this.#statusPulse,
+        ...(this.#unitPulses.length === 0
+          ? {}
+          : { unitPulses: this.#unitPulses }),
         artSet: this.#artSet(),
         chibiArt: this.#chibiArt,
         ...(model.saturation === undefined
@@ -1000,7 +1154,28 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       context.lineWidth = 2 * this.#camera.zoom;
       if (this.#projectile.bomb === true)
         drawBombProjectileV7(context, x, y, this.#camera.zoom, progress);
-      else if (this.#projectile.catapult) {
+      else if (this.#projectile.acid === true) {
+        // Revision 19: a pale cream blob with a charcoal outline (never
+        // green), and a small trailing drop.
+        context.fillStyle = DINOSAUR_CUE_COLORS_V7.cream;
+        context.strokeStyle = DINOSAUR_CUE_COLORS_V7.charcoal;
+        context.lineWidth = Math.max(1, 2 * this.#camera.zoom);
+        for (const [dx, dy, radius] of [
+          [0, 0, 8],
+          [-9, 6, 3.5],
+        ] as const) {
+          context.beginPath();
+          context.arc(
+            x + dx * this.#camera.zoom,
+            y + dy * this.#camera.zoom,
+            radius * this.#camera.zoom,
+            0,
+            Math.PI * 2,
+          );
+          context.fill();
+          context.stroke();
+        }
+      } else if (this.#projectile.catapult) {
         context.fillStyle = "#6d665e";
         context.beginPath();
         context.arc(x, y, 7 * this.#camera.zoom, 0, Math.PI * 2);
@@ -1098,6 +1273,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#drawSupportOverlay();
   }
 
+  /**
+   * Review tooling and tests: draws the given revision-19 Dinosaur cues at
+   * their fixed progress on the effects canvas until cleared with an empty
+   * list. The game never calls it; presentations clear it.
+   */
+  pinDinosaurFeedback(feedback: readonly DinosaurFeedbackV7[]): void {
+    this.#pinnedDinosaurFeedback = feedback;
+    this.#drawSupportOverlay();
+  }
+
   #drawSupportOverlay(): void {
     const context = this.#effectsContext;
     const canvas = this.#effectsCanvas;
@@ -1110,6 +1295,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       drawSupportFeedbackV7(context, this.#camera, pinned, false, effectArt);
     for (const pinned of this.#pinnedExplosionFeedback)
       drawExplosionFeedbackV7(context, this.#camera, pinned, false);
+    for (const pinned of this.#pinnedDinosaurFeedback)
+      drawDinosaurFeedbackV7(context, this.#camera, pinned);
+    const dinosaur = this.#dinosaurFeedback;
+    if (dinosaur === null) {
+      delete canvas.dataset.dinosaurEffect;
+      delete canvas.dataset.dinosaurCells;
+      delete canvas.dataset.dinosaurProgress;
+    } else {
+      canvas.dataset.dinosaurEffect = dinosaur.effect;
+      canvas.dataset.dinosaurCells = String(dinosaur.cells.length);
+      canvas.dataset.dinosaurProgress = dinosaur.progress.toFixed(3);
+      drawDinosaurFeedbackV7(context, this.#camera, dinosaur);
+    }
     const explosion = this.#explosionFeedback;
     if (explosion === null) {
       delete canvas.dataset.explosionWave;
@@ -1618,6 +1816,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     path: readonly CoordV7[],
     duration: number,
     followCamera = false,
+    /** Revision 19: per-frame cue state, set before the frame is drawn. */
+    onProgress?: (progress: number) => void,
   ): Promise<void> {
     const first = path[0];
     if (first === undefined) return;
@@ -1627,6 +1827,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#draw();
     }
     await this.#animate(duration, (progress) => {
+      onProgress?.(progress);
       if (path.length === 1) {
         this.#draw();
         return;
@@ -1684,9 +1885,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     to: CoordV7,
     duration: number,
     bomb = false,
+    acid = false,
   ): Promise<void> {
     await this.#animate(duration, (progress) => {
-      this.#projectile = { from, to, progress, catapult, bomb };
+      this.#projectile = { from, to, progress, catapult, bomb, acid };
       this.#draw();
     });
     this.#projectile = null;
@@ -1818,7 +2020,71 @@ function unitName(
     return `Undead ${unitRoleRuleV7(view, unit).label}`;
   if (unitIsGoblinV7(view, unit))
     return `Goblin ${unitRoleRuleV7(view, unit).label}`;
+  // Revision 19: Dinosaur units by their own names; an Egg with its
+  // countdown.
+  if (unitIsDinosaurV7(view, unit)) {
+    const turns = eggTurnsRemainingV7(view, unit.id);
+    return `Dinosaur ${unitDisplayNameV7(view, unit)}${
+      unit.form === "EGG" && turns !== null
+        ? ` (${eggCountdownTextV7(turns)})`
+        : ""
+    }`;
+  }
   return title(unit.role);
+}
+const NO_HELD_UNITS: ReadonlyMap<number, CoordV7> = new Map();
+/**
+ * Revision 19: where each unit with a later slide in `steps` waits: the
+ * start of its next `MOVE` step after `index`.
+ */
+function heldUnitsAfterV7(
+  steps: readonly CorePresentationStepV7[],
+  index: number,
+): ReadonlyMap<number, CoordV7> {
+  const held = new Map<number, CoordV7>();
+  for (let later = steps.length - 1; later > index; later -= 1) {
+    const step = steps[later];
+    if (step?.kind !== "MOVE") continue;
+    const start = step.path[0];
+    if (start !== undefined) held.set(step.unitId, start);
+  }
+  return held;
+}
+/**
+ * Revision 19 sprite cues of a Dinosaur step at `progress` (0 to 1): a laid
+ * Egg pops in with one small bounce, a hatching Egg wobbles twice before
+ * its hatchling grows from x0.6, and a grown unit pulses to x1.2 and
+ * settles. Other cues move no sprite.
+ */
+export function dinosaurUnitPulsesV7(
+  step: Extract<CorePresentationStepV7, { readonly kind: "DINOSAUR" }>,
+  progress: number,
+  zoom: number,
+): readonly UnitPulseV7[] {
+  const pulse = (): Omit<UnitPulseV7, "unitId"> | null => {
+    if (step.effect === "EGG_LAID")
+      return {
+        scale:
+          progress < 0.6
+            ? 0.6 + 0.55 * (progress / 0.6)
+            : 1.15 - 0.15 * ((progress - 0.6) / 0.4),
+      };
+    if (step.effect === "GROW")
+      return { scale: 1 + 0.2 * Math.sin(Math.PI * progress) };
+    if (step.effect === "HATCH")
+      return progress < 0.45
+        ? {
+            scale: 1,
+            offsetXCssPx:
+              Math.sin((progress / 0.45) * Math.PI * 4) * 4.8 * zoom,
+          }
+        : { scale: 0.6 + 0.4 * ((progress - 0.45) / 0.55) };
+    return null;
+  };
+  const value = pulse();
+  return value === null
+    ? []
+    : step.unitIds.map((unitId) => ({ unitId, ...value }));
 }
 /** Pixel wheel delta for one CHIBI zoom step (one ordinary mouse notch). */
 const CHIBI_WHEEL_STEP_DELTA = 50;

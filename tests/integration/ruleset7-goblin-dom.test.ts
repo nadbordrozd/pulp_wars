@@ -69,6 +69,7 @@ describe("Revision 17 Goblin DOM", () => {
         "Human",
         "Undead",
         "Goblin",
+        "Dinosaur",
       ]);
       expect(field.value).toBe("ORIGINAL");
     }

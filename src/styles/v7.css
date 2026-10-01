@@ -2449,3 +2449,200 @@
 .v7-help-goblin .v7-help-rule strong {
   margin-right: 0.25rem;
 }
+
+/*
+ * Revision 19 Dinosaurs (docs/art/factions/DINOSAUR.md): interface cues use
+ * the unowned effect palette (cream, greys, basalt charcoal) and the badge's
+ * dusty blue, apart from every owner colour.
+ */
+.v7-faction-chip[data-faction="dinosaur"] {
+  border: 1px solid #efe6c855;
+  background: #33363d;
+  color: #b9cdea;
+}
+
+.v7-command-icon[data-icon="stampede"],
+.v7-command-icon[data-icon="hatch"] {
+  color: #efe6c8;
+}
+
+/* Egg countdown, slots and growth chips beside the unit's name. */
+.v7-dinosaur-chip {
+  border: 1px solid #efe6c855;
+  background: #33363d;
+  color: #efe6c8;
+  white-space: nowrap;
+}
+
+.v7-dinosaur-chip[data-growth-stage="1"],
+.v7-dinosaur-chip[data-growth-stage="2"] {
+  border-color: #efe6c8;
+  font-weight: 800;
+}
+
+.v7-egg-info {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+/* The LEGACY code-drawn Egg fills the legacy identity frame. */
+.v7-art-frame.v7-egg-figure {
+  width: 112px;
+  height: 130px;
+}
+
+.v7-dialog-header > .v7-egg-figure {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+/* Slot capacity: a city holding more slots than it has reads as a warning. */
+.v7-city-units.is-over-capacity {
+  color: #ffd84a;
+}
+
+/*
+ * Lay Egg cards stand next to the train cards: the role portrait with a
+ * small egg cue, the cost, the hatch time and the slots. A card that cannot
+ * be used keeps its reason visible (touch has no hover).
+ */
+.v7-egg-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+}
+
+.v7-egg-art > .v7-art-frame:not(.v7-chibi-art),
+.v7-egg-art > .v7-undead-art {
+  width: 3rem;
+  height: 3rem;
+}
+
+.v7-egg-cue {
+  position: absolute;
+  right: -0.35rem;
+  bottom: -0.2rem;
+  box-sizing: border-box;
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0.16rem;
+  border: 1.5px solid #efe6c8;
+  border-radius: 50%;
+  background: #33363d;
+  color: #efe6c8;
+  pointer-events: none;
+}
+
+.v7-egg-cue path {
+  stroke: #1d1a17;
+  stroke-width: 1.4;
+}
+
+.v7-egg-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.25rem;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.v7-egg-fact {
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: rgb(239 230 200 / 14%);
+  color: #efe6c8;
+  white-space: nowrap;
+}
+
+/* Two-slot bodies (Triceratops, T-Rex) are marked. */
+.v7-egg-fact[data-slots="2"] {
+  background: #efe6c8;
+  color: #1d1a17;
+}
+
+.v7-egg-reason {
+  color: #ffe9a8;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.v7-lay-egg-action[aria-disabled="true"] {
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.v7-lay-egg-action[aria-disabled="true"] > .v7-egg-art,
+.v7-lay-egg-action[aria-disabled="true"] > .v7-action-label,
+.v7-lay-egg-action[aria-disabled="true"] > .v7-command-economy,
+.v7-lay-egg-action[aria-disabled="true"] > .v7-egg-facts {
+  opacity: 0.5;
+}
+
+.v7-lay-egg-action[aria-pressed="true"] {
+  outline: 3px solid #fff8d0;
+  outline-offset: 1px;
+}
+
+/* "Ankylosaurus Egg" and "Triceratops Egg" stay inside a phone column. */
+@media (max-width: 800px) {
+  .v7-selection-dock > .v7-context-actions .v7-lay-egg-action {
+    padding-inline: 0.05rem;
+  }
+
+  .v7-selection-dock > .v7-context-actions .v7-lay-egg-action .v7-action-label {
+    overflow-wrap: anywhere;
+    font-size: 0.6rem;
+    letter-spacing: -0.01em;
+  }
+}
+
+.v7-lay-egg-locked {
+  flex: 1 1 100%;
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.v7-lay-egg-detail {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+/* Disabled Dinosaur actions keep their explanation reachable. */
+.v7-context-action[data-disabled-reason^="stampede-"],
+.v7-context-action[data-disabled-reason="hatch-new-egg"],
+.v7-context-action[data-disabled-reason="dinosaur-field-defense"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.v7-context-action[data-stampede="armed"] {
+  outline: 3px solid #fff8d0;
+  outline-offset: 1px;
+}
+
+/* Stampede lane legend: run tile, stand tile and target swatches. */
+.v7-stampede-legend .v7-landing-legend-swatch {
+  border: 2px solid #33363d;
+  background: rgb(239 230 200 / 45%);
+}
+
+.v7-stampede-legend [data-stampede-marker="stand"] .v7-landing-legend-swatch {
+  border-color: #efe6c8;
+  box-shadow: 0 0 0 2px #33363d;
+}
+
+.v7-stampede-legend [data-stampede-marker="target"] .v7-landing-legend-swatch {
+  border: 2px dashed #ff655f;
+  background: transparent;
+}
