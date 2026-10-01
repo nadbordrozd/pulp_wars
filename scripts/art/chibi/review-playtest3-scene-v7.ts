@@ -16,6 +16,8 @@
  * - MOUNTAINS: a Mountain range on the rocky ground with Ore, Mines and
  *   Roads, beside Grass, Forest, Shallow and Deep Water, with units on and
  *   next to it.
+ * - MOUNTAIN_EDGES and MOUNTAIN_BLOCK (bead pulp_wars-6gd.7): the ragged
+ *   edge of the rocky ground against other land; see their layouts.
  */
 import type { PlayerViewV7 } from "../../../src/engine/index";
 import { CanvasBoardHostV7 } from "../../../src/render/canvas/board-host-v7";
@@ -158,11 +160,66 @@ const MOUNTAINS: Layout = [
   [D, S, G, G, M, G, D],
 ];
 
+const ROAD_G: Cell = { terrain: "GRASS", road: true };
+
+/**
+ * Bead pulp_wars-6gd.7: a lone Mountain (1,1), a Mountain between Forest
+ * and Shallow Water (4,1) with an Ore Mountain below it, an L-shaped range
+ * (1,3)-(1,5)-(2,5) whose foot carries a Road, a lone Mine (5,4) below a
+ * unit, and a Mountain beside fog (5,6; the fog is cell 6,6).
+ */
+const MOUNTAIN_EDGES: Layout = [
+  [G, G, G, G, G, G, G],
+  [G, M, G, F, M, S, G],
+  [G, G, G, G, ORE, S, G],
+  [G, M, G, G, G, rival("GUARD"), G],
+  [G, ORE, G, ROAD_G, G, MINE, G],
+  [G, M, ROAD_M, ROAD_G, F, G, G],
+  [G, G, G, G, G, M, G],
+];
+
+/**
+ * Bead pulp_wars-6gd.7: a 3 x 3 block (2,0)-(4,2) with Ore, a Mine and a
+ * Road through its bottom middle cell, a lone Mountain (1,4), a pair beside
+ * Shallow and Deep Water (5,4)-(5,5) and a unit on a lone Ore Mountain.
+ */
+const MOUNTAIN_BLOCK: Layout = [
+  [G, G, M, ORE, M, G, G],
+  [S, G, MINE, M, ORE, F, G],
+  [S, G, M, ROAD_M, M, G, G],
+  [G, G, G, G, G, G, G],
+  [G, M, G, G, F, M, S],
+  [G, G, G, viewer("FIGHTER", ORE), G, ORE, D],
+  [G, F, G, G, G, G, G],
+];
+
+interface Scene {
+  readonly layout: Layout;
+  readonly goblinRoster: boolean;
+  readonly extraSeats: readonly "HUMAN"[];
+  /** Layout cells shown as unexplored fog. */
+  readonly fog?: readonly (readonly [number, number])[];
+}
+
 export const PLAYTEST3_SCENES_V7 = {
   ROCKET: { layout: ROCKET, goblinRoster: true, extraSeats: ["HUMAN"] },
   FARMS: { layout: FARMS, goblinRoster: false, extraSeats: [] },
   MOUNTAINS: { layout: MOUNTAINS, goblinRoster: false, extraSeats: [] },
-} as const;
+  MOUNTAIN_EDGES: {
+    layout: MOUNTAIN_EDGES,
+    goblinRoster: false,
+    extraSeats: [],
+    fog: [
+      [6, 6],
+      [6, 5],
+    ],
+  },
+  MOUNTAIN_BLOCK: {
+    layout: MOUNTAIN_BLOCK,
+    goblinRoster: false,
+    extraSeats: [],
+  },
+} as const satisfies Record<string, Scene>;
 
 export type Playtest3SceneIdV7 = keyof typeof PLAYTEST3_SCENES_V7;
 
@@ -170,7 +227,35 @@ export function playtest3SceneViewV7(
   live: PlayerViewV7,
   id: Playtest3SceneIdV7,
 ): PlayerViewV7 {
-  const scene = PLAYTEST3_SCENES_V7[id];
+  const scene: Scene = PLAYTEST3_SCENES_V7[id];
+  const view = playtest3SceneBaseViewV7(live, scene);
+  const fog = scene.fog ?? [];
+  if (fog.length === 0) return view;
+  // The patch's origin: the capital sits at layout cell (3,3).
+  const capital = view.board.tiles.find(
+    (tile) => tile.explored && tile.site === "CAPITAL",
+  );
+  if (capital === undefined) return view;
+  const fogged = new Set(
+    fog.map(([x, y]) => `${capital.at.x - 3 + x},${capital.at.y - 3 + y}`),
+  );
+  return {
+    ...view,
+    board: {
+      ...view.board,
+      tiles: view.board.tiles.map((tile) =>
+        fogged.has(`${tile.at.x},${tile.at.y}`)
+          ? { at: tile.at, explored: false as const }
+          : tile,
+      ),
+    },
+  };
+}
+
+function playtest3SceneBaseViewV7(
+  live: PlayerViewV7,
+  scene: Scene,
+): PlayerViewV7 {
   return chibiReviewSceneViewV7(live, {
     // ROSTER: each cell names its owner and units stand in their land form.
     kind: "ROSTER",

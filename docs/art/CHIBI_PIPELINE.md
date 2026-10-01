@@ -135,6 +135,34 @@ The review of batch 5 shows all three.
   where it would become a flat Mountain variant; the runtime reaches it
   only as the `groundUrl` of the Mountain layers.
 
+### Runtime ground fringe
+
+The rocky Mountain ground is a square tile. Bead `pulp_wars-6gd.7` softens
+its edge in the renderer, not in the pipeline, so no edge or corner tile
+variants exist (a 4-edge set would need 15 tiles per profile, each
+generated, reviewed and kept seamless with its neighbours).
+[`chibi-terrain-fringe-v7.ts`](../../src/render/canvas/chibi-terrain-fringe-v7.ts)
+is the whole rule:
+
+- An edge of a Mountain or Mined Mountain cell is exposed when its
+  orthogonal neighbour is explored land that is not a Mountain (Grass,
+  Forest, any improved land). Edges against another Mountain, water, fog
+  and the board edge are never cut.
+- For a cell with an exposed edge the board draws the cell's Grass variant,
+  then the ground tile with a binary alpha mask, then the body layer (after
+  the Roads on a Road cell). The mask cuts each exposed edge back by 3 to
+  14 master pixels along a ragged profile, rounds a corner between two
+  exposed edges, keeps a few loose stones on the grass and darkens the rim.
+  Every profile is 6 pixels deep at both ends, so a range's outline
+  continues across cell boundaries.
+- The profile is one of 8, chosen by a hash of the cell, so nothing
+  flickers. The resolver builds each masked tile once per ground, profile
+  and edge set (at most 120 rasters of 80 x 80) and draws it through the
+  shared terrain part rect, so it adds no geometry of its own at any zoom
+  step or device pixel ratio.
+- While the ground or body layer is loading, or if pixel readback fails,
+  the cell draws its square master as before. LEGACY is unchanged.
+
 ### Crop fields
 
 The Farm is a field of grain with no building and no owner colour (bead
@@ -355,14 +383,17 @@ mandatory rewards (Survey and City Wall, Stockpile and Boom, and the
 Undead unit rewards). A review of batch `N` also includes its faction
 companions `N-<name>` (batch 5 includes `5-undead`).
 
-`npm run art:chibi-playtest3-review` (bead `pulp_wars-6gd.5`) writes
+`npm run art:chibi-playtest3-review` (beads `pulp_wars-6gd.5` and
+`pulp_wars-6gd.7`) writes
 `art/pixellab/reviews/chibi-playtest-3-art/`: `sheet-{1x,x4}.png` (the
 fireworks Rocket Cart beside the Goblin units and the Human Catapult, in
 the key and player colours with its mask and portrait; the grain-field
 Farm alone, in a 3 x 3 block and beside Windmills; the rocky ground tile,
 the Mountain and Mined Mountain masters and a range with Ore and Mines
 beside Grass, Forest and water) and
-`ingame-{rocket,farms,mountains}-{desktop,phone}-zoom-{1,0.75}.png`, the
+`ingame-{rocket,farms,mountains,mountain-edges,mountain-block}-{desktop,phone}-zoom-{1,0.75}.png`
+(the last two show the runtime ground fringe: a lone Mountain, an L-shaped
+range, a 3 x 3 block, and Mountains beside water, Forest, Roads and fog), the
 scenes of
 [`review-playtest3-scene-v7.ts`](../../scripts/art/chibi/review-playtest3-scene-v7.ts)
 drawn by the real board host. Its captures start Vite on port 6351 unless

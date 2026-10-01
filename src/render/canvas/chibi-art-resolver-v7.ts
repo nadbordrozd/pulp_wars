@@ -9,6 +9,11 @@ import {
 } from "../../assets/chibi-art-v7";
 import { CHIBI_ART_ASSETS_V7 } from "../../assets/chibi-art-manifest";
 import { chibiRasterForDeviceScale } from "./chibi-geometry-v7";
+import {
+  applyChibiFringeMaskV7,
+  chibiFringeMaskV7,
+  chibiFringeVariantV7,
+} from "./chibi-terrain-fringe-v7";
 import type { Point } from "./geometry";
 import { parseHexColourV7, recolourOwnerPixelsV7 } from "./owner-recolour-v7";
 
@@ -75,8 +80,25 @@ export interface ChibiArtRequestV7 {
   readonly deviceScale: number;
 }
 
+export interface ChibiFringedGroundRequestV7 {
+  /** A tall-terrain asset with layers (a Mountain or Mined Mountain). */
+  readonly asset: ChibiArtAssetV7;
+  readonly at: Point;
+  /** Exposed edges, from chibiMountainFringeEdgesV7; never 0. */
+  readonly edges: number;
+}
+
 export interface ChibiBoardArtV7 {
   resolve(request: ChibiArtRequestV7): ChibiResolutionV7;
+  /**
+   * The asset's ground tile with its exposed edges cut back to a ragged
+   * outline (bead pulp_wars-6gd.7), as an owning-cell raster at density 1.
+   * Null while the ground loads or when it cannot be read; the cell then
+   * draws its square ground as before.
+   */
+  resolveFringedGround?(
+    request: ChibiFringedGroundRequestV7,
+  ): CanvasImageSource | null;
 }
 
 export interface ChibiEntryResolutionV7 {
@@ -225,6 +247,10 @@ export function createChibiArtResolverV7(input: {
     slices.set(url, result);
     return result;
   };
+  // Fringed ground tiles by ground URL, profile variant and edge set (at
+  // most CHIBI_FRINGE_VARIANTS x 15 per ground); null once readback failed.
+  const fringed = new Map<string, CanvasImageSource | null>();
+  const groundPixels = new Map<string, Uint8ClampedArray | null>();
   const raster = (url: string): RasterRecord => {
     const existing = rasters.get(url);
     if (existing !== undefined) return existing;
@@ -255,6 +281,38 @@ export function createChibiArtResolverV7(input: {
     return record;
   };
   return {
+    resolveFringedGround(request) {
+      const { asset } = request;
+      const url = asset.layers?.groundUrl;
+      if (url === undefined || request.edges === 0) return null;
+      const ground = raster(url);
+      if (ground.state !== "READY") return null;
+      const variant = chibiFringeVariantV7(request.at);
+      const key = `${url}|${variant}|${request.edges}`;
+      const cached = fringed.get(key);
+      if (cached !== undefined) return cached;
+      const width = asset.width;
+      const height = asset.height - chibiOverflowV7(asset).up;
+      let pixels = groundPixels.get(url);
+      if (pixels === undefined) {
+        pixels = input.environment.readPixels(ground.image, width, height);
+        groundPixels.set(url, pixels);
+      }
+      // The mask is square; every registered ground tile is 80 x 80.
+      const surface =
+        pixels === null || width !== height
+          ? null
+          : input.environment.createSurface(
+              applyChibiFringeMaskV7(
+                pixels,
+                chibiFringeMaskV7(variant, request.edges, width),
+              ),
+              width,
+              height,
+            );
+      fringed.set(key, surface);
+      return surface;
+    },
     resolve(request) {
       const asset = chibiVariantV7(
         registry.variants(request.subject),

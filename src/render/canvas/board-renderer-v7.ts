@@ -103,6 +103,7 @@ import {
   isWholeScale,
   snapCameraToDevicePixels,
 } from "./chibi-geometry-v7";
+import { chibiMountainFringeEdgesV7 } from "./chibi-terrain-fringe-v7";
 import { RULESET7_PLAYER_COLORS } from "./owner-recolour-v7";
 
 export type BoardSelectionV7 =
@@ -972,6 +973,17 @@ export function drawBoardV7(input: {
           )
           .map((entry) => coordKey(entry.at)),
   );
+  // CHIBI Mountain ground fringe (pulp_wars-6gd.7): terrain subjects by
+  // cell, so a Mountain knows which of its edges border other land.
+  const terrainSubjects = new Map<string, ArtSubjectV7>();
+  if (chibiArt?.resolveFringedGround !== undefined)
+    for (const entry of input.plan.entries)
+      if (entry.kind === "TERRAIN" && entry.artSubject !== undefined)
+        terrainSubjects.set(coordKey(entry.at), entry.artSubject);
+  const terrainSubjectAt = (at: {
+    readonly x: number;
+    readonly y: number;
+  }): ArtSubjectV7 | undefined => terrainSubjects.get(coordKey(at));
   for (const pass of passes)
     for (const entry of input.plan.entries) {
       if (
@@ -1056,7 +1068,59 @@ export function drawBoardV7(input: {
                 : `${entry.ownerColor}55`;
             context.fillRect(left, top, size, size);
           }
-          if (chibi.kind === "READY")
+          // A Mountain bordering other land: Grass, then its rocky ground
+          // cut back along those edges, then the body's owning cell (after
+          // the Roads when the cell has one). The overflow is unchanged.
+          const fringeEdges =
+            pass === "GROUND" &&
+            chibi.kind === "READY" &&
+            chibi.layers !== undefined &&
+            terrainSubjects.size > 0
+              ? chibiMountainFringeEdgesV7(
+                  entry.artSubject,
+                  entry.at,
+                  terrainSubjectAt,
+                )
+              : 0;
+          const fringedGround =
+            fringeEdges === 0 || chibi.kind !== "READY"
+              ? null
+              : (chibiArt?.resolveFringedGround?.({
+                  asset: chibi.asset,
+                  at: entry.at,
+                  edges: fringeEdges,
+                }) ?? null);
+          if (
+            fringedGround !== null &&
+            chibi.kind === "READY" &&
+            chibi.layers !== undefined
+          ) {
+            const part = { centre: { x, y }, camera, devicePixelRatio };
+            const grass = chibiArt?.resolve({
+              subject: "TERRAIN:GRASS",
+              at: entry.at,
+              deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+            });
+            if (grass?.kind === "READY")
+              drawChibiTerrainV7(context, grass, {
+                ...part,
+                sceneAlpha,
+                part: "CELL",
+              });
+            drawChibiTerrainV7(context, chibi, {
+              ...part,
+              sceneAlpha,
+              part: "GROUND",
+              image: fringedGround,
+            });
+            if (layers === undefined)
+              drawChibiTerrainV7(context, chibi, {
+                ...part,
+                sceneAlpha,
+                part: "CELL",
+                image: chibi.layers.body,
+              });
+          } else if (chibi.kind === "READY")
             drawChibiTerrainV7(context, chibi, {
               centre: { x, y },
               camera,

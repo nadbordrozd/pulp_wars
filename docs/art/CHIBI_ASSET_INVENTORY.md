@@ -324,7 +324,13 @@ keeps `building-city-<level>` for every faction. Review evidence:
    boulders, pebbles and cracks, a forced three-colour palette); Forests
    keep the grass. The same accepted bodies were re-composited, so the
    peaks, Ore and Mine entrances are unchanged. A Mountain tile is now a
-   grey square beside grass, with a straight edge like water.
+   grey square beside grass, with a straight edge like water. **Bead
+   `pulp_wars-6gd.7`:** that straight edge made a lone Mountain read as a
+   grey box, so the runtime now cuts the rocky ground back to a ragged
+   edge wherever a Mountain borders other land (see
+   [the pipeline's runtime ground fringe](CHIBI_PIPELINE.md#runtime-ground-fringe)).
+   Edges between Mountains, and against water, fog and the board edge,
+   stay straight. No asset changed.
 4. **Mine is a terrain subject.** A Mine draws `TERRAIN:MINED_MOUNTAIN` (the
    art includes the mountain); `IMPROVEMENT:MINE` is never emitted. Batch 3
    lists "Mine" as an improvement; it is really a tall-terrain variant of

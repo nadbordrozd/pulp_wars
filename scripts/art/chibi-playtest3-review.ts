@@ -15,9 +15,12 @@
  *       with a Windmill column, and next to grass; the rocky ground tile
  *       tiled 3 x 2, every Mountain and Mined Mountain master, and a range
  *       with Ore and Mines beside Grass, Forest and Shallow and Deep Water
- *   ingame-<scene>-<viewport>-zoom-<step>.png  the three scenes of
+ *   ingame-<scene>-<viewport>-zoom-<step>.png  the five scenes of
  *       scripts/art/chibi/review-playtest3-scene-v7.ts (rocket, farms,
- *       mountains) drawn by the real board host with ?art=chibi over a
+ *       mountains, and mountain-edges and mountain-block for the ground
+ *       fringe of bead pulp_wars-6gd.7: a lone Mountain, an L-shaped range,
+ *       a 3 x 3 block, and Mountains beside water, Forest, Roads and fog)
+ *       drawn by the real board host with ?art=chibi over a
  *       fresh match, on desktop (1440 x 900, DPR 1) and phone (390 x 844,
  *       DPR 3) at zoom 1 and 0.75
  *   index.json                  sizes, hashes and the capture notes
@@ -51,7 +54,13 @@ const ROOT = process.cwd();
 const DIRECTORY = path.join(ROOT, "art/pixellab/reviews/chibi-playtest-3-art");
 const TILE = 80;
 const UP = 24;
-const SCENES = ["ROCKET", "FARMS", "MOUNTAINS"] as const;
+const SCENES = [
+  "ROCKET",
+  "FARMS",
+  "MOUNTAINS",
+  "MOUNTAIN_EDGES",
+  "MOUNTAIN_BLOCK",
+] as const;
 const OWNERS = Object.entries(RULESET7_PLAYER_COLORS) as [string, string][];
 const CORAL = RULESET7_PLAYER_COLORS.CORAL;
 
@@ -464,7 +473,7 @@ async function sheets(): Promise<string[]> {
   );
   top += UP + 2 * TILE + MARGIN;
   labels.push({
-    text: "A Mountain range with Ore and Mines beside Grass, Forest, Shallow and Deep Water, with a Rocket Cart and a Fighter",
+    text: "A Mountain range with Ore and Mines beside Grass, Forest, Shallow and Deep Water, with a Rocket Cart and a Fighter (square ground: the runtime edge fringe is in the ingame-mountain-* captures)",
     left: MARGIN,
     top,
   });
@@ -736,7 +745,7 @@ async function captureScenes(
         throw new Error("Chrome returned no screenshot");
       const file = path.join(
         DIRECTORY,
-        `ingame-${scene.toLowerCase()}-${viewport.name}-zoom-${step}.png`,
+        `ingame-${scene.toLowerCase().replace("_", "-")}-${viewport.name}-zoom-${step}.png`,
       );
       await writeFile(file, Buffer.from(shot.data, "base64"));
       evidence.push({
@@ -969,6 +978,7 @@ async function main(): Promise<void> {
     notes: [
       "Sheets use the runtime mask recolour (recolourOwnerPixelsV7) and the accepted masters, masks, anchors and body layers from the pipeline records.",
       "In-game captures are the synthetic scenes of scripts/art/chibi/review-playtest3-scene-v7.ts drawn by CanvasBoardHostV7 with ?art=chibi over a fresh match; each scene rewrites a 7 x 7 patch around the viewer's capital.",
+      "The mountain-edges and mountain-block scenes show the rocky ground fringe of bead pulp_wars-6gd.7; the sheets compose the square ground tile.",
     ],
   };
   await writeFile(
