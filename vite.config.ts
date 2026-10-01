@@ -19,6 +19,10 @@ export default defineConfig(({ command }) => ({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
+    // Heavy AI/map tests flake against the 5 s default when the machine is
+    // under load; explicit per-test timeouts still take precedence.
+    testTimeout: 60000,
+    hookTimeout: 60000,
     // `.claude/**` holds agent git worktrees (other checkouts of this repo).
     exclude: [...configDefaults.exclude, ".claude/**"],
   },
