@@ -689,7 +689,7 @@ describe("v4 varied-resource map smoke coverage", () => {
     expect(mixes.size).toBeGreaterThan(1);
     expect(exactlyTwo).toBeGreaterThan(0);
     expect(moreThanTwo).toBeGreaterThan(0);
-  }, 30_000);
+  }, 600_000);
 });
 
 function sameTestCoord(

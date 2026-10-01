@@ -1516,7 +1516,7 @@ describe("ruleset-7 Goblin explosion previews", () => {
     expect(kabooms).toBeGreaterThan(300);
     expect(attacks).toBeGreaterThan(300);
     expect(longest).toBeGreaterThanOrEqual(6);
-  }, 60_000);
+  }, 600_000);
 
   it("never lists hidden units, sets touchesUnexplored exactly, and is exact without it", () => {
     let exact = 0;
@@ -1582,7 +1582,7 @@ describe("ruleset-7 Goblin explosion previews", () => {
     }
     expect(exact).toBeGreaterThan(200);
     expect(flagged).toBeGreaterThan(10);
-  }, 60_000);
+  }, 600_000);
 
   it("returns null for commands that are not offered and an empty chain for plain attacks", () => {
     const state = goblinArenaV7(

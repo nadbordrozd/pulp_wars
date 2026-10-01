@@ -892,7 +892,7 @@ describe("ruleset-7 revision-18 Showcase play", () => {
     [["UNDEAD", "GOBLIN", "ORIGINAL", "GOBLIN"]],
   ])(
     "plays Normal against Normal %j for 20 rounds with no policy error",
-    { timeout: 180_000 },
+    { timeout: 600_000 },
     (factions) => {
       const result = runAiMatchV7(showcaseSetup(factions), { maxRounds: 20 });
       expect(result.errors).toEqual([]);

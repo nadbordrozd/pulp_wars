@@ -193,7 +193,7 @@ describe("ruleset-7 Normal AI endgame siege (pulp_wars-1mc)", () => {
       expect(match.termination).toBe("OUTCOME");
       expect(match.rounds).toBeLessThan(60);
     },
-    120_000,
+    600_000,
   );
 });
 

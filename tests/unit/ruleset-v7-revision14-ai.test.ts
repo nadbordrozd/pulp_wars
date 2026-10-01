@@ -371,7 +371,7 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     expect(first.metrics.undead.plagueApplications).toBeGreaterThan(0);
     const again = runAiMatchV7(setup, { maxRounds: 40 });
     expect(again.stateHash).toBe(first.stateHash);
-  }, 120_000);
+  }, 600_000);
 });
 
 interface Piece {

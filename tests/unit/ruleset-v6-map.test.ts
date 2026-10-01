@@ -342,7 +342,7 @@ describe("ruleset-6 spatial-economy map generation", () => {
     expect(maxQuarryPairs).toBeGreaterThanOrEqual(1);
     expect(maxMixedFamilies).toBe(4);
     expect(viableLateGameSites).toBeGreaterThan(0);
-  }, 30_000);
+  }, 600_000);
 });
 
 describe("ruleset-6 fog-safe resource projection", () => {

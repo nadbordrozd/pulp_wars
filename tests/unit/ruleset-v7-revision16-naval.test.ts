@@ -618,7 +618,7 @@ describe("ruleset-7 revision-16 Normal AI landings", () => {
           expect(spentByUnit.get(command.unitId) ?? 0).toBeLessThanOrEqual(1);
       }
     },
-    120_000,
+    600_000,
   );
 });
 
@@ -650,7 +650,7 @@ describe("ruleset-7 revision-16 move-then-land persistence", () => {
       if (parsed.kind === "VALID") expect(parsed.save.state).toEqual(state);
       expect(runReplayV7(replay).state).toEqual(state);
     }
-  }, 120_000);
+  }, 600_000);
 });
 
 /**

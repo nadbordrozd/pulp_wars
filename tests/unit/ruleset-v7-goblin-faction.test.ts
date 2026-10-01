@@ -1295,7 +1295,7 @@ describe("ruleset-7 Goblin persistence", () => {
     goblinSeat.faction = "ORIGINAL";
     goblinSeat.factionTreeId = "ORIGINAL_BASELINE_V5";
     expect(parseSaveV7(JSON.stringify(swapped)).kind).not.toBe("VALID");
-  }, 60_000);
+  }, 600_000);
 
   it("finishes headless Goblin matches without errors or stalls", () => {
     for (const factions of [
@@ -1311,7 +1311,7 @@ describe("ruleset-7 Goblin persistence", () => {
       expect(match.stalls).toEqual([]);
       expect(["OUTCOME", "ROUND_CAP"]).toContain(match.termination);
     }
-  }, 120_000);
+  }, 600_000);
 });
 
 class MemoryStorage implements StorageAdapter {

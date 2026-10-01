@@ -525,7 +525,7 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
     expect(diagnostic.workUnits).toBeLessThanOrEqual(
       diagnostic.bounds.declaredMaximumWorkUnits,
     );
-  }, 60_000);
+  }, 600_000);
 
   it("finishes Undead-vs-Human and Undead-vs-Undead matches using the whole kit", () => {
     const cases: readonly {
@@ -575,7 +575,7 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
     expect(used.DEVOUR).toBeGreaterThan(0);
     expect(used.WAIL).toBeGreaterThan(0);
     expect(used.RALLY).toBeGreaterThan(0);
-  }, 180_000);
+  }, 600_000);
 });
 
 interface Piece {

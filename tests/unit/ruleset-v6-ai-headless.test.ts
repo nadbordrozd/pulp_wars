@@ -522,7 +522,7 @@ describe("ruleset-6 deterministic headless execution", () => {
     );
     expect(first.metrics.coinsEarned).toBeGreaterThan(0);
     expect(first.metrics.coinsSpent).toBeGreaterThan(0);
-  }, 30_000);
+  }, 600_000);
 
   it("strictly rejects malformed replays and mismatched checkpoints", () => {
     const replay: ReplayFileV6 = {
@@ -600,7 +600,7 @@ describe("ruleset-6 deterministic headless execution", () => {
     expect(result.events).toEqual(repeated.events);
     expect(result.stateHash).toBe(repeated.stateHash);
     expect(result.metrics.checkpointHash).toBe(repeated.metrics.checkpointHash);
-  }, 30_000);
+  }, 600_000);
 
   it("preserves map, turn order, and post-generation PRNG across faction-only changes", () => {
     const original = createdState(

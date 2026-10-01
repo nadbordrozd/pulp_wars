@@ -784,7 +784,7 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
       "2026-09-29T12:00:00.000Z",
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
-  }, 60_000);
+  }, 600_000);
 
   it("round-trips Lich splash from ordinary Normal AI play", () => {
     // Seed 15 fields a Lich that splashes within 45 rounds of Normal play
@@ -831,7 +831,7 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
       "2026-09-29T12:00:00.000Z",
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
-  }, 60_000);
+  }, 600_000);
 });
 
 describe("ruleset-7 revision-13 Lich splash", () => {

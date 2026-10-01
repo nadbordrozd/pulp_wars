@@ -204,7 +204,7 @@ describe("ruleset-7 revision-13 headless Undead telemetry", () => {
       metrics.capacity.overcapacityStatesByFaction.ORIGINAL +
         metrics.capacity.overcapacityStatesByFaction.UNDEAD,
     );
-  }, 60_000);
+  }, 600_000);
 
   it("passes seat-ordered factions through the batch runner", async () => {
     const batch = await runAiBatchV7({

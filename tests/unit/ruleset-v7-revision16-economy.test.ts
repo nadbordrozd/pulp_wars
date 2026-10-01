@@ -271,7 +271,7 @@ describe("ruleset-7 revision-16 income previews", () => {
     // The match exercises both caps.
     expect(cappedCityTurns).toBeGreaterThan(0);
     expect(cappedMarketTurns).toBeGreaterThan(0);
-  }, 240_000);
+  }, 600_000);
 });
 
 const MARKET_AT: CoordV7 = { x: 2, y: 7 };

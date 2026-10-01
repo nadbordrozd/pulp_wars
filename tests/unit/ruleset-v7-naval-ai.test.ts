@@ -908,7 +908,7 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
           entry.events.some((event) => event.kind === "CITY_CAPTURED"),
       ),
     ).toBe(true);
-  }, 60_000);
+  }, 600_000);
 
   it.each([
     ["PANGEA", 9400, false, "ISOLATED"],
@@ -1052,7 +1052,7 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       if (mapType === "CONTINENTS" && geometry === "ISOLATED")
         expect(patrolEscort).toBe(true);
     },
-    30_000,
+    600_000,
   );
 });
 

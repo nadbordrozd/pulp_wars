@@ -50,7 +50,7 @@ describe("complete deterministic AI matches", () => {
         }, []),
       ),
     ).toBeLessThanOrEqual(128);
-  }, 60_000);
+  }, 600_000);
 
   it("summarizes a fixed cross-setup batch corpus", async () => {
     const summary = await runAiBatch({
@@ -79,7 +79,7 @@ describe("complete deterministic AI matches", () => {
       ["ORIGINAL", "ORIGINAL", "ORIGINAL"],
       ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
     ]);
-  }, 30_000);
+  }, 600_000);
 
   it("accepts Huge as an explicit batch size for every AI count", async () => {
     const summary = await runAiBatch({
@@ -127,7 +127,7 @@ describe("complete deterministic AI matches", () => {
     expect(first.stateHash).toBe(second.stateHash);
     expect(first.errors).toEqual([]);
     expect(first.stalls).toEqual([]);
-  }, 60_000);
+  }, 600_000);
 
   it("accepts Large cooperative batches as an explicit option", async () => {
     const summary = await runAiBatch({

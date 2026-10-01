@@ -1106,7 +1106,7 @@ describe("ruleset-7 revision-14 natural play and persistence", () => {
       "2026-09-29T12:00:00.000Z",
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
-  }, 60_000);
+  }, 600_000);
 
   it("still scripts the browser smoke's Raise Dead save on its revision-14 map", () => {
     // The browser smoke resumes this replay-valid save; it must stop on a

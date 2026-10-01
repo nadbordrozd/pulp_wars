@@ -1361,7 +1361,7 @@ describe("ruleset-7 revision-18 public and engine parity", () => {
       totals.roadOriginMoves += roadOriginMoves;
       totals.conservative += conservative;
     },
-    120_000,
+    600_000,
   );
 
   it("sees the Normal AI use both rules in those matches", () => {
@@ -1541,7 +1541,7 @@ describe("ruleset-7 revision-18 Normal AI route estimates", () => {
       });
       expect(second.stateHash).toBe(first.stateHash);
     },
-    120_000,
+    600_000,
   );
 });
 

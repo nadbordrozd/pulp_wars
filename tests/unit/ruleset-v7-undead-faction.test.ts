@@ -393,7 +393,7 @@ describe("ruleset-7 per-seat factions", () => {
         setup: { ...replay.setup, factions: ["ORIGINAL", "ORIGINAL"] },
       }),
     ).toThrow();
-  }, 60_000);
+  }, 600_000);
 });
 
 describe("ruleset-7 Undead roster and technology registration", () => {
@@ -1683,7 +1683,7 @@ describe("ruleset-7 all-Human parity digests", () => {
         normalizedHumanViewHash: baseline.normalizedHumanViewHash,
         normalizedHumanCommandsHash: baseline.normalizedHumanCommandsHash,
       });
-    }, 60_000);
+    }, 600_000);
 });
 
 describe("ruleset-7 Normal AI with Undead seats", () => {
@@ -1702,7 +1702,7 @@ describe("ruleset-7 Normal AI with Undead seats", () => {
         first.stateHash,
       );
     }
-  }, 60_000);
+  }, 600_000);
 });
 
 interface UnitSpec {

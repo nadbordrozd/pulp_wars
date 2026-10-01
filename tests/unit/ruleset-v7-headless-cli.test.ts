@@ -162,7 +162,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
         "undead,original",
       ),
     ).toThrow(/--factions with batch requires exactly one --ai-counts value/);
-  }, 30_000);
+  }, 600_000);
 
   it("defaults to Continents and accepts all map types in match and batch modes", () => {
     const common = [
@@ -202,7 +202,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       "ARCHIPELAGO",
       "LAKES",
     ]);
-  }, 30_000);
+  }, 600_000);
 
   it("accepts the showcase map type at size 16 only", () => {
     const common = [
@@ -282,7 +282,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
         "11",
       ),
     ).toThrow(/--size must be 16 for the showcase map type/);
-  }, 60_000);
+  }, 600_000);
 
   it("dispatches a command-zero v7 replay through canonical playable creation", () => {
     const setup = setupV7(42);

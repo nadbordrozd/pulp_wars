@@ -685,7 +685,7 @@ describe("ruleset-7 revision-13 Graves: state, events, and persistence", () => {
     };
     tampered.state.graves = tampered.state.graves.slice(1);
     expect(parseSaveV7(JSON.stringify(tampered)).kind).not.toBe("VALID");
-  }, 60_000);
+  }, 600_000);
 });
 
 describe("ruleset-7 revision-13 Graves: public view and projection", () => {

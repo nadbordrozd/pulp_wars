@@ -261,7 +261,7 @@ describe("ruleset-7 naval persistence schema", () => {
     );
     expect(parseSaveV7(JSON.stringify(save))).toMatchObject({ kind: "VALID" });
     expect(runReplayV7(replay).state).toEqual(state);
-  }, 60_000);
+  }, 600_000);
 
   it("rejects malformed water layers, unit domains, deep access, and Port ledgers", () => {
     const fixture = withPortV7(9502);

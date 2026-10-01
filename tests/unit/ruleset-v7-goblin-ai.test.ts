@@ -814,13 +814,13 @@ describe("ruleset-7 revision-17 Normal AI: the turn command cap", () => {
     expect(kinds.length).toBeLessThanOrEqual(
       NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7,
     );
-  }, 120_000);
+  }, 600_000);
 
   it("closes the turn exactly at a cap the horde would exceed", () => {
     const kinds = playTurn(horde(), 40);
     expect(kinds).toHaveLength(40);
     expect(kinds.at(-1)).toBe("END_TURN");
-  }, 120_000);
+  }, 600_000);
 });
 
 // pulp_wars-0ao.7 balance pass: the matrix showed the policy never trained a

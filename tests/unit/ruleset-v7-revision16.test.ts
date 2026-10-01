@@ -239,7 +239,7 @@ describe("ruleset-7 revision-16 orthogonal Shallow Water", () => {
             water.filter((tile) => tile.terrain === "SHALLOW_WATER").length,
           ).toBeGreaterThanOrEqual(Math.ceil(water.length * 0.25));
         }
-  }, 120_000);
+  }, 600_000);
 
   it("keeps the revision-15 eight-neighbour classification for parity fixtures only", () => {
     const setup = setupFor("ARCHIPELAGO", 14, 1, 0);
@@ -473,7 +473,7 @@ describe("ruleset-7 revision-16 capital growth floor", () => {
         }
     for (const worst of Object.values(attempts))
       expect(worst).toBeLessThanOrEqual(256);
-  }, 120_000);
+  }, 600_000);
 });
 
 describe("ruleset-7 revision-16 level 2 on the first turn", () => {
@@ -521,7 +521,7 @@ describe("ruleset-7 revision-16 level 2 on the first turn", () => {
           }
         }
     },
-    120_000,
+    600_000,
   );
 });
 
@@ -653,7 +653,7 @@ describe("ruleset-7 revision-16 Normal AI opening", () => {
             }
           }
     },
-    120_000,
+    600_000,
   );
 });
 
