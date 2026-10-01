@@ -8,17 +8,12 @@ faction registration; the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
 duration valuation, the endgame siege mode (`pulp_wars-1mc`), the
 revision-17 Goblin play (`pulp_wars-0ao.6`), and the revision-18 movement
-estimates (`pulp_wars-6gd.2`) are summarized below. A revision-19 Dinosaur
-seat (`pulp_wars-c87.2`) plays with this ordinary policy on the Dinosaur
-registration until `pulp_wars-c87.5` adds its own heuristics. Since
-`pulp_wars-c87.3` it also plays the Egg and Stampede commands through
-`src/ai/v7-dinosaur.ts`: `LAY_EGG` competes with `TRAIN` as the city's land
-production (one nest tile per role, the one farthest from the visible hostile
-units; an Egg's hatch time counts against it in a threatened city), and an
-offered `STAMPEDE` or `HATCH` is scored from its public preview (a Stampede
-like an attack; never one whose death-blast chain kills an own unit). These
-commands are offered only to a Dinosaur seat, so matches without one decide
-exactly as under revision 18.
+estimates (`pulp_wars-6gd.2`) are summarized below. The revision-19
+Dinosaur play (`pulp_wars-c87.5`, `src/ai/v7-dinosaur.ts`) is
+[summarized below](#revision-19-dinosaur-play-pulp_wars-c875): Eggs, nest
+tiles, Egg protection, Hatch, Grow, Stampede and its lanes, and play against
+each of them. It is gated on a match with a Dinosaur seat, so matches without
+one decide exactly as under revision 18.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
@@ -568,6 +563,153 @@ The public-planning benchmarks were rechecked: the two captured late views
 offer more Moves (operations 66,220 → 66,235 and 94,408 → 94,442), and the
 public validator now derives the Road-node fact of each tile once per step,
 so the captured view's tile reads stay under the 6,000 bound.
+
+## Revision-19 Dinosaur play (`pulp_wars-c87.5`)
+
+Every Dinosaur heuristic lives behind one gate: the match has a Dinosaur seat
+(`src/ai/v7-dinosaur.ts`, `dinosaurMatchForPolicyV7`), or reads a fact that
+only a Dinosaur-faction unit has (an Egg, `GROW`, `STAMPEDE`, `ACID`, an
+armour reduction, a slot value above 1). A match without one never evaluates
+any of it, so Human, Undead, and Goblin decisions are unchanged: a 24-match
+parity run (Human, Undead, and Goblin seats in two-, three-, and four-seat
+matches) is byte-identical to the `5b4790b` policy in every command, event,
+and state. The helpers read only the public view, public commands, and the
+public previews (`previewStampedeV7`, `previewHatchV7`, `queryCombatPreviewV7`
+with its `acid` and Armoured fields, `previewAttackExplosionsV7` through the
+Stampede preview) and the public lane rule applied to the view
+(`stampedeLaneV7` with `viewStampedeFactsV7`). They add no PRNG use, no
+elapsed-time input, and no work units: each is a bounded scan of the view
+inside an existing scoring step, cached per decision. Values are in the
+policy's usual units (a unit is worth cost x 4 + HP).
+
+Shared estimates (every match; all neutral without a Dinosaur unit):
+
+- **Damage estimate** (`publicProjectedDamageWithLookupV7`): an attacker with
+  Acid ignores the defender's cover and fortification; an Armoured defender
+  takes one less (minimum 1) before the cap at its HP; an Alpha's +1 Attack
+  is in its published Attack, and the Pounce estimate adds it to the role's
+  base.
+- **Unit value**: a grown unit is worth 10 more per stage, as a target
+  (`targetStrategicValue`) and as an own unit (`retainedUnitValue`); a visible
+  Egg is worth the role inside x 4, its HP, and 2 per turn it still needs.
+- **Threat reach**: a visible hostile Triceratops in land form also threatens
+  every land tile at distance 2 or 3 along an open lane from where it stands
+  (open as far as the viewer can see), and the projected damage there adds
+  the run bonus (+1 Attack per lane tile). The unit under evaluation never
+  blocks its own lane. This reach feeds every safety test, the city threats,
+  and the Move safety value, so a unit steps out of a lane when an equally
+  good tile exists, prefers Forest and Mountain (cover, and a Forest or
+  Mountain lane tile closes the lane), and a center a Triceratops can
+  Stampede is a threatened city.
+
+As Dinosaurs:
+
+- **Production.** `LAY_EGG` competes with `TRAIN` as the city's land
+  production, one nest tile per role. In addition to the shared role values:
+  each hatch turn beyond the first costs 1 (12 per hatch turn in a threatened
+  city, so short-hatch Eggs and trained units come first there); a two-slot
+  Egg that takes the last slots of a city with capacity 3 or less costs 4; the
+  first Stampede unit gains 4; the first Shaman gains 10 while an own Egg with
+  two or more turns left waits or at least three own attackers could use War
+  Drums, and a Shaman costs 30 in a threatened city (it is no defender). An
+  Egg is never laid on a tile where the visible enemies' projected damage
+  next turn destroys it, nor in a threatened city with an empty center while
+  a unit can be trained there instead. Hatch times read Nesting.
+- **Nest tile.** The offered tile with the least projected damage to an Egg
+  there next turn, then the fewest visible hostile attackers within two Moves
+  plus their range, then the tile farthest from every visible hostile unit,
+  then the one next to more own land units, then (y, x) order.
+- **Abandoning an Egg** is a candidate only in an emergency: the home city is
+  threatened, its center is empty, it has no free slot and its city action,
+  the Egg's slots would free one, the refund covers a Caveman, and the Egg
+  needs two or more turns. It then takes priority 1261 (a threatened city's
+  training is 1260). The ordinary Disband rule no longer applies to Eggs, so
+  a doomed Egg is not sold for its refund.
+- **Egg protection.** An own Egg is worth the unit inside, scaled by how
+  soon it hatches (all of it next turn, two thirds in two turns, half in
+  three). An attack on a unit whose reach includes an own Egg gains that
+  value (its share for a hit that does not kill). An own attacker steps next
+  to an Egg that a visible enemy can reach before it hatches (within its
+  remaining turns, looking at most two turns ahead) and that has no own
+  attacker beside it (priority 760, a quarter of the value, +2 toward the
+  nearest enemy), when the tile is outside visible lethal reach; the sole
+  such guard makes no routine Move (below 1100) away from the Egg until it
+  hatches or the enemy is gone.
+- **Hatch.** Scored by the unit inside (cost x 4 + HP), 10 per turn saved,
+  and 20 when visible enemies can hit the Egg: 1262 for such an Egg, 1085
+  for an Egg with two or more turns left, 640 otherwise (only when the
+  Shaman has nothing better; it hatches next turn anyway). A Shaman with its
+  action steps next to an Egg it can hatch (1084, then it hatches), stands by
+  an Egg laid this turn (760), and makes no routine Move away from a long
+  Egg.
+- **Grow.** A kill by a unit one kill from Big gains 10 and from Alpha 16,
+  so on equal damage the growing unit takes the kill. A grown unit recovers
+  below two thirds of its HP (priority 930; an ungrown unit below half),
+  steps out of visible reach when that wounded (935), leaves visible lethal
+  reach at 1150, never makes a routine Move into it unless that is strictly
+  safer, and does not make a non-lethal attack that leaves it where the
+  visible enemies kill it when it is not already that exposed (a proven city
+  save, a lethal follow-up this turn, or the endgame combined kill excuses
+  it).
+- **Stampede.** Scored from `previewStampedeV7`: the target's loss (its value
+  for a kill, its share for a hit), the growth of a kill, the death-blast
+  chain (hostile value, minus twice the value lost by other own and allied
+  units, minus the Triceratops's own share once against its HP after
+  growth), 8 per tile of Field Defense destroyed, 50 for killing the unit on
+  a hostile city center, 20 for pushing it off (the Triceratops follows and
+  besieges) plus 15 with an own capturer within two tiles, and the own Egg
+  the target could reach; minus the exposure on the final tile, projected
+  with the target gone or wounded where the Push leaves it: the Triceratops's
+  whole value when the visible enemies kill it there (a third when it is
+  doomed where it stands), otherwise half the share it loses. A Stampede with
+  a net value of 0 or less, or whose chain kills an own or allied unit, is
+  never a candidate. Priorities: clearing a center 1350, pushing a defender
+  off a center next to a capturer 1345, a kill of a unit threatening an own
+  city 1280, another kill 1180, a hit on such a unit 1240, a hit that breaks
+  Field Defense 910, another hit 905 (above chip attacks, so the unanswered
+  hit goes first).
+- **Lanes.** A Triceratops with a candidate Stampede does not move. One that
+  has not moved or acted takes a Move (priority 860, above routine Moves)
+  onto a tile from which a lane to a visible hostile unit or Egg is open,
+  valued by the projected hit from there (a quarter, at most 24), when the
+  tile is outside visible lethal reach; such a tile needs no screen (the
+  siege-role screen rule is waived for it).
+- War Drums, Tend Wounded, Rampage, and Pounce use the Rally, Tend, Overrun,
+  and Charge rules unchanged.
+
+Against Dinosaurs (every seat in such a match):
+
+- **Eggs.** An attack that destroys a visible hostile Egg is an ordinary kill
+  (1180) valued at the Egg, so long-hatch Eggs rank first. A hit that does
+  not destroy it is a candidate only when the Egg needs two or more turns
+  (Eggs never heal; a chip at 900) or this turn's offered attacks destroy it
+  together (each unit's best hit, summed). A melee kill is not taken when
+  the Egg is worth less than the attacker, the advance onto its tile is
+  inside visible lethal reach, and the attacker is not already that exposed.
+  A unit that can attack after moving steps where its projected hit destroys
+  an Egg it cannot reach now (1179, half the Egg's value), outside visible
+  lethal reach. City defence and capture keep their priorities.
+- **Lane blocking.** An own unit worth no more than the defender of an own
+  city center steps onto a tile of the open lane between a visible hostile
+  Triceratops and that center (priority 1245, value 10, +4 next to the
+  Triceratops, which then has no run at all), when it would survive there.
+- **Growth.** An attack whose retaliation kills the attacker, against a unit
+  one kill from Big or Alpha, is not a candidate (only a city save, a lethal
+  follow-up, or the endgame combined kill excuses it), and it and a
+  non-lethal melee hit that leaves the attacker where the wounded target
+  kills it next turn cost that growth (10 or 16). A Move into the visible
+  lethal reach of such a unit costs the same. Grown units are worth more as
+  targets, so kills on them go first.
+- **Armoured.** A hit of at most 1 damage on an Armoured unit that survives
+  is not a candidate (same excuses).
+- **Goblin blasts.** Kaboom, bomb splash, and death-blast chains value an Egg
+  like any hostile unit, at the Egg's target value above.
+
+Opening research and research valuation are unchanged. In a 140-match sanity
+sample (10 seeds x sizes 11 and 14 x `DH`, `HD`, `DU`, `UD`, `DG`, `GD`,
+`DD`) no match had a policy error, a stall, or a turn at the 128-command cap
+(the longest turn used 49 commands). Tuning the numbers above against the
+balance acceptance is `pulp_wars-c87.8`.
 
 ## Revision-8 merged industry and processor adjacency
 

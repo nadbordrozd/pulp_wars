@@ -1,13 +1,17 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
   EGG_DEFENSE2_V7,
+  EGG_HP_V7,
   EMBARKED_LANDING_MAX_SPENT_V7,
   EMBARKED_MOVE_V7,
+  GROWTH_HP_V7,
+  armouredDamageV7,
   effectiveRoleRuleV7,
   cityUnitCapacityForV7,
   factionTreeV7,
   isRallyTargetV7,
   technologyCapabilitiesV7,
+  unitAlphaAttack2V7,
   unitCapacitySlotsV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
@@ -24,6 +28,7 @@ import {
   previewEconomicV7,
   previewKaboomV7,
   previewMonumentV7,
+  previewStampedeV7,
   queryAiReadyCommandsV7,
   queryCombatPreviewV7,
   queryPublicEconomicPotentialsV7,
@@ -89,10 +94,39 @@ import {
   type ExplosionChainValueV7,
 } from "./v7-goblin";
 import {
+  ACID_TARGET_VALUE_V7,
+  EGG_GUARD_PRIORITY_V7,
+  EGG_SMASH_SETUP_PRIORITY_V7,
+  GROWN_RETREAT_PRIORITY_V7,
+  HATCH_APPROACH_PRIORITY_V7,
+  LANE_BLOCK_PRIORITY_V7,
+  STAMPEDE_BREAKER_PRIORITY_V7,
+  STAMPEDE_CAPTURER_NEAR_VALUE_V7,
+  STAMPEDE_CHIP_PRIORITY_V7,
+  STAMPEDE_CITY_SAVE_PRIORITY_V7,
+  STAMPEDE_CLEAR_CENTER_PRIORITY_V7,
+  STAMPEDE_FIELD_DEFENSE_VALUE_V7,
+  STAMPEDE_KILL_PRIORITY_V7,
+  STAMPEDE_LANE_MOVE_PRIORITY_V7,
+  STAMPEDE_PUSH_CENTER_PRIORITY_V7,
+  STAMPEDE_PUSH_CENTER_VALUE_V7,
+  armouredForPolicyV7,
   chosenLayEggCommandsV7,
-  dinosaurActionScoreV7,
+  dinosaurMatchForPolicyV7,
+  dinosaurProductionAdjustmentV7,
+  eggProtectionValueV7,
+  eggStatusV7,
+  eggTargetBonusV7,
+  eggUnitValueV7,
+  growthKillValueV7,
+  growthStageForPolicyV7,
+  grownUnitPremiumV7,
+  hatchScoreV7,
   layEggAdjustmentV7,
-  stampedeHoldUnitIdsV7,
+  stampedeLaneBetweenV7,
+  stampedeLaneRunV7,
+  stampedeLaneTilesV7,
+  stampederV7,
 } from "./v7-dinosaur";
 import {
   normalOpeningResearchPendingV7,
@@ -222,6 +256,13 @@ interface PolicyContextV7 {
   /** Goblin matches: per-decision caches of public attack and danger facts. */
   readonly goblinAttackFacts: Map<string, GoblinAttackFactsV7>;
   readonly goblinDoomed: Map<UnitId, boolean>;
+  /**
+   * Revision 19 (`pulp_wars-c87.5`): a seat is Dinosaur; all Dinosaur
+   * heuristics are gated on it.
+   */
+  readonly dinosaur: boolean;
+  /** Dinosaur matches: per-decision public Egg and Stampede facts. */
+  dinosaurFacts: DinosaurFactsV7 | null;
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
   readonly commands: readonly CommandV7[];
@@ -1118,6 +1159,8 @@ function bareContext(
     goblin: goblinMatchForPolicyV7(view),
     goblinAttackFacts: new Map(),
     goblinDoomed: new Map(),
+    dinosaur: dinosaurMatchForPolicyV7(view),
+    dinosaurFacts: null,
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
     commands,
     openingGrowthHarvest: commands.some((command) =>
@@ -2335,6 +2378,11 @@ function* publicThreatenedTilesWorkV7(
       }
     yield;
   }
+  // Revision 19 (`pulp_wars-c87.5`): a Triceratops also threatens every land
+  // tile at distance 2 or 3 along an open lane from where it stands (open as
+  // far as the viewer can see). Only a Dinosaur unit has Stampede.
+  if (unit.form === "LAND" && rule.abilities.includes("STAMPEDE"))
+    direct.push(...stampedeLaneTilesV7(view, unit));
   return [...new Map(direct.map((at) => [coordKey(at), at])).values()];
 }
 
@@ -2423,12 +2471,13 @@ function isPolicyCandidate(
       corridor !== null && corridor.missingRoadKeys[0] === coordKey(command.at)
     );
   }
-  // Revision 19 (`pulp_wars-c87.3`): a Triceratops with a worthwhile
-  // Stampede on offer does not move first (it cannot Stampede after moving).
+  // Revision 19: a Triceratops with a worthwhile Stampede on offer does not
+  // move first (it cannot Stampede after moving).
   if (
     command.kind === "MOVE" &&
+    context.dinosaur &&
     context.view.viewer.faction === "DINOSAUR" &&
-    stampedeHoldUnitIdsV7(context.view, context.commands).has(command.unitId)
+    stampedeHoldUnitIdsV7(context).has(command.unitId)
   )
     return false;
   if (
@@ -2449,7 +2498,9 @@ function isPolicyCandidate(
       distance(to, objective) >= 2 &&
       distance(to, objective) <= 3 &&
       !hasReachableScreenAtV7(context, actor, to) &&
-      !endgameSiegeTileV7(context, actor, to)
+      !endgameSiegeTileV7(context, actor, to) &&
+      // Revision 19: a Triceratops takes a safe lane tile without a screen.
+      !(context.dinosaur && stampedeLaneMoveValueV7(context, actor, to) > 0)
     )
       return false;
   }
@@ -2502,8 +2553,7 @@ function isPolicyCandidate(
     command.kind === "LAY_EGG"
   )
     return preferredSharedCityActionV7(context, command.cityId) === command;
-  // Revision 19 (`pulp_wars-c87.3`): Hatch and Stampede are scored by their
-  // public previews; the full Dinosaur policy is `pulp_wars-c87.5`.
+  // Revision 19: Hatch and Stampede are scored by their public previews.
   if (command.kind === "HATCH" || command.kind === "STAMPEDE") return true;
   if (command.kind === "CHOOSE_CITY_REWARD")
     return preferredReward(context, command) === command.reward;
@@ -2527,8 +2577,13 @@ function isPolicyCandidate(
       })
     );
   }
-  if (command.kind === "DISBAND")
+  if (command.kind === "DISBAND") {
+    // Revision 19: an Egg is abandoned only to free capacity in an emergency.
+    const disbanded = context.lookup.unitsById.get(command.unitId);
+    if (disbanded?.form === "EGG")
+      return eggAbandonEmergencyV7(context, disbanded);
     return usefulDisband(context, command as DisbandCommandV7);
+  }
   const economic = previewEconomicV7(context.view, command);
   if (
     context.naval.active &&
@@ -2596,6 +2651,11 @@ function isLowValueAttackV7(
   )
     return true;
   if (context.goblin && goblinFriendlyFireRejectedV7(context, command, preview))
+    return true;
+  if (
+    context.dinosaur &&
+    dinosaurAttackRejectedV7(context, command, actor, preview)
+  )
     return true;
   const immediate =
     combatImmediateValue(preview, context.view) +
@@ -2950,10 +3010,12 @@ function* sharedCityContextWorkV7(
     CityId,
     Extract<CommandV7, { kind: "TRAIN_NAVAL" }>[]
   >();
-  // Revision 19: one `LAY_EGG` per city and role, on the nest tile farthest
-  // from the visible hostile units (matches without a Dinosaur seat offer
-  // none, so they are unchanged).
-  const chosenEggs = chosenLayEggCommandsV7(view, context.commands);
+  // Revision 19: one `LAY_EGG` per city and role, on the nest tile with the
+  // least visible hostile reach (matches without a Dinosaur seat offer none,
+  // so they are unchanged).
+  const chosenEggs = chosenLayEggCommandsV7(view, context.commands, (at) =>
+    nestDangerV7(context, at),
+  );
   for (const command of context.commands) {
     if (command.kind === "LAY_EGG" && !chosenEggs.has(command)) {
       yield;
@@ -3177,7 +3239,32 @@ function* sharedCityContextWorkV7(
           : 0)
       );
     };
+    const capacity =
+      city === undefined
+        ? 0
+        : cityUnitCapacityForV7(
+            city.level,
+            view.viewer.researchedTechs,
+            view.viewer.faction,
+          );
+    const free =
+      city === undefined ? 0 : capacity - (assignedByCity.get(cityId) ?? 0);
+    const productionCity = { freeSlots: free, capacity, threatened };
+    const needsCenterDefender =
+      city !== undefined && threatened && !ownedAt.has(coordKey(city.at));
+    // Revision 19 (Dinosaur seat only): an Egg is not laid where visible
+    // enemies destroy it before it hatches, nor in a threatened city whose
+    // empty center a trained unit could defend at once.
+    const offersTrain = shared.some((command) => command.kind === "TRAIN");
+    const eggBlocked = (command: SharedCityCommandV7): boolean =>
+      command.kind === "LAY_EGG" &&
+      ((needsCenterDefender && offersTrain) ||
+        nestDangerV7(context, command.at) >= laidEggHpForPolicyV7(view));
     for (const command of landByCity.get(cityId) ?? []) {
+      if (eggBlocked(command)) {
+        yield;
+        continue;
+      }
       const count = ownedRoleCounts.get(command.role) ?? 0;
       const value =
         effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp +
@@ -3189,7 +3276,8 @@ function* sharedCityContextWorkV7(
         trainingAdjustment(command.role) +
         hordeAdjustment(command.role, count) +
         cityAdjustment(command.role) +
-        layEggAdjustmentV7(view, command, threatened);
+        layEggAdjustmentV7(view, command, threatened) +
+        dinosaurProductionAdjustmentV7(view, command, productionCity);
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
         preferredLand === null ||
@@ -3223,16 +3311,6 @@ function* sharedCityContextWorkV7(
             ? "PATROL_BOAT"
             : null;
     const centerGuard = centerGuardByCity.get(cityId);
-    const free =
-      city === undefined
-        ? 0
-        : cityUnitCapacityForV7(
-            city.level,
-            view.viewer.researchedTechs,
-            view.viewer.faction,
-          ) - (assignedByCity.get(cityId) ?? 0);
-    const needsCenterDefender =
-      city !== undefined && threatened && !ownedAt.has(coordKey(city.at));
     let best: SharedCityCommandV7 | null = null;
     let bestUtility = Number.NEGATIVE_INFINITY;
     let bestTie: readonly number[] = [];
@@ -3265,7 +3343,8 @@ function* sharedCityContextWorkV7(
               hasLandCaptureUnit
             ) &&
             (!spendsReserve || threatened) &&
-            !worsens
+            !worsens &&
+            !eggBlocked(command)
           : (!spendsReserve ||
               (context.naval.visibleNavalDanger &&
                 command.role === "PATROL_BOAT")) &&
@@ -3288,7 +3367,12 @@ function* sharedCityContextWorkV7(
                   Number(command.role === "CATAPULT" && durableScreen) * 12 +
                   trainingAdjustment(command.role) +
                   cityAdjustment(command.role) +
-                  layEggAdjustmentV7(view, command, threatened)) *
+                  layEggAdjustmentV7(view, command, threatened) +
+                  dinosaurProductionAdjustmentV7(
+                    view,
+                    command,
+                    productionCity,
+                  )) *
                   3 -
                 cost * 4 +
                 Number(preferredLand?.role === command.role) * 18
@@ -3737,8 +3821,15 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "STAMPEDE" || command.kind === "HATCH") {
-    // Revision 19 (`pulp_wars-c87.3`): previewed value only.
-    const dinosaur = dinosaurActionScoreV7(view, command);
+    // Revision 19: previewed value (`pulp_wars-c87.5`).
+    const dinosaur =
+      command.kind === "STAMPEDE"
+        ? stampedeScoreV7(context, command)
+        : hatchScoreV7(
+            view,
+            command,
+            ownEggDangerV7(context, command.eggUnitId) > 0,
+          );
     priority = dinosaur.priority;
     strategicValue = dinosaur.strategic;
     immediateValue = dinosaur.immediate;
@@ -3909,6 +4000,14 @@ function scoreCommandWithContext(
         )
           priority -= FRIENDLY_SPLASH_PRIORITY_DEMOTION_V7;
       }
+      // Revision 19: Grow, kill feeding, Acid, and Egg defence.
+      if (context.dinosaur && actor !== undefined)
+        strategicValue += dinosaurAttackValueV7(
+          context,
+          command,
+          actor,
+          preview,
+        );
     }
   }
 
@@ -4021,6 +4120,14 @@ function scoreCommandWithContext(
       actor.hp * 4 >= actor.maxHp
     )
       priority = 300;
+    // Revision 19: a grown unit heals earlier (below two thirds of its HP).
+    if (
+      actor !== undefined &&
+      context.dinosaur &&
+      growthStageForPolicyV7(view, actor) > 0 &&
+      actor.hp * 3 < actor.maxHp * 2
+    )
+      priority = 930;
   }
 
   if (command.kind === "PROMOTE") {
@@ -4195,6 +4302,12 @@ function scoreCommandWithContext(
       priority = goblin.priority;
       strategicValue += goblin.strategic;
     }
+    if (context.dinosaur && resultAt !== null) {
+      // Revision 19: lanes, Eggs, growth (`pulp_wars-c87.5`).
+      const dinosaur = dinosaurMoveValueV7(context, actor, resultAt, priority);
+      priority = dinosaur.priority;
+      strategicValue += dinosaur.strategic;
+    }
   }
 
   if (command.kind === "PILLAGE" && actor !== undefined) {
@@ -4211,7 +4324,8 @@ function scoreCommandWithContext(
   if (command.kind === "DISBAND" && actor !== undefined) {
     immediateValue = Math.floor((unitRoleRuleV7(view, actor).cost ?? 0) / 2);
     strategicValue = freeCapacity(view, actor.homeCityId) <= 0 ? 6 : 0;
-    priority = 1090;
+    // Revision 19: an abandoned Egg frees the slot a defender needs now.
+    priority = actor.form === "EGG" ? EGG_ABANDON_PRIORITY_V7 : 1090;
   }
 
   if (command.kind === "KABOOM" && actor !== undefined && context.goblin) {
@@ -6156,6 +6270,872 @@ function plunderResearchValueV7(
   return { priority: 1070, strategic: 4 * Math.min(6, contact) };
 }
 
+/**
+ * Revision 19 Dinosaur play (`pulp_wars-c87.5`). Every helper below runs only
+ * in a match with a Dinosaur seat (`context.dinosaur`); each is a bounded
+ * scan of the public view and public previews inside an existing scoring
+ * step, with no PRNG use, elapsed-time input, or work units.
+ */
+interface OwnEggFactsV7 {
+  readonly unit: PublicUnitV7;
+  readonly turnsRemaining: number;
+  readonly laidThisTurn: boolean;
+  /** The unit inside, scaled by how soon it hatches. */
+  readonly value: number;
+  /** Projected damage of the visible enemies' next turn. */
+  readonly danger: number;
+  /** Visible hostile units whose reach includes the Egg's tile. */
+  readonly threatIds: ReadonlySet<UnitId>;
+  /**
+   * A visible enemy can reach the Egg before it hatches (within its
+   * remaining turns, looking at most two turns ahead).
+   */
+  readonly pending: boolean;
+  /** The visible hostile attacker nearest to the Egg, if any. */
+  readonly nearestThreatAt: CoordV7 | null;
+}
+
+interface DinosaurScoreV7 {
+  readonly priority: number;
+  readonly strategic: number;
+  readonly immediate: number;
+}
+
+interface DinosaurFactsV7 {
+  readonly ownEggs: readonly OwnEggFactsV7[];
+  readonly nestDanger: Map<string, number>;
+  readonly stampedeScores: Map<string, DinosaurScoreV7>;
+  stampedeHolds: ReadonlySet<UnitId> | null;
+}
+
+const NO_DINOSAUR_SCORE_V7: DinosaurScoreV7 = Object.freeze({
+  priority: -1,
+  strategic: 0,
+  immediate: 0,
+});
+/** Abandoning an Egg so a defender can be trained (threatened train: 1260). */
+const EGG_ABANDON_PRIORITY_V7 = 1261;
+/** A wounded grown unit steps out of visible reach (Recover: 930). */
+const GROWN_WOUNDED_RETREAT_PRIORITY_V7 = 935;
+/** An Egg is guarded against enemies that reach it within this many turns. */
+const EGG_GUARD_HORIZON_TURNS_V7 = 2;
+/** Moves below this priority are routine (as for the Goblin spacing rules). */
+const DINOSAUR_ROUTINE_MOVE_PRIORITY_V7 = 1100;
+
+function dinosaurFactsV7(context: PolicyContextV7): DinosaurFactsV7 {
+  if (context.dinosaurFacts !== null) return context.dinosaurFacts;
+  const view = context.view;
+  const ownEggs: OwnEggFactsV7[] = [];
+  for (const unit of view.units) {
+    if (unit.form !== "EGG" || unit.ownerId !== view.viewer.id) continue;
+    const status = eggStatusV7(view, unit);
+    if (status === undefined) continue;
+    const threatIds = new Set<UnitId>();
+    let pending = false;
+    let nearest: PublicUnitV7 | null = null;
+    for (const hostile of context.lookup.visibleHostiles) {
+      const facts = publicCombatFacts(view, hostile, context.lookup);
+      if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) continue;
+      const gap = distance(hostile.at, unit.at);
+      if (context.threatenedTiles.get(hostile.id)?.has(coordKey(unit.at)))
+        threatIds.add(hostile.id);
+      if (
+        gap <=
+        facts.move *
+          Math.min(EGG_GUARD_HORIZON_TURNS_V7, status.turnsRemaining) +
+          facts.maximumRange
+      )
+        pending = true;
+      if (nearest === null || gap < distance(nearest.at, unit.at))
+        nearest = hostile;
+    }
+    ownEggs.push({
+      unit,
+      turnsRemaining: status.turnsRemaining,
+      laidThisTurn: status.laidThisTurn,
+      value: eggProtectionValueV7(view, unit),
+      danger: visibleImmediateDamage(view, unit, unit.at, context),
+      threatIds,
+      pending: pending || threatIds.size > 0,
+      nearestThreatAt: nearest?.at ?? null,
+    });
+  }
+  const facts: DinosaurFactsV7 = {
+    ownEggs,
+    nestDanger: new Map(),
+    stampedeScores: new Map(),
+    stampedeHolds: null,
+  };
+  context.dinosaurFacts = facts;
+  return facts;
+}
+
+/** The HP of an Egg the viewer lays now (6, or 10 with Nesting). */
+function laidEggHpForPolicyV7(view: PlayerViewV7): number {
+  return (
+    EGG_HP_V7 +
+    technologyCapabilitiesV7(view.viewer.researchedTechs, view.viewer.faction)
+      .eggHpBonus
+  );
+}
+
+/**
+ * The visible enemies' projected damage next turn to an Egg laid on `at`
+ * (their reach now, Stampede lanes included).
+ */
+function nestDangerV7(context: PolicyContextV7, at: CoordV7): number {
+  const facts = dinosaurFactsV7(context);
+  const key = coordKey(at);
+  const cached = facts.nestDanger.get(key);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  const hp = laidEggHpForPolicyV7(view);
+  let role: UnitRoleIdV7 = "RAIDER";
+  for (const command of context.commands)
+    if (command.kind === "LAY_EGG") {
+      role = command.role;
+      break;
+    }
+  const egg: PublicUnitV7 = {
+    id: -1 as UnitId,
+    ownerId: view.viewer.id,
+    homeCityId: null,
+    role,
+    form: "EGG",
+    at,
+    hp,
+    maxHp: hp,
+    kills: 0,
+    veteran: false,
+    captureEligible: false,
+    activation: {
+      moved: false,
+      movedPathLength: 0,
+      attacked: false,
+      attacksUsed: 0,
+      tendedThisTurn: false,
+      inspired: false,
+      overrunActive: false,
+      escapeAvailable: false,
+      recovered: false,
+      captured: false,
+      handled: true,
+      specialActed: false,
+    },
+  };
+  const danger = visibleImmediateDamage(view, egg, at, context);
+  facts.nestDanger.set(key, danger);
+  return danger;
+}
+
+/** The projected visible damage to the own Egg `eggUnitId` (0 if unknown). */
+function ownEggDangerV7(context: PolicyContextV7, eggUnitId: UnitId): number {
+  return (
+    dinosaurFactsV7(context).ownEggs.find((egg) => egg.unit.id === eggUnitId)
+      ?.danger ?? 0
+  );
+}
+
+/** The most valuable own Egg within the visible reach of `hostileId`. */
+function threatenedEggValueV7(
+  context: PolicyContextV7,
+  hostileId: UnitId,
+): number {
+  if (context.view.viewer.faction !== "DINOSAUR") return 0;
+  let value = 0;
+  for (const egg of dinosaurFactsV7(context).ownEggs)
+    if (egg.threatIds.has(hostileId)) value = Math.max(value, egg.value);
+  return value;
+}
+
+/**
+ * An own Egg is abandoned only in a real emergency: its threatened home city
+ * has an empty center, no slot left for a defender, the Coins and the city
+ * action to train one, and the Egg does not hatch at the next Start Turn.
+ */
+function eggAbandonEmergencyV7(
+  context: PolicyContextV7,
+  egg: PublicUnitV7,
+): boolean {
+  const view = context.view;
+  const city =
+    egg.homeCityId === null
+      ? undefined
+      : context.lookup.citiesById.get(egg.homeCityId);
+  const status = eggStatusV7(view, egg);
+  if (
+    city === undefined ||
+    status === undefined ||
+    status.turnsRemaining < 2 ||
+    city.ownerId !== view.viewer.id ||
+    city.cityActionAvailable !== true ||
+    !threatenedCity(context, city.id)
+  )
+    return false;
+  if (
+    (context.threatLookup.occupantsByKey.get(coordKey(city.at)) ?? []).some(
+      (unit) => unit.hp > 0 && same(unit.at, city.at),
+    )
+  )
+    return false;
+  const free = freeCapacity(view, city.id);
+  const defenderCost =
+    effectiveRoleRuleV7("FIGHTER", view.viewer.faction).cost ?? 0;
+  return (
+    free <= 0 &&
+    free + unitCapacitySlotsV7(view, egg) >= 1 &&
+    view.viewer.coins + Math.floor((unitRoleRuleV7(view, egg).cost ?? 0) / 2) >=
+      defenderCost
+  );
+}
+
+/** Whether the target's cover or fortification is what Acid ignores. */
+function acidIgnoresDefenseV7(
+  view: PlayerViewV7,
+  target: PublicUnitV7,
+): boolean {
+  if (isAfloatV7(target) || target.form === "EGG") return false;
+  const tile = findPublicTileV7(view, target.at);
+  if (tile?.explored !== true) return false;
+  return (
+    tile.terrain === "FOREST" ||
+    tile.terrain === "MOUNTAIN" ||
+    (tile.territoryOwnerId === target.ownerId &&
+      (tile.fortificationLevel ?? 0) > 0)
+  );
+}
+
+/**
+ * A non-lethal melee exchange that leaves the attacker where the wounded
+ * target kills it on its own turn (the target's kill, and its growth).
+ */
+function targetKillsAttackerNextV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+): boolean {
+  if (preview.defenderDies || preview.attackerDies) return false;
+  const facts = publicCombatFacts(context.view, target, context.lookup);
+  const gap = distance(actor.at, target.at);
+  if (
+    !facts.abilities.includes("ATTACK") ||
+    gap < facts.minimumRange ||
+    gap > facts.maximumRange
+  )
+    return false;
+  const wounded = {
+    ...actor,
+    hp: Math.min(
+      actor.maxHp,
+      actor.hp - preview.damageToAttacker + preview.attackerHeal,
+    ),
+  };
+  return (
+    publicProjectedDamageWithLookupV7(
+      context.view,
+      { ...target, hp: target.hp - preview.damageToDefender },
+      wounded,
+      actor.at,
+      {},
+      context.lookup,
+    ) >= wounded.hp
+  );
+}
+
+/** The growth a kill would give a hostile land unit (0 for an Egg). */
+function hostileGrowthFeedV7(view: PlayerViewV7, unit: PublicUnitV7): number {
+  return isAfloatV7(unit) || unit.form === "EGG"
+    ? 0
+    : growthKillValueV7(view, unit);
+}
+
+/**
+ * Dinosaur-match attack value: the growth a kill gives an own unit that is
+ * one kill from Big or Alpha, the growth an exchange hands a hostile one, an
+ * Acid attack on a target whose cover or fortification it ignores, and the
+ * own Egg a target could reach.
+ */
+function dinosaurAttackValueV7(
+  context: PolicyContextV7,
+  command: AttackCommandV7,
+  actor: PublicUnitV7,
+  preview: CombatPreviewV7,
+): number {
+  const view = context.view;
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (target === undefined) return 0;
+  let value = 0;
+  if (preview.defenderDies && !preview.attackerDies)
+    value += growthKillValueV7(view, actor);
+  const feed = hostileGrowthFeedV7(view, target);
+  if (
+    feed > 0 &&
+    !preview.defenderDies &&
+    (preview.attackerDies ||
+      targetKillsAttackerNextV7(context, actor, target, preview))
+  )
+    value -= feed;
+  if (preview.acid && acidIgnoresDefenseV7(view, target))
+    value += ACID_TARGET_VALUE_V7;
+  const egg = threatenedEggValueV7(context, target.id);
+  if (egg > 0)
+    value += preview.defenderDies
+      ? egg
+      : Math.floor(
+          (egg * Math.min(target.hp, preview.damageToDefender)) / target.hp,
+        );
+  return value;
+}
+
+/** This turn's offered attacks destroy the Egg (each unit's hit, summed). */
+function eggDestructionCompletedV7(
+  context: PolicyContextV7,
+  egg: PublicUnitV7,
+): boolean {
+  const best = new Map<UnitId, number>();
+  for (const command of context.commands) {
+    if (command.kind !== "ATTACK" || command.targetUnitId !== egg.id) continue;
+    const preview = queryCombatPreviewV7(
+      context.view,
+      command.unitId,
+      command.targetUnitId,
+    );
+    if (preview === null) continue;
+    best.set(
+      command.unitId,
+      Math.max(best.get(command.unitId) ?? 0, preview.damageToDefender),
+    );
+  }
+  return sum([...best.values()]) >= egg.hp;
+}
+
+/**
+ * Dinosaur-match attack rejections (a proven city save, a lethal follow-up
+ * this turn, or the endgame combined kill excuses the last three):
+ *
+ * - a hit on an Egg that hatches next turn and is not destroyed this turn
+ *   (an Egg hatches at full HP), and a melee kill of an Egg worth less than
+ *   the attacker when the advance onto its tile is lethal;
+ * - a hit of at most 1 damage on an Armoured unit that survives;
+ * - an attack whose retaliation kills the attacker and so hands a kill to a
+ *   hostile unit that is one kill from Big or Alpha;
+ * - an own grown unit's non-lethal attack that leaves it where the visible
+ *   enemies kill it, when it is not already that exposed.
+ */
+function dinosaurAttackRejectedV7(
+  context: PolicyContextV7,
+  command: AttackCommandV7,
+  actor: PublicUnitV7,
+  preview: CombatPreviewV7,
+): boolean {
+  const view = context.view;
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (target === undefined) return false;
+  const excused = (): boolean => {
+    const facts = attackPurposeFactsV7(context, command, preview);
+    return (
+      facts.savesCity ||
+      facts.opensLethalFollowUp ||
+      endgameCombinedKillV7(context, command, preview)
+    );
+  };
+  if (target.form === "EGG") {
+    if (!preview.defenderDies)
+      return (
+        (eggStatusV7(view, target)?.turnsRemaining ?? 1) < 2 &&
+        !eggDestructionCompletedV7(context, target)
+      );
+    if (!preview.advances) return false;
+    return (
+      targetStrategicValue(view, target.id, context.lookup) <
+        retainedUnitValue(view, actor) &&
+      visibleImmediateDamage(view, actor, target.at, context) >= actor.hp &&
+      visibleImmediateDamage(view, actor, actor.at, context) < actor.hp
+    );
+  }
+  if (
+    !preview.defenderDies &&
+    preview.damageToDefender <= 1 &&
+    armouredForPolicyV7(view, target)
+  )
+    return !excused();
+  if (
+    preview.attackerDies &&
+    !preview.defenderDies &&
+    hostileGrowthFeedV7(view, target) > 0
+  )
+    return !excused();
+  if (
+    actor.ownerId === view.viewer.id &&
+    growthStageForPolicyV7(view, actor) > 0 &&
+    !preview.defenderDies &&
+    !preview.attackerDies &&
+    visibleImmediateDamage(view, actor, actor.at, context) < actor.hp &&
+    !vampireAttackAcceptableV7(context, view, command)
+  )
+    return !excused();
+  return false;
+}
+
+/**
+ * The visible enemies' projected damage next turn to a Triceratops after the
+ * previewed Stampede: on its final tile, with a killed target gone and a
+ * surviving one wounded where the Push leaves it.
+ */
+function stampedeExposureV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: NonNullable<ReturnType<typeof previewStampedeV7>>,
+  hp: number,
+): number {
+  const view = context.view;
+  const after = projectPublicUnits(
+    view,
+    view.units.flatMap((unit) =>
+      unit.id === actor.id
+        ? [{ ...unit, at: preview.endsAt, hp }]
+        : unit.id !== target.id
+          ? [unit]
+          : preview.combat.defenderDies
+            ? []
+            : [
+                {
+                  ...unit,
+                  at: preview.pushTo ?? unit.at,
+                  hp: unit.hp - preview.combat.damageToDefender,
+                },
+              ],
+    ),
+    [actor.id, target.id],
+  );
+  const moved = after.units.find((unit) => unit.id === actor.id);
+  return moved === undefined
+    ? 0
+    : visibleImmediateDamage(after, moved, moved.at, context);
+}
+
+/**
+ * An offered Stampede by its public preview: the target's loss, the growth
+ * of a kill, the death-blast chain, Field Defense destroyed, a defender
+ * killed on or pushed off a hostile city center (more with an own capturer
+ * within two tiles), and the own Egg the target could reach; minus the
+ * Triceratops's exposure on its final tile (all of its value when the
+ * visible enemies kill it there, a third when it is doomed where it stands
+ * anyway). A Stampede whose blast chain kills an own or allied unit, or
+ * whose net value is not positive, is declined.
+ */
+function stampedeScoreV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "STAMPEDE" }>,
+): DinosaurScoreV7 {
+  const facts = dinosaurFactsV7(context);
+  const key = `${command.unitId}:${command.targetUnitId}`;
+  const cached = facts.stampedeScores.get(key);
+  if (cached !== undefined) return cached;
+  const score = stampedeScoreUncachedV7(context, command);
+  facts.stampedeScores.set(key, score);
+  return score;
+}
+
+function stampedeScoreUncachedV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "STAMPEDE" }>,
+): DinosaurScoreV7 {
+  const view = context.view;
+  const preview = previewStampedeV7(view, command.unitId, command.targetUnitId);
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (
+    preview === null ||
+    actor === undefined ||
+    target === undefined ||
+    preview.combat.damageToDefender <= 0 ||
+    preview.explosions.totals.friendlyKills > 0
+  )
+    return NO_DINOSAUR_SCORE_V7;
+  const dies = preview.combat.defenderDies;
+  const damage = preview.combat.damageToDefender;
+  let value = hostileLossValueV7(context, target, damage, dies);
+  const growth = dies ? growthKillValueV7(view, actor) : 0;
+  value += growth;
+  // The Triceratops's HP when the blasts and the enemies' replies arrive: a
+  // kill that makes it Big or Alpha heals it first (section 5.2).
+  const hp = actor.hp + (growth > 0 ? GROWTH_HP_V7 : 0);
+  const retained = retainedUnitValue(view, actor);
+  if (preview.explosions.explosions.length > 0) {
+    // The blast on the Triceratops itself is the price of its own attack
+    // (counted once, against its HP after growth); blasts on other own and
+    // allied units cost the friendly-fire trade factor.
+    let selfLoss = 0;
+    const chain = explosionChainValueV7(
+      view,
+      preview.explosions,
+      (owner) => isHostile(view, owner),
+      (unit, hit, killed) => hostileLossValueV7(context, unit, hit, killed),
+      (unit, hit, killed) => {
+        if (unit.id !== actor.id)
+          return friendlyLossValueV7(view, unit, hit, killed);
+        selfLoss += Math.floor((retained * Math.min(hit, hp)) / hp);
+        return 0;
+      },
+    );
+    value +=
+      chain.hostileValue -
+      FRIENDLY_FIRE_TRADE_FACTOR_V7 * chain.friendlyValue -
+      selfLoss;
+  }
+  value +=
+    STAMPEDE_FIELD_DEFENSE_VALUE_V7 * preview.fieldDefenseDestroyed.length;
+  const center = context.lookup.citiesByKey.get(coordKey(target.at));
+  const hostileCenter =
+    target.form !== "EGG" &&
+    center !== undefined &&
+    isHostile(view, center.ownerId);
+  const clearsCenter = hostileCenter && dies;
+  const pushesOffCenter = hostileCenter && !dies && preview.pushTo !== null;
+  const capturerNear =
+    pushesOffCenter &&
+    center !== undefined &&
+    view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.id !== actor.id &&
+        distance(unit.at, center.at) <= 2 &&
+        canCaptureV7(view, unit),
+    );
+  if (clearsCenter) value += 50;
+  if (pushesOffCenter)
+    value +=
+      STAMPEDE_PUSH_CENTER_VALUE_V7 +
+      (capturerNear ? STAMPEDE_CAPTURER_NEAR_VALUE_V7 : 0);
+  const egg = threatenedEggValueV7(context, target.id);
+  if (egg > 0)
+    value += dies
+      ? egg
+      : Math.floor((egg * Math.min(target.hp, damage)) / target.hp);
+  const exposure = stampedeExposureV7(context, actor, target, preview, hp);
+  if (exposure >= hp)
+    value -=
+      visibleImmediateDamage(view, actor, actor.at, context) >= actor.hp
+        ? Math.floor(retained / 3)
+        : retained;
+  else value -= Math.floor((retained * exposure) / (2 * hp));
+  if (value <= 0) return NO_DINOSAUR_SCORE_V7;
+  const threatening = context.threats.some(
+    (threat) => threat.unitId === target.id,
+  );
+  return {
+    priority: dies
+      ? clearsCenter
+        ? STAMPEDE_CLEAR_CENTER_PRIORITY_V7
+        : threatening
+          ? STAMPEDE_CITY_SAVE_PRIORITY_V7
+          : STAMPEDE_KILL_PRIORITY_V7
+      : capturerNear
+        ? STAMPEDE_PUSH_CENTER_PRIORITY_V7
+        : threatening
+          ? 1240
+          : preview.fieldDefenseDestroyed.length > 0
+            ? STAMPEDE_BREAKER_PRIORITY_V7
+            : STAMPEDE_CHIP_PRIORITY_V7,
+    strategic: value,
+    immediate: 10 * damage + 20 * Number(dies),
+  };
+}
+
+/**
+ * The own Triceratopses that hold their Move this turn because a worthwhile
+ * Stampede is offered for them (a Triceratops cannot Stampede after moving).
+ */
+function stampedeHoldUnitIdsV7(context: PolicyContextV7): ReadonlySet<UnitId> {
+  const facts = dinosaurFactsV7(context);
+  if (facts.stampedeHolds !== null) return facts.stampedeHolds;
+  const holds = new Set<UnitId>();
+  for (const command of context.commands)
+    if (
+      command.kind === "STAMPEDE" &&
+      !holds.has(command.unitId) &&
+      stampedeScoreV7(context, command).priority >= 0
+    )
+      holds.add(command.unitId);
+  facts.stampedeHolds = holds;
+  return holds;
+}
+
+/**
+ * The value of standing an unmoved own Triceratops on `to`: the best hit of
+ * a Stampede from there along an open lane on a visible hostile unit or Egg
+ * (0 when there is none, or when the visible enemies would kill it there).
+ */
+function stampedeLaneMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): number {
+  const view = context.view;
+  if (
+    actor.ownerId !== view.viewer.id ||
+    view.viewer.faction !== "DINOSAUR" ||
+    !stampederV7(view, actor) ||
+    actor.activation.moved ||
+    !primaryReadyForPolicyV7(actor)
+  )
+    return 0;
+  let best = 0;
+  for (const hostile of context.lookup.visibleHostiles) {
+    if (isAfloatV7(hostile) || hostile.hp <= 0) continue;
+    const run = stampedeLaneRunV7(
+      view,
+      actor.ownerId,
+      to,
+      hostile.at,
+      actor.id,
+    );
+    if (run === 0) continue;
+    const damage = publicProjectedDamageWithLookupV7(
+      view,
+      actor,
+      hostile,
+      hostile.at,
+      { bonusAttack2: 2 * run },
+      context.lookup,
+    );
+    best = Math.max(
+      best,
+      hostileLossValueV7(context, hostile, damage, damage >= hostile.hp),
+    );
+  }
+  if (best <= 0) return 0;
+  return visibleImmediateDamage(view, actor, to, context) < actor.hp ? best : 0;
+}
+
+/** Own land attackers next to `at`, other than `excludedId`. */
+function eggGuardsV7(
+  context: PolicyContextV7,
+  at: CoordV7,
+  excludedId: UnitId,
+): number {
+  const view = context.view;
+  let guards = 0;
+  for (const neighbor of neighbors8V7(view, at))
+    for (const unit of context.threatLookup.occupantsByKey.get(
+      coordKey(neighbor),
+    ) ?? [])
+      if (
+        unit.id !== excludedId &&
+        unit.hp > 0 &&
+        unit.ownerId === view.viewer.id &&
+        !isAfloatV7(unit) &&
+        unit.form !== "EGG" &&
+        same(unit.at, neighbor) &&
+        publicCombatFacts(view, unit, context.lookup).attack2 > 0
+      )
+        guards += 1;
+  return guards;
+}
+
+/**
+ * Dinosaur-match Move adjustments.
+ *
+ * As Dinosaurs: an unmoved Triceratops takes a safe tile with an open lane
+ * to a target; a Shaman with its action steps next to an Egg it can hatch,
+ * and stays by a long Egg; a unit guards an own Egg that visible enemies can
+ * reach before it hatches, and its sole guard stays until it hatches; a
+ * grown unit never makes a routine Move into visible lethal reach, leaves
+ * it, and when wounded steps out of reach to heal.
+ *
+ * Every seat: a unit that can attack after moving steps where it destroys a
+ * visible hostile Egg; a cheap unit blocks the open lane of a hostile
+ * Triceratops to a defended own center; a Move into the lethal reach of a
+ * hostile unit one kill from Big or Alpha costs that growth.
+ */
+function dinosaurMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  if (
+    isAfloatV7(actor) ||
+    actor.ownerId !== view.viewer.id ||
+    same(actor.at, to)
+  )
+    return { priority, strategic: 0 };
+  const destination = findPublicTileV7(view, to);
+  if (destination?.explored === true && destination.biome === null)
+    return { priority, strategic: 0 };
+  const routine = priority < DINOSAUR_ROUTINE_MOVE_PRIORITY_V7;
+  let raised = priority;
+  let strategic = 0;
+  let dangerThereValue: number | null = null;
+  let dangerHereValue: number | null = null;
+  const dangerThere = (): number =>
+    (dangerThereValue ??= visibleImmediateDamage(view, actor, to, context));
+  const dangerHere = (): number =>
+    (dangerHereValue ??= visibleImmediateDamage(
+      view,
+      actor,
+      actor.at,
+      context,
+    ));
+  const facts = publicCombatFacts(view, actor, context.lookup);
+  const rule = unitRoleRuleV7(view, actor);
+  const attacker = facts.abilities.includes("ATTACK") && facts.attack2 > 0;
+
+  if (view.viewer.faction === "DINOSAUR") {
+    const dinosaur = dinosaurFactsV7(context);
+    const lane = stampedeLaneMoveValueV7(context, actor, to);
+    if (lane > 0) {
+      raised = Math.max(raised, STAMPEDE_LANE_MOVE_PRIORITY_V7);
+      strategic += Math.min(24, Math.ceil(lane / 4));
+    }
+    if (rule.abilities.includes("HATCH")) {
+      // An Egg laid this turn cannot be hatched until the next one.
+      const long = dinosaur.ownEggs.filter(
+        (egg) => egg.turnsRemaining >= 2 || egg.danger > 0,
+      );
+      const beside = (at: CoordV7, hatchable: boolean) =>
+        long.filter(
+          (egg) =>
+            distance(egg.unit.at, at) === 1 &&
+            (!hatchable || !egg.laidThisTurn),
+        );
+      const hatchThere = primaryReadyForPolicyV7(actor) ? beside(to, true) : [];
+      if (
+        hatchThere.length > 0 &&
+        beside(actor.at, true).length === 0 &&
+        dangerThere() < actor.hp
+      ) {
+        raised = Math.max(raised, HATCH_APPROACH_PRIORITY_V7);
+        strategic += Math.floor(
+          Math.max(...hatchThere.map((egg) => eggUnitValueV7(view, egg.unit))) /
+            4,
+        );
+      } else if (beside(actor.at, false).length > 0) {
+        if (routine && beside(to, false).length === 0)
+          return { priority: -1, strategic };
+      } else if (beside(to, false).length > 0 && dangerThere() < actor.hp) {
+        raised = Math.max(raised, EGG_GUARD_PRIORITY_V7);
+        strategic += 4;
+      }
+    }
+    if (attacker && rule.tacticalRole !== "SUPPORT") {
+      for (const egg of dinosaur.ownEggs) {
+        if (!egg.pending) continue;
+        const here = distance(actor.at, egg.unit.at) === 1;
+        const there = distance(to, egg.unit.at) === 1;
+        if (here === there || eggGuardsV7(context, egg.unit.at, actor.id) > 0)
+          continue;
+        if (here) {
+          // The sole guard of such an Egg stays beside it until it hatches.
+          if (routine) return { priority: -1, strategic };
+        } else if (dangerThere() < actor.hp) {
+          raised = Math.max(raised, EGG_GUARD_PRIORITY_V7);
+          strategic +=
+            Math.floor(egg.value / 4) +
+            (egg.nearestThreatAt !== null &&
+            distance(to, egg.nearestThreatAt) <
+              distance(egg.unit.at, egg.nearestThreatAt)
+              ? 2
+              : 0);
+        }
+      }
+    }
+    if (growthStageForPolicyV7(view, actor) > 0) {
+      const here = dangerHere();
+      const there = dangerThere();
+      if (there >= actor.hp) {
+        if (routine && there >= here) return { priority: -1, strategic };
+      } else if (here >= actor.hp) {
+        raised = Math.max(raised, GROWN_RETREAT_PRIORITY_V7);
+        strategic += here - there;
+      } else if (actor.hp * 3 < actor.maxHp * 2 && there < here) {
+        raised = Math.max(raised, GROWN_WOUNDED_RETREAT_PRIORITY_V7);
+        strategic += here - there;
+      }
+    }
+  }
+
+  if (
+    attacker &&
+    rule.mayUsePrimaryActionAfterMove &&
+    primaryReadyForPolicyV7(actor)
+  ) {
+    const inRange = (from: CoordV7, at: CoordV7): boolean =>
+      distance(from, at) >= facts.minimumRange &&
+      distance(from, at) <= facts.maximumRange;
+    let smash = 0;
+    for (const hostile of context.lookup.visibleHostiles) {
+      if (
+        hostile.form !== "EGG" ||
+        !inRange(to, hostile.at) ||
+        inRange(actor.at, hostile.at)
+      )
+        continue;
+      if (
+        publicProjectedDamageWithLookupV7(
+          view,
+          actor,
+          hostile,
+          hostile.at,
+          {},
+          context.lookup,
+        ) >= hostile.hp
+      )
+        smash = Math.max(
+          smash,
+          targetStrategicValue(view, hostile.id, context.lookup),
+        );
+    }
+    if (smash > 0 && dangerThere() < actor.hp) {
+      raised = Math.max(raised, EGG_SMASH_SETUP_PRIORITY_V7);
+      strategic += Math.floor(smash / 2);
+    }
+  }
+
+  for (const hostile of context.lookup.visibleHostiles) {
+    if (!stampederV7(view, hostile)) continue;
+    for (const city of view.cities) {
+      if (city.ownerId !== view.viewer.id) continue;
+      const defender = (
+        context.threatLookup.occupantsByKey.get(coordKey(city.at)) ?? []
+      ).find(
+        (unit) =>
+          unit.ownerId === view.viewer.id &&
+          unit.hp > 0 &&
+          same(unit.at, city.at),
+      );
+      if (
+        defender === undefined ||
+        defender.id === actor.id ||
+        retainedUnitValue(view, actor) > retainedUnitValue(view, defender) ||
+        !stampedeLaneBetweenV7(view, hostile.ownerId, hostile.at, city.at).some(
+          (at) => same(at, to),
+        ) ||
+        dangerThere() >= actor.hp
+      )
+        continue;
+      raised = Math.max(raised, LANE_BLOCK_PRIORITY_V7);
+      strategic += 10 + (distance(to, hostile.at) === 1 ? 4 : 0);
+    }
+  }
+
+  let feed = 0;
+  for (const hostile of context.lookup.visibleHostiles) {
+    const growth = hostileGrowthFeedV7(view, hostile);
+    if (
+      growth > feed &&
+      context.threatenedTiles.get(hostile.id)?.has(coordKey(to)) === true
+    )
+      feed = growth;
+  }
+  if (feed > 0 && dangerThere() >= actor.hp) strategic -= feed;
+  return { priority: raised, strategic };
+}
+
 function captureEndsMatchV7(
   view: PlayerViewV7,
   targetOwnerId: PlayerId,
@@ -7024,7 +8004,13 @@ function visibleImmediateDamage(
     const directlyThreatened = d >= minimumRange && d <= maximumRange;
     const reachableThreat =
       context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false;
-    if (!directlyThreatened && !reachableThreat) {
+    // Revision 19: the lane tiles a hostile Triceratops would run to hit a
+    // unit on `at` (the actor itself never blocks its own lane).
+    const stampedeRun =
+      hostile.form === "LAND" && facts.abilities.includes("STAMPEDE")
+        ? stampedeLaneRunV7(view, hostile.ownerId, hostile.at, at, actor.id)
+        : 0;
+    if (!directlyThreatened && !reachableThreat && stampedeRun === 0) {
       // pulp_wars-vkq.21: Battleship splash counts like Lich splash (Liches
       // died one after another to it on naval maps); revision 17 adds the
       // Bomb Chucker's bomb.
@@ -7054,6 +8040,8 @@ function visibleImmediateDamage(
                 2 * gangUpForPolicyV7(view, hostile, at, new Set([actor.id])),
             }
           : {}),
+        // Revision 19: the Stampede run bonus (+1 Attack per lane tile).
+        ...(stampedeRun > 0 ? { bonusAttack2: 2 * stampedeRun } : {}),
       },
       effectiveLookup,
     );
@@ -7148,16 +8136,28 @@ function publicProjectedDamageWithLookupV7(
   const defenseRule = unitRoleRuleV7(view, defender);
   const attackFacts = publicCombatFacts(view, attacker, lookup);
   const publishedAttack2 = attackFacts.attack2;
+  // Revision 19: an Alpha's +1 Attack is part of its published Attack; the
+  // Pounce estimate adds it to the role's base (0 for every other unit).
   const attack2 =
     (options.maximumCharge &&
     attacker.form === "LAND" &&
     attackFacts.abilities.includes("CHARGE")
-      ? Math.max(publishedAttack2, attackRule.attack2 + 2)
+      ? Math.max(
+          publishedAttack2,
+          attackRule.attack2 + 2 + unitAlphaAttack2V7(view, attacker),
+        )
       : publishedAttack2) + (options.bonusAttack2 ?? 0);
   if (!Number.isInteger(attack2)) return 0;
-  const bonus = projectedDefenseBonus(view, defender, defenderAt);
+  // Revision 19 Acid: a Spitter's attack ignores the defender's cover and
+  // fortification (only a Dinosaur unit has Acid).
+  const acid =
+    attacker.form === "LAND" && attackFacts.abilities.includes("ACID");
+  const bonus = acid
+    ? { numerator: 1, denominator: 1 }
+    : projectedDefenseBonus(view, defender, defenderAt);
   const defenderTile = findPublicTileV7(view, defenderAt);
   const fortificationLevel =
+    !acid &&
     defender.form === "LAND" &&
     defenderTile?.explored === true &&
     defenderTile.territoryOwnerId === defender.ownerId
@@ -7180,11 +8180,17 @@ function publicProjectedDamageWithLookupV7(
   const defenseOnCommon = defenseForceNumerator * attackForceDenominator;
   const denominator = (attackOnCommon + defenseOnCommon) * 4n;
   if (denominator <= 0n) return 0;
+  // Revision 19 Armoured: one less damage (minimum 1) to an Ankylosaurus,
+  // before the cap at its HP; unchanged for every other unit.
   return Math.min(
     defender.hp,
-    Number(
-      (2n * attackOnCommon * BigInt(attack2) * 9n + denominator) /
-        (2n * denominator),
+    armouredDamageV7(
+      view,
+      defender,
+      Number(
+        (2n * attackOnCommon * BigInt(attack2) * 9n + denominator) /
+          (2n * denominator),
+      ),
     ),
   );
 }
@@ -7380,7 +8386,11 @@ function retainedUnitValue(view: PlayerViewV7, unit: PublicUnitV7): number {
   const rule = unitRoleRuleV7(view, unit);
   return unit.role === "JUGGERNAUT"
     ? 40 + rule.attack2 + rule.defense2 + 8 + unit.kills * 2
-    : (rule.cost ?? 0) * 4 + unit.hp + unit.kills * 2;
+    : (rule.cost ?? 0) * 4 +
+        unit.hp +
+        unit.kills * 2 +
+        // Revision 19: a grown unit costs more to replace (0 otherwise).
+        grownUnitPremiumV7(view, unit);
 }
 
 function targetStrategicValue(
@@ -7423,12 +8433,17 @@ function targetStrategicValue(
           }).length,
         )
       : 0;
+  // Revision 19 (both 0 without a Dinosaur seat): a grown unit is a priority
+  // target, and an Egg is worth more the longer it still needs.
+  const dinosaur =
+    grownUnitPremiumV7(view, unit) + eggTargetBonusV7(view, unit);
   return unit.role === "JUGGERNAUT"
     ? 40 +
         rule.attack2 +
         rule.defense2 +
-        (rule.abilities.includes("PUSH") ? 8 : 0)
-    : (rule.cost ?? 0) * 4 + unit.hp + necromancer + plagueSource;
+        (rule.abilities.includes("PUSH") ? 8 : 0) +
+        dinosaur
+    : (rule.cost ?? 0) * 4 + unit.hp + necromancer + plagueSource + dinosaur;
 }
 
 const NECROMANCER_TARGET_BONUS_V7 = 12;

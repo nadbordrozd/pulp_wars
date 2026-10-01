@@ -2,11 +2,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   chosenLayEggCommandsV7,
-  dinosaurActionScoreV7,
+  hatchScoreV7,
   layEggAdjustmentV7,
-  stampedeHoldUnitIdsV7,
 } from "../../src/ai/v7-dinosaur";
-import { chooseNormalCommandV7 } from "../../src/ai/v7";
+import { chooseNormalCommandV7, scoreCommandV7 } from "../../src/ai/v7";
 import {
   applyCommandV7,
   queryPlayerCommandsV7,
@@ -23,9 +22,10 @@ import {
   unitAtV7,
 } from "../fixtures/v7-goblin-arena";
 
-// Revision 19 (`pulp_wars-c87.3`): the minimal Normal AI support that lets a
+// Revision 19 (`pulp_wars-c87.3`): the Normal AI support that lets a
 // Dinosaur seat play legally with Eggs and Stampede. The full Dinosaur policy
-// and its scenarios are `pulp_wars-c87.5`.
+// (`pulp_wars-c87.5`) is covered by ruleset-v7-dinosaur-ai.test.ts and
+// ruleset-v7-dinosaur-ai-against.test.ts.
 
 /** No treasure chest anywhere, so open rows stay open lanes. */
 function arena(
@@ -47,10 +47,14 @@ describe("ruleset-7 revision-19 Normal AI: public boundary", () => {
       "../engine/rules/ruleset-v7",
       "../engine/v7/commands",
       "../engine/v7/query",
+      // The public lane geometry, applied to the view (`viewStampedeFactsV7`).
+      "../engine/v7/stampede",
       "../engine/v7/types",
       "../engine/v7/view",
     ]);
-    expect(source).not.toMatch(/GameStateV7|random|Math\.random|Date\.now/);
+    expect(source).not.toMatch(
+      /GameStateV7|stateStampedeFactsV7|random|Math\.random|Date\.now/,
+    );
   });
 });
 
@@ -120,7 +124,9 @@ describe("ruleset-7 revision-19 Normal AI: Eggs", () => {
       at: { x: 7, y: 7 },
     };
     expect(layEggAdjustmentV7(view, lay, false)).toBe(0);
-    expect(layEggAdjustmentV7(view, lay, true)).toBe(-36);
+    // With Nesting (the arena has every technology) a T-Rex Egg hatches in
+    // two turns.
+    expect(layEggAdjustmentV7(view, lay, true)).toBe(-24);
     expect(
       layEggAdjustmentV7(
         view,
@@ -144,9 +150,10 @@ describe("ruleset-7 revision-19 Normal AI: Eggs", () => {
       unitId: unitAtV7(state, { x: 6, y: 6 }).id,
       eggUnitId: unitAtV7(state, { x: 7, y: 7 }).id,
     };
-    expect(dinosaurActionScoreV7(view, hatch)).toEqual({
+    // The T-Rex inside (10 * 4 + 28) and 10 per turn saved.
+    expect(hatchScoreV7(view, hatch, false)).toEqual({
       priority: 1085,
-      strategic: 28 + 30,
+      strategic: 68 + 30,
       immediate: 0,
     });
     const candidates = chooseNormalCommandV7(view).candidates.map(
@@ -169,13 +176,10 @@ describe("ruleset-7 revision-19 Normal AI: Stampede", () => {
       unitId: triceratops.id,
       targetUnitId: unitAtV7(state, { x: 5, y: 3 }).id,
     };
-    expect(dinosaurActionScoreV7(view, stampede)).toMatchObject({
+    expect(scoreCommandV7(view, stampede)).toMatchObject({
       priority: 1180,
-      immediate: 1,
+      immediateValue: 10 * 1 + 20,
     });
-    expect(stampedeHoldUnitIdsV7(view, queryPlayerCommandsV7(view))).toEqual(
-      new Set([triceratops.id]),
-    );
     const decision = chooseNormalCommandV7(view);
     // Economy comes first; the Stampede is the best command of the unit.
     expect(
@@ -216,7 +220,7 @@ describe("ruleset-7 revision-19 Normal AI: Stampede", () => {
     };
     expect(queryPlayerCommandsV7(view)).toContainEqual(stampede);
     // Big (+4 HP, to 7) and then the Scrap Buggy's blast of 4: it survives.
-    expect(dinosaurActionScoreV7(view, stampede).priority).toBe(1180);
+    expect(scoreCommandV7(view, stampede).priority).toBe(1180);
     const doomed = checkedV7({
       ...state,
       units: state.units.map((unit) =>
@@ -226,7 +230,7 @@ describe("ruleset-7 revision-19 Normal AI: Stampede", () => {
       ),
     });
     expect(
-      dinosaurActionScoreV7(viewForV7(doomed, doomed.humanPlayerId), stampede)
+      scoreCommandV7(viewForV7(doomed, doomed.humanPlayerId), stampede)
         .priority,
     ).toBe(-1);
   });

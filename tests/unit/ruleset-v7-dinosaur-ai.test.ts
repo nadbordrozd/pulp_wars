@@ -1,0 +1,802 @@
+import { describe, expect, it } from "vitest";
+import {
+  EGG_GUARD_PRIORITY_V7,
+  GROWN_RETREAT_PRIORITY_V7,
+  HATCH_APPROACH_PRIORITY_V7,
+  HATCH_LAST_TURN_PRIORITY_V7,
+  HATCH_PRIORITY_V7,
+  HATCH_THREATENED_PRIORITY_V7,
+  STAMPEDE_BREAKER_PRIORITY_V7,
+  STAMPEDE_CHIP_PRIORITY_V7,
+  STAMPEDE_KILL_PRIORITY_V7,
+  STAMPEDE_LANE_MOVE_PRIORITY_V7,
+  STAMPEDE_PUSH_CENTER_PRIORITY_V7,
+  dinosaurMatchForPolicyV7,
+  dinosaurProductionAdjustmentV7,
+  layEggAdjustmentV7,
+} from "../../src/ai/v7-dinosaur";
+import { publicProjectedDamageForPolicyV7 } from "../../src/ai/v7";
+import {
+  applyCommandV7,
+  queryCombatPreviewV7,
+  type CommandV7,
+  type GameStateV7,
+} from "../../src/engine/index";
+import {
+  attackV7,
+  candidatesV7,
+  dinosaurFieldV7,
+  dinosaurTechsWithoutV7,
+  forestTileV7,
+  isCandidateV7,
+  moveCandidateV7,
+  patchTileV7,
+  productionCandidatesV7,
+  publicUnitAtV7,
+  scoreV7,
+  stampedeV7,
+  unitCandidatesV7,
+  unitIdAtV7,
+  viewerViewV7,
+} from "../fixtures/v7-dinosaur-ai";
+import { cityOfV7, withKillsV7 } from "../fixtures/v7-dinosaur-arena";
+import type { GoblinPieceV7 } from "../fixtures/v7-goblin-arena";
+
+// Revision 19 (`pulp_wars-c87.5`): the Normal AI playing Dinosaurs
+// (docs/product/RULESET_7_REVISION_19_DINOSAURS.md section 11). Seat 0 is the
+// Dinosaur viewer (capital (8, 8), level 1, capacity 3 with Planning); seat 1
+// is Human (capital (2, 8)). See tests/fixtures/v7-dinosaur-ai.ts.
+
+const DH = ["DINOSAUR", "ORIGINAL"] as const;
+const NO_NESTING = { techs: { 0: dinosaurTechsWithoutV7("FORTIFICATION") } };
+
+const dino = (
+  pieces: readonly GoblinPieceV7[],
+  options: Parameters<typeof dinosaurFieldV7>[2] = {},
+): GameStateV7 => dinosaurFieldV7(DH, pieces, options);
+
+const own = (role: GoblinPieceV7["role"], x: number, y: number, hp?: number) =>
+  ({
+    seat: 0,
+    role,
+    at: { x, y },
+    ...(hp === undefined ? {} : { hp }),
+  }) as const;
+const foe = (role: GoblinPieceV7["role"], x: number, y: number, hp?: number) =>
+  ({
+    seat: 1,
+    role,
+    at: { x, y },
+    ...(hp === undefined ? {} : { hp }),
+  }) as const;
+
+describe("ruleset-7 revision-19 Normal AI as Dinosaurs: gate", () => {
+  it("is on exactly in a match with a Dinosaur seat", () => {
+    expect(dinosaurMatchForPolicyV7(viewerViewV7(dino([])))).toBe(true);
+    expect(
+      dinosaurMatchForPolicyV7(
+        viewerViewV7(dinosaurFieldV7(["ORIGINAL", "DINOSAUR"], [])),
+      ),
+    ).toBe(true);
+    for (const factions of [
+      ["ORIGINAL", "UNDEAD"],
+      ["GOBLIN", "ORIGINAL"],
+    ] as const)
+      expect(
+        dinosaurMatchForPolicyV7(viewerViewV7(dinosaurFieldV7(factions, []))),
+      ).toBe(false);
+  });
+});
+
+describe("ruleset-7 revision-19 Normal AI as Dinosaurs: production", () => {
+  it("trains a Caveman, not an Egg or a Shaman, in a threatened city with an empty center", () => {
+    // The Fighter on (6, 8) reaches the center (8, 8) next turn.
+    const threatened = dino([own("FIGHTER", 10, 10), foe("FIGHTER", 6, 8)]);
+    expect(productionCandidatesV7(threatened)).toEqual([
+      { kind: "TRAIN", cityId: cityOfV7(threatened, 0).id, role: "FIGHTER" },
+    ]);
+    // With no enemy in reach the same city lays an Egg.
+    const calm = dino([own("FIGHTER", 10, 10), foe("FIGHTER", 1, 1)]);
+    expect(productionCandidatesV7(calm).map((command) => command.kind)).toEqual(
+      ["LAY_EGG"],
+    );
+  });
+
+  it("does not lay an Egg that visible enemies destroy before it hatches", () => {
+    // A 6-HP Egg dies to one Fighter hit. The center is garrisoned, so only
+    // Eggs are offered. Two Fighters reach every nest tile.
+    const doomed = dino(
+      [own("FIGHTER", 8, 8), foe("FIGHTER", 6, 8), foe("FIGHTER", 10, 8)],
+      NO_NESTING,
+    );
+    expect(productionCandidatesV7(doomed)).toEqual([]);
+    // One Fighter reaches only x <= 8: the Egg goes behind the city.
+    const side = dino([own("FIGHTER", 8, 8), foe("FIGHTER", 6, 8)], NO_NESTING);
+    const laid = productionCandidatesV7(side);
+    expect(laid).toHaveLength(1);
+    expect(laid[0]).toMatchObject({ kind: "LAY_EGG", at: { x: 9, y: 7 } });
+    expect(
+      applyCommandV7(side, side.humanPlayerId, laid[0] as CommandV7).accepted,
+    ).toBe(true);
+  });
+
+  it("nests away from visible enemies and next to own units", () => {
+    // (9, 7), (9, 8), and (9, 9) are equally far from the Fighter; the own
+    // Caveman on (10, 9) stands next to (9, 8) and (9, 9).
+    const beside = dino([own("FIGHTER", 10, 9), foe("FIGHTER", 1, 1)]);
+    expect(productionCandidatesV7(beside)[0]).toMatchObject({
+      kind: "LAY_EGG",
+      at: { x: 9, y: 8 },
+    });
+    const alone = dino([own("FIGHTER", 5, 1), foe("FIGHTER", 1, 1)]);
+    expect(productionCandidatesV7(alone)[0]).toMatchObject({
+      kind: "LAY_EGG",
+      at: { x: 9, y: 7 },
+    });
+  });
+
+  it("counts hatch delay, slots in a small city, the first Triceratops, and the first Shaman", () => {
+    const city = { freeSlots: 3, capacity: 3, threatened: false };
+    const state = dino([foe("FIGHTER", 1, 1)], NO_NESTING);
+    const view = viewerViewV7(state);
+    const cityId = cityOfV7(state, 0).id;
+    const lay = (role: GoblinPieceV7["role"]): CommandV7 => ({
+      kind: "LAY_EGG",
+      cityId,
+      role,
+      at: { x: 9, y: 9 },
+    });
+    const adjust = (command: CommandV7, facts = city, from = view): number =>
+      command.kind === "LAY_EGG" || command.kind === "TRAIN"
+        ? dinosaurProductionAdjustmentV7(from, command, facts)
+        : Number.NaN;
+    // Hatch 1, 2, and 3 turns: one point per turn beyond the first.
+    expect(adjust(lay("RAIDER"))).toBe(0);
+    expect(adjust(lay("GUARD"))).toBe(-1);
+    expect(adjust(lay("KNIGHT"))).toBe(-2);
+    // A two-slot Egg that takes the last slots of a small city.
+    expect(adjust(lay("KNIGHT"), { ...city, freeSlots: 2 })).toBe(-6);
+    expect(adjust(lay("KNIGHT"), { ...city, freeSlots: 2, capacity: 5 })).toBe(
+      -2,
+    );
+    expect(adjust(lay("GUARD"), { ...city, freeSlots: 1 })).toBe(-1);
+    // The first Stampede unit.
+    expect(adjust(lay("CATAPULT"))).toBe(-1 + 4);
+    const withTriceratops = viewerViewV7(
+      dino([own("CATAPULT", 5, 1), foe("FIGHTER", 1, 1)], NO_NESTING),
+    );
+    expect(adjust(lay("CATAPULT"), city, withTriceratops)).toBe(-1);
+    // Nesting shortens the delay.
+    const nesting = viewerViewV7(dino([foe("FIGHTER", 1, 1)]));
+    expect(adjust(lay("KNIGHT"), city, nesting)).toBe(-1);
+    expect(layEggAdjustmentV7(nesting, lay("KNIGHT"), true)).toBe(-24);
+    expect(layEggAdjustmentV7(view, lay("KNIGHT"), true)).toBe(-36);
+    expect(layEggAdjustmentV7(view, lay("KNIGHT"), false)).toBe(0);
+    // Shaman: by need, never as the defender of a threatened city.
+    const shaman: CommandV7 = { kind: "TRAIN", cityId, role: "CAPTAIN" };
+    expect(adjust(shaman)).toBe(0);
+    expect(adjust(shaman, { ...city, threatened: true })).toBe(-30);
+    const longEgg = viewerViewV7(
+      dino([foe("FIGHTER", 1, 1)], {
+        eggs: [{ seat: 0, role: "KNIGHT", at: { x: 9, y: 9 } }],
+      }),
+    );
+    expect(adjust(shaman, city, longEgg)).toBe(10);
+    const army = viewerViewV7(
+      dino([
+        own("FIGHTER", 5, 1),
+        own("FIGHTER", 6, 1),
+        own("RAIDER", 7, 1),
+        foe("FIGHTER", 1, 1),
+      ]),
+    );
+    expect(adjust(shaman, city, army)).toBe(10);
+    const owned = viewerViewV7(
+      dino([foe("FIGHTER", 1, 1), own("CAPTAIN", 5, 1)], {
+        eggs: [{ seat: 0, role: "KNIGHT", at: { x: 9, y: 9 } }],
+      }),
+    );
+    expect(adjust(shaman, city, owned)).toBe(0);
+    expect(adjust({ kind: "TRAIN", cityId, role: "FIGHTER" })).toBe(0);
+    // Another faction's production is never adjusted.
+    const human = dinosaurFieldV7(["ORIGINAL", "DINOSAUR"], []);
+    expect(
+      adjust(
+        { kind: "TRAIN", cityId: cityOfV7(human, 0).id, role: "CAPTAIN" },
+        { ...city, threatened: true },
+        viewerViewV7(human),
+      ),
+    ).toBe(0);
+  });
+
+  it("abandons an Egg only to free the slot a threatened, empty city needs for a defender", () => {
+    // Caveman (1 slot) + T-Rex Egg (2 slots) fill the capacity of 3.
+    const egg = [{ seat: 0, role: "KNIGHT", at: { x: 9, y: 9 } }] as const;
+    const emergency = dino([own("FIGHTER", 10, 10), foe("FIGHTER", 6, 8)], {
+      eggs: egg,
+    });
+    const abandon: CommandV7 = {
+      kind: "DISBAND",
+      unitId: unitIdAtV7(emergency, { x: 9, y: 9 }),
+    };
+    expect(productionCandidatesV7(emergency)).toEqual([abandon]);
+    expect(scoreV7(emergency, abandon).priority).toBe(1261);
+    const after = applyCommandV7(emergency, emergency.humanPlayerId, abandon);
+    expect(after.accepted).toBe(true);
+    if (after.accepted)
+      expect(productionCandidatesV7(after.state)).toEqual([
+        { kind: "TRAIN", cityId: cityOfV7(emergency, 0).id, role: "FIGHTER" },
+      ]);
+    // A defended center, or no threat, is no emergency.
+    const guarded = dino([own("FIGHTER", 8, 8), foe("FIGHTER", 6, 8)], {
+      eggs: egg,
+    });
+    expect(productionCandidatesV7(guarded)).toEqual([]);
+    const calm = dino([own("FIGHTER", 10, 10), foe("FIGHTER", 1, 1)], {
+      eggs: egg,
+    });
+    expect(
+      productionCandidatesV7(calm).some(
+        (command) => command.kind === "DISBAND",
+      ),
+    ).toBe(false);
+    // An Egg that visible enemies will destroy is still not abandoned.
+    const doomed = dino(
+      [own("FIGHTER", 8, 8), foe("FIGHTER", 10, 7), foe("FIGHTER", 10, 6)],
+      { eggs: [{ seat: 0, role: "RAIDER", at: { x: 9, y: 8 } }] },
+    );
+    expect(
+      productionCandidatesV7(doomed).some(
+        (command) => command.kind === "DISBAND",
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
+  const egg = [{ seat: 0, role: "KNIGHT", at: { x: 9, y: 7 } }] as const;
+
+  it("moves a guard next to an Egg that a visible enemy reaches before it hatches", () => {
+    // The Fighter on (10, 4) is three tiles from the Egg, which needs three
+    // turns; no own unit stands next to the Egg.
+    const state = dino([own("FIGHTER", 10, 9), foe("FIGHTER", 10, 4)], {
+      eggs: egg,
+    });
+    const guard = moveCandidateV7(state, { x: 10, y: 9 }, { x: 10, y: 8 });
+    expect(guard?.score.priority).toBe(EGG_GUARD_PRIORITY_V7);
+    // A quarter of the Egg's protection value (68 * 2 / 4 = 34).
+    expect(guard?.score.strategicValue).toBe(8);
+    expect(
+      moveCandidateV7(state, { x: 10, y: 9 }, { x: 9, y: 9 })?.score.priority,
+    ).toBe(700);
+    // With a guard already there, or no enemy in sight, it is a routine Move.
+    const guarded = dino(
+      [own("FIGHTER", 10, 9), own("FIGHTER", 8, 7), foe("FIGHTER", 10, 4)],
+      { eggs: egg },
+    );
+    expect(
+      moveCandidateV7(guarded, { x: 10, y: 9 }, { x: 10, y: 8 }),
+    ).toBeUndefined();
+    const calm = dino([own("FIGHTER", 10, 9), foe("FIGHTER", 1, 1)], {
+      eggs: egg,
+    });
+    expect(
+      moveCandidateV7(calm, { x: 10, y: 9 }, { x: 10, y: 8 }),
+    ).toBeUndefined();
+  });
+
+  it("keeps the sole guard beside an Egg until it hatches", () => {
+    // The Fighter on (10, 5) reaches the Egg on (9, 7) next turn.
+    const state = dino([own("FIGHTER", 10, 8), foe("FIGHTER", 10, 5)], {
+      eggs: egg,
+    });
+    const ends = unitCandidatesV7(state, { x: 10, y: 8 }, "MOVE").flatMap(
+      (candidate) =>
+        candidate.command.kind === "MOVE"
+          ? candidate.command.path.slice(-1)
+          : [],
+    );
+    // Only Moves that stay next to the Egg remain.
+    expect(ends.length).toBeGreaterThan(0);
+    expect(
+      ends.every(
+        (to) => Math.max(Math.abs(to.x - 9), Math.abs(to.y - 7)) === 1,
+      ),
+    ).toBe(true);
+    // Without the threat the guard is free to leave.
+    const calm = dino([own("FIGHTER", 10, 8), foe("FIGHTER", 1, 1)], {
+      eggs: egg,
+    });
+    expect(
+      moveCandidateV7(calm, { x: 10, y: 8 }, { x: 9, y: 9 }),
+    ).toBeDefined();
+    expect(
+      moveCandidateV7(state, { x: 10, y: 8 }, { x: 9, y: 9 }),
+    ).toBeUndefined();
+    // It also stays while the enemy is two turns away (the Fighter on
+    // (10, 4) is three tiles from the Egg), but not for one farther off.
+    const near = dino([own("FIGHTER", 10, 8), foe("FIGHTER", 10, 4)], {
+      eggs: egg,
+    });
+    expect(
+      moveCandidateV7(near, { x: 10, y: 8 }, { x: 9, y: 9 }),
+    ).toBeUndefined();
+    const distant = dino([own("FIGHTER", 10, 8), foe("FIGHTER", 10, 3)], {
+      eggs: egg,
+    });
+    expect(
+      moveCandidateV7(distant, { x: 10, y: 8 }, { x: 9, y: 9 }),
+    ).toBeDefined();
+  });
+
+  it("values an attack on a unit that can reach an own Egg at the Egg inside", () => {
+    const pieces = [own("FIGHTER", 10, 8), foe("FIGHTER", 10, 7, 1)];
+    const bare = dino(pieces);
+    const nest = dino(pieces, { eggs: egg });
+    const from = { x: 10, y: 8 };
+    const to = { x: 10, y: 7 };
+    // T-Rex Egg: (10 * 4 + 28) * 2 / (1 + 3 turns) = 34.
+    expect(
+      scoreV7(nest, attackV7(nest, from, to)).strategicValue -
+        scoreV7(bare, attackV7(bare, from, to)).strategicValue,
+    ).toBe(34);
+  });
+});
+
+describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Grow", () => {
+  it("adds the growth to a kill by a unit one kill from Big or Alpha", () => {
+    const strategic = (kills: number): number => {
+      const state = withKillsV7(
+        dino([own("RAIDER", 2, 3), foe("FIGHTER", 3, 3, 1)]),
+        { x: 2, y: 3 },
+        kills,
+      );
+      const score = scoreV7(
+        state,
+        attackV7(state, { x: 2, y: 3 }, { x: 3, y: 3 }),
+      );
+      expect(score.priority).toBe(1180);
+      return score.strategicValue;
+    };
+    const plain = strategic(1);
+    expect(strategic(0)).toBe(plain + 10);
+    expect(strategic(2)).toBe(plain + 16);
+    expect(strategic(3)).toBe(plain);
+    // A Caveman does not grow: the Raptor's kill ranks first on equal damage.
+    const caveman = dino([own("FIGHTER", 2, 3), foe("FIGHTER", 3, 3, 1)]);
+    expect(
+      scoreV7(caveman, attackV7(caveman, { x: 2, y: 3 }, { x: 3, y: 3 }))
+        .strategicValue,
+    ).toBe(plain);
+  });
+
+  it("heals a grown unit earlier than an ungrown one", () => {
+    // Both are below two thirds and above half of their maximum HP.
+    const big = withKillsV7(
+      dino([own("RAIDER", 9, 9), foe("FIGHTER", 1, 1)]),
+      { x: 9, y: 9 },
+      1,
+      9,
+    );
+    const small = dino([own("RAIDER", 9, 9, 7), foe("FIGHTER", 1, 1)]);
+    const recover = (state: GameStateV7): number =>
+      scoreV7(state, {
+        kind: "RECOVER",
+        unitId: unitIdAtV7(state, { x: 9, y: 9 }),
+      }).priority;
+    expect(recover(big)).toBe(930);
+    expect(recover(small)).toBe(300);
+  });
+
+  it("moves a grown unit out of visible lethal reach and never routinely into it", () => {
+    const hurt = (
+      kills: number,
+      at: { x: number; y: number },
+      fighter = { x: 5, y: 3 },
+    ) =>
+      withKillsV7(
+        dino([own("RAIDER", at.x, at.y), foe("FIGHTER", fighter.x, fighter.y)]),
+        at,
+        kills,
+        5,
+      );
+    // A 5-HP Raptor two tiles from a Fighter dies next turn.
+    const from = { x: 3, y: 3 };
+    const safe = { x: 2, y: 4 };
+    expect(moveCandidateV7(hurt(1, from), from, safe)?.score.priority).toBe(
+      GROWN_RETREAT_PRIORITY_V7,
+    );
+    expect(moveCandidateV7(hurt(0, from), from, safe)?.score.priority).toBe(
+      700,
+    );
+    // From safety, a Move into that reach is offered to the ungrown Raptor
+    // only.
+    const back = { x: 5, y: 1 };
+    const into = { x: 4, y: 2 };
+    const fighter = { x: 5, y: 4 };
+    expect(moveCandidateV7(hurt(0, back, fighter), back, into)).toBeDefined();
+    expect(moveCandidateV7(hurt(1, back, fighter), back, into)).toBeUndefined();
+    // It heals instead.
+    expect(
+      unitCandidatesV7(hurt(1, back, fighter), back)[0]?.command.kind,
+    ).toBe("RECOVER");
+  });
+
+  it("does not trade a grown unit cheaply", () => {
+    // The Raptor's hit on the Fighter costs it 4 HP; with the Marksman's
+    // shot the visible enemies then kill a Big Raptor (16 HP).
+    const state = (kills: number, marksman: boolean): GameStateV7 =>
+      withKillsV7(
+        dino([
+          own("RAIDER", 3, 3),
+          foe("FIGHTER", 4, 3),
+          ...(marksman ? [foe("MARKSMAN", 5, 2)] : []),
+        ]),
+        { x: 3, y: 3 },
+        kills,
+      );
+    const attack = (candidate: GameStateV7): boolean =>
+      isCandidateV7(
+        candidate,
+        attackV7(candidate, { x: 3, y: 3 }, { x: 4, y: 3 }),
+      );
+    expect(attack(state(1, true))).toBe(false);
+    expect(attack(state(1, false))).toBe(true);
+    expect(attack(state(0, true))).toBe(true);
+  });
+});
+
+describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Stampede", () => {
+  const tri = { x: 1, y: 3 };
+  const target = { x: 4, y: 3 };
+
+  it("takes a killing Stampede and holds the Triceratops for it", () => {
+    const state = dino([own("CATAPULT", 1, 3), foe("FIGHTER", 4, 3)]);
+    const stampede = stampedeV7(state, tri, target);
+    const score = scoreV7(state, stampede);
+    expect(score.priority).toBe(STAMPEDE_KILL_PRIORITY_V7);
+    // The Fighter (2 * 4 + 10) and the growth of the first kill.
+    expect(score.strategicValue).toBe(18 + 10);
+    expect(score.immediateValue).toBe(10 * 10 + 20);
+    const commands = unitCandidatesV7(state, tri).map(
+      (candidate) => candidate.command,
+    );
+    expect(commands[0]).toEqual(stampede);
+    expect(commands.some((command) => command.kind === "MOVE")).toBe(false);
+    expect(applyCommandV7(state, state.humanPlayerId, stampede).accepted).toBe(
+      true,
+    );
+  });
+
+  it("values damage, Field Defense broken, and a defender pushed off a center", () => {
+    const chip = dino([own("CATAPULT", 1, 3), foe("GUARD", 4, 3)]);
+    const plain = scoreV7(chip, stampedeV7(chip, tri, target));
+    expect(plain.priority).toBe(STAMPEDE_CHIP_PRIORITY_V7);
+    expect(plain.immediateValue).toBe(140);
+    const fortified = patchTileV7(chip, target, { fieldDefense: true });
+    const breaker = scoreV7(fortified, stampedeV7(fortified, tri, target));
+    expect(breaker.priority).toBe(STAMPEDE_BREAKER_PRIORITY_V7);
+    expect(breaker.strategicValue).toBe(plain.strategicValue + 8);
+    // The Guard on the hostile capital (2, 8) is pushed off; the Triceratops
+    // follows onto the center. With an own capturer within two tiles the
+    // Stampede ranks with a capture opening.
+    const center = { x: 2, y: 8 };
+    const from = { x: 5, y: 8 };
+    const siege = dino([own("CATAPULT", 5, 8), foe("GUARD", 2, 8)]);
+    const push = scoreV7(siege, stampedeV7(siege, from, center));
+    expect(push.priority).toBe(STAMPEDE_CHIP_PRIORITY_V7);
+    const supported = dino([
+      own("CATAPULT", 5, 8),
+      own("FIGHTER", 3, 6),
+      foe("GUARD", 2, 8),
+    ]);
+    const open = scoreV7(supported, stampedeV7(supported, from, center));
+    expect(open.priority).toBe(STAMPEDE_PUSH_CENTER_PRIORITY_V7);
+    expect(open.strategicValue).toBe(push.strategicValue + 15);
+    // Off a center the same hit is worth 20 less.
+    expect(push.strategicValue - plain.strategicValue).toBe(20);
+  });
+
+  it("declines a Stampede that leaves the Triceratops to die for no gain", () => {
+    const exposed = dino([
+      own("CATAPULT", 1, 3),
+      foe("GUARD", 4, 3),
+      foe("KNIGHT", 5, 2),
+      foe("KNIGHT", 5, 4),
+      foe("CATAPULT", 5, 1),
+    ]);
+    const stampede = stampedeV7(exposed, tri, target);
+    expect(scoreV7(exposed, stampede).priority).toBe(-1);
+    const commands = unitCandidatesV7(exposed, tri).map(
+      (candidate) => candidate.command,
+    );
+    expect(commands).not.toContainEqual(stampede);
+    // Not held: it is free to move.
+    expect(commands.some((command) => command.kind === "MOVE")).toBe(true);
+    // The same hit with no enemy behind the target is taken.
+    const alone = dino([own("CATAPULT", 1, 3), foe("GUARD", 4, 3)]);
+    expect(isCandidateV7(alone, stampedeV7(alone, tri, target))).toBe(true);
+  });
+
+  it("moves an unmoved Triceratops onto an open lane when no Stampede is offered", () => {
+    const state = dino([own("CATAPULT", 1, 2), foe("GUARD", 4, 3)]);
+    const from = { x: 1, y: 2 };
+    expect(unitCandidatesV7(state, from, "STAMPEDE")).toEqual([]);
+    // (1, 3) is three tiles from the Guard along the row, (2, 3) two.
+    const far = moveCandidateV7(state, from, { x: 1, y: 3 });
+    const near = moveCandidateV7(state, from, { x: 2, y: 3 });
+    expect(far?.score.priority).toBe(STAMPEDE_LANE_MOVE_PRIORITY_V7);
+    expect(near?.score.priority).toBe(STAMPEDE_LANE_MOVE_PRIORITY_V7);
+    expect(far?.score.strategicValue).toBeGreaterThan(
+      near?.score.strategicValue ?? 0,
+    );
+    // (0, 3) has no lane: a routine Move.
+    expect(moveCandidateV7(state, from, { x: 0, y: 3 })?.score.priority).toBe(
+      700,
+    );
+    expect(unitCandidatesV7(state, from)[0]).toEqual(far);
+    // A Forest on (2, 3) closes the lane from (1, 3).
+    const closed = forestTileV7(state, { x: 2, y: 3 });
+    expect(moveCandidateV7(closed, from, { x: 1, y: 3 })?.score.priority).toBe(
+      700,
+    );
+    // A Triceratops that has already acted gains nothing from a lane tile.
+    const spent = dino([
+      {
+        ...own("CATAPULT", 1, 2),
+        activation: { attacked: true, attacksUsed: 1 },
+      },
+      foe("GUARD", 4, 3),
+    ]);
+    expect(
+      unitCandidatesV7(spent, from, "MOVE").every(
+        (candidate) =>
+          candidate.score.priority < STAMPEDE_LANE_MOVE_PRIORITY_V7,
+      ),
+    ).toBe(true);
+  });
+
+  it("does not take a lane tile inside visible lethal reach", () => {
+    // (1, 3) is on a lane to the Guard but next to two Knights' reach.
+    const state = dino([
+      own("CATAPULT", 1, 2, 4),
+      foe("GUARD", 4, 3),
+      foe("KNIGHT", 3, 5),
+    ]);
+    expect(
+      unitCandidatesV7(state, { x: 1, y: 2 }, "MOVE").every(
+        (candidate) =>
+          candidate.score.priority < STAMPEDE_LANE_MOVE_PRIORITY_V7,
+      ),
+    ).toBe(true);
+  });
+
+  it("declines a Stampede whose death blast kills an own unit, and prices its own blast once", () => {
+    const blast = dinosaurFieldV7(
+      ["DINOSAUR", "GOBLIN"],
+      [own("CATAPULT", 1, 3, 3), foe("KNIGHT", 3, 3, 1)],
+    );
+    const from = { x: 1, y: 3 };
+    const buggy = { x: 3, y: 3 };
+    // Big (+4 HP, to 7), then the Scrap Buggy's blast of 4: it survives.
+    expect(scoreV7(blast, stampedeV7(blast, from, buggy)).priority).toBe(
+      STAMPEDE_KILL_PRIORITY_V7,
+    );
+    // Already Big (no heal): the blast kills it.
+    const doomed = withKillsV7(blast, from, 1, 3);
+    expect(scoreV7(doomed, stampedeV7(doomed, from, buggy)).priority).toBe(-1);
+    expect(isCandidateV7(doomed, stampedeV7(doomed, from, buggy))).toBe(false);
+  });
+});
+
+describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Hatch", () => {
+  const shaman = { x: 9, y: 8 };
+
+  it("hatches the most valuable eligible Egg, and a one-turn Egg only at leisure", () => {
+    const state = dino([own("CAPTAIN", 9, 8), foe("FIGHTER", 1, 1)], {
+      eggs: [
+        { seat: 0, role: "KNIGHT", at: { x: 9, y: 7 } },
+        { seat: 0, role: "GUARD", at: { x: 9, y: 9 } },
+        { seat: 0, role: "RAIDER", at: { x: 8, y: 9 } },
+      ],
+    });
+    const hatches = unitCandidatesV7(state, shaman, "HATCH");
+    expect(
+      hatches.map((candidate) => [
+        candidate.command.kind === "HATCH"
+          ? publicUnitAtV7(
+              state,
+              state.units.find(
+                (unit) =>
+                  candidate.command.kind === "HATCH" &&
+                  unit.id === candidate.command.eggUnitId,
+              )?.at ?? shaman,
+            ).role
+          : null,
+        candidate.score.priority,
+        candidate.score.strategicValue,
+      ]),
+    ).toEqual([
+      // T-Rex: 10 * 4 + 28 + 10 * 3 turns; Ankylosaurus: 5 * 4 + 20 + 20.
+      ["KNIGHT", HATCH_PRIORITY_V7, 98],
+      ["GUARD", HATCH_PRIORITY_V7, 60],
+      ["RAIDER", HATCH_LAST_TURN_PRIORITY_V7, 38],
+    ]);
+    expect(unitCandidatesV7(state, shaman)[0]).toEqual(hatches[0]);
+  });
+
+  it("hatches a threatened Egg first", () => {
+    // The Fighter on (10, 10) can hit the Ankylosaurus Egg on (9, 9).
+    const state = dino([own("CAPTAIN", 9, 8), foe("FIGHTER", 10, 10)], {
+      eggs: [
+        { seat: 0, role: "KNIGHT", at: { x: 9, y: 7 } },
+        { seat: 0, role: "GUARD", at: { x: 9, y: 9 } },
+      ],
+    });
+    const best = unitCandidatesV7(state, shaman)[0];
+    expect(best?.command).toEqual({
+      kind: "HATCH",
+      unitId: unitIdAtV7(state, shaman),
+      eggUnitId: unitIdAtV7(state, { x: 9, y: 9 }),
+    });
+    expect(best?.score.priority).toBe(HATCH_THREATENED_PRIORITY_V7);
+    expect(best?.score.strategicValue).toBe(60 + 20);
+    expect(
+      best === undefined
+        ? false
+        : applyCommandV7(state, state.humanPlayerId, best.command).accepted,
+    ).toBe(true);
+  });
+
+  it("walks a Shaman to an Egg it can hatch and keeps it by a long Egg", () => {
+    const from = { x: 10, y: 10 };
+    const state = dino([own("CAPTAIN", 10, 10), foe("FIGHTER", 1, 1)], {
+      eggs: [{ seat: 0, role: "KNIGHT", at: { x: 9, y: 8 } }],
+    });
+    const approach = moveCandidateV7(state, from, { x: 9, y: 9 });
+    expect(approach?.score.priority).toBe(HATCH_APPROACH_PRIORITY_V7);
+    // A quarter of the T-Rex inside (68).
+    expect(approach?.score.strategicValue).toBe(17);
+    expect(moveCandidateV7(state, from, { x: 9, y: 10 })?.score.priority).toBe(
+      700,
+    );
+    // An Egg laid this turn cannot be hatched yet: the Shaman only stands by.
+    const fresh = dino([own("CAPTAIN", 10, 10), foe("FIGHTER", 1, 1)], {
+      eggs: [
+        { seat: 0, role: "KNIGHT", at: { x: 9, y: 8 }, laidThisTurn: true },
+      ],
+    });
+    expect(moveCandidateV7(fresh, from, { x: 9, y: 9 })?.score.priority).toBe(
+      EGG_GUARD_PRIORITY_V7,
+    );
+    // Beside such an Egg it does not wander off.
+    const beside = dino([own("CAPTAIN", 9, 9), foe("FIGHTER", 1, 1)], {
+      eggs: [
+        { seat: 0, role: "KNIGHT", at: { x: 9, y: 8 }, laidThisTurn: true },
+      ],
+    });
+    expect(
+      moveCandidateV7(beside, { x: 9, y: 9 }, { x: 10, y: 10 }),
+    ).toBeUndefined();
+    // With no Egg it moves like any Captain.
+    const idle = dino([own("CAPTAIN", 9, 9), foe("FIGHTER", 1, 1)]);
+    expect(
+      unitCandidatesV7(idle, { x: 9, y: 9 }, "MOVE").length,
+    ).toBeGreaterThan(0);
+  });
+});
+
+describe("ruleset-7 revision-19 Normal AI as Dinosaurs: estimates", () => {
+  const estimate = (
+    state: GameStateV7,
+    from: { x: number; y: number },
+    to: { x: number; y: number },
+    options: { readonly maximumCharge?: boolean } = {},
+  ): number =>
+    publicProjectedDamageForPolicyV7(
+      viewerViewV7(state),
+      publicUnitAtV7(state, from),
+      publicUnitAtV7(state, to),
+      to,
+      options,
+    );
+  const previewed = (
+    state: GameStateV7,
+    from: { x: number; y: number },
+    to: { x: number; y: number },
+  ): number | undefined =>
+    queryCombatPreviewV7(
+      viewerViewV7(state),
+      unitIdAtV7(state, from),
+      unitIdAtV7(state, to),
+    )?.damageToDefender;
+
+  it("applies Acid: a Spitter ignores Forest cover", () => {
+    const from = { x: 3, y: 3 };
+    const to = { x: 5, y: 3 };
+    const open = dino([own("MARKSMAN", 3, 3), foe("FIGHTER", 5, 3)]);
+    const forest = forestTileV7(open, to);
+    expect(estimate(forest, from, to)).toBe(5);
+    expect(estimate(forest, from, to)).toBe(estimate(open, from, to));
+    expect(estimate(forest, from, to)).toBe(previewed(forest, from, to));
+    // A Human Marksman's shot is reduced by the same Forest.
+    const human = forestTileV7(
+      dinosaurFieldV7(
+        ["ORIGINAL", "DINOSAUR"],
+        [own("MARKSMAN", 3, 3), foe("FIGHTER", 5, 3)],
+      ),
+      to,
+    );
+    expect(estimate(human, from, to)).toBe(previewed(human, from, to));
+    expect(estimate(human, from, to)).toBeLessThan(5);
+    // The policy prefers the Spitter target whose cover Acid ignores.
+    expect(
+      scoreV7(forest, attackV7(forest, from, to)).strategicValue -
+        scoreV7(open, attackV7(open, from, to)).strategicValue,
+    ).toBe(3);
+  });
+
+  it("applies Armoured: one less damage to an Ankylosaurus", () => {
+    const state = dinosaurFieldV7(
+      ["ORIGINAL", "DINOSAUR"],
+      [own("FIGHTER", 3, 3), foe("GUARD", 4, 3), foe("FIGHTER", 3, 4)],
+    );
+    const from = { x: 3, y: 3 };
+    expect(estimate(state, from, { x: 4, y: 3 })).toBe(3);
+    expect(estimate(state, from, { x: 4, y: 3 })).toBe(
+      previewed(state, from, { x: 4, y: 3 }),
+    );
+    // A Human Guard has the same Defense and no armour.
+    const human = dinosaurFieldV7(
+      ["ORIGINAL", "ORIGINAL"],
+      [own("FIGHTER", 3, 3), foe("GUARD", 4, 3)],
+    );
+    expect(estimate(human, from, { x: 4, y: 3 })).toBe(
+      previewed(human, from, { x: 4, y: 3 }),
+    );
+  });
+
+  it("applies Alpha: +1 Attack in the threat estimate, with Pounce on top", () => {
+    const raptor = (kills: number): GameStateV7 =>
+      withKillsV7(
+        dinosaurFieldV7(
+          ["ORIGINAL", "DINOSAUR"],
+          [own("GUARD", 3, 3), foe("RAIDER", 4, 3)],
+        ),
+        { x: 4, y: 3 },
+        kills,
+      );
+    const hit = (kills: number, maximumCharge: boolean): number =>
+      estimate(
+        raptor(kills),
+        { x: 4, y: 3 },
+        { x: 3, y: 3 },
+        { maximumCharge },
+      );
+    expect(hit(3, false)).toBeGreaterThan(hit(0, false));
+    expect(hit(3, true)).toBeGreaterThan(hit(0, true));
+    expect(hit(3, true)).toBeGreaterThan(hit(3, false));
+  });
+});
+
+describe("ruleset-7 revision-19 Normal AI as Dinosaurs: candidates stay legal", () => {
+  it("offers only commands the engine accepts in a busy Dinosaur position", () => {
+    const pieces = [
+      own("CATAPULT", 1, 3),
+      own("CAPTAIN", 9, 8),
+      own("RAIDER", 3, 5),
+      foe("GUARD", 4, 3),
+      foe("FIGHTER", 6, 6),
+    ];
+    const state = dino(pieces, {
+      eggs: [{ seat: 0, role: "GUARD", at: { x: 9, y: 9 } }],
+    });
+    const candidates = candidatesV7(state);
+    expect(candidates.length).toBeGreaterThan(5);
+    for (const candidate of candidates)
+      expect(
+        applyCommandV7(state, state.humanPlayerId, candidate.command).accepted,
+        JSON.stringify(candidate.command),
+      ).toBe(true);
+  });
+});

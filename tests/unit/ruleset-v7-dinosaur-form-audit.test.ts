@@ -493,6 +493,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/engine/v7/state-schema.ts": 2,
     "src/engine/v7/wail.ts": 1,
     "src/engine/rules/ruleset-v7.ts": 1,
+    // `pulp_wars-c87.5`: the own land units counted for the Shaman training
+    // bias (an Egg and an embarked unit are neither a Shaman nor a fighter).
+    "src/ai/v7-dinosaur.ts": 1,
     "src/ai/v7-goblin.ts": 1,
     "src/ai/v7-undead.ts": 1,
     "src/ai/v7.ts": 11,

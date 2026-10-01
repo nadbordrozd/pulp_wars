@@ -31,12 +31,12 @@ npm run headless -- match --ruleset pulp-wars-poc-7r19 --map-type pangea --facti
 
 A Dinosaur seat
 ([revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)) plays
-with the ordinary Normal policy on the Dinosaur registration. Since
-`pulp_wars-c87.3` it trains Cavemen and Shamans, lays every other role as an
-Egg (`LAY_EGG`, counted with its role's production and Coins in the role
-inventories), and takes offered Stampedes and Hatches by their previewed
-value; the full Dinosaur policy and telemetry follow (`pulp_wars-c87.5`,
-`pulp_wars-c87.8`).
+with the Normal policy on the Dinosaur registration. It trains Cavemen and
+Shamans, lays every other role as an Egg (`LAY_EGG`, counted with its role's
+production and Coins in the role inventories), and plays Eggs, Hatch, Grow,
+and Stampede with the
+[Dinosaur policy](NORMAL_AI.md#revision-19-dinosaur-play-pulp_wars-c875)
+(`pulp_wars-c87.5`); the Dinosaur telemetry follows (`pulp_wars-c87.8`).
 
 Every v7 result adds, beside the mechanical-role inventories:
 
