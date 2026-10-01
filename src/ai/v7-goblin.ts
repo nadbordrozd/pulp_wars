@@ -298,9 +298,10 @@ const NO_KABOOM_EXPOSURE_V7: KaboomExposureV7 = Object.freeze({
 /**
  * The most profitable Kaboom (for the enemy) that a visible hostile
  * goblin-crewed unit could set off next turn around `actor` standing at `at`:
- * the exploder steps (Move, or an embarked unit's landing) onto an empty land
- * cell next to `at` within its Move, or explodes where it stands, and its
- * blast hits every visible unit around that cell. A bounded public estimate
+ * the exploder Moves onto an empty land cell next to `at` within its Move,
+ * or explodes where it stands, and its blast hits every visible unit around
+ * that cell (an embarked unit cannot: landing ends its activation, revisions
+ * 6 and 16, `pulp_wars-0ao.15`). A bounded public estimate
  * (Chebyshev reach, no terrain or zone of control), used to keep units out
  * of clumps a Kaboom would profit from.
  */
@@ -317,11 +318,12 @@ export function hostileKaboomExposureV7(
 ): KaboomExposureV7 {
   let best = NO_KABOOM_EXPOSURE_V7;
   for (const hostile of hostiles) {
-    if (hostile.form === "NAVAL") continue;
+    // Landing ends the activation (`pulp_wars-0ao.15`): an embarked unit
+    // cannot Kaboom next turn.
+    if (hostile.form !== "LAND") continue;
     const damage = kaboomDamageV7(view, hostile);
     if (damage <= 0) continue;
-    const reach =
-      hostile.form === "EMBARKED" ? 2 : unitRoleRuleV7(view, hostile).move;
+    const reach = unitRoleRuleV7(view, hostile).move;
     if (chebyshev(hostile.at, at) > reach + 1) continue;
     for (let y = at.y - 1; y <= at.y + 1; y += 1)
       for (let x = at.x - 1; x <= at.x + 1; x += 1) {
@@ -329,7 +331,7 @@ export function hostileKaboomExposureV7(
         if (x === at.x && y === at.y) continue;
         if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
           continue;
-        const standing = hostile.form === "LAND" && same(hostile.at, center);
+        const standing = same(hostile.at, center);
         if (
           !standing &&
           (chebyshev(hostile.at, center) > reach || !cellOpen(center))

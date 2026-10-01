@@ -30,6 +30,12 @@ import {
 } from "../../src/render/canvas/board-renderer-v7";
 import { checkedV7, setupV7 } from "../fixtures/v7-builders";
 import {
+  applyOkV7,
+  goblinArenaV7,
+  seatIdV7,
+  unitAtV7,
+} from "../fixtures/v7-goblin-arena";
+import {
   READY_ACTIVATION_V7,
   embarkedLandingV7,
 } from "../fixtures/v7-naval-builders";
@@ -314,6 +320,91 @@ describe("ruleset-7 revision-16 landing reach", () => {
       at: fixture.afterMove,
     });
   });
+});
+
+// Revisions 6 and 16 (`pulp_wars-0ao.15`): landing ends the unit's activation
+// for every faction. After DISEMBARK the landed unit is offered nothing, and
+// every further unit command is rejected atomically with the existing codes.
+describe("ruleset-7 landing ends the activation", () => {
+  for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const)
+    it(`offers and accepts nothing more for a landed ${faction} unit`, () => {
+      const water = [at(0, 0), at(0, 1), at(0, 2), at(1, 0)];
+      const landing = at(1, 1);
+      const enemyAt = at(2, 1);
+      const arena = (form: "EMBARKED" | "LAND", where: CoordV7) =>
+        goblinArenaV7(
+          [faction, "ORIGINAL"],
+          [
+            { seat: 0, role: "FIGHTER", at: where, form, hp: 5 },
+            { seat: 1, role: "FIGHTER", at: enemyAt },
+          ],
+          { water },
+        );
+      const state = arena("EMBARKED", at(0, 1));
+      const seat = seatIdV7(state, 0);
+      const mover = unitAtV7(state, at(0, 1)).id;
+      const enemy = unitAtV7(state, enemyAt).id;
+      const offeredFor = (current: GameStateV7, unitId: number) =>
+        queryPlayerCommandsV7(current, seat).filter(
+          (command) => "unitId" in command && command.unitId === unitId,
+        );
+      expect(offeredFor(state, mover)).toContainEqual({
+        kind: "DISEMBARK",
+        unitId: mover,
+        at: landing,
+      });
+      // Control: an unmoved land unit on the landing cell may attack, Recover
+      // (not a Restless Undead unit outside its territory), and Disband
+      // there, so the rejections below come from the landing.
+      const ready = arena("LAND", landing);
+      const kinds = offeredFor(ready, unitAtV7(ready, landing).id).map(
+        (command) => command.kind,
+      );
+      for (const kind of ["ATTACK", "DISBAND", "MOVE", "WAIT"])
+        expect(kinds).toContain(kind);
+      if (faction !== "UNDEAD") expect(kinds).toContain("RECOVER");
+      if (faction === "GOBLIN") expect(kinds).toContain("KABOOM");
+
+      const landed = applyOkV7(state, seat, {
+        kind: "DISEMBARK",
+        unitId: mover,
+        at: landing,
+      }).state;
+      expect(unitAtV7(landed, landing)).toMatchObject({
+        id: mover,
+        form: "LAND",
+        activation: { moved: true, handled: true },
+      });
+      expect(offeredFor(landed, mover)).toEqual([]);
+      const reject = (command: CommandV7) => {
+        const result = applyCommandV7(landed, seat, command);
+        if (result.accepted) throw new Error(`${command.kind} accepted`);
+        expect(result.state).toBe(landed);
+        expect(result.events).toEqual([]);
+        return result.error;
+      };
+      const acted = { code: "UNIT_ALREADY_ACTED", params: { unitId: mover } };
+      expect(
+        reject({ kind: "ATTACK", unitId: mover, targetUnitId: enemy }),
+      ).toEqual(acted);
+      expect(reject({ kind: "DISBAND", unitId: mover })).toEqual(acted);
+      expect(reject({ kind: "RECOVER", unitId: mover })).toEqual(acted);
+      expect(reject({ kind: "MOVE", unitId: mover, path: [at(2, 2)] })).toEqual(
+        acted,
+      );
+      expect(reject({ kind: "WAIT", unitId: mover })).toEqual({
+        code: "UNIT_ALREADY_HANDLED",
+        params: { unitId: mover },
+      });
+      expect(
+        reject({ kind: "DISEMBARK", unitId: mover, at: at(2, 2) }),
+      ).toEqual({ code: "MOVEMENT_ILLEGAL", params: {} });
+      expect(reject({ kind: "KABOOM", unitId: mover })).toEqual(
+        faction === "GOBLIN"
+          ? acted
+          : { code: "UNIT_ROLE_INVALID", params: { role: "FIGHTER" } },
+      );
+    });
 });
 
 describe("ruleset-7 revision-16 landing queries and preview", () => {
@@ -650,6 +741,10 @@ function moveStat(stats: {
   return move === undefined
     ? null
     : move.total.numerator / move.total.denominator;
+}
+
+function at(x: number, y: number): CoordV7 {
+  return { x, y };
 }
 
 function same(left: CoordV7, right: CoordV7): boolean {

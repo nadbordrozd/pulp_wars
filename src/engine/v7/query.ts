@@ -1396,12 +1396,8 @@ export function queryThreatenedTilesV7(
   // Revision 17: a goblin-crewed land unit may Kaboom after moving, so it
   // also threatens every tile within Chebyshev 1 of a tile it can reach.
   const kaboom = unit.form === "LAND" && rule.abilities.includes("KABOOM");
-  // `pulp_wars-0ao.11`: an embarked goblin-crewed unit may land and Kaboom in
-  // the same activation, threatening the tiles around each landing cell.
-  const embarkedKaboom =
-    unit.form === "EMBARKED" && rule.abilities.includes("KABOOM")
-      ? publicEmbarkedKaboomReachV7(view, unit)
-      : [];
+  // `pulp_wars-0ao.15`: landing ends the activation, so an embarked unit has
+  // no same-turn Kaboom reach from its landing cells.
   if (!rule.abilities.includes("ATTACK") && !wail) return [];
   const minimumRange = kaboom ? 0 : wail ? 1 : rule.minimumRange;
   const maximumRange = wail ? WAIL_RADIUS_V7 : rule.range;
@@ -1423,65 +1419,8 @@ export function queryThreatenedTilesV7(
       }),
     );
   return [
-    ...new Map(
-      [...direct, ...embarkedKaboom].map((at) => [`${at.y},${at.x}`, at]),
-    ).values(),
+    ...new Map(direct.map((at) => [`${at.y},${at.x}`, at])).values(),
   ].sort((a, b) => a.y - b.y || a.x - b.x);
-}
-
-/**
- * Revision 17 Kaboom reach of an embarked goblin-crewed unit: it may sail at
- * most one step (landing needs one of its two points, revision 16), land on
- * an open land cell next to its water cell (`DISEMBARK`), and then Kaboom in
- * the same activation (landing uses no primary action). Every landing cell
- * and every tile within Chebyshev 1 of it is threatened. Mirrors the Normal
- * AI's public reach model (`embarkedKaboomReachWorkV7` in `src/ai/v7.ts`):
- * explored tiles only, no allied territory, Mountains only when the owner is
- * known to have Engineering, and no cell occupied by another visible unit.
- */
-function publicEmbarkedKaboomReachV7(
-  view: PlayerViewV7,
-  unit: PlayerViewV7["units"][number],
-): readonly CoordV7[] {
-  const engineering =
-    unit.ownerId === view.viewer.id
-      ? view.viewer.researchedTechs.includes("ENGINEERING")
-      : view.units.some((other) => {
-          const tile = tileAtView(view, other.at);
-          return (
-            other.ownerId === unit.ownerId &&
-            tile?.explored === true &&
-            tile.terrain === "MOUNTAIN"
-          );
-        });
-  const open = (at: CoordV7) =>
-    !view.units.some((other) => other.id !== unit.id && same(other.at, at));
-  const enterable = (tile: PlayerTileViewV7) =>
-    tile.explored &&
-    (tile.territoryOwnerId === null ||
-      tile.territoryOwnerId === unit.ownerId ||
-      !publicAllied(view, unit.ownerId, tile.territoryOwnerId)) &&
-    open(tile.at);
-  const waters = [unit.at];
-  if (EMBARKED_LANDING_MAX_SPENT_V7 >= 1)
-    for (const tile of adjacentPublicTiles(view, unit.at))
-      if (tile.explored && tile.biome === null && enterable(tile))
-        waters.push(tile.at);
-  const reach = new Map<string, CoordV7>();
-  for (const water of waters)
-    for (const landing of adjacentPublicTiles(view, water)) {
-      if (
-        !landing.explored ||
-        landing.biome === null ||
-        (landing.terrain === "MOUNTAIN" && !engineering) ||
-        !enterable(landing)
-      )
-        continue;
-      reach.set(`${landing.at.y},${landing.at.x}`, landing.at);
-      for (const around of adjacentPublicTiles(view, landing.at))
-        reach.set(`${around.at.y},${around.at.x}`, around.at);
-    }
-  return [...reach.values()];
 }
 
 function primaryUsedForQuery(unit: Pick<UnitStateV7, "activation">): boolean {

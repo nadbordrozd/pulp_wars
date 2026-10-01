@@ -1667,7 +1667,7 @@ describe("ruleset-7 Goblin Kaboom threat reach", () => {
     ).toBe(false);
   });
 
-  it("reaches around the landing cells of an embarked goblin-crewed unit (pulp_wars-0ao.11)", () => {
+  it("gives an embarked goblin-crewed unit no landing-then-Kaboom reach (pulp_wars-0ao.15)", () => {
     const water = [at(0, 0), at(0, 1), at(0, 2), at(1, 0)];
     const state = goblinArenaV7(
       ["ORIGINAL", "GOBLIN"],
@@ -1680,30 +1680,34 @@ describe("ruleset-7 Goblin Kaboom threat reach", () => {
     );
     const goblin = unitAtV7(state, at(0, 1));
     const cart = unitAtV7(state, at(0, 2));
-    // Landing then Kaboom is one legal activation: landing spends no
-    // primary action, so the landed unit may still explode.
+    // Landing ends the activation (revisions 6 and 16): the landed unit is
+    // offered no Kaboom and the engine rejects one atomically.
     const goblinSeat = seatIdV7(state, 1);
     const landed = applyOkV7(
       { ...state, activeSeatIndex: state.turnOrder.indexOf(goblinSeat) },
       goblinSeat,
       { kind: "DISEMBARK", unitId: goblin.id, at: at(1, 1) },
     ).state;
-    expect(queryPlayerCommandsV7(landed, goblinSeat)).toContainEqual({
+    expect(queryPlayerCommandsV7(landed, goblinSeat)).not.toContainEqual({
       kind: "KABOOM",
       unitId: goblin.id,
     });
-    applyOkV7(landed, goblinSeat, { kind: "KABOOM", unitId: goblin.id });
+    const kaboom = applyCommandV7(landed, goblinSeat, {
+      kind: "KABOOM",
+      unitId: goblin.id,
+    });
+    expect(kaboom).toMatchObject({
+      accepted: false,
+      state: landed,
+      events: [],
+      error: { code: "UNIT_ALREADY_ACTED", params: { unitId: goblin.id } },
+    });
     const viewer = state.humanPlayerId;
     const view = viewForV7(state, viewer);
     const has = (tiles: readonly CoordV7[], where: CoordV7) =>
       tiles.some((tile) => sameV7(tile, where));
     for (const unit of [goblin, cart]) {
       const tiles = queryThreatenedTilesV7(state, unit.id, viewer);
-      // It lands next to its water (the Goblin also via (1, 0) onto (2, 1))
-      // and blasts the cells around the landing cell, but no farther.
-      expect(has(tiles, at(2, 2))).toBe(true);
-      expect(has(tiles, at(3, 2))).toBe(true);
-      expect(has(tiles, at(2, 3))).toBe(true);
       expect(has(tiles, at(4, 2))).toBe(false);
       // The public query covers the Normal AI's reach model.
       for (const where of publicThreatenedTilesForPolicyV7(
@@ -1712,6 +1716,12 @@ describe("ruleset-7 Goblin Kaboom threat reach", () => {
       ))
         expect(has(tiles, where)).toBe(true);
     }
+    // The Goblin (range 1) keeps only the ordinary embarked envelope (its
+    // attack range from the water cells it can reach), not the blast around
+    // its landing cells (1, 1), (1, 2), and (2, 1) that 0ao.11 added.
+    const goblinTiles = queryThreatenedTilesV7(state, goblin.id, viewer);
+    for (const where of [at(2, 2), at(3, 2), at(2, 3), at(3, 1)])
+      expect(has(goblinTiles, where)).toBe(false);
   });
 });
 

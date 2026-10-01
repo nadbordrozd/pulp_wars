@@ -30,6 +30,7 @@ import {
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import { checkedV7 } from "../fixtures/v7-builders";
+import { goblinArenaV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
 import {
   READY_ACTIVATION_V7,
   embarkedLandingV7,
@@ -134,6 +135,82 @@ describe("Ruleset 7 revision-16 landing preview in the DOM app", () => {
     expect(
       port.state.units.find((unit) => unit.id === fixture.unitId),
     ).toMatchObject({ form: "EMBARKED", at: fixture.start });
+    app.destroy();
+  });
+});
+
+// Revisions 6 and 16 (`pulp_wars-0ao.15`): landing ends the activation, so
+// the dock of a landed unit offers no action (and no map target).
+describe("Ruleset 7 landed unit dock", () => {
+  it("shows no actionable button for a landed Goblin next to an enemy", async () => {
+    const water = [at(0, 0), at(0, 1), at(0, 2), at(1, 0)];
+    const landing = at(1, 1);
+    const arena = (form: "EMBARKED" | "LAND", where: CoordV7) =>
+      goblinArenaV7(
+        ["GOBLIN", "ORIGINAL"],
+        [
+          { seat: 0, role: "FIGHTER", at: where, form },
+          { seat: 1, role: "FIGHTER", at: at(2, 1) },
+        ],
+        { water },
+      );
+    const actionable = () =>
+      Array.from(
+        document.querySelectorAll<HTMLButtonElement>(
+          ".v7-selection-dock .v7-context-actions button",
+        ),
+      )
+        .filter((item) => item.getAttribute("aria-disabled") !== "true")
+        .map((item) => item.dataset.action);
+    // Control: the same Goblin standing ready on the landing cell has
+    // Kaboom and Wait buttons.
+    const ready = arena("LAND", landing);
+    const readyPort = new FixturePort(ready);
+    const readyHost = new CapturingBoardHost();
+    const readyApp = new Ruleset7DomAppView(
+      document,
+      requiredRoot(),
+      readyPort,
+      { boardHost: readyHost, settingsStorage: null },
+    );
+    readyHost.callbacks?.onSelection({
+      kind: "UNIT",
+      unitId: unitAtV7(ready, landing).id,
+    });
+    expect(actionable()).toEqual(
+      expect.arrayContaining(["command-kaboom", "command-wait"]),
+    );
+    readyApp.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    const state = arena("EMBARKED", at(0, 1));
+    const unitId = unitAtV7(state, at(0, 1)).id;
+    const port = new FixturePort(state);
+    const host = new CapturingBoardHost();
+    const app = new Ruleset7DomAppView(document, requiredRoot(), port, {
+      boardHost: host,
+      settingsStorage: null,
+    });
+    host.callbacks?.onSelection({ kind: "UNIT", unitId });
+    const result = await port.dispatch({
+      kind: "DISEMBARK",
+      unitId,
+      at: landing,
+    });
+    expect(result.accepted).toBe(true);
+    host.callbacks?.onSelection({ kind: "UNIT", unitId });
+    expect(port.state.units.find((unit) => unit.id === unitId)).toMatchObject({
+      form: "LAND",
+      at: landing,
+    });
+    expect(actionable()).toEqual([]);
+    expect(
+      port
+        .snapshot()
+        .offeredCommands.filter(
+          (command) => "unitId" in command && command.unitId === unitId,
+        ),
+    ).toEqual([]);
     app.destroy();
   });
 });
@@ -288,6 +365,10 @@ class CapturingBoardHost implements BoardHostV7 {
     this.callbacks = null;
     this.model = null;
   }
+}
+
+function at(x: number, y: number): CoordV7 {
+  return { x, y };
 }
 
 function requiredRoot(): HTMLElement {

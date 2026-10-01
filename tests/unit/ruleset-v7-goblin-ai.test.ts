@@ -686,7 +686,7 @@ describe("ruleset-7 revision-17 Normal AI: against Goblins", () => {
     ).toContainEqual(kill);
   });
 
-  it("reaches Kaboom threat through an embarked Goblin that can land", () => {
+  it("gives an embarked Goblin no landing-then-Kaboom reach (pulp_wars-0ao.15)", () => {
     const { state, view } = arena(
       ["ORIGINAL", "GOBLIN"],
       [
@@ -697,9 +697,13 @@ describe("ruleset-7 revision-17 Normal AI: against Goblins", () => {
     );
     const embarked = unitAtV7(state, at(0, 1));
     const reach = publicThreatenedTilesForPolicyV7(view, embarked);
-    // It lands on (1, 1) or (1, 2) and blasts the cells around it.
-    expect(reach).toContainEqual(at(2, 2));
+    // Landing on (1, 1) or (1, 2) ends its activation, so it cannot blast
+    // the cells around a landing cell this turn: like any embarked unit it
+    // is modelled by its attack range from where it floats.
+    expect(reach).not.toContainEqual(at(2, 2));
     expect(reach).not.toContainEqual(at(4, 2));
+    for (const tile of reach)
+      expect(Math.max(Math.abs(tile.x - 0), Math.abs(tile.y - 1))).toBe(1);
   });
 });
 

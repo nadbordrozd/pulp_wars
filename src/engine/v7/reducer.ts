@@ -1465,7 +1465,15 @@ function applyDisembark(
             at: command.at,
             form: "LAND" as const,
             captureEligible: false,
-            activation: { ...candidate.activation, moved: true, handled: true },
+            // Revisions 6 and 16 (`pulp_wars-0ao.15`): landing ends the
+            // activation for every faction, like embarking: no further Move,
+            // primary action (Attack, Kaboom, Recover, specials), Pillage,
+            // Field Defense, or Disband this turn. The water path length is
+            // kept (embarked units are never Tended or Inspired).
+            activation: {
+              ...exhaustedActivation(),
+              movedPathLength: candidate.activation.movedPathLength,
+            },
           }
         : candidate,
     );

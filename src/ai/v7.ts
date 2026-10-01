@@ -2194,11 +2194,8 @@ function* publicThreatenedTilesWorkV7(
 ): Generator<void, readonly CoordV7[]> {
   const rule = unitRoleRuleV7(view, unit);
   const facts = publicCombatFacts(view, unit, policyLookup);
-  // Revision 17 (`pulp_wars-0ao.6`): an embarked goblin-crewed unit may land
-  // (after at most one sailing step) and Kaboom the same turn, threatening
-  // every tile within Chebyshev 1 of a landing tile.
-  if (unit.form === "EMBARKED" && kaboomDamageV7(view, unit) > 0)
-    return yield* embarkedKaboomReachWorkV7(view, unit, lookup);
+  // `pulp_wars-0ao.15`: landing ends the activation, so an embarked
+  // goblin-crewed unit has no same-turn Kaboom reach (revisions 6 and 16).
   // Revision 13: a hostile Banshee's Wail threatens a living viewer within
   // Chebyshev 2 of every tile it can reach (it may Wail after moving).
   const wail = publicWailThreatV7(view, unit);
@@ -2301,39 +2298,6 @@ function* publicThreatenedTilesWorkV7(
 }
 
 const WAIL_THREAT_RADIUS_V7 = 2;
-
-function* embarkedKaboomReachWorkV7(
-  view: PlayerViewV7,
-  unit: PublicUnitV7,
-  lookup: PublicThreatLookupV7,
-): Generator<void, readonly CoordV7[]> {
-  const open = (at: CoordV7) =>
-    !(lookup.occupantsByKey.get(coordKey(at)) ?? []).some(
-      (occupant) => occupant.id !== unit.id,
-    );
-  // One sailing step leaves the landing point (revision 16).
-  const waters = [unit.at];
-  if (EMBARKED_LANDING_MAX_SPENT_V7 >= 1)
-    for (const next of neighbors8V7(view, unit.at)) {
-      const tile = tileAtPublicV7(view, next);
-      if (publicMovementTilePossible(view, unit, tile, lookup) && open(next))
-        waters.push(next);
-    }
-  const landed: PublicUnitV7 = { ...unit, form: "LAND" };
-  const reach = new Map<string, CoordV7>();
-  for (const water of waters) {
-    for (const landing of neighbors8V7(view, water)) {
-      const tile = tileAtPublicV7(view, landing);
-      if (!publicMovementTilePossible(view, landed, tile, lookup)) continue;
-      if (!open(landing)) continue;
-      reach.set(coordKey(landing), landing);
-      for (const around of neighbors8V7(view, landing))
-        reach.set(coordKey(around), around);
-    }
-    yield;
-  }
-  return [...reach.values()];
-}
 
 /** A visible hostile land Banshee threatens a living viewer (section 6.6). */
 function publicWailThreatV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
@@ -6923,8 +6887,9 @@ function visibleImmediateDamage(
     view.units.filter((unit) => isHostile(view, unit.ownerId));
   // Revision 13 (Undead matches only): Wail, Lich splash, and Infect.
   const undead = context?.undead ?? undeadMatchForPolicyV7(view);
-  // Revision 17 (Goblin matches only): bomb splash, Gang Up, and the Kaboom
-  // of an embarked goblin-crewed unit that lands next to the actor.
+  // Revision 17 (Goblin matches only): bomb splash and Gang Up. Landing ends
+  // the activation (`pulp_wars-0ao.15`), so an embarked goblin-crewed unit
+  // has no same-turn Kaboom and is modelled like any embarked unit.
   const goblin = context?.goblin ?? goblinMatchForPolicyV7(view);
   for (const hostile of hostiles) {
     const facts = publicCombatFacts(view, hostile, effectiveLookup);
@@ -6933,16 +6898,6 @@ function visibleImmediateDamage(
       hostile.form === "LAND" &&
       isBansheeV7(view, hostile) &&
       isLivingOwnerV7(view, actor.ownerId);
-    if (goblin && hostile.form === "EMBARKED") {
-      const kaboom = kaboomDamageV7(view, hostile);
-      if (
-        kaboom > 0 &&
-        (context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ??
-          distance(hostile.at, at) <= 3)
-      )
-        total += Math.min(kaboom, actor.hp);
-      continue;
-    }
     if (!wail && (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0))
       continue;
     const d = distance(hostile.at, at);

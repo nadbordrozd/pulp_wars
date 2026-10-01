@@ -1436,6 +1436,15 @@ describe("ruleset-7 all-Human parity digests", () => {
   // every digest below unchanged: its only all-Human difference is the
   // neutral combat-preview field `gangUp: 0`, removed before hashing like the
   // revision-13 and revision-14 neutral fields.
+  // `pulp_wars-0ao.15` (landing ends the activation for every faction,
+  // revisions 6 and 16) changes the command, event, final state, view, and
+  // command digests: in the 64841f1 matches the Normal AI attacked with a
+  // unit it had just landed (seed 7 first at command 55, seed 1234 first at
+  // command 342), and each match's first divergence is exactly that Attack,
+  // now illegal. With only the old landing activation restored in the
+  // reducer, both matches reproduced the previous digests exactly. Map and
+  // post-generation PRNG digests, rounds, and terminations are unchanged;
+  // seed 7 has 331 commands (was 238) and seed 1234 has 359 (was 362).
   const BASELINE = [
     {
       seed: 7,
@@ -1444,7 +1453,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "RIVAL",
       mapType: "CONTINENTS",
       maxRounds: 30,
-      acceptedCommands: 238,
+      acceptedCommands: 331,
       rounds: 31,
       termination: "ROUND_CAP",
       mapHash:
@@ -1452,15 +1461,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "5d3c1466a272a403979e43806c2770bc8a755b7c36ceed19e71f0ac04b46e4b7",
+        "4a05bacf356ce086dcc180dfb8d3a16b7fbb2b234d6c1116015f5f21a02391a4",
       eventHash:
-        "c3b4210bbd23193ccc4d4bf81bc45fa0db4a75e8883f227a82f21f27b8a96128",
+        "46dd95a18ce260841dadcf571b6d83be9c1b873a1cdf8a0616a35900e63787e8",
       normalizedFinalStateHash:
-        "9f75de766fda8fb1954bada46226f5ddb100141a1877c50e2260f4fcdd3a04e1",
+        "307b81dd247e9d34f02beca34b5aa22de5447f7df80f76c0de0477d128a8eb25",
       normalizedHumanViewHash:
-        "7d64e7604b184097f51f7d92d6119c38494f83fbc63ec69c59041085b4047e69",
+        "6cf96dac179e1849528ac78076726ed56d4c4bff42c2efd418aaa2adc9a83a9a",
       normalizedHumanCommandsHash:
-        "bc161528d660a647697cabfec3526b9a6fcc5951280f8e692ad67ed8047ab703",
+        "20ea9965c6f8c77038134a432116c40c82ea737ede63eb645ce3d91740d5a041",
     },
     {
       seed: 1234,
@@ -1469,7 +1478,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "COOPERATIVE",
       mapType: "ARCHIPELAGO",
       maxRounds: 18,
-      acceptedCommands: 362,
+      acceptedCommands: 359,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1477,15 +1486,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "30324e124ff71f75fb31a74824d21f838c6ba16a6d1936643f70f7e9966f5b2a",
+        "1aa804efe8fb4d02ecf4f7942dd0760a83fecf0508176d412e4895c2d4399f7b",
       eventHash:
-        "07337b7fd4170ff0a9bc94415ac86b0f2235079818f4458bd43414aa51e8087e",
+        "eba627e132dc6f9c1e2ac3053383be6300b9b260285d22c34cc6e2abfe086dc8",
       normalizedFinalStateHash:
-        "c2c3b97ca95a6f3e45f498196141c0bf06494ac87e8e3c1097ac51052021fe33",
+        "3d6de90155062f759bc49b8251adebf22fd98b5defa9ba71d2b6f303f56fa397",
       normalizedHumanViewHash:
-        "538a2b1c582b816de4609be7e74db4cf97c8b74058902ed8747deded51c1d244",
+        "21524bff31671d867a02def80fa9886833f52378e404ceacf303c487533e2041",
       normalizedHumanCommandsHash:
-        "aa1fdc255f928c60a2658c35eaac4a01f51f24ec796504baf812ed82260a77d5",
+        "377e785d882a064888a6d44b08c3334d74f6327917a78f3df638450c515d3d5e",
     },
   ] as const;
 

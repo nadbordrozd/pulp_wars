@@ -969,8 +969,15 @@ units on the tile receive none. There is no other city-center defense bonus.
   cell an embarked unit lands either directly on an adjacent cell, or after a
   one-cell Move on a cell adjacent to that water cell; after a two-cell Move it
   cannot land that turn. ZOC does not block landing, and a Move interrupted
-  after one cell may still land. Landing ends its activation, and it cannot
-  capture until a later turn. The browser marks direct landing cells ("Land
+  after one cell may still land. Landing ends the unit's activation for every
+  faction: for the rest of that turn the landed unit cannot Move, Attack,
+  Kaboom, Recover, Capture, Pillage, Fortify, use any special action, Wait, or
+  Disband (Promote, which never depends on the activation, stays available).
+  The public command query offers none of these, and the engine rejects them
+  atomically with the existing codes for a unit that already acted (Attack,
+  Kaboom, Move, Recover, Disband: `UNIT_ALREADY_ACTED`; Wait:
+  `UNIT_ALREADY_HANDLED`; Capture: `CAPTURE_NOT_ELIGIBLE`). It may capture
+  from a later turn. The browser marks direct landing cells ("Land
   now") and cells reachable by one water step then landing ("Move 1, then
   land"), sending the Move and then `DISEMBARK` for the latter.
 - **Port** (Shorecraft, 4 Coins): on owned Shallow Water with a land cell of

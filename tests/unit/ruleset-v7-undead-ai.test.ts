@@ -543,6 +543,11 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
       // pulp_wars-vkq.21 AI: the earlier cases no longer reach a Devour (seed
       // 0 did until the revision-16 economy numbers; seed 13 does with them).
       { factions: ["ORIGINAL", "UNDEAD"], seed: 13, mapType: "PANGEA" },
+      // pulp_wars-0ao.15: every Wail of the earlier cases was in seed 2,
+      // which changed once a landed unit can no longer attack the same turn
+      // (its old command log had three post-landing actions). This Dry Land
+      // match has no landings and Wails three times.
+      { factions: ["UNDEAD", "ORIGINAL"], seed: 0, mapType: "DRY_LAND" },
     ];
     const used: Record<string, number> = {
       RAISE_DEAD: 0,
