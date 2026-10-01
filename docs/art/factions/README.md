@@ -9,7 +9,9 @@ user has named the Undead faction (epic `pulp_wars-vkq`); its fragment is
 bead `pulp_wars-vkq.11` and must follow the rules below. The user approved
 it on 2026-09-29: [`UNDEAD`](UNDEAD.md). The Goblin faction (epic
 `pulp_wars-0ao`) has its fragment in bead `pulp_wars-0ao.10`:
-[`GOBLIN`](GOBLIN.md), approved by the root on 2026-09-30.
+[`GOBLIN`](GOBLIN.md), approved by the root on 2026-09-30. The Dinosaur
+faction (epic `pulp_wars-c87`) has its fragment in bead `pulp_wars-c87.6`:
+[`DINOSAUR`](DINOSAUR.md), approved by the root on 2026-10-01.
 
 ## How the layers combine
 
