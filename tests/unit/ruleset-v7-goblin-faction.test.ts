@@ -14,6 +14,7 @@ import {
   RULESET_7,
   RULESET_7_ID,
   STARTING_FIGHTERS_V7,
+  TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7,
   TECHNOLOGY_IDS_V7,
   UNDEAD_ROLE_MECHANICS_V7,
   UNIT_ROLE_IDS_V7,
@@ -44,7 +45,6 @@ import {
   runReplayV7,
   startingCompanionCellV7,
   technologyCapabilitiesV7,
-  technologyDisplayNameV7,
   unitRoleRuleV7,
   type BoardStateV7,
   type CommandV7,
@@ -692,12 +692,13 @@ describe("ruleset-7 Goblin technology", () => {
   });
 
   it("names and describes technologies from the viewer's faction", () => {
-    expect(technologyDisplayNameV7("COMMERCE", "GOBLIN")).toBe("Plunder");
-    expect(technologyDisplayNameV7("COMMERCE", "ORIGINAL")).toBe("Commerce");
-    expect(technologyDisplayNameV7("COMMERCE", "UNDEAD")).toBe("Commerce");
-    expect(technologyDisplayNameV7("NAVAL_ENGINEERING", "GOBLIN")).toBe(
-      "Naval Engineering",
-    );
+    // Only Goblin Commerce is renamed; the UI's `technologyNameV7` applies
+    // these overrides (tests/unit/ruleset7-goblin-presentation.test.ts).
+    expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7).toEqual({
+      ORIGINAL: {},
+      UNDEAD: {},
+      GOBLIN: { COMMERCE: "Plunder" },
+    });
     const state = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],
       [

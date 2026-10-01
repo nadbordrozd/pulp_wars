@@ -9,6 +9,7 @@ import {
   viewForV7,
   type CommandV7,
   type CoordV7,
+  type FactionIdV7,
   type GameStateV7,
   type MatchSetupV7,
 } from "../../src/engine/index";
@@ -341,6 +342,59 @@ describe("Revision 17 Goblin DOM", () => {
     expect(recruit.label).toBe("Goblin");
     expect(recruit.restrictions).toContain(
       `Kaboom ${KABOOM}: ${kaboomText(KABOOM)}`,
+    );
+  });
+
+  it("names Plague and bite cures in Help only for viewers who have them", () => {
+    // pulp_wars-0ao.16: only a Human Captain's Tend Wounded cures Plague and
+    // bites. Seat 0 is the viewer.
+    const helpTips = (factions: readonly FactionIdV7[]): string => {
+      document.body.innerHTML = '<div id="app"></div>';
+      const controller = new FixtureController(
+        goblinArenaV7(factions, [
+          { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
+        ]),
+      );
+      const app = mount(controller, new RecordingBoardHost());
+      requiredButton("compact-menu").click();
+      requiredButton("help").click();
+      const tips = [
+        ...requiredElement<HTMLElement>(".v7-help-tips").querySelectorAll("li"),
+      ].map((item) => item.textContent ?? "");
+      app.destroy();
+      return tips.join("\n");
+    };
+
+    const goblin = helpTips(["GOBLIN", "UNDEAD"]);
+    expect(goblin).toContain(
+      "Lich shots plague your units for 3 turns: −2 HP each turn, spreading to neighbours on the first. Goblins can't cure it; only killing the Lich ends it sooner.",
+    );
+    expect(goblin).toContain(
+      "Zombie bites make your units rise as enemy Zombies when they die; Goblins can't cure bites.",
+    );
+    expect(goblin).not.toMatch(/Captain|Tend/);
+
+    const human = helpTips(["ORIGINAL", "UNDEAD", "GOBLIN"]);
+    expect(human).toContain(
+      "Killing the Lich or a Captain's Tend ends it sooner.",
+    );
+    expect(human).toContain("a Captain's Tend cures bites.");
+
+    const undeadVsGoblin = helpTips(["UNDEAD", "GOBLIN"]);
+    expect(undeadVsGoblin).toContain(
+      "A Lich's shots plague living units for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner only if the Lich dies.",
+    );
+    expect(undeadVsGoblin).toContain(
+      "Zombies bite living land units; a bitten unit that dies rises as the biter's Zombie.",
+    );
+    expect(undeadVsGoblin).not.toMatch(/Captain|tends/);
+
+    const undeadAll = helpTips(["UNDEAD", "ORIGINAL", "GOBLIN"]);
+    expect(undeadAll).toContain(
+      "It ends sooner if the Lich dies or a Human Captain tends them.",
+    );
+    expect(undeadAll).toContain(
+      "rises as the biter's Zombie unless a Human Captain tends it first.",
     );
   });
 

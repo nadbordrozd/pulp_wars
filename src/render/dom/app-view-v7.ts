@@ -94,6 +94,7 @@ import {
   RESTLESS_EXPLANATION_V7,
   devourPreviewDescriptionV7,
   disbandBlockedByAfflictionV7,
+  factionCanCureAfflictionsV7,
   factionNameV7,
   matchHasUndeadV7,
   raiseDeadPreviewDescriptionV7,
@@ -2190,8 +2191,8 @@ export class Ruleset7DomAppView {
       "Select a tile in your land to harvest or build.",
       "Spend coins on technology to unlock more. Your first technology is free.",
       "Fruit is visible from the start; Gathering reveals Fertile Ground.",
-      ...(undeadViewer
-        ? UNDEAD_HELP_TIPS
+      ...(view !== null && undeadViewer
+        ? undeadHelpTipsV7(view)
         : [
             // Revision 17: Goblin Wolf Riders have no Escape.
             ...(view?.viewer.faction === "GOBLIN"
@@ -2200,8 +2201,17 @@ export class Ruleset7DomAppView {
             ...(view !== null && matchHasUndeadV7(view)
               ? [
                   "Units that fall in battle on land leave Graves. Undead raise or devour them, and Zombie kills rise as Zombies.",
-                  "Lich shots plague your units for 3 turns: −2 HP each turn, spreading to neighbours on the first. Killing the Lich or a Captain's Tend ends it sooner.",
-                  "Zombie bites make your units rise as enemy Zombies when they die; a Captain's Tend cures bites.",
+                  // pulp_wars-0ao.16: only a Captain's Tend cures; Goblins
+                  // (no Tend Wounded) have no cure.
+                  ...(factionCanCureAfflictionsV7(view.viewer.faction)
+                    ? [
+                        "Lich shots plague your units for 3 turns: −2 HP each turn, spreading to neighbours on the first. Killing the Lich or a Captain's Tend ends it sooner.",
+                        "Zombie bites make your units rise as enemy Zombies when they die; a Captain's Tend cures bites.",
+                      ]
+                    : [
+                        `Lich shots plague your units for 3 turns: −2 HP each turn, spreading to neighbours on the first. ${factionNameV7(view.viewer.faction)}s can't cure it; only killing the Lich ends it sooner.`,
+                        `Zombie bites make your units rise as enemy Zombies when they die; ${factionNameV7(view.viewer.faction)}s can't cure bites.`,
+                      ]),
                   "Your units can't strike back at a Vampire's attack.",
                 ]
               : []),
@@ -4755,16 +4765,33 @@ function playerTitle(view: PlayerViewV7, seat: number): string {
     : playerName(seat);
 }
 
-const UNDEAD_HELP_TIPS: readonly string[] = [
-  "Units that fall in battle on land leave Graves.",
-  "A Necromancer raises Skeletons from adjacent Graves; a Ghoul devours the Grave it stands on to heal.",
-  "A Banshee can't attack; it Wails at every visible living enemy within 2 tiles.",
-  "Zombie kills rise as your Zombies, Vampires heal from damage they deal, and Lich shots splash.",
-  "Restless: your units recover only inside your territory.",
-  "A Lich's shots plague living units for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if the Lich dies or a Captain tends them.",
-  "Zombies bite living land units; a bitten unit that dies rises as the biter's Zombie unless a Captain tends it first.",
-  "Enemies can't strike back at a Vampire's attack.",
-];
+/**
+ * Undead viewer Help. pulp_wars-0ao.16: the Plague and bite tips name a
+ * Captain's cure only when a seat can Tend (Human); with a Goblin seat too it
+ * is a Human Captain, and with no Human seat nobody can cure them.
+ */
+function undeadHelpTipsV7(view: PlayerViewV7): readonly string[] {
+  const curable = view.players.some((player) =>
+    factionCanCureAfflictionsV7(player.faction),
+  );
+  const captain = matchHasGoblinV7(view) ? "a Human Captain" : "a Captain";
+  return [
+    "Units that fall in battle on land leave Graves.",
+    "A Necromancer raises Skeletons from adjacent Graves; a Ghoul devours the Grave it stands on to heal.",
+    "A Banshee can't attack; it Wails at every visible living enemy within 2 tiles.",
+    "Zombie kills rise as your Zombies, Vampires heal from damage they deal, and Lich shots splash.",
+    "Restless: your units recover only inside your territory.",
+    `A Lich's shots plague living units for 3 turns: −2 HP each turn, spreading to neighbours on the first. ${
+      curable
+        ? `It ends sooner if the Lich dies or ${captain} tends them.`
+        : "It ends sooner only if the Lich dies."
+    }`,
+    `Zombies bite living land units; a bitten unit that dies rises as the biter's Zombie${
+      curable ? ` unless ${captain} tends it first.` : "."
+    }`,
+    "Enemies can't strike back at a Vampire's attack.",
+  ];
+}
 
 /** Revision 14 Tend Wounded text, shown in Undead matches only. */
 const TEND_CURES_DESCRIPTION =

@@ -1208,7 +1208,9 @@ export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
 
 /**
  * Revision 17: per-faction technology display names. Serialized technology
- * IDs never change; only Goblin Commerce is renamed (Plunder).
+ * IDs never change; only Goblin Commerce is renamed (Plunder). The single
+ * name helper, `technologyNameV7` in src/render/goblin-presentation-v7.ts,
+ * applies these overrides and otherwise keeps the sentence-case name.
  */
 export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   Record<FactionIdV7, Readonly<Partial<Record<TechnologyIdV7, string>>>>
@@ -1217,22 +1219,6 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   UNDEAD: {},
   GOBLIN: { COMMERCE: "Plunder" },
 });
-
-/** A technology's display name for a viewer of `faction`. */
-export function technologyDisplayNameV7(
-  tech: TechnologyIdV7,
-  faction: FactionIdV7,
-): string {
-  const override = TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7[faction][tech];
-  return (
-    override ??
-    tech
-      .toLowerCase()
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
-  );
-}
 
 export function factionTreeV7(faction: FactionIdV7): FactionTechnologyTreeV7 {
   const tree = Object.hasOwn(FACTION_TREES_V7, faction)

@@ -2,6 +2,7 @@ import {
   FACTION_DISPLAY_NAMES_V7,
   PLAGUE_DURATION_TURNS_V7,
   factionRulesV7,
+  factionTreeV7,
   gravesEnabledV7,
   playerFactionV7,
   queryPlayerCommandsV7,
@@ -33,6 +34,17 @@ export function matchHasUndeadV7(view: Pick<PlayerViewV7, "setup">): boolean {
 
 export function factionNameV7(faction: FactionIdV7): string {
   return FACTION_DISPLAY_NAMES_V7[faction];
+}
+
+/**
+ * True when `faction` registers a role with Tend Wounded, the only cure for
+ * Plague and Bitten (a Human Captain). Windmills and Troll regeneration heal
+ * HP but cure nothing, so Goblins have no cure (revision 17 section 5.4).
+ */
+export function factionCanCureAfflictionsV7(faction: FactionIdV7): boolean {
+  return Object.values(factionTreeV7(faction).roleRules).some((rule) =>
+    rule.abilities.includes("TEND_WOUNDED"),
+  );
 }
 
 /** A unit's name under its owner's faction registration. */
@@ -247,6 +259,15 @@ export function unitAfflictionsV7(
   unitId: number,
 ): readonly UnitAfflictionV7[] {
   const result: UnitAfflictionV7[] = [];
+  // pulp_wars-0ao.16: name the Captain's cure only when the afflicted unit's
+  // owner has one; Goblin units (no Tend Wounded) cannot be cured.
+  const owner = view.units.find((unit) => unit.id === unitId)?.ownerId;
+  const ownerFaction =
+    owner === undefined ? undefined : playerFactionV7(view, owner);
+  const uncurable =
+    ownerFaction !== undefined && !factionCanCureAfflictionsV7(ownerFaction)
+      ? `${factionNameV7(ownerFaction)}s`
+      : null;
   const plague = view.plagued.find((entry) => entry.unitId === unitId);
   if (plague !== undefined) {
     const source =
@@ -271,7 +292,11 @@ export function unitAfflictionsV7(
     result.push({
       id: "PLAGUE",
       chip: `Plague · ${turns} ${turns === 1 ? "turn" : "turns"}`,
-      explanation: `Plague from ${lich}: ${damage}${spread}. It ends sooner if that Lich dies or a Captain tends it.`,
+      explanation: `Plague from ${lich}: ${damage}${spread}. ${
+        uncurable === null
+          ? "It ends sooner if that Lich dies or a Captain tends it."
+          : `It ends sooner only if that Lich dies; ${uncurable} can't cure it.`
+      }`,
     });
   }
   const bite = view.bitten.find((entry) => entry.unitId === unitId);
@@ -280,7 +305,11 @@ export function unitAfflictionsV7(
     result.push({
       id: "BITTEN",
       chip: "Bitten",
-      explanation: `Bitten by ${biter} Zombie: if it dies it rises as ${biter} Zombie, unless a Captain tends it first.`,
+      explanation: `Bitten by ${biter} Zombie: if it dies it rises as ${biter} Zombie${
+        uncurable === null
+          ? ", unless a Captain tends it first."
+          : `; ${uncurable} can't cure bites.`
+      }`,
     });
   }
   return result;

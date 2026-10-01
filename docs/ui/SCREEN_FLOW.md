@@ -251,6 +251,15 @@ Wave 2` → `Yours −3` → `−3`), keeping its lethal red or hazard styling;
   ring and a still "+N" at the midpoint. Help adds a
   "Goblins" list with the ten section 11.3 sentences in every Goblin match,
   and Goblin viewers get no Raider Escape tip.
+- **No cure (`pulp_wars-0ao.16`).** Only a Human Captain's Tend Wounded cures
+  Plague and bites (Windmills and Troll regeneration cure nothing), so cure
+  text names a Captain only where one can help. A Goblin viewer's Plague and
+  bite help tips end "Goblins can't cure it; only killing the Lich ends it
+  sooner." and "Goblins can't cure bites."; a Goblin unit's Plague and Bitten
+  sentences end "It ends sooner only if that Lich dies; Goblins can't cure
+  it." and "; Goblins can't cure bites.". An Undead viewer's tips say "a Human
+  Captain" when a Goblin seat is also present, and drop the Captain clause when
+  no seat is Human. Human viewers and Human/Undead matches read as before.
 - **Review.** `npm run review:ruleset7-goblin-ui` captures these surfaces in
   both art sets at desktop and phone widths (dev server only).
 

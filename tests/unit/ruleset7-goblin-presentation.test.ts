@@ -27,6 +27,10 @@ import {
   technologyNameV7,
 } from "../../src/render/goblin-presentation-v7";
 import {
+  factionCanCureAfflictionsV7,
+  unitAfflictionsV7,
+} from "../../src/render/undead-presentation-v7";
+import {
   portraitSubjectV7,
   technologySubjectV7,
 } from "../../src/assets/chibi-ui-art-v7";
@@ -374,6 +378,7 @@ describe("Revision 17 Goblin presentation text", () => {
       expect(technologyNameV7("CHIVALRY", faction)).toBe("Chivalry");
     }
     expect(technologyNameV7("COMMERCE", "ORIGINAL")).toBe("Commerce");
+    expect(technologyNameV7("COMMERCE", "UNDEAD")).toBe("Commerce");
     // Goblin land roles have their own portraits (pulp_wars-0ao.8).
     expect(portraitSubjectV7("FIGHTER", "GOBLIN")).toBe(
       "PORTRAIT:GOBLIN:FIGHTER",
@@ -407,6 +412,58 @@ describe("Revision 17 Goblin presentation text", () => {
     expect(
       goblinBoundaryNoticeV7(rally.events.events, rally.before, rally.after),
     ).toBe(null);
+  });
+
+  it("names a Captain's cure on afflicted units only when their owner can Tend", () => {
+    // pulp_wars-0ao.16: only a Human Captain's Tend Wounded cures Plague and
+    // bites; Windmills and Troll regeneration cure nothing.
+    expect(factionCanCureAfflictionsV7("ORIGINAL")).toBe(true);
+    expect(factionCanCureAfflictionsV7("GOBLIN")).toBe(false);
+    expect(factionCanCureAfflictionsV7("UNDEAD")).toBe(false);
+    const arena = goblinArenaV7(
+      ["GOBLIN", "UNDEAD", "ORIGINAL"],
+      [
+        { seat: 0, role: "FIGHTER", at: { x: 5, y: 4 } },
+        { seat: 1, role: "CATAPULT", at: { x: 7, y: 4 } },
+        { seat: 1, role: "GUARD", at: { x: 6, y: 5 } },
+        { seat: 2, role: "FIGHTER", at: { x: 5, y: 6 } },
+      ],
+    );
+    const at = (x: number, y: number) =>
+      required(arena.units.find((unit) => unit.at.x === x && unit.at.y === y))
+        .id;
+    const [goblin, lich, zombie, human] = [
+      at(5, 4),
+      at(7, 4),
+      at(6, 5),
+      at(5, 6),
+    ];
+    const state: GameStateV7 = {
+      ...arena,
+      plagued: [goblin, human].map((unitId) => ({
+        unitId,
+        sourceUnitId: lich,
+        turnsRemaining: 2,
+      })),
+      bitten: [goblin, human].map((unitId) => ({
+        unitId,
+        biterPlayerId: seatIdV7(arena, 1),
+        biterUnitId: zombie,
+      })),
+    };
+    const view = viewForV7(state, seatIdV7(state, 0));
+    expect(
+      unitAfflictionsV7(view, goblin).map((item) => item.explanation),
+    ).toEqual([
+      "Plague from Player 2's Lich: −2 HP at the start of each of its next 2 turns, then it ends. It ends sooner only if that Lich dies; Goblins can't cure it.",
+      "Bitten by Player 2's Zombie: if it dies it rises as Player 2's Zombie; Goblins can't cure bites.",
+    ]);
+    expect(
+      unitAfflictionsV7(view, human).map((item) => item.explanation),
+    ).toEqual([
+      "Plague from Player 2's Lich: −2 HP at the start of each of its next 2 turns, then it ends. It ends sooner if that Lich dies or a Captain tends it.",
+      "Bitten by Player 2's Zombie: if it dies it rises as Player 2's Zombie, unless a Captain tends it first.",
+    ]);
   });
 });
 
