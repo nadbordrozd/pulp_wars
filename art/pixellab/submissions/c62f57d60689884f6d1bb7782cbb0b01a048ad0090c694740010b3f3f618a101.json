@@ -1,0 +1,36 @@
+{
+  "id": "dinosaur-city-3-a-edit",
+  "jobId": "ab3c9ea6-34b9-4ef9-99e8-8fbf2d33ba99",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-dinosaur",
+    "asset": "chibi-dinosaur-city-3",
+    "subject": "CITY:DINOSAUR:3",
+    "faction": "DINOSAUR",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 104
+    },
+    "seed": 67232,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass, the soil slab and the row of dark stones along its edge under the camp, so the rib arch, the tents and the hut stand directly on a transparent background with nothing at all under them. Keep the giant cream rib-cage arch, the horned cream skull, the bright red awning and roof, the bright red cone tents, the red flags, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass, the soil slab and the row of dark stones along its edge under the camp, so the rib arch, the tents and the hut stand directly on a transparent background with nothing at all under them. Keep the giant cream rib-cage arch, the horned cream skull, the bright red awning and roof, the bright red cone tents, the red flags, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass, the soil slab and the row of dark stones along its edge under the camp, so the rib arch, the tents and the hut stand directly on a transparent background with nothing at all under them. Keep the giant cream rib-cage arch, the horned cream skull, the bright red awning and roof, the bright red cone tents, the red flags, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass, the soil slab and the row of dark stones along its edge under the camp, so the rib arch, the tents and the hut stand directly on a transparent background with nothing at all under them. Keep the giant cream rib-cage arch, the horned cream skull, the bright red awning and roof, the bright red cone tents, the red flags, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "dinosaur-city-3-a",
+      "candidate": 0,
+      "sha256": "ad94d2b290f21427abed0d92d3b19c8b68acbe7a25163d5d6e12aca6289e9685"
+    }
+  }
+}

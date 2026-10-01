@@ -181,14 +181,15 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
   DINOSAUR: "Dinosaur",
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
-type FactionBadgeV7 = "UNDEAD" | "GOBLIN" | null;
+type FactionBadgeV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR" | null;
 /**
- * The placeholder badge of a faction. Revision 19: the Dinosaur badge lands
- * with the Dinosaur UI (`pulp_wars-c87.4`); until then Dinosaur units are
- * drawn as the Human art without a badge.
+ * The placeholder badge of a faction. Revision 19 (bead `pulp_wars-c87.7`):
+ * Dinosaur units shown with Human art wear the footprint badge.
  */
 function factionBadgeV7(faction: FactionIdV7): FactionBadgeV7 {
-  return faction === "UNDEAD" || faction === "GOBLIN" ? faction : null;
+  return faction === "UNDEAD" || faction === "GOBLIN" || faction === "DINOSAUR"
+    ? faction
+    : null;
 }
 const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "MOVE",
@@ -5187,12 +5188,18 @@ function factionBadgeArt(
   return frame;
 }
 
-/** The Undead skull badge, or the Goblin head badge. */
+/** The Undead skull, Goblin head or Dinosaur footprint badge. */
 function factionBadgeIcon(
   documentRoot: Document,
-  badge: "UNDEAD" | "GOBLIN",
+  badge: "UNDEAD" | "GOBLIN" | "DINOSAUR",
 ): SVGSVGElement {
-  return badge === "UNDEAD"
-    ? uiIconV7(documentRoot, "skull", "v7-undead-badge")
-    : uiIconV7(documentRoot, "goblin", "v7-undead-badge v7-goblin-badge");
+  if (badge === "UNDEAD")
+    return uiIconV7(documentRoot, "skull", "v7-undead-badge");
+  if (badge === "DINOSAUR")
+    return uiIconV7(
+      documentRoot,
+      "dinosaur",
+      "v7-undead-badge v7-dinosaur-badge",
+    );
+  return uiIconV7(documentRoot, "goblin", "v7-undead-badge v7-goblin-badge");
 }

@@ -61,6 +61,7 @@
     "art:chibi-batch-review": "tsx scripts/art/chibi-batch-review.ts",
     "art:chibi-faction-dry-run-review": "tsx scripts/art/chibi-faction-dry-run-review.ts",
     "art:chibi-goblin-review": "tsx scripts/art/chibi-goblin-review.ts",
+    "art:chibi-dinosaur-review": "tsx scripts/art/chibi-dinosaur-review.ts",
     "art:chibi-faction-cities-review": "tsx scripts/art/chibi-faction-cities-review.ts",
     "art:chibi-playtest3-review": "tsx scripts/art/chibi-playtest3-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",

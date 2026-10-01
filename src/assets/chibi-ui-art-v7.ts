@@ -8,6 +8,7 @@ import type {
 } from "../engine/index";
 import type {
   ArtSubjectV7,
+  DinosaurArtRoleV7,
   GoblinArtRoleV7,
   UndeadArtRoleV7,
 } from "./chibi-art-v7";
@@ -28,9 +29,9 @@ import type {
 const NAVAL_ROLES: readonly UnitRoleIdV7[] = ["PATROL_BOAT", "BATTLESHIP"];
 
 /**
- * The portrait of a role for a faction: Undead and (revision 17, bead
- * pulp_wars-0ao.8) Goblin land roles have their own; naval roles share the
- * Human ship portraits.
+ * The portrait of a role for a faction: Undead, (revision 17, bead
+ * pulp_wars-0ao.8) Goblin and (revision 19, bead pulp_wars-c87.7) Dinosaur
+ * land roles have their own; naval roles share the Human ship portraits.
  */
 export function portraitSubjectV7(
   role: UnitRoleIdV7,
@@ -39,6 +40,8 @@ export function portraitSubjectV7(
   if (NAVAL_ROLES.includes(role)) return `PORTRAIT:${role}`;
   if (faction === "UNDEAD") return `PORTRAIT:UNDEAD:${role as UndeadArtRoleV7}`;
   if (faction === "GOBLIN") return `PORTRAIT:GOBLIN:${role as GoblinArtRoleV7}`;
+  if (faction === "DINOSAUR")
+    return `PORTRAIT:DINOSAUR:${role as DinosaurArtRoleV7}`;
   return `PORTRAIT:${role}`;
 }
 
@@ -89,7 +92,7 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
 /**
  * Technology art for a viewer's faction: the units and portraits a
  * technology shows follow the faction (an Undead Drill shows the Zombie, a
- * Goblin Drill the Orc Brute).
+ * Goblin Drill the Orc Brute, a Dinosaur Drill the Ankylosaurus).
  */
 export function technologySubjectV7(
   tech: TechnologyIdV7,
@@ -102,10 +105,12 @@ export function technologySubjectV7(
       subject.slice("PORTRAIT:".length) as UnitRoleIdV7,
       faction,
     );
-  if (subject === "UNIT:KNIGHT" || subject === "UNIT:GUARD")
-    return faction === "UNDEAD"
-      ? `UNIT:UNDEAD:${subject.slice("UNIT:".length) as UndeadArtRoleV7}`
-      : `UNIT:GOBLIN:${subject.slice("UNIT:".length) as GoblinArtRoleV7}`;
+  if (subject === "UNIT:KNIGHT" || subject === "UNIT:GUARD") {
+    const role = subject.slice("UNIT:".length) as UndeadArtRoleV7;
+    if (faction === "UNDEAD") return `UNIT:UNDEAD:${role}`;
+    if (faction === "DINOSAUR") return `UNIT:DINOSAUR:${role}`;
+    return `UNIT:GOBLIN:${role}`;
+  }
   return subject;
 }
 
@@ -127,7 +132,10 @@ const RESOURCE_COMMANDS: Partial<Record<CommandV7["kind"], ArtSubjectV7>> = {
  * training the faction's portrait, the Undead Rally is Frenzy and the Goblin
  * Rally is WAAAGH! (the Warboss's tin megaphone, bead pulp_wars-0ao.14).
  * Kaboom! is `ICON:ACTION:KABOOM`, the PixelLab bomb; without a raster (and
- * always in LEGACY) it keeps its code-drawn bomb glyph.
+ * always in LEGACY) it keeps its code-drawn bomb glyph. The Dinosaur Rally
+ * is War Drums (`ICON:ACTION:DINOSAUR:RALLY`), and Lay Egg, Hatch and
+ * Stampede are `ICON:ACTION:LAY_EGG`, `ICON:ACTION:HATCH` and
+ * `ICON:ACTION:STAMPEDE` (bead pulp_wars-c87.7).
  */
 export function commandSubjectV7(
   command: CommandV7,
@@ -148,6 +156,7 @@ export function commandSubjectV7(
     case "RALLY":
       if (faction === "UNDEAD") return "ICON:ACTION:UNDEAD:RALLY";
       if (faction === "GOBLIN") return "ICON:ACTION:GOBLIN:RALLY";
+      if (faction === "DINOSAUR") return "ICON:ACTION:DINOSAUR:RALLY";
       return "ICON:ACTION:RALLY";
     default:
       break;

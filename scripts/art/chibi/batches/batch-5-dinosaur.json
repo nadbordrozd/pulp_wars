@@ -1,0 +1,536 @@
+{
+  "schemaVersion": 1,
+  "batch": "5-dinosaur",
+  "title": "Chibi batch 5: Dinosaur interface portraits and command icons",
+  "bead": "pulp_wars-c87.7",
+  "faction": "DINOSAUR",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-portrait-dinosaur-caveman",
+      "subject": "PORTRAIT:DINOSAUR:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-dinosaur-raptor",
+      "subject": "PORTRAIT:DINOSAUR:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-dinosaur-spitter",
+      "subject": "PORTRAIT:DINOSAUR:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-dinosaur-ankylosaurus",
+      "subject": "PORTRAIT:DINOSAUR:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-dinosaur-shaman",
+      "subject": "PORTRAIT:DINOSAUR:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-dinosaur-triceratops",
+      "subject": "PORTRAIT:DINOSAUR:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-dinosaur-t-rex",
+      "subject": "PORTRAIT:DINOSAUR:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-dinosaur-brontosaurus",
+      "subject": "PORTRAIT:DINOSAUR:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-lay-egg",
+      "subject": "ICON:ACTION:LAY_EGG",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-hatch",
+      "subject": "ICON:ACTION:HATCH",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-stampede",
+      "subject": "ICON:ACTION:STAMPEDE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-dinosaur-rally",
+      "subject": "ICON:ACTION:DINOSAUR:RALLY",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "portrait-dinosaur-caveman-a",
+      "asset": "chibi-portrait-dinosaur-caveman",
+      "endpoint": "create-image-pixen",
+      "seed": 5901,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is a very pale cream-beige with light grey-beige shading, never orange or pink; the mouth is dark with cream teeth, never red. Nothing is brown: straps and cords are charcoal grey.",
+      "negativeAddendum": "orange skin, pink skin, red mouth, brown straps, arm bands, helmet, sword",
+      "notes": "First portrait pass, with the Caveman's lesson: pale skin (orange-pink skin lands in the red-brown band) and no brown."
+    },
+    {
+      "id": "portrait-dinosaur-raptor-a",
+      "asset": "chibi-portrait-dinosaur-raptor",
+      "endpoint": "create-image-pixen",
+      "seed": 5911,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "rider, person, wings, fur, grey skin, slate skin, weapon, axe, armour, brown straps, red mouth",
+      "promptAddendum": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. It has no weapon, no armour and no straps; the inside of the mouth is dark navy blue, never red.",
+      "notes": "First portrait pass, with the unit sample's lessons: the blue named as clear cornflower blue, no weapons, a dark mouth."
+    },
+    {
+      "id": "portrait-dinosaur-spitter-a",
+      "asset": "chibi-portrait-dinosaur-spitter",
+      "endpoint": "create-image-pixen",
+      "seed": 5921,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "rider, person, wings, fur, grey skin, slate skin, weapon, axe, armour, brown straps, red mouth",
+      "promptAddendum": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. It has no weapon, no armour and no straps; the inside of the mouth is dark navy blue, never red.",
+      "notes": "First portrait pass, with the unit sample's lessons: the blue named as clear cornflower blue, no weapons, a dark mouth."
+    },
+    {
+      "id": "portrait-dinosaur-ankylosaurus-a",
+      "asset": "chibi-portrait-dinosaur-ankylosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 5931,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "rider, person, wings, fur, grey skin, slate skin, weapon, axe, brown straps, red mouth, turtle, tan skin, brown skin",
+      "promptAddendum": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. It has no weapon, no armour and no straps; the inside of the mouth is dark navy blue, never red. The round ball of the tail club is painted plain bright red, as on the map piece.",
+      "notes": "First portrait pass, with the unit sample's lessons: the blue named as clear cornflower blue, no weapons, a dark mouth. The accepted unit has a red tail-club ball."
+    },
+    {
+      "id": "portrait-dinosaur-shaman-a",
+      "asset": "chibi-portrait-dinosaur-shaman",
+      "endpoint": "create-image-pixen",
+      "seed": 5941,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is a very pale cream-beige with light grey-beige shading, never orange or pink; the mouth is dark with cream teeth, never red. Nothing is brown: straps and cords are charcoal grey.",
+      "negativeAddendum": "orange skin, pink skin, red mouth, brown straps, arm bands, helmet, sword",
+      "notes": "First portrait pass, with the Caveman's lesson: pale skin (orange-pink skin lands in the red-brown band) and no brown."
+    },
+    {
+      "id": "portrait-dinosaur-triceratops-a",
+      "asset": "chibi-portrait-dinosaur-triceratops",
+      "endpoint": "create-image-pixen",
+      "seed": 5951,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "rider, person, wings, fur, grey skin, slate skin, weapon, axe, armour, brown straps, red mouth",
+      "promptAddendum": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. It has no weapon, no armour and no straps; the inside of the mouth is dark navy blue, never red.",
+      "notes": "First portrait pass, with the unit sample's lessons: the blue named as clear cornflower blue, no weapons, a dark mouth."
+    },
+    {
+      "id": "portrait-dinosaur-t-rex-a",
+      "asset": "chibi-portrait-dinosaur-t-rex",
+      "endpoint": "create-image-pixen",
+      "seed": 5961,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "rider, person, wings, fur, grey skin, slate skin, weapon, axe, armour, brown straps, red mouth",
+      "promptAddendum": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. It has no weapon, no armour and no straps; the inside of the mouth is dark navy blue, never red. A plain bright red cloth cape hangs from the collar over the shoulders.",
+      "notes": "First portrait pass, with the unit sample's lessons: the blue named as clear cornflower blue, no weapons, a dark mouth."
+    },
+    {
+      "id": "portrait-dinosaur-brontosaurus-a",
+      "asset": "chibi-portrait-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 5971,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "rider, person, wings, fur, grey skin, slate skin, weapon, axe, armour, brown straps, red mouth",
+      "promptAddendum": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. It has no weapon, no armour and no straps; the inside of the mouth is dark navy blue, never red.",
+      "notes": "First portrait pass, with the unit sample's lessons: the blue named as clear cornflower blue, no weapons, a dark mouth."
+    },
+    {
+      "id": "icon-action-lay-egg-a",
+      "asset": "chibi-icon-action-lay-egg",
+      "endpoint": "create-image-pixen",
+      "seed": 5981,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "orange, gold, yellow, red, brown, hand, person",
+      "promptAddendum": "Every mark is pale cream, cool grey, charcoal or clear cornflower blue; nothing is red, orange, yellow, tan or brown.",
+      "notes": "First icon pass: unowned, so no red; the Goblin shout lines drifted to orange and gold."
+    },
+    {
+      "id": "icon-action-hatch-a",
+      "asset": "chibi-icon-action-hatch",
+      "endpoint": "create-image-pixen",
+      "seed": 5991,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "orange, gold, yellow, red, brown, hand, person",
+      "promptAddendum": "Every mark is pale cream, cool grey, charcoal or clear cornflower blue; nothing is red, orange, yellow, tan or brown.",
+      "notes": "First icon pass: unowned, so no red; the Goblin shout lines drifted to orange and gold."
+    },
+    {
+      "id": "icon-action-stampede-a",
+      "asset": "chibi-icon-action-stampede",
+      "endpoint": "create-image-pixen",
+      "seed": 6001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "orange, gold, yellow, red, brown, hand, person",
+      "promptAddendum": "Every mark is pale cream, cool grey, charcoal or clear cornflower blue; nothing is red, orange, yellow, tan or brown.",
+      "notes": "First icon pass: unowned, so no red; the Goblin shout lines drifted to orange and gold."
+    },
+    {
+      "id": "icon-action-dinosaur-rally-a",
+      "asset": "chibi-icon-action-dinosaur-rally",
+      "endpoint": "create-image-pixen",
+      "seed": 6011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "orange, gold, yellow, red, brown, hand, person",
+      "promptAddendum": "Every mark is pale cream, cool grey, charcoal or clear cornflower blue; nothing is red, orange, yellow, tan or brown.",
+      "notes": "First icon pass: unowned, so no red; the Goblin shout lines drifted to orange and gold."
+    },
+    {
+      "id": "portrait-dinosaur-caveman-b",
+      "asset": "chibi-portrait-dinosaur-caveman",
+      "endpoint": "create-image-pixen",
+      "seed": 5902,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Head and shoulders only, filling the image. He laughs with a wide happy open smile showing cream teeth and big round friendly eyes, never angry. The skin is a very pale cream-beige with light grey-beige shading, never orange or pink. The plain bright red fur tunic covers both shoulders and the whole chest across the bottom of the image. Nothing is brown.",
+      "negativeAddendum": "orange skin, pink skin, red mouth, brown straps, arm bands, helmet, sword, angry face, frown, whole body, legs, feet",
+      "notes": "portrait-dinosaur-caveman-a drew the whole angry figure with a small red cape: 15.7% owner area. A bust with a red tunic across the chest and a laughing face."
+    },
+    {
+      "id": "portrait-dinosaur-raptor-a-edit",
+      "asset": "chibi-portrait-dinosaur-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 5912,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-dinosaur-raptor-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the grey-blue skin of the head to a clear cornflower blue with darker navy blue shading, as bright as a blue sky, with no grey skin. Change nothing else: keep the bright red feather crest, the bright red collar, the cream throat, teeth and claw, the eye, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-dinosaur-raptor-a is the right head (red feather crest, toothy grin, red collar, a sickle claw; 29.4% owner area, QA pass) in a slate blue duller than the accepted map piece."
+    },
+    {
+      "id": "portrait-dinosaur-spitter-a-edit",
+      "asset": "chibi-portrait-dinosaur-spitter",
+      "endpoint": "edit-image-pixen",
+      "seed": 5922,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-dinosaur-spitter-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the grey skin of the head and neck to a clear cornflower blue with darker navy blue shading, with no grey skin, and make the inside of the mouth dark navy blue instead of pink. Change nothing else: keep the round bright red frill with its cream rim, the cream crests, teeth and throat, the eyes, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-dinosaur-spitter-a is the right frilled head (27.8% owner area, QA pass) with grey skin and a pink mouth; the accepted map piece is blue."
+    },
+    {
+      "id": "portrait-dinosaur-ankylosaurus-b",
+      "asset": "chibi-portrait-dinosaur-ankylosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 5932,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey, tan or brown. The head is blunt and smooth with no brow horns and no frill. The domed shell of blue-grey plates is the biggest shape, and a wide plain bright red blanket strip lies over its middle from top to bottom. The round ball of the tail club is painted plain bright red.",
+      "negativeAddendum": "rider, person, wings, fur, grey skin, weapon, brown straps, red mouth, turtle, tan skin, brown skin, brow horns, frill, triceratops, scarf",
+      "notes": "portrait-dinosaur-ankylosaurus-a drew a small three-horned beast with a red scarf: 10.5% owner area. The addendum describes the accepted unit: shell, red strip, red club ball."
+    },
+    {
+      "id": "portrait-dinosaur-triceratops-a-edit",
+      "asset": "chibi-portrait-dinosaur-triceratops",
+      "endpoint": "edit-image-pixen",
+      "seed": 5952,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-dinosaur-triceratops-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the round neck frill behind the head one plain flat solid bright red surface with no pattern, no dark patches and no brown, keeping its rim of cream studs. Recolour the grey-blue skin of the face and body to a clear cornflower blue with navy blue shading, and make the inside of the mouth dark navy blue. Change nothing else: keep the three cream horns, the cream beak, the eye, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-dinosaur-triceratops-a is the right three-horned head with a studded frill, but the frill is dark red-brown with patches: 11.7% owner area and 12.9% red-brown."
+    },
+    {
+      "id": "portrait-dinosaur-t-rex-a-edit",
+      "asset": "chibi-portrait-dinosaur-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 5962,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-dinosaur-t-rex-a",
+        "candidate": 0
+      },
+      "editInstruction": "Widen the red scarf into a big plain bright red cloth that covers the whole neck, both shoulders and the chest below the jaw, plain flat bright red with no stripes. Recolour the dark grey-blue skin to a clear cornflower blue with navy blue shading. Change nothing else: keep the big head, the open jaws, the cream teeth and lower jaw, the eye, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-dinosaur-t-rex-a is the right boxy head with open jaws and chunky teeth, but the scarf is thin and striped: 11.8% owner area and 3.7% red-brown."
+    },
+    {
+      "id": "portrait-dinosaur-brontosaurus-b",
+      "asset": "chibi-portrait-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 5972,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey or green. The thick neck is long and fills the image from the bottom edge up to the head near the top; the three bright red cloth bands are broad, plain and flat, and together cover most of the neck. The head is smooth and round with no horn.",
+      "negativeAddendum": "rider, person, wings, fur, grey skin, green skin, weapon, armour, brown straps, red mouth, horn, nose horn, scarf knot",
+      "notes": "portrait-dinosaur-brontosaurus-a drew a big head on a short neck with one small scarf and a nose horn: 8.1% owner area. The addendum asks for the long banded neck."
+    },
+    {
+      "id": "icon-action-lay-egg-a-edit",
+      "asset": "chibi-icon-action-lay-egg",
+      "endpoint": "edit-image-pixen",
+      "seed": 5982,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-lay-egg-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the brown strap and the grey patch from the egg, so the egg is one smooth pale cream eggshell with a few big dusty blue speckles and cool grey shading, with nothing brown. Change nothing else: keep the egg's shape, the nest ring of pale cream bones under it, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-action-lay-egg-a is a big cream egg on a nest of crossed bones, with a brown strap and a grey patch across it (13.7% brown)."
+    },
+    {
+      "id": "icon-action-stampede-a-edit",
+      "asset": "chibi-icon-action-stampede",
+      "endpoint": "edit-image-pixen",
+      "seed": 6002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-stampede-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the green face and body of the beast to a clear cornflower blue with navy blue shading, and recolour every red and orange part (the snout, the blanket stripes) to the same blue or to pale cream, so that nothing is green, red, orange or brown. Change nothing else: keep the cream horns, the blue frill with its cream rim, the pale cream dust puffs behind it, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-action-stampede-a is the right charging horned head with dust puffs trailing behind, but the face is green and the snout and blanket are red and orange (6.9% red-brown): player colours on an unowned icon."
+    },
+    {
+      "id": "icon-action-dinosaur-rally-a-edit",
+      "asset": "chibi-icon-action-dinosaur-rally",
+      "endpoint": "edit-image-pixen",
+      "seed": 6012,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-dinosaur-rally-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the two red-brown drumsticks to chunky pale cream bones, and recolour the red-brown lashings on the side of the drum to charcoal grey, so that nothing is red or brown. Make the short beat lines above the drum bigger, bolder and pale cream. Change nothing else: keep the round drum with its pale cream drumhead and dark grey frame, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-action-dinosaur-rally-a is the right drum with crossed sticks and beat marks, but the sticks and lashings are red-brown (3.6%) and the beat lines tiny."
+    },
+    {
+      "id": "portrait-dinosaur-ankylosaurus-c",
+      "asset": "chibi-portrait-dinosaur-ankylosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 5933,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Seen from the side, shown whole: the biggest shape is a low round dome shell of blue-grey bony plates with a rim of chunky cream spikes; a small blunt smooth clear cornflower blue head is held low at the front and four short blue legs stand under the shell; one wide plain bright red blanket strip lies over the middle of the dome from its top down to its lower edge; the tail is raised behind and ends in a big round ball painted plain bright red.",
+      "negativeAddendum": "rider, person, wings, fur, grey skin, weapon, brown straps, red mouth, turtle, tan skin, brown skin, frill, triceratops, scarf, standing upright",
+      "notes": "portrait-dinosaur-ankylosaurus-a and -b (portrait class) drew a small upright three-horned beast with a scarf (10.5% and 11.0% owner area): the portrait class asks for a head-and-shoulders character. The asset moves to the icon class, like the Human Catapult and the Rocket Cart: an item sprite shown whole, still owned and masked. The addendum describes the accepted unit."
+    },
+    {
+      "id": "portrait-dinosaur-t-rex-b",
+      "asset": "chibi-portrait-dinosaur-t-rex",
+      "endpoint": "create-image-pixen",
+      "seed": 5963,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. The inside of the mouth is dark navy blue, never red. Below the jaw a big plain flat bright red cloth cape covers the whole neck, both shoulders and the chest right across the bottom third of the image.",
+      "negativeAddendum": "rider, person, wings, fur, grey skin, slate skin, weapon, armour, brown straps, red mouth, red tongue, striped scarf",
+      "notes": "portrait-dinosaur-t-rex-a-edit shrank the scarf instead of widening it (7.9% owner area, 7.5% red-brown). A fresh seed with a red cape across the bottom third."
+    },
+    {
+      "id": "portrait-dinosaur-brontosaurus-c",
+      "asset": "chibi-portrait-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 5973,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey or green. The thick neck takes up the lower two thirds of the image, rising from the bottom edge, and is wrapped in three broad plain flat bright red cloth bands that together cover most of it; the smooth round friendly head sits on top.",
+      "negativeAddendum": "rider, person, wings, fur, grey skin, green skin, weapon, armour, brown straps, red mouth, checked pattern",
+      "notes": "portrait-dinosaur-brontosaurus-b drew a nose horn and a checked collar (5.8% owner area). The negative no longer names a horn (Pixen has no negative field and draws nouns it reads) and the addendum gives the neck two thirds of the image."
+    },
+    {
+      "id": "icon-action-stampede-a-edit-2",
+      "asset": "chibi-icon-action-stampede",
+      "endpoint": "edit-image-pixen",
+      "seed": 6003,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-stampede-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour every red and orange part of the beast (the snout tip, the mouth, the feet and the stripes on its body) to pale cream or to the same blue as its face, so that nothing at all is red, orange or brown. Change nothing else: keep the cream horns, the blue face and frill, the pale cream dust puffs behind it, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-action-stampede-a-edit made the face blue but kept a red-orange snout, feet and stripes (4.0% red-brown, 21 key-red pixels). A single-focus edit for the red and orange."
+    },
+    {
+      "id": "icon-action-stampede-a-edit-3",
+      "asset": "chibi-icon-action-stampede",
+      "endpoint": "edit-image-pixen",
+      "seed": 6004,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-stampede-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the small red-orange tip of the snout and the small orange spots near the mouth to pale cream, so that nothing at all is red or orange. Change nothing else: keep the cream horns, the blue face and frill, the pale cream dust puffs, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-action-stampede-a-edit-2 cleared the feet and stripes; a red-orange snout tip remains (18 red-brown and 4 key-red pixels)."
+    },
+    {
+      "id": "icon-action-stampede-b",
+      "asset": "chibi-icon-action-stampede",
+      "endpoint": "create-image-pixen",
+      "seed": 6005,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The head is big and fills the right two thirds of the image; its skin is a clear cornflower blue shaded navy blue with a pale cream beak, and the frill is the same blue with a cream rim. The three dust puffs are small and round, on the left. Every mark is pale cream, cool grey, charcoal or blue; nothing is red, orange, yellow, green, tan or brown, and it wears nothing.",
+      "negativeAddendum": "orange, gold, yellow, red, brown, hand, person, green face, red snout, blanket, saddle, whole body, legs",
+      "notes": "Three edits of icon-action-stampede-a never cleared its red-orange snout and ended in a muddy blob of dust. Fresh seed 1 of 2: a big blue head only, small puffs."
+    },
+    {
+      "id": "icon-action-stampede-c",
+      "asset": "chibi-icon-action-stampede",
+      "endpoint": "create-image-pixen",
+      "seed": 6006,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The head is big and fills the right two thirds of the image; its skin is a clear cornflower blue shaded navy blue with a pale cream beak, and the frill is the same blue with a cream rim. The three dust puffs are small and round, on the left. Every mark is pale cream, cool grey, charcoal or blue; nothing is red, orange, yellow, green, tan or brown, and it wears nothing.",
+      "negativeAddendum": "orange, gold, yellow, red, brown, hand, person, green face, red snout, blanket, saddle, whole body, legs",
+      "notes": "As icon-action-stampede-b. Seed 2 of 2."
+    }
+  ]
+}

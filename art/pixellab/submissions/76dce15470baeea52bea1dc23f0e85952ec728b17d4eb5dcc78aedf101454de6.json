@@ -1,0 +1,69 @@
+{
+  "id": "portrait-dinosaur-spitter-a",
+  "jobId": "sync-f907ff20-2fe8-4d47-8496-1bb740fb84ed",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-portrait-dinosaur-spitter",
+    "subject": "PORTRAIT:DINOSAUR:MARKSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5921,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+        "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+        "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+        "text": "Subject: Spitter portrait, head and neck of a chunky cute frilled spitting dinosaur: a round dusty blue head with two small cream crests, big round eyes, puffed cheeks and a pursed mouth, framed by a wide round neck frill spread open like a fan, the frill plain flat bright red with a thin cream rim, a pale cream throat."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. It has no weapon, no armour and no straps; the inside of the mouth is dark navy blue, never red.",
+        "negative": "rider, person, wings, fur, grey skin, slate skin, weapon, axe, armour, brown straps, red mouth"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Spitter portrait, head and neck of a chunky cute frilled spitting dinosaur: a round dusty blue head with two small cream crests, big round eyes, puffed cheeks and a pursed mouth, framed by a wide round neck frill spread open like a fan, the frill plain flat bright red with a thin cream rim, a pale cream throat. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. It has no weapon, no armour and no straps; the inside of the mouth is dark navy blue, never red.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, rider, person, wings, fur, grey skin, slate skin, weapon, axe, armour, brown straps, red mouth",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Spitter portrait, head and neck of a chunky cute frilled spitting dinosaur: a round dusty blue head with two small cream crests, big round eyes, puffed cheeks and a pursed mouth, framed by a wide round neck frill spread open like a fan, the frill plain flat bright red with a thin cream rim, a pale cream throat. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. It has no weapon, no armour and no straps; the inside of the mouth is dark navy blue, never red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, rider, person, wings, fur, grey skin, slate skin, weapon, axe, armour, brown straps, red mouth."
+  }
+}

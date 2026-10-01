@@ -1,0 +1,36 @@
+{
+  "id": "dinosaur-city-3-a-edit-3",
+  "jobId": "ff84bc62-fed4-454f-a7aa-ce325dddf713",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-dinosaur",
+    "asset": "chibi-dinosaur-city-3",
+    "subject": "CITY:DINOSAUR:3",
+    "faction": "DINOSAUR",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 104
+    },
+    "seed": 67234,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the dark brown wooden walls and posts of the hut under the red roof on the left to pale cream rawhide with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the dark brown wooden walls and posts of the hut under the red roof on the left to pale cream rawhide with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the dark brown wooden walls and posts of the hut under the red roof on the left to pale cream rawhide with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the dark brown wooden walls and posts of the hut under the red roof on the left to pale cream rawhide with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "dinosaur-city-3-a-edit-2",
+      "candidate": 0,
+      "sha256": "fd0ff68bdc44d29ecf27df2fa58227c912c0774558b1b982d3a938dbfc1a6677"
+    }
+  }
+}

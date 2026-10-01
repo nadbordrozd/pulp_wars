@@ -1,0 +1,36 @@
+{
+  "id": "portrait-dinosaur-spitter-a-edit",
+  "jobId": "fd6cbe4b-8b66-4e61-907c-5d18ea3ac8e9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-portrait-dinosaur-spitter",
+    "subject": "PORTRAIT:DINOSAUR:MARKSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5922,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the grey skin of the head and neck to a clear cornflower blue with darker navy blue shading, with no grey skin, and make the inside of the mouth dark navy blue instead of pink. Change nothing else: keep the round bright red frill with its cream rim, the cream crests, teeth and throat, the eyes, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the grey skin of the head and neck to a clear cornflower blue with darker navy blue shading, with no grey skin, and make the inside of the mouth dark navy blue instead of pink. Change nothing else: keep the round bright red frill with its cream rim, the cream crests, teeth and throat, the eyes, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the grey skin of the head and neck to a clear cornflower blue with darker navy blue shading, with no grey skin, and make the inside of the mouth dark navy blue instead of pink. Change nothing else: keep the round bright red frill with its cream rim, the cream crests, teeth and throat, the eyes, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the grey skin of the head and neck to a clear cornflower blue with darker navy blue shading, with no grey skin, and make the inside of the mouth dark navy blue instead of pink. Change nothing else: keep the round bright red frill with its cream rim, the cream crests, teeth and throat, the eyes, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-dinosaur-spitter-a",
+      "candidate": 0,
+      "sha256": "0cb47f1a274ca1b38dff8cc35893658341fb5e243f7866cd2d0529619b65ba96"
+    }
+  }
+}

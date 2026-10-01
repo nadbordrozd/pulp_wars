@@ -1,0 +1,69 @@
+{
+  "id": "ankylosaurus-a",
+  "jobId": "sync-11a61201-12b4-4414-82fe-8a1854087cb8",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-ankylosaurus",
+    "subject": "UNIT:DINOSAUR:GUARD",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 19401,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+        "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+        "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+        "text": "Subject: Ankylosaurus, a chunky cute armoured dinosaur, a low round dome on four short stubby legs, as tall as a soldier's shoulders and filling the whole width of the image: a big blunt head held low at the front with big round sleepy eyes, a small smile and two short cream cheek horns, a high round domed back of dusty blue bony plates shaded darker navy blue with a rim of chunky cream spikes all round its edge, a thick tail raised high behind it ending in a huge round cream bone club, a pale cream belly; a big plain bright red blanket lies over the middle of the dome between the spikes and hangs down both sides to the ground, tied with a charcoal grey cord; simple shapes and very few details; the feet are the lowest thing in the image; clearly a living armoured dome with a tail club, not a turtle and not a shield soldier."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands.",
+        "negative": "turtle, tortoise, shield, spear, rider, green shell, wheels, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Ankylosaurus, a chunky cute armoured dinosaur, a low round dome on four short stubby legs, as tall as a soldier's shoulders and filling the whole width of the image: a big blunt head held low at the front with big round sleepy eyes, a small smile and two short cream cheek horns, a high round domed back of dusty blue bony plates shaded darker navy blue with a rim of chunky cream spikes all round its edge, a thick tail raised high behind it ending in a huge round cream bone club, a pale cream belly; a big plain bright red blanket lies over the middle of the dome between the spikes and hangs down both sides to the ground, tied with a charcoal grey cord; simple shapes and very few details; the feet are the lowest thing in the image; clearly a living armoured dome with a tail club, not a turtle and not a shield soldier. Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, turtle, tortoise, shield, spear, rider, green shell, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Ankylosaurus, a chunky cute armoured dinosaur, a low round dome on four short stubby legs, as tall as a soldier's shoulders and filling the whole width of the image: a big blunt head held low at the front with big round sleepy eyes, a small smile and two short cream cheek horns, a high round domed back of dusty blue bony plates shaded darker navy blue with a rim of chunky cream spikes all round its edge, a thick tail raised high behind it ending in a huge round cream bone club, a pale cream belly; a big plain bright red blanket lies over the middle of the dome between the spikes and hangs down both sides to the ground, tied with a charcoal grey cord; simple shapes and very few details; the feet are the lowest thing in the image; clearly a living armoured dome with a tail club, not a turtle and not a shield soldier. Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, turtle, tortoise, shield, spear, rider, green shell, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands."
+  }
+}

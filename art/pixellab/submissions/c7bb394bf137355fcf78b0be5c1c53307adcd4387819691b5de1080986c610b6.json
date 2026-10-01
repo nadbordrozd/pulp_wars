@@ -1,0 +1,36 @@
+{
+  "id": "shaman-a-edit",
+  "jobId": "8b8231d4-f54a-46de-8f48-44ea95408d53",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-shaman",
+    "subject": "UNIT:DINOSAUR:CAPTAIN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 19511,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the whole robe plain bright red from the shoulders down to the feet, including the sleeves and the dark parts of the robe. Recolour the brown drum rim, straps and drumstick handle dark charcoal grey, so nothing is brown, and make the red cheeks pale skin colour. Change nothing else: keep the cream skull hood, the red feathers, the black beard, the drum, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the whole robe plain bright red from the shoulders down to the feet, including the sleeves and the dark parts of the robe. Recolour the brown drum rim, straps and drumstick handle dark charcoal grey, so nothing is brown, and make the red cheeks pale skin colour. Change nothing else: keep the cream skull hood, the red feathers, the black beard, the drum, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the whole robe plain bright red from the shoulders down to the feet, including the sleeves and the dark parts of the robe. Recolour the brown drum rim, straps and drumstick handle dark charcoal grey, so nothing is brown, and make the red cheeks pale skin colour. Change nothing else: keep the cream skull hood, the red feathers, the black beard, the drum, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the whole robe plain bright red from the shoulders down to the feet, including the sleeves and the dark parts of the robe. Recolour the brown drum rim, straps and drumstick handle dark charcoal grey, so nothing is brown, and make the red cheeks pale skin colour. Change nothing else: keep the cream skull hood, the red feathers, the black beard, the drum, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "shaman-a",
+      "candidate": 0,
+      "sha256": "51cc7bd29a9f01c78db96d25893ed650cd49b0a4a1d14c39e855e438ca53e5ac"
+    }
+  }
+}

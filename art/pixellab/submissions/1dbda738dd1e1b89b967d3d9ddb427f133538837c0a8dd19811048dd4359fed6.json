@@ -1,0 +1,36 @@
+{
+  "id": "triceratops-b-edit",
+  "jobId": "f675476f-1019-4339-a33e-8c6398108812",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-triceratops",
+    "subject": "UNIT:DINOSAUR:CATAPULT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 19611,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the orange and red-brown face and the brown belly straps to a clear cornflower blue with navy blue shading, so the whole animal is blue and nothing is orange or brown. Make the round neck frill one plain flat solid bright red surface with no pattern, lines or spots. Change nothing else: keep the cream beak, the three cream horns and studs, the blue body, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the orange and red-brown face and the brown belly straps to a clear cornflower blue with navy blue shading, so the whole animal is blue and nothing is orange or brown. Make the round neck frill one plain flat solid bright red surface with no pattern, lines or spots. Change nothing else: keep the cream beak, the three cream horns and studs, the blue body, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the orange and red-brown face and the brown belly straps to a clear cornflower blue with navy blue shading, so the whole animal is blue and nothing is orange or brown. Make the round neck frill one plain flat solid bright red surface with no pattern, lines or spots. Change nothing else: keep the cream beak, the three cream horns and studs, the blue body, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the orange and red-brown face and the brown belly straps to a clear cornflower blue with navy blue shading, so the whole animal is blue and nothing is orange or brown. Make the round neck frill one plain flat solid bright red surface with no pattern, lines or spots. Change nothing else: keep the cream beak, the three cream horns and studs, the blue body, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "triceratops-b",
+      "candidate": 0,
+      "sha256": "8291f2c517ff6a7e8285f41bdb7ff9108aef3e60b1de95cdbd50f92e25e09c00"
+    }
+  }
+}

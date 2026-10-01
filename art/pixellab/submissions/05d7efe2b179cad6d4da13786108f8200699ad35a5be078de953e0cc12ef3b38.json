@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-lay-egg-a-edit",
+  "jobId": "6c242c02-8a67-4466-97c4-8cc53ec19488",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-icon-action-lay-egg",
+    "subject": "ICON:ACTION:LAY_EGG",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5982,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the brown strap and the grey patch from the egg, so the egg is one smooth pale cream eggshell with a few big dusty blue speckles and cool grey shading, with nothing brown. Change nothing else: keep the egg's shape, the nest ring of pale cream bones under it, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the brown strap and the grey patch from the egg, so the egg is one smooth pale cream eggshell with a few big dusty blue speckles and cool grey shading, with nothing brown. Change nothing else: keep the egg's shape, the nest ring of pale cream bones under it, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the brown strap and the grey patch from the egg, so the egg is one smooth pale cream eggshell with a few big dusty blue speckles and cool grey shading, with nothing brown. Change nothing else: keep the egg's shape, the nest ring of pale cream bones under it, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the brown strap and the grey patch from the egg, so the egg is one smooth pale cream eggshell with a few big dusty blue speckles and cool grey shading, with nothing brown. Change nothing else: keep the egg's shape, the nest ring of pale cream bones under it, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-lay-egg-a",
+      "candidate": 0,
+      "sha256": "7ee90ec8a2d71a249d80d5d64f78efbe9ab9ce73cec6dd6d6b8f9f3c3b013db3"
+    }
+  }
+}

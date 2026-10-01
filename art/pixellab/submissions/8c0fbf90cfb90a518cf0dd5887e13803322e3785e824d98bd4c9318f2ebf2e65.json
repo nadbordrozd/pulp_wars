@@ -1,0 +1,36 @@
+{
+  "id": "dinosaur-city-2-d-edit",
+  "jobId": "fedf94ad-9da1-4d87-80bc-bc2e9388911f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-dinosaur",
+    "asset": "chibi-dinosaur-city-2",
+    "subject": "CITY:DINOSAUR:2",
+    "faction": "DINOSAUR",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 100
+    },
+    "seed": 67225,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the brown soil slab and floor under the camp, so the tents, the totem pole, the flag, the standing stones and the fence stand directly on a transparent background with nothing at all under them. Recolour the brown fence to pale cream tusks. Keep the bright red cone tents, the bone totem with its horned skull, the bright red banner flag, the dark blue-grey standing stones, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the brown soil slab and floor under the camp, so the tents, the totem pole, the flag, the standing stones and the fence stand directly on a transparent background with nothing at all under them. Recolour the brown fence to pale cream tusks. Keep the bright red cone tents, the bone totem with its horned skull, the bright red banner flag, the dark blue-grey standing stones, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the brown soil slab and floor under the camp, so the tents, the totem pole, the flag, the standing stones and the fence stand directly on a transparent background with nothing at all under them. Recolour the brown fence to pale cream tusks. Keep the bright red cone tents, the bone totem with its horned skull, the bright red banner flag, the dark blue-grey standing stones, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the brown soil slab and floor under the camp, so the tents, the totem pole, the flag, the standing stones and the fence stand directly on a transparent background with nothing at all under them. Recolour the brown fence to pale cream tusks. Keep the bright red cone tents, the bone totem with its horned skull, the bright red banner flag, the dark blue-grey standing stones, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "dinosaur-city-2-d",
+      "candidate": 0,
+      "sha256": "78bdf1762d11d64780b7cc6f10eb1725aadce3f77fddc13d3bac27b408090752"
+    }
+  }
+}

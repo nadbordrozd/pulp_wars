@@ -74,7 +74,7 @@ the Human-era owner text they were generated with.
 | `terrain`      | `create-image-pixflux` (flat shading) or Pixen | a field at least 2x the tile; the seamless 80 x 80 window is cropped, optionally inside a `cropRegion` |
 | `tall-terrain` | Pixen, then optional edit                      | the transparent body drawn over an accepted ground tile's bottom cell                                  |
 | `portrait`     | Pixen, `side` view, south-east, low detail     | the candidate: a 48 x 48 head-and-shoulders interface portrait with an owner mask (batch 5)            |
-| `icon`         | Pixen, low top-down, no direction              | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships and the Catapult        |
+| `icon`         | Pixen, low top-down, no direction              | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships, the Catapult, the Egg  |
 | `status`       | Pixen, flat camera, side view                  | the candidate palette-mapped: a 32 x 32 board status marker                                            |
 | `effect`       | Pixen, icon camera, side view                  | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                   |
 
@@ -105,10 +105,24 @@ Portraits are owned (`PORTRAIT:*` subjects need a mask); icons are not.
 A batch is one faction, so batch 5 is split: `batch-5.json` (ORIGINAL:
 Human portraits, ship portraits and every Human or shared icon),
 `batch-5-undead.json` (UNDEAD: Undead portraits and the Undead command
-icons) and `batch-5-goblin.json` (GOBLIN: Goblin portraits, bead
+icons), `batch-5-goblin.json` (GOBLIN: Goblin portraits, bead
 `pulp_wars-0ao.8`, and the Goblin Kaboom! and WAAAGH! command icons, bead
-`pulp_wars-0ao.14`).
-The review of batch 5 shows all three.
+`pulp_wars-0ao.14`) and `batch-5-dinosaur.json` (DINOSAUR: Dinosaur
+portraits and the Lay Egg, Hatch, Stampede and War Drums command icons,
+bead `pulp_wars-c87.7`).
+The review of batch 5 shows all four.
+
+**The Egg is an owned item sprite on the board** (bead `pulp_wars-c87.7`):
+`UNIT:DINOSAUR:EGG` is a `STANDARD_UNIT` asset (48 x 48, bottom-centred,
+masked) made with the `icon` recipe class, because the `unit` class text
+asks for a figure with a head and feet. The icon class therefore accepts
+`STANDARD_UNIT` as well as `ICON` and `PORTRAIT` assets; a unit subject is
+owned, so the owner layer and the mask still apply.
+
+**Quadrupeds** (bead `pulp_wars-c87.7`): the `unit` class with the default
+south-east view stands a four-legged animal up on two legs. A recipe may set
+`"options": { "view": "side", "direction": "east" }`, which with an addendum
+naming a level four-legged body gave the Brontosaurus and the Triceratops.
 
 ### Building on earlier batches
 
@@ -353,6 +367,28 @@ colour and the four player colours, with the mask at x4) and
 (board at zoom 1 and 0.75 on desktop and phone, the unit dock, the training
 dock and the technology tree), indexed in `goblin-index.json`. Its captures
 start Vite on port 6301 unless `--port` says otherwise.
+
+`npm run art:chibi-dinosaur-review` (bead `pulp_wars-c87.7`) writes
+`art/pixellab/reviews/chibi-batch-dinosaur/`:
+`faction-units-{1x,x4}.png` and `faction-portraits-{1x,x4}.png` (every
+Dinosaur unit and portrait beside the Human, Undead and Goblin one of its
+role, in the key colour and the four player colours, with the mask at x4),
+`faction-units-zoom-0.75.png` (the 1:1 sheet at zoom step 0.75),
+`cities-{1x,x4}.png` (City 1-3 of the four factions),
+`icons-{1x,x4}.png` (Lay Egg, Hatch, Stampede and War Drums beside the
+existing command icons on the dock panel and a light page),
+`egg-{1x,x4}.png` (the Egg beside the Caveman and the Raptor),
+`showcase-{desktop,phone}-zoom-{1,0.75}.png`, `showcase-dock-desktop.png`
+and `showcase-tech-desktop.png` (a Showcase match with a Dinosaur viewer
+against a Human, an Undead and a Goblin seat, launched through the
+controller because the setup form offers the faction only from bead
+`pulp_wars-c87.4`), `ingame-roster-{desktop,phone}-zoom-{1,0.75}.png` (the
+scene of
+[`review-dinosaur-scene-v7.ts`](../../scripts/art/chibi/review-dinosaur-scene-v7.ts)
+drawn by the real board host: the eight units and the Egg in the four
+player colours, with HP bars and seat badges, beside the other three
+factions) and `dinosaur-index.json`. Its captures start Vite on port 6431
+unless `--port` says otherwise. It does not run the batch review.
 
 The faction city sets (`CITY:UNDEAD:<level>`, `CITY:GOBLIN:<level>`, batches
 `cities-undead` and `cities-goblin`, bead `pulp_wars-6gd.6`) have their own

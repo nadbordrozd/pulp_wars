@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-dinosaur-rally-a-edit",
+  "jobId": "c82bb020-5d05-40a8-b448-3c73bd46e867",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-icon-action-dinosaur-rally",
+    "subject": "ICON:ACTION:DINOSAUR:RALLY",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 6012,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the two red-brown drumsticks to chunky pale cream bones, and recolour the red-brown lashings on the side of the drum to charcoal grey, so that nothing is red or brown. Make the short beat lines above the drum bigger, bolder and pale cream. Change nothing else: keep the round drum with its pale cream drumhead and dark grey frame, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the two red-brown drumsticks to chunky pale cream bones, and recolour the red-brown lashings on the side of the drum to charcoal grey, so that nothing is red or brown. Make the short beat lines above the drum bigger, bolder and pale cream. Change nothing else: keep the round drum with its pale cream drumhead and dark grey frame, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the two red-brown drumsticks to chunky pale cream bones, and recolour the red-brown lashings on the side of the drum to charcoal grey, so that nothing is red or brown. Make the short beat lines above the drum bigger, bolder and pale cream. Change nothing else: keep the round drum with its pale cream drumhead and dark grey frame, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the two red-brown drumsticks to chunky pale cream bones, and recolour the red-brown lashings on the side of the drum to charcoal grey, so that nothing is red or brown. Make the short beat lines above the drum bigger, bolder and pale cream. Change nothing else: keep the round drum with its pale cream drumhead and dark grey frame, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-dinosaur-rally-a",
+      "candidate": 0,
+      "sha256": "a5b5f4e694673a7c2e78a723e18532acf1a389e51bf17dfda2674354d0400607"
+    }
+  }
+}

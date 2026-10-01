@@ -1,0 +1,36 @@
+{
+  "id": "portrait-dinosaur-t-rex-a-edit",
+  "jobId": "ff41547e-46ab-4661-8ad7-11538cd7402c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-portrait-dinosaur-t-rex",
+    "subject": "PORTRAIT:DINOSAUR:KNIGHT",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5962,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Widen the red scarf into a big plain bright red cloth that covers the whole neck, both shoulders and the chest below the jaw, plain flat bright red with no stripes. Recolour the dark grey-blue skin to a clear cornflower blue with navy blue shading. Change nothing else: keep the big head, the open jaws, the cream teeth and lower jaw, the eye, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Widen the red scarf into a big plain bright red cloth that covers the whole neck, both shoulders and the chest below the jaw, plain flat bright red with no stripes. Recolour the dark grey-blue skin to a clear cornflower blue with navy blue shading. Change nothing else: keep the big head, the open jaws, the cream teeth and lower jaw, the eye, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Widen the red scarf into a big plain bright red cloth that covers the whole neck, both shoulders and the chest below the jaw, plain flat bright red with no stripes. Recolour the dark grey-blue skin to a clear cornflower blue with navy blue shading. Change nothing else: keep the big head, the open jaws, the cream teeth and lower jaw, the eye, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Widen the red scarf into a big plain bright red cloth that covers the whole neck, both shoulders and the chest below the jaw, plain flat bright red with no stripes. Recolour the dark grey-blue skin to a clear cornflower blue with navy blue shading. Change nothing else: keep the big head, the open jaws, the cream teeth and lower jaw, the eye, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-dinosaur-t-rex-a",
+      "candidate": 0,
+      "sha256": "28b392f64c7967a761ec1c2102f77cd19ff654e6b81131f4fff0ddb82bbd1caa"
+    }
+  }
+}

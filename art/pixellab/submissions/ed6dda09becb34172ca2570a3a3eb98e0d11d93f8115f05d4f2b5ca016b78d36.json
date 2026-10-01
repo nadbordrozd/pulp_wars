@@ -1,0 +1,36 @@
+{
+  "id": "triceratops-b-edit-2",
+  "jobId": "2db974f5-3a5b-47f5-b8c4-c2ef6d7e784f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-triceratops",
+    "subject": "UNIT:DINOSAUR:CATAPULT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 19612,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the brown strap under the belly and every other brown or tan part of the body to dark charcoal grey, so that nothing is brown. Change nothing else: keep the plain bright red frill, the blue skin, the cream beak, horns and claws, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the brown strap under the belly and every other brown or tan part of the body to dark charcoal grey, so that nothing is brown. Change nothing else: keep the plain bright red frill, the blue skin, the cream beak, horns and claws, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the brown strap under the belly and every other brown or tan part of the body to dark charcoal grey, so that nothing is brown. Change nothing else: keep the plain bright red frill, the blue skin, the cream beak, horns and claws, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the brown strap under the belly and every other brown or tan part of the body to dark charcoal grey, so that nothing is brown. Change nothing else: keep the plain bright red frill, the blue skin, the cream beak, horns and claws, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "triceratops-b-edit",
+      "candidate": 0,
+      "sha256": "f0448193b95f3fa228adf0a2fe75f4200632491f90d4db5eb8b26fa69e191d3e"
+    }
+  }
+}

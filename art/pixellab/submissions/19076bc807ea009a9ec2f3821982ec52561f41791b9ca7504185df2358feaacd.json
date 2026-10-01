@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-b-edit-2",
+  "jobId": "c927bf9e-55d1-46c3-8f3c-2c35c2a55baa",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 19712,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add a big plain bright red blanket draped over the dinosaur's back and hips, hanging from the shoulders down its side to the knee and covering the upper part of the tail, joined to the red scarf at the neck. Change nothing else: keep the blue skin, the big head and open jaws, the cream belly, teeth and claws, the red tail bands, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add a big plain bright red blanket draped over the dinosaur's back and hips, hanging from the shoulders down its side to the knee and covering the upper part of the tail, joined to the red scarf at the neck. Change nothing else: keep the blue skin, the big head and open jaws, the cream belly, teeth and claws, the red tail bands, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add a big plain bright red blanket draped over the dinosaur's back and hips, hanging from the shoulders down its side to the knee and covering the upper part of the tail, joined to the red scarf at the neck. Change nothing else: keep the blue skin, the big head and open jaws, the cream belly, teeth and claws, the red tail bands, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Add a big plain bright red blanket draped over the dinosaur's back and hips, hanging from the shoulders down its side to the knee and covering the upper part of the tail, joined to the red scarf at the neck. Change nothing else: keep the blue skin, the big head and open jaws, the cream belly, teeth and claws, the red tail bands, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-b-edit",
+      "candidate": 0,
+      "sha256": "5ace22b6eb4e6ce25b6b24dc306ed347a92ae79ec89355ad7a4b55f1e0662b54"
+    }
+  }
+}

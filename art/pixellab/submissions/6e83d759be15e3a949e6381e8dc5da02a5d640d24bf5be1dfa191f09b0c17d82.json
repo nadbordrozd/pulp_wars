@@ -1,0 +1,36 @@
+{
+  "id": "raptor-a-edit",
+  "jobId": "d8af1ed8-5ae8-46ce-8348-21fed9490cf0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-raptor",
+    "subject": "UNIT:DINOSAUR:RAIDER",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 19211,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the grey skin of the dinosaur to a clear cornflower blue with darker navy blue shading and navy blue stripes on the tail, with no grey skin anywhere. Change nothing else: keep the cream belly, throat, teeth and claws, the bright red feather crest, the bright red blanket, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the grey skin of the dinosaur to a clear cornflower blue with darker navy blue shading and navy blue stripes on the tail, with no grey skin anywhere. Change nothing else: keep the cream belly, throat, teeth and claws, the bright red feather crest, the bright red blanket, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the grey skin of the dinosaur to a clear cornflower blue with darker navy blue shading and navy blue stripes on the tail, with no grey skin anywhere. Change nothing else: keep the cream belly, throat, teeth and claws, the bright red feather crest, the bright red blanket, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the grey skin of the dinosaur to a clear cornflower blue with darker navy blue shading and navy blue stripes on the tail, with no grey skin anywhere. Change nothing else: keep the cream belly, throat, teeth and claws, the bright red feather crest, the bright red blanket, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "raptor-a",
+      "candidate": 0,
+      "sha256": "57a873f501d3de1b07040f2d91c61ecf0e26dfdd8d3ee9105c492998a9d999dd"
+    }
+  }
+}

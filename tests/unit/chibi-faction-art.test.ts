@@ -320,3 +320,117 @@ describe("Goblin faction art (pulp_wars-0ao.8)", () => {
     ).toBe("human-guard");
   });
 });
+
+describe("Dinosaur faction art (pulp_wars-c87.7)", () => {
+  const ROLES = [
+    "FIGHTER",
+    "RAIDER",
+    "MARKSMAN",
+    "GUARD",
+    "CAPTAIN",
+    "CATAPULT",
+    "KNIGHT",
+    "JUGGERNAUT",
+  ] as const;
+
+  it("names Dinosaur units, the Egg and their fallbacks", () => {
+    expect(
+      unitArtSubjectV7({ role: "KNIGHT", form: "LAND", faction: "DINOSAUR" }),
+    ).toBe("UNIT:DINOSAUR:KNIGHT");
+    expect(
+      unitArtSubjectV7({ role: "RAIDER", form: "EGG", faction: "DINOSAUR" }),
+    ).toBe("UNIT:DINOSAUR:EGG");
+    for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const)
+      expect(
+        unitArtSubjectV7({ role, form: "NAVAL", faction: "DINOSAUR" }),
+      ).toBe(`UNIT:${role}`);
+    expect(chibiFallbackSubjectV7("UNIT:DINOSAUR:CATAPULT")).toBe(
+      "UNIT:CATAPULT",
+    );
+    expect(chibiFallbackSubjectV7("PORTRAIT:DINOSAUR:CAPTAIN")).toBe(
+      "PORTRAIT:CAPTAIN",
+    );
+    expect(chibiFallbackSubjectV7("ICON:ACTION:DINOSAUR:RALLY")).toBe(
+      "ICON:ACTION:RALLY",
+    );
+    expect(chibiFallbackSubjectV7("CITY:DINOSAUR:2")).toBe("CITY:2");
+    // The Egg has no Human counterpart.
+    expect(chibiFallbackSubjectV7("UNIT:DINOSAUR:EGG")).toBe(null);
+  });
+
+  it("resolves every Dinosaur land role's unit and portrait to registered PixelLab art", () => {
+    const built = buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7);
+    expect(built.problems).toEqual([]);
+    const art = createChibiArtResolverV7({
+      environment: syncEnvironment,
+      redraw: () => undefined,
+      registry: built.registry,
+    });
+    for (const role of ROLES)
+      for (const [subject, prefix] of [
+        [`UNIT:DINOSAUR:${role}`, "chibi-dinosaur-"],
+        [`PORTRAIT:DINOSAUR:${role}`, "chibi-portrait-dinosaur-"],
+      ] as const) {
+        const resolved = resolveChibiWithFallbackV7(art, request(subject));
+        expect(resolved.factionArt, subject).toBe(true);
+        if (resolved.resolution.kind !== "READY") throw new Error(subject);
+        expect(resolved.resolution.asset.id.startsWith(prefix), subject).toBe(
+          true,
+        );
+        expect(resolved.resolution.cacheKey).toBe(
+          `chibi:${resolved.resolution.asset.id}@1#${RULESET7_PLAYER_COLORS.TEAL}`,
+        );
+      }
+  });
+
+  it("registers one owned 48 x 48 Egg, bottom-centred on its tile, and the four command icons", () => {
+    const bySubject = new Map(
+      CHIBI_ART_ASSETS_V7.map((asset) => [asset.subject, asset]),
+    );
+    const egg = bySubject.get("UNIT:DINOSAUR:EGG");
+    if (egg === undefined) throw new Error("UNIT:DINOSAUR:EGG");
+    expect(chibiAssetProblemsV7(egg)).toEqual([]);
+    expect([egg.width, egg.height, egg.assetClass]).toEqual([
+      48,
+      48,
+      "STANDARD_UNIT",
+    ]);
+    expect(egg.anchor).toBeUndefined();
+    expect(egg.ownerMaskUrl).toBe(egg.url.replace(/\.png$/, ".mask.png"));
+    expect(
+      CHIBI_ART_ASSETS_V7.filter(
+        (asset) => asset.subject === "UNIT:DINOSAUR:EGG",
+      ),
+    ).toHaveLength(1);
+    for (const subject of [
+      "ICON:ACTION:LAY_EGG",
+      "ICON:ACTION:HATCH",
+      "ICON:ACTION:STAMPEDE",
+      "ICON:ACTION:DINOSAUR:RALLY",
+    ] as const) {
+      const icon = bySubject.get(subject);
+      if (icon === undefined) throw new Error(subject);
+      expect([icon.assetClass, icon.width, icon.height]).toEqual([
+        "ICON",
+        48,
+        48,
+      ]);
+      expect(icon.ownerMaskUrl).toBeUndefined();
+    }
+  });
+
+  it("falls back from a Dinosaur subject without a usable raster to the Human sprite", () => {
+    const art = resolver([
+      unit("dinosaur-guard", "UNIT:DINOSAUR:GUARD", "/broken-guard.png"),
+      unit("human-guard", "UNIT:GUARD"),
+    ]);
+    const standIn = resolveChibiWithFallbackV7(
+      art,
+      request("UNIT:DINOSAUR:GUARD"),
+    );
+    expect(standIn.factionArt).toBe(false);
+    expect(
+      standIn.resolution.kind === "READY" && standIn.resolution.asset.id,
+    ).toBe("human-guard");
+  });
+});

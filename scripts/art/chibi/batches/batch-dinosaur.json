@@ -1,0 +1,738 @@
+{
+  "schemaVersion": 1,
+  "batch": "dinosaur",
+  "title": "Dinosaur art: the eight Dinosaur units and the Egg",
+  "bead": "pulp_wars-c87.7",
+  "faction": "DINOSAUR",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-dinosaur-caveman",
+      "subject": "UNIT:DINOSAUR:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-dinosaur-raptor",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 34,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-dinosaur-spitter",
+      "subject": "UNIT:DINOSAUR:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-dinosaur-ankylosaurus",
+      "subject": "UNIT:DINOSAUR:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-dinosaur-shaman",
+      "subject": "UNIT:DINOSAUR:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-dinosaur-triceratops",
+      "subject": "UNIT:DINOSAUR:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 34,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-dinosaur-t-rex",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 30,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-dinosaur-brontosaurus",
+      "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      }
+    },
+    {
+      "id": "chibi-dinosaur-egg",
+      "subject": "UNIT:DINOSAUR:EGG",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "caveman-a",
+      "asset": "chibi-dinosaur-caveman",
+      "endpoint": "create-image-pixen",
+      "seed": 19101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "shield, helmet, sword, spear, bow, quiver, wooden club, stone club, armour",
+      "notes": "Sample of three (Caveman, Raptor, Brontosaurus): the approved line and negative addendum unchanged."
+    },
+    {
+      "id": "raptor-a",
+      "asset": "chibi-dinosaur-raptor",
+      "endpoint": "create-image-pixen",
+      "seed": 19201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing and carries no rider.",
+      "negativeAddendum": "rider, saddle, reins, horse, wolf, wings, fur, sword, spear",
+      "notes": "Sample of three: the approved line, the dinosaur addendum and negative addendum unchanged."
+    },
+    {
+      "id": "brontosaurus-a",
+      "asset": "chibi-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19801,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing and carries no rider.",
+      "negativeAddendum": "rider, person, elephant, trunk, wings, dragon, tower, wooden howdah",
+      "notes": "Sample of three: the approved line, the dinosaur addendum and negative addendum unchanged."
+    },
+    {
+      "id": "spitter-a",
+      "asset": "chibi-dinosaur-spitter",
+      "endpoint": "create-image-pixen",
+      "seed": 19301,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown.",
+      "negativeAddendum": "bow, quiver, arrows, green spit, slime, umbrella, wings, rider, sword, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin",
+      "notes": "Batch after the sample (Caveman, Raptor, Brontosaurus). The sample showed that 'dusty blue' comes back slate grey unless the addendum names a clear cornflower blue, that the unit class's signature weapon puts axes and cannons on dinosaurs, that quadrupeds stand up on two legs, and that straps, boots and bands come back brown. Seed 1 of 2."
+    },
+    {
+      "id": "ankylosaurus-a",
+      "asset": "chibi-dinosaur-ankylosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands.",
+      "negativeAddendum": "turtle, tortoise, shield, spear, rider, green shell, wheels, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands",
+      "notes": "Batch after the sample (Caveman, Raptor, Brontosaurus). The sample showed that 'dusty blue' comes back slate grey unless the addendum names a clear cornflower blue, that the unit class's signature weapon puts axes and cannons on dinosaurs, that quadrupeds stand up on two legs, and that straps, boots and bands come back brown. Seed 1 of 2."
+    },
+    {
+      "id": "shaman-a",
+      "asset": "chibi-dinosaur-shaman",
+      "endpoint": "create-image-pixen",
+      "seed": 19501,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "banner, flag, staff, megaphone, skeleton body, bone arms, shield, sword, wooden drum, war bonnet, brown straps, brown drum, arm bands, bracers, orange skin, pink skin, red mouth",
+      "promptAddendum": "The skin is a very pale cream-beige with light grey-beige shading, never orange or pink. The mouth is dark with cream teeth, never red. The drum frame, the straps and the belt are dark charcoal grey, never brown; he wears no arm bands.",
+      "notes": "Batch after the sample (Caveman, Raptor, Brontosaurus). The sample showed that 'dusty blue' comes back slate grey unless the addendum names a clear cornflower blue, that the unit class's signature weapon puts axes and cannons on dinosaurs, that quadrupeds stand up on two legs, and that straps, boots and bands come back brown. The Caveman's orange-pink skin landed in the red-brown band, so the Shaman asks for pale skin. Seed 1 of 2."
+    },
+    {
+      "id": "triceratops-a",
+      "asset": "chibi-dinosaur-triceratops",
+      "endpoint": "create-image-pixen",
+      "seed": 19601,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands.",
+      "negativeAddendum": "rider, howdah, catapult, wheels, rhinoceros, wings, spikes on the back, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands",
+      "notes": "Batch after the sample (Caveman, Raptor, Brontosaurus). The sample showed that 'dusty blue' comes back slate grey unless the addendum names a clear cornflower blue, that the unit class's signature weapon puts axes and cannons on dinosaurs, that quadrupeds stand up on two legs, and that straps, boots and bands come back brown. Seed 1 of 2."
+    },
+    {
+      "id": "t-rex-a",
+      "asset": "chibi-dinosaur-t-rex",
+      "endpoint": "create-image-pixen",
+      "seed": 19701,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown.",
+      "negativeAddendum": "rider, saddle, wings, dragon, horns, back spikes, frill, sword, lance, horse, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin",
+      "notes": "Batch after the sample (Caveman, Raptor, Brontosaurus). The sample showed that 'dusty blue' comes back slate grey unless the addendum names a clear cornflower blue, that the unit class's signature weapon puts axes and cannons on dinosaurs, that quadrupeds stand up on two legs, and that straps, boots and bands come back brown. Seed 1 of 2."
+    },
+    {
+      "id": "egg-a",
+      "asset": "chibi-dinosaur-egg",
+      "endpoint": "create-image-pixen",
+      "seed": 19901,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "face, eyes, crack, hatching, baby, bird, chicken, straw, twigs, brown nest, grass, feet",
+      "promptAddendum": "The eggshell is pale cream with cool grey shading, never tan or brown; the nest bones are pale cream. The red band and the red cloth are plain flat bright red.",
+      "notes": "The Egg: the icon recipe class (an owned item sprite, as for the Rocket Cart portrait) on a 48 x 48 unit canvas. Seed 1 of 2."
+    },
+    {
+      "id": "caveman-b",
+      "asset": "chibi-dinosaur-caveman",
+      "endpoint": "create-image-pixen",
+      "seed": 19102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "He smiles a wide happy goofy grin with big round friendly eyes, never angry and never frowning. The bone club is huge, as long as his body: one thick cream bone with two round knobs, held up above his head. The fur tunic is plain bright red and covers the whole torso and the legs down to the shins; he wears no grey or black clothing and no arm bands.",
+      "negativeAddendum": "shield, helmet, sword, spear, bow, quiver, wooden club, stone club, armour, angry face, frown, snarl, grey tunic, black tunic, arm bands, bracers",
+      "notes": "caveman-a: angry frown with fangs, a tiny club and a charcoal tunic under a small red one (16.5% owner area). Addendum asks for the grin, the huge raised bone and a red tunic to the shins. Seed 1 of 2."
+    },
+    {
+      "id": "caveman-c",
+      "asset": "chibi-dinosaur-caveman",
+      "endpoint": "create-image-pixen",
+      "seed": 19103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "He smiles a wide happy goofy grin with big round friendly eyes, never angry and never frowning. The bone club is huge, as long as his body: one thick cream bone with two round knobs, held up above his head. The fur tunic is plain bright red and covers the whole torso and the legs down to the shins; he wears no grey or black clothing and no arm bands.",
+      "negativeAddendum": "shield, helmet, sword, spear, bow, quiver, wooden club, stone club, armour, angry face, frown, snarl, grey tunic, black tunic, arm bands, bracers",
+      "notes": "As caveman-b. Seed 2 of 2."
+    },
+    {
+      "id": "raptor-b",
+      "asset": "chibi-dinosaur-raptor",
+      "endpoint": "create-image-pixen",
+      "seed": 19202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing and carries no rider. The skin is a clear saturated cornflower blue (#5b82b8) shaded navy blue (#3c5c8e): clearly blue, never grey and never slate. The red blanket is big: it covers the whole back and both flanks from the shoulders to the hips.",
+      "negativeAddendum": "rider, saddle, reins, horse, wolf, wings, fur, sword, spear, grey skin, slate skin, grey body",
+      "notes": "raptor-a: the right runner with a red feather crest (22.1% owner area), but the skin is neutral slate grey, the Undead and Goblin wolf colour, not the fragment's dusty blue, and the blanket is a thin sash. Addendum names the blue by hex and asks for a bigger blanket. Seed 1 of 2."
+    },
+    {
+      "id": "raptor-c",
+      "asset": "chibi-dinosaur-raptor",
+      "endpoint": "create-image-pixen",
+      "seed": 19203,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing and carries no rider. The skin is a clear saturated cornflower blue (#5b82b8) shaded navy blue (#3c5c8e): clearly blue, never grey and never slate. The red blanket is big: it covers the whole back and both flanks from the shoulders to the hips.",
+      "negativeAddendum": "rider, saddle, reins, horse, wolf, wings, fur, sword, spear, grey skin, slate skin, grey body",
+      "notes": "As raptor-b. Seed 2 of 2."
+    },
+    {
+      "id": "brontosaurus-b",
+      "asset": "chibi-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19802,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing and carries no rider. One single animal with exactly one head on one single long neck. The skin is a clear cornflower blue (#7f9cc4) shaded slate blue (#56739c): clearly blue, never grey. Every strap, cord and band is charcoal grey or bright red, never brown; the howdah is cream bone and pale rawhide, never wood; the banner pole is a cream bone.",
+      "negativeAddendum": "rider, person, elephant, trunk, wings, dragon, tower, wooden howdah, two heads, second head, two animals, brown straps, brown bands, wooden pole, grey skin",
+      "notes": "brontosaurus-a: two heads (a second animal in front of the neck), slate-grey skin, brown leg bands and a brown wooden howdah and pole (11.6% brown, RED_BROWN_MATERIAL 3.4%). Seed 1 of 2."
+    },
+    {
+      "id": "brontosaurus-c",
+      "asset": "chibi-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19803,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing and carries no rider. One single animal with exactly one head on one single long neck. The skin is a clear cornflower blue (#7f9cc4) shaded slate blue (#56739c): clearly blue, never grey. Every strap, cord and band is charcoal grey or bright red, never brown; the howdah is cream bone and pale rawhide, never wood; the banner pole is a cream bone.",
+      "negativeAddendum": "rider, person, elephant, trunk, wings, dragon, tower, wooden howdah, two heads, second head, two animals, brown straps, brown bands, wooden pole, grey skin",
+      "notes": "As brontosaurus-b. Seed 2 of 2."
+    },
+    {
+      "id": "raptor-a-edit",
+      "asset": "chibi-dinosaur-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 19211,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the grey skin of the dinosaur to a clear cornflower blue with darker navy blue shading and navy blue stripes on the tail, with no grey skin anywhere. Change nothing else: keep the cream belly, throat, teeth and claws, the bright red feather crest, the bright red blanket, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "raptor-b and raptor-c answered the blue addendum with a cannon on the back and a battle axe in the hands (the unit class asks for a signature weapon). raptor-a has the right weaponless runner; a single-focus edit recolours its slate skin."
+    },
+    {
+      "id": "caveman-b-edit",
+      "asset": "chibi-dinosaur-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 19111,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the brown wrap on the forearm to charcoal grey, make the inside of the mouth dark grey with small cream teeth instead of red, and make the skin a light pale peach with pale beige shading instead of orange. Change nothing else: keep the black hair and beard, the bright red headband, the bright red tunic, the cream bone club, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "caveman-b is the right figure (bone club raised overhead, red headband and tunic to the knees, 21.9% owner area) but has a brown forearm wrap, a red mouth and orange skin shading: RED_BROWN_MATERIAL 8.1%."
+    },
+    {
+      "id": "brontosaurus-d",
+      "asset": "chibi-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19804,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing and carries no rider. One single animal with exactly one head. Every strap and cord is charcoal grey, never brown.",
+      "negativeAddendum": "rider, person, elephant, trunk, wings, dragon, tower, howdah, saddle, flag, pole, two heads, second head, two animals, nose horn, rhinoceros, brown straps, brown bands, grey skin",
+      "notes": "brontosaurus-b and -c: the howdah and banner drew a brown wooden saddle, a second head in front of the neck (-c) and a rhinoceros nose horn. The subject line was tuned: no howdah and no banner, a side view on four legs, one smooth hornless head, clear cornflower blue; the owner area is the neck bands and a blanket over the whole back. Seed 1 of 2."
+    },
+    {
+      "id": "brontosaurus-e",
+      "asset": "chibi-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19805,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing and carries no rider. One single animal with exactly one head. Every strap and cord is charcoal grey, never brown.",
+      "negativeAddendum": "rider, person, elephant, trunk, wings, dragon, tower, howdah, saddle, flag, pole, two heads, second head, two animals, nose horn, rhinoceros, brown straps, brown bands, grey skin",
+      "notes": "As brontosaurus-d. Seed 2 of 2."
+    },
+    {
+      "id": "caveman-b-edit-2",
+      "asset": "chibi-dinosaur-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 19112,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour all the bare skin (face, arms, legs and feet) from orange-pink to a very pale cream-beige skin tone with light grey-beige shading, with no orange, pink or red skin anywhere. Change nothing else: keep the black hair and beard, the bright red headband, the bright red tunic, the cream bone club, the charcoal belt, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "caveman-b-edit fixed the brown wrap and the red mouth but left the orange-pink skin: 167 red-brown pixels (8.1%). A single-focus edit for the skin only."
+    },
+    {
+      "id": "caveman-d",
+      "asset": "chibi-dinosaur-caveman",
+      "endpoint": "create-image-pixen",
+      "seed": 19104,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "He laughs with a wide open happy smile showing a row of white teeth and big round friendly eyes with raised eyebrows, never angry. The bone club is huge, as long as his body: one thick cream bone with two round knobs, held up above his head in one hand. The fur tunic is plain bright red and covers the whole torso and the legs down to the shins. The skin is a very pale cream-beige with light grey-beige shading, never orange or pink. He wears no arm bands; the belt is charcoal grey.",
+      "negativeAddendum": "shield, helmet, sword, spear, bow, quiver, wooden club, stone club, armour, angry face, frown, snarl, grey tunic, black tunic, arm bands, bracers, orange skin, pink skin, red mouth",
+      "notes": "A fresh seed beside the caveman-b edits, asking for pale skin (orange-pink skin shading lands in the red-brown band) and a laughing face."
+    },
+    {
+      "id": "brontosaurus-f",
+      "asset": "chibi-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19806,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "It is a four-legged animal like an elephant-sized sauropod: it stands on all four legs, with its body level and its belly parallel to the ground, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider and no weapon. One single animal with exactly one head. Every cord is charcoal grey, never brown; it wears no boots, no belts and no leg bands.",
+      "negativeAddendum": "rider, person, elephant, trunk, wings, dragon, tower, howdah, saddle, flag, pole, two heads, second head, two animals, nose horn, rhinoceros, brown straps, brown bands, grey skin, axe, weapon, sword, standing upright, two legs, arms, hands, boots, belt, raptor, tyrannosaur",
+      "notes": "brontosaurus-d and -e stood upright on two legs like dragons, one with an axe and both with brown boots and belts: the unit class asks for a standing figure with a signature weapon. The addendum insists on a level four-legged body with no arms. Default options."
+    },
+    {
+      "id": "brontosaurus-g",
+      "asset": "chibi-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19807,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal like an elephant-sized sauropod: it stands on all four legs, with its body level and its belly parallel to the ground, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider and no weapon. One single animal with exactly one head. Every cord is charcoal grey, never brown; it wears no boots, no belts and no leg bands.",
+      "negativeAddendum": "rider, person, elephant, trunk, wings, dragon, tower, howdah, saddle, flag, pole, two heads, second head, two animals, nose horn, rhinoceros, brown straps, brown bands, grey skin, axe, weapon, sword, standing upright, two legs, arms, hands, boots, belt, raptor, tyrannosaur",
+      "notes": "As brontosaurus-f, with the side view facing east: a long quadruped shows its four legs and its neck best in profile."
+    },
+    {
+      "id": "brontosaurus-h",
+      "asset": "chibi-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19808,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider and no weapon. The body has no face: the only eyes and mouth are on the head at the top of the neck. Every cord is charcoal grey, never brown; it wears no boots, no belts, no hood and no leg bands.",
+      "negativeAddendum": "rider, person, elephant, trunk, wings, dragon, tower, howdah, saddle, flag, pole, two heads, second head, two animals, face on the body, head on the chest, nose horn, rhinoceros, brown straps, brown bands, grey skin, axe, weapon, sword, standing upright, arms, hands, boots, belt, hood",
+      "notes": "brontosaurus-g (side view, east) is the right level four-legged body in clear blue with 23.5% owner area, but again has two heads: a small one on the neck and a big hooded one on the chest. The chibi class asks for a big head, so 'a small round head' on a long neck gets a second, big one. The subject line now ends the neck in the animal's only head, a big round one. Seed 1 of 2."
+    },
+    {
+      "id": "brontosaurus-i",
+      "asset": "chibi-dinosaur-brontosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19809,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider and no weapon. The body has no face: the only eyes and mouth are on the head at the top of the neck. Every cord is charcoal grey, never brown; it wears no boots, no belts, no hood and no leg bands.",
+      "negativeAddendum": "rider, person, elephant, trunk, wings, dragon, tower, howdah, saddle, flag, pole, two heads, second head, two animals, face on the body, head on the chest, nose horn, rhinoceros, brown straps, brown bands, grey skin, axe, weapon, sword, standing upright, arms, hands, boots, belt, hood",
+      "notes": "As brontosaurus-h. Seed 2 of 2."
+    },
+    {
+      "id": "brontosaurus-h-edit",
+      "asset": "chibi-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 19818,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brontosaurus-h",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the brown boots and brown feet to the same blue skin as the legs, with small cream toenails, and recolour the brown straps on the chest charcoal grey, so that nothing is brown. Remove the small horn on top of the head so the head is smooth and round. Change nothing else: keep the blue skin, the cream belly and throat, the bright red neck bands, the bright red blanket, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "brontosaurus-h is the first single-headed long-necked giant (three red neck bands, a red blanket, head in the top 8 px, 25.4% owner area, QA pass) but wears brown boots and chest straps (18.7% brown) and has a small horn."
+    },
+    {
+      "id": "spitter-b",
+      "asset": "chibi-dinosaur-spitter",
+      "endpoint": "create-image-pixen",
+      "seed": 19302,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown.",
+      "negativeAddendum": "bow, quiver, arrows, green spit, slime, umbrella, wings, rider, sword, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin",
+      "notes": "As spitter-a. Seed 2 of 2."
+    },
+    {
+      "id": "ankylosaurus-b",
+      "asset": "chibi-dinosaur-ankylosaurus",
+      "endpoint": "create-image-pixen",
+      "seed": 19402,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands.",
+      "negativeAddendum": "turtle, tortoise, shield, spear, rider, green shell, wheels, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands",
+      "notes": "As ankylosaurus-a, with the side view facing east that gave the Brontosaurus a level four-legged body. Seed 2 of 2."
+    },
+    {
+      "id": "shaman-b",
+      "asset": "chibi-dinosaur-shaman",
+      "endpoint": "create-image-pixen",
+      "seed": 19502,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The skin is a very pale cream-beige with light grey-beige shading, never orange or pink. The mouth is dark with cream teeth, never red. The drum frame, the straps and the belt are dark charcoal grey, never brown; he wears no arm bands.",
+      "negativeAddendum": "banner, flag, staff, megaphone, skeleton body, bone arms, shield, sword, wooden drum, war bonnet, brown straps, brown drum, arm bands, bracers, orange skin, pink skin, red mouth",
+      "notes": "As shaman-a. Seed 2 of 2."
+    },
+    {
+      "id": "triceratops-b",
+      "asset": "chibi-dinosaur-triceratops",
+      "endpoint": "create-image-pixen",
+      "seed": 19602,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands.",
+      "negativeAddendum": "rider, howdah, catapult, wheels, rhinoceros, wings, spikes on the back, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands",
+      "notes": "As triceratops-a, with the side view facing east that gave the Brontosaurus a level four-legged body. Seed 2 of 2."
+    },
+    {
+      "id": "t-rex-b",
+      "asset": "chibi-dinosaur-t-rex",
+      "endpoint": "create-image-pixen",
+      "seed": 19702,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey. Every cord is charcoal grey, never brown.",
+      "negativeAddendum": "rider, saddle, wings, dragon, horns, back spikes, frill, sword, lance, horse, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin",
+      "notes": "As t-rex-a. Seed 2 of 2."
+    },
+    {
+      "id": "egg-b",
+      "asset": "chibi-dinosaur-egg",
+      "endpoint": "create-image-pixen",
+      "seed": 19902,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The eggshell is pale cream with cool grey shading, never tan or brown; the nest bones are pale cream. The red band and the red cloth are plain flat bright red.",
+      "negativeAddendum": "face, eyes, crack, hatching, baby, bird, chicken, straw, twigs, brown nest, grass, feet",
+      "notes": "As egg-a. Seed 2 of 2."
+    },
+    {
+      "id": "spitter-a-edit",
+      "asset": "chibi-dinosaur-spitter",
+      "endpoint": "edit-image-pixen",
+      "seed": 19311,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "spitter-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the dark grey skin of the dinosaur (head, arms, legs and tail) to a clear cornflower blue with darker navy blue shading, with no grey skin anywhere, and make the inside of the mouth dark navy blue instead of red. Change nothing else: keep the big round bright red frill with its cream rim, the cream crests, teeth, belly and claws, the bright red cloth, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "spitter-a has the round fan frill in plain red with a cream rim and a red poncho (33.2% owner area, QA pass), but slate-grey skin and a red mouth. The skin recolour that worked for the Raptor."
+    },
+    {
+      "id": "ankylosaurus-a-edit",
+      "asset": "chibi-dinosaur-ankylosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 19411,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "ankylosaurus-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the tan and brown skin of the animal (head, legs, tail and belly sides) to a clear cornflower blue with darker navy blue shading, keeping the cream horns, spikes, claws and the cream tail club, so that nothing is tan or brown. Make the red blanket much wider so that it covers the whole middle of the domed shell from the top down to the ground, plain bright red. Change nothing else: keep the shape, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "ankylosaurus-a is the right low spiked dome with the tail club raised to head height, but its head and legs are tan and brown (22.2%) and the blanket is a narrow strip at the back: 9.5% owner area."
+    },
+    {
+      "id": "shaman-a-edit",
+      "asset": "chibi-dinosaur-shaman",
+      "endpoint": "edit-image-pixen",
+      "seed": 19511,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "shaman-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the whole robe plain bright red from the shoulders down to the feet, including the sleeves and the dark parts of the robe. Recolour the brown drum rim, straps and drumstick handle dark charcoal grey, so nothing is brown, and make the red cheeks pale skin colour. Change nothing else: keep the cream skull hood, the red feathers, the black beard, the drum, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "shaman-a is the right figure (beast-skull hood with a jutting toothy jaw, three red feathers, a bearded face, a round drum at the belly, a drumstick raised) but the robe is half dark and the drum rim brown: 13.6% owner area (COVERAGE_LOW), 23.2% brown."
+    },
+    {
+      "id": "triceratops-b-edit",
+      "asset": "chibi-dinosaur-triceratops",
+      "endpoint": "edit-image-pixen",
+      "seed": 19611,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "triceratops-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the orange and red-brown face and the brown belly straps to a clear cornflower blue with navy blue shading, so the whole animal is blue and nothing is orange or brown. Make the round neck frill one plain flat solid bright red surface with no pattern, lines or spots. Change nothing else: keep the cream beak, the three cream horns and studs, the blue body, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "triceratops-b (side view, east) is the right four-legged beast with three forward horns and a round studded frill, but its face is orange-red (445 red-brown pixels, 15.3%) and the frill is striped, so the mask is speckled."
+    },
+    {
+      "id": "triceratops-c",
+      "asset": "chibi-dinosaur-triceratops",
+      "endpoint": "create-image-pixen",
+      "seed": 19603,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin of the face, body and legs is a clear cornflower blue shaded navy blue: clearly blue, never grey, never orange and never brown. The frill is one plain flat solid bright red surface with no pattern. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands.",
+      "negativeAddendum": "rider, howdah, catapult, wheels, rhinoceros, wings, spikes on the back, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands, orange face, brown face, red face, striped frill",
+      "notes": "A fresh seed beside the triceratops-b edit, naming a blue face and a plain frill. triceratops-a (default view) stood upright holding a red blade."
+    },
+    {
+      "id": "t-rex-b-edit",
+      "asset": "chibi-dinosaur-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 19711,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the dark grey skin to a clear cornflower blue with navy blue shading, with no grey skin anywhere, and make the inside of the mouth dark navy blue instead of red. Widen the red scarf into a big plain bright red bib over the chest and shoulders, and add two plain bright red cloth bands round the tail. Change nothing else: keep the cream belly, jaw, teeth and claws, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "t-rex-b is the right upright tyrant (a huge boxy head with open jaws and chunky teeth, tiny arms, a thick tail, no weapon), but slate grey with only a thin scarf: 11.5% owner area. The fragment's fallback (a bib over the chest) plus the skin recolour."
+    },
+    {
+      "id": "egg-a-edit",
+      "asset": "chibi-dinosaur-egg",
+      "endpoint": "edit-image-pixen",
+      "seed": 19911,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "egg-a",
+        "candidate": 0
+      },
+      "editInstruction": "Replace the dark grey band round the middle of the egg with one broad plain flat bright red painted band, with no grey, no studs and no squares on it. Change nothing else: keep the cream eggshell with its blue-grey speckles, the ring of cream bones, the bright red cloth round the nest, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "egg-a is the right Egg (a speckled cream shell in a bone ring with a red cloth skirt, 29.9% owner area, QA pass), but its band is a dark grey strap with red squares that reads as iron."
+    },
+    {
+      "id": "ankylosaurus-a-edit-b",
+      "asset": "chibi-dinosaur-ankylosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 19412,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "ankylosaurus-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the tan and brown skin of the animal (head, legs, tail and belly) to a clear cornflower blue with navy blue shading, so nothing is tan or brown. Make the red blanket strip over the shell twice as wide, plain bright red, and paint the round ball of the tail club plain bright red. Change nothing else: keep the blue-grey shell plates, the cream spikes, horns and claws, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "ankylosaurus-a-edit turned the blanket into a hood over the whole dome (42.9% owner area) and hid the shell plates and spikes, so the armoured dome no longer reads. A second edit of ankylosaurus-a keeps the shell: a wider strip plus the fragment's fallback, a red tail-club ball."
+    },
+    {
+      "id": "shaman-a-edit-2",
+      "asset": "chibi-dinosaur-shaman",
+      "endpoint": "edit-image-pixen",
+      "seed": 19512,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "shaman-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Give him long plain bright red sleeves that cover both arms from the shoulders to the wrists, replacing the bare arms and the dark arm bands, and make the bright red robe skirt longer and wider so it reaches the ankles. Change nothing else: keep the cream skull hood, the red feathers, the face and black beard, the drum, the drumstick, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "shaman-a-edit changed almost nothing (13.3% owner area): the drum and the belts hide the robe. Red sleeves and a longer skirt add owner area without touching the hood, drum or face."
+    },
+    {
+      "id": "triceratops-b-edit-2",
+      "asset": "chibi-dinosaur-triceratops",
+      "endpoint": "edit-image-pixen",
+      "seed": 19612,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "triceratops-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the brown strap under the belly and every other brown or tan part of the body to dark charcoal grey, so that nothing is brown. Change nothing else: keep the plain bright red frill, the blue skin, the cream beak, horns and claws, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "triceratops-b-edit is the charging three-horned beast with a plain flat red frill and a blue face (32.4% owner area, QA pass); a single-focus edit for the brown belly strap."
+    },
+    {
+      "id": "t-rex-b-edit-2",
+      "asset": "chibi-dinosaur-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 19712,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Add a big plain bright red blanket draped over the dinosaur's back and hips, hanging from the shoulders down its side to the knee and covering the upper part of the tail, joined to the red scarf at the neck. Change nothing else: keep the blue skin, the big head and open jaws, the cream belly, teeth and claws, the red tail bands, the pose, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "t-rex-b-edit recoloured the skin to clear blue and added red tail and ankle bands, but the scarf stayed thin: 11.3% owner area (COVERAGE_LOW). A single-focus edit adds the approved back blanket."
+    }
+  ]
+}

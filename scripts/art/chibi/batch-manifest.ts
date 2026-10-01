@@ -239,8 +239,10 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     camera: "icon",
     factionLayer: true,
     // Ships and the Catapult use the icon camera for their whole-object
-    // portraits (a machine has no head and shoulders).
-    assetClasses: ["ICON", "PORTRAIT"],
+    // portraits (a machine has no head and shoulders). The Dinosaur Egg
+    // (UNIT:DINOSAUR:EGG, bead pulp_wars-c87.7) is an owned item sprite on
+    // the board: the unit class would give it a face and feet.
+    assetClasses: ["ICON", "PORTRAIT", "STANDARD_UNIT"],
     generators: ["create-image-pixen"],
     editPass: true,
     noBackground: true,
@@ -787,7 +789,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT):(UNDEAD|GOBLIN):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:)?[A-Z_]+$|^CITY:((UNDEAD|GOBLIN):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^STATUS:(PLAGUED|BITTEN)$|^EFFECT:[A-Z_]+$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT):(UNDEAD|GOBLIN|DINOSAUR):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:)?[A-Z_]+$|^CITY:((UNDEAD|GOBLIN|DINOSAUR):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^STATUS:(PLAGUED|BITTEN)$|^EFFECT:[A-Z_]+$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;

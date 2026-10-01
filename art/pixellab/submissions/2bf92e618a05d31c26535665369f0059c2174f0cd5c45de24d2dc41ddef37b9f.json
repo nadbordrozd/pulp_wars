@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-stampede-a-edit",
+  "jobId": "0ebc3394-66e0-49fb-9f87-44b84a8e1f43",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-icon-action-stampede",
+    "subject": "ICON:ACTION:STAMPEDE",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 6002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the green face and body of the beast to a clear cornflower blue with navy blue shading, and recolour every red and orange part (the snout, the blanket stripes) to the same blue or to pale cream, so that nothing is green, red, orange or brown. Change nothing else: keep the cream horns, the blue frill with its cream rim, the pale cream dust puffs behind it, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the green face and body of the beast to a clear cornflower blue with navy blue shading, and recolour every red and orange part (the snout, the blanket stripes) to the same blue or to pale cream, so that nothing is green, red, orange or brown. Change nothing else: keep the cream horns, the blue frill with its cream rim, the pale cream dust puffs behind it, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the green face and body of the beast to a clear cornflower blue with navy blue shading, and recolour every red and orange part (the snout, the blanket stripes) to the same blue or to pale cream, so that nothing is green, red, orange or brown. Change nothing else: keep the cream horns, the blue frill with its cream rim, the pale cream dust puffs behind it, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the green face and body of the beast to a clear cornflower blue with navy blue shading, and recolour every red and orange part (the snout, the blanket stripes) to the same blue or to pale cream, so that nothing is green, red, orange or brown. Change nothing else: keep the cream horns, the blue frill with its cream rim, the pale cream dust puffs behind it, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-stampede-a",
+      "candidate": 0,
+      "sha256": "a674d07b4a8d138e8a868d887cbe2ec450dfbb22a122d217e5a9f1010baafa5a"
+    }
+  }
+}

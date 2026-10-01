@@ -116,6 +116,30 @@ bead `pulp_wars-0ao.4` and their generator were removed when this art was
 registered; their evidence stays in
 `art/pixellab/reviews/chibi-goblin-placeholders/`.
 
+**Dinosaur subjects (revision 19, bead `pulp_wars-c87.7`).** A Dinosaur land
+unit asks for `UNIT:DINOSAUR:<ROLE>` (Caveman `FIGHTER`, Raptor `RAIDER`,
+Spitter `MARKSMAN`, Ankylosaurus `GUARD`, Shaman `CAPTAIN`, Triceratops
+`CATAPULT`, T-Rex `KNIGHT`, Brontosaurus `JUGGERNAUT`) with the canvas, class
+and mask of the Human role above. Three anchors move right of the default so
+the art clears the HP bar and seat badge: the Raptor's tail by 2 px
+(`34, 48`), the Triceratops's tail by 2 px (`34, 48`) and the T-Rex's
+blanket hem by 6 px (`30, 48`). An Egg (a unit of form `EGG`, whatever role
+is inside) asks for `UNIT:DINOSAUR:EGG`: `chibi-dinosaur-egg`, a
+`STANDARD_UNIT` of 48 x 48, bottom-centred on its tile (anchor `24, 8`),
+with an owner mask; it has no fallback subject. The rasters are PixelLab art
+from batch `dinosaur` (`scripts/art/chibi/batches/batch-dinosaur.json`), and
+the dock, training buttons and technology cards use the
+`PORTRAIT:DINOSAUR:<ROLE>` busts of batch `5-dinosaur` (the Ankylosaurus
+shown whole). Without a usable raster (and always in LEGACY) a Dinosaur unit
+or portrait draws the Human art of its role with the Dinosaur badge, a
+dusty-blue three-toed footprint on a charcoal disc in the Undead badge's
+corner. Dinosaur Patrol Boats, Battleships and embarked transports use the
+Human subjects, with the badge. Prompts and recipes:
+[DINOSAUR.md](factions/DINOSAUR.md) and
+`scripts/art/chibi/subjects/DINOSAUR.json`; review evidence:
+`npm run art:chibi-dinosaur-review` into
+`art/pixellab/reviews/chibi-batch-dinosaur/`.
+
 ## Map overlays drawn in code (no raster today)
 
 | Overlay                                                   | Drawn by                                         | Plan batch     | Notes                                                                                 |
@@ -161,7 +185,9 @@ rewards and on technology cards.)
 Bead `pulp_wars-67q.11`. Records: `scripts/art/chibi/records/batch-5.json`
 (ORIGINAL), `batch-5-undead.json` (UNDEAD) and `batch-5-goblin.json`
 (GOBLIN portraits, bead `pulp_wars-0ao.8`, and the Kaboom! and WAAAGH!
-command icons, bead `pulp_wars-0ao.14`); masters under
+command icons, bead `pulp_wars-0ao.14`) and `batch-5-dinosaur.json`
+(DINOSAUR portraits and the Lay Egg, Hatch, Stampede and War Drums command
+icons, bead `pulp_wars-c87.7`); masters under
 `public/assets/chibi/portraits/` and `public/assets/chibi/icons/`.
 
 **The DOM hook.** [`chibi-dom-art-v7.ts`](../../src/render/dom/chibi-dom-art-v7.ts)
@@ -188,7 +214,15 @@ registers.
 | Leaderboard city count              | `CITY:1`, or `CITY:UNDEAD:1` or `CITY:GOBLIN:1` by that player's faction                                                                                                                         | that player             |
 | Inline and HUD coin and population  | `ICON:HUD:COIN`, `ICON:HUD:POPULATION`                                                                                                                                                           | none                    |
 
-Undead and Goblin portraits, Frenzy and WAAAGH! fall back to the Human art
+A Dinosaur viewer or owner follows the same rows: `UNIT:DINOSAUR:<ROLE>`
+(an Egg: `UNIT:DINOSAUR:EGG`), `CITY:DINOSAUR:<level>`,
+`PORTRAIT:DINOSAUR:<ROLE>`, War Drums `ICON:ACTION:DINOSAUR:RALLY`, and
+`ICON:ACTION:LAY_EGG`, `ICON:ACTION:HATCH` and `ICON:ACTION:STAMPEDE` for the
+three Dinosaur commands (`commandSubjectV7` derives them from the command
+kind; the interface that offers them is bead `pulp_wars-c87.4`).
+
+Undead, Goblin and Dinosaur portraits, Frenzy, WAAAGH! and War Drums fall
+back to the Human art
 (with the faction badge on units, as on the map) while they have no raster;
 with their own art the badge is dropped. Kaboom! has no Human counterpart:
 without its raster, and always in LEGACY, it keeps the code-drawn bomb glyph
@@ -198,7 +232,7 @@ of `ui-icons-v7.ts`.
 chibi map sprite (Gathering the Fruit bush, Farming the Farm, Chivalry the
 Knight, Naval Engineering the Battleship, and so on; an Undead viewer's
 Chivalry and Drill show the Vampire and Zombie, a Goblin viewer's the Scrap
-Buggy and Orc Brute). Portrait and action reuse
+Buggy and Orc Brute, a Dinosaur viewer's the T-Rex and Ankylosaurus). Portrait and action reuse
 follows LEGACY too: Administration the Captain portrait, Scouting the
 Raider, Marksmanship the Marksman, Planning the Expand reward, Raiding
 Pillage, Explosives Blast Mountain, Roads Build Road. Fieldcraft,
@@ -235,23 +269,26 @@ batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
 `building-ruleset7-lumber-camp`, `building-square-grand-works`,
 `terrain-ruleset7-resource-fish`, `terrain-square-fertile-ground`.
 
-## Faction city sets (bead `pulp_wars-6gd.6`)
+## Faction city sets (beads `pulp_wars-6gd.6` and `pulp_wars-c87.7`)
 
 The Human `CITY:1`–`CITY:3` rasters are the only city variants: the capital
 crown, the City Wall (fortification) badge, the population pips, the HP bar
 and the garrisoned unit are code-drawn overlays shared by every faction. The
-Undead and the Goblins each have the same three rasters, on the Human
+Undead, the Goblins and the Dinosaurs each have the same three rasters, on the Human
 canvases, anchors and overflow, with owner masks. `SITE:VILLAGE` stays
 shared.
 
-| Art subject     | Asset                 | Batch           | Canvas   | Anchor  | Overflow side / up | Mask     | Look                         |
-| --------------- | --------------------- | --------------- | -------- | ------- | ------------------ | -------- | ---------------------------- |
-| `CITY:UNDEAD:1` | `chibi-undead-city-1` | `cities-undead` | 88 x 96  | default | 4 / 16             | required | [UNDEAD](factions/UNDEAD.md) |
-| `CITY:UNDEAD:2` | `chibi-undead-city-2` | `cities-undead` | 96 x 100 | default | 8 / 20             | required | necropolis                   |
-| `CITY:UNDEAD:3` | `chibi-undead-city-3` | `cities-undead` | 96 x 104 | default | 8 / 24             | required | necropolis                   |
-| `CITY:GOBLIN:1` | `chibi-goblin-city-1` | `cities-goblin` | 88 x 96  | default | 4 / 16             | required | [GOBLIN](factions/GOBLIN.md) |
-| `CITY:GOBLIN:2` | `chibi-goblin-city-2` | `cities-goblin` | 96 x 100 | default | 8 / 20             | required | scrap camp                   |
-| `CITY:GOBLIN:3` | `chibi-goblin-city-3` | `cities-goblin` | 96 x 104 | default | 8 / 24             | required | scrap camp                   |
+| Art subject       | Asset                   | Batch             | Canvas   | Anchor  | Overflow side / up | Mask     | Look                             |
+| ----------------- | ----------------------- | ----------------- | -------- | ------- | ------------------ | -------- | -------------------------------- |
+| `CITY:UNDEAD:1`   | `chibi-undead-city-1`   | `cities-undead`   | 88 x 96  | default | 4 / 16             | required | [UNDEAD](factions/UNDEAD.md)     |
+| `CITY:UNDEAD:2`   | `chibi-undead-city-2`   | `cities-undead`   | 96 x 100 | default | 8 / 20             | required | necropolis                       |
+| `CITY:UNDEAD:3`   | `chibi-undead-city-3`   | `cities-undead`   | 96 x 104 | default | 8 / 24             | required | necropolis                       |
+| `CITY:GOBLIN:1`   | `chibi-goblin-city-1`   | `cities-goblin`   | 88 x 96  | default | 4 / 16             | required | [GOBLIN](factions/GOBLIN.md)     |
+| `CITY:GOBLIN:2`   | `chibi-goblin-city-2`   | `cities-goblin`   | 96 x 100 | default | 8 / 20             | required | scrap camp                       |
+| `CITY:GOBLIN:3`   | `chibi-goblin-city-3`   | `cities-goblin`   | 96 x 104 | default | 8 / 24             | required | scrap camp                       |
+| `CITY:DINOSAUR:1` | `chibi-dinosaur-city-1` | `cities-dinosaur` | 88 x 96  | default | 4 / 16             | required | [DINOSAUR](factions/DINOSAUR.md) |
+| `CITY:DINOSAUR:2` | `chibi-dinosaur-city-2` | `cities-dinosaur` | 96 x 100 | default | 8 / 20             | required | bone-and-hide camp               |
+| `CITY:DINOSAUR:3` | `chibi-dinosaur-city-3` | `cities-dinosaur` | 96 x 104 | default | 8 / 24             | required | bone-and-hide camp               |
 
 The board and the selection dock resolve a city by its **owner's** faction
 (`cityArtSubjectV7` in

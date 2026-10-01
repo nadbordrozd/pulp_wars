@@ -225,6 +225,41 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
       "assets/chibi/settlements/chibi-goblin-city-3.mask.png",
     ),
   },
+  // Dinosaur city set (pulp_wars-c87.7, batch cities-dinosaur): the
+  // bone-and-hide camp, resolved by the owner's faction like the sets above.
+  {
+    id: "chibi-dinosaur-city-1",
+    subject: "CITY:DINOSAUR:1",
+    assetClass: "SETTLEMENT",
+    width: 88,
+    height: 96,
+    url: chibiArtUrl("assets/chibi/settlements/chibi-dinosaur-city-1.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/settlements/chibi-dinosaur-city-1.mask.png",
+    ),
+  },
+  {
+    id: "chibi-dinosaur-city-2",
+    subject: "CITY:DINOSAUR:2",
+    assetClass: "SETTLEMENT",
+    width: 96,
+    height: 100,
+    url: chibiArtUrl("assets/chibi/settlements/chibi-dinosaur-city-2.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/settlements/chibi-dinosaur-city-2.mask.png",
+    ),
+  },
+  {
+    id: "chibi-dinosaur-city-3",
+    subject: "CITY:DINOSAUR:3",
+    assetClass: "SETTLEMENT",
+    width: 96,
+    height: 104,
+    url: chibiArtUrl("assets/chibi/settlements/chibi-dinosaur-city-3.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/settlements/chibi-dinosaur-city-3.mask.png",
+    ),
+  },
   {
     id: "chibi-fighter",
     subject: "UNIT:FIGHTER",
@@ -1333,6 +1368,253 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     width: 48,
     height: 48,
     url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-kaboom.png"),
+  },
+  // Dinosaur (pulp_wars-c87.7, batch dinosaur): UNIT:DINOSAUR:<ROLE> units
+  // and the one Egg sprite (UNIT:DINOSAUR:EGG, 48 x 48, bottom-centred).
+  {
+    id: "chibi-dinosaur-caveman",
+    subject: "UNIT:DINOSAUR:FIGHTER",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-dinosaur-caveman.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-dinosaur-caveman.mask.png",
+    ),
+  },
+  {
+    id: "chibi-dinosaur-raptor",
+    subject: "UNIT:DINOSAUR:RAIDER",
+    assetClass: "LARGE_UNIT",
+    width: 72,
+    height: 88,
+    url: chibiArtUrl("assets/chibi/units/chibi-dinosaur-raptor.png"),
+    // 2 px right of the class anchor: the tail tip clears the seat badge.
+    anchor: { x: 34, y: 48 },
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-dinosaur-raptor.mask.png",
+    ),
+  },
+  {
+    id: "chibi-dinosaur-spitter",
+    subject: "UNIT:DINOSAUR:MARKSMAN",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-dinosaur-spitter.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-dinosaur-spitter.mask.png",
+    ),
+  },
+  {
+    id: "chibi-dinosaur-ankylosaurus",
+    subject: "UNIT:DINOSAUR:GUARD",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-dinosaur-ankylosaurus.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-dinosaur-ankylosaurus.mask.png",
+    ),
+  },
+  {
+    id: "chibi-dinosaur-shaman",
+    subject: "UNIT:DINOSAUR:CAPTAIN",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-dinosaur-shaman.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-dinosaur-shaman.mask.png",
+    ),
+  },
+  {
+    id: "chibi-dinosaur-triceratops",
+    subject: "UNIT:DINOSAUR:CATAPULT",
+    assetClass: "LARGE_UNIT",
+    width: 72,
+    height: 88,
+    url: chibiArtUrl("assets/chibi/units/chibi-dinosaur-triceratops.png"),
+    // 2 px right of the class anchor: the tail clears the seat badge.
+    anchor: { x: 34, y: 48 },
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-dinosaur-triceratops.mask.png",
+    ),
+  },
+  {
+    id: "chibi-dinosaur-t-rex",
+    subject: "UNIT:DINOSAUR:KNIGHT",
+    assetClass: "LARGE_UNIT",
+    width: 72,
+    height: 88,
+    url: chibiArtUrl("assets/chibi/units/chibi-dinosaur-t-rex.png"),
+    // 6 px right of the class anchor: the blanket hem and tail clear the
+    // seat badge and HP bar.
+    anchor: { x: 30, y: 48 },
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-dinosaur-t-rex.mask.png",
+    ),
+  },
+  {
+    id: "chibi-dinosaur-brontosaurus",
+    subject: "UNIT:DINOSAUR:JUGGERNAUT",
+    assetClass: "GIANT_UNIT",
+    width: 88,
+    height: 104,
+    url: chibiArtUrl("assets/chibi/units/chibi-dinosaur-brontosaurus.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/units/chibi-dinosaur-brontosaurus.mask.png",
+    ),
+  },
+  {
+    id: "chibi-dinosaur-egg",
+    subject: "UNIT:DINOSAUR:EGG",
+    assetClass: "STANDARD_UNIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/units/chibi-dinosaur-egg.png"),
+    ownerMaskUrl: chibiArtUrl("assets/chibi/units/chibi-dinosaur-egg.mask.png"),
+  },
+  // Dinosaur portraits (pulp_wars-c87.7, batch 5-dinosaur):
+  // PORTRAIT:DINOSAUR:<ROLE>; the Ankylosaurus is shown whole (icon class).
+  {
+    id: "chibi-portrait-dinosaur-caveman",
+    subject: "PORTRAIT:DINOSAUR:FIGHTER",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-caveman.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-caveman.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-dinosaur-raptor",
+    subject: "PORTRAIT:DINOSAUR:RAIDER",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-raptor.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-raptor.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-dinosaur-spitter",
+    subject: "PORTRAIT:DINOSAUR:MARKSMAN",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-spitter.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-spitter.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-dinosaur-ankylosaurus",
+    subject: "PORTRAIT:DINOSAUR:GUARD",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-ankylosaurus.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-ankylosaurus.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-dinosaur-shaman",
+    subject: "PORTRAIT:DINOSAUR:CAPTAIN",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-shaman.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-shaman.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-dinosaur-triceratops",
+    subject: "PORTRAIT:DINOSAUR:CATAPULT",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-triceratops.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-triceratops.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-dinosaur-t-rex",
+    subject: "PORTRAIT:DINOSAUR:KNIGHT",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-t-rex.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-t-rex.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-dinosaur-brontosaurus",
+    subject: "PORTRAIT:DINOSAUR:JUGGERNAUT",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-brontosaurus.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-dinosaur-brontosaurus.mask.png",
+    ),
+  },
+  // Dinosaur command icons (pulp_wars-c87.7, batch 5-dinosaur): Lay Egg,
+  // Hatch, Stampede and War Drums (ICON:ACTION:DINOSAUR:RALLY, the Dinosaur
+  // Rally). LEGACY keeps its own art.
+  {
+    id: "chibi-icon-action-dinosaur-rally",
+    subject: "ICON:ACTION:DINOSAUR:RALLY",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-dinosaur-rally.png"),
+  },
+  {
+    id: "chibi-icon-action-hatch",
+    subject: "ICON:ACTION:HATCH",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-hatch.png"),
+  },
+  {
+    id: "chibi-icon-action-lay-egg",
+    subject: "ICON:ACTION:LAY_EGG",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-lay-egg.png"),
+  },
+  {
+    id: "chibi-icon-action-stampede",
+    subject: "ICON:ACTION:STAMPEDE",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-stampede.png"),
   },
 ];
 

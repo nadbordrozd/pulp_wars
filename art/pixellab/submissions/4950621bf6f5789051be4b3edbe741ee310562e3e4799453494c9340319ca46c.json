@@ -1,0 +1,36 @@
+{
+  "id": "shaman-a-edit-2",
+  "jobId": "0204ee56-9c7e-4f41-9e7e-8ab12003c886",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-shaman",
+    "subject": "UNIT:DINOSAUR:CAPTAIN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 19512,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Give him long plain bright red sleeves that cover both arms from the shoulders to the wrists, replacing the bare arms and the dark arm bands, and make the bright red robe skirt longer and wider so it reaches the ankles. Change nothing else: keep the cream skull hood, the red feathers, the face and black beard, the drum, the drumstick, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Give him long plain bright red sleeves that cover both arms from the shoulders to the wrists, replacing the bare arms and the dark arm bands, and make the bright red robe skirt longer and wider so it reaches the ankles. Change nothing else: keep the cream skull hood, the red feathers, the face and black beard, the drum, the drumstick, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Give him long plain bright red sleeves that cover both arms from the shoulders to the wrists, replacing the bare arms and the dark arm bands, and make the bright red robe skirt longer and wider so it reaches the ankles. Change nothing else: keep the cream skull hood, the red feathers, the face and black beard, the drum, the drumstick, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Give him long plain bright red sleeves that cover both arms from the shoulders to the wrists, replacing the bare arms and the dark arm bands, and make the bright red robe skirt longer and wider so it reaches the ankles. Change nothing else: keep the cream skull hood, the red feathers, the face and black beard, the drum, the drumstick, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "shaman-a-edit",
+      "candidate": 0,
+      "sha256": "01913dade88f9bd7a3969be2119d23498e1dc238faa7a752002d4ae981de4d8c"
+    }
+  }
+}

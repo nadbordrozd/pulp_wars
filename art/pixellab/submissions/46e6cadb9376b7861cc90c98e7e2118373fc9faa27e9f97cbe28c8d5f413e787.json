@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-b-edit",
+  "jobId": "c89047a4-94a0-461d-b853-2ae9ad94377e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 19711,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the dark grey skin to a clear cornflower blue with navy blue shading, with no grey skin anywhere, and make the inside of the mouth dark navy blue instead of red. Widen the red scarf into a big plain bright red bib over the chest and shoulders, and add two plain bright red cloth bands round the tail. Change nothing else: keep the cream belly, jaw, teeth and claws, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the dark grey skin to a clear cornflower blue with navy blue shading, with no grey skin anywhere, and make the inside of the mouth dark navy blue instead of red. Widen the red scarf into a big plain bright red bib over the chest and shoulders, and add two plain bright red cloth bands round the tail. Change nothing else: keep the cream belly, jaw, teeth and claws, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the dark grey skin to a clear cornflower blue with navy blue shading, with no grey skin anywhere, and make the inside of the mouth dark navy blue instead of red. Widen the red scarf into a big plain bright red bib over the chest and shoulders, and add two plain bright red cloth bands round the tail. Change nothing else: keep the cream belly, jaw, teeth and claws, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the dark grey skin to a clear cornflower blue with navy blue shading, with no grey skin anywhere, and make the inside of the mouth dark navy blue instead of red. Widen the red scarf into a big plain bright red bib over the chest and shoulders, and add two plain bright red cloth bands round the tail. Change nothing else: keep the cream belly, jaw, teeth and claws, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-b",
+      "candidate": 0,
+      "sha256": "fd8e358bf9b42e54cd5e908f542901b3b558bc74233d515a7937a685fa3b7516"
+    }
+  }
+}

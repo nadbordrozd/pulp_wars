@@ -1,0 +1,69 @@
+{
+  "id": "portrait-dinosaur-brontosaurus-b",
+  "jobId": "sync-982e2364-2c2b-4578-be0d-c0898de9c1f4",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-portrait-dinosaur-brontosaurus",
+    "subject": "PORTRAIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5972,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+        "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+        "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+        "text": "Subject: Brontosaurus portrait, the head and long neck of a chunky cute gentle long-necked dinosaur: a small round pale dusty blue head with big sleepy eyes and a gentle smile on top of a thick neck rising from the bottom of the image, a pale cream throat, and three broad plain bright red cloth bands round the neck."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey or green. The thick neck is long and fills the image from the bottom edge up to the head near the top; the three bright red cloth bands are broad, plain and flat, and together cover most of the neck. The head is smooth and round with no horn.",
+        "negative": "rider, person, wings, fur, grey skin, green skin, weapon, armour, brown straps, red mouth, horn, nose horn, scarf knot"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Brontosaurus portrait, the head and long neck of a chunky cute gentle long-necked dinosaur: a small round pale dusty blue head with big sleepy eyes and a gentle smile on top of a thick neck rising from the bottom of the image, a pale cream throat, and three broad plain bright red cloth bands round the neck. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey or green. The thick neck is long and fills the image from the bottom edge up to the head near the top; the three bright red cloth bands are broad, plain and flat, and together cover most of the neck. The head is smooth and round with no horn.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, rider, person, wings, fur, grey skin, weapon, armour, brown straps, red mouth, horn, nose horn, scarf knot",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Brontosaurus portrait, the head and long neck of a chunky cute gentle long-necked dinosaur: a small round pale dusty blue head with big sleepy eyes and a gentle smile on top of a thick neck rising from the bottom of the image, a pale cream throat, and three broad plain bright red cloth bands round the neck. The skin is a clear cornflower blue shaded navy blue: clearly blue, never grey or green. The thick neck is long and fills the image from the bottom edge up to the head near the top; the three bright red cloth bands are broad, plain and flat, and together cover most of the neck. The head is smooth and round with no horn. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, rider, person, wings, fur, grey skin, weapon, armour, brown straps, red mouth, horn, nose horn, scarf knot."
+  }
+}

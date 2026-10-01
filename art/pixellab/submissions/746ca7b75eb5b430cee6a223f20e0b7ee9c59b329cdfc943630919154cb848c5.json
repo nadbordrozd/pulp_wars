@@ -1,0 +1,36 @@
+{
+  "id": "caveman-b-edit",
+  "jobId": "33fd094d-d79e-411c-bd57-0df8ccb038a7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-caveman",
+    "subject": "UNIT:DINOSAUR:FIGHTER",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 19111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the brown wrap on the forearm to charcoal grey, make the inside of the mouth dark grey with small cream teeth instead of red, and make the skin a light pale peach with pale beige shading instead of orange. Change nothing else: keep the black hair and beard, the bright red headband, the bright red tunic, the cream bone club, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the brown wrap on the forearm to charcoal grey, make the inside of the mouth dark grey with small cream teeth instead of red, and make the skin a light pale peach with pale beige shading instead of orange. Change nothing else: keep the black hair and beard, the bright red headband, the bright red tunic, the cream bone club, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the brown wrap on the forearm to charcoal grey, make the inside of the mouth dark grey with small cream teeth instead of red, and make the skin a light pale peach with pale beige shading instead of orange. Change nothing else: keep the black hair and beard, the bright red headband, the bright red tunic, the cream bone club, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the brown wrap on the forearm to charcoal grey, make the inside of the mouth dark grey with small cream teeth instead of red, and make the skin a light pale peach with pale beige shading instead of orange. Change nothing else: keep the black hair and beard, the bright red headband, the bright red tunic, the cream bone club, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "caveman-b",
+      "candidate": 0,
+      "sha256": "58a4f13e157b156056feb626a96a50d980cd69e6d11bc5ce6f59a940063bcbd7"
+    }
+  }
+}

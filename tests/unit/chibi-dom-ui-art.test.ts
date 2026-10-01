@@ -195,6 +195,42 @@ describe("CHIBI interface subjects", () => {
     expect(
       commandSubjectV7({ kind: "KABOOM", unitId: 1 as never }, "GOBLIN"),
     ).toBe("ICON:ACTION:KABOOM");
+    // Revision 19 (pulp_wars-c87.7): War Drums, Lay Egg, Hatch and Stampede.
+    expect(commandSubjectV7(commands[0] as CommandV7, "DINOSAUR")).toBe(
+      "ICON:ACTION:DINOSAUR:RALLY",
+    );
+    expect(
+      commandSubjectV7(
+        {
+          kind: "LAY_EGG",
+          cityId: 1 as never,
+          role: "RAIDER",
+          at: { x: 0, y: 0 },
+        },
+        "DINOSAUR",
+      ),
+    ).toBe("ICON:ACTION:LAY_EGG");
+    expect(
+      commandSubjectV7(
+        { kind: "HATCH", unitId: 1 as never, eggUnitId: 2 as never },
+        "DINOSAUR",
+      ),
+    ).toBe("ICON:ACTION:HATCH");
+    expect(
+      commandSubjectV7(
+        { kind: "STAMPEDE", unitId: 1 as never, targetUnitId: 2 as never },
+        "DINOSAUR",
+      ),
+    ).toBe("ICON:ACTION:STAMPEDE");
+    expect(commandSubjectV7(commands[13] as CommandV7, "DINOSAUR")).toBe(
+      "PORTRAIT:DINOSAUR:GUARD",
+    );
+    expect(technologySubjectV7("DRILL", "DINOSAUR")).toBe(
+      "UNIT:DINOSAUR:GUARD",
+    );
+    expect(technologySubjectV7("SCOUTING", "DINOSAUR")).toBe(
+      "PORTRAIT:DINOSAUR:RAIDER",
+    );
     expect(commandSubjectV7(commands[13] as CommandV7, "UNDEAD")).toBe(
       "PORTRAIT:UNDEAD:GUARD",
     );

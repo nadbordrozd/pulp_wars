@@ -1,0 +1,36 @@
+{
+  "id": "egg-a-edit",
+  "jobId": "1eaba44a-beb4-4ccb-b8dd-4aed41d13cec",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-egg",
+    "subject": "UNIT:DINOSAUR:EGG",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 19911,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Replace the dark grey band round the middle of the egg with one broad plain flat bright red painted band, with no grey, no studs and no squares on it. Change nothing else: keep the cream eggshell with its blue-grey speckles, the ring of cream bones, the bright red cloth round the nest, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Replace the dark grey band round the middle of the egg with one broad plain flat bright red painted band, with no grey, no studs and no squares on it. Change nothing else: keep the cream eggshell with its blue-grey speckles, the ring of cream bones, the bright red cloth round the nest, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Replace the dark grey band round the middle of the egg with one broad plain flat bright red painted band, with no grey, no studs and no squares on it. Change nothing else: keep the cream eggshell with its blue-grey speckles, the ring of cream bones, the bright red cloth round the nest, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Replace the dark grey band round the middle of the egg with one broad plain flat bright red painted band, with no grey, no studs and no squares on it. Change nothing else: keep the cream eggshell with its blue-grey speckles, the ring of cream bones, the bright red cloth round the nest, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "egg-a",
+      "candidate": 0,
+      "sha256": "2a8933fc79306c2e21b6af22d18228e049c9233c9f42a1124040ba9bae8bce7e"
+    }
+  }
+}

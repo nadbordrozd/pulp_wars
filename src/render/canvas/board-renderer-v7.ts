@@ -45,6 +45,7 @@ import {
   type AbilityPreviewStyleV7,
   type AfflictionSubjectV7,
 } from "./undead-canvas-v7";
+import { drawDinosaurBadgeV7 } from "./dinosaur-canvas-v7";
 import { drawGoblinBadgeV7 } from "./goblin-canvas-v7";
 import {
   blastPreviewPresentationV7,
@@ -250,11 +251,11 @@ export interface BoardRenderPlanEntryV7 {
   /** CITY only: the owner's capital (marked by a crown in the CHIBI art set). */
   readonly capital?: boolean;
   /**
-   * UNIT only: an Undead- or Goblin-owned unit. It is drawn with its
-   * faction badge unless the CHIBI art set shows its own faction raster
-   * (for Goblins, the pulp_wars-0ao.4 placeholders).
+   * UNIT only: an Undead-, Goblin- or Dinosaur-owned unit. It is drawn
+   * with its faction badge unless the CHIBI art set shows its own faction
+   * raster.
    */
-  readonly faction?: "UNDEAD" | "GOBLIN";
+  readonly faction?: "UNDEAD" | "GOBLIN" | "DINOSAUR";
   /**
    * UNIT only, revision 14: the public Plague and Bitten statuses, drawn as
    * small markers in the piece's overlay frame (absent when there are none).
@@ -510,7 +511,9 @@ export function buildBoardRenderPlanV7(
         commands.some(
           (command) => command.kind === "MOVE" && command.unitId === unit.id,
         ),
-      ...(faction === "UNDEAD" || faction === "GOBLIN" ? { faction } : {}),
+      ...(faction === "UNDEAD" || faction === "GOBLIN" || faction === "DINOSAUR"
+        ? { faction }
+        : {}),
       ...(afflictions.length > 0 ? { afflictions } : {}),
     });
   }
@@ -1530,6 +1533,15 @@ export function drawBoardV7(input: {
           drawUndeadBadgeV7(context, x, y, camera.zoom, chibiPiece);
         if (entry.kind === "UNIT" && entry.faction === "GOBLIN" && !factionArt)
           drawGoblinBadgeV7(context, x, y, camera.zoom, chibiPiece);
+        // The Egg has its own sprite and no Human counterpart, so it never
+        // wears the badge (bead pulp_wars-c87.7).
+        if (
+          entry.kind === "UNIT" &&
+          entry.faction === "DINOSAUR" &&
+          !factionArt &&
+          entry.artSubject !== "UNIT:DINOSAUR:EGG"
+        )
+          drawDinosaurBadgeV7(context, x, y, camera.zoom, chibiPiece);
         if (entry.kind === "UNIT")
           for (const [slot, affliction] of (
             entry.afflictions ?? []

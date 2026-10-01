@@ -110,14 +110,14 @@ describe("Faction city art (pulp_wars-6gd.6)", () => {
     ).toEqual({ kind: "MISSING" });
   });
 
-  it("registers City 1-3 for both factions on the Human canvases, anchors and overflow, with masks", () => {
+  it("registers City 1-3 for every faction set on the Human canvases, anchors and overflow, with masks", () => {
     const bySubject = new Map(
       CHIBI_ART_ASSETS_V7.map((asset) => [asset.subject, asset]),
     );
     for (const level of [1, 2, 3] as const) {
       const human = bySubject.get(`CITY:${level}`);
       if (human === undefined) throw new Error(`CITY:${level}`);
-      for (const faction of ["UNDEAD", "GOBLIN"] as const) {
+      for (const faction of ["UNDEAD", "GOBLIN", "DINOSAUR"] as const) {
         const asset = bySubject.get(`CITY:${faction}:${level}`);
         if (asset === undefined) throw new Error(`CITY:${faction}:${level}`);
         expect(asset.assetClass).toBe("SETTLEMENT");
@@ -156,11 +156,32 @@ describe("Faction city art (pulp_wars-6gd.6)", () => {
     expect(live.cities.length).toBeGreaterThan(0);
     for (const entry of subjects("ORIGINAL"))
       expect(entry.artSubject).toMatch(/^CITY:[123]$/);
-    for (const faction of ["UNDEAD", "GOBLIN"] as const)
+    for (const faction of ["UNDEAD", "GOBLIN", "DINOSAUR"] as const)
       for (const entry of subjects(faction)) {
         expect(entry.artSubject).toMatch(new RegExp(`^CITY:${faction}:[123]$`));
         // LEGACY draws by assetId, which no faction changes.
         expect(entry.assetId).toMatch(/^building-city-[123]$/);
       }
+  });
+  it("marks Dinosaur units for the faction badge and asks for their own art (pulp_wars-c87.7)", () => {
+    const state = exploredAllV7(initialV7(1516));
+    const live = viewForV7(state, state.humanPlayerId);
+    const view = {
+      ...live,
+      players: live.players.map((player) => ({
+        ...player,
+        faction: "DINOSAUR" as FactionIdV7,
+      })),
+    };
+    const units = buildBoardRenderPlanV7(view, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    }).entries.filter((entry) => entry.kind === "UNIT");
+    expect(units.length).toBeGreaterThan(0);
+    for (const entry of units) {
+      expect(entry.faction).toBe("DINOSAUR");
+      expect(entry.artSubject).toMatch(/^UNIT:(DINOSAUR:)?[A-Z_]+$/);
+    }
   });
 });

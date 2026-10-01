@@ -30,13 +30,14 @@ export type ArtSubjectV7 =
   | `UNIT:GOBLIN:${GoblinArtRoleV7}`
   /**
    * Revision 19: the Dinosaur units and the one Egg sprite shared by every
-   * role (rasters land with bead pulp_wars-c87.7, DINOSAUR.md).
+   * role (bead pulp_wars-c87.7, DINOSAUR.md).
    */
   | `UNIT:DINOSAUR:${DinosaurArtRoleV7 | "EGG"}`
   | `CITY:${1 | 2 | 3}`
   /**
    * Faction city sets (bead pulp_wars-6gd.6): the Undead necropolis and the
-   * Goblin scrap camp, one raster per art level like the Human `CITY:<level>`.
+   * Goblin scrap camp, one raster per art level like the Human `CITY:<level>`;
+   * the Dinosaur bone-and-hide camp joined them in bead pulp_wars-c87.7.
    */
   | `CITY:${CityArtFactionV7}:${1 | 2 | 3}`
   | "SITE:VILLAGE"
@@ -67,20 +68,25 @@ export type ChibiEffectSubjectV7 =
  * asks for them; the DOM art hook (src/render/dom/chibi-dom-art-v7.ts) does.
  * `PORTRAIT:<ROLE>` is a head-and-shoulders unit portrait (train buttons,
  * rewards, technology cards); `PORTRAIT:UNDEAD:<ROLE>` is the Undead one and
- * `PORTRAIT:GOBLIN:<ROLE>` the Goblin one (bead pulp_wars-0ao.8).
+ * `PORTRAIT:GOBLIN:<ROLE>` the Goblin one (bead pulp_wars-0ao.8);
+ * `PORTRAIT:DINOSAUR:<ROLE>` is the Dinosaur one (bead pulp_wars-c87.7).
  * `ICON:*` are unowned icons: dedicated technology icons, command and action
- * icons (`ICON:ACTION:UNDEAD:RALLY` is the Undead Frenzy and
- * `ICON:ACTION:GOBLIN:RALLY` the Goblin WAAAGH!, bead pulp_wars-0ao.14), city
- * rewards and the HUD economy icons.
+ * icons (`ICON:ACTION:UNDEAD:RALLY` is the Undead Frenzy,
+ * `ICON:ACTION:GOBLIN:RALLY` the Goblin WAAAGH!, bead pulp_wars-0ao.14, and
+ * `ICON:ACTION:DINOSAUR:RALLY` the Dinosaur War Drums; Lay Egg, Hatch and
+ * Stampede are `ICON:ACTION:<KIND>` of their command kinds), city rewards
+ * and the HUD economy icons.
  */
 export type UiArtSubjectV7 =
   | `PORTRAIT:${UnitRoleIdV7}`
   | `PORTRAIT:UNDEAD:${UndeadArtRoleV7}`
   | `PORTRAIT:GOBLIN:${GoblinArtRoleV7}`
+  | `PORTRAIT:DINOSAUR:${DinosaurArtRoleV7}`
   | `ICON:TECH:${TechnologyIdV7}`
   | `ICON:ACTION:${CommandV7["kind"]}`
   | "ICON:ACTION:UNDEAD:RALLY"
   | "ICON:ACTION:GOBLIN:RALLY"
+  | "ICON:ACTION:DINOSAUR:RALLY"
   | `ICON:REWARD:${"SURVEY" | "WALLS" | "EXPAND"}`
   | `ICON:HUD:${"COIN" | "POPULATION"}`;
 
@@ -107,7 +113,7 @@ export type GoblinArtRoleV7 = UndeadArtRoleV7;
 export type DinosaurArtRoleV7 = UndeadArtRoleV7;
 
 /** Factions with their own city art; every other faction uses `CITY:<level>`. */
-export type CityArtFactionV7 = "UNDEAD" | "GOBLIN";
+export type CityArtFactionV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR";
 
 /**
  * The art subject of a city on the map or in the interface: the owner
@@ -119,7 +125,11 @@ export function cityArtSubjectV7(city: {
   readonly artLevel: 1 | 2 | 3;
   readonly faction: FactionIdV7 | null | undefined;
 }): ArtSubjectV7 {
-  if (city.faction === "UNDEAD" || city.faction === "GOBLIN")
+  if (
+    city.faction === "UNDEAD" ||
+    city.faction === "GOBLIN" ||
+    city.faction === "DINOSAUR"
+  )
     return `CITY:${city.faction}:${city.artLevel}`;
   return `CITY:${city.artLevel}`;
 }
@@ -158,10 +168,12 @@ export function unitArtSubjectV7(unit: {
  * `ICON:ACTION:UNDEAD:RALLY`; `UNIT:GOBLIN:<ROLE>` and `PORTRAIT:GOBLIN:<ROLE>`
  * fall back to the Human art with the Goblin badge, and
  * `ICON:ACTION:GOBLIN:RALLY` (WAAAGH!) to the Human Rally horn. A faction
- * city (`CITY:UNDEAD:<level>`, `CITY:GOBLIN:<level>`) falls back to the Human
- * `CITY:<level>`. Revision 19: `UNIT:DINOSAUR:<ROLE>` falls back to the
- * Human `UNIT:<ROLE>` until its raster lands; the Egg (`UNIT:DINOSAUR:EGG`)
- * has no Human counterpart. Every other subject has no fallback.
+ * city (`CITY:UNDEAD:<level>`, `CITY:GOBLIN:<level>`, `CITY:DINOSAUR:<level>`)
+ * falls back to the Human `CITY:<level>`. Revision 19: `UNIT:DINOSAUR:<ROLE>`
+ * and `PORTRAIT:DINOSAUR:<ROLE>` fall back to the Human art with the Dinosaur
+ * badge, and `ICON:ACTION:DINOSAUR:RALLY` (War Drums) to the Human Rally
+ * horn; the Egg (`UNIT:DINOSAUR:EGG`) has no Human counterpart. Every other
+ * subject has no fallback.
  */
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,

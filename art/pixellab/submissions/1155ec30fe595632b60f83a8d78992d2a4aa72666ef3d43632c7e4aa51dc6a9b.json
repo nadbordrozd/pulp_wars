@@ -1,0 +1,69 @@
+{
+  "id": "triceratops-c",
+  "jobId": "sync-bcb7db8f-ec44-40f9-8fd0-3a5777644dea",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-triceratops",
+    "subject": "UNIT:DINOSAUR:CATAPULT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 19603,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+        "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+        "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+        "text": "Subject: Triceratops, a chunky cute stocky horned dinosaur on four thick legs, clearly bigger than a soldier, filling the whole width of the image: a huge head lowered to charge, about half of its whole length, with two long cream brow horns pointing forward, one short cream nose horn and a cream beak, small determined friendly eyes, and a big round bony neck frill standing up behind the head, the frill plain flat bright red with a rim of small cream studs; a heavy barrel body with dusty blue skin shaded darker navy blue and a pale cream belly, a short thick tail; a plain bright red blanket strapped over its back with a charcoal grey cord, hanging down both sides; simple shapes and very few details; the feet are the lowest thing in the image; clearly a charging three-horned beast, not a catapult and not a rhinoceros."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin of the face, body and legs is a clear cornflower blue shaded navy blue: clearly blue, never grey, never orange and never brown. The frill is one plain flat solid bright red surface with no pattern. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands.",
+        "negative": "rider, howdah, catapult, wheels, rhinoceros, wings, spikes on the back, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands, orange face, brown face, red face, striped frill"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Triceratops, a chunky cute stocky horned dinosaur on four thick legs, clearly bigger than a soldier, filling the whole width of the image: a huge head lowered to charge, about half of its whole length, with two long cream brow horns pointing forward, one short cream nose horn and a cream beak, small determined friendly eyes, and a big round bony neck frill standing up behind the head, the frill plain flat bright red with a rim of small cream studs; a heavy barrel body with dusty blue skin shaded darker navy blue and a pale cream belly, a short thick tail; a plain bright red blanket strapped over its back with a charcoal grey cord, hanging down both sides; simple shapes and very few details; the feet are the lowest thing in the image; clearly a charging three-horned beast, not a catapult and not a rhinoceros. Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin of the face, body and legs is a clear cornflower blue shaded navy blue: clearly blue, never grey, never orange and never brown. The frill is one plain flat solid bright red surface with no pattern. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, howdah, catapult, rhinoceros, wings, spikes on the back, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands, orange face, brown face, red face, striped frill",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Triceratops, a chunky cute stocky horned dinosaur on four thick legs, clearly bigger than a soldier, filling the whole width of the image: a huge head lowered to charge, about half of its whole length, with two long cream brow horns pointing forward, one short cream nose horn and a cream beak, small determined friendly eyes, and a big round bony neck frill standing up behind the head, the frill plain flat bright red with a rim of small cream studs; a heavy barrel body with dusty blue skin shaded darker navy blue and a pale cream belly, a short thick tail; a plain bright red blanket strapped over its back with a charcoal grey cord, hanging down both sides; simple shapes and very few details; the feet are the lowest thing in the image; clearly a charging three-horned beast, not a catapult and not a rhinoceros. Its teeth, horns and claws are its only weapons; it holds nothing, carries no rider and no weapon, and wears no boots, belts or armour. The skin of the face, body and legs is a clear cornflower blue shaded navy blue: clearly blue, never grey, never orange and never brown. The frill is one plain flat solid bright red surface with no pattern. Every cord is charcoal grey, never brown. It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, howdah, catapult, rhinoceros, wings, spikes on the back, axe, weapon, boots, belt, brown straps, brown bands, grey skin, slate skin, standing upright, arms, hands, orange face, brown face, red face, striped frill."
+  }
+}

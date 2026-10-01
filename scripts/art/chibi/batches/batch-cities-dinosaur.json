@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "batch": "cities-dinosaur",
+  "title": "Dinosaur city set: the bone-and-hide camp, City 1-3",
+  "bead": "pulp_wars-c87.7",
+  "faction": "DINOSAUR",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-dinosaur-city-1",
+      "subject": "CITY:DINOSAUR:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      }
+    },
+    {
+      "id": "chibi-dinosaur-city-2",
+      "subject": "CITY:DINOSAUR:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 100
+      }
+    },
+    {
+      "id": "chibi-dinosaur-city-3",
+      "subject": "CITY:DINOSAUR:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 104
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "dinosaur-city-1-a",
+      "asset": "chibi-dinosaur-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67211,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "negativeAddendum": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava",
+      "promptAddendum": "The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp.",
+      "notes": "First city pass (City 1 is the sample)."
+    },
+    {
+      "id": "dinosaur-city-2-a",
+      "asset": "chibi-dinosaur-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 67221,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "negativeAddendum": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava",
+      "promptAddendum": "The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp.",
+      "notes": "First city pass (City 1 is the sample)."
+    },
+    {
+      "id": "dinosaur-city-3-a",
+      "asset": "chibi-dinosaur-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 67231,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "negativeAddendum": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava",
+      "promptAddendum": "The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp.",
+      "notes": "First city pass (City 1 is the sample)."
+    },
+    {
+      "id": "dinosaur-city-1-a-edit",
+      "asset": "chibi-dinosaur-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 67212,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "dinosaur-city-1-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and the brown soil slab under the camp, so the tents, the totem pole, the flag and the standing stones stand directly on a transparent background with nothing at all under them. Keep the bright red cone tents with their cream tusks, the cream bone totem with its skull, the bright red banner flag, the dark standing stones, the outline and the art style exactly the same.",
+      "notes": "dinosaur-city-1-a is the right small camp (three red cone tents over cream tusks, a bone totem with a horned skull, a red banner, basalt stones, 27.7% owner area, QA pass) on a grass and soil slab."
+    },
+    {
+      "id": "dinosaur-city-2-b",
+      "asset": "chibi-dinosaur-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 67222,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "promptAddendum": "The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp. There is no wall, no tower and no face anywhere.",
+      "negativeAddendum": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava, wall, stone wall, tower, monster face, eyes, mouth, cave",
+      "notes": "dinosaur-city-2-a drew a crenellated basalt wall round a dark cave that reads as a monster face with red teeth, and only two tents: 19.4% owner area. The CITY:DINOSAUR:2 line was tuned: the cave rock is replaced by two standing stones, and the five tents are 'crowded together' with no wall."
+    },
+    {
+      "id": "dinosaur-city-3-a-edit",
+      "asset": "chibi-dinosaur-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 67232,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "recipe": "dinosaur-city-3-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, the soil slab and the row of dark stones along its edge under the camp, so the rib arch, the tents and the hut stand directly on a transparent background with nothing at all under them. Keep the giant cream rib-cage arch, the horned cream skull, the bright red awning and roof, the bright red cone tents, the red flags, the outline and the art style exactly the same.",
+      "notes": "dinosaur-city-3-a is the right top tier (a giant cream rib arch over the camp, a horned skull over the gate, a red awning, a red-roofed hut, eight small red tents, 16.3% owner area) on a grass and soil slab."
+    },
+    {
+      "id": "dinosaur-city-2-c",
+      "asset": "chibi-dinosaur-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 67223,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "promptAddendum": "The tents are plain flat solid bright red with no stripes and no dark panels, and together with the banner they are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stones dark blue-grey; nothing is tan, brown or wooden: the fence is cream tusks and the flag pole a cream bone. There is no ground and no floor under the camp.",
+      "negativeAddendum": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava, wall, stone wall, tower, striped tent, circus tent, wooden fence, brown floor, platform",
+      "notes": "dinosaur-city-2-b (the tuned line) is a camp of three tents, a bone totem and two stones, but the tents are striped dark red, the fence wooden and the floor a brown slab: 7.1% red-brown, and it is no bigger than City 1. Seed 1 of 2 with plain tents and no wood."
+    },
+    {
+      "id": "dinosaur-city-2-d",
+      "asset": "chibi-dinosaur-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 67224,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "promptAddendum": "The tents are plain flat solid bright red with no stripes and no dark panels, and together with the banner they are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stones dark blue-grey; nothing is tan, brown or wooden: the fence is cream tusks and the flag pole a cream bone. There is no ground and no floor under the camp.",
+      "negativeAddendum": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava, wall, stone wall, tower, striped tent, circus tent, wooden fence, brown floor, platform",
+      "notes": "As dinosaur-city-2-c. Seed 2 of 2."
+    },
+    {
+      "id": "dinosaur-city-3-a-edit-2",
+      "asset": "chibi-dinosaur-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 67233,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "recipe": "dinosaur-city-3-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour every brown wooden part (the walls and posts of the hut on the left, the brown bands round the rib arch, the flag poles) to pale cream bone with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents and flags, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "dinosaur-city-3-a-edit removed the slab, but the hut walls, the bands round the ribs and the poles are brown wood: 6.1% red-brown and 23.8% brown."
+    },
+    {
+      "id": "dinosaur-city-2-d-edit",
+      "asset": "chibi-dinosaur-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 67225,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "dinosaur-city-2-d",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the brown soil slab and floor under the camp, so the tents, the totem pole, the flag, the standing stones and the fence stand directly on a transparent background with nothing at all under them. Recolour the brown fence to pale cream tusks. Keep the bright red cone tents, the bone totem with its horned skull, the bright red banner flag, the dark blue-grey standing stones, the outline and the art style exactly the same.",
+      "notes": "dinosaur-city-2-d is the right middle tier (five red cone tents in two sizes, a bone totem with a horned skull, a red banner, two basalt standing stones, a low fence with a gap; 26.2% owner area, QA pass) on a brown soil slab with a brown fence (39.8% brown)."
+    },
+    {
+      "id": "dinosaur-city-3-a-edit-3",
+      "asset": "chibi-dinosaur-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 67234,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "recipe": "dinosaur-city-3-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the dark brown wooden walls and posts of the hut under the red roof on the left to pale cream rawhide with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "dinosaur-city-3-a-edit-2 cleared the arch bands and poles (21.0% owner area, QA pass), but the hut walls on the left are still dark brown wood."
+    },
+    {
+      "id": "dinosaur-city-3-a-edit-4",
+      "asset": "chibi-dinosaur-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 67235,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "recipe": "dinosaur-city-3-a-edit-3",
+        "candidate": 0
+      },
+      "editInstruction": "Paint the whole roof of the cream hut on the left plain flat bright red, and recolour the small dark brown hut behind the skull on the right to plain flat bright red hide. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning behind it, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "dinosaur-city-3-a-edit-3 turned the hut to cream hide but its red roof went with it: 16.6% owner area, less than City 2. A single-focus edit gives the hut roof and the small hut behind the skull back to the owner colour."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "ankylosaurus-a-edit",
+  "jobId": "cc46c585-af33-4b57-85e5-797e50936af0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-ankylosaurus",
+    "subject": "UNIT:DINOSAUR:GUARD",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 19411,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the tan and brown skin of the animal (head, legs, tail and belly sides) to a clear cornflower blue with darker navy blue shading, keeping the cream horns, spikes, claws and the cream tail club, so that nothing is tan or brown. Make the red blanket much wider so that it covers the whole middle of the domed shell from the top down to the ground, plain bright red. Change nothing else: keep the shape, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the tan and brown skin of the animal (head, legs, tail and belly sides) to a clear cornflower blue with darker navy blue shading, keeping the cream horns, spikes, claws and the cream tail club, so that nothing is tan or brown. Make the red blanket much wider so that it covers the whole middle of the domed shell from the top down to the ground, plain bright red. Change nothing else: keep the shape, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the tan and brown skin of the animal (head, legs, tail and belly sides) to a clear cornflower blue with darker navy blue shading, keeping the cream horns, spikes, claws and the cream tail club, so that nothing is tan or brown. Make the red blanket much wider so that it covers the whole middle of the domed shell from the top down to the ground, plain bright red. Change nothing else: keep the shape, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the tan and brown skin of the animal (head, legs, tail and belly sides) to a clear cornflower blue with darker navy blue shading, keeping the cream horns, spikes, claws and the cream tail club, so that nothing is tan or brown. Make the red blanket much wider so that it covers the whole middle of the domed shell from the top down to the ground, plain bright red. Change nothing else: keep the shape, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "ankylosaurus-a",
+      "candidate": 0,
+      "sha256": "6b5fbd2a3a2530e621616e2d972e9f130287c5921e41b5e0aa374e0f6a3697c2"
+    }
+  }
+}

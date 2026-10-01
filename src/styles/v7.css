@@ -2336,6 +2336,22 @@
   stroke: #33363d;
 }
 
+/*
+ * Revision 19 Dinosaurs (docs/art/factions/DINOSAUR.md): the footprint badge
+ * is dusty blue on basalt charcoal with a cream rim, apart from every owner
+ * colour and from the Undead skull and the Goblin head.
+ */
+.v7-dinosaur-badge {
+  border-color: #efe6c8;
+  background: #33363d;
+  color: #7f9cc4;
+}
+
+.v7-dinosaur-badge path {
+  stroke: #33363d;
+  stroke-width: 0.6;
+}
+
 .v7-faction-chip[data-faction="goblin"] {
   border: 1px solid #efe6c855;
   background: #33363d;

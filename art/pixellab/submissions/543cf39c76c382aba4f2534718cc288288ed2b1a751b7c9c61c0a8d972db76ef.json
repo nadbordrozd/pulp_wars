@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-stampede-a-edit-3",
+  "jobId": "5a8eb319-a04f-4406-94c3-82311c9d37e7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-icon-action-stampede",
+    "subject": "ICON:ACTION:STAMPEDE",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 6004,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the small red-orange tip of the snout and the small orange spots near the mouth to pale cream, so that nothing at all is red or orange. Change nothing else: keep the cream horns, the blue face and frill, the pale cream dust puffs, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the small red-orange tip of the snout and the small orange spots near the mouth to pale cream, so that nothing at all is red or orange. Change nothing else: keep the cream horns, the blue face and frill, the pale cream dust puffs, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the small red-orange tip of the snout and the small orange spots near the mouth to pale cream, so that nothing at all is red or orange. Change nothing else: keep the cream horns, the blue face and frill, the pale cream dust puffs, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the small red-orange tip of the snout and the small orange spots near the mouth to pale cream, so that nothing at all is red or orange. Change nothing else: keep the cream horns, the blue face and frill, the pale cream dust puffs, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-stampede-a-edit-2",
+      "candidate": 0,
+      "sha256": "e93b519d0b28971a2a4b7609940517c897ab2d14e2ff81963fcd1616b50f80d8"
+    }
+  }
+}

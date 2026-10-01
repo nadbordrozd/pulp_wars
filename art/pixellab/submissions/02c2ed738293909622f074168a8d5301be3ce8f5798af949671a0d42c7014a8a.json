@@ -1,0 +1,36 @@
+{
+  "id": "portrait-dinosaur-raptor-a-edit",
+  "jobId": "ab57cbef-92b7-4eae-9d7c-342070823be3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-portrait-dinosaur-raptor",
+    "subject": "PORTRAIT:DINOSAUR:RAIDER",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5912,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the grey-blue skin of the head to a clear cornflower blue with darker navy blue shading, as bright as a blue sky, with no grey skin. Change nothing else: keep the bright red feather crest, the bright red collar, the cream throat, teeth and claw, the eye, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the grey-blue skin of the head to a clear cornflower blue with darker navy blue shading, as bright as a blue sky, with no grey skin. Change nothing else: keep the bright red feather crest, the bright red collar, the cream throat, teeth and claw, the eye, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the grey-blue skin of the head to a clear cornflower blue with darker navy blue shading, as bright as a blue sky, with no grey skin. Change nothing else: keep the bright red feather crest, the bright red collar, the cream throat, teeth and claw, the eye, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the grey-blue skin of the head to a clear cornflower blue with darker navy blue shading, as bright as a blue sky, with no grey skin. Change nothing else: keep the bright red feather crest, the bright red collar, the cream throat, teeth and claw, the eye, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-dinosaur-raptor-a",
+      "candidate": 0,
+      "sha256": "1c970506a1019008090cfe04011aba78c18842b1fac147a289cba927f5590f14"
+    }
+  }
+}

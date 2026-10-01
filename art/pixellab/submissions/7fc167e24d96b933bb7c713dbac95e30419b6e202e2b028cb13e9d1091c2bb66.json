@@ -1,0 +1,69 @@
+{
+  "id": "portrait-dinosaur-caveman-b",
+  "jobId": "sync-a48a92e2-1d71-4dde-9d92-f614dec2aa63",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-portrait-dinosaur-caveman",
+    "subject": "PORTRAIT:DINOSAUR:FIGHTER",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5902,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+        "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+        "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+        "text": "Subject: Caveman portrait, head and shoulders of a chunky cute friendly caveman: a huge round head with light peach skin, a big wild mane of charcoal black hair, a bushy charcoal black beard and a big goofy grin, a bright red headband, a plain bright red fur tunic over one shoulder, and a huge chunky cream bone club raised beside the head."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Head and shoulders only, filling the image. He laughs with a wide happy open smile showing cream teeth and big round friendly eyes, never angry. The skin is a very pale cream-beige with light grey-beige shading, never orange or pink. The plain bright red fur tunic covers both shoulders and the whole chest across the bottom of the image. Nothing is brown.",
+        "negative": "orange skin, pink skin, red mouth, brown straps, arm bands, helmet, sword, angry face, frown, whole body, legs, feet"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Caveman portrait, head and shoulders of a chunky cute friendly caveman: a huge round head with light peach skin, a big wild mane of charcoal black hair, a bushy charcoal black beard and a big goofy grin, a bright red headband, a plain bright red fur tunic over one shoulder, and a huge chunky cream bone club raised beside the head. Head and shoulders only, filling the image. He laughs with a wide happy open smile showing cream teeth and big round friendly eyes, never angry. The skin is a very pale cream-beige with light grey-beige shading, never orange or pink. The plain bright red fur tunic covers both shoulders and the whole chest across the bottom of the image. Nothing is brown.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, orange skin, pink skin, red mouth, brown straps, arm bands, helmet, angry face, frown, whole body",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Caveman portrait, head and shoulders of a chunky cute friendly caveman: a huge round head with light peach skin, a big wild mane of charcoal black hair, a bushy charcoal black beard and a big goofy grin, a bright red headband, a plain bright red fur tunic over one shoulder, and a huge chunky cream bone club raised beside the head. Head and shoulders only, filling the image. He laughs with a wide happy open smile showing cream teeth and big round friendly eyes, never angry. The skin is a very pale cream-beige with light grey-beige shading, never orange or pink. The plain bright red fur tunic covers both shoulders and the whole chest across the bottom of the image. Nothing is brown. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, orange skin, pink skin, red mouth, brown straps, arm bands, helmet, angry face, frown, whole body."
+  }
+}

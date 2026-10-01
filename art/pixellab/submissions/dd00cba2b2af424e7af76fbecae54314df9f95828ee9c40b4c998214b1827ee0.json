@@ -1,0 +1,36 @@
+{
+  "id": "dinosaur-city-1-a-edit",
+  "jobId": "885fb0b5-dbc4-4d0b-b044-52670f3b295e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-dinosaur",
+    "asset": "chibi-dinosaur-city-1",
+    "subject": "CITY:DINOSAUR:1",
+    "faction": "DINOSAUR",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 67212,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and the brown soil slab under the camp, so the tents, the totem pole, the flag and the standing stones stand directly on a transparent background with nothing at all under them. Keep the bright red cone tents with their cream tusks, the cream bone totem with its skull, the bright red banner flag, the dark standing stones, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and the brown soil slab under the camp, so the tents, the totem pole, the flag and the standing stones stand directly on a transparent background with nothing at all under them. Keep the bright red cone tents with their cream tusks, the cream bone totem with its skull, the bright red banner flag, the dark standing stones, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and the brown soil slab under the camp, so the tents, the totem pole, the flag and the standing stones stand directly on a transparent background with nothing at all under them. Keep the bright red cone tents with their cream tusks, the cream bone totem with its skull, the bright red banner flag, the dark standing stones, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and the brown soil slab under the camp, so the tents, the totem pole, the flag and the standing stones stand directly on a transparent background with nothing at all under them. Keep the bright red cone tents with their cream tusks, the cream bone totem with its skull, the bright red banner flag, the dark standing stones, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "dinosaur-city-1-a",
+      "candidate": 0,
+      "sha256": "3e215555cc2c3334e02f695bae78a617e4fb095fec9d5bc158d210092d18f20f"
+    }
+  }
+}

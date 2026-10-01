@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-stampede-a-edit-2",
+  "jobId": "7b965b0f-7423-4ebc-a6ad-508c442957ad",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-icon-action-stampede",
+    "subject": "ICON:ACTION:STAMPEDE",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 6003,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour every red and orange part of the beast (the snout tip, the mouth, the feet and the stripes on its body) to pale cream or to the same blue as its face, so that nothing at all is red, orange or brown. Change nothing else: keep the cream horns, the blue face and frill, the pale cream dust puffs behind it, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour every red and orange part of the beast (the snout tip, the mouth, the feet and the stripes on its body) to pale cream or to the same blue as its face, so that nothing at all is red, orange or brown. Change nothing else: keep the cream horns, the blue face and frill, the pale cream dust puffs behind it, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour every red and orange part of the beast (the snout tip, the mouth, the feet and the stripes on its body) to pale cream or to the same blue as its face, so that nothing at all is red, orange or brown. Change nothing else: keep the cream horns, the blue face and frill, the pale cream dust puffs behind it, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour every red and orange part of the beast (the snout tip, the mouth, the feet and the stripes on its body) to pale cream or to the same blue as its face, so that nothing at all is red, orange or brown. Change nothing else: keep the cream horns, the blue face and frill, the pale cream dust puffs behind it, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-stampede-a-edit",
+      "candidate": 0,
+      "sha256": "d15b42b48492484c56f05286ca196da8f50a1afb3cc88b77629327271703c6db"
+    }
+  }
+}

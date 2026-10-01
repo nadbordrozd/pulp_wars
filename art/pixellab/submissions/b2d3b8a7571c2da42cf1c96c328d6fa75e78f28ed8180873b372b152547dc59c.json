@@ -1,0 +1,36 @@
+{
+  "id": "brontosaurus-h-edit",
+  "jobId": "9ef01e75-4266-46a4-bda7-af23c08a17b8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-brontosaurus",
+    "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 19818,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the brown boots and brown feet to the same blue skin as the legs, with small cream toenails, and recolour the brown straps on the chest charcoal grey, so that nothing is brown. Remove the small horn on top of the head so the head is smooth and round. Change nothing else: keep the blue skin, the cream belly and throat, the bright red neck bands, the bright red blanket, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the brown boots and brown feet to the same blue skin as the legs, with small cream toenails, and recolour the brown straps on the chest charcoal grey, so that nothing is brown. Remove the small horn on top of the head so the head is smooth and round. Change nothing else: keep the blue skin, the cream belly and throat, the bright red neck bands, the bright red blanket, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the brown boots and brown feet to the same blue skin as the legs, with small cream toenails, and recolour the brown straps on the chest charcoal grey, so that nothing is brown. Remove the small horn on top of the head so the head is smooth and round. Change nothing else: keep the blue skin, the cream belly and throat, the bright red neck bands, the bright red blanket, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the brown boots and brown feet to the same blue skin as the legs, with small cream toenails, and recolour the brown straps on the chest charcoal grey, so that nothing is brown. Remove the small horn on top of the head so the head is smooth and round. Change nothing else: keep the blue skin, the cream belly and throat, the bright red neck bands, the bright red blanket, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "brontosaurus-h",
+      "candidate": 0,
+      "sha256": "9e4361d1d9f1f54b4a3b0408ea75cc9246452dc102b8d294536f32a7c81421ad"
+    }
+  }
+}

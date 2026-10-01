@@ -1,0 +1,36 @@
+{
+  "id": "portrait-dinosaur-triceratops-a-edit",
+  "jobId": "34ac8f58-afd3-4aa2-b7ee-a40005c32f8c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-dinosaur",
+    "asset": "chibi-portrait-dinosaur-triceratops",
+    "subject": "PORTRAIT:DINOSAUR:CATAPULT",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5952,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the round neck frill behind the head one plain flat solid bright red surface with no pattern, no dark patches and no brown, keeping its rim of cream studs. Recolour the grey-blue skin of the face and body to a clear cornflower blue with navy blue shading, and make the inside of the mouth dark navy blue. Change nothing else: keep the three cream horns, the cream beak, the eye, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the round neck frill behind the head one plain flat solid bright red surface with no pattern, no dark patches and no brown, keeping its rim of cream studs. Recolour the grey-blue skin of the face and body to a clear cornflower blue with navy blue shading, and make the inside of the mouth dark navy blue. Change nothing else: keep the three cream horns, the cream beak, the eye, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the round neck frill behind the head one plain flat solid bright red surface with no pattern, no dark patches and no brown, keeping its rim of cream studs. Recolour the grey-blue skin of the face and body to a clear cornflower blue with navy blue shading, and make the inside of the mouth dark navy blue. Change nothing else: keep the three cream horns, the cream beak, the eye, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the round neck frill behind the head one plain flat solid bright red surface with no pattern, no dark patches and no brown, keeping its rim of cream studs. Recolour the grey-blue skin of the face and body to a clear cornflower blue with navy blue shading, and make the inside of the mouth dark navy blue. Change nothing else: keep the three cream horns, the cream beak, the eye, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-dinosaur-triceratops-a",
+      "candidate": 0,
+      "sha256": "b063c3f08aa3045987669712c7d7c29e17e7e007ad478b73dae87adae12d3c64"
+    }
+  }
+}

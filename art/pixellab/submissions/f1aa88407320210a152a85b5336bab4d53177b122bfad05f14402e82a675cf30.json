@@ -1,0 +1,36 @@
+{
+  "id": "spitter-a-edit",
+  "jobId": "6d9b6284-e689-4e85-9244-fe7dbdfb0074",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-spitter",
+    "subject": "UNIT:DINOSAUR:MARKSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 19311,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the dark grey skin of the dinosaur (head, arms, legs and tail) to a clear cornflower blue with darker navy blue shading, with no grey skin anywhere, and make the inside of the mouth dark navy blue instead of red. Change nothing else: keep the big round bright red frill with its cream rim, the cream crests, teeth, belly and claws, the bright red cloth, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the dark grey skin of the dinosaur (head, arms, legs and tail) to a clear cornflower blue with darker navy blue shading, with no grey skin anywhere, and make the inside of the mouth dark navy blue instead of red. Change nothing else: keep the big round bright red frill with its cream rim, the cream crests, teeth, belly and claws, the bright red cloth, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the dark grey skin of the dinosaur (head, arms, legs and tail) to a clear cornflower blue with darker navy blue shading, with no grey skin anywhere, and make the inside of the mouth dark navy blue instead of red. Change nothing else: keep the big round bright red frill with its cream rim, the cream crests, teeth, belly and claws, the bright red cloth, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the dark grey skin of the dinosaur (head, arms, legs and tail) to a clear cornflower blue with darker navy blue shading, with no grey skin anywhere, and make the inside of the mouth dark navy blue instead of red. Change nothing else: keep the big round bright red frill with its cream rim, the cream crests, teeth, belly and claws, the bright red cloth, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "spitter-a",
+      "candidate": 0,
+      "sha256": "72e3ef4bdb31941b25a873ac4aadb564efab623e3a1f718cbaa09ef270463cd6"
+    }
+  }
+}

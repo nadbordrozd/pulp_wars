@@ -1,0 +1,1262 @@
+{
+  "schemaVersion": 1,
+  "batch": "cities-dinosaur",
+  "recipes": {
+    "dinosaur-city-1-a": {
+      "id": "dinosaur-city-1-a",
+      "asset": "chibi-dinosaur-city-1",
+      "jobId": "sync-eba4097e-5f04-4dfc-97c0-08f18842d9fc",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-1",
+        "subject": "CITY:DINOSAUR:1",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 67211,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a small level-1 bone-and-hide camp: one tall totem pole of stacked cream bones topped with a small horned beast skull and a big plain bright red banner flag, and three chunky cone tents of plain flat solid bright red hide stretched over crossed cream tusks pressed around its foot, and one small dark basalt standing stone; wide and chunky, filling the whole width of the image. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp.",
+            "negative": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a small level-1 bone-and-hide camp: one tall totem pole of stacked cream bones topped with a small horned beast skull and a big plain bright red banner flag, and three chunky cone tents of plain flat solid bright red hide stretched over crossed cream tusks pressed around its foot, and one small dark basalt standing stone; wide and chunky, filling the whole width of the image. Buildings only. The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a small level-1 bone-and-hide camp: one tall totem pole of stacked cream bones topped with a small horned beast skull and a big plain bright red banner flag, and three chunky cone tents of plain flat solid bright red hide stretched over crossed cream tusks pressed around its foot, and one small dark basalt standing stone; wide and chunky, filling the whole width of the image. Buildings only. The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire."
+      },
+      "submittedAt": "2026-10-01T16:18:52.178Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-1-a.png",
+      "rawSheetSha256": "3e215555cc2c3334e02f695bae78a617e4fb095fec9d5bc158d210092d18f20f",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.6172,
+          "footprintWidthShare": 0.8205,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T16:19:56.995Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Right small camp (27.7% owner area) on a grass and soil slab. Edited.",
+        "reviewedAt": "2026-10-01T16:21:23.299Z"
+      }
+    },
+    "dinosaur-city-1-a-edit": {
+      "id": "dinosaur-city-1-a-edit",
+      "asset": "chibi-dinosaur-city-1",
+      "jobId": "885fb0b5-dbc4-4d0b-b044-52670f3b295e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-1",
+        "subject": "CITY:DINOSAUR:1",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 67212,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove all ground: erase the grass and the brown soil slab under the camp, so the tents, the totem pole, the flag and the standing stones stand directly on a transparent background with nothing at all under them. Keep the bright red cone tents with their cream tusks, the cream bone totem with its skull, the bright red banner flag, the dark standing stones, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Remove all ground: erase the grass and the brown soil slab under the camp, so the tents, the totem pole, the flag and the standing stones stand directly on a transparent background with nothing at all under them. Keep the bright red cone tents with their cream tusks, the cream bone totem with its skull, the bright red banner flag, the dark standing stones, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove all ground: erase the grass and the brown soil slab under the camp, so the tents, the totem pole, the flag and the standing stones stand directly on a transparent background with nothing at all under them. Keep the bright red cone tents with their cream tusks, the cream bone totem with its skull, the bright red banner flag, the dark standing stones, the outline and the art style exactly the same.",
+        "editInstruction": "Remove all ground: erase the grass and the brown soil slab under the camp, so the tents, the totem pole, the flag and the standing stones stand directly on a transparent background with nothing at all under them. Keep the bright red cone tents with their cream tusks, the cream bone totem with its skull, the bright red banner flag, the dark standing stones, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "dinosaur-city-1-a",
+          "candidate": 0,
+          "sha256": "3e215555cc2c3334e02f695bae78a617e4fb095fec9d5bc158d210092d18f20f"
+        }
+      },
+      "submittedAt": "2026-10-01T16:25:08.224Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-1-a-edit.png",
+      "rawSheetSha256": "d128bcdef10d56b9f30ccdad5eb945881d3e7073f3047c8774ce3e4c6d0d70bb",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.0083,
+          "footprintWidthShare": 0.7632,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.0083,
+          "footprintWidthShare": 0.7632,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T16:25:40.060Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Small camp with no slab: three red cone tents over cream tusks, a bone totem with a horned skull, a red banner, a bone-and-hide hut and dark basalt stones. 34.3% owner area, automatic mask, QA pass.",
+        "reviewedAt": "2026-10-01T16:27:06.357Z"
+      }
+    },
+    "dinosaur-city-2-a": {
+      "id": "dinosaur-city-2-a",
+      "asset": "chibi-dinosaur-city-2",
+      "jobId": "sync-c40fbb3f-da94-4638-af80-7384703f219a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-2",
+        "subject": "CITY:DINOSAUR:2",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 100
+        },
+        "seed": 67221,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a medium level-2 bone-and-hide camp, with no castle: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, a dark basalt rock with a round cave mouth hung with a plain bright red hide curtain, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp.",
+            "negative": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a medium level-2 bone-and-hide camp, with no castle: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, a dark basalt rock with a round cave mouth hung with a plain bright red hide curtain, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only. The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a medium level-2 bone-and-hide camp, with no castle: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, a dark basalt rock with a round cave mouth hung with a plain bright red hide curtain, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only. The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire."
+      },
+      "submittedAt": "2026-10-01T16:18:53.218Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 96,
+        "height": 100
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-2-a.png",
+      "rawSheetSha256": "77fa7b80c180ae0bce16cf17d8e1b5ec704810d33aeef661e918ad2f6209c259",
+      "plateHints": [
+        {
+          "bandRows": 18,
+          "groundShare": 0.205,
+          "footprintWidthShare": 0.7727,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T16:19:42.457Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A crenellated basalt wall round a dark cave that reads as a monster face with red teeth; two tents.",
+        "reviewedAt": "2026-10-01T16:21:23.541Z"
+      }
+    },
+    "dinosaur-city-2-b": {
+      "id": "dinosaur-city-2-b",
+      "asset": "chibi-dinosaur-city-2",
+      "jobId": "sync-d54d22aa-73ab-4c28-8781-29c144d6450f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-2",
+        "subject": "CITY:DINOSAUR:2",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 100
+        },
+        "seed": 67222,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a medium level-2 bone-and-hide camp, clearly bigger than a small camp, with no castle and no wall: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, crowded together, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, two dark basalt standing stones, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp. There is no wall, no tower and no face anywhere.",
+            "negative": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava, wall, stone wall, tower, monster face, eyes, mouth, cave"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a medium level-2 bone-and-hide camp, clearly bigger than a small camp, with no castle and no wall: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, crowded together, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, two dark basalt standing stones, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only. The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp. There is no wall, no tower and no face anywhere.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, wall, stone wall, tower, monster face, eyes, mouth, cave",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a medium level-2 bone-and-hide camp, clearly bigger than a small camp, with no castle and no wall: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, crowded together, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, two dark basalt standing stones, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only. The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp. There is no wall, no tower and no face anywhere. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, wall, stone wall, tower, monster face, eyes, mouth, cave."
+      },
+      "submittedAt": "2026-10-01T16:25:09.252Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 96,
+        "height": 100
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-2-b.png",
+      "rawSheetSha256": "a319bbc35f9b80e25cd9b0af6c96bf421cdc472e48c9839bf2cb58ffb28acc14",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.4519,
+          "footprintWidthShare": 0.5495,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T16:25:40.358Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Three striped dark red tents, a wooden fence and a brown slab: 7.1% red-brown; no bigger than City 1.",
+        "reviewedAt": "2026-10-01T16:27:06.606Z"
+      }
+    },
+    "dinosaur-city-2-c": {
+      "id": "dinosaur-city-2-c",
+      "asset": "chibi-dinosaur-city-2",
+      "jobId": "sync-10b471c6-7617-441b-b6a1-2820a69802e4",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-2",
+        "subject": "CITY:DINOSAUR:2",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 100
+        },
+        "seed": 67223,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a medium level-2 bone-and-hide camp, clearly bigger than a small camp, with no castle and no wall: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, crowded together, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, two dark basalt standing stones, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The tents are plain flat solid bright red with no stripes and no dark panels, and together with the banner they are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stones dark blue-grey; nothing is tan, brown or wooden: the fence is cream tusks and the flag pole a cream bone. There is no ground and no floor under the camp.",
+            "negative": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava, wall, stone wall, tower, striped tent, circus tent, wooden fence, brown floor, platform"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a medium level-2 bone-and-hide camp, clearly bigger than a small camp, with no castle and no wall: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, crowded together, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, two dark basalt standing stones, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only. The tents are plain flat solid bright red with no stripes and no dark panels, and together with the banner they are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stones dark blue-grey; nothing is tan, brown or wooden: the fence is cream tusks and the flag pole a cream bone. There is no ground and no floor under the camp.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, wall, stone wall, tower, striped tent, circus tent, wooden fence, brown floor",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a medium level-2 bone-and-hide camp, clearly bigger than a small camp, with no castle and no wall: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, crowded together, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, two dark basalt standing stones, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only. The tents are plain flat solid bright red with no stripes and no dark panels, and together with the banner they are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stones dark blue-grey; nothing is tan, brown or wooden: the fence is cream tusks and the flag pole a cream bone. There is no ground and no floor under the camp. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, wall, stone wall, tower, striped tent, circus tent, wooden fence, brown floor."
+      },
+      "submittedAt": "2026-10-01T16:28:00.607Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 96,
+        "height": 100
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-2-c.png",
+      "rawSheetSha256": "2ad5094d03d4b96aa216160d8929ecf43adab2551a0de17827f7a209d48c1219",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.3367,
+          "footprintWidthShare": 0.7326,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T16:28:33.147Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A crowd of red tents inside a grey stone wall on a brick slab.",
+        "reviewedAt": "2026-10-01T16:29:52.796Z"
+      }
+    },
+    "dinosaur-city-2-d": {
+      "id": "dinosaur-city-2-d",
+      "asset": "chibi-dinosaur-city-2",
+      "jobId": "sync-90bd76cc-b4ce-4a4d-8fa2-9e1d392ac5f2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-2",
+        "subject": "CITY:DINOSAUR:2",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 100
+        },
+        "seed": 67224,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a medium level-2 bone-and-hide camp, clearly bigger than a small camp, with no castle and no wall: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, crowded together, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, two dark basalt standing stones, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The tents are plain flat solid bright red with no stripes and no dark panels, and together with the banner they are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stones dark blue-grey; nothing is tan, brown or wooden: the fence is cream tusks and the flag pole a cream bone. There is no ground and no floor under the camp.",
+            "negative": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava, wall, stone wall, tower, striped tent, circus tent, wooden fence, brown floor, platform"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a medium level-2 bone-and-hide camp, clearly bigger than a small camp, with no castle and no wall: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, crowded together, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, two dark basalt standing stones, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only. The tents are plain flat solid bright red with no stripes and no dark panels, and together with the banner they are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stones dark blue-grey; nothing is tan, brown or wooden: the fence is cream tusks and the flag pole a cream bone. There is no ground and no floor under the camp.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, wall, stone wall, tower, striped tent, circus tent, wooden fence, brown floor",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a medium level-2 bone-and-hide camp, clearly bigger than a small camp, with no castle and no wall: five chunky cone tents of plain flat solid bright red hide over crossed cream tusks in two sizes, crowded together, one tall totem pole of stacked cream bones with a horned beast skull and a big plain bright red banner flag, two dark basalt standing stones, and a low fence of curved cream tusks along the front with an open gap; wide and chunky, filling the whole width of the image. Buildings only. The tents are plain flat solid bright red with no stripes and no dark panels, and together with the banner they are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stones dark blue-grey; nothing is tan, brown or wooden: the fence is cream tusks and the flag pole a cream bone. There is no ground and no floor under the camp. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, wall, stone wall, tower, striped tent, circus tent, wooden fence, brown floor."
+      },
+      "submittedAt": "2026-10-01T16:28:01.654Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 96,
+        "height": 100
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-2-d.png",
+      "rawSheetSha256": "78bdf1762d11d64780b7cc6f10eb1725aadce3f77fddc13d3bac27b408090752",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.7622,
+          "footprintWidthShare": 0.7273,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T16:28:35.776Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Right middle tier (26.2% owner area, QA pass) on a brown soil slab with a brown fence. Edited.",
+        "reviewedAt": "2026-10-01T16:29:53.041Z"
+      }
+    },
+    "dinosaur-city-2-d-edit": {
+      "id": "dinosaur-city-2-d-edit",
+      "asset": "chibi-dinosaur-city-2",
+      "jobId": "fedf94ad-9da1-4d87-80bc-bc2e9388911f",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-2",
+        "subject": "CITY:DINOSAUR:2",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 100
+        },
+        "seed": 67225,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove all ground: erase the brown soil slab and floor under the camp, so the tents, the totem pole, the flag, the standing stones and the fence stand directly on a transparent background with nothing at all under them. Recolour the brown fence to pale cream tusks. Keep the bright red cone tents, the bone totem with its horned skull, the bright red banner flag, the dark blue-grey standing stones, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Remove all ground: erase the brown soil slab and floor under the camp, so the tents, the totem pole, the flag, the standing stones and the fence stand directly on a transparent background with nothing at all under them. Recolour the brown fence to pale cream tusks. Keep the bright red cone tents, the bone totem with its horned skull, the bright red banner flag, the dark blue-grey standing stones, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove all ground: erase the brown soil slab and floor under the camp, so the tents, the totem pole, the flag, the standing stones and the fence stand directly on a transparent background with nothing at all under them. Recolour the brown fence to pale cream tusks. Keep the bright red cone tents, the bone totem with its horned skull, the bright red banner flag, the dark blue-grey standing stones, the outline and the art style exactly the same.",
+        "editInstruction": "Remove all ground: erase the brown soil slab and floor under the camp, so the tents, the totem pole, the flag, the standing stones and the fence stand directly on a transparent background with nothing at all under them. Recolour the brown fence to pale cream tusks. Keep the bright red cone tents, the bone totem with its horned skull, the bright red banner flag, the dark blue-grey standing stones, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "dinosaur-city-2-d",
+          "candidate": 0,
+          "sha256": "78bdf1762d11d64780b7cc6f10eb1725aadce3f77fddc13d3bac27b408090752"
+        }
+      },
+      "submittedAt": "2026-10-01T16:30:41.125Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 96,
+        "height": 100
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-2-d-edit.png",
+      "rawSheetSha256": "6bd484478b1d1bcd2b657de046c389f6ea9682b3cf81b4545203fb386018437c",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.3066,
+          "footprintWidthShare": 0.5244,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.3066,
+          "footprintWidthShare": 0.5244,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T16:31:48.549Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Middle camp with no slab: five red cone tents in two sizes, a bone totem with a horned skull, a red banner, two basalt standing stones and a low tusk fence with a gap. 37.1% owner area, automatic mask, QA pass.",
+        "reviewedAt": "2026-10-01T16:32:27.034Z"
+      }
+    },
+    "dinosaur-city-3-a": {
+      "id": "dinosaur-city-3-a",
+      "asset": "chibi-dinosaur-city-3",
+      "jobId": "sync-18ff88a0-9fda-49b6-b966-ab72fbdd4821",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-3",
+        "subject": "CITY:DINOSAUR:3",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 104
+        },
+        "seed": 67231,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a large level-3 bone-and-hide camp, the biggest settlement, with no castle: one giant cream rib-cage arching high over the whole camp like a row of huge curved ribs, a huge horned cream beast skull over the open front gate, big plain flat solid bright red hide awnings stretched between the ribs, eight chunky cone tents of plain bright red hide in different sizes underneath, two tall bone totem poles with big plain bright red banner flags, and a ring of dark basalt standing stones; wide and chunky, filling the whole image. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp.",
+            "negative": "caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire, lava"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a large level-3 bone-and-hide camp, the biggest settlement, with no castle: one giant cream rib-cage arching high over the whole camp like a row of huge curved ribs, a huge horned cream beast skull over the open front gate, big plain flat solid bright red hide awnings stretched between the ribs, eight chunky cone tents of plain bright red hide in different sizes underneath, two tall bone totem poles with big plain bright red banner flags, and a ring of dark basalt standing stones; wide and chunky, filling the whole image. Buildings only. The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Everything is made of chunky pale cream bone, pale cream rawhide and dark basalt stone, lashed with charcoal grey cord, with knotted lashings, small cream teeth and chipped flint edges as details; bone and rawhide are shaded with cool grey, stone with darker blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a large level-3 bone-and-hide camp, the biggest settlement, with no castle: one giant cream rib-cage arching high over the whole camp like a row of huge curved ribs, a huge horned cream beast skull over the open front gate, big plain flat solid bright red hide awnings stretched between the ribs, eight chunky cone tents of plain bright red hide in different sizes underneath, two tall bone totem poles with big plain bright red banner flags, and a ring of dark basalt standing stones; wide and chunky, filling the whole image. Buildings only. The tent hides and the banner are plain flat bright red and are the largest area of the camp. Bones and tusks are pale cream shaded cool grey, the stone is dark blue-grey; nothing is tan, brown or wooden, and there is no ground under the camp. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs, straw, bricks, lava, fire, flames, orange glow, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur, brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, caveman, person, character, dinosaur, animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire."
+      },
+      "submittedAt": "2026-10-01T16:18:54.239Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 96,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-3-a.png",
+      "rawSheetSha256": "ad94d2b290f21427abed0d92d3b19c8b68acbe7a25163d5d6e12aca6289e9685",
+      "plateHints": [
+        {
+          "bandRows": 20,
+          "groundShare": 0.5631,
+          "footprintWidthShare": 0.8333,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T16:19:23.248Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Right rib-arch camp (16.3% owner area) on a grass and soil slab. Edited.",
+        "reviewedAt": "2026-10-01T16:21:23.784Z"
+      }
+    },
+    "dinosaur-city-3-a-edit": {
+      "id": "dinosaur-city-3-a-edit",
+      "asset": "chibi-dinosaur-city-3",
+      "jobId": "ab3c9ea6-34b9-4ef9-99e8-8fbf2d33ba99",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-3",
+        "subject": "CITY:DINOSAUR:3",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 104
+        },
+        "seed": 67232,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove all ground: erase the grass, the soil slab and the row of dark stones along its edge under the camp, so the rib arch, the tents and the hut stand directly on a transparent background with nothing at all under them. Keep the giant cream rib-cage arch, the horned cream skull, the bright red awning and roof, the bright red cone tents, the red flags, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Remove all ground: erase the grass, the soil slab and the row of dark stones along its edge under the camp, so the rib arch, the tents and the hut stand directly on a transparent background with nothing at all under them. Keep the giant cream rib-cage arch, the horned cream skull, the bright red awning and roof, the bright red cone tents, the red flags, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove all ground: erase the grass, the soil slab and the row of dark stones along its edge under the camp, so the rib arch, the tents and the hut stand directly on a transparent background with nothing at all under them. Keep the giant cream rib-cage arch, the horned cream skull, the bright red awning and roof, the bright red cone tents, the red flags, the outline and the art style exactly the same.",
+        "editInstruction": "Remove all ground: erase the grass, the soil slab and the row of dark stones along its edge under the camp, so the rib arch, the tents and the hut stand directly on a transparent background with nothing at all under them. Keep the giant cream rib-cage arch, the horned cream skull, the bright red awning and roof, the bright red cone tents, the red flags, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "dinosaur-city-3-a",
+          "candidate": 0,
+          "sha256": "ad94d2b290f21427abed0d92d3b19c8b68acbe7a25163d5d6e12aca6289e9685"
+        }
+      },
+      "submittedAt": "2026-10-01T16:25:10.274Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 96,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-3-a-edit.png",
+      "rawSheetSha256": "fe41434e0619cc0664d2982ce9e1e1bba09f14a5c1ebe77392539fe9d47e51e9",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.0588,
+          "footprintWidthShare": 0.7143,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0.0588,
+          "footprintWidthShare": 0.7143,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T16:25:36.771Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Slab removed, but brown wooden hut walls, arch bands and poles: 6.1% red-brown. Edited.",
+        "reviewedAt": "2026-10-01T16:27:06.849Z"
+      }
+    },
+    "dinosaur-city-3-a-edit-2": {
+      "id": "dinosaur-city-3-a-edit-2",
+      "asset": "chibi-dinosaur-city-3",
+      "jobId": "3fedf02a-f951-4bb1-890d-e219f02ea1c6",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-3",
+        "subject": "CITY:DINOSAUR:3",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 104
+        },
+        "seed": 67233,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour every brown wooden part (the walls and posts of the hut on the left, the brown bands round the rib arch, the flag poles) to pale cream bone with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents and flags, the dark stone posts, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour every brown wooden part (the walls and posts of the hut on the left, the brown bands round the rib arch, the flag poles) to pale cream bone with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents and flags, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour every brown wooden part (the walls and posts of the hut on the left, the brown bands round the rib arch, the flag poles) to pale cream bone with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents and flags, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour every brown wooden part (the walls and posts of the hut on the left, the brown bands round the rib arch, the flag poles) to pale cream bone with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents and flags, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "dinosaur-city-3-a-edit",
+          "candidate": 0,
+          "sha256": "e23095fbde330d3fb610585f50adc1472ecc1f79f94e31df506c59a9959eb88f"
+        }
+      },
+      "submittedAt": "2026-10-01T16:28:02.665Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 96,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-3-a-edit-2.png",
+      "rawSheetSha256": "c0c0570c4392218771d92b4b2ba2d0d0c46db5106c2298a668762bab00545778",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.0176,
+          "footprintWidthShare": 0.7143,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0.0176,
+          "footprintWidthShare": 0.7143,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T16:29:11.102Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Arch bands and poles cleared (21.0% owner area, QA pass); the hut walls are still dark brown wood. Edited again.",
+        "reviewedAt": "2026-10-01T16:29:53.287Z"
+      }
+    },
+    "dinosaur-city-3-a-edit-3": {
+      "id": "dinosaur-city-3-a-edit-3",
+      "asset": "chibi-dinosaur-city-3",
+      "jobId": "ff84bc62-fed4-454f-a7aa-ce325dddf713",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-3",
+        "subject": "CITY:DINOSAUR:3",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 104
+        },
+        "seed": 67234,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour the dark brown wooden walls and posts of the hut under the red roof on the left to pale cream rawhide with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour the dark brown wooden walls and posts of the hut under the red roof on the left to pale cream rawhide with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour the dark brown wooden walls and posts of the hut under the red roof on the left to pale cream rawhide with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour the dark brown wooden walls and posts of the hut under the red roof on the left to pale cream rawhide with cool grey shading, so that nothing is brown or wooden. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning and roof, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "dinosaur-city-3-a-edit-2",
+          "candidate": 0,
+          "sha256": "fd0ff68bdc44d29ecf27df2fa58227c912c0774558b1b982d3a938dbfc1a6677"
+        }
+      },
+      "submittedAt": "2026-10-01T16:30:42.140Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 96,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-3-a-edit-3.png",
+      "rawSheetSha256": "7329179717dddebbc0594d532e2b8fddf18e8d41a4d76e56048ca10cdfbc7b71",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.0139,
+          "footprintWidthShare": 0.7391,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0.0139,
+          "footprintWidthShare": 0.7391,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T16:31:18.504Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The hut is cream hide now, but its red roof went with it: 16.6% owner area. Edited again.",
+        "reviewedAt": "2026-10-01T16:32:27.783Z"
+      }
+    },
+    "dinosaur-city-3-a-edit-4": {
+      "id": "dinosaur-city-3-a-edit-4",
+      "asset": "chibi-dinosaur-city-3",
+      "jobId": "3780f307-9e9a-4552-aeef-77def4fdaff1",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cities-dinosaur",
+        "asset": "chibi-dinosaur-city-3",
+        "subject": "CITY:DINOSAUR:3",
+        "faction": "DINOSAUR",
+        "recipeClass": "settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 104
+        },
+        "seed": 67235,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Paint the whole roof of the cream hut on the left plain flat bright red, and recolour the small dark brown hut behind the skull on the right to plain flat bright red hide. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning behind it, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Paint the whole roof of the cream hut on the left plain flat bright red, and recolour the small dark brown hut behind the skull on the right to plain flat bright red hide. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning behind it, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Paint the whole roof of the cream hut on the left plain flat bright red, and recolour the small dark brown hut behind the skull on the right to plain flat bright red hide. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning behind it, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Paint the whole roof of the cream hut on the left plain flat bright red, and recolour the small dark brown hut behind the skull on the right to plain flat bright red hide. Change nothing else: keep the giant cream rib arch, the horned skull, the bright red awning behind it, the bright red cone tents, the dark stone posts, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "dinosaur-city-3-a-edit-3",
+          "candidate": 0,
+          "sha256": "1d25ac27bb45d37d202843c241518a69a17327c2c3ae92a067ae8d3dfca3941c"
+        }
+      },
+      "submittedAt": "2026-10-01T16:33:32.106Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 96,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-dinosaur/dinosaur-city-3-a-edit-4.png",
+      "rawSheetSha256": "e68c01c01375c99256b7803881ac990723bdaa02bc6f2f40fe120d4c696b8e4f",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.014,
+          "footprintWidthShare": 0.7391,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0.014,
+          "footprintWidthShare": 0.7391,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T16:34:15.340Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Top tier with no slab: a giant cream rib arch over the camp, a horned skull over the gate, a red awning, a red-roofed hut, eight red cone tents, basalt posts. 23.5% owner area, automatic mask, QA pass. The hut walls stay dark brown.",
+        "reviewedAt": "2026-10-01T16:34:48.262Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-dinosaur-city-1": {
+      "id": "chibi-dinosaur-city-1",
+      "subject": "CITY:DINOSAUR:1",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "dinosaur-city-1-a-edit",
+      "candidate": 0,
+      "candidateSha256": "b420000afd10f8bbaef129cb4cf4f9a9d88269cdaba6229be82db58e1f9b5fcd",
+      "master": {
+        "path": "public/assets/chibi/settlements/chibi-dinosaur-city-1.png",
+        "sha256": "b420000afd10f8bbaef129cb4cf4f9a9d88269cdaba6229be82db58e1f9b5fcd",
+        "pixelSha256": "4ea197d91567a8540e80f47f2d198b72f24f60c93a00bc1fda69706d42e72006",
+        "width": 88,
+        "height": 96
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 44,
+        "y": 56
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 16,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.0083,
+        "footprintWidthShare": 0.7632,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/settlements/chibi-dinosaur-city-1.mask.png",
+        "sha256": "f13d795d9ddc380963b6f045c42b0e9bc722283d2b918bb5ba67d56058032945",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 8,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 2962,
+          "ownerPixels": 1015,
+          "coverage": 0.3427,
+          "coverageOnTarget": true,
+          "redBrownPixels": 0,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Small camp with no slab: three red cone tents over cream tusks, a bone totem with a horned skull, a red banner, a bone-and-hide hut and dark basalt stones. 34.3% owner area, automatic mask, QA pass.",
+      "acceptedAt": "2026-10-01T16:27:06.357Z"
+    },
+    "chibi-dinosaur-city-2": {
+      "id": "chibi-dinosaur-city-2",
+      "subject": "CITY:DINOSAUR:2",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "dinosaur-city-2-d-edit",
+      "candidate": 0,
+      "candidateSha256": "283b2a00c0d605401d034021e5d84fe6ac096b3e1b6ba631be2874fe65b6f6e3",
+      "master": {
+        "path": "public/assets/chibi/settlements/chibi-dinosaur-city-2.png",
+        "sha256": "283b2a00c0d605401d034021e5d84fe6ac096b3e1b6ba631be2874fe65b6f6e3",
+        "pixelSha256": "1aa6ba9bcf29d7375cc2245d0124c7e71d57367eb653b8fad967b86315ca762c",
+        "width": 96,
+        "height": 100
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 48,
+        "y": 60
+      },
+      "overflow": {
+        "left": 8,
+        "right": 8,
+        "up": 20,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.3066,
+        "footprintWidthShare": 0.5244,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/settlements/chibi-dinosaur-city-2.mask.png",
+        "sha256": "d795b54807e7e7f079c5396f7f18ff0cae27439bdc7892b7bee9d4aa9d3f3bb5",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 4,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 3112,
+          "ownerPixels": 1155,
+          "coverage": 0.3711,
+          "coverageOnTarget": true,
+          "redBrownPixels": 6,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Middle camp with no slab: five red cone tents in two sizes, a bone totem with a horned skull, a red banner, two basalt standing stones and a low tusk fence with a gap. 37.1% owner area, automatic mask, QA pass.",
+      "acceptedAt": "2026-10-01T16:32:27.034Z"
+    },
+    "chibi-dinosaur-city-3": {
+      "id": "chibi-dinosaur-city-3",
+      "subject": "CITY:DINOSAUR:3",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "dinosaur-city-3-a-edit-4",
+      "candidate": 0,
+      "candidateSha256": "63d1884aa0a2ca3a0abee0b80b00387ee982fea6a62fc2e093a50f9b807ffc16",
+      "master": {
+        "path": "public/assets/chibi/settlements/chibi-dinosaur-city-3.png",
+        "sha256": "63d1884aa0a2ca3a0abee0b80b00387ee982fea6a62fc2e093a50f9b807ffc16",
+        "pixelSha256": "31b7b33fbcf2688f0336993d1e7e899d72596db0146a823bb763e1c8f8a4025d",
+        "width": 96,
+        "height": 104
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 48,
+        "y": 64
+      },
+      "overflow": {
+        "left": 8,
+        "right": 8,
+        "up": 24,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 17,
+        "groundShare": 0.014,
+        "footprintWidthShare": 0.7391,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/settlements/chibi-dinosaur-city-3.mask.png",
+        "sha256": "cc1e64fe5e282bc0905a6ea1beee34af34661f2ec3b86f8cd28b0bc0a5943ffb",
+        "source": "AUTO",
+        "thresholds": {
+          "alphaMin": 128,
+          "owner": {
+            "hue": {
+              "from": 340,
+              "to": 5
+            },
+            "saturationMin": 0.65,
+            "valueMin": 0.3
+          },
+          "redBrown": {
+            "hue": {
+              "from": 5.0001,
+              "to": 15
+            },
+            "saturationMin": 0.45,
+            "valueMin": 0.3
+          },
+          "keyLike": {
+            "hue": {
+              "from": 335,
+              "to": 5
+            },
+            "saturationMin": 0.5,
+            "valueMin": 0.2
+          },
+          "minComponentPixels": 3,
+          "embeddedNeighbourMin": 5,
+          "redBrownMaterialMaxShare": 0.03,
+          "coverage": {
+            "min": 0.15,
+            "targetMin": 0.2,
+            "targetMax": 0.4,
+            "max": 0.55
+          }
+        },
+        "speckleDropped": 12,
+        "qa": {
+          "status": "PASS",
+          "opaquePixels": 4849,
+          "ownerPixels": 1138,
+          "coverage": 0.2347,
+          "coverageOnTarget": true,
+          "redBrownPixels": 28,
+          "maskOnTransparent": 0,
+          "maskOnRedBrown": 0,
+          "maskOnNonKey": 0,
+          "maskEmbeddedInRedBrown": 0,
+          "failures": [],
+          "warnings": []
+        }
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Top tier with no slab: a giant cream rib arch over the camp, a horned skull over the gate, a red awning, a red-roofed hut, eight red cone tents, basalt posts. 23.5% owner area, automatic mask, QA pass. The hut walls stay dark brown.",
+      "acceptedAt": "2026-10-01T16:34:48.262Z"
+    }
+  }
+}

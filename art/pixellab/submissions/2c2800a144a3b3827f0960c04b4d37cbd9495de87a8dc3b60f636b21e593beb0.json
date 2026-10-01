@@ -1,0 +1,36 @@
+{
+  "id": "caveman-b-edit-2",
+  "jobId": "55f67ae2-af9b-4580-a420-27668b9f505b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur",
+    "asset": "chibi-dinosaur-caveman",
+    "subject": "UNIT:DINOSAUR:FIGHTER",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 19112,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour all the bare skin (face, arms, legs and feet) from orange-pink to a very pale cream-beige skin tone with light grey-beige shading, with no orange, pink or red skin anywhere. Change nothing else: keep the black hair and beard, the bright red headband, the bright red tunic, the cream bone club, the charcoal belt, the pose, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour all the bare skin (face, arms, legs and feet) from orange-pink to a very pale cream-beige skin tone with light grey-beige shading, with no orange, pink or red skin anywhere. Change nothing else: keep the black hair and beard, the bright red headband, the bright red tunic, the cream bone club, the charcoal belt, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour all the bare skin (face, arms, legs and feet) from orange-pink to a very pale cream-beige skin tone with light grey-beige shading, with no orange, pink or red skin anywhere. Change nothing else: keep the black hair and beard, the bright red headband, the bright red tunic, the cream bone club, the charcoal belt, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour all the bare skin (face, arms, legs and feet) from orange-pink to a very pale cream-beige skin tone with light grey-beige shading, with no orange, pink or red skin anywhere. Change nothing else: keep the black hair and beard, the bright red headband, the bright red tunic, the cream bone club, the charcoal belt, the pose, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "caveman-b-edit",
+      "candidate": 0,
+      "sha256": "76af160c25b6d37a9fed5dfab143af4cab5ec401d62472328ba270bbf2c313dc"
+    }
+  }
+}

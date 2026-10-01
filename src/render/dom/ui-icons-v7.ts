@@ -26,6 +26,7 @@ export type UiIconIdV7 =
   | "plague"
   | "bite"
   | "goblin"
+  | "dinosaur"
   | "bomb";
 
 const PATHS: Readonly<Record<UiIconIdV7, string>> = {
@@ -64,6 +65,9 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   // and a fuse rising straight up).
   goblin:
     "M12 7.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10ZM7.4 10.6 1.8 8.4l5.4 5ZM16.6 10.6l5.6-2.2-5.4 5ZM10 11.2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2ZM14 11.2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z",
+  // Revision 19: a three-toed footprint (the Dinosaur badge, filled).
+  dinosaur:
+    "M12 13a4 3.6 0 1 0 0 7.2 4 3.6 0 0 0 0-7.2ZM12 3.5 10.2 11h3.6ZM5.5 6.5 7.6 13l3-1.8ZM18.5 6.5 16.4 13l-3-1.8Z",
   bomb: "M12 8.8a6.6 6.6 0 1 0 0 13.2 6.6 6.6 0 0 0 0-13.2ZM10.5 8.8v-2h3v2M12 6.8c0-1.7.6-2.9 2-3.6",
 };
 
