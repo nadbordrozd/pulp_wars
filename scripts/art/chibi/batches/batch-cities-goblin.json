@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "batch": "cities-goblin",
+  "title": "Goblin city set: the scrap camp, City 1-3",
+  "bead": "pulp_wars-6gd.6",
+  "faction": "GOBLIN",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-goblin-city-1",
+      "subject": "CITY:GOBLIN:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      }
+    },
+    {
+      "id": "chibi-goblin-city-2",
+      "subject": "CITY:GOBLIN:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 100
+      }
+    },
+    {
+      "id": "chibi-goblin-city-3",
+      "subject": "CITY:GOBLIN:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 104
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "goblin-city-1-a",
+      "asset": "chibi-goblin-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 66211,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "promptAddendum": "Big bright red tent cloth covers most of the camp and is its largest area, shaded only with darker red.",
+      "negativeAddendum": "goblin, orc, troll, soldier, guard, warrior, person, villager, character, creature, face, eyes, orange cloth, campfire",
+      "notes": "Sample: the smallest tier."
+    },
+    {
+      "id": "goblin-city-3-a",
+      "asset": "chibi-goblin-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 66231,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "promptAddendum": "Big bright red tent cloth and red painted roofs cover most of the warren and are its largest areas, shaded only with darker red.",
+      "negativeAddendum": "goblin, orc, troll, soldier, guard, warrior, person, villager, character, creature, face, eyes, orange cloth, campfire",
+      "notes": "Sample: the top tier, which differs most from the smallest."
+    },
+    {
+      "id": "goblin-city-2-a",
+      "asset": "chibi-goblin-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 66221,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "promptAddendum": "Big bright red tent cloth and red painted roofs cover most of the camp and are its largest areas, shaded only with darker red.",
+      "negativeAddendum": "goblin, orc, troll, soldier, guard, warrior, person, villager, character, creature, face, eyes, orange cloth, campfire",
+      "notes": "The middle tier, generated after the City 1 and City 3 samples."
+    },
+    {
+      "id": "goblin-city-1-a-edit",
+      "asset": "chibi-goblin-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 66212,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "goblin-city-1-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the brown soil slab under the camp, so the tents, the hut and the lookout pole stand directly on a transparent background with nothing at all under them. Keep the red patched tents, the grey scrap-iron hut, the lookout pole, the red flag, the outline and the art style exactly the same.",
+      "notes": "undead-style ground removal: goblin-city-1-a is the right small camp (three red patched tents, a scrap hut with a chimney, a lookout pole with a red flag, 22.2% owner area) on a brown soil slab."
+    },
+    {
+      "id": "goblin-city-3-a-edit",
+      "asset": "chibi-goblin-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 66232,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "recipe": "goblin-city-3-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the orange and brown soil slab under the walls, so the walls stand directly on a transparent background with nothing at all under them. Paint the whole big patched tent, including its blue and orange panels, and every hut roof and tower roof solid bright red with only darker red shading. Keep the grey iron walls, the towers, the chimney pipes with grey smoke, the red flag, the outline and the art style exactly the same.",
+      "notes": "goblin-city-3-a has the ring wall, keep, chimney pipes with soot and a flag, but only 8.7% owner area (COVERAGE_LOW), a tent with blue and orange panels and an orange-brown slab."
+    },
+    {
+      "id": "goblin-city-3-b",
+      "asset": "chibi-goblin-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 66233,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "promptAddendum": "Not a stone castle: the palisade is low, crooked and uneven, made of mismatched dented grey iron sheets with spikes, and many big round bright red patched tents and red painted hut roofs rise above it. Big bright red tent cloth and red roofs cover most of the warren and are its largest areas, shaded only with darker red; no blue, orange or yellow cloth.",
+      "negativeAddendum": "goblin, orc, troll, soldier, guard, warrior, person, villager, character, creature, face, eyes, orange cloth, blue cloth, campfire, stone castle, crenellated stone wall, brick",
+      "notes": "goblin-city-3-a read as a grey stone castle with crenellations; ask for a low crooked scrap palisade with red tents rising above it."
+    },
+    {
+      "id": "goblin-city-3-c",
+      "asset": "chibi-goblin-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 66234,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "promptAddendum": "Big bright red tent cloth covers most of the camp and is its largest area, shaded only with darker red; no blue, orange or yellow cloth.",
+      "negativeAddendum": "goblin, orc, troll, soldier, guard, warrior, person, villager, character, creature, face, eyes, orange cloth, blue cloth, campfire, castle, keep, battlements, stone wall, brick",
+      "notes": "goblin-city-3-a, its edit and goblin-city-3-b all drew a grey stone castle with 9-13% owner area. The CITY:GOBLIN:2 and :3 subject lines were rewritten without fortress, keep, ring palisade or watchtowers: a heap of red tents inside a low scrap fence, the same vocabulary as the accepted City 1 sample."
+    },
+    {
+      "id": "goblin-city-3-c-edit",
+      "asset": "chibi-goblin-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 66235,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "recipe": "goblin-city-3-c",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and the brown soil slab under the camp, so the spiked iron fence, the tents and the huts stand directly on a transparent background with nothing at all under them. Keep the big red patched tent, the small red tents, the grey scrap-iron huts with red panels, the chimney pipes with grey smoke, the red flag, the spiked fence with its gate, the outline and the art style exactly the same.",
+      "notes": "goblin-city-3-c is the right top tier (a huge red patched tent, small red tents, scrap huts with red panels, three chimney pipes with soot clouds, a spiked scrap fence with a gate, 22.6% owner area) on a grass and soil slab."
+    },
+    {
+      "id": "goblin-city-2-a-edit",
+      "asset": "chibi-goblin-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 66222,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "goblin-city-2-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the black platform and its red rim under the camp, so the spiked iron fence, the tents and the tower stand directly on a transparent background with nothing at all under them. Keep the red patched tents, the dark hut, the grey iron lookout tower, the red flag, the chimney pipe with grey smoke, the spiked fence, the outline and the art style exactly the same.",
+      "notes": "goblin-city-2-a is the right middle tier (three red patched tents, a hut, a riveted lookout tower with a flag, a chimney with soot, a spiked fence, 29.8% owner area) on a black platform whose rim is key red."
+    },
+    {
+      "id": "goblin-city-2-a-edit-2",
+      "asset": "chibi-goblin-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 66223,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "goblin-city-2-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the dark maroon roof of the hut on the right and the dark maroon square patches on the red tents to dark blue-grey scrap iron, with no maroon, brown or dark red anywhere. Change nothing else: keep the bright red tents, the lookout tower, the red flag, the chimney pipe with grey smoke, the spiked fence, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "goblin-city-2-a-edit removed the platform (34.8% owner area), but the hut roof and the tent patches are a dark maroon outside the mask, which stays maroon under every owner colour."
+    },
+    {
+      "id": "goblin-city-1-a-edit-2",
+      "asset": "chibi-goblin-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 66213,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "goblin-city-1-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the dark brown timber walls of the hut and the dark brown lookout pole to light grey riveted scrap iron with blue-grey shading, with no brown anywhere, and make the three tents and the flag a brighter solid red. Change nothing else: keep the shapes, the patches, the chimney, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "goblin-city-1-a-edit was accepted first, but beside City 2 and 3 on the board it reads as a dark blob: the hut and pole are dark brown timber (the Goblins use no wood) and the tents are a darker red than the other tiers."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "undead-city-1-b-edit",
+  "jobId": "917d2870-104d-45d7-bc00-c3241997b14f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-undead",
+    "asset": "chibi-undead-city-1",
+    "subject": "CITY:UNDEAD:1",
+    "faction": "UNDEAD",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 66114,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the brown soil slab and its red rim under the buildings, so the crypts stand directly on a transparent background with nothing at all under them. Keep the grey stone tower, the red roofs, the big red banner flag, the ivory skull, the headstones, the pale blue flames, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the brown soil slab and its red rim under the buildings, so the crypts stand directly on a transparent background with nothing at all under them. Keep the grey stone tower, the red roofs, the big red banner flag, the ivory skull, the headstones, the pale blue flames, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the brown soil slab and its red rim under the buildings, so the crypts stand directly on a transparent background with nothing at all under them. Keep the grey stone tower, the red roofs, the big red banner flag, the ivory skull, the headstones, the pale blue flames, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the brown soil slab and its red rim under the buildings, so the crypts stand directly on a transparent background with nothing at all under them. Keep the grey stone tower, the red roofs, the big red banner flag, the ivory skull, the headstones, the pale blue flames, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "undead-city-1-b",
+      "candidate": 0,
+      "sha256": "8458591746865a45b656c20da9575e03c8924bf588eb7f6b185ea30e84e8cb08"
+    }
+  }
+}

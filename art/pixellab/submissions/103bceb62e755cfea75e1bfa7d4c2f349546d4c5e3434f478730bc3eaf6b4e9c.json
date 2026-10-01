@@ -1,0 +1,36 @@
+{
+  "id": "goblin-city-3-c-edit",
+  "jobId": "7385ec44-193e-4936-83a2-ce1342f21315",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-goblin",
+    "asset": "chibi-goblin-city-3",
+    "subject": "CITY:GOBLIN:3",
+    "faction": "GOBLIN",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 104
+    },
+    "seed": 66235,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and the brown soil slab under the camp, so the spiked iron fence, the tents and the huts stand directly on a transparent background with nothing at all under them. Keep the big red patched tent, the small red tents, the grey scrap-iron huts with red panels, the chimney pipes with grey smoke, the red flag, the spiked fence with its gate, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and the brown soil slab under the camp, so the spiked iron fence, the tents and the huts stand directly on a transparent background with nothing at all under them. Keep the big red patched tent, the small red tents, the grey scrap-iron huts with red panels, the chimney pipes with grey smoke, the red flag, the spiked fence with its gate, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and the brown soil slab under the camp, so the spiked iron fence, the tents and the huts stand directly on a transparent background with nothing at all under them. Keep the big red patched tent, the small red tents, the grey scrap-iron huts with red panels, the chimney pipes with grey smoke, the red flag, the spiked fence with its gate, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and the brown soil slab under the camp, so the spiked iron fence, the tents and the huts stand directly on a transparent background with nothing at all under them. Keep the big red patched tent, the small red tents, the grey scrap-iron huts with red panels, the chimney pipes with grey smoke, the red flag, the spiked fence with its gate, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "goblin-city-3-c",
+      "candidate": 0,
+      "sha256": "8d039c528363d7f3e6f4c0d7198b6a6196a35c7fbb7d4646ae05f8a26db6b42e"
+    }
+  }
+}

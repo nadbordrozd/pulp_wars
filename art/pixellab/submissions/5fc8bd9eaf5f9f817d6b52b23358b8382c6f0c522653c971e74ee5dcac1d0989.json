@@ -1,0 +1,36 @@
+{
+  "id": "goblin-city-2-a-edit-2",
+  "jobId": "41473585-ca52-46cc-a226-abe4ab169476",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-goblin",
+    "asset": "chibi-goblin-city-2",
+    "subject": "CITY:GOBLIN:2",
+    "faction": "GOBLIN",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 100
+    },
+    "seed": 66223,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the dark maroon roof of the hut on the right and the dark maroon square patches on the red tents to dark blue-grey scrap iron, with no maroon, brown or dark red anywhere. Change nothing else: keep the bright red tents, the lookout tower, the red flag, the chimney pipe with grey smoke, the spiked fence, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the dark maroon roof of the hut on the right and the dark maroon square patches on the red tents to dark blue-grey scrap iron, with no maroon, brown or dark red anywhere. Change nothing else: keep the bright red tents, the lookout tower, the red flag, the chimney pipe with grey smoke, the spiked fence, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the dark maroon roof of the hut on the right and the dark maroon square patches on the red tents to dark blue-grey scrap iron, with no maroon, brown or dark red anywhere. Change nothing else: keep the bright red tents, the lookout tower, the red flag, the chimney pipe with grey smoke, the spiked fence, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the dark maroon roof of the hut on the right and the dark maroon square patches on the red tents to dark blue-grey scrap iron, with no maroon, brown or dark red anywhere. Change nothing else: keep the bright red tents, the lookout tower, the red flag, the chimney pipe with grey smoke, the spiked fence, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "goblin-city-2-a-edit",
+      "candidate": 0,
+      "sha256": "1ebd040069b966ef2836de0d2b8d83d4d222f144b03f3aaaf6398f04aa46498f"
+    }
+  }
+}

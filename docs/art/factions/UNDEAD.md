@@ -97,7 +97,8 @@ This guides the subject lines; it is not sent to PixelLab.
   of wood.
 - **Small pale blue lights** (eyes, the Necromancer's staff, the Lich's orb)
   are the only glow, and always small.
-- **Settlements:** shared with the Humans (see
+- **Settlements:** the Undead have their own city set, a necropolis; the
+  neutral village stays shared (see
   [Cities and villages](#cities-and-villages)).
 - **Portraits and icons (batch 5, bead `pulp_wars-67q.11`):** each
   `PORTRAIT:UNDEAD:<ROLE>` line in `scripts/art/chibi/subjects/UNDEAD.json`
@@ -269,14 +270,52 @@ the board.
 
 ### Cities and villages
 
-**Decided: Undead share the Human settlement art.** The runtime keys city
-art by level only (`CITY:1`, `CITY:2`, `CITY:3` and the neutral
-`SITE:VILLAGE` in `src/assets/chibi-art-v7.ts`), not by owner faction, and
-a city changes owner when it is captured. Shared cities need no runtime
-change, keep the owner mask the only sign of who holds a city, and never
-swap a city's whole look on capture. There are no Undead city or village
-subject lines; Undead identity lives in the units, the Grave and the
-ability effects.
+**Undead cities are a necropolis (bead `pulp_wars-6gd.6`).** On 2026-10-01
+the user asked that "each faction should have its own set of city sprites
+that fit the faction esthetics", which replaces the earlier decision to
+share the Human settlement art. The neutral village (`SITE:VILLAGE`) stays
+shared: it has no owner and so no faction.
+
+- **Subjects:** `CITY:UNDEAD:1`, `CITY:UNDEAD:2` and `CITY:UNDEAD:3` in
+  `scripts/art/chibi/subjects/UNDEAD.json`, one raster per art level like the
+  Human `CITY:<level>`, on the same canvases (88 x 96, 96 x 100, 96 x 104),
+  the default bottom-centre anchor and the same overflow, each with an owner
+  mask. The capital crown, the City Wall badge, the population pips, the HP
+  bar and the garrisoned unit are the shared code-drawn overlays.
+- **Resolution:** a city asks for the set of its **owner's** faction
+  (`cityArtSubjectV7` in `src/assets/chibi-art-v7.ts`), so a captured city
+  changes its look with its owner. A level without a usable Undead raster
+  falls back to the Human `CITY:<level>`, as `UNIT:UNDEAD:<ROLE>` does.
+  LEGACY is unchanged.
+- **Look:** weathered grey stone crypts, mausoleums and crooked towers,
+  ivory bone trim, dark iron spikes, bare grey dead trees and small cold
+  pale blue flames. The flames stay pale blue, never teal or cyan, which
+  would read as the Teal player colour (see [Palette](#palette)). Trees are
+  slate grey: the faction uses no wood.
+- **Owner colour** on roofs, cone roofs, banners and drapes.
+
+| Level | Asset                 | What it shows                                                                                                                          | Owner area |
+| ----- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| 1     | `chibi-undead-city-1` | a crooked crypt tower with a ragged banner, three red-roofed crypts, a big ivory skull ornament, headstones, blue flames               | 31.9%      |
+| 2     | `chibi-undead-city-2` | a square bell tower with a flag, four red-roofed crypts, a round corner tower, a spiked front wall with an arch gate, a dead tree      | 17.8%      |
+| 3     | `chibi-undead-city-3` | a dark crenellated ring wall, crooked towers with red cone roofs, a gothic spire, a red-roofed hall, red drapes over the gate, a flame | 15.1%      |
+
+Batch `cities-undead` took 8 PixelLab calls. Findings:
+
+- Every text-to-image city stood on a slab (grass, soil, or a slab with a
+  key-red rim that the mask picked up); a ground-removal edit fixed each.
+- "Slate roofs" came back as a tile pattern with pale tiles, which the mask
+  turned into speckles (`undead-city-1-a`). Ask for "one plain flat solid
+  bright red surface with no tile pattern".
+- The walled City 3 has little roof to show: its first candidate had 11.1%
+  owner area (`COVERAGE_LOW`). An edit painting the hall roof and the cream
+  cone roofs red reached 15.1%. City 2 and 3 pass the 15% minimum but sit
+  under the 20–40% target; the drapes, roofs and banner still read in all
+  four player colours at zoom 0.75.
+
+Evidence: `npm run art:chibi-faction-cities-review` writes
+[`art/pixellab/reviews/chibi-faction-cities/`](../../../art/pixellab/reviews/chibi-faction-cities/)
+(see the [pipeline](../CHIBI_PIPELINE.md#review-evidence)).
 
 ### Ability effects and status markers (bead `pulp_wars-vkq.14`)
 
@@ -321,7 +360,8 @@ Canvas and class follow the mechanical role's subject in the
 | Abomination (`JUGGERNAUT`) | 88 x 104      | patchwork smock over belly and knees      | giant stitched hulk, head sunk between shoulders, one arm bigger, manacles with broken chains |
 | Patrol Boat, Battleship    | Human art     | Human art                                 | reused unchanged (spec section 3)                                                             |
 | Grave marker               | about 40 x 40 | none (unowned)                            | small leaning rounded headstone with an engraved skull and a moss tuft                        |
-| City 1–3, village          | Human art     | Human art                                 | shared Human art (decided)                                                                    |
+| City 1–3                   | Human canvas  | roofs, cone roofs, banners, drapes        | grey stone necropolis: crypts, crooked towers, spikes, dead trees, pale blue flames           |
+| Village                    | Human art     | none (unowned)                            | shared Human art                                                                              |
 
 ## Decisions (approved 2026-09-29)
 
@@ -329,7 +369,9 @@ The user approved this document with the recommended answer to every open
 question of the draft:
 
 1. **Cities:** Undead share the Human city and village art; there are no
-   Undead city tiers.
+   Undead city tiers. **Superseded on 2026-10-01** (bead `pulp_wars-6gd.6`):
+   the Undead have their own City 1–3; only the village stays shared (see
+   [Cities and villages](#cities-and-villages)).
 2. **Banshee:** floats with no feet; the "feet visible" class rule is
    relaxed for her recipe only, through her subject line and recipe
    addenda (see [Subject lines](#subject-lines)). The Lich keeps small feet
@@ -357,6 +399,7 @@ separate bead, which matches this faction's never-brown rule.
 - [x] Every material has a non-red, non-brown shading colour.
 - [x] Every unit line puts red on a garment covering torso and legs.
 - [x] Feet, hands, handles, stocks and shields have non-brown colours.
-- [x] No settlement lines: Undead share the Human city and village art.
+- [x] City lines end "Buildings only." with figure words in the recipe's
+      `negativeAddendum`; the village is the shared Human art.
 - [ ] The sample (Skeleton and Banshee) passes mask QA and reads apart from
       the Human set at zoom 0.75.

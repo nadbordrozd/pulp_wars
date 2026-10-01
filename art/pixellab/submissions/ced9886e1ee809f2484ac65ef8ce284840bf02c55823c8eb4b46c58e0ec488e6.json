@@ -1,0 +1,36 @@
+{
+  "id": "goblin-city-3-a-edit",
+  "jobId": "83d9d526-d13f-46d8-a904-202d7df7e687",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-goblin",
+    "asset": "chibi-goblin-city-3",
+    "subject": "CITY:GOBLIN:3",
+    "faction": "GOBLIN",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 104
+    },
+    "seed": 66232,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the orange and brown soil slab under the walls, so the walls stand directly on a transparent background with nothing at all under them. Paint the whole big patched tent, including its blue and orange panels, and every hut roof and tower roof solid bright red with only darker red shading. Keep the grey iron walls, the towers, the chimney pipes with grey smoke, the red flag, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the orange and brown soil slab under the walls, so the walls stand directly on a transparent background with nothing at all under them. Paint the whole big patched tent, including its blue and orange panels, and every hut roof and tower roof solid bright red with only darker red shading. Keep the grey iron walls, the towers, the chimney pipes with grey smoke, the red flag, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the orange and brown soil slab under the walls, so the walls stand directly on a transparent background with nothing at all under them. Paint the whole big patched tent, including its blue and orange panels, and every hut roof and tower roof solid bright red with only darker red shading. Keep the grey iron walls, the towers, the chimney pipes with grey smoke, the red flag, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the orange and brown soil slab under the walls, so the walls stand directly on a transparent background with nothing at all under them. Paint the whole big patched tent, including its blue and orange panels, and every hut roof and tower roof solid bright red with only darker red shading. Keep the grey iron walls, the towers, the chimney pipes with grey smoke, the red flag, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "goblin-city-3-a",
+      "candidate": 0,
+      "sha256": "a2248966a83d012ee8e62114453ed7ed8e85d6b08062bc8b8e756c1987e55b5e"
+    }
+  }
+}

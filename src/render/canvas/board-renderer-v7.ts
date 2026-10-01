@@ -83,7 +83,11 @@ import { selectionJumpOffsetCssPx } from "./selection-jump-presentation";
 import { RULESET7_TACTICAL_UI_SYMBOL_BY_ID } from "../../assets/ruleset7-tactical-ui-symbols";
 import { tacticalAttachmentsV7 } from "../tactical-presentation-v7";
 import type { ArtSetV7, ArtSubjectV7 } from "../../assets/chibi-art-v7";
-import { chibiOverflowV7, unitArtSubjectV7 } from "../../assets/chibi-art-v7";
+import {
+  chibiOverflowV7,
+  cityArtSubjectV7,
+  unitArtSubjectV7,
+} from "../../assets/chibi-art-v7";
 import {
   resolveChibiWithFallbackV7,
   type ChibiBoardArtV7,
@@ -430,7 +434,13 @@ export function buildBoardRenderPlanV7(
       value: city.level,
       population: city.population,
       assetId: `building-city-${cityArtLevel(city.level)}`,
-      artSubject: `CITY:${cityArtLevel(city.level)}`,
+      // A city wears its owner faction's city set (bead pulp_wars-6gd.6);
+      // without that raster the renderer falls back to the Human set.
+      artSubject: cityArtSubjectV7({
+        artLevel: cityArtLevel(city.level),
+        faction: view.players.find((player) => player.id === city.ownerId)
+          ?.faction,
+      }),
     });
   for (const at of view.treasureChests)
     entries.push({

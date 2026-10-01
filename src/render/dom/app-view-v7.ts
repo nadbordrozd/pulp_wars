@@ -68,6 +68,7 @@ import {
 } from "./selection-identity-v7";
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
 import {
+  cityArtSubjectV7,
   unitArtSubjectV7,
   type ArtSetV7,
   type ArtSubjectV7,
@@ -1664,7 +1665,11 @@ export class Ruleset7DomAppView {
           true,
           null,
           this.#chibiArt(
-            `CITY:${cityTier}`,
+            cityArtSubjectV7({
+              artLevel: cityTier,
+              faction: view.players.find((player) => player.id === city.ownerId)
+                ?.faction,
+            }),
             CHIBI_DOM_BOXES_V7.dock,
             this.#playerColour(view, city.ownerId),
           )?.element,
@@ -2719,7 +2724,7 @@ export class Ruleset7DomAppView {
       cities.title = "Cities";
       cities.append(
         this.#chibiArt(
-          "CITY:1",
+          cityArtSubjectV7({ artLevel: 1, faction: entry.faction }),
           CHIBI_DOM_BOXES_V7.leaderboard,
           RULESET7_PLAYER_COLORS[entry.color],
         )?.element ?? art(this.#document, "building-city-1", ""),

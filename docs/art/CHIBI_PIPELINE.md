@@ -296,6 +296,22 @@ colour and the four player colours, with the mask at x4) and
 dock and the technology tree), indexed in `goblin-index.json`. Its captures
 start Vite on port 6301 unless `--port` says otherwise.
 
+The faction city sets (`CITY:UNDEAD:<level>`, `CITY:GOBLIN:<level>`, batches
+`cities-undead` and `cities-goblin`, bead `pulp_wars-6gd.6`) have their own
+command, `npm run art:chibi-faction-cities-review`, which writes
+`art/pixellab/reviews/chibi-faction-cities/`: `cities-{1x,x4}.png` (City 1–3
+of the Human, Undead and Goblin sets side by side in the four player
+colours), `garrison-{1x,x4}.png` (key colour, mask, and each city with its
+faction's standard and large unit garrisoned as the runtime places them),
+`ingame-cities-{desktop,phone}-zoom-{1,0.75}.png` (the scene of
+[`review-cities-v7.ts`](../../scripts/art/chibi/review-cities-v7.ts): a
+column of level 1, 2 and 3 cities per faction with territory borders,
+garrisons, a capital crown and a City Wall badge, drawn by the real board
+host), `match-*.png` (fresh matches as an Undead and as a Goblin viewer,
+with the city dock) and `index.json`. Its captures start Vite on port 6361.
+With `--preview <batch>:<recipe>[:candidate],… --out <scratch dir>` it lays
+raw candidates out the same way before acceptance and prints their mask QA.
+
 Interface batches (every asset a `PORTRAIT` or `ICON`, batch 5) get
 interface sheets instead: each portrait or icon on the dark dock panel in
 the key colour and for owners A and B, its mask, on a light page, at the

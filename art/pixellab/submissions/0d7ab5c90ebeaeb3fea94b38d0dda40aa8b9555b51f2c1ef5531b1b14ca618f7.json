@@ -1,0 +1,36 @@
+{
+  "id": "goblin-city-1-a-edit",
+  "jobId": "9f933f6d-b8aa-43ef-848a-0396be950a6f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-goblin",
+    "asset": "chibi-goblin-city-1",
+    "subject": "CITY:GOBLIN:1",
+    "faction": "GOBLIN",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 66212,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the brown soil slab under the camp, so the tents, the hut and the lookout pole stand directly on a transparent background with nothing at all under them. Keep the red patched tents, the grey scrap-iron hut, the lookout pole, the red flag, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the brown soil slab under the camp, so the tents, the hut and the lookout pole stand directly on a transparent background with nothing at all under them. Keep the red patched tents, the grey scrap-iron hut, the lookout pole, the red flag, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the brown soil slab under the camp, so the tents, the hut and the lookout pole stand directly on a transparent background with nothing at all under them. Keep the red patched tents, the grey scrap-iron hut, the lookout pole, the red flag, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the brown soil slab under the camp, so the tents, the hut and the lookout pole stand directly on a transparent background with nothing at all under them. Keep the red patched tents, the grey scrap-iron hut, the lookout pole, the red flag, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "goblin-city-1-a",
+      "candidate": 0,
+      "sha256": "c0b6b03145905e54243e26016f5a4b011e2c9cce9b04cafe36cae80a7b5ed83f"
+    }
+  }
+}

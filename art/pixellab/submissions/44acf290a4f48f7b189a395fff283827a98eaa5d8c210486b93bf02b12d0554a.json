@@ -1,0 +1,36 @@
+{
+  "id": "undead-city-1-a-edit",
+  "jobId": "08815a26-2530-4fcf-bff2-a4715d83d05b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-undead",
+    "asset": "chibi-undead-city-1",
+    "subject": "CITY:UNDEAD:1",
+    "faction": "UNDEAD",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 66112,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and the brown soil slab under the buildings, so the crypts stand directly on a transparent background with nothing at all under them. Repaint the brown timber walls of the front house as grey stone. Paint every roof solid bright red with only darker red shading and no pale tiles. Keep the grey stone tower, the red banner flag, the headstones, the pale blue flames, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and the brown soil slab under the buildings, so the crypts stand directly on a transparent background with nothing at all under them. Repaint the brown timber walls of the front house as grey stone. Paint every roof solid bright red with only darker red shading and no pale tiles. Keep the grey stone tower, the red banner flag, the headstones, the pale blue flames, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and the brown soil slab under the buildings, so the crypts stand directly on a transparent background with nothing at all under them. Repaint the brown timber walls of the front house as grey stone. Paint every roof solid bright red with only darker red shading and no pale tiles. Keep the grey stone tower, the red banner flag, the headstones, the pale blue flames, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and the brown soil slab under the buildings, so the crypts stand directly on a transparent background with nothing at all under them. Repaint the brown timber walls of the front house as grey stone. Paint every roof solid bright red with only darker red shading and no pale tiles. Keep the grey stone tower, the red banner flag, the headstones, the pale blue flames, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "undead-city-1-a",
+      "candidate": 0,
+      "sha256": "90bcc4fcd6dc4c767b75ed7439c134333e343f4c07f9fa685e6c842a4892582b"
+    }
+  }
+}

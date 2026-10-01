@@ -149,6 +149,76 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     url: chibiArtUrl("assets/chibi/settlements/chibi-city-3.png"),
     ownerMaskUrl: chibiArtUrl("assets/chibi/settlements/chibi-city-3.mask.png"),
   },
+  // Faction city sets (pulp_wars-6gd.6, batches cities-undead and
+  // cities-goblin): the Undead necropolis and the Goblin scrap camp, on the
+  // Human canvases. A city resolves CITY:<FACTION>:<level> by its owner's
+  // faction and falls back to CITY:<level> above.
+  {
+    id: "chibi-undead-city-1",
+    subject: "CITY:UNDEAD:1",
+    assetClass: "SETTLEMENT",
+    width: 88,
+    height: 96,
+    url: chibiArtUrl("assets/chibi/settlements/chibi-undead-city-1.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/settlements/chibi-undead-city-1.mask.png",
+    ),
+  },
+  {
+    id: "chibi-undead-city-2",
+    subject: "CITY:UNDEAD:2",
+    assetClass: "SETTLEMENT",
+    width: 96,
+    height: 100,
+    url: chibiArtUrl("assets/chibi/settlements/chibi-undead-city-2.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/settlements/chibi-undead-city-2.mask.png",
+    ),
+  },
+  {
+    id: "chibi-undead-city-3",
+    subject: "CITY:UNDEAD:3",
+    assetClass: "SETTLEMENT",
+    width: 96,
+    height: 104,
+    url: chibiArtUrl("assets/chibi/settlements/chibi-undead-city-3.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/settlements/chibi-undead-city-3.mask.png",
+    ),
+  },
+  {
+    id: "chibi-goblin-city-1",
+    subject: "CITY:GOBLIN:1",
+    assetClass: "SETTLEMENT",
+    width: 88,
+    height: 96,
+    url: chibiArtUrl("assets/chibi/settlements/chibi-goblin-city-1.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/settlements/chibi-goblin-city-1.mask.png",
+    ),
+  },
+  {
+    id: "chibi-goblin-city-2",
+    subject: "CITY:GOBLIN:2",
+    assetClass: "SETTLEMENT",
+    width: 96,
+    height: 100,
+    url: chibiArtUrl("assets/chibi/settlements/chibi-goblin-city-2.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/settlements/chibi-goblin-city-2.mask.png",
+    ),
+  },
+  {
+    id: "chibi-goblin-city-3",
+    subject: "CITY:GOBLIN:3",
+    assetClass: "SETTLEMENT",
+    width: 96,
+    height: 104,
+    url: chibiArtUrl("assets/chibi/settlements/chibi-goblin-city-3.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/settlements/chibi-goblin-city-3.mask.png",
+    ),
+  },
   {
     id: "chibi-fighter",
     subject: "UNIT:FIGHTER",

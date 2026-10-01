@@ -1,0 +1,36 @@
+{
+  "id": "undead-city-2-a-edit",
+  "jobId": "027db0c8-1215-4b36-97fd-60a6714389f1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-undead",
+    "asset": "chibi-undead-city-2",
+    "subject": "CITY:UNDEAD:2",
+    "faction": "UNDEAD",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 100
+    },
+    "seed": 66122,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and the brown soil slab under the walls and the grass inside the walls, so the stone walls stand directly on a transparent background with nothing at all under them. Keep the grey stone tower, the walls with iron spikes, the red roofs, the red flag, the dead tree, the pale blue flames, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and the brown soil slab under the walls and the grass inside the walls, so the stone walls stand directly on a transparent background with nothing at all under them. Keep the grey stone tower, the walls with iron spikes, the red roofs, the red flag, the dead tree, the pale blue flames, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and the brown soil slab under the walls and the grass inside the walls, so the stone walls stand directly on a transparent background with nothing at all under them. Keep the grey stone tower, the walls with iron spikes, the red roofs, the red flag, the dead tree, the pale blue flames, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and the brown soil slab under the walls and the grass inside the walls, so the stone walls stand directly on a transparent background with nothing at all under them. Keep the grey stone tower, the walls with iron spikes, the red roofs, the red flag, the dead tree, the pale blue flames, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "undead-city-2-a",
+      "candidate": 0,
+      "sha256": "20346b463aa8b920843588e40ca5150964aee1174e52929e5ca2eacbe1c4567d"
+    }
+  }
+}

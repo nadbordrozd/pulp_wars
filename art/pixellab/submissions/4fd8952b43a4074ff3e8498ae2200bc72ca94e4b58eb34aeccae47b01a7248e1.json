@@ -1,0 +1,69 @@
+{
+  "id": "goblin-city-3-b",
+  "jobId": "sync-f9dda0dd-943b-4871-9c85-b0f75378c521",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "cities-goblin",
+    "asset": "chibi-goblin-city-3",
+    "subject": "CITY:GOBLIN:3",
+    "faction": "GOBLIN",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 104
+    },
+    "seed": 66233,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+        "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+        "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+        "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/GOBLIN.json",
+        "text": "Subject: a large level-3 scrap fortress warren, the biggest settlement: many chunky patched tents of bright red cloth and dented grey scrap-iron huts with bright red painted roof panels packed inside a crooked ring palisade of spiked grey scrap-iron plates with a big riveted iron gate, two crooked scrap-iron corner watchtowers with bright red pointed roofs and a tall central scrap-iron keep with a big bright red patched flag on a lookout pole, two bent grey iron chimney pipes puffing small grey soot clouds and piles of grey scrap junk; wide and chunky, filling the whole image. Buildings only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Not a stone castle: the palisade is low, crooked and uneven, made of mismatched dented grey iron sheets with spikes, and many big round bright red patched tents and red painted hut roofs rise above it. Big bright red tent cloth and red roofs cover most of the warren and are its largest areas, shaded only with darker red; no blue, orange or yellow cloth.",
+        "negative": "goblin, orc, troll, soldier, guard, warrior, person, villager, character, creature, face, eyes, orange cloth, blue cloth, campfire, stone castle, crenellated stone wall, brick"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a large level-3 scrap fortress warren, the biggest settlement: many chunky patched tents of bright red cloth and dented grey scrap-iron huts with bright red painted roof panels packed inside a crooked ring palisade of spiked grey scrap-iron plates with a big riveted iron gate, two crooked scrap-iron corner watchtowers with bright red pointed roofs and a tall central scrap-iron keep with a big bright red patched flag on a lookout pole, two bent grey iron chimney pipes puffing small grey soot clouds and piles of grey scrap junk; wide and chunky, filling the whole image. Buildings only. Not a stone castle: the palisade is low, crooked and uneven, made of mismatched dented grey iron sheets with spikes, and many big round bright red patched tents and red painted hut roofs rise above it. Big bright red tent cloth and red roofs cover most of the warren and are its largest areas, shaded only with darker red; no blue, orange or yellow cloth.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, goblin, orc, troll, soldier, guard, warrior, person, villager, character, creature, face, eyes, orange cloth, blue cloth, campfire, stone castle, crenellated stone wall, brick",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a large level-3 scrap fortress warren, the biggest settlement: many chunky patched tents of bright red cloth and dented grey scrap-iron huts with bright red painted roof panels packed inside a crooked ring palisade of spiked grey scrap-iron plates with a big riveted iron gate, two crooked scrap-iron corner watchtowers with bright red pointed roofs and a tall central scrap-iron keep with a big bright red patched flag on a lookout pole, two bent grey iron chimney pipes puffing small grey soot clouds and piles of grey scrap junk; wide and chunky, filling the whole image. Buildings only. Not a stone castle: the palisade is low, crooked and uneven, made of mismatched dented grey iron sheets with spikes, and many big round bright red patched tents and red painted hut roofs rise above it. Big bright red tent cloth and red roofs cover most of the warren and are its largest areas, shaded only with darker red; no blue, orange or yellow cloth. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, goblin, orc, troll, soldier, guard, warrior, person, villager, character, creature, face, eyes, orange cloth, blue cloth, campfire, stone castle, crenellated stone wall, brick."
+  }
+}

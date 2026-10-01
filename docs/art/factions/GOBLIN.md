@@ -114,7 +114,8 @@ This guides the subject lines; it is not sent to PixelLab.
 - **Bombs belong to the Bomb Chucker** (and the Kaboom icon): no other unit
   carries a bomb, so the one raised bomb stays its tell. The Goblin's own
   Kaboom needs no prop.
-- **Settlements:** shared with the Humans (see
+- **Settlements:** the Goblins have their own city set, a scrap camp; the
+  neutral village stays shared (see
   [Cities and villages](#cities-and-villages)).
 - **Portraits (bead `pulp_wars-0ao.8`, batch `5-goblin`):** each
   `PORTRAIT:GOBLIN:<ROLE>` line in `scripts/art/chibi/subjects/GOBLIN.json`
@@ -315,10 +316,52 @@ hand, face, mouth, person`.
 
 ### Cities and villages
 
-**Goblins share the Human settlement art**, as decided for the Undead: the
-runtime keys city art by level, not by owner faction, and a city changes
-owner on capture. There are no Goblin city or village subject lines. The
-placeholder "city tint" of spec
+**Goblin cities are a scrap camp (bead `pulp_wars-6gd.6`).** On 2026-10-01
+the user asked that "each faction should have its own set of city sprites
+that fit the faction esthetics", which replaces the earlier decision to
+share the Human settlement art. The neutral village (`SITE:VILLAGE`) stays
+shared.
+
+- **Subjects:** `CITY:GOBLIN:1`, `CITY:GOBLIN:2` and `CITY:GOBLIN:3` in
+  `scripts/art/chibi/subjects/GOBLIN.json`, on the Human canvases (88 x 96,
+  96 x 100, 96 x 104) with the default bottom-centre anchor, the same
+  overflow and an owner mask each. The capital crown, the City Wall badge,
+  the pips, the HP bar and the garrisoned unit are the shared overlays.
+- **Resolution:** by the city **owner's** faction (`cityArtSubjectV7`), so
+  a captured city changes its look with its owner; a level without a usable
+  Goblin raster falls back to the Human `CITY:<level>`. LEGACY is unchanged.
+- **Look:** round patched tents, dented grey scrap-iron huts, a crooked
+  lookout pole or riveted tower with a flag, bent chimney pipes puffing
+  small grey soot clouds, spiked scrap fences and junk. No wood and no
+  stone, as for the units.
+- **Owner colour** on tent cloth, flags and painted hut panels.
+
+| Level | Asset                 | What it shows                                                                                              | Owner area |
+| ----- | --------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- |
+| 1     | `chibi-goblin-city-1` | three red patched tents, a grey scrap-iron hut with a chimney, a lookout pole with a flag                  | 25.9%      |
+| 2     | `chibi-goblin-city-2` | three big patched tents, a hut, a riveted iron lookout tower with a flag, a chimney pipe with a soot cloud | 33.7%      |
+| 3     | `chibi-goblin-city-3` | a huge patched tent with a flag pole, small tents, four scrap-iron huts, three chimney pipes with soot     | 31.9%      |
+
+Batch `cities-goblin` took 11 PixelLab calls. Findings:
+
+- "Fortress", "keep", "ring palisade" and "watchtowers" drew a grey stone
+  castle with crenellations and 9–13% owner area, three times
+  (`goblin-city-3-a`, its edit, `goblin-city-3-b`). The City 2 and 3 lines
+  now say "scrap camp, with no castle and no stone" and describe a heap of
+  red tents inside a low scrap fence, with `castle, keep, battlements,
+stone wall, brick` in the recipe's `negativeAddendum`.
+- Every text-to-image camp stood on a slab or platform, one with a key-red
+  rim; a ground-removal edit fixed each.
+- Pixen draws a hut as dark brown timber and tent patches as dark maroon.
+  Both stay brown or maroon under every owner colour, so a recolour edit
+  turned them into light grey scrap iron (`goblin-city-1-a-edit-2`,
+  `goblin-city-2-a-edit-2`).
+
+Evidence: `npm run art:chibi-faction-cities-review` writes
+[`art/pixellab/reviews/chibi-faction-cities/`](../../../art/pixellab/reviews/chibi-faction-cities/)
+(see the [pipeline](../CHIBI_PIPELINE.md#review-evidence)).
+
+The placeholder "city tint" of spec
 [section 11.4](../../product/RULESET_7_REVISION_17_GOBLINS.md#114-placeholder-and-final-art)
 is a code-side cue only: it must leave the owner-mask pixels untouched and
 must not push any other pixel towards red or brown.
@@ -390,7 +433,8 @@ the same role's unit that the silhouette must read apart from.
 | Scrap Buggy (`KNIGHT`)    | 72 x 88   | painted body panels, driver's cap        | low wide four-wheeled jalopy, front ram, exhaust pipe with a soot cloud (Human: knight on a horse; Undead: Vampire with a bat-wing cape)               |
 | Troll (`JUGGERNAUT`)      | 88 x 104  | smock over belly and knees               | giant hunched grey-green lump, long arms, drooping nose, moss, stone club on the shoulder (Human: armoured hammer brute; Undead: stitched Abomination) |
 | Patrol Boat, Battleship   | Human art | Human art                                | reused unchanged (spec section 3)                                                                                                                      |
-| City 1–3, village         | Human art | Human art                                | shared Human art                                                                                                                                       |
+| City 1–3                  | as Human  | tent cloth, flags, painted hut panels    | scrap camp: patched tents, grey scrap-iron huts, lookout pole or tower, chimney pipes with soot (Human: stone town; Undead: grey necropolis)           |
+| Village                   | Human art | none (unowned)                           | shared Human art                                                                                                                                       |
 
 ## Sprite findings (bead `pulp_wars-0ao.8`)
 
@@ -469,7 +513,8 @@ also draws both icons in its sheets.
 - [x] Every unit line puts red on a garment or painted part covering torso
       and legs.
 - [x] Feet, hands, handles, stocks and shields have non-brown colours.
-- [x] No settlement lines: Goblins share the Human city and village art.
+- [x] City lines end "Buildings only." with figure words in the recipe's
+      `negativeAddendum`; the village is the shared Human art.
 - [x] The sample (Goblin, Bomb Chucker, Troll) passes mask QA and reads
       apart from the Human and Undead sets at zoom 0.75.
 - [x] The whole roster and its portraits pass mask QA, clear the HP bar and

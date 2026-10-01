@@ -1,0 +1,69 @@
+{
+  "id": "undead-city-1-a",
+  "jobId": "sync-5eccb0b7-76fa-42e7-b992-f3b002641b27",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "cities-undead",
+    "asset": "chibi-undead-city-1",
+    "subject": "CITY:UNDEAD:1",
+    "faction": "UNDEAD",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 66111,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+        "text": "Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown.",
+        "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+        "text": "Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/UNDEAD.json",
+        "text": "Subject: a small level-1 graveyard hamlet: one short crooked leaning grey stone crypt tower with a bright red pointed cone roof and a big ragged bright red banner flag, and three chunky little grey stone mausoleums with solid bright red slate roofs pressed around its foot, two small rounded headstones and one small iron lantern with a cold pale blue flame; no wall; wide and chunky, filling the whole width of the image. Buildings only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Big bright red roofs cover most of the hamlet and are its largest areas, shaded only with darker red.",
+        "negative": "skeleton, zombie, ghost, soldier, guard, warrior, person, villager, character, creature, face, orange roof"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a small level-1 graveyard hamlet: one short crooked leaning grey stone crypt tower with a bright red pointed cone roof and a big ragged bright red banner flag, and three chunky little grey stone mausoleums with solid bright red slate roofs pressed around its foot, two small rounded headstones and one small iron lantern with a cold pale blue flame; no wall; wide and chunky, filling the whole width of the image. Buildings only. Big bright red roofs cover most of the hamlet and are its largest areas, shaded only with darker red.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, skeleton, zombie, ghost, soldier, guard, warrior, person, villager, character, creature, face, orange roof",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful spooky storybook, playful and never scary. Everything is made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull dark iron and weathered grey stone, with small grey-green moss patches, stitched seams and small cold pale blue flames as details; bone is shaded with cool grey, iron and stone with darker slate blue-grey, never brown. Class: one settlement map piece, a compact cluster of chunky buildings that fills most of the image, thick single-colour black outline, big simple shapes. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: a small level-1 graveyard hamlet: one short crooked leaning grey stone crypt tower with a bright red pointed cone roof and a big ragged bright red banner flag, and three chunky little grey stone mausoleums with solid bright red slate roofs pressed around its foot, two small rounded headstones and one small iron lantern with a cold pale blue flame; no wall; wide and chunky, filling the whole width of the image. Buildings only. Big bright red roofs cover most of the hamlet and are its largest areas, shaded only with darker red. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow, orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket, modern clothing, brown boots, brown leather, brown cloth, bronze, copper, verdigris, rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, skeleton, zombie, ghost, soldier, guard, warrior, person, villager, character, creature, face, orange roof."
+  }
+}

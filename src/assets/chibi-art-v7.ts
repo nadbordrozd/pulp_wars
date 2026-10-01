@@ -28,6 +28,11 @@ export type ArtSubjectV7 =
   /** Revision 17: the Goblin units (bead pulp_wars-0ao.8, GOBLIN.md). */
   | `UNIT:GOBLIN:${GoblinArtRoleV7}`
   | `CITY:${1 | 2 | 3}`
+  /**
+   * Faction city sets (bead pulp_wars-6gd.6): the Undead necropolis and the
+   * Goblin scrap camp, one raster per art level like the Human `CITY:<level>`.
+   */
+  | `CITY:${CityArtFactionV7}:${1 | 2 | 3}`
   | "SITE:VILLAGE"
   | "TREASURE"
   /** Revision 13: the unowned Grave marker left by a fallen land unit. */
@@ -89,6 +94,24 @@ export type UndeadArtRoleV7 = Exclude<
  */
 export type GoblinArtRoleV7 = UndeadArtRoleV7;
 
+/** Factions with their own city art; every other faction uses `CITY:<level>`. */
+export type CityArtFactionV7 = "UNDEAD" | "GOBLIN";
+
+/**
+ * The art subject of a city on the map or in the interface: the owner
+ * faction's own city set for the art level, or the shared (Human) set. A
+ * faction subject without a usable raster falls back to `CITY:<level>`
+ * through chibiFallbackSubjectV7. Neutral villages stay `SITE:VILLAGE`.
+ */
+export function cityArtSubjectV7(city: {
+  readonly artLevel: 1 | 2 | 3;
+  readonly faction: FactionIdV7 | null | undefined;
+}): ArtSubjectV7 {
+  if (city.faction === "UNDEAD" || city.faction === "GOBLIN")
+    return `CITY:${city.faction}:${city.artLevel}`;
+  return `CITY:${city.artLevel}`;
+}
+
 const SHARED_ART_ROLES_V7: readonly UnitRoleIdV7[] = [
   "PATROL_BOAT",
   "BATTLESHIP",
@@ -118,8 +141,9 @@ export function unitArtSubjectV7(unit: {
  * with the Undead badge), and likewise `PORTRAIT:UNDEAD:<ROLE>` and
  * `ICON:ACTION:UNDEAD:RALLY`; `UNIT:GOBLIN:<ROLE>` and `PORTRAIT:GOBLIN:<ROLE>`
  * fall back to the Human art with the Goblin badge, and
- * `ICON:ACTION:GOBLIN:RALLY` (WAAAGH!) to the Human Rally horn. Every other subject has
- * no fallback.
+ * `ICON:ACTION:GOBLIN:RALLY` (WAAAGH!) to the Human Rally horn. A faction
+ * city (`CITY:UNDEAD:<level>`, `CITY:GOBLIN:<level>`) falls back to the Human
+ * `CITY:<level>`. Every other subject has no fallback.
  */
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,

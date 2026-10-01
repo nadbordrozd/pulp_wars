@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "batch": "cities-undead",
+  "title": "Undead city set: the necropolis, City 1-3",
+  "bead": "pulp_wars-6gd.6",
+  "faction": "UNDEAD",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-undead-city-1",
+      "subject": "CITY:UNDEAD:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      }
+    },
+    {
+      "id": "chibi-undead-city-2",
+      "subject": "CITY:UNDEAD:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 100
+      }
+    },
+    {
+      "id": "chibi-undead-city-3",
+      "subject": "CITY:UNDEAD:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 104
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "undead-city-1-a",
+      "asset": "chibi-undead-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 66111,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "promptAddendum": "Big bright red roofs cover most of the hamlet and are its largest areas, shaded only with darker red.",
+      "negativeAddendum": "skeleton, zombie, ghost, soldier, guard, warrior, person, villager, character, creature, face, orange roof",
+      "notes": "Sample: the smallest tier."
+    },
+    {
+      "id": "undead-city-3-a",
+      "asset": "chibi-undead-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 66131,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "promptAddendum": "Big bright red roofs cover most of the necropolis and are its largest areas, shaded only with darker red.",
+      "negativeAddendum": "skeleton, zombie, ghost, soldier, guard, warrior, person, villager, character, creature, face, orange roof",
+      "notes": "Sample: the top tier, which differs most from the smallest."
+    },
+    {
+      "id": "undead-city-2-a",
+      "asset": "chibi-undead-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 66121,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "promptAddendum": "Big bright red roofs cover most of the town and are its largest areas, shaded only with darker red.",
+      "negativeAddendum": "skeleton, zombie, ghost, soldier, guard, warrior, person, villager, character, creature, face, orange roof",
+      "notes": "The middle tier, generated after the City 1 and City 3 samples."
+    },
+    {
+      "id": "undead-city-1-a-edit",
+      "asset": "chibi-undead-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 66112,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "undead-city-1-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and the brown soil slab under the buildings, so the crypts stand directly on a transparent background with nothing at all under them. Repaint the brown timber walls of the front house as grey stone. Paint every roof solid bright red with only darker red shading and no pale tiles. Keep the grey stone tower, the red banner flag, the headstones, the pale blue flames, the outline and the art style exactly the same.",
+      "notes": "undead-city-1-a is a good small crooked tower with a banner and crypts, but stands on a grass and soil slab, has a brown timber house, and its tiled roof is chequered with pale tiles (15.8% owner area)."
+    },
+    {
+      "id": "undead-city-3-a-edit",
+      "asset": "chibi-undead-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 66132,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "recipe": "undead-city-3-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the grass strip under the walls, so the walls stand directly on a transparent background with nothing at all under them. Paint the big grey slate roof of the hall, the cream cone roofs and every small roof solid bright red with only darker red shading, like the red cone roofs. Keep the grey stone ring wall, the towers, the red drapes on the gate, the red banner flag, the dead tree, the pale blue flame, the outline and the art style exactly the same.",
+      "notes": "undead-city-3-a is a strong walled necropolis (ring wall, crooked towers, spire, dead tree, blue flame, red drapes) but only 11.1% owner area (COVERAGE_LOW): the hall roof is grey slate and two cone roofs are cream; a grass strip runs under the walls."
+    },
+    {
+      "id": "undead-city-1-b",
+      "asset": "chibi-undead-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 66113,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "promptAddendum": "Every roof is one plain flat solid bright red surface with no tile pattern, no pale tiles and no speckles, shaded only with darker red; the big red roofs are the largest areas. All walls are grey stone.",
+      "negativeAddendum": "skeleton, zombie, ghost, soldier, guard, warrior, person, villager, character, creature, face, orange roof, timber frame, wooden beams, brown walls, cottage, roof tiles pattern",
+      "notes": "undead-city-1-a-edit removed the slab but kept the brown timber house and a roof chequered with pale tiles, so the recoloured roofs are speckled; ask for plain flat red roofs and stone walls."
+    },
+    {
+      "id": "undead-city-1-b-edit",
+      "asset": "chibi-undead-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 66114,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "undead-city-1-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the brown soil slab and its red rim under the buildings, so the crypts stand directly on a transparent background with nothing at all under them. Keep the grey stone tower, the red roofs, the big red banner flag, the ivory skull, the headstones, the pale blue flames, the outline and the art style exactly the same.",
+      "notes": "undead-city-1-b is the right small graveyard (crooked crypt tower, flat red roofs, big ragged banner, a big ivory skull ornament, blue flames, 29.5% owner area) on a brown slab whose rim is key red."
+    },
+    {
+      "id": "undead-city-2-a-edit",
+      "asset": "chibi-undead-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 66122,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "undead-city-2-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and the brown soil slab under the walls and the grass inside the walls, so the stone walls stand directly on a transparent background with nothing at all under them. Keep the grey stone tower, the walls with iron spikes, the red roofs, the red flag, the dead tree, the pale blue flames, the outline and the art style exactly the same.",
+      "notes": "undead-city-2-a is the right middle tier (bell tower with a flag, four red-roofed crypts, a round corner tower, a spiked front wall with an arch gate, a dead tree, 16.7% owner area) on a grass and soil slab."
+    }
+  ]
+}

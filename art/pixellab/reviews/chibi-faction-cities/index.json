@@ -1,0 +1,170 @@
+{
+  "bead": "pulp_wars-6gd.6",
+  "batches": [
+    "1",
+    "cities-undead",
+    "cities-goblin"
+  ],
+  "owners": {
+    "CORAL": "#f06762",
+    "TEAL": "#28b7a4",
+    "GOLD": "#e2b63f",
+    "VIOLET": "#a277d2"
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour. A garrisoned unit is drawn at 0.75 with its right edge at the population pip column, as the board renderer places it.",
+  "cities": [
+    {
+      "asset": "chibi-city-1",
+      "width": 88,
+      "height": 96,
+      "ownerCoverage": null
+    },
+    {
+      "asset": "chibi-city-2",
+      "width": 96,
+      "height": 100,
+      "ownerCoverage": null
+    },
+    {
+      "asset": "chibi-city-3",
+      "width": 96,
+      "height": 104,
+      "ownerCoverage": null
+    },
+    {
+      "asset": "chibi-undead-city-1",
+      "width": 88,
+      "height": 96,
+      "ownerCoverage": 0.3193
+    },
+    {
+      "asset": "chibi-undead-city-2",
+      "width": 96,
+      "height": 100,
+      "ownerCoverage": 0.178
+    },
+    {
+      "asset": "chibi-undead-city-3",
+      "width": 96,
+      "height": 104,
+      "ownerCoverage": 0.1507
+    },
+    {
+      "asset": "chibi-goblin-city-1",
+      "width": 88,
+      "height": 96,
+      "ownerCoverage": 0.2589
+    },
+    {
+      "asset": "chibi-goblin-city-2",
+      "width": 96,
+      "height": 100,
+      "ownerCoverage": 0.3371
+    },
+    {
+      "asset": "chibi-goblin-city-3",
+      "width": 96,
+      "height": 104,
+      "ownerCoverage": 0.3189
+    }
+  ],
+  "captures": "match-*: fresh matches (seed 67) as an Undead and as a Goblin viewer, captured from the running game with ?art=chibi. ingame-cities-*: the synthetic scene of scripts/art/chibi/review-cities-v7.ts drawn by the real board host.",
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/cities-1x.png",
+      "width": 1326,
+      "height": 464,
+      "sha256": "278ad2a54389578f6f48b2a9717fe92896a78846fa4807de21dcb8f38f11c95e"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/garrison-1x.png",
+      "width": 996,
+      "height": 464,
+      "sha256": "6b6481b1c5d8152ec63acd4079365590247d431d617766e7b140724130ed3324"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/cities-x4.png",
+      "width": 5070,
+      "height": 1472,
+      "sha256": "fa9228a5a4a819edeb1a1209931f11dc361f44857f23843926874325116304c5"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/garrison-x4.png",
+      "width": 5070,
+      "height": 1472,
+      "sha256": "c4e30d5cf244298e5cbb08b8cac3eafb12aa03546a23529a881e4ea4fc3bfa38"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/match-undead-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e61c4f39c6af121588b74ce8b4b877eb8bbab3df293e0f539fcc47620e353d56"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/match-undead-city-dock-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "25ef0e791c88dc55bf539ed94f495e4d3a433e04db6c06819ef3cb5a8248852d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/match-goblin-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e1c3f279411c9f09f64002359a1b1218e4ae7f46e099c4bd256f178d479cd961"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/match-goblin-city-dock-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4bfbdfbf5f13c9ea334ff33a4cb7fa1efb16ce21bfcd02e05fd7f48a81d6752c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/ingame-cities-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2cfe8eebff91891725d835caec77c0cbd305daba94a8125a10e2de5836e33f81"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/ingame-cities-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8aa3422831236afc4b95ffe6b8be554809036e28c19d8b0e88c33f62a5a92ae9"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/match-undead-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "161cfadfe79683c36071d9083e3f3b993f87e5bfd413a8b49dfc267a44414b79"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/match-undead-city-dock-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "1f1ebb38a6f5b8b9198c4c52f32b13ac16f30297efc5530efa55056136315d74"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/match-goblin-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "d78ce9be4ab454730f480191a4e7567bd7e6501ddb27007a3f07da086aee46fd"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/match-goblin-city-dock-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "4b0a200282cae837a6bf8febc43a8fc9658e05f9aa23185d0280b68f0fc1e45d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/ingame-cities-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "b3c2fe07e28a4f88c71566e8f5457dc3bd9dbc3db6fa3b5e65d34e35af1ca2f6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-faction-cities/ingame-cities-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "b96b1e10407d92dc8dd969eb42d58a9cab26e7febe9ebdf0d17c3c24286c33b7"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "undead-city-3-a-edit",
+  "jobId": "a4d2df05-7287-4280-bc5c-2ed461e13b99",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-undead",
+    "asset": "chibi-undead-city-3",
+    "subject": "CITY:UNDEAD:3",
+    "faction": "UNDEAD",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 104
+    },
+    "seed": 66132,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the grass strip under the walls, so the walls stand directly on a transparent background with nothing at all under them. Paint the big grey slate roof of the hall, the cream cone roofs and every small roof solid bright red with only darker red shading, like the red cone roofs. Keep the grey stone ring wall, the towers, the red drapes on the gate, the red banner flag, the dead tree, the pale blue flame, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the grass strip under the walls, so the walls stand directly on a transparent background with nothing at all under them. Paint the big grey slate roof of the hall, the cream cone roofs and every small roof solid bright red with only darker red shading, like the red cone roofs. Keep the grey stone ring wall, the towers, the red drapes on the gate, the red banner flag, the dead tree, the pale blue flame, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the grass strip under the walls, so the walls stand directly on a transparent background with nothing at all under them. Paint the big grey slate roof of the hall, the cream cone roofs and every small roof solid bright red with only darker red shading, like the red cone roofs. Keep the grey stone ring wall, the towers, the red drapes on the gate, the red banner flag, the dead tree, the pale blue flame, the outline and the art style exactly the same.",
+    "editInstruction": "Remove the grass strip under the walls, so the walls stand directly on a transparent background with nothing at all under them. Paint the big grey slate roof of the hall, the cream cone roofs and every small roof solid bright red with only darker red shading, like the red cone roofs. Keep the grey stone ring wall, the towers, the red drapes on the gate, the red banner flag, the dead tree, the pale blue flame, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "undead-city-3-a",
+      "candidate": 0,
+      "sha256": "b721252bc310f9f492cb791daa0a3357800d15de11cfd4477f5588295a991665"
+    }
+  }
+}

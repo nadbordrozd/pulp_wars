@@ -178,12 +178,12 @@ registers.
 | Interface use                       | CHIBI subject                                                                                                                                                                                    | Owner colour            |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
 | Selection dock and unit help (unit) | the unit's map subject (`UNIT:<ROLE>`, `UNIT:UNDEAD:<ROLE>`, `UNIT:GOBLIN:<ROLE>`, embarked transport)                                                                                           | the unit's owner        |
-| Selection dock (city, tile)         | `CITY:<level>`; the improvement, resource or terrain map subject (a Mine is its mined mountain)                                                                                                  | city or territory owner |
+| Selection dock (city, tile)         | `CITY:<level>`, or `CITY:UNDEAD:<level>` or `CITY:GOBLIN:<level>` by the city owner's faction; the improvement, resource or terrain map subject (a Mine is its mined mountain)                   | city or territory owner |
 | Train buttons, recruit help         | `PORTRAIT:<ROLE>`; `PORTRAIT:UNDEAD:<ROLE>` or `PORTRAIT:GOBLIN:<ROLE>` for an Undead or Goblin viewer's land roles                                                                              | the viewer              |
 | Technology cards and detail         | `CHIBI_TECH_ART_SUBJECTS_V7` in [`chibi-ui-art-v7.ts`](../../src/assets/chibi-ui-art-v7.ts)                                                                                                      | the viewer              |
 | Command and action buttons          | `ICON:ACTION:<KIND>` (Frenzy: `ICON:ACTION:UNDEAD:RALLY`; WAAAGH!: `ICON:ACTION:GOBLIN:RALLY`; Kaboom!: `ICON:ACTION:KABOOM`); build and harvest commands their map subject; Capture the Village | the viewer              |
 | City rewards                        | `ICON:REWARD:*`, `ICON:HUD:COIN` (Stockpile, Treasury), `ICON:HUD:POPULATION` (Boom), faction portraits (Militia, Juggernaut)                                                                    | the viewer              |
-| Leaderboard city count              | `CITY:1`                                                                                                                                                                                         | that player             |
+| Leaderboard city count              | `CITY:1`, or `CITY:UNDEAD:1` or `CITY:GOBLIN:1` by that player's faction                                                                                                                         | that player             |
 | Inline and HUD coin and population  | `ICON:HUD:COIN`, `ICON:HUD:POPULATION`                                                                                                                                                           | none                    |
 
 Undead and Goblin portraits, Frenzy and WAAAGH! fall back to the Human art
@@ -232,6 +232,33 @@ batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
 `portrait-original-captain` (revision 9), `building-ruleset7-port`,
 `building-ruleset7-lumber-camp`, `building-square-grand-works`,
 `terrain-ruleset7-resource-fish`, `terrain-square-fertile-ground`.
+
+## Faction city sets (bead `pulp_wars-6gd.6`)
+
+The Human `CITY:1`–`CITY:3` rasters are the only city variants: the capital
+crown, the City Wall (fortification) badge, the population pips, the HP bar
+and the garrisoned unit are code-drawn overlays shared by every faction. The
+Undead and the Goblins each have the same three rasters, on the Human
+canvases, anchors and overflow, with owner masks. `SITE:VILLAGE` stays
+shared.
+
+| Art subject     | Asset                 | Batch           | Canvas   | Anchor  | Overflow side / up | Mask     | Look                         |
+| --------------- | --------------------- | --------------- | -------- | ------- | ------------------ | -------- | ---------------------------- |
+| `CITY:UNDEAD:1` | `chibi-undead-city-1` | `cities-undead` | 88 x 96  | default | 4 / 16             | required | [UNDEAD](factions/UNDEAD.md) |
+| `CITY:UNDEAD:2` | `chibi-undead-city-2` | `cities-undead` | 96 x 100 | default | 8 / 20             | required | necropolis                   |
+| `CITY:UNDEAD:3` | `chibi-undead-city-3` | `cities-undead` | 96 x 104 | default | 8 / 24             | required | necropolis                   |
+| `CITY:GOBLIN:1` | `chibi-goblin-city-1` | `cities-goblin` | 88 x 96  | default | 4 / 16             | required | [GOBLIN](factions/GOBLIN.md) |
+| `CITY:GOBLIN:2` | `chibi-goblin-city-2` | `cities-goblin` | 96 x 100 | default | 8 / 20             | required | scrap camp                   |
+| `CITY:GOBLIN:3` | `chibi-goblin-city-3` | `cities-goblin` | 96 x 104 | default | 8 / 24             | required | scrap camp                   |
+
+The board and the selection dock resolve a city by its **owner's** faction
+(`cityArtSubjectV7` in
+[`chibi-art-v7.ts`](../../src/assets/chibi-art-v7.ts)), and a faction subject
+without a usable raster falls back to the Human `CITY:<level>`
+(`chibiFallbackSubjectV7`), like `UNIT:<FACTION>:<ROLE>`. The LEGACY art set
+keeps `building-city-<level>` for every faction. Review evidence:
+`npm run art:chibi-faction-cities-review`
+([pipeline](CHIBI_PIPELINE.md#review-evidence)).
 
 ## Counts per batch
 

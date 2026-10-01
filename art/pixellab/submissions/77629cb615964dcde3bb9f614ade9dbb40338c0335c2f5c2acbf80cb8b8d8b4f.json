@@ -1,0 +1,36 @@
+{
+  "id": "goblin-city-1-a-edit-2",
+  "jobId": "5741f1c9-d0d4-47b6-98ee-9471f3fbeb7b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cities-goblin",
+    "asset": "chibi-goblin-city-1",
+    "subject": "CITY:GOBLIN:1",
+    "faction": "GOBLIN",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 66213,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the dark brown timber walls of the hut and the dark brown lookout pole to light grey riveted scrap iron with blue-grey shading, with no brown anywhere, and make the three tents and the flag a brighter solid red. Change nothing else: keep the shapes, the patches, the chimney, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the dark brown timber walls of the hut and the dark brown lookout pole to light grey riveted scrap iron with blue-grey shading, with no brown anywhere, and make the three tents and the flag a brighter solid red. Change nothing else: keep the shapes, the patches, the chimney, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the dark brown timber walls of the hut and the dark brown lookout pole to light grey riveted scrap iron with blue-grey shading, with no brown anywhere, and make the three tents and the flag a brighter solid red. Change nothing else: keep the shapes, the patches, the chimney, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the dark brown timber walls of the hut and the dark brown lookout pole to light grey riveted scrap iron with blue-grey shading, with no brown anywhere, and make the three tents and the flag a brighter solid red. Change nothing else: keep the shapes, the patches, the chimney, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "goblin-city-1-a-edit",
+      "candidate": 0,
+      "sha256": "83f517cb70a6260f733b42040fdf173a82a1770318f49d2db3dd08ead94edfc6"
+    }
+  }
+}
