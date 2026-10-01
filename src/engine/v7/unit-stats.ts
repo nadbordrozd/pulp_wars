@@ -1,5 +1,6 @@
 import {
   ALPHA_ATTACK2_V7,
+  EGG_DEFENSE2_V7,
   EMBARKED_MOVE_V7,
   GROWTH_KILLS_V7,
   technologyCapabilitiesV7,
@@ -108,6 +109,7 @@ export function publicUnitStatsV7(
   const embarked = unit.form === "EMBARKED";
   const owner = state.players.find((player) => player.id === unit.ownerId);
   if (owner === undefined) throw new RangeError("INVALID_STATE");
+  if (unit.form === "EGG") return eggStats(state, unit, role.label);
   const capabilities = technologyCapabilitiesV7(
     owner.researchedTechs,
     owner.faction,
@@ -344,6 +346,50 @@ export function publicUnitStatsV7(
           },
         }
       : {}),
+  };
+}
+
+/**
+ * Revision 19 section 10: an Egg's public stats: its HP, Attack 0, Defense
+ * 1, Move 0, Range 0, and Sight 0, with no terrain or fortification
+ * modifier, no ability, and no status. The label is "{Unit} Egg".
+ */
+function eggStats(
+  state: GameStateV7,
+  unit: UnitStateV7,
+  roleLabel: string,
+): PublicUnitStatsV7 {
+  const labelText = `${roleLabel} Egg`;
+  const mechanics = unitRoleMechanicsV7(state, unit);
+  return {
+    unitId: unit.id,
+    minimumRange: 0,
+    maximumRange: 0,
+    stats: [
+      stat("HP", "HP", unit.hp, base(labelText, "maximum HP", unit.maxHp), []),
+      stat("ATTACK", "Attack", null, base(labelText, "Attack", 0, 2), []),
+      stat(
+        "DEFENSE",
+        "Defense",
+        null,
+        base(labelText, "Defense", EGG_DEFENSE2_V7, 2),
+        [],
+      ),
+      stat("MOVE", "Move", null, base(labelText, "Move", 0), []),
+      stat("RANGE", "Range", null, base(labelText, "Range", 0), []),
+      stat("SIGHT", "Sight", null, base(labelText, "Sight", 0), []),
+    ],
+    abilities: [],
+    statuses: [],
+    dinosaur: {
+      capacitySlots: mechanics.capacitySlots,
+      growthStage: null,
+      killsToNextStage: null,
+      armourReduction: 0,
+      acid: false,
+      stampedeRunBonus: 0,
+      egg: eggStatus(state, unit),
+    },
   };
 }
 

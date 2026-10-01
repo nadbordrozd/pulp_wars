@@ -34,6 +34,8 @@ export function detectionCoversCoordV7(
     state.units.some(
       (unit) =>
         unit.hp > 0 &&
+        // Revision 19: an Egg has Sight 0 and detects nothing.
+        unit.form !== "EGG" &&
         side.has(unit.ownerId) &&
         chebyshev(unit.at, at) <=
           (unit.form === "LAND" && unit.role === "RAIDER" ? 2 : 1),

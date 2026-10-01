@@ -1,5 +1,6 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
+  EGG_DEFENSE2_V7,
   armouredDamageV7,
   factionRulesV7,
   playerFactionV7,
@@ -88,11 +89,28 @@ export function gangUpBonusV7(
   return Math.min(maximum, helpers) as 0 | 1 | 2;
 }
 
-/** Exact BigInt-backed v7 combat calculation used by resolution and queries. */
+/**
+ * Revision 19 Stampede (section 7.2): the hit of a Triceratops that ran
+ * `runTiles` lane tiles. The caller passes a state in which the Triceratops
+ * already stands on the stand tile, next to the target.
+ */
+export interface StampedeHitV7 {
+  readonly runTiles: 1 | 2;
+}
+
+/**
+ * Exact BigInt-backed v7 combat calculation used by resolution and queries.
+ * With `stampede` the attack is a Stampede hit: the run bonus is added to the
+ * Attack, the target never retaliates, a survivor is pushed under the
+ * ordinary Push conditions (whatever the attacker's abilities), and
+ * `advances` covers both the advance after a kill and the follow after a
+ * Push.
+ */
 export function calculateCombatPreviewV7(
   state: GameStateV7,
   attackerId: UnitId,
   targetUnitId: UnitId,
+  stampede: StampedeHitV7 | null = null,
 ): CombatPreviewV7 {
   const attacker = requireUnit(state, attackerId);
   const defender = requireUnit(state, targetUnitId);
@@ -113,6 +131,11 @@ export function calculateCombatPreviewV7(
     attacker.activation.inspired && attacker.activation.attacksUsed === 0;
   const inspiredConsumed = attacker.activation.inspired;
   const gangUp = gangUpBonusV7(state, state.units, attacker, defender);
+  // Revision 19 Stampede: +1 Attack per lane tile run.
+  const stampedeAttack2 =
+    stampede === null
+      ? 0
+      : stampede.runTiles * attackerMechanics.stampedeRunBonus2;
   // Revision 19: an Alpha adds 1 Attack to every attack it makes.
   const attack2 =
     attacker.form === "EMBARKED"
@@ -121,17 +144,22 @@ export function calculateCombatPreviewV7(
         (chargeApplied ? 2 : 0) +
         (inspiredApplied ? 2 : 0) +
         gangUp * 2 +
-        unitAlphaAttack2V7(state, attacker);
+        unitAlphaAttack2V7(state, attacker) +
+        stampedeAttack2;
   // Revision 19 Acid (section 8.1): a land-form Spitter's attack removes the
   // defender's cover and fortification from the whole exchange.
   const acid = attackHasAcidV7(attackerRule, attacker);
   const fortificationLevel = acid
     ? 0
     : fortificationLevelForUnitV7(state, defender);
+  // Revision 19 section 6.2: an Egg defends with a fixed 1, like an embarked
+  // unit (no cover and no fortification: both helpers need land form).
   const defense2 =
     defender.form === "EMBARKED"
       ? 2
-      : defenderRule.defense2 + fortificationLevel * 2;
+      : defender.form === "EGG"
+        ? EGG_DEFENSE2_V7
+        : defenderRule.defense2 + fortificationLevel * 2;
   const breachApplied = false;
   const bonus = acid ? NO_BONUS : defenseBonusForUnitV7(state, defender);
 
@@ -165,10 +193,14 @@ export function calculateCombatPreviewV7(
   // Revision 14 (V1): an UNANSWERED attacker (the Vampire) draws no
   // retaliation.
   const unanswered = attackerRule.abilities.includes("UNANSWERED");
+  // Revision 19: an Egg never retaliates, and neither does the target of a
+  // Stampede.
   const retaliates =
     !defenderDies &&
     !unanswered &&
+    stampede === null &&
     defender.form !== "EMBARKED" &&
+    defender.form !== "EGG" &&
     defenderRule.abilities.includes("ATTACK") &&
     defenderRule.attack2 > 0 &&
     distance >= defenderRule.minimumRange &&
@@ -234,21 +266,28 @@ export function calculateCombatPreviewV7(
       state.units.find((unit) => unit.id === unitId)?.ownerId,
     plaguedUnitIds: new Set(state.plagued.map((entry) => entry.unitId)),
     bittenUnitIds: new Set(state.bitten.map((entry) => entry.unitId)),
+    eggUnitIds: new Set(
+      state.units.filter((unit) => unit.form === "EGG").map((unit) => unit.id),
+    ),
   });
-  const advances =
-    defenderDies &&
-    !afflictions.defenderBittenRises &&
-    !attackerDies &&
-    distance === 1 &&
-    attackerMechanics.advancesAfterKill &&
-    attacker.form === "LAND" &&
-    defender.form === "LAND";
   const push = pushState(
     state,
     attacker,
     defender,
     !defenderDies && distance === 1,
+    stampede !== null,
   );
+  // Revision 19 section 6.7: a melee attacker that destroys an Egg advances
+  // onto its tile exactly as after killing a land unit. A Stampede also
+  // follows a pushed target into the tile it vacated.
+  const advances =
+    ((defenderDies && !afflictions.defenderBittenRises) ||
+      (stampede !== null && push === "WILL_PUSH")) &&
+    !attackerDies &&
+    distance === 1 &&
+    attackerMechanics.advancesAfterKill &&
+    attacker.form === "LAND" &&
+    (defender.form === "LAND" || defender.form === "EGG");
   const nextAttacks = attacker.activation.attacksUsed + 1;
   const undead = undeadCombatEffectsV7({
     attacker,
@@ -284,9 +323,11 @@ export function calculateCombatPreviewV7(
       ? "DEFENDER_DIED"
       : retaliates
         ? null
-        : unanswered
-          ? "UNANSWERED"
-          : "OUT_OF_RANGE",
+        : stampede !== null
+          ? "STAMPEDE"
+          : unanswered
+            ? "UNANSWERED"
+            : "OUT_OF_RANGE",
     advances,
     push,
     attacksUsed: nextAttacks,
@@ -300,7 +341,7 @@ export function calculateCombatPreviewV7(
     splash,
     ...undead,
     ...afflictions,
-    stampede: 0,
+    stampede: (stampedeAttack2 / 2) as 0 | 1 | 2,
     acid,
     defenderArmoured,
     attackerArmoured,
@@ -394,6 +435,8 @@ export function pushedDestinationV7(
     x: defender.at.x + defender.at.x - attacker.at.x,
     y: defender.at.y + defender.at.y - attacker.at.y,
   };
+  // Revision 19 section 6.2: an Egg cannot be pushed or displaced.
+  if (defender.form === "EGG") return null;
   const tile = tileAtV7(state.board, destination);
   if (tile === undefined || tile.site !== null) return null;
   const water = tile.biome === null;
@@ -432,10 +475,12 @@ function pushState(
   attacker: UnitStateV7,
   defender: UnitStateV7,
   survivesMelee: boolean,
+  stampede: boolean,
 ): CombatPreviewV7["push"] {
   if (
     !survivesMelee ||
-    !unitRoleRuleV7(state, attacker).abilities.includes("PUSH")
+    defender.form === "EGG" ||
+    (!stampede && !unitRoleRuleV7(state, attacker).abilities.includes("PUSH"))
   )
     return "BLOCKED";
   const behind = {

@@ -10,8 +10,15 @@ duration valuation, the endgame siege mode (`pulp_wars-1mc`), the
 revision-17 Goblin play (`pulp_wars-0ao.6`), and the revision-18 movement
 estimates (`pulp_wars-6gd.2`) are summarized below. A revision-19 Dinosaur
 seat (`pulp_wars-c87.2`) plays with this ordinary policy on the Dinosaur
-registration until `pulp_wars-c87.5` adds its own heuristics; matches without
-a Dinosaur seat decide exactly as under revision 18.
+registration until `pulp_wars-c87.5` adds its own heuristics. Since
+`pulp_wars-c87.3` it also plays the Egg and Stampede commands through
+`src/ai/v7-dinosaur.ts`: `LAY_EGG` competes with `TRAIN` as the city's land
+production (one nest tile per role, the one farthest from the visible hostile
+units; an Egg's hatch time counts against it in a threatened city), and an
+offered `STAMPEDE` or `HATCH` is scored from its public preview (a Stampede
+like an attack; never one whose death-blast chain kills an own unit). These
+commands are offered only to a Dinosaur seat, so matches without one decide
+exactly as under revision 18.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening

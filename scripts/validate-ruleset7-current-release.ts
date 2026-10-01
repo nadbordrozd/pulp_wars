@@ -73,6 +73,10 @@ const result = spawnSync(
     "tests/unit/ruleset-v7-revision18-showcase.test.ts",
     "tests/unit/ruleset-v7-dinosaur-faction.test.ts",
     "tests/unit/ruleset-v7-dinosaur-rules.test.ts",
+    "tests/unit/ruleset-v7-dinosaur-eggs.test.ts",
+    "tests/unit/ruleset-v7-dinosaur-stampede.test.ts",
+    "tests/unit/ruleset-v7-dinosaur-form-audit.test.ts",
+    "tests/unit/ruleset-v7-dinosaur-ai-basics.test.ts",
     "tests/unit/ruleset-v7-save.test.ts",
     "tests/unit/persistence-v7.test.ts",
     "tests/integration/ruleset7-biome-browser.test.ts",
@@ -85,5 +89,5 @@ const result = spawnSync(
 if (result.status !== 0)
   throw new Error("Current revision-19 release contract tests failed");
 process.stdout.write(
-  "ruleset-7 current release PASS: revision-19 identity and the Dinosaur faction core (registration, roster, capacity slots, Grow, Wild, Acid, Armoured, substitutions, Showcase; Eggs and Stampede declared, resolved from pulp_wars-c87.3); revision-18 movement and Showcase; the revision-17 Goblin faction core (registration, roster, the starting Goblin, substitutions, Warrens, Gang Up, Plunder, WAAAGH!, Troll regeneration, the Field Defense restriction); revision-16a orthogonal Shallow Water with the 25% Shallow minimum, capital growth floor and CAPITAL_GROWTH, Normal AI growth-first opening; revision-16b 2-tile boats (Patrol Boat and embarked Move 2, DISEMBARK spends one point) and the landing preview; revision-15 three-turn Plague with first-turn spread, Zombie 18 HP; revision-14 Plague, Bitten, unanswered Vampire, Lich Attack 3, village table, and income caps; revision-13 faction registration (Human and Undead rosters), revision-12 rules (free opening research, Fertile Ground mask, Raider Escape), roster, economy, naval, logistics, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
+  "ruleset-7 current release PASS: revision-19 identity and the Dinosaur faction core (registration, roster, capacity slots, Grow, Wild, Acid, Armoured, substitutions, Showcase), Eggs (LAY_EGG, hatching, Shaman Hatch, Nesting, destruction, capture, Abandon Egg), and the Triceratops Stampede with exact public previews; revision-18 movement and Showcase; the revision-17 Goblin faction core (registration, roster, the starting Goblin, substitutions, Warrens, Gang Up, Plunder, WAAAGH!, Troll regeneration, the Field Defense restriction); revision-16a orthogonal Shallow Water with the 25% Shallow minimum, capital growth floor and CAPITAL_GROWTH, Normal AI growth-first opening; revision-16b 2-tile boats (Patrol Boat and embarked Move 2, DISEMBARK spends one point) and the landing preview; revision-15 three-turn Plague with first-turn spread, Zombie 18 HP; revision-14 Plague, Bitten, unanswered Vampire, Lich Attack 3, village table, and income caps; revision-13 faction registration (Human and Undead rosters), revision-12 rules (free opening research, Fertile Ground mask, Raider Escape), roster, economy, naval, logistics, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
 );

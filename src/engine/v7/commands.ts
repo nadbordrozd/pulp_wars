@@ -389,6 +389,15 @@ export function compareCommandsV7(left: CommandV7, right: CommandV7): number {
     COMMAND_KIND_ORDER_V7.indexOf(left.kind) -
     COMMAND_KIND_ORDER_V7.indexOf(right.kind);
   if (byKind !== 0) return byKind;
+  // Revision 19 section 10: `LAY_EGG` is offered in city-ID, role, then
+  // (y, x) order.
+  if (left.kind === "LAY_EGG" && right.kind === "LAY_EGG")
+    return (
+      left.cityId - right.cityId ||
+      UNIT_ROLE_IDS_V7.indexOf(left.role) -
+        UNIT_ROLE_IDS_V7.indexOf(right.role) ||
+      compareNullableCoords(left.at, right.at)
+    );
   const leftAt = targetCoord(left);
   const rightAt = targetCoord(right);
   const byTarget = compareNullableCoords(leftAt, rightAt);

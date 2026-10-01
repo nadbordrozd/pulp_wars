@@ -1,8 +1,12 @@
 import {
+  EGG_HP_V7,
   GROWTH_HP_V7,
   effectiveRoleRuleV7,
+  eggActivationV7,
   growthStageForKillsV7,
   resolveCityGrowthV7,
+  roleMechanicsV7,
+  unitId,
   type CityStateV7,
   type CommandV7,
   type CoordV7,
@@ -62,6 +66,99 @@ export function withKillsV7(
       return { ...unit, kills, maxHp, hp: hp ?? unit.hp + growth };
     }),
   });
+}
+
+export interface EggPieceV7 {
+  readonly seat: number;
+  readonly role: UnitStateV7["role"];
+  readonly at: CoordV7;
+  /** Default: the base Egg HP (6). */
+  readonly maxHp?: number;
+  readonly hp?: number;
+  /** Default: the role's hatch time. */
+  readonly turnsRemaining?: number;
+  /** Default: false (laid on an earlier turn). */
+  readonly laidThisTurn?: boolean;
+}
+
+/**
+ * Adds Eggs (section 6.1) to an arena state: each is a new unit of form
+ * `EGG` homed to the first city of its seat, with its `eggs` entry. The
+ * tiles must be nest tiles of that city (the state schema checks it).
+ */
+export function withEggsV7(
+  state: GameStateV7,
+  pieces: readonly EggPieceV7[],
+): GameStateV7 {
+  const eggs = pieces.map((piece, index) => {
+    const city = cityOfV7(state, piece.seat);
+    const owner = state.players.find((player) => player.id === city.ownerId);
+    if (owner === undefined) throw new Error("owner missing");
+    const maxHp = piece.maxHp ?? EGG_HP_V7;
+    const unit: UnitStateV7 = {
+      id: unitId(state.nextEntityId + index),
+      ownerId: city.ownerId,
+      homeCityId: city.id,
+      role: piece.role,
+      form: "EGG",
+      at: piece.at,
+      hp: piece.hp ?? maxHp,
+      maxHp,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation: eggActivationV7(),
+    };
+    return {
+      unit,
+      entry: {
+        unitId: unit.id,
+        turnsRemaining:
+          piece.turnsRemaining ??
+          roleMechanicsV7(piece.role, owner.faction).hatchTurns ??
+          1,
+        laidThisTurn: piece.laidThisTurn ?? false,
+      },
+    };
+  });
+  return checkedV7({
+    ...state,
+    nextEntityId: state.nextEntityId + pieces.length,
+    units: [...state.units, ...eggs.map((egg) => egg.unit)],
+    eggs: [...state.eggs, ...eggs.map((egg) => egg.entry)].sort(
+      (left, right) => left.unitId - right.unitId,
+    ),
+    treasureChests: state.treasureChests.filter(
+      (chest) => !pieces.some((piece) => sameV7(piece.at, chest)),
+    ),
+    board: {
+      ...state.board,
+      tiles: state.board.tiles.map((tile) =>
+        pieces.some((piece) => sameV7(piece.at, tile.at)) && tile.site === null
+          ? {
+              ...tile,
+              biome: tile.biome ?? ("PLAINS" as const),
+              terrain: "GRASS" as const,
+              resource: null,
+              improvement: null,
+              road: false,
+              fieldDefense: false,
+            }
+          : tile,
+      ),
+    },
+  });
+}
+
+/** The Egg countdown entry of the unit on `at`. */
+export function eggEntryAtV7(
+  state: GameStateV7,
+  at: CoordV7,
+): GameStateV7["eggs"][number] {
+  const unit = state.units.find((candidate) => sameV7(candidate.at, at));
+  const entry = state.eggs.find((candidate) => candidate.unitId === unit?.id);
+  if (entry === undefined) throw new Error(`no egg at ${at.x},${at.y}`);
+  return entry;
 }
 
 /** Replaces the terrain (and optionally Field Defense) of one land tile. */

@@ -370,6 +370,15 @@ export interface UnitActivationV7 {
 
 export type UnitFormV7 = "LAND" | "EMBARKED" | "NAVAL" | "EGG";
 
+/**
+ * Revision 19: whether a unit of this form is afloat (a naval unit or an
+ * embarked land unit). An Egg stands on land, so "not `LAND`" no longer
+ * means afloat; rules about water, docks, and blockades use this instead.
+ */
+export function isAfloatFormV7(form: UnitFormV7): boolean {
+  return form === "NAVAL" || form === "EMBARKED";
+}
+
 export interface UnitStateV7 {
   readonly id: UnitId;
   readonly ownerId: PlayerId;

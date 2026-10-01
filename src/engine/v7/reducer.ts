@@ -10,6 +10,7 @@ import {
   EMBARKED_LANDING_MAX_SPENT_V7,
   embarkedMovementSpentV7,
   factionRulesV7,
+  isEggLaidRoleV7,
   isRallyTargetV7,
   playerFactionV7,
   technologyCapabilitiesV7,
@@ -49,6 +50,21 @@ import {
 } from "./economy";
 import type { DomainEventV7 } from "./events";
 import { calculateCombatPreviewV7, pushedDestinationV7 } from "./combat";
+import {
+  eggActivationV7,
+  hatchEggV7,
+  isNestTileV7,
+  laidEggHpV7,
+  laidEggTurnsV7,
+  prunedEggsV7,
+  resolveStartTurnHatchV7,
+  withEggV7,
+} from "./eggs";
+import {
+  isStampedeTargetFormV7,
+  stampedeLaneV7,
+  stateStampedeFactsV7,
+} from "./stampede";
 import {
   RAISE_DEAD_SKELETON_HP_V7,
   raiseDeadGravesV7,
@@ -153,9 +169,9 @@ export type RuleErrorCodeV7 =
   | "WAIL_NOT_LEGAL"
   | "KABOOM_NOT_LEGAL"
   | "DISBAND_NOT_LEGAL"
-  // Revision 19 (returned from `pulp_wars-c87.3`): an illegal Stampede
-  // (`MOVED`, `EMBARKED`, `NOT_IN_LANE`, `LANE_BLOCKED`), an illegal Hatch
-  // (`EMBARKED`, `NO_EGG`, `LAID_THIS_TURN`), and a unit command naming an Egg.
+  // Revision 19: an illegal Stampede (`MOVED`, `EMBARKED`, `NOT_IN_LANE`,
+  // `LANE_BLOCKED`), an illegal Hatch (`EMBARKED`, `NO_EGG`,
+  // `LAID_THIS_TURN`), and a unit command other than Disband naming an Egg.
   | "STAMPEDE_NOT_LEGAL"
   | "HATCH_NOT_LEGAL"
   | "UNIT_IS_EGG";
@@ -295,6 +311,9 @@ function navalFactsMayChangeV7(command: CommandV7): boolean {
     // Revision 17 section 6.7: an exploding blockader lifts its blockade, and
     // END_TURN reports blockades lifted by Start Turn Plague and chains.
     "KABOOM",
+    // Revision 19 section 7.4: a death-blast chain a Stampede sets off can
+    // kill a blockader.
+    "STAMPEDE",
     "END_TURN",
   ].includes(command.kind);
 }
@@ -324,6 +343,15 @@ function applyCommandCoreV7(
   const command = parsed.value;
   const common = commonError(state, actor, command);
   if (common !== null) return rejected(stateInput, common.code, common.params);
+  // Revision 19 section 6.2: no unit command is legal for an Egg except
+  // Disband. Unknown, dead, and foreign units keep the ordinary unit errors.
+  if ("unitId" in command && command.kind !== "DISBAND") {
+    const named = state.units.find(
+      (unit) => unit.id === command.unitId && unit.hp > 0,
+    );
+    if (named !== undefined && named.ownerId === actor && named.form === "EGG")
+      return rejected(stateInput, "UNIT_IS_EGG", { unitId: named.id });
+  }
   if (command.kind === "RESEARCH")
     return applyResearch(stateInput, state, actor, command.tech);
   if (command.kind === "BUILD_MONUMENT")
@@ -406,9 +434,12 @@ function applyCommandCoreV7(
     return applyLandGrant(stateInput, state, actor, command.cityId);
   if (command.kind === "END_TURN")
     return applyEndTurn(stateInput, state, actor);
-  // Revision 19: `LAY_EGG`, `HATCH`, and `STAMPEDE` are declared and parsed
-  // with the identity, but their rules land with `pulp_wars-c87.3`. Until
-  // then no Egg exists, they are never offered, and they are rejected here.
+  if (command.kind === "LAY_EGG")
+    return applyLayEgg(stateInput, state, actor, command);
+  if (command.kind === "HATCH")
+    return applyHatch(stateInput, state, actor, command);
+  if (command.kind === "STAMPEDE")
+    return applyStampede(stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -1601,7 +1632,9 @@ function applyTrain(
   const rule = effectiveRoleRuleV7(command.role, player.faction);
   if (command.role === "PATROL_BOAT" || command.role === "BATTLESHIP")
     return rejected(original, "UNIT_ROLE_INVALID", { role: command.role });
-  if (rule.cost === null)
+  // Revision 19 section 6.3: an egg-laid role is never trained; its owner
+  // lays it with `LAY_EGG`.
+  if (rule.cost === null || isEggLaidRoleV7(command.role, player.faction))
     return rejected(original, "UNIT_ROLE_INVALID", { role: command.role });
   if (
     rule.technology !== null &&
@@ -1675,6 +1708,526 @@ function applyTrain(
       ...spawn.events,
       ...achievements.events,
     ]);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * Revision 19 `LAY_EGG` (section 6.3): a city action that lays an Egg of an
+ * egg-laid role on a nest tile of the city. The legality checks run in the
+ * section's fixed order; the first failure is the (atomic) rejection.
+ */
+function applyLayEgg(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "LAY_EGG" }>,
+): ApplyCommandResultV7 {
+  const city = state.cities.find((item) => item.id === command.cityId);
+  if (city === undefined) return rejected(original, "CITY_NOT_FOUND");
+  if (city.ownerId !== actor) return rejected(original, "CITY_NOT_OWNED");
+  if (!city.cityActionAvailable)
+    return rejected(original, "CITY_ACTION_SPENT", { cityId: city.id });
+  if (isCityBesiegedV7(state, city))
+    return rejected(original, "CITY_BESIEGED", { cityId: city.id });
+  if (hasCityChoice(state, city.id))
+    return rejected(original, "CITY_REWARD_PENDING", { cityId: city.id });
+  const player = requirePlayer(state, actor);
+  const rule = effectiveRoleRuleV7(command.role, player.faction);
+  const turnsRemaining = laidEggTurnsV7(
+    command.role,
+    player.researchedTechs,
+    player.faction,
+  );
+  if (turnsRemaining === null || rule.cost === null)
+    return rejected(original, "UNIT_ROLE_INVALID", { role: command.role });
+  if (
+    rule.technology !== null &&
+    !player.researchedTechs.includes(rule.technology)
+  )
+    return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
+  if (tileAtV7(state.board, command.at) === undefined)
+    return rejected(original, "TILE_NOT_FOUND");
+  if (!isNestTileV7(state, city, command.at))
+    return rejected(original, "INVALID_TILE", { action: "LAY_EGG" });
+  if (
+    assignedUnitCountV7(state, city.id) +
+      unitCapacitySlotsV7(state, { ownerId: actor, role: command.role }) >
+    cityUnitCapacityV7(state, city)
+  )
+    return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
+  // Arms Industry exactly as for land training; never the Shipyard discount.
+  const forgeActive = state.board.tiles.some(
+    (tile) =>
+      tile.territoryCityId === city.id &&
+      tile.improvement === "FORGE" &&
+      spatialContributionAtV7(state, tile.at, "FORGE").population > 0,
+  );
+  const cost = Math.max(1, rule.cost - (forgeActive ? 1 : 0));
+  if (player.coins < cost)
+    return rejected(original, "INSUFFICIENT_COINS", { cost });
+  if (
+    state.nextEntityId >= Number.MAX_SAFE_INTEGER ||
+    state.commandIndex >= Number.MAX_SAFE_INTEGER
+  )
+    return rejected(original, "INTEGER_OVERFLOW");
+  try {
+    const allocation = allocateUnitId(state.nextEntityId);
+    const hp = laidEggHpV7(player.researchedTechs, player.faction);
+    const egg: UnitStateV7 = {
+      id: allocation.id,
+      ownerId: actor,
+      homeCityId: city.id,
+      role: command.role,
+      form: "EGG",
+      at: { x: command.at.x, y: command.at.y },
+      hp,
+      maxHp: hp,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation: eggActivationV7(),
+    };
+    // Laying reveals nothing, draws no PRNG value, and changes no economy.
+    const staged: GameStateV7 = {
+      ...state,
+      nextEntityId: allocation.nextEntityId,
+      commandIndex: nextSafe(state.commandIndex),
+      players: debit(state.players, actor, cost),
+      cities: state.cities.map((candidate) =>
+        candidate.id === city.id
+          ? { ...candidate, cityActionAvailable: false }
+          : candidate,
+      ),
+      units: [...state.units, egg],
+      eggs: withEggV7(state.eggs, {
+        unitId: egg.id,
+        turnsRemaining,
+        laidThisTurn: true,
+      }),
+    };
+    const achievements = evaluateAchievementsV7(staged, actor);
+    return accepted(checked(achievements.state), [
+      {
+        kind: "EGG_LAID",
+        playerId: actor,
+        cityId: city.id,
+        unitId: egg.id,
+        role: egg.role,
+        cost,
+        at: egg.at,
+        hp,
+        turnsRemaining,
+      },
+      ...achievements.events,
+    ]);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * Revision 19 Shaman `HATCH` (section 6.5): a primary action that hatches an
+ * adjacent own Egg laid on an earlier turn at once; the hatchling is
+ * exhausted for the rest of the turn.
+ */
+function applyHatch(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "HATCH" }>,
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const shaman = actorCheck.unit;
+  const rule = unitRoleRuleV7(state, shaman);
+  if (!rule.abilities.includes("HATCH"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: shaman.role });
+  if (
+    shaman.activation.overrunActive ||
+    primaryUsed(shaman) ||
+    (shaman.activation.moved && !rule.mayUsePrimaryActionAfterMove)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: shaman.id });
+  if (shaman.form !== "LAND")
+    return rejected(original, "HATCH_NOT_LEGAL", { reason: "EMBARKED" });
+  const egg = state.units.find(
+    (unit) =>
+      unit.id === command.eggUnitId &&
+      unit.hp > 0 &&
+      unit.ownerId === actor &&
+      unit.form === "EGG" &&
+      chebyshev(unit.at, shaman.at) === 1,
+  );
+  const entry =
+    egg === undefined
+      ? undefined
+      : state.eggs.find((candidate) => candidate.unitId === egg.id);
+  if (egg === undefined || entry === undefined)
+    return rejected(original, "HATCH_NOT_LEGAL", { reason: "NO_EGG" });
+  if (entry.laidThisTurn)
+    return rejected(original, "HATCH_NOT_LEGAL", { reason: "LAID_THIS_TURN" });
+  try {
+    const events: DomainEventV7[] = [];
+    const hatched = hatchEggV7(
+      state,
+      egg.id,
+      exhaustedActivation(),
+      "SHAMAN",
+      shaman.id,
+      events,
+    );
+    if (hatched.revealed.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: uniqueCoords(hatched.revealed),
+      });
+    const staged = graveActionTail(
+      {
+        ...hatched.state,
+        commandIndex: nextSafe(state.commandIndex),
+        units: hatched.state.units.map((unit) =>
+          unit.id === shaman.id
+            ? {
+                ...unit,
+                activation: {
+                  ...unit.activation,
+                  specialActed: true,
+                  handled: true,
+                },
+              }
+            : unit,
+        ),
+      },
+      actor,
+      events,
+    );
+    return accepted(checked(staged), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * Revision 19 `STAMPEDE` (section 7): a Triceratops that has not moved runs
+ * one or two tiles along an open lane and hits the unit at its end, harder
+ * the longer it ran, without retaliation. A survivor is pushed back and the
+ * Triceratops follows; after a kill it advances. Every fact it reads is
+ * explored by the actor, so it resolves completely or is rejected atomically.
+ */
+function applyStampede(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "STAMPEDE" }>,
+): ApplyCommandResultV7 {
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const attacker = actorCheck.unit;
+  const rule = unitRoleRuleV7(state, attacker);
+  if (!rule.abilities.includes("STAMPEDE"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: attacker.role });
+  // A unit that moved or landed this turn reports `MOVED` (landing ends the
+  // activation, so its primary action also reads as used).
+  if (attacker.activation.moved)
+    return rejected(original, "STAMPEDE_NOT_LEGAL", { reason: "MOVED" });
+  if (primaryUsed(attacker) || attacker.activation.overrunActive)
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: attacker.id });
+  if (attacker.form !== "LAND")
+    return rejected(original, "STAMPEDE_NOT_LEGAL", { reason: "EMBARKED" });
+  const target = state.units.find(
+    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
+  );
+  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
+    return rejected(original, "TARGET_NOT_FOUND", {
+      targetUnitId: command.targetUnitId,
+    });
+  if (
+    target.ownerId === actor ||
+    arePlayersAlliedV7(state, actor, target.ownerId)
+  )
+    return rejected(original, "TARGET_ALLIED");
+  if (!isStampedeTargetFormV7(target.form))
+    return rejected(original, "STAMPEDE_NOT_LEGAL", { reason: "NOT_IN_LANE" });
+  const lane = stampedeLaneV7(
+    stateStampedeFactsV7(state, actor),
+    actor,
+    attacker.at,
+    target.at,
+  );
+  if (!lane.ok)
+    return rejected(original, "STAMPEDE_NOT_LEGAL", { reason: lane.reason });
+  try {
+    const player = requirePlayer(state, actor);
+    // 1. Run: reveal sight from every lane tile, as a Move does.
+    let players = state.players;
+    const actorRevealed: CoordV7[] = [];
+    for (const step of lane.lane) {
+      const sight = revealRadius(
+        { ...state, players } as GameStateV7,
+        actor,
+        step,
+        unitSightRadiusAtV7(state, attacker, tileAtV7(state.board, step)),
+      );
+      players = setExplored(players, actor, sight.explored);
+      actorRevealed.push(...sight.revealed);
+    }
+    const standTile = tileAtV7(state.board, lane.standAt);
+    const targetTile = tileAtV7(state.board, target.at);
+    if (standTile === undefined || targetTile === undefined)
+      throw new RangeError("INVALID_STATE");
+    const standOwner = state.cities.find(
+      (city) => city.id === standTile.territoryCityId,
+    )?.ownerId;
+    const standDefenseLost =
+      standTile.fieldDefense &&
+      standOwner !== undefined &&
+      standOwner !== actor &&
+      arePlayersHostileV7(state, actor, standOwner);
+    // 2. Hit, from the stand tile. The Push is decided on the tiles the
+    // actor had explored before the run, so the public preview is exact.
+    const standing: UnitStateV7 = { ...attacker, at: lane.standAt };
+    const ranState: GameStateV7 = {
+      ...state,
+      units: state.units.map((unit) =>
+        unit.id === attacker.id ? standing : unit,
+      ),
+    };
+    const calculated = calculateCombatPreviewV7(
+      ranState,
+      attacker.id,
+      target.id,
+      { runTiles: lane.runTiles },
+    );
+    const canAdvance =
+      calculated.advances &&
+      (targetTile.terrain !== "MOUNTAIN" ||
+        player.researchedTechs.includes("ENGINEERING"));
+    const preview =
+      canAdvance === calculated.advances
+        ? calculated
+        : { ...calculated, advances: canAdvance };
+    const pushDestination =
+      preview.push === "WILL_PUSH"
+        ? pushedDestinationV7(ranState, standing, target)
+        : null;
+    const attackerKills = attacker.kills + (preview.defenderDies ? 1 : 0);
+    if (!Number.isSafeInteger(attackerKills))
+      throw new RangeError("INTEGER_OVERFLOW");
+    const endsAt = preview.advances ? target.at : lane.standAt;
+    let attackerAfter: UnitStateV7 = {
+      ...attacker,
+      at: endsAt,
+      hp: attacker.hp - preview.damageToAttacker + preview.attackerHeal,
+      kills: attackerKills,
+      captureEligible: false,
+      activation: {
+        ...attacker.activation,
+        moved: true,
+        movedPathLength: lane.lane.length,
+        attacked: true,
+        attacksUsed: 1,
+        inspired: false,
+        overrunActive: false,
+        escapeAvailable: false,
+        handled: true,
+      },
+    };
+    const defenderAfter: UnitStateV7 = {
+      ...target,
+      at: pushDestination ?? target.at,
+      hp: target.hp - preview.damageToDefender + preview.defenderHeal,
+      captureEligible:
+        pushDestination === null ? target.captureEligible : false,
+    };
+    const growthEvents: DomainEventV7[] = [];
+    attackerAfter = grownUnitV7(
+      state,
+      attacker.kills,
+      attackerAfter,
+      growthEvents,
+    );
+    let units = state.units
+      .map((unit) =>
+        unit.id === attacker.id
+          ? attackerAfter
+          : unit.id === target.id
+            ? defenderAfter
+            : unit,
+      )
+      .filter((unit) => unit.hp > 0);
+    // 4. Field Defense on the target tile falls, whoever owns the tile and
+    // whether or not the target survives.
+    let board = state.board;
+    if (standDefenseLost || targetTile.fieldDefense)
+      board = {
+        ...board,
+        tiles: board.tiles.map((tile) =>
+          (standDefenseLost && same(tile.at, lane.standAt)) ||
+          (targetTile.fieldDefense && same(tile.at, target.at))
+            ? { ...tile, fieldDefense: false }
+            : tile,
+        ),
+      };
+    const events: DomainEventV7[] = [
+      { kind: "UNIT_MOVED", unitId: attacker.id, path: lane.lane },
+    ];
+    if (standDefenseLost)
+      events.push({
+        kind: "FIELD_DEFENSE_DESTROYED",
+        at: lane.standAt,
+        reason: "OCCUPATION",
+      });
+    events.push({ kind: "COMBAT_RESOLVED", preview });
+    if (targetTile.fieldDefense)
+      events.push({
+        kind: "FIELD_DEFENSE_DESTROYED",
+        at: target.at,
+        reason: "CATAPULT",
+      });
+    // 5. Kill: the death, then its Grave or Bitten rising.
+    let graves = state.graves;
+    let nextEntityId = state.nextEntityId;
+    const risings: UnitStateV7[] = [];
+    if (preview.defenderDies) {
+      const bite = biteOfV7(state, target.id);
+      if (bite === undefined || target.form !== "LAND")
+        graves = recordCombatDeathV7(state, graves, target, "ATTACK", events);
+      else {
+        const allocation = allocateUnitId(nextEntityId);
+        nextEntityId = allocation.nextEntityId;
+        const rising = recordBittenRisingV7(
+          state,
+          bite,
+          target,
+          "ATTACK",
+          allocation.id,
+          exhaustedActivation(),
+          events,
+        );
+        risings.push(rising);
+        units = [...units, rising];
+      }
+    }
+    events.push(...growthEvents);
+    // 6 and 7. Push, then the one-tile advance or follow.
+    if (pushDestination !== null)
+      events.push({
+        kind: "UNIT_PUSHED",
+        sourceUnitId: attacker.id,
+        targetUnitId: target.id,
+        from: target.at,
+        to: pushDestination,
+      });
+    if (preview.advances)
+      events.push({
+        kind: "UNIT_MOVED",
+        unitId: attacker.id,
+        path: [target.at],
+      });
+    // 9. The death blast of a killed exploding target, after the advance.
+    const chain = resolveStateExplosionChainV7(
+      state,
+      { units, board, graves, nextEntityId, bitten: state.bitten },
+      preview.defenderDies && isExplodingUnitV7(state, target)
+        ? [{ unit: target, cause: "DEATH" as const }]
+        : [],
+      events,
+    );
+    units = [...chain.units];
+    board = chain.board;
+    graves = chain.graves;
+    nextEntityId = chain.nextEntityId;
+    risings.push(...chain.risings);
+    const plunder = plunderAwardsV7(state, players, [
+      ...(preview.defenderDies
+        ? [{ creditedId: actor, victimOwnerId: target.ownerId }]
+        : []),
+      ...chain.credits,
+    ]);
+    events.push(...plunder.events);
+    players = plunder.players;
+    // Reveals: the run and the Triceratops's final tile, then a pushed
+    // target's new tile, then every rising.
+    const finalReveal = revealRadius(
+      { ...state, board, players, units } as GameStateV7,
+      actor,
+      endsAt,
+      unitSightRadiusAtV7(
+        { ...state, board, players, units } as GameStateV7,
+        attackerAfter,
+      ),
+    );
+    players = setExplored(players, actor, finalReveal.explored);
+    actorRevealed.push(...finalReveal.revealed);
+    if (actorRevealed.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: uniqueCoords(actorRevealed),
+      });
+    if (pushDestination !== null) {
+      const pushedState = { ...state, board, players, units } as GameStateV7;
+      const reveal = revealRadius(
+        pushedState,
+        target.ownerId,
+        pushDestination,
+        unitSightRadiusAtV7(pushedState, defenderAfter),
+      );
+      players = setExplored(players, target.ownerId, reveal.explored);
+      if (reveal.revealed.length)
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: target.ownerId,
+          tiles: reveal.revealed,
+        });
+    }
+    for (const risen of risings) {
+      const risenState = { ...state, board, players, units } as GameStateV7;
+      const reveal = revealRadius(
+        risenState,
+        risen.ownerId,
+        risen.at,
+        unitSightRadiusAtV7(risenState, risen),
+      );
+      players = setExplored(players, risen.ownerId, reveal.explored);
+      if (reveal.revealed.length)
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: risen.ownerId,
+          tiles: reveal.revealed,
+        });
+    }
+    const economy = recomputeLiveEconomyV7(
+      state,
+      { board, cities: state.cities, units },
+      state.populationContributions,
+    );
+    events.push(...economyAndGrowth(economy.changes));
+    const settlement = settleCityRewardsV7(
+      {
+        ...state,
+        board,
+        commandIndex: nextSafe(state.commandIndex),
+        nextEntityId,
+        players,
+        cities: economy.cities,
+        units,
+        graves,
+        populationContributions: economy.populationContributions,
+      },
+      actor,
+    );
+    events.push(...settlement.events);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    events.push(...achievements.events);
+    return accepted(checked(achievements.state), events);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -3444,7 +3997,11 @@ function applyDisband(
   const actorCheck = validateUnitActor(state, actor, unitId);
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
-  if (actorCheck.unit.form !== "LAND")
+  // Revision 19 section 6.7: an own Egg may be abandoned with Disband, for
+  // half the printed cost of the role inside, on any turn (an Egg has no
+  // primary action to have used).
+  const egg = actorCheck.unit.form === "EGG";
+  if (actorCheck.unit.form !== "LAND" && !egg)
     return rejected(original, "UNIT_ROLE_INVALID", {
       role: actorCheck.unit.role,
     });
@@ -3456,7 +4013,7 @@ function applyDisband(
     return rejected(original, "UNIT_ROLE_INVALID", {
       role: actorCheck.unit.role,
     });
-  if (primaryUsed(actorCheck.unit))
+  if (!egg && primaryUsed(actorCheck.unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   // Revision 14 sections 3.6 and 4.5: afflicted units cannot Disband.
   if (state.plagued.some((entry) => entry.unitId === unitId))
@@ -3581,18 +4138,33 @@ function applyCapture(
         item.id === captured.id ? captured : item,
       );
     }
-    let units = state.units.map((item) =>
-      item.id === unit.id
-        ? {
-            ...item,
-            homeCityId: captured.id,
-            captureEligible: false,
-            activation: { ...item.activation, captured: true, handled: true },
-          }
-        : formerOwner !== null && item.homeCityId === captured.id
-          ? { ...item, homeCityId: null }
-          : item,
-    );
+    // Revision 19 section 6.7: every Egg homed to a captured city is
+    // destroyed at once (an uncredited removal: no kill, Plunder, or Grave).
+    const lostEggs =
+      formerOwner === null
+        ? []
+        : state.units
+            .filter(
+              (item) =>
+                item.hp > 0 &&
+                item.form === "EGG" &&
+                item.homeCityId === captured.id,
+            )
+            .sort((a, b) => a.id - b.id);
+    let units = state.units
+      .filter((item) => !lostEggs.some((egg) => egg.id === item.id))
+      .map((item) =>
+        item.id === unit.id
+          ? {
+              ...item,
+              homeCityId: captured.id,
+              captureEligible: false,
+              activation: { ...item.activation, captured: true, handled: true },
+            }
+          : formerOwner !== null && item.homeCityId === captured.id
+            ? { ...item, homeCityId: null }
+            : item,
+      );
     let players: readonly PlayerStateV7[] = state.players.map((item) =>
       item.id === actor && spoils
         ? {
@@ -3624,6 +4196,11 @@ function applyCapture(
         from: formerOwner,
         to: actor,
       },
+      ...lostEggs.map((egg): DomainEventV7 => ({
+        kind: "UNIT_DIED",
+        unitId: egg.id,
+        cause: "CITY_CAPTURED",
+      })),
     ];
     if (spoils)
       events.push({
@@ -3776,9 +4353,15 @@ function applyEndTurn(
       },
       nextPlayer.id,
     );
-    const started = startTurnEconomyV7(advanced, nextPlayer, false, (next) =>
-      resolveStartTurnPlagueAndChainV7(next, nextPlayer.id),
-    );
+    // Revision 19 section 6.4: the hatch step runs after Plague and any
+    // chain it started, and before Windmill healing.
+    const started = startTurnEconomyV7(advanced, nextPlayer, false, (next) => {
+      const plague = resolveStartTurnPlagueAndChainV7(next, nextPlayer.id);
+      const hatch = resolveStartTurnHatchV7(plague.state, nextPlayer.id);
+      return hatch.events.length === 0 && hatch.state === plague.state
+        ? plague
+        : { state: hatch.state, events: [...plague.events, ...hatch.events] };
+    });
     const turnStarted = started.events[0];
     if (turnStarted === undefined) throw new RangeError("INVALID_STATE");
     const settlement = settleCityRewardsV7(started.state, nextPlayer.id);
@@ -4276,6 +4859,8 @@ function recoverIdleUnits(
       (unit) =>
         unit.ownerId === player.id &&
         unit.form !== "EMBARKED" &&
+        // Revision 19 section 6.2: idle recovery skips an Egg.
+        unit.form !== "EGG" &&
         (unit.form !== "NAVAL" ||
           [unit.at, ...adjacentCoords(state, unit.at)].some((at) =>
             isActivePortV7(state, at, player.id),
@@ -4390,7 +4975,8 @@ function resetTurnUnits(state: GameStateV7, playerId: PlayerId): GameStateV7 {
   return {
     ...state,
     units: state.units.map((unit) => {
-      if (unit.ownerId !== playerId) return unit;
+      // Revision 19 section 6.2: an Egg stays exhausted at Start Turn.
+      if (unit.ownerId !== playerId || unit.form === "EGG") return unit;
       const city = state.cities.find((candidate) =>
         same(candidate.at, unit.at),
       );
@@ -4591,10 +5177,13 @@ function evaluateAchievementsV7(
         (city) => city.id === contribution.cityId && city.ownerId === playerId,
       ),
   );
+  // Revision 19 section 9.7: an Egg does not count for Muster until it
+  // hatches.
   const trainableRoles = new Set(
     state.units.flatMap((unit) =>
       unit.ownerId === playerId &&
       unit.hp > 0 &&
+      unit.form !== "EGG" &&
       unitRoleRuleV7(state, unit).cost !== null
         ? [unit.role]
         : [],
@@ -4813,7 +5402,8 @@ function isExplored(player: PlayerStateV7, at: CoordV7): boolean {
 function checked(state: GameStateV7): GameStateV7 {
   checkedOutputValidationCountV7 += 1;
   // Revision 14: drop afflictions of departed units, sources, and biters.
-  const result = parseGameStateV7(prunedAfflictionsV7(state));
+  // Revision 19: drop the countdowns of Eggs that left the board.
+  const result = parseGameStateV7(prunedEggsV7(prunedAfflictionsV7(state)));
   if (result === null) throw new RangeError("INVALID_STATE");
   return result;
 }

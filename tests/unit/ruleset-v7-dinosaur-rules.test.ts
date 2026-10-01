@@ -158,19 +158,27 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
     const city = cityOfV7(one, 0);
     expect(city.level).toBe(1);
     expect(cityUnitCapacityV7(one, city)).toBe(2);
+    // Egg-laid roles are laid on a nest tile (`pulp_wars-c87.3`).
+    const nest = { x: city.at.x - 1, y: city.at.y - 1 };
     const triceratops: CommandV7 = {
-      kind: "TRAIN",
+      kind: "LAY_EGG",
       cityId: city.id,
       role: "CATAPULT",
+      at: nest,
     };
     const raptor: CommandV7 = {
-      kind: "TRAIN",
+      kind: "LAY_EGG",
       cityId: city.id,
       role: "RAIDER",
+      at: nest,
     };
     const offered = queryPlayerCommandsV7(one, one.humanPlayerId);
     expect(offered).toContainEqual(raptor);
-    expect(offered).not.toContainEqual(triceratops);
+    expect(
+      offered.filter(
+        (command) => command.kind === "LAY_EGG" && command.role === "CATAPULT",
+      ),
+    ).toEqual([]);
     expect(applyCommandV7(one, one.humanPlayerId, triceratops)).toMatchObject({
       accepted: false,
       error: { code: "CITY_CAPACITY_FULL", params: { cityId: city.id } },
@@ -186,6 +194,8 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
       triceratops,
     );
     const trained = applyOkV7(empty, empty.humanPlayerId, triceratops);
+    // The Egg uses the slots of the unit inside from the moment it is laid.
+    expect(unitAtV7(trained.state, nest).form).toBe("EGG");
     expect(assignedUnitCountV7(trained.state, city.id)).toBe(2);
     expect(previewCityCapacityV7(trained.state, city.id)).toMatchObject({
       assigned: 2,
@@ -195,9 +205,6 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
     // The city is now full for every role, the 1-slot Caveman included.
     const full = checkedV7({
       ...trained.state,
-      units: trained.state.units.map((unit) =>
-        sameV7(unit.at, city.at) ? { ...unit, at: { x: 4, y: 3 } } : unit,
-      ),
       cities: trained.state.cities.map((candidate) => ({
         ...candidate,
         cityActionAvailable: true,
@@ -205,7 +212,7 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
     });
     expect(
       queryPlayerCommandsV7(full, full.humanPlayerId).filter(
-        (command) => command.kind === "TRAIN",
+        (command) => command.kind === "TRAIN" || command.kind === "LAY_EGG",
       ),
     ).toEqual([]);
     expect(
@@ -222,6 +229,7 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
     const freed = checkedV7({
       ...full,
       units: full.units.filter((unit) => unit.role !== "CATAPULT"),
+      eggs: [],
     });
     expect(assignedUnitCountV7(freed, city.id)).toBe(0);
     expect(queryPlayerCommandsV7(freed, freed.humanPlayerId)).toContainEqual(
@@ -242,9 +250,10 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
     expect(cityUnitCapacityV7(planned, city)).toBe(3);
     expect(cityUnitCapacityV7(planned, cityOfV7(planned, 1))).toBe(3);
     const train: CommandV7 = {
-      kind: "TRAIN",
+      kind: "LAY_EGG",
       cityId: city.id,
       role: "CATAPULT",
+      at: { x: city.at.x - 1, y: city.at.y - 1 },
     };
     expect(
       queryPlayerCommandsV7(planned, planned.humanPlayerId),

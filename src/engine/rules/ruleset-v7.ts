@@ -1710,6 +1710,29 @@ export function unitAlphaAttack2V7(
   return unitGrowthStageV7(roster, unit) === 2 ? ALPHA_ATTACK2_V7 : 0;
 }
 
+/**
+ * Revision 19 section 2.3: whether `role` is laid as an Egg, never trained,
+ * under `faction`'s registration (the five trainable Dinosaur units).
+ */
+export function isEggLaidRoleV7(
+  role: UnitRoleIdV7,
+  faction: FactionIdV7,
+): boolean {
+  return roleMechanicsV7(role, faction).hatchTurns !== null;
+}
+
+/**
+ * Revision 19 section 6.2: the maximum HP an Egg may have: the base Egg HP,
+ * or the base plus the Nesting bonus of its owner's registration.
+ */
+export function eggMaxHpOptionsV7(faction: FactionIdV7): readonly number[] {
+  const bonuses = new Set<number>([0]);
+  for (const node of factionTreeV7(faction).nodes)
+    for (const unlock of node.unlocks)
+      if (unlock.kind === "NESTING") bonuses.add(unlock.eggHp);
+  return [...bonuses].sort((a, b) => a - b).map((bonus) => EGG_HP_V7 + bonus);
+}
+
 /** The capacity slots a unit (or the unit inside an Egg) uses in its city. */
 export function unitCapacitySlotsV7(
   roster: FactionRosterV7,

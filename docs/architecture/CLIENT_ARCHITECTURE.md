@@ -9,8 +9,11 @@ the setup screen offers, Human, Undead, and Goblin, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The engine also
 registers the Dinosaur faction of the
 [revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
-(`pulp_wars-c87.2`: identity, roster, capacity slots, Grow, Acid, Armoured);
-the client draws its units as the Human art and offers the faction from
+(`pulp_wars-c87.2`: identity, roster, capacity slots, Grow, Acid, Armoured;
+`pulp_wars-c87.3`: Eggs, Shaman Hatch, Nesting, and Stampede, with their
+public previews `previewLayEggV7`, `previewHatchV7`, `previewStampedeV7`, and
+`queryStampedeLanesV7`); the client draws its units as the Human art and
+offers the faction, the Egg marker, and those commands from
 `pulp_wars-c87.4`. That document
 folds in the
 [revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md)

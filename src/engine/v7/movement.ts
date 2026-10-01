@@ -251,7 +251,8 @@ export function reachableMovementPathsV7(
   const player = state.players.find(
     (candidate) => candidate.id === unit.ownerId,
   );
-  if (player === undefined) return [];
+  // Revision 19 section 6.2: an Egg never moves.
+  if (player === undefined || unit.form === "EGG") return [];
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -305,6 +306,8 @@ export function reachablePlayerMovementPathsV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
 ): readonly ReachablePathV7[] {
+  // Revision 19 section 6.2: an Egg never moves.
+  if (unit.form === "EGG") return [];
   const context = publicMovementContextV7(view);
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
@@ -599,6 +602,8 @@ export function unitSightRadiusAtV7(
   tile = tileAtV7(state.board, unit.at),
 ): number {
   if (unit.form === "EMBARKED") return 1;
+  // Revision 19 section 6.2: an Egg has Sight 0 and reveals nothing.
+  if (unit.form === "EGG") return 0;
   const player = requirePlayer(state, unit.ownerId);
   const capabilities = technologyCapabilitiesV7(
     player.researchedTechs,
@@ -685,7 +690,8 @@ function projectsZocV7(
   target: UnitStateV7,
   at: CoordV7,
 ): boolean {
-  if (projector.form === "EMBARKED") return false;
+  // Revision 19 section 6.2: an Egg projects no zone of control.
+  if (projector.form === "EMBARKED" || projector.form === "EGG") return false;
   const targetTile = tileAtV7(state.board, at);
   const water = targetTile?.biome === null;
   if (!water) return projector.form !== "NAVAL";
@@ -759,6 +765,8 @@ function publicHostileZoc(
       if (
         unit.hp <= 0 ||
         unit.form === "EMBARKED" ||
+        // Revision 19: an Egg projects no zone of control.
+        unit.form === "EGG" ||
         unit.ownerId === target.ownerId ||
         publicAllied(view, target.ownerId, unit.ownerId)
       )

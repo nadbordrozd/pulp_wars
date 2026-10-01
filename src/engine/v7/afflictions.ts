@@ -74,6 +74,11 @@ export function afflictionCombatEffectsV7(input: {
   readonly splashOwner: (unitId: UnitId) => PlayerId | undefined;
   readonly plaguedUnitIds: ReadonlySet<UnitId>;
   readonly bittenUnitIds: ReadonlySet<UnitId>;
+  /**
+   * Revision 19: the Eggs among the splash victims. An Egg takes no status:
+   * it is never plagued (and never Bitten, which needs land form).
+   */
+  readonly eggUnitIds?: ReadonlySet<UnitId>;
 }): Pick<
   CombatPreviewV7,
   | "plagued"
@@ -88,6 +93,7 @@ export function afflictionCombatEffectsV7(input: {
   if (input.attackerRule.abilities.includes("PLAGUE") && !input.attackerDies) {
     if (
       !input.defenderDies &&
+      input.defender.form !== "EGG" &&
       living(input.defender.ownerId) &&
       !input.plaguedUnitIds.has(input.defender.id)
     )
@@ -95,6 +101,7 @@ export function afflictionCombatEffectsV7(input: {
     for (const entry of input.splash)
       if (
         !entry.dies &&
+        input.eggUnitIds?.has(entry.unitId) !== true &&
         living(input.splashOwner(entry.unitId)) &&
         !input.plaguedUnitIds.has(entry.unitId)
       )

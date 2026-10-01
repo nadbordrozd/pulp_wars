@@ -1,5 +1,6 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
+  EGG_DEFENSE2_V7,
   EMBARKED_LANDING_MAX_SPENT_V7,
   EMBARKED_MOVE_V7,
   effectiveRoleRuleV7,
@@ -7,6 +8,7 @@ import {
   factionTreeV7,
   isRallyTargetV7,
   technologyCapabilitiesV7,
+  unitCapacitySlotsV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -86,6 +88,12 @@ import {
   regenerationV7,
   type ExplosionChainValueV7,
 } from "./v7-goblin";
+import {
+  chosenLayEggCommandsV7,
+  dinosaurActionScoreV7,
+  layEggAdjustmentV7,
+  stampedeHoldUnitIdsV7,
+} from "./v7-dinosaur";
 import {
   normalOpeningResearchPendingV7,
   normalOpeningTechnologyV7,
@@ -367,8 +375,15 @@ const NO_NAVAL_PLAN_V7: NavalPlanV7 = Object.freeze({
 });
 
 type AiReadyItemV7 = ReturnType<typeof queryAiReadyCommandsV7>[number];
-type SharedCityCommandV7 =
+/**
+ * Revision 19: a land production command of a city: `TRAIN`, or for a
+ * Dinosaur seat `LAY_EGG` on the nest tile the policy chose for that role.
+ */
+type LandProductionCommandV7 =
   | Extract<CommandV7, { kind: "TRAIN" }>
+  | Extract<CommandV7, { kind: "LAY_EGG" }>;
+type SharedCityCommandV7 =
+  | LandProductionCommandV7
   | Extract<CommandV7, { kind: "TRAIN_NAVAL" }>
   | Extract<CommandV7, { kind: "LAND_GRANT" }>;
 
@@ -1851,8 +1866,10 @@ function* navalPlanWorkV7(
     anyWaterDistance !== null &&
     captureLandDistance !== null &&
     anyWaterDistance + (closestCoastDistance ?? 0) + 3 < captureLandDistance;
+  // Revision 19: an Egg stands on land; only naval and embarked units are
+  // afloat.
   const visibleNavalDanger = view.units.some(
-    (unit) => isHostile(view, unit.ownerId) && unit.form !== "LAND",
+    (unit) => isHostile(view, unit.ownerId) && isAfloatV7(unit),
   );
   const ownedPortKeys = new Set(
     view.naval.ownedPorts.map((port) => coordKey(port.at)),
@@ -1861,12 +1878,12 @@ function* navalPlanWorkV7(
     .filter(
       (unit) =>
         isHostile(view, unit.ownerId) &&
-        unit.form !== "LAND" &&
+        isAfloatV7(unit) &&
         ownedPortKeys.has(coordKey(unit.at)),
     )
     .map((unit) => unit.at);
   const visibleHostileFleet = view.units
-    .filter((unit) => isHostile(view, unit.ownerId) && unit.form !== "LAND")
+    .filter((unit) => isHostile(view, unit.ownerId) && isAfloatV7(unit))
     .map((unit) => unit.at);
   const fleetGoals =
     visibleBlockaders.length > 0
@@ -2281,6 +2298,8 @@ function* publicThreatenedTilesWorkV7(
               occupant.id !== unit.id &&
               occupant.hp > 0 &&
               occupant.form !== "EMBARKED" &&
+              // Revision 19: an Egg projects no zone of control.
+              occupant.form !== "EGG" &&
               occupant.ownerId !== unit.ownerId &&
               !publicPlayersAllied(view, unit.ownerId, occupant.ownerId) &&
               publicProjectsZocForThreatV7(view, occupant, unit, tile),
@@ -2331,12 +2350,19 @@ function publicWailThreatV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
   );
 }
 
+/** Revision 19: naval and embarked units are afloat; an Egg is not. */
+function isAfloatV7(unit: PublicUnitV7): boolean {
+  return unit.form === "NAVAL" || unit.form === "EMBARKED";
+}
+
 function publicProjectsZocForThreatV7(
   view: PlayerViewV7,
   projector: PublicUnitV7,
   target: PublicUnitV7,
   tile: PlayerViewV7["board"]["tiles"][number],
 ): boolean {
+  // Revision 19: an Egg projects no zone of control.
+  if (projector.form === "EGG") return false;
   if (!tile.explored) return true;
   if (tile.biome !== null) return projector.form !== "NAVAL";
   if (projector.form === "NAVAL") return true;
@@ -2397,6 +2423,14 @@ function isPolicyCandidate(
       corridor !== null && corridor.missingRoadKeys[0] === coordKey(command.at)
     );
   }
+  // Revision 19 (`pulp_wars-c87.3`): a Triceratops with a worthwhile
+  // Stampede on offer does not move first (it cannot Stampede after moving).
+  if (
+    command.kind === "MOVE" &&
+    context.view.viewer.faction === "DINOSAUR" &&
+    stampedeHoldUnitIdsV7(context.view, context.commands).has(command.unitId)
+  )
+    return false;
   if (
     (command.kind === "MOVE" || command.kind === "ATTACK") &&
     leavesSoleThreatenedDefender(context, command) &&
@@ -2464,9 +2498,13 @@ function isPolicyCandidate(
   if (
     command.kind === "TRAIN" ||
     command.kind === "TRAIN_NAVAL" ||
-    command.kind === "LAND_GRANT"
+    command.kind === "LAND_GRANT" ||
+    command.kind === "LAY_EGG"
   )
     return preferredSharedCityActionV7(context, command.cityId) === command;
+  // Revision 19 (`pulp_wars-c87.3`): Hatch and Stampede are scored by their
+  // public previews; the full Dinosaur policy is `pulp_wars-c87.5`.
+  if (command.kind === "HATCH" || command.kind === "STAMPEDE") return true;
   if (command.kind === "CHOOSE_CITY_REWARD")
     return preferredReward(context, command) === command.reward;
   if (command.kind === "REDEVELOP") {
@@ -2907,21 +2945,30 @@ function* sharedCityContextWorkV7(
   if (context.sharedCityContextPrepared) return;
   const { view } = context;
   const sharedByCity = new Map<CityId, SharedCityCommandV7[]>();
-  const landByCity = new Map<CityId, Extract<CommandV7, { kind: "TRAIN" }>[]>();
+  const landByCity = new Map<CityId, LandProductionCommandV7[]>();
   const navalByCity = new Map<
     CityId,
     Extract<CommandV7, { kind: "TRAIN_NAVAL" }>[]
   >();
+  // Revision 19: one `LAY_EGG` per city and role, on the nest tile farthest
+  // from the visible hostile units (matches without a Dinosaur seat offer
+  // none, so they are unchanged).
+  const chosenEggs = chosenLayEggCommandsV7(view, context.commands);
   for (const command of context.commands) {
+    if (command.kind === "LAY_EGG" && !chosenEggs.has(command)) {
+      yield;
+      continue;
+    }
     if (
       command.kind === "TRAIN" ||
       command.kind === "TRAIN_NAVAL" ||
-      command.kind === "LAND_GRANT"
+      command.kind === "LAND_GRANT" ||
+      command.kind === "LAY_EGG"
     ) {
       const shared = sharedByCity.get(command.cityId) ?? [];
       shared.push(command);
       sharedByCity.set(command.cityId, shared);
-      if (command.kind === "TRAIN") {
+      if (command.kind === "TRAIN" || command.kind === "LAY_EGG") {
         const land = landByCity.get(command.cityId) ?? [];
         land.push(command);
         landByCity.set(command.cityId, land);
@@ -2976,10 +3023,13 @@ function* sharedCityContextWorkV7(
     if (unit.ownerId === view.viewer.id) {
       ownedRoleCounts.set(unit.role, (ownedRoleCounts.get(unit.role) ?? 0) + 1);
       ownedAt.add(coordKey(unit.at));
+      // Revision 19 section 5.1: used capacity is a slot sum (every role
+      // of a Human, Undead, or Goblin seat uses one slot).
       if (unit.homeCityId !== null)
         assignedByCity.set(
           unit.homeCityId,
-          (assignedByCity.get(unit.homeCityId) ?? 0) + 1,
+          (assignedByCity.get(unit.homeCityId) ?? 0) +
+            unitCapacitySlotsV7(view, unit),
         );
       if (
         unit.form === "LAND" &&
@@ -3087,7 +3137,7 @@ function* sharedCityContextWorkV7(
 
     const threatened = threatenedCityIds.has(cityId);
     const landOrder = threatened ? THREATENED_ROLE_ORDER : GENERAL_ROLE_ORDER;
-    let preferredLand: Extract<CommandV7, { kind: "TRAIN" }> | null = null;
+    let preferredLand: LandProductionCommandV7 | null = null;
     let preferredLandValue = Number.NEGATIVE_INFINITY;
     // Revision 14 (Undead matches): a fragile siege unit trained on a center
     // inside visible lethal reach dies before it acts (the vkq.18 Lich
@@ -3138,7 +3188,8 @@ function* sharedCityContextWorkV7(
         8 * count +
         trainingAdjustment(command.role) +
         hordeAdjustment(command.role, count) +
-        cityAdjustment(command.role);
+        cityAdjustment(command.role) +
+        layEggAdjustmentV7(view, command, threatened);
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
         preferredLand === null ||
@@ -3206,7 +3257,7 @@ function* sharedCityContextWorkV7(
         view.viewer.coins - cost < context.naval.reserveCoins;
       const eligible =
         command.kind === "LAND_GRANT" ||
-        (command.kind === "TRAIN"
+        (command.kind === "TRAIN" || command.kind === "LAY_EGG"
           ? !(
               context.naval.active &&
               !threatened &&
@@ -3231,12 +3282,13 @@ function* sharedCityContextWorkV7(
         const utility =
           command.kind === "LAND_GRANT"
             ? neutral * 7 - 18
-            : command.kind === "TRAIN"
+            : command.kind === "TRAIN" || command.kind === "LAY_EGG"
               ? (effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp +
                   Number(command.role === "GUARD" && threatened) * 20 +
                   Number(command.role === "CATAPULT" && durableScreen) * 12 +
                   trainingAdjustment(command.role) +
-                  cityAdjustment(command.role)) *
+                  cityAdjustment(command.role) +
+                  layEggAdjustmentV7(view, command, threatened)) *
                   3 -
                 cost * 4 +
                 Number(preferredLand?.role === command.role) * 18
@@ -3678,10 +3730,18 @@ function scoreCommandWithContext(
       priority = Math.max(priority, 1070);
   }
 
-  if (command.kind === "TRAIN") {
+  if (command.kind === "TRAIN" || command.kind === "LAY_EGG") {
     priority = threatenedCity(context, command.cityId) ? 1260 : 1080;
     immediateValue = -trainingCostV7(view, command);
     strategicValue = trainingStrategicValue(context, command);
+  }
+
+  if (command.kind === "STAMPEDE" || command.kind === "HATCH") {
+    // Revision 19 (`pulp_wars-c87.3`): previewed value only.
+    const dinosaur = dinosaurActionScoreV7(view, command);
+    priority = dinosaur.priority;
+    strategicValue = dinosaur.strategic;
+    immediateValue = dinosaur.immediate;
   }
 
   if (command.kind === "TRAIN_NAVAL") {
@@ -4173,6 +4233,7 @@ function scoreCommandWithContext(
     (command.kind === "RESEARCH" ||
       command.kind === "TRAIN" ||
       command.kind === "TRAIN_NAVAL" ||
+      command.kind === "LAY_EGG" ||
       command.kind.startsWith("BUILD_"))
   )
     priority = NORMAL_GROWTH_HARVEST_PRIORITY_V7 - 1;
@@ -4182,6 +4243,8 @@ function scoreCommandWithContext(
     resultAt === null ||
     command.kind === "ATTACK" ||
     command.kind === "KABOOM" ||
+    command.kind === "STAMPEDE" ||
+    command.kind === "HATCH" ||
     (command.kind === "MOVE" &&
       actor.role === "KNIGHT" &&
       precomputedKnightOverrun !== undefined)
@@ -6708,7 +6771,7 @@ function preferredReward(
 
 function trainingStrategicValue(
   context: PolicyContextV7,
-  command: Extract<CommandV7, { kind: "TRAIN" }>,
+  command: LandProductionCommandV7,
 ): number {
   let value = effectiveRoleRuleV7(
     command.role,
@@ -7100,10 +7163,13 @@ function publicProjectedDamageWithLookupV7(
     defenderTile.territoryOwnerId === defender.ownerId
       ? (defenderTile.fortificationLevel ?? 0)
       : 0;
+  // Revision 19: an Egg defends with a fixed 1, like an embarked unit.
   const defense2 =
     defender.form === "EMBARKED"
       ? 2
-      : defenseRule.defense2 + fortificationLevel * 2;
+      : defender.form === "EGG"
+        ? EGG_DEFENSE2_V7
+        : defenseRule.defense2 + fortificationLevel * 2;
   const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
   const attackForceDenominator = 2n * BigInt(attacker.maxHp);
   const defenseForceNumerator =
@@ -7393,15 +7459,18 @@ function freeCapacity(view: PlayerViewV7, cityId: CityId | null): number {
     view.viewer.researchedTechs,
     view.viewer.faction,
   );
-  const assigned = view.units.filter(
-    (unit) => unit.ownerId === view.viewer.id && unit.homeCityId === cityId,
-  ).length;
+  // Revision 19 section 5.1: used capacity is a slot sum.
+  const assigned = view.units
+    .filter(
+      (unit) => unit.ownerId === view.viewer.id && unit.homeCityId === cityId,
+    )
+    .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
   return capacity - assigned;
 }
 
 function trainingCostV7(
   view: PlayerViewV7,
-  command: Extract<CommandV7, { kind: "TRAIN" | "TRAIN_NAVAL" }>,
+  command: Extract<CommandV7, { kind: "TRAIN" | "TRAIN_NAVAL" | "LAY_EGG" }>,
 ): number {
   const base = effectiveRoleRuleV7(command.role, view.viewer.faction).cost ?? 0;
   if (command.kind === "TRAIN_NAVAL") {
@@ -7659,7 +7728,7 @@ function fallbackTie(
   const content =
     command.kind === "RESEARCH"
       ? TECHNOLOGY_IDS_V7.indexOf(command.tech)
-      : command.kind === "TRAIN"
+      : command.kind === "TRAIN" || command.kind === "LAY_EGG"
         ? UNIT_ROLE_IDS_V7.indexOf(command.role)
         : command.kind === "CHOOSE_CITY_REWARD"
           ? REWARD_IDS_V7.indexOf(command.reward)

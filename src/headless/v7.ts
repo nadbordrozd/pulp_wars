@@ -1253,7 +1253,13 @@ function recordEventsV7(
       metrics.rewards[event.reward] += 1;
       metrics.economy.coinsEarned += event.coins;
     }
-    if (event.kind === "UNIT_TRAINED" || event.kind === "NAVAL_UNIT_TRAINED") {
+    // Revision 19: an Egg laid counts as its role's production (the Coins
+    // are spent when it is laid); Dinosaur telemetry is `pulp_wars-c87.8`.
+    if (
+      event.kind === "UNIT_TRAINED" ||
+      event.kind === "NAVAL_UNIT_TRAINED" ||
+      event.kind === "EGG_LAID"
+    ) {
       metrics.roles.trained[event.role] += 1;
       metrics.economy.coinsSpent += event.cost;
       metrics.roles.trainingCoins[event.role] += event.cost;

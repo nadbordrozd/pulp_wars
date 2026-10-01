@@ -132,6 +132,8 @@ export function resolveStartTurnPlagueV7(
     for (const unit of [...units].sort((left, right) => left.id - right.id))
       if (
         unit.hp > 0 &&
+        // Revision 19: an Egg never receives a spread.
+        unit.form !== "EGG" &&
         chebyshev(unit.at, spreader.at) === 1 &&
         !alreadyPlagued.has(unit.id) &&
         isLivingOwnerV7(state, unit.ownerId)

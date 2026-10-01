@@ -841,10 +841,12 @@ export function achievementProgressV7(
         : maximum,
     0,
   );
+  // Revision 19 section 9.7: an Egg does not count until it hatches.
   const roles = new Set(
     state.units.flatMap((unit) =>
       unit.ownerId === playerId &&
       unit.hp > 0 &&
+      unit.form !== "EGG" &&
       unitRoleRuleV7(state, unit).cost !== null
         ? [unit.role]
         : [],

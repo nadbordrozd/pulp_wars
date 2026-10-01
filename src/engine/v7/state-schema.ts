@@ -3,10 +3,13 @@ import type { PlayerId } from "../model/ids";
 import {
   GROWTH_HP_V7,
   effectiveRoleRuleV7,
+  eggMaxHpOptionsV7,
   factionTreeIdV7,
   gravesEnabledV7,
   growthStageForKillsV7,
+  roleMechanicsV7,
 } from "../rules/ruleset-v7";
+import { isEggActivationV7 } from "./eggs";
 import {
   ACHIEVEMENT_IDS_V7,
   BIOME_IDS_V7,
@@ -18,6 +21,7 @@ import {
   TECHNOLOGY_IDS_V7,
   TERRAIN_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  isAfloatFormV7,
   type BoardStateV7,
   type AchievementEntitlementV7,
   type AchievementIdV7,
@@ -700,12 +704,10 @@ function parseUnit(
     !isNonNegativeSafeIntegerV7(input.kills) ||
     typeof input.veteran !== "boolean" ||
     typeof input.captureEligible !== "boolean" ||
-    // Revision 19: the `EGG` form is part of the schema, but no Egg is
-    // accepted until `LAY_EGG` lands (`pulp_wars-c87.3`), so a state holding
-    // one is rejected here.
     (input.form !== "LAND" &&
       input.form !== "EMBARKED" &&
-      input.form !== "NAVAL")
+      input.form !== "NAVAL" &&
+      input.form !== "EGG")
   )
     return null;
   const id = parseUnitIdV7(input.id);
@@ -720,6 +722,40 @@ function parseUnit(
   if (faction === undefined) return null;
   const rule = effectiveRoleRuleV7(role, faction);
   const overrun = rule.abilities.includes("OVERRUN");
+  // Revision 19 section 6.1: an Egg is an egg-laid role of a Dinosaur seat
+  // with 6 or 10 maximum HP, no kills, no Promotion, no capture eligibility,
+  // and the exhausted activation at all times. Its tile, home city, and
+  // countdown are checked with the cross references.
+  if (input.form === "EGG") {
+    if (
+      id === null ||
+      owner === null ||
+      home === null ||
+      at === null ||
+      activation === null ||
+      roleMechanicsV7(role, faction).hatchTurns === null ||
+      !eggMaxHpOptionsV7(faction).includes(input.maxHp) ||
+      input.kills !== 0 ||
+      input.veteran ||
+      input.captureEligible ||
+      !isEggActivationV7(activation)
+    )
+      return null;
+    return {
+      id,
+      ownerId: owner,
+      homeCityId: home,
+      role,
+      form: "EGG",
+      at,
+      hp: input.hp,
+      maxHp: input.maxHp,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation,
+    };
+  }
   if (
     id === null ||
     owner === null ||
@@ -1077,8 +1113,10 @@ function validateCrossReferences(value: CrossInput): boolean {
     if (
       tile === undefined ||
       owner === undefined ||
-      (unit.form === "LAND") !== (tile.biome !== null) ||
-      (unit.form !== "LAND" &&
+      // Revision 19: an Egg stands on land like a land-form unit; only naval
+      // and embarked units are afloat.
+      isAfloatFormV7(unit.form) !== (tile.biome === null) ||
+      (isAfloatFormV7(unit.form) &&
         tile.terrain === "DEEP_WATER" &&
         !owner.researchedTechs.includes("NAVIGATION"))
     )
@@ -1210,9 +1248,11 @@ function validateCrossReferences(value: CrossInput): boolean {
   )
     return false;
   const unitById = new Map(units.map((unit) => [unit.id, unit]));
+  // Revision 19: an Egg takes no status, so it is never plagued or bitten.
   const living = (unit: UnitStateV7 | undefined): boolean =>
     unit !== undefined &&
     unit.hp > 0 &&
+    unit.form !== "EGG" &&
     playerById.get(unit.ownerId)?.faction !== "UNDEAD";
   for (const entry of plagued) {
     const source = unitById.get(entry.sourceUnitId);
@@ -1242,15 +1282,39 @@ function validateCrossReferences(value: CrossInput): boolean {
     )
       return false;
   }
-  // Revision 19 Eggs: one entry per unit of form `EGG` and none otherwise,
-  // and only in a match with a Dinosaur seat. Unit parsing accepts no Egg
-  // before `pulp_wars-c87.3`, so the list is always empty until then.
+  // Revision 19 Eggs (section 6.1): one entry per unit of form `EGG` and
+  // none otherwise, and only in a match with a Dinosaur seat. Each Egg's
+  // countdown is at most its role's hatch time, its home city exists and is
+  // its owner's, and it stands on a land tile of that city's territory next
+  // to the city center.
   if (
     eggs.length !== units.filter((unit) => unit.form === "EGG").length ||
-    eggs.some((entry) => unitById.get(entry.unitId)?.form !== "EGG") ||
     (eggs.length > 0 && !value.setup.factions.includes("DINOSAUR"))
   )
     return false;
+  for (const entry of eggs) {
+    const egg = unitById.get(entry.unitId);
+    if (egg === undefined || egg.form !== "EGG") return false;
+    const faction = playerById.get(egg.ownerId)?.faction;
+    const home =
+      egg.homeCityId === null ? undefined : cityById.get(egg.homeCityId);
+    const tile = tileAt(board, egg.at);
+    if (
+      faction === undefined ||
+      entry.turnsRemaining >
+        (roleMechanicsV7(egg.role, faction).hatchTurns ?? 0) ||
+      home === undefined ||
+      home.ownerId !== egg.ownerId ||
+      tile === undefined ||
+      tile.biome === null ||
+      tile.territoryCityId !== home.id ||
+      Math.max(
+        Math.abs(egg.at.x - home.at.x),
+        Math.abs(egg.at.y - home.at.y),
+      ) !== 1
+    )
+      return false;
+  }
   if (outcome !== null) {
     if (outcome.kind === "DEFEAT") {
       if (
@@ -1296,7 +1360,7 @@ function populationLedgerValid(
                 (units.some(
                   (unit) =>
                     unit.hp > 0 &&
-                    unit.form !== "LAND" &&
+                    isAfloatFormV7(unit.form) &&
                     sameCoordV7(unit.at, tile.at) &&
                     unit.ownerId !== city.ownerId &&
                     !(

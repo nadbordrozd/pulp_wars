@@ -816,10 +816,13 @@ describe("ruleset-7 revision-18 Showcase play", () => {
             `${faction} ${unit.role} ${command.kind}`,
           ).toBe(true);
       }
-      // Training is possible from the first turn, on land and at the docks.
+      // Training is possible from the first turn, on land and at the docks
+      // (a Dinosaur seat lays its egg-laid roles as Eggs, revision 19).
       const trained = new Set(
         commands.flatMap((command) =>
-          command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL"
+          command.kind === "TRAIN" ||
+          command.kind === "TRAIN_NAVAL" ||
+          command.kind === "LAY_EGG"
             ? [command.role]
             : [],
         ),

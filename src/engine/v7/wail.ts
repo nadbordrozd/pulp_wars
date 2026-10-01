@@ -1,5 +1,6 @@
 import type { UnitId } from "../model/ids";
 import {
+  EGG_DEFENSE2_V7,
   armouredDamageV7,
   gravesEnabledV7,
   playerFactionV7,
@@ -238,13 +239,20 @@ function target(
   };
 }
 
-/** Defense 1 when embarked; otherwise base Defense plus fortification. */
+/**
+ * Defense 1 when embarked and for an Egg (revision 19); otherwise base
+ * Defense plus fortification.
+ */
 function defense2For(
   base2: number,
   unit: Pick<WailUnitV7, "form">,
   fortificationLevel: number,
 ): number {
-  return unit.form === "EMBARKED" ? 2 : base2 + fortificationLevel * 2;
+  return unit.form === "EMBARKED"
+    ? 2
+    : unit.form === "EGG"
+      ? EGG_DEFENSE2_V7
+      : base2 + fortificationLevel * 2;
 }
 
 function sortTargets<T extends WailTargetV7>(targets: readonly T[]): T[] {

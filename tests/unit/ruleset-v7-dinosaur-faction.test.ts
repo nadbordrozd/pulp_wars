@@ -1212,9 +1212,8 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
     });
   });
 
-  it("trains every Dinosaur land role with TRAIN on the city center in this bead", () => {
-    // `pulp_wars-c87.3` makes TRAIN reject the egg-laid roles (Eggs).
-    for (const role of ["FIGHTER", "CAPTAIN", ...EGG_LAID_ROLES] as const) {
+  it("trains the Caveman and the Shaman with TRAIN and never an egg-laid role", () => {
+    for (const role of ["FIGHTER", "CAPTAIN"] as const) {
       const state = goblinArenaV7(
         ["DINOSAUR", "ORIGINAL"],
         [{ seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } }],
@@ -1253,6 +1252,36 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
       ["DINOSAUR", "ORIGINAL"],
       [{ seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } }],
     );
+    // Section 6.3: `TRAIN` with an egg-laid role is rejected for a Dinosaur
+    // seat and never offered; the same roles stay trainable for a Human.
+    for (const role of EGG_LAID_ROLES) {
+      const train: CommandV7 = {
+        kind: "TRAIN",
+        cityId: cityOfV7(state, 0).id,
+        role,
+      };
+      expect(
+        queryPlayerCommandsV7(state, state.humanPlayerId),
+      ).not.toContainEqual(train);
+      expect(applyCommandV7(state, state.humanPlayerId, train)).toEqual({
+        accepted: false,
+        state,
+        events: [],
+        error: { code: "UNIT_ROLE_INVALID", params: { role } },
+      });
+    }
+    const human = goblinArenaV7(
+      ["ORIGINAL", "DINOSAUR"],
+      [{ seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } }],
+    );
+    for (const role of EGG_LAID_ROLES)
+      expect(
+        applyCommandV7(human, human.humanPlayerId, {
+          kind: "TRAIN",
+          cityId: cityOfV7(human, 0).id,
+          role,
+        }).accepted,
+      ).toBe(true);
     expect(
       applyCommandV7(state, state.humanPlayerId, {
         kind: "TRAIN",
@@ -1362,7 +1391,7 @@ describe("ruleset-7 Dinosaur Showcase", () => {
     expect(playerIncomeV7(reference, dinosaurId).totalCoins).toBe(16);
   });
 
-  it("cannot train in the over-capacity capital but can in North and at the Coast docks", () => {
+  it("cannot train or lay in the over-capacity capital but can in North and at the Coast docks", () => {
     const created = createPlayableGameV7(showcase(["DINOSAUR", "ORIGINAL"]));
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
@@ -1387,21 +1416,35 @@ describe("ruleset-7 Dinosaur Showcase", () => {
       accepted: false,
       error: { code: "CITY_SPAWN_OCCUPIED" },
     });
+    // The Caveman and the Shaman are the only trained land roles.
     expect(
       trains
         .filter(
           (command) => command.kind === "TRAIN" && command.cityId === north.id,
         )
         .map((command) => (command.kind === "TRAIN" ? command.role : null)),
-    ).toEqual([
-      "FIGHTER",
-      "RAIDER",
-      "MARKSMAN",
-      "GUARD",
-      "CAPTAIN",
-      "CATAPULT",
-      "KNIGHT",
-    ]);
+    ).toEqual(["FIGHTER", "CAPTAIN"]);
+    // The Showcase starts with hatched units only; North and the Coast can
+    // lay every Egg from the first turn (section 2.4), the capital none.
+    expect(state.eggs).toEqual([]);
+    expect(state.units.every((unit) => unit.form !== "EGG")).toBe(true);
+    const lays = commands.flatMap((command) =>
+      command.kind === "LAY_EGG" ? [command] : [],
+    );
+    expect(lays.some((command) => command.cityId === capital.id)).toBe(false);
+    for (const city of [north, coast])
+      expect([
+        ...new Set(
+          lays
+            .filter((command) => command.cityId === city.id)
+            .map((command) => command.role),
+        ),
+      ]).toEqual(["RAIDER", "MARKSMAN", "GUARD", "CATAPULT", "KNIGHT"]);
+    for (const command of lays) {
+      const result = applyCommandV7(state, state.humanPlayerId, command);
+      expect(result.accepted).toBe(true);
+      if (result.accepted) expect(result.state.eggs).toHaveLength(1);
+    }
     expect(
       new Set(
         trains.flatMap((command) =>
@@ -1419,7 +1462,7 @@ describe("ruleset-7 Dinosaur Showcase", () => {
 });
 
 describe("ruleset-7 revision-19 declared shapes", () => {
-  it("orders and parses the three new commands, and rejects them until Eggs land", () => {
+  it("orders and parses the three new commands, which only a Dinosaur seat is offered", () => {
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("KABOOM"),
@@ -1462,12 +1505,12 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     for (const command of commands) {
       expect(parseCommandV7(command)).toEqual({ ok: true, value: command });
       expect(parseCommandV7({ ...command, extra: 1 }).ok).toBe(false);
-      expect(applyCommandV7(state, state.humanPlayerId, command)).toMatchObject(
-        {
-          accepted: false,
-          error: { code: "INVALID_COMMAND" },
-        },
-      );
+      expect(
+        applyCommandV7(state, state.humanPlayerId, {
+          ...command,
+          extra: 1,
+        } as never),
+      ).toMatchObject({ accepted: false, error: { code: "INVALID_COMMAND" } });
     }
     expect(
       parseCommandV7({ kind: "STAMPEDE", unitId: 1, targetUnitId: 0 }).ok,
@@ -1481,13 +1524,44 @@ describe("ruleset-7 revision-19 declared shapes", () => {
         at: { x: 1, y: 1 },
       }).ok,
     ).toBe(false);
-    // None of them is offered, to any seat.
-    for (const player of state.players)
-      expect(
-        queryPlayerCommandsV7(state, player.id).filter((command) =>
-          ["STAMPEDE", "HATCH", "LAY_EGG"].includes(command.kind),
-        ),
-      ).toEqual([]);
+    // The Dinosaur seat is offered its Stampede; the other two are rejected
+    // by their own rules here (no Egg next to the Shaman, a full city).
+    const offered = queryPlayerCommandsV7(state, state.humanPlayerId);
+    expect(offered).toContainEqual(commands[0]);
+    expect(
+      applyCommandV7(state, state.humanPlayerId, commands[1]),
+    ).toMatchObject({
+      accepted: false,
+      error: { code: "HATCH_NOT_LEGAL", params: { reason: "NO_EGG" } },
+    });
+    expect(
+      applyCommandV7(state, state.humanPlayerId, commands[2]),
+    ).toMatchObject({
+      accepted: false,
+      error: { code: "CITY_CAPACITY_FULL" },
+    });
+    // A Human seat with the same pieces is offered none of them, and they
+    // are rejected for it.
+    const human = goblinArenaV7(
+      ["ORIGINAL", "DINOSAUR"],
+      [
+        { seat: 0, role: "CATAPULT", at: { x: 4, y: 3 } },
+        { seat: 0, role: "CAPTAIN", at: { x: 4, y: 5 } },
+        { seat: 1, role: "FIGHTER", at: { x: 6, y: 3 } },
+      ],
+    );
+    expect(
+      queryPlayerCommandsV7(human, human.humanPlayerId).filter((command) =>
+        ["STAMPEDE", "HATCH", "LAY_EGG"].includes(command.kind),
+      ),
+    ).toEqual([]);
+    for (const command of commands)
+      expect(applyCommandV7(human, human.humanPlayerId, command)).toMatchObject(
+        {
+          accepted: false,
+          error: { code: "UNIT_ROLE_INVALID" },
+        },
+      );
   });
 
   it("orders and parses the three new events, the Egg death cause, and the preview fields", () => {
@@ -1637,7 +1711,7 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     ).toMatchObject({ preview: { stampede: 0, acid: false } });
   });
 
-  it("requires the `eggs` state key and accepts no Egg yet", () => {
+  it("requires the `eggs` state key and a real Egg unit for every entry", () => {
     const state = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
@@ -1651,7 +1725,8 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     expect(parseGameStateV7(withoutEggs)).toBeNull();
     const raptor = unitAtV7(state, { x: 7, y: 7 });
     const entry = { unitId: raptor.id, turnsRemaining: 1, laidThisTurn: true };
-    // An entry without an Egg unit, and the Egg form itself, are rejected.
+    // An entry without an Egg unit is rejected, and so is a full-HP unit
+    // relabelled as an Egg (an Egg has 6 or 10 maximum HP and is exhausted).
     expect(parseGameStateV7({ ...state, eggs: [entry] })).toBeNull();
     expect(
       parseGameStateV7({
@@ -1699,10 +1774,12 @@ describe("ruleset-7 Dinosaur persistence and headless play", () => {
         kinds.add(event.kind);
       }
       state = result.state;
-      expect(state.eggs).toEqual([]);
       replay = appendReplayCommandV7(replay, record.command, state);
     }
     expect(kinds.has("UNIT_TRAINED")).toBe(true);
+    // Eggs are laid, hatch, and round-trip through the replay and the save.
+    expect(kinds.has("EGG_LAID")).toBe(true);
+    expect(kinds.has("EGG_HATCHED")).toBe(true);
     expect(canonicalHash(state)).toBe(match.stateHash);
     expect(replay.checkpoints.at(-1)?.stateHash).toBe(match.stateHash);
     const parsedReplay = parseReplayJsonV7(JSON.stringify(replay));

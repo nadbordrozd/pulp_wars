@@ -8,12 +8,13 @@ import {
 import { hasAcceptedStateCertificateV7 } from "./accepted-state-certificate";
 import type { DomainEventV7 } from "./events";
 import { spatialContributionAtV7 } from "./spatial-economy";
-import type {
-  CityStateV7,
-  GameStateV7,
-  PlayerStateV7,
-  PopulationContributionV7,
-  RewardIdV7,
+import {
+  isAfloatFormV7,
+  type CityStateV7,
+  type GameStateV7,
+  type PlayerStateV7,
+  type PopulationContributionV7,
+  type RewardIdV7,
 } from "./types";
 
 export function isActivePortV7(
@@ -42,7 +43,8 @@ export function isActivePortV7(
       unit.at.y === at.y &&
       unit.ownerId !== ownerId &&
       arePlayersHostileV7(state, unit.ownerId, ownerId) &&
-      (unit.form === "NAVAL" || unit.form === "EMBARKED"),
+      // Only afloat units blockade (revision 19: never an Egg).
+      isAfloatFormV7(unit.form),
   );
 }
 
@@ -821,8 +823,13 @@ export function startTurnEconomyV7(
         ? { ...city, cityActionAvailable: true }
         : city,
     ),
+    // Revision 19 section 6.2: Start Turn leaves an Egg's activation
+    // exhausted.
     units: state.units.map((unit) =>
-      resetActivation && unit.ownerId === player.id && unit.hp > 0
+      resetActivation &&
+      unit.ownerId === player.id &&
+      unit.hp > 0 &&
+      unit.form !== "EGG"
         ? {
             ...unit,
             captureEligible: unitOccupiesCapturableSiteV7(state, unit),
@@ -897,8 +904,11 @@ function resolveRegenerationV7(
     { readonly kind: "UNITS_REGENERATED" }
   >[];
 } {
+  // Revision 19 section 6.2: an Egg never heals.
   const results = state.units
-    .filter((unit) => unit.ownerId === playerId && unit.hp > 0)
+    .filter(
+      (unit) => unit.ownerId === playerId && unit.hp > 0 && unit.form !== "EGG",
+    )
     .sort((left, right) => left.id - right.id)
     .flatMap((unit) => {
       const amount = Math.min(
@@ -957,6 +967,8 @@ function resolveWindmillHealingV7(
         (unit) =>
           unit.ownerId === playerId &&
           unit.hp > 0 &&
+          // Revision 19 section 6.2: a Windmill never heals an Egg.
+          unit.form !== "EGG" &&
           unit.hp < unit.maxHp &&
           !assigned.has(unit.id) &&
           Math.max(
