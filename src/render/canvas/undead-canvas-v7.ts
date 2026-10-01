@@ -7,6 +7,7 @@
 
 import {
   PREVIEW_TEXT_MIN_FONT_CSS_PX_V7,
+  previewLabelVariantsV7,
   wrapPreviewTextV7,
   type PreviewLabelPlacerV7,
 } from "./preview-label-layout-v7";
@@ -488,25 +489,39 @@ export function drawAbilityTargetV7(
     const font = Math.max(11, 15 * zoom);
     context.font = `${800} ${font}px system-ui`;
     context.textAlign = "center";
-    const width = Math.max(
-      font * 2.6,
-      context.measureText(label).width + font * 0.7,
-    );
-    const height = font * 1.4;
-    const natural = { left: x - width / 2, top: y - size / 2 + 2 * zoom };
-    const { left, top } =
-      placer === undefined
-        ? natural
-        : placer.place(
-            { ...natural, width, height },
-            {
-              left: x - size / 2,
-              top: y - size / 2,
-              right: x + size / 2,
-              bottom: y + size / 2,
-            },
-          );
+    // Fullest first; a crowded cell falls back to a shorter form, and a
+    // label that fits nowhere is left out rather than covering another.
+    const variants = (
+      placer === undefined ? [label] : previewLabelVariantsV7(label)
+    ).map((text) => {
+      const width = Math.max(
+        font * 2.6,
+        context.measureText(text).width + font * 0.7,
+      );
+      return {
+        text,
+        left: x - width / 2,
+        top: y - size / 2 + 2 * zoom,
+        width,
+        height: font * 1.4,
+      };
+    });
     context.restore();
+    const first = variants[0];
+    if (first === undefined) return;
+    const placement =
+      placer === undefined
+        ? { left: first.left, top: first.top, variant: 0 }
+        : placer.placeFirst(variants, {
+            left: x - size / 2,
+            top: y - size / 2,
+            right: x + size / 2,
+            bottom: y + size / 2,
+          });
+    const chosen = placement === null ? undefined : variants[placement.variant];
+    if (placement === null || chosen === undefined) return;
+    const { left, top } = placement;
+    const { text, width, height } = chosen;
     const paint = (): void => {
       context.save();
       context.font = `${800} ${font}px system-ui`;
@@ -525,7 +540,7 @@ export function drawAbilityTargetV7(
       context.setLineDash([]);
       context.strokeRect(left, top, width, height);
       context.fillStyle = "#fff8df";
-      context.fillText(label, left + width / 2, top + font * 1.05);
+      context.fillText(text, left + width / 2, top + font * 1.05);
       context.restore();
     };
     if (paintLater === undefined) paint();
@@ -554,16 +569,21 @@ export interface PreviewTextBoxV7 {
  * at y + 39, the note right below it. Smaller zooms keep a
  * PREVIEW_TEXT_MIN_FONT_CSS_PX_V7 font and wrap a text wider than 1.5 cells
  * onto two lines; the placer keeps the stack inside the visible band.
+ *
+ * `variants` lists the stack's forms from the fullest to the most compact
+ * (bead pulp_wars-0ao.12): the placer draws the first that fits without
+ * overlapping an earlier preview box, and nothing when none does.
  */
 export function drawPreviewTextStackV7(
   context: CanvasRenderingContext2D,
   x: number,
   y: number,
   zoom: number,
-  boxes: readonly PreviewTextBoxV7[],
+  variants: readonly (readonly PreviewTextBoxV7[])[],
   placer?: PreviewLabelPlacerV7,
 ): void {
-  if (boxes.length === 0) return;
+  const stacks = variants.filter((boxes) => boxes.length > 0);
+  if (stacks.length === 0) return;
   const font = Math.max(PREVIEW_TEXT_MIN_FONT_CSS_PX_V7, 10 * zoom);
   const lineStep = font * 1.2;
   context.save();
@@ -575,33 +595,45 @@ export function drawPreviewTextStackV7(
   // at the smallest zooms a long attack label wraps instead of spanning
   // three cells and colliding with its neighbours' labels.
   const wrapWidth = Math.max(90 * zoom, 1.5 * cell);
-  const laid = boxes.map((box) => {
-    const lines = wrapPreviewTextV7(box.text, wrapWidth, measure);
+  const laidStacks = stacks.map((boxes) => {
+    const laid = boxes.map((box) => {
+      const lines = wrapPreviewTextV7(box.text, wrapWidth, measure);
+      return {
+        box,
+        lines,
+        width: Math.max(90 * zoom, Math.max(...lines.map(measure)) + font),
+        height: font * box.lineBox + (lines.length - 1) * lineStep,
+      };
+    });
+    const width = Math.max(...laid.map((entry) => entry.width));
     return {
-      box,
-      lines,
-      width: Math.max(90 * zoom, Math.max(...lines.map(measure)) + font),
-      height: font * box.lineBox + (lines.length - 1) * lineStep,
+      laid,
+      left: x - width / 2,
+      top: y + 39 * zoom,
+      width,
+      height: laid.reduce((sum, entry) => sum + entry.height, 0),
     };
   });
-  const stackWidth = Math.max(...laid.map((entry) => entry.width));
-  const stackHeight = laid.reduce((sum, entry) => sum + entry.height, 0);
-  const natural = { left: x - stackWidth / 2, top: y + 39 * zoom };
+  const [natural] = laidStacks;
   const placed =
-    placer === undefined
-      ? natural
-      : placer.place(
-          { ...natural, width: stackWidth, height: stackHeight },
-          {
-            left: x - cell / 2,
-            top: y - cell / 2,
-            right: x + cell / 2,
-            bottom: y + cell / 2,
-          },
-        );
-  const centre = placed.left + stackWidth / 2;
+    placer === undefined || natural === undefined
+      ? natural === undefined
+        ? null
+        : { left: natural.left, top: natural.top, variant: 0 }
+      : placer.placeFirst(laidStacks, {
+          left: x - cell / 2,
+          top: y - cell / 2,
+          right: x + cell / 2,
+          bottom: y + cell / 2,
+        });
+  const stack = placed === null ? undefined : laidStacks[placed.variant];
+  if (placed === null || stack === undefined) {
+    context.restore();
+    return;
+  }
+  const centre = placed.left + stack.width / 2;
   let top = placed.top;
-  for (const entry of laid) {
+  for (const entry of stack.laid) {
     context.fillStyle = entry.box.fill;
     context.fillRect(centre - entry.width / 2, top, entry.width, entry.height);
     context.fillStyle = entry.box.color;

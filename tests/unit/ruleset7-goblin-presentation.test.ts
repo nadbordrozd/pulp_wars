@@ -35,6 +35,11 @@ import {
   type BoardRenderPlanEntryV7,
 } from "../../src/render/canvas/board-renderer-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
+import {
+  REGENERATION_TEXT_COLOR_V7,
+  drawSupportFeedbackV7,
+} from "../../src/render/canvas/support-presentation-v7";
+import { chibiCameraZoom } from "../../src/render/canvas/chibi-geometry-v7";
 import { panToFrameArea } from "../../src/render/canvas/geometry";
 import {
   GOBLIN_BLAST_PALETTE_V7,
@@ -47,7 +52,11 @@ import {
   goblinAttackChainFixtureV7,
   goblinShowcaseFixtureV7,
 } from "../fixtures/v7-goblin-ui";
-import { goblinArenaV7, seatIdV7 } from "../fixtures/v7-goblin-arena";
+import {
+  endTurnUntilV7,
+  goblinArenaV7,
+  seatIdV7,
+} from "../fixtures/v7-goblin-arena";
 
 const AT = GOBLIN_SHOWCASE_V7;
 const NO_INTERACTION = {
@@ -163,6 +172,7 @@ describe("Revision 17 Goblin presentation text", () => {
     expect(goblinAttackPreviewTextV7(view, preview, chain)).toEqual({
       gangUp: "Gang Up +1",
       warnings: ["Bomb splash hits your Goblin"],
+      summary: "Bomb hits your Goblin",
       semantic:
         "Gang Up adds 1 Attack from your units next to the target. Bomb splash hits your Goblin.",
     });
@@ -179,11 +189,14 @@ describe("Revision 17 Goblin presentation text", () => {
     const chain = required(
       previewAttackExplosionsV7(view, attacker.id, target.id),
     );
-    expect(goblinAttackPreviewTextV7(view, preview, chain).warnings).toEqual([
+    const text = goblinAttackPreviewTextV7(view, preview, chain);
+    expect(text.warnings).toEqual([
       "Enemy Bomb Chucker explodes on death: 3 damage around it",
       "Chain reaction: enemy Rocket Cart explodes (5 damage)",
       "Blasts hit 3 of your units, 0 killed",
     ]);
+    // Bead pulp_wars-0ao.12: the crowded-board summary of those lines.
+    expect(text.summary).toBe("Chain: 2 blasts · 3 yours hit");
     const cells = blastPreviewPresentationV7(
       view,
       chain,
@@ -615,6 +628,83 @@ describe("Revision 17 explosion feedback", () => {
     const bomb = recordingContext();
     drawBombProjectileV7(bomb.context, 10, 10, 1, 0.5);
     expect(bomb.log.some((call) => call[0] === "arc")).toBe(true);
+  });
+});
+
+describe("Revision 17 Troll regeneration cue (pulp_wars-0ao.12)", () => {
+  it("plans a heal cue with the regained HP on each visible Troll", () => {
+    const state = goblinShowcaseFixtureV7();
+    const human = state.humanPlayerId;
+    const turn = endTurnUntilV7(state, human);
+    const before = viewForV7(state, human);
+    const after = viewForV7(turn.state, human);
+    const envelope = projectEventsV7(state, turn.state, human, turn.events);
+    const regenerated = envelope.events.find(
+      (event) => event.kind === "UNITS_REGENERATED",
+    );
+    expect(regenerated).toBeDefined();
+    const troll = unitAt(before, AT.troll);
+    const steps = corePresentationPlanV7(before, envelope, after).filter(
+      (step) => step.kind === "SUPPORT" && step.effect === "REGENERATE",
+    );
+    expect(steps).toEqual([
+      {
+        kind: "SUPPORT",
+        effect: "REGENERATE",
+        actor: { unitId: troll.id, at: AT.troll, amount: 4 },
+        recipients: [],
+        durationMs: 640,
+      },
+    ]);
+    // A boundary without regeneration plays no heal cue.
+    const kaboom = boundary(state, {
+      kind: "KABOOM",
+      unitId: unitAt(before, AT.kaboom).id,
+    });
+    expect(
+      corePresentationPlanV7(kaboom.before, kaboom.events, kaboom.after).some(
+        (step) => step.kind === "SUPPORT" && step.effect === "REGENERATE",
+      ),
+    ).toBe(false);
+  });
+
+  it("draws the heal ring and a rising +N, held still under reduced motion", () => {
+    const feedback = {
+      effect: "REGENERATE" as const,
+      actor: { unitId: 7, at: { x: 2, y: 2 }, amount: 4 },
+      recipients: [{ unitId: 9, at: { x: 4, y: 2 }, amount: 3 }],
+      progress: 0.15,
+    };
+    const camera = { offsetX: 0, offsetY: 0, zoom: chibiCameraZoom(0.75) };
+    const full = recordingContext();
+    drawSupportFeedbackV7(full.context, camera, feedback, false);
+    const reduced = recordingContext();
+    drawSupportFeedbackV7(reduced.context, camera, feedback, true);
+    const midpoint = recordingContext();
+    drawSupportFeedbackV7(
+      midpoint.context,
+      camera,
+      { ...feedback, progress: 0.5 },
+      false,
+    );
+    const floats = (log: readonly (readonly unknown[])[]) =>
+      log.filter((call) => call[0] === "fillText");
+    // One "+N" per regenerated Troll, outlined for contrast, over a ring.
+    expect(floats(full.log).map((call) => call[1])).toEqual(["+4", "+3"]);
+    expect(
+      full.log
+        .filter((call) => call[0] === "strokeText")
+        .map((call) => call[1]),
+    ).toEqual(["+4", "+3"]);
+    expect(full.log.filter((call) => call[0] === "arc")).toHaveLength(2);
+    expect(full.styles).toContain(REGENERATION_TEXT_COLOR_V7);
+    // The float rises from the Troll's head as the cue plays.
+    const [early] = floats(full.log);
+    const [middle] = floats(midpoint.log);
+    expect(Number(early?.[3])).toBeGreaterThan(Number(middle?.[3]));
+    // Reduced motion draws exactly the midpoint frame, with no travel.
+    expect(reduced.log).toEqual(midpoint.log);
+    expect(full.log).not.toEqual(midpoint.log);
   });
 });
 

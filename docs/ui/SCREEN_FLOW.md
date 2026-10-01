@@ -227,6 +227,16 @@ looks as in revision 16 apart from the extra faction option.
   (the attacker reads `Attacker −N`), and a Bomb Chucker's splash ring marks
   own units `Yours −N` in the hazard style. These labels are placed before
   the attack's label stack so they stay on their own cells.
+- **Crowded labels.** Board preview labels never overlap, at every zoom and
+  width (`pulp_wars-0ao.12`). Each label is placed in a fixed order and
+  nudged off earlier ones; one that still collides falls back to a shorter
+  form: a hit label drops its trailing part, then its prefix (`Yours −3 ·
+Wave 2` → `Yours −3` → `−3`), keeping its lethal red or hazard styling;
+  an attack stack replaces its warning boxes with one summary box ("Chain:
+  2 blasts · 3 yours hit", "Bomb hits your Goblin"), then drops the
+  summary, the note, and finally the label's second part. A label with no
+  free spot is left out rather than covering another; the full sentences
+  stay in the board's screen-reader description.
 - **Feedback.** Each projected `EXPLOSION_RESOLVED` wave plays a code-native
   cartoon bang on the effects canvas (a white-and-cream spiky star, soot
   puffs and iron scraps over the 3 × 3 area, a puff over every hit unit), one
@@ -235,7 +245,10 @@ looks as in revision 16 apart from the extra faction option.
   camera follows only other players' blasts. The live region and a toast
   announce "Your Goblin blew up: N hit, K killed", "Player 2's Rocket Cart
   exploded: …", "Plunder: +N Coins" (owner only), "Your Troll regenerated 4
-  HP" and "Your Orc Warboss: WAAAGH! +1 Attack for N units". Help adds a
+  HP" and "Your Orc Warboss: WAAAGH! +1 Attack for N units". Each visible
+  regenerated Troll shows the Tend heal ring with a bold green "+N" rising
+  from its head (`UNITS_REGENERATED`, 640 ms); reduced motion holds the
+  ring and a still "+N" at the midpoint. Help adds a
   "Goblins" list with the ten section 11.3 sentences in every Goblin match,
   and Goblin viewers get no Raider Escape tip.
 - **Review.** `npm run review:ruleset7-goblin-ui` captures these surfaces in

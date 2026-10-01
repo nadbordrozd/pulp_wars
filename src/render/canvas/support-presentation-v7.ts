@@ -2,15 +2,17 @@ import type { ChibiEffectIdV7 } from "../../assets/chibi-art-v7";
 import type { CoordV7 } from "../../engine/index";
 import { chibiMasterScale, isWholeScale } from "./chibi-geometry-v7";
 import { projectGrid, worldToScreen, type CameraState } from "./geometry";
-import type { SupportEffectV7 } from "./presentation-plan-v7";
+import type { SupportCueUnitV7, SupportEffectV7 } from "./presentation-plan-v7";
 
 export interface SupportFeedbackV7 {
   readonly effect: SupportEffectV7;
-  readonly actor: { readonly unitId: number | null; readonly at: CoordV7 };
-  readonly recipients: readonly {
-    readonly unitId: number;
+  readonly actor: {
+    readonly unitId: number | null;
     readonly at: CoordV7;
-  }[];
+    /** Revision 17 REGENERATE: the HP regained, floated as "+N". */
+    readonly amount?: number;
+  };
+  readonly recipients: readonly SupportCueUnitV7[];
   readonly progress: number;
 }
 
@@ -95,6 +97,18 @@ export function drawSupportFeedbackV7(
         progress,
         fade,
         sprites,
+      );
+    return;
+  }
+  if (feedback.effect === "REGENERATE") {
+    for (const unit of [feedback.actor, ...feedback.recipients])
+      drawRegeneration(
+        context,
+        worldToScreen(projectGrid(unit.at), camera),
+        camera.zoom,
+        progress,
+        fade,
+        unit.amount,
       );
     return;
   }
@@ -296,7 +310,7 @@ function drawLifesteal(
 }
 
 const UNDEAD_PULSE_COLORS: Readonly<
-  Record<Exclude<SupportEffectV7, "RALLY" | "TEND">, string>
+  Record<Exclude<SupportEffectV7, "RALLY" | "TEND" | "REGENERATE">, string>
 > = {
   RAISE: "#8ff0a4",
   DEVOUR: "#ff9a84",
@@ -473,6 +487,44 @@ function drawTend(
     context.lineTo(x + dx, y + dy);
     context.stroke();
   }
+  context.restore();
+}
+
+/** Green of the regeneration float, distinct from the teal heal ring. */
+export const REGENERATION_TEXT_COLOR_V7 = "#9dffb0";
+
+/**
+ * Revision 17 Troll regeneration (bead pulp_wars-0ao.12): the Tend heal
+ * ring and sparkles on the Troll, plus a bold "+N" that rises from its head
+ * and fades. Reduced motion holds it at its midpoint (`progress` 0.5), so
+ * the "+N" stays still and readable.
+ */
+function drawRegeneration(
+  context: CanvasRenderingContext2D,
+  center: { readonly x: number; readonly y: number },
+  zoom: number,
+  progress: number,
+  fade: number,
+  amount: number | undefined,
+): void {
+  drawTend(context, center, zoom, progress, fade, true);
+  if (amount === undefined || amount <= 0) return;
+  // Never below 15 CSS px, so the number reads at the smallest zoom; it
+  // starts just above the head and rises as it fades.
+  const font = Math.max(15, 24 * zoom);
+  const y = center.y - (50 + 20 * progress) * zoom;
+  context.save();
+  // The float stays fully opaque for its first half, then fades.
+  context.globalAlpha = progress <= 0.5 ? 1 : Math.max(0, fade * 1.15);
+  context.font = `900 ${font}px system-ui`;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.lineJoin = "round";
+  context.lineWidth = Math.max(3, font * 0.22);
+  context.strokeStyle = "#103019";
+  context.strokeText(`+${amount}`, center.x, y);
+  context.fillStyle = REGENERATION_TEXT_COLOR_V7;
+  context.fillText(`+${amount}`, center.x, y);
   context.restore();
 }
 

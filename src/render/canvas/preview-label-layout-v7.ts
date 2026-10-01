@@ -7,7 +7,9 @@
  * band the start-camera framing uses, between the HUD and the dock) and
  * nudged off boxes placed earlier in the same frame. Text never shrinks below
  * PREVIEW_TEXT_MIN_FONT_CSS_PX_V7; a text too wide for its cell wraps onto
- * two lines at its ` · ` separators instead.
+ * two lines at its ` · ` separators instead. Boxes never overlap: a label
+ * that cannot be nudged free falls back to a more compact variant, or is
+ * left out (bead pulp_wars-0ao.12).
  */
 
 export interface PreviewRectV7 {
@@ -63,10 +65,41 @@ export function wrapPreviewTextV7(
 }
 
 /**
- * Places preview boxes for one frame, in draw order. `safe` is the rectangle
- * boxes must stay inside (null disables clamping and nudging). A box whose
- * anchor cell is wholly outside `safe` keeps its natural position, so a label
- * is never pulled into view for a target the player cannot see.
+ * The compact forms of a short preview label, fullest first, for a crowded
+ * cell: the label, its first ` · ` part (`Yours −3 · Wave 2` → `Yours −3`),
+ * then that part's signed amount alone (`Yours −3` → `−3`, `Attacker −8` →
+ * `−8`). The label's box keeps its lethal and friendly-fire styling, so the
+ * bare amount still reads as a lethal or own-unit hit.
+ */
+export function previewLabelVariantsV7(label: string): readonly string[] {
+  const first = label.split(SEPARATOR)[0] ?? label;
+  const amount = /[−+-]\d.*$/u.exec(first)?.[0];
+  return [
+    ...new Set([label, first, ...(amount === undefined ? [] : [amount])]),
+  ];
+}
+
+/** A placed preview box: its top-left corner and the variant that fitted. */
+export interface PreviewPlacementV7 {
+  readonly left: number;
+  readonly top: number;
+  /** Index into the variants passed to `placeFirst` (0 = the fullest). */
+  readonly variant: number;
+}
+
+/**
+ * Places preview boxes for one frame, in draw order, so that no two placed
+ * boxes ever overlap (bead pulp_wars-0ao.12). `safe` is the rectangle boxes
+ * must stay inside (null disables clamping and nudging). A box whose anchor
+ * cell is wholly outside `safe` keeps its natural position, so a label is
+ * never pulled into view for a target the player cannot see.
+ *
+ * Each label offers variants from the fullest to the most compact (for
+ * example a long warning stack, then its one-line summary, then the bare
+ * damage). The first variant that can be clamped and nudged to a free spot
+ * wins; when none can, nothing is placed and the caller draws no box, so an
+ * earlier label is never covered. Placement depends only on the boxes and
+ * their order, so it is deterministic.
  */
 export class PreviewLabelPlacerV7 {
   readonly #safe: PreviewRectV7 | null;
@@ -79,32 +112,64 @@ export class PreviewLabelPlacerV7 {
         : null;
   }
 
-  /** Returns the box's final top-left corner and reserves its rectangle. */
-  place(
+  /** Every rectangle placed so far this frame, in placement order. */
+  get placed(): readonly PreviewRectV7[] {
+    return this.#placed;
+  }
+
+  /**
+   * Places the first variant that fits without overlapping an earlier box
+   * and reserves its rectangle; null when no variant fits.
+   */
+  placeFirst(
+    variants: readonly PreviewBoxV7[],
+    anchor: PreviewRectV7,
+  ): PreviewPlacementV7 | null {
+    for (const [variant, box] of variants.entries()) {
+      const at = this.#fit(box, anchor);
+      if (at === null) continue;
+      this.#placed.push({
+        left: at.left,
+        top: at.top,
+        right: at.left + box.width,
+        bottom: at.top + box.height,
+      });
+      return { ...at, variant };
+    }
+    return null;
+  }
+
+  #fit(
     box: PreviewBoxV7,
     anchor: PreviewRectV7,
-  ): { readonly left: number; readonly top: number } {
+  ): { readonly left: number; readonly top: number } | null {
     const safe = this.#safe;
-    // A hidden target's box stays put and reserves nothing.
+    // A hidden target's box stays put; it is still kept off earlier boxes.
     if (safe === null || !intersects(anchor, safe))
-      return { left: box.left, top: box.top };
-    const { left, top } = this.#nudge(
-      {
-        left: clampAxis(box.left, box.width, safe.left, safe.right),
-        top: clampAxis(box.top, box.height, safe.top, safe.bottom),
-        width: box.width,
-        height: box.height,
-      },
-      safe,
-      anchor,
+      return this.#collide(box.left, box.top, box) === undefined
+        ? { left: box.left, top: box.top }
+        : null;
+    const clamped = {
+      left: clampAxis(box.left, box.width, safe.left, safe.right),
+      top: clampAxis(box.top, box.height, safe.top, safe.bottom),
+      width: box.width,
+      height: box.height,
+    };
+    const { left, top } = this.#nudge(clamped, safe, anchor);
+    return this.#collide(left, top, box) === undefined ? { left, top } : null;
+  }
+
+  #collide(
+    left: number,
+    top: number,
+    box: PreviewBoxV7,
+  ): PreviewRectV7 | undefined {
+    return this.#placed.find((placed) =>
+      intersects(
+        { left, top, right: left + box.width, bottom: top + box.height },
+        placed,
+      ),
     );
-    this.#placed.push({
-      left,
-      top,
-      right: left + box.width,
-      bottom: top + box.height,
-    });
-    return { left, top };
   }
 
   /**
@@ -112,7 +177,8 @@ export class PreviewLabelPlacerV7 {
    * most half a cell) is tried first, so neighbouring targets' boxes stay
    * under their own cells; otherwise the smaller of the downward and upward
    * shifts (down on a tie), at most one cell. A longer shift would detach the
-   * box from its target, so the box then keeps its clamped position.
+   * box from its target, so the box then keeps its clamped position (and
+   * `placeFirst` rejects it if it still overlaps).
    */
   #nudge(
     box: PreviewBoxV7,
@@ -120,12 +186,7 @@ export class PreviewLabelPlacerV7 {
     anchor: PreviewRectV7,
   ): { readonly left: number; readonly top: number } {
     const collide = (left: number, top: number): PreviewRectV7 | undefined =>
-      this.#placed.find((placed) =>
-        intersects(
-          { left, top, right: left + box.width, bottom: top + box.height },
-          placed,
-        ),
-      );
+      this.#collide(left, top, box);
     if (collide(box.left, box.top) === undefined) return box;
     // Follows collisions along one axis until the box is free; null when it
     // would leave the safe rectangle or move further than `limit`.

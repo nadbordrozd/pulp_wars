@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
-import type { CommandV7, CoordV7 } from "../../src/engine/index";
 import {
+  queryPlayerCommandsV7,
+  viewForV7,
+  type CommandV7,
+  type CoordV7,
+  type PlayerViewV7,
+} from "../../src/engine/index";
+import {
+  buildBoardRenderPlanV7,
   drawBoardV7,
   previewSafeRectV7,
   type BoardRenderPlanEntryV7,
@@ -8,14 +15,28 @@ import {
   type LabelSafeAreaV7,
   type MapCommandTargetV7,
 } from "../../src/render/canvas/board-renderer-v7";
-import { chibiCameraZoom } from "../../src/render/canvas/chibi-geometry-v7";
-import type { CameraState } from "../../src/render/canvas/geometry";
+import {
+  CHIBI_ZOOM_STEPS,
+  chibiCameraZoom,
+} from "../../src/render/canvas/chibi-geometry-v7";
+import {
+  MAX_ZOOM,
+  MIN_ZOOM,
+  type CameraState,
+} from "../../src/render/canvas/geometry";
 import {
   PREVIEW_EDGE_MARGIN_CSS_PX_V7,
   PREVIEW_TEXT_MIN_FONT_CSS_PX_V7,
   PreviewLabelPlacerV7,
+  previewLabelVariantsV7,
   wrapPreviewTextV7,
 } from "../../src/render/canvas/preview-label-layout-v7";
+import {
+  GOBLIN_ATTACK_CHAIN_V7,
+  GOBLIN_SHOWCASE_V7,
+  goblinAttackChainFixtureV7,
+  goblinShowcaseFixtureV7,
+} from "../fixtures/v7-goblin-ui";
 
 /** Bead pulp_wars-nbl: preview labels stay visible and legible. */
 
@@ -23,6 +44,9 @@ const VIEWPORT = { width: 390, height: 700 } as const;
 const LABEL_FILL = "#171722dd";
 const NOTE_FILL = "#2a1633ee";
 const ABILITY_FILL = "#171722e6";
+/** A warning box and a friendly-fire hit label. */
+const WARNING_FILL = "#4d3500f2";
+const LETHAL_FILL = "#8f1f22ee";
 const LONG_LABEL = "Deal 8 · take 0 · splash 8 to 2";
 /** A 6 CSS px-per-character stand-in for canvas text metrics. */
 const CHAR_WIDTH = 6;
@@ -42,7 +66,10 @@ interface Text {
   readonly font: string;
 }
 
-function recordingContext(): {
+function recordingContext(
+  /** Text width per character for a font; 6 CSS px by default. */
+  charWidth: (font: string) => number = () => CHAR_WIDTH,
+): {
   readonly context: CanvasRenderingContext2D;
   readonly boxes: Box[];
   readonly texts: Text[];
@@ -57,7 +84,9 @@ function recordingContext(): {
     get: (target, key) => {
       if (key === "canvas") return undefined;
       if (key === "measureText")
-        return (text: string) => ({ width: text.length * CHAR_WIDTH });
+        return (text: string) => ({
+          width: text.length * charWidth(String(target.font)),
+        });
       if (key === "fillRect")
         return (left: number, top: number, width: number, height: number) =>
           boxes.push({
@@ -368,11 +397,13 @@ describe("preview label placer and wrapping", () => {
     });
     // The target cell lies wholly under the HUD band.
     expect(
-      placer.place(
-        { left: -20, top: 40, width: 80, height: 18 },
-        { left: -30, top: 0, right: 30, bottom: 60 },
-      ),
-    ).toEqual({ left: -20, top: 40 });
+      placer.placeFirst([{ left: -20, top: 40, width: 80, height: 18 }], {
+        left: -30,
+        top: 0,
+        right: 30,
+        bottom: 60,
+      }),
+    ).toEqual({ left: -20, top: 40, variant: 0 });
   });
 
   it("falls back to the whole viewport for a degenerate band", () => {
@@ -384,3 +415,289 @@ describe("preview label placer and wrapping", () => {
     });
   });
 });
+
+/**
+ * Bead pulp_wars-0ao.12: the dense Goblin review fixtures (the attack-chain
+ * death blasts, the armed Kaboom! and the friendly bomb splash) never draw
+ * one preview label over another, at every zoom, on desktop and phone.
+ */
+describe("dense Goblin preview labels never overlap (pulp_wars-0ao.12)", () => {
+  /** Fills of every board preview label and stack box. */
+  const PREVIEW_FILLS = new Set([
+    LABEL_FILL,
+    NOTE_FILL,
+    ABILITY_FILL,
+    WARNING_FILL,
+    LETHAL_FILL,
+  ]);
+  /** Bold system-ui is about 0.62 em per character. */
+  const charWidth = (font: string): number => fontPx(font) * 0.62;
+  const NO_INTERACTION = {
+    selection: null,
+    selectedUnitId: null,
+    selectedAchievement: null,
+  } as const;
+
+  interface Scene {
+    readonly name: string;
+    readonly plan: BoardRenderPlanV7;
+    readonly focus: CoordV7;
+    /** Hit labels the preview draws. */
+    readonly hitLabels: readonly string[];
+  }
+
+  function scenes(): readonly Scene[] {
+    const chainState = goblinAttackChainFixtureV7();
+    const chainView = viewForV7(chainState, chainState.humanPlayerId);
+    const attacker = unitAt(chainView, GOBLIN_ATTACK_CHAIN_V7.attacker);
+    const chainPlan = buildBoardRenderPlanV7(
+      chainView,
+      queryPlayerCommandsV7(chainView),
+      {
+        ...NO_INTERACTION,
+        selection: { kind: "UNIT", unitId: attacker.id },
+        selectedUnitId: attacker.id,
+      },
+    );
+    const showcaseState = goblinShowcaseFixtureV7();
+    const showcase = viewForV7(showcaseState, showcaseState.humanPlayerId);
+    const kaboom = unitAt(showcase, GOBLIN_SHOWCASE_V7.kaboom);
+    const kaboomPlan = buildBoardRenderPlanV7(
+      showcase,
+      queryPlayerCommandsV7(showcase),
+      {
+        ...NO_INTERACTION,
+        selection: { kind: "UNIT", unitId: kaboom.id },
+        selectedUnitId: kaboom.id,
+        kaboomPreviewUnitId: kaboom.id,
+      },
+    );
+    const chucker = unitAt(showcase, GOBLIN_SHOWCASE_V7.bombChucker);
+    const bombPlan = buildBoardRenderPlanV7(
+      showcase,
+      queryPlayerCommandsV7(showcase),
+      {
+        ...NO_INTERACTION,
+        selection: { kind: "UNIT", unitId: chucker.id },
+        selectedUnitId: chucker.id,
+      },
+    );
+    const chainTarget = chainPlan.targets.find(
+      (target) => target.blast !== undefined,
+    );
+    return [
+      {
+        name: "attack-chain",
+        plan: chainPlan,
+        focus: GOBLIN_ATTACK_CHAIN_V7.bombChucker,
+        hitLabels: (chainTarget?.blast?.cells ?? []).map((cell) => cell.label),
+      },
+      {
+        name: "kaboom-armed",
+        plan: kaboomPlan,
+        focus: GOBLIN_SHOWCASE_V7.kaboom,
+        hitLabels: kaboomPlan.entries.flatMap((entry) =>
+          entry.kind === "ABILITY_TARGET" ? [entry.label ?? ""] : [],
+        ),
+      },
+      {
+        name: "bomb-splash",
+        plan: bombPlan,
+        focus: GOBLIN_SHOWCASE_V7.bombTarget,
+        hitLabels: ["Yours −4"],
+      },
+    ];
+  }
+
+  const SIZES = [
+    {
+      name: "phone",
+      viewport: { width: 390, height: 844 },
+      // The HUD row above, the selection dock (with the Kaboom! panel) below.
+      safe: { top: 60, bottom: 520 },
+    },
+    {
+      name: "desktop",
+      viewport: { width: 1440, height: 1000 },
+      safe: { top: 64, bottom: 850 },
+    },
+  ] as const;
+  const ZOOMS = [
+    ...CHIBI_ZOOM_STEPS.map((step) => chibiCameraZoom(step)),
+    MIN_ZOOM,
+    1,
+    MAX_ZOOM,
+  ];
+
+  function drawScene(
+    scene: Scene,
+    size: (typeof SIZES)[number],
+    zoom: number,
+    screen: { readonly x: number; readonly y: number },
+  ): { readonly boxes: Box[]; readonly texts: Text[] } {
+    const { context, boxes, texts } = recordingContext(charWidth);
+    const cell = 128 * zoom;
+    drawBoardV7({
+      context,
+      viewport: size.viewport,
+      devicePixelRatio: 1,
+      camera: {
+        zoom,
+        offsetX: screen.x - scene.focus.x * cell,
+        offsetY: screen.y - scene.focus.y * cell,
+      },
+      plan: scene.plan,
+      images: { resolve: () => null },
+      previewFocus: scene.focus,
+      labelSafeArea: size.safe,
+    });
+    return {
+      boxes: boxes.filter((box) => PREVIEW_FILLS.has(box.fill)),
+      texts,
+    };
+  }
+
+  it("places every label clear of every other label", () => {
+    let checked = 0;
+    for (const scene of scenes())
+      for (const size of SIZES)
+        for (const zoom of ZOOMS) {
+          const cell = 128 * zoom;
+          const middle = (size.safe.top + size.safe.bottom) / 2;
+          const centre = { x: size.viewport.width / 2, y: middle };
+          // The cluster centred, and pushed against each edge of the band.
+          for (const screen of [
+            centre,
+            { x: cell * 0.6, y: middle },
+            { x: size.viewport.width - cell * 0.6, y: middle },
+            { x: centre.x, y: size.safe.top + cell * 0.6 },
+            { x: centre.x, y: size.safe.bottom - cell * 0.6 },
+          ]) {
+            const { boxes, texts } = drawScene(scene, size, zoom, screen);
+            const where = `${scene.name} ${size.name} zoom ${zoom.toFixed(3)} at ${screen.x.toFixed(0)},${screen.y.toFixed(0)}`;
+            expect(boxes.length, where).toBeGreaterThan(0);
+            for (const [index, box] of boxes.entries())
+              for (const other of boxes.slice(index + 1))
+                expect(
+                  overlaps(box, other),
+                  `${where}: ${JSON.stringify([box, other])}`,
+                ).toBe(false);
+            // With the cluster centred every hit keeps a label: the full
+            // text or, in a crowd, its shorter form.
+            if (screen === centre) {
+              const drawn = texts.map((text) => text.text);
+              for (const label of scene.hitLabels)
+                expect(
+                  previewLabelVariantsV7(label).some((variant) =>
+                    drawn.includes(variant),
+                  ),
+                  `${where}: ${label} in ${JSON.stringify(drawn)}`,
+                ).toBe(true);
+            }
+            checked += 1;
+          }
+        }
+    expect(checked).toBe(3 * 2 * ZOOMS.length * 5);
+  });
+
+  it("shortens the attack-chain warnings to their summary on a phone", () => {
+    const chain = scenes()[0];
+    if (chain === undefined) throw new Error("attack-chain scene missing");
+    const { texts } = drawScene(chain, SIZES[0], chibiCameraZoom(0.75), {
+      x: 195,
+      y: 290,
+    });
+    const drawn = texts.map((text) => text.text);
+    // The hit labels keep their cells; the attack keeps its damage line
+    // (wrapped at the phone zoom) and the long warnings collapse into the
+    // short summary.
+    expect(drawn).toEqual(
+      expect.arrayContaining([
+        "Yours −3",
+        "Attacker −8",
+        "−2 · Wave 2",
+        "Yours −5",
+        "Deal 2",
+        "take 0",
+        "Chain: 2 blasts",
+        "3 yours hit",
+      ]),
+    );
+    expect(drawn.some((text) => text.startsWith("Enemy Bomb Chucker"))).toBe(
+      false,
+    );
+  });
+});
+
+describe("preview label variants (pulp_wars-0ao.12)", () => {
+  it("shortens a hit label to its first part, then its amount", () => {
+    expect(previewLabelVariantsV7("Yours −3 · Wave 2")).toEqual([
+      "Yours −3 · Wave 2",
+      "Yours −3",
+      "−3",
+    ]);
+    expect(previewLabelVariantsV7("Attacker −8")).toEqual([
+      "Attacker −8",
+      "−8",
+    ]);
+    expect(previewLabelVariantsV7("−4")).toEqual(["−4"]);
+    expect(previewLabelVariantsV7("Kaboom!")).toEqual(["Kaboom!"]);
+  });
+
+  it("never places two boxes over each other and falls back in order", () => {
+    const placer = new PreviewLabelPlacerV7({
+      left: 0,
+      top: 30,
+      right: 200,
+      bottom: 130,
+    });
+    const anchor = { left: 50, top: 50, right: 110, bottom: 110 };
+    const wide = { left: 0, top: 60, width: 200, height: 40 };
+    const narrow = { left: 70, top: 60, width: 20, height: 12 };
+    expect(placer.placeFirst([wide], anchor)).toEqual({
+      left: 0,
+      top: 60,
+      variant: 0,
+    });
+    // The wide variant cannot move clear within a cell; the narrow one can.
+    expect(placer.placeFirst([wide, narrow], anchor)?.variant).toBe(1);
+    // A pseudo-random crowd: every accepted box is clear of the others.
+    let seed = 7;
+    const random = (): number => {
+      seed = (seed * 1_103_515_245 + 12_345) % 2_147_483_648;
+      return seed / 2_147_483_648;
+    };
+    for (let index = 0; index < 300; index += 1) {
+      const x = random() * 200;
+      const y = random() * 200;
+      placer.placeFirst(
+        [
+          { left: x - 40, top: y, width: 80, height: 18 },
+          { left: x - 12, top: y, width: 24, height: 14 },
+        ],
+        { left: x - 30, top: y - 30, right: x + 30, bottom: y + 30 },
+      );
+    }
+    const placed = placer.placed;
+    expect(placed.length).toBeGreaterThan(10);
+    for (const [index, box] of placed.entries())
+      for (const other of placed.slice(index + 1))
+        expect(
+          box.left < other.right &&
+            other.left < box.right &&
+            box.top < other.bottom &&
+            other.top < box.bottom,
+        ).toBe(false);
+  });
+});
+
+function unitAt(
+  view: PlayerViewV7,
+  at: CoordV7,
+): PlayerViewV7["units"][number] {
+  const unit = view.units.find(
+    (candidate) => candidate.at.x === at.x && candidate.at.y === at.y,
+  );
+  if (unit === undefined) throw new Error(`no unit at ${at.x},${at.y}`);
+  return unit;
+}

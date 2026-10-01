@@ -543,7 +543,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#drawSupportOverlay();
         }
         for (const step of supportSteps) {
-          await this.#animate(100 * durationScale, () => {
+          // Revision 17: the still "+N" of Troll regeneration holds long
+          // enough to read.
+          const hold = step.effect === "REGENERATE" ? 480 : 100;
+          await this.#animate(hold * durationScale, () => {
             this.#supportFeedback = {
               effect: step.effect,
               actor: step.actor,

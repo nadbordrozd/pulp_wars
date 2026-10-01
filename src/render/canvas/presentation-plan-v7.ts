@@ -54,12 +54,12 @@ export type CorePresentationStepV7 =
       readonly kind: "SUPPORT";
       /** RALLY/TEND, plus the revision-13 Undead cues. */
       readonly effect: SupportEffectV7;
-      readonly actor: { readonly unitId: number | null; readonly at: CoordV7 };
-      readonly recipients: readonly {
-        readonly unitId: number;
-        readonly at: CoordV7;
-      }[];
-      readonly durationMs: 320;
+      readonly actor: Omit<SupportCueUnitV7, "unitId"> & {
+        readonly unitId: number | null;
+      };
+      readonly recipients: readonly SupportCueUnitV7[];
+      /** Revision 17: Troll regeneration holds its "+N" float longer. */
+      readonly durationMs: 320 | 640;
     }
   | {
       readonly kind: "WINDMILL_HEALING";
@@ -79,6 +79,14 @@ export type CorePresentationStepV7 =
       readonly lethal: boolean;
       readonly durationMs: 100;
     };
+
+/** A unit a support cue plays on. */
+export interface SupportCueUnitV7 {
+  readonly unitId: number;
+  readonly at: CoordV7;
+  /** Revision 17 REGENERATE: the HP regained, floated as "+N". */
+  readonly amount?: number;
+}
 
 export type SupportEffectV7 =
   | "RALLY"
@@ -106,7 +114,12 @@ export type SupportEffectV7 =
    * Revision 13 Lifesteal (vkq.14): the healed Vampire is the actor; the
    * unit it drained is the single recipient.
    */
-  | "LIFESTEAL";
+  | "LIFESTEAL"
+  /**
+   * Revision 17 Troll regeneration (bead pulp_wars-0ao.12): the Tend heal
+   * ring with a rising "+N" on each regenerated Troll.
+   */
+  | "REGENERATE";
 
 /** Builds animation instructions exclusively from captured public views/events. */
 export function corePresentationPlanV7(
@@ -404,6 +417,25 @@ export function corePresentationPlanV7(
             durationMs: 320,
           });
       }
+    } else if (event.kind === "UNITS_REGENERATED") {
+      // Revision 17: the projected event lists only Trolls the viewer may
+      // see; each one shows the heal ring and its "+N" where it stands.
+      const [first, ...rest] = event.results.flatMap((result) => {
+        const unit =
+          after.units.find((candidate) => candidate.id === result.unitId) ??
+          before.units.find((candidate) => candidate.id === result.unitId);
+        return unit === undefined || !explored.has(`${unit.at.x},${unit.at.y}`)
+          ? []
+          : [{ unitId: unit.id, at: unit.at, amount: result.amount }];
+      });
+      if (first !== undefined)
+        steps.push({
+          kind: "SUPPORT",
+          effect: "REGENERATE",
+          actor: first,
+          recipients: rest,
+          durationMs: 640,
+        });
     } else if (event.kind === "DEAD_RAISED") {
       const actor = [...after.units, ...before.units].find(
         (unit) => unit.id === event.unitId,

@@ -13,7 +13,8 @@ import {
  * Revision 17 Goblin UI visual review (pulp_wars-0ao.5). It captures the
  * default-route setup with a Goblin seat, the Kaboom! preview with friendly
  * fire and a chain, the armed confirmation, the explosion effect
- * mid-animation, a Bomb Chucker's friendly splash with Gang Up, a Human
+ * mid-animation, a Bomb Chucker's friendly splash with Gang Up, the Troll
+ * regeneration cue (pinned mid-animation), a Human
  * attack whose death-blast chain hits its own units, the Goblin unit docks
  * and `?` details, WAAAGH!, Warrens, Plunder and Help, in the CHIBI and
  * LEGACY art sets at desktop and phone widths. It needs the Vite dev
@@ -190,6 +191,19 @@ try {
       await capture(connection, `bomb-splash-${suffix}.png`);
       await activate(connection, at.bombChucker as Coord);
       await capture(connection, `dock-bomb-chucker-${suffix}.png`);
+      // Troll regeneration (pulp_wars-0ao.12): the heal ring and "+4"
+      // frozen mid-cue on the selected Troll.
+      await activate(connection, at.troll as Coord);
+      await evaluate(
+        connection,
+        `(() => { const troll = globalThis.__GOBLIN_REVIEW__.snapshotView().units.find((unit) => unit.at.x === ${at.troll?.x} && unit.at.y === ${at.troll?.y}); globalThis.__GOBLIN_REVIEW__.boardHost.pinSupportFeedback([{ effect: 'REGENERATE', actor: { unitId: troll.id, at: troll.at, amount: 4 }, recipients: [], progress: 0.35 }]); })()`,
+      );
+      await delay(200);
+      await capture(connection, `troll-regen-${suffix}.png`);
+      await evaluate(
+        connection,
+        `globalThis.__GOBLIN_REVIEW__.boardHost.pinSupportFeedback([])`,
+      );
       if (size === "desktop") {
         await activate(connection, at.troll as Coord);
         await evaluate(

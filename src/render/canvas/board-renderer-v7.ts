@@ -150,6 +150,12 @@ export interface MapCommandTargetV7 {
    */
   readonly previewWarnings?: readonly string[];
   /**
+   * Revision 17: a short summary of `previewWarnings` (for example "Chain:
+   * 2 blasts · 3 yours hit"), drawn instead of them when the full warning
+   * stack would overlap another preview label (bead pulp_wars-0ao.12).
+   */
+  readonly previewWarningSummary?: string;
+  /**
    * Revision 17: the death blasts this attack sets off (Goblin matches
    * only), shown on the board while the target is focused.
    */
@@ -1944,41 +1950,69 @@ function drawMapTarget(
   for (const edge of entry.targetEdges ?? TILE_EDGES)
     strokeTileEdge(context, camera, entry.at, edge);
   context.restore();
-  const boxes: PreviewTextBoxV7[] = [
-    ...(entry.target?.previewLabel === undefined
+  const target = entry.target;
+  const labelBox = (text: string): PreviewTextBoxV7 => ({
+    text,
+    fill: "#171722dd",
+    color: "#fff8df",
+    lineBox: 1.8,
+    baseline: 1.3,
+  });
+  const warningBox = (text: string): PreviewTextBoxV7 => ({
+    text,
+    fill: "#4d3500f2",
+    color: "#ffe9a8",
+    lineBox: 1.6,
+    baseline: 1.2,
+  });
+  const label =
+    target?.previewLabel === undefined ? [] : [labelBox(target.previewLabel)];
+  const note =
+    target?.previewNote === undefined
       ? []
       : [
           {
-            text: entry.target.previewLabel,
-            fill: "#171722dd",
-            color: "#fff8df",
-            lineBox: 1.8,
-            baseline: 1.3,
-          },
-        ]),
-    ...(entry.target?.previewNote === undefined
-      ? []
-      : [
-          {
-            text: entry.target.previewNote,
+            text: target.previewNote,
             fill: "#2a1633ee",
             color: "#f3dcff",
             lineBox: 1.6,
             baseline: 1.2,
           },
-        ]),
-    ...(entry.target?.previewWarnings ?? []).map((warning) => ({
-      text: warning,
-      fill: "#4d3500f2",
-      color: "#ffe9a8",
-      lineBox: 1.6,
-      baseline: 1.2,
-    })),
-  ];
-  if (boxes.length > 0)
+        ];
+  const warnings = (target?.previewWarnings ?? []).map(warningBox);
+  const summary =
+    warnings.length === 0 || target?.previewWarningSummary === undefined
+      ? []
+      : [warningBox(target.previewWarningSummary)];
+  const shortLabel = target?.previewLabel?.split(" · ")[0];
+  // Bead pulp_wars-0ao.12: fullest first. A crowded target falls back to
+  // the warnings' one-line summary, then to the label and note, the label,
+  // and finally the label's first part, so no preview box covers another.
+  const variants = dedupeStacks([
+    [...label, ...note, ...warnings],
+    [...label, ...note, ...summary],
+    [...label, ...note],
+    label,
+    shortLabel === undefined ? [] : [labelBox(shortLabel)],
+  ]);
+  if (variants.length > 0)
     defer(() => {
-      drawPreviewTextStackV7(context, x, y, camera.zoom, boxes, placer);
+      drawPreviewTextStackV7(context, x, y, camera.zoom, variants, placer);
     });
+}
+
+/** Drops empty and repeated stacks, keeping the first of each. */
+function dedupeStacks(
+  stacks: readonly (readonly PreviewTextBoxV7[])[],
+): readonly (readonly PreviewTextBoxV7[])[] {
+  const seen = new Set<string>();
+  return stacks.filter((boxes) => {
+    if (boxes.length === 0) return false;
+    const key = JSON.stringify(boxes.map((box) => [box.text, box.fill]));
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 /** Faint area fills and outer edges of the selected unit's ability preview. */
@@ -2736,6 +2770,9 @@ function commandMapTargets(
               }),
           ...(note === null ? {} : { previewNote: note }),
           ...(warnings === null ? {} : { previewWarnings: warnings }),
+          ...(warnings === null || goblin === null || goblin.summary === null
+            ? {}
+            : { previewWarningSummary: goblin.summary }),
           ...(blast === null ? {} : { blast }),
           ...((undeadMatch || goblinMatch) &&
           preview !== null &&

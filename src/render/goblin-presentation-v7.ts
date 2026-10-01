@@ -587,6 +587,12 @@ export interface GoblinAttackPreviewTextV7 {
   readonly gangUp: string | null;
   /** Death-blast, chain, bomb-splash and friendly-fire warnings. */
   readonly warnings: readonly string[];
+  /**
+   * The warnings in a few words ("Chain: 2 blasts · 3 yours hit"), for a
+   * crowded board where the full warning stack does not fit
+   * (bead pulp_wars-0ao.12); null without warnings.
+   */
+  readonly summary: string | null;
   /** Screen-reader sentence of the same content, or null. */
   readonly semantic: string | null;
 }
@@ -598,6 +604,7 @@ export function goblinAttackPreviewTextV7(
 ): GoblinAttackPreviewTextV7 {
   const gangUp = preview.gangUp > 0 ? `Gang Up +${preview.gangUp}` : null;
   const warnings: string[] = [];
+  const summary: string[] = [];
   const attacker = view.units.find((unit) => unit.id === preview.attackerId);
   for (const splash of preview.splash) {
     const unit = view.units.find((candidate) => candidate.id === splash.unitId);
@@ -611,7 +618,15 @@ export function goblinAttackPreviewTextV7(
     warnings.push(
       `Bomb splash hits your ${unitRoleRuleV7(view, unit).label}${splash.dies ? " (dies)" : ""}`,
     );
+    summary.push(
+      `Bomb ${splash.dies ? "kills" : "hits"} your ${unitRoleRuleV7(view, unit).label}`,
+    );
   }
+  const explosions = chain?.explosions.length ?? 0;
+  if (explosions > 0)
+    summary.push(
+      explosions === 1 ? "Explodes on death" : `Chain: ${explosions} blasts`,
+    );
   for (const explosion of chain?.explosions ?? [])
     warnings.push(
       explosion.wave === 1
@@ -630,11 +645,23 @@ export function goblinAttackPreviewTextV7(
         ? `Friendly fire: ${hits.friendly} of your units hit, ${chain.totals.friendlyKills} killed`
         : `Blasts hit ${hits.friendly} of your units, ${chain.totals.friendlyKills} killed`,
     );
+    const kills = chain.totals.friendlyKills;
+    summary.push(
+      `${own ? "Friendly fire: " : ""}${hits.friendly} yours hit${kills > 0 ? `, ${kills} killed` : ""}`,
+    );
   }
-  if (chain !== null && chain.totals.plunderCoins > 0)
+  if (chain !== null && chain.totals.plunderCoins > 0) {
     warnings.push(`Plunder: +${chain.totals.plunderCoins} Coins`);
-  if (chain !== null && chain.explosions.length > 0 && chain.touchesUnexplored)
+    summary.push(`Plunder +${chain.totals.plunderCoins}`);
+  }
+  if (
+    chain !== null &&
+    chain.explosions.length > 0 &&
+    chain.touchesUnexplored
+  ) {
     warnings.push(FOG_NOTE_V7);
+    summary.push("May reach fog");
+  }
   const semantic = [
     ...(gangUp === null
       ? []
@@ -643,7 +670,12 @@ export function goblinAttackPreviewTextV7(
         ]),
     ...warnings.map((line) => `${line}.`),
   ].join(" ");
-  return { gangUp, warnings, semantic: semantic === "" ? null : semantic };
+  return {
+    gangUp,
+    warnings,
+    summary: summary.length === 0 ? null : summary.join(" · "),
+    semantic: semantic === "" ? null : semantic,
+  };
 }
 
 /**
