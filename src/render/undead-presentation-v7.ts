@@ -47,6 +47,23 @@ export function factionCanCureAfflictionsV7(faction: FactionIdV7): boolean {
   );
 }
 
+/**
+ * pulp_wars-0ao.18: how match-aware text names the one cure for Plague and
+ * Bitten. "a Captain" in Human/Undead matches, "a Human Captain" when a Goblin
+ * seat is also present, and null when no seat can Tend (so no cure exists).
+ */
+export function cureCaptainPhraseV7(
+  view: Pick<PlayerViewV7, "players">,
+): string | null {
+  if (
+    !view.players.some((player) => factionCanCureAfflictionsV7(player.faction))
+  )
+    return null;
+  return view.players.some((player) => player.faction === "GOBLIN")
+    ? "a Human Captain"
+    : "a Captain";
+}
+
 /** A unit's name under its owner's faction registration. */
 export function unitLabelV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   return unitRoleRuleV7(view, unit).label;
@@ -129,6 +146,9 @@ export function undeadAbilityNameV7(
 export function undeadAbilityDescriptionV7(
   ability: string,
   faction: FactionIdV7,
+  // pulp_wars-0ao.18: `cureCaptainPhraseV7` of the match; null when no seat
+  // can cure, so the Plague sentence names no cure.
+  cureCaptain: string | null = "a Captain",
 ): string | null {
   if (faction !== "UNDEAD") return null;
   switch (ability) {
@@ -145,7 +165,9 @@ export function undeadAbilityDescriptionV7(
     case "LIFESTEAL":
       return "Heals by the damage it deals when it survives the fight.";
     case "PLAGUE":
-      return "Living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies or a Captain tends them.";
+      return `Living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies${
+        cureCaptain === null ? "." : ` or ${cureCaptain} tends them.`
+      }`;
     case "BITE":
       return "Living land units it damages are bitten and rise as your Zombies when they die.";
     case "UNANSWERED":

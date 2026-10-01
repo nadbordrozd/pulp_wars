@@ -101,6 +101,7 @@ import {
   restlessOutsideTerritoryV7,
   restlessRecoverBlockedV7,
   tendPreviewPresentationV7,
+  cureCaptainPhraseV7,
   undeadAbilityDescriptionV7,
   undeadAbilityNameV7,
   undeadBoundaryNoticeV7,
@@ -1356,6 +1357,7 @@ export class Ruleset7DomAppView {
                   stats.minimumRange,
                   stats.maximumRange,
                   unitFaction,
+                  cureCaptainPhraseV7(view),
                 );
           if (description === null) continue;
           const entry = el(this.#document, "p", "v7-unit-ability");
@@ -2468,7 +2470,12 @@ export class Ruleset7DomAppView {
 
   #recruitHelp(role: UnitRoleIdV7): HTMLElement {
     const faction = this.#viewerFaction();
-    const presentation = recruitmentRolePresentationV7(role, faction);
+    const view = this.#snapshot.view;
+    const presentation = recruitmentRolePresentationV7(
+      role,
+      faction,
+      view === null ? undefined : cureCaptainPhraseV7(view),
+    );
     const rule = effectiveRoleRuleV7(role, faction);
     const modal = el(this.#document, "section", "v7-recruit-help");
     modal.dataset.v7Region = "recruit-help";
@@ -4172,6 +4179,7 @@ export interface RecruitmentRolePresentationV7 {
 export function recruitmentRolePresentationV7(
   roleId: UnitRoleIdV7,
   faction: FactionIdV7,
+  cureCaptain: string | null = "a Captain",
 ): RecruitmentRolePresentationV7 {
   const role = effectiveRoleRuleV7(roleId, faction);
   const restrictions: string[] = [];
@@ -4219,6 +4227,7 @@ export function recruitmentRolePresentationV7(
         role.minimumRange,
         role.range,
         faction,
+        cureCaptain,
       );
       return description === null
         ? []
@@ -4237,8 +4246,9 @@ function abilityDescription(
   minimum: number,
   maximum: number,
   faction: FactionIdV7,
+  cureCaptain: string | null,
 ): string | null {
-  const undead = undeadAbilityDescriptionV7(ability, faction);
+  const undead = undeadAbilityDescriptionV7(ability, faction, cureCaptain);
   if (undead !== null) return undead;
   const goblin = goblinAbilityDescriptionV7(ability, faction);
   if (goblin !== null) return goblin;
@@ -4771,10 +4781,8 @@ function playerTitle(view: PlayerViewV7, seat: number): string {
  * is a Human Captain, and with no Human seat nobody can cure them.
  */
 function undeadHelpTipsV7(view: PlayerViewV7): readonly string[] {
-  const curable = view.players.some((player) =>
-    factionCanCureAfflictionsV7(player.faction),
-  );
-  const captain = matchHasGoblinV7(view) ? "a Human Captain" : "a Captain";
+  const captain = cureCaptainPhraseV7(view);
+  const curable = captain !== null;
   return [
     "Units that fall in battle on land leave Graves.",
     "A Necromancer raises Skeletons from adjacent Graves; a Ghoul devours the Grave it stands on to heal.",

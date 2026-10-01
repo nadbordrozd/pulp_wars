@@ -27,9 +27,12 @@ import {
   technologyNameV7,
 } from "../../src/render/goblin-presentation-v7";
 import {
+  cureCaptainPhraseV7,
   factionCanCureAfflictionsV7,
+  undeadAbilityDescriptionV7,
   unitAfflictionsV7,
 } from "../../src/render/undead-presentation-v7";
+import { recruitmentRolePresentationV7 } from "../../src/render/dom/app-view-v7";
 import {
   portraitSubjectV7,
   technologySubjectV7,
@@ -464,6 +467,47 @@ describe("Revision 17 Goblin presentation text", () => {
       "Plague from Player 2's Lich: −2 HP at the start of each of its next 2 turns, then it ends. It ends sooner if that Lich dies or a Captain tends it.",
       "Bitten by Player 2's Zombie: if it dies it rises as Player 2's Zombie, unless a Captain tends it first.",
     ]);
+  });
+});
+
+describe("Lich Plague ability text is match-aware", () => {
+  // pulp_wars-0ao.18: the sentence names a Captain's tending only when a seat
+  // that can Tend (Human) is in the match.
+  const lichText = (factions: Parameters<typeof goblinArenaV7>[0]) => {
+    const arena = goblinArenaV7(factions, [
+      { seat: 0, role: "FIGHTER", at: { x: 5, y: 4 } },
+    ]);
+    return undeadAbilityDescriptionV7(
+      "PLAGUE",
+      "UNDEAD",
+      cureCaptainPhraseV7(viewForV7(arena, seatIdV7(arena, 0))),
+    );
+  };
+
+  it("keeps Human/Undead text byte-identical and names no cure without a Human seat", () => {
+    const base =
+      "Living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies";
+    expect(lichText(["UNDEAD", "ORIGINAL"])).toBe(
+      `${base} or a Captain tends them.`,
+    );
+    expect(lichText(["UNDEAD", "UNDEAD"])).toBe(`${base}.`);
+    expect(lichText(["UNDEAD", "GOBLIN"])).toBe(`${base}.`);
+    expect(lichText(["UNDEAD", "ORIGINAL", "GOBLIN"])).toBe(
+      `${base} or a Human Captain tends them.`,
+    );
+    // The recruitment info panel threads the same match phrase through.
+    const plague = (cure: string | null) =>
+      recruitmentRolePresentationV7("CATAPULT", "UNDEAD", cure).abilities.find(
+        (line) => line.startsWith("Plague:"),
+      );
+    expect(plague(null)).toBe(`Plague: ${base}.`);
+    expect(plague("a Captain")).toBe(
+      `Plague: ${base} or a Captain tends them.`,
+    );
+    // Callers that do not know the match keep the pre-0ao.18 sentence.
+    expect(undeadAbilityDescriptionV7("PLAGUE", "UNDEAD")).toBe(
+      `${base} or a Captain tends them.`,
+    );
   });
 });
 

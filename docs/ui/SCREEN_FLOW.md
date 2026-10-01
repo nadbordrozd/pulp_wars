@@ -276,9 +276,10 @@ Wave 2` → `Yours −3` → `−3`), keeping its lethal red or hazard styling;
   it." and "; Goblins can't cure bites.". An Undead viewer's tips say "a Human
   Captain" when a Goblin seat is also present, and drop the Captain clause when
   no seat is Human. Human viewers and Human/Undead matches read as before.
-  One sentence is not yet match-aware (open, `pulp_wars-0ao.18`): the Lich's
-  Plague ability text still ends "or a Captain tends them" in every match,
-  including one without a Human seat.
+  The Lich's Plague ability text (`pulp_wars-0ao.18`) is match-aware the same
+  way: "... It ends sooner if this Lich dies or a Captain tends them." in a
+  match with a Human seat ("a Human Captain" when a Goblin seat is also
+  present), and "... It ends sooner if this Lich dies." when no seat can Tend.
 - **Review.** `npm run review:ruleset7-goblin-ui` captures these surfaces in
   both art sets at desktop and phone widths (dev server only).
 

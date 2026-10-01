@@ -45,8 +45,8 @@ tuning bounds and decisions keep the pre-tuning contract values (two starting
 Goblins, Goblin Attack 2 and Defense 1, Kaboom 4, death blasts 3/5/5); the
 values here are current. Where a document and the code disagreed, the code's
 behavior is the rule and is stated below;
-[Known discrepancies](#20-known-discrepancies) lists no rule discrepancy as
-of revision 17, only one open presentation-text gap.
+[Known discrepancies](#20-known-discrepancies) lists no discrepancy as of
+revision 17.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague, and
@@ -1950,21 +1950,8 @@ no cure for Plague or Bitten, and their Help and status sentences say so.
 
 ## 20. Known discrepancies
 
-No rule discrepancy is open: as of revision 17 (`pulp-wars-poc-7r17`) the
-rules in this document match the code. One presentation-text gap is open:
-
-- **Lich Plague ability text (open, `pulp_wars-0ao.18`; presentation only).**
-  Only a Human Captain's Tend Wounded cures Plague
-  ([section 10](#10-recovery-and-support)), and the Help tips and Plague
-  status sentences name a Captain only where one can help
-  ([Screen Flow](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-17-goblin-overlay)).
-  The Lich's Plague ability sentence
-  (`src/render/undead-presentation-v7.ts`) is not match-aware and still ends
-  "or a Captain tends them" in every match, including matches without a
-  Human seat, where no unit can tend. The rule is as stated in this document;
-  the sentence, pinned by
-  [revision 15 §7](RULESET_7_REVISION_15_BALANCE.md#7-ui-text), is to be
-  made match-aware or neutral.
+No discrepancy is open: as of revision 17 (`pulp-wars-poc-7r17`) the rules in
+this document match the code.
 
 The revision 13–17 overlays keep superseded values (for example the
 Lich's Attack 2.5 and 20-HP Zombie in revision 13, unlimited Plague in

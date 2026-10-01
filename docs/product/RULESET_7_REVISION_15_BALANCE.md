@@ -186,7 +186,10 @@ matches with an Undead seat); details in
   3; N = 1 reads "−2 HP at the start of its next turn, then it ends".
 - **Lich ability:** "Living units its attacks hit are plagued for 3 turns:
   −2 HP each turn, spreading to neighbours on the first. It ends sooner if
-  this Lich dies or a Captain tends them."
+  this Lich dies or a Captain tends them." In a match with no Human seat
+  (no seat can Tend) it ends "It ends sooner if this Lich dies." with no cure
+  named, and with a Goblin seat also present it reads "a Human Captain"
+  (revision 17, `pulp_wars-0ao.18`).
 - **Help tips:** Human "Lich shots plague your units for 3 turns: −2 HP each
   turn, spreading to neighbours on the first. Killing the Lich or a Captain's
   Tend ends it sooner."; Undead "A Lich's shots plague living units for 3
