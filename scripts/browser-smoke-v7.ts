@@ -692,7 +692,9 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
       `globalThis.__V7_CHIBI_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
     );
   };
-  const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
+  // Every fresh setup opens on "New map" with the seed field hidden; the art
+  // probes launch that default, so each of their maps is a new random one.
+  const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY' && document.querySelector('.v7-seed-choice')?.dataset.seedMode === 'new' && document.querySelector('#v7-seed')?.closest('label')?.hidden === true`;
   const activeWithArt = (artSet: string): string =>
     `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && document.querySelector(${JSON.stringify(canvasSelector)})?.dataset.artSet === ${JSON.stringify(artSet)}; })()`;
   const storedArt = (): Promise<string | null> =>
@@ -1485,10 +1487,23 @@ async function elementCenter(
   return evaluate(connection, stableControlPointExpression(selector), true);
 }
 
+/**
+ * Setup defaults to "New map" (a random seed per launch). The smoke needs
+ * fixed maps, so it chooses "Use seed", which reveals the seed field.
+ */
+async function chooseUseSeed(connection: Connection): Promise<void> {
+  await pointerClick(connection, '[data-action="seed-mode-seed"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-seed-choice')?.dataset.seedMode === 'seed' && document.querySelector('[data-action="seed-mode-seed"]')?.getAttribute('aria-pressed') === 'true' && document.querySelector('#v7-seed')?.closest('label')?.hidden === false`,
+  );
+}
+
 async function replaceSeedInput(
   connection: Connection,
   value: string,
 ): Promise<void> {
+  await chooseUseSeed(connection);
   await pointerClick(connection, "#v7-seed");
   await connection.send("Input.dispatchKeyEvent", {
     type: "rawKeyDown",

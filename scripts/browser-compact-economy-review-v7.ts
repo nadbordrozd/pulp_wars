@@ -57,6 +57,8 @@ try {
     `document.querySelector('[data-v7-setup]') !== null`,
   );
   await viewport(connection, 1024, 768, 1);
+  // Setup defaults to "New map"; a fixed seed needs "Use seed" first.
+  await click(connection, '[data-action="seed-mode-seed"]');
   await setValue(connection, "#v7-seed", "20");
   await click(connection, '[data-action="launch"]');
   await waitFor(

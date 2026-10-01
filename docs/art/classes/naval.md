@@ -115,12 +115,10 @@ fog.
 Each source converges its outer 32 pixels to its own exact shared edge field so
 same-type neighbors have no seam. Do not bake a coast, foam border, route,
 current, beach, ownership color, resource, Port, grid line, or coordinate-stamped
-motif into either source. The renderer derives a restrained 4 CSS-pixel
-code-native boundary on the shallow side of every public Shallow/Deep edge and
-a separate 3 CSS-pixel coast line on the water side of every public Water/Land
-edge. Borders use value plus a repeated short-dash/wave shape, remain visible in
-grayscale and common color-vision simulations, never cross fog, and do not enter
-simulation state or hit testing.
+motif into either source. Since `pulp_wars-6gd.4` the renderer draws no
+code-native boundary on Shallow/Deep edges and no coast line on Water/Land
+edges (the former dashed lines were removed after playtesting), so the two
+water sources and the land art must read apart by value on their own.
 
 Reject noisy bubbles, many tiny whitecaps, photorealistic reflections, gradients
 that imply a fixed global direction, edge seams, obvious tiling stamps, high

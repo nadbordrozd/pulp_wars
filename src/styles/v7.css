@@ -22,6 +22,34 @@
   color: var(--paper);
   background: #171722;
   font-size: calc(1rem * var(--ui-scale));
+
+  /*
+   * The whole interface is chrome, not a document: nothing in it selects
+   * as text (a stray drag in the tech tree used to highlight half the
+   * screen). Text fields and deliberately copyable text opt back in below.
+   */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.v7-app-shell input,
+.v7-app-shell textarea,
+.v7-app-shell .v7-copyable,
+.v7-app-shell .v7-recovery-details {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.v7-app-shell img,
+.v7-app-shell svg,
+.v7-app-shell canvas,
+.v7-app-shell a {
+  -webkit-user-drag: none;
+}
+
+.v7-app-shell [hidden] {
+  display: none !important;
 }
 
 .v7-app-shell[data-contrast="high"] {
@@ -118,6 +146,48 @@
   grid-column: 1 / -1;
   margin-top: -0.3rem;
   color: var(--muted);
+}
+
+/* "New map" / "Use seed": a two-state segmented control above the seed. */
+.v7-seed-choice {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.6rem 1rem;
+  align-items: center;
+}
+
+.v7-seed-toggle {
+  display: inline-flex;
+  padding: 0.2rem;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.v7-seed-option {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.v7-seed-option[aria-pressed="true"] {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.v7-seed-hint {
+  color: var(--muted);
+}
+
+.v7-setup-form label.v7-seed-field {
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .v7-launch {
@@ -1002,6 +1072,22 @@
 
 /* ---------- Dialogs ---------- */
 
+/*
+ * Every popup sits over a dim scrim covering the board, HUD and docks, so
+ * the rest of the screen reads as paused. The scrim takes the pointer: a
+ * click on it closes a dismissable popup and never reaches the board.
+ */
+.v7-scrim {
+  position: absolute;
+  z-index: 29;
+  inset: 0;
+  background: rgb(6 7 12 / 64%);
+}
+
+.v7-scrim[data-dismissable="true"] {
+  cursor: pointer;
+}
+
 .v7-overlay,
 .v7-recruit-help,
 .v7-unit-help-dialog,
@@ -1048,16 +1134,52 @@
   justify-self: end;
 }
 
+/*
+ * The popup close button: a large, light, high-contrast disc pinned to the
+ * popup's top-right corner. It is sticky, so it stays there while a long
+ * popup (the tech tree) scrolls, and its negative bottom margin gives the
+ * row it would occupy back to the content.
+ */
 .v7-overlay > .close-button,
 .v7-recruit-help > .close-button,
 .v7-unit-help-dialog > .close-button {
-  position: absolute;
-  z-index: 5;
-  top: 0.6rem;
-  right: 0.6rem;
-  border: 0;
-  background: transparent;
+  position: sticky;
+  z-index: 8;
+  top: 0;
+  justify-self: end;
+  width: 2.75rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  min-height: 2.75rem;
+  margin: -0.6rem -0.6rem calc(-2.15rem - 0.9rem) 0;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 45%);
+  color: var(--ink);
+}
+
+.v7-overlay > .close-button .v7-ui-icon,
+.v7-recruit-help > .close-button .v7-ui-icon,
+.v7-unit-help-dialog > .close-button .v7-ui-icon {
+  width: 26px;
+  height: 26px;
+  stroke-width: 3;
+}
+
+.v7-overlay > .close-button:hover:not(:disabled),
+.v7-recruit-help > .close-button:hover:not(:disabled),
+.v7-unit-help-dialog > .close-button:hover:not(:disabled) {
+  border-color: var(--ink);
+  background: #fff;
+}
+
+.v7-mandatory-hint {
+  grid-column: 1 / -1;
   color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-align: center;
 }
 
 .v7-overlay h2,
@@ -1066,7 +1188,7 @@
 .v7-mandatory-choice h2,
 .v7-achievement-notice h2,
 .v7-results h2 {
-  padding-right: 2.5rem;
+  padding-right: 3rem;
   font-size: 1.7rem;
 }
 
@@ -1079,7 +1201,7 @@
   grid-template-columns: 4.5rem minmax(0, 1fr) auto;
   gap: 0.75rem;
   align-items: center;
-  padding-right: 2rem;
+  padding-right: 2.75rem;
 }
 
 .v7-dialog-header > .v7-art-frame {
@@ -1866,6 +1988,9 @@
     z-index: 4;
     top: 0;
     display: block;
+
+    /* Leaves the popup's sticky close button its top-right corner. */
+    padding-right: 2.75rem;
   }
 
   .v7-tech-detail {

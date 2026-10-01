@@ -78,6 +78,7 @@ describe("Ruleset 7 application route", () => {
 
     count.value = "1";
     count.dispatchEvent(new Event("change", { bubbles: true }));
+    chooseSeed();
     const seed = requiredInput("v7-seed");
     seed.value = "2";
     seed.dispatchEvent(new Event("change", { bubbles: true }));
@@ -131,6 +132,7 @@ describe("Ruleset 7 application route", () => {
       },
     });
     requiredInput("v7-seed").value = "0";
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().ai.active);
     const fast = requiredButton('[data-action="fast-forward"]');
@@ -195,6 +197,7 @@ describe("Ruleset 7 application route", () => {
       createAiPolicyWork: immediateEndTurnWork,
     });
     requiredInput("v7-seed").value = "2";
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => first.controller.snapshot().phase === "ACTIVE");
     first.controller.flushPersistence();
@@ -226,6 +229,7 @@ describe("Ruleset 7 application route", () => {
       }),
     });
     requiredInput("v7-seed").value = "0";
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => scheduler.activeCount() === 1);
     scheduler.runNext();
@@ -322,4 +326,11 @@ async function waitUntil(predicate: () => boolean): Promise<void> {
     await new Promise<void>((resolve) => setTimeout(resolve, 0));
   }
   throw new Error("timed out");
+}
+
+/** Setup defaults to "New map"; these launches need the fixed seed field. */
+function chooseSeed(): void {
+  document
+    .querySelector<HTMLButtonElement>('[data-action="seed-mode-seed"]')
+    ?.click();
 }

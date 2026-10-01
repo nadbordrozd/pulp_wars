@@ -184,6 +184,20 @@ export interface MountRuleset7AppOptions {
   readonly downloadDebugBundle?: (source: string, filename: string) => void;
   readonly settingsStorage?: StorageAdapter | null;
   readonly startupNotice?: string;
+  /**
+   * Draws the map seed (0–4294967295) of a "New map" launch. The engine
+   * stays deterministic: only this DOM layer picks the seed. Tests inject a
+   * fixed source; the browser's crypto (or Math.random) is the default.
+   */
+  readonly randomSeed?: () => number;
+}
+
+/** A fresh unsigned 32-bit map seed from the browser. */
+export function browserRandomSeedV7(documentRoot: Document): number {
+  const crypto = documentRoot.defaultView?.crypto;
+  if (crypto !== undefined && typeof crypto.getRandomValues === "function")
+    return crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
+  return Math.floor(Math.random() * 0x1_0000_0000);
 }
 
 export type Ruleset7ControllerPortV7 = Pick<
@@ -207,6 +221,8 @@ interface DraftV7 {
   readonly aiCount: 1 | 2 | 3;
   readonly aiMode: "RIVAL" | "COOPERATIVE";
   readonly boardSize: (typeof BOARD_SIZES)[number];
+  /** NEW draws a random seed at launch; SEED uses `seedText`. */
+  readonly seedMode: "NEW" | "SEED";
   readonly seedText: string;
   readonly humanColor: PlayerColorV7;
   readonly mapType: MapTypeV7;
@@ -226,6 +242,7 @@ export class Ruleset7DomAppView {
   readonly #downloadSafeLog: (source: string, filename: string) => void;
   readonly #downloadDebugBundle: (source: string, filename: string) => void;
   readonly #settingsStorage: StorageAdapter | null;
+  readonly #randomSeed: () => number;
   readonly #artSet: ArtSetV7;
   /** CHIBI interface art; null in LEGACY, which keeps its markup unchanged. */
   readonly #chibiDom: ChibiDomArtV7 | null;
@@ -237,6 +254,7 @@ export class Ruleset7DomAppView {
     aiCount: 1,
     aiMode: "RIVAL",
     boardSize: 11,
+    seedMode: "NEW",
     seedText: "42",
     humanColor: "CORAL",
     mapType: "CONTINENTS",
@@ -305,6 +323,8 @@ export class Ruleset7DomAppView {
       options.downloadDebugBundle ??
       ((source, filename) => downloadJsonFile(documentRoot, source, filename));
     this.#settingsStorage = options.settingsStorage ?? null;
+    this.#randomSeed =
+      options.randomSeed ?? (() => browserRandomSeedV7(documentRoot));
     this.#artSet = options.artSet ?? "LEGACY";
     this.#chibiDom =
       this.#artSet === "CHIBI"
@@ -341,6 +361,7 @@ export class Ruleset7DomAppView {
     }
     this.#snapshot = controller.snapshot();
     this.#document.addEventListener("keydown", this.#onKeyDown);
+    this.#root.addEventListener("dragstart", this.#onDragStart);
     this.#unsubscribeAcceptedBoundary = controller.subscribeAcceptedBoundary(
       (boundary) => this.#queueBoundary(boundary),
     );
@@ -365,12 +386,41 @@ export class Ruleset7DomAppView {
     if (CHIBI_ECONOMY_ICONS.get(this.#document) === this.#economyIcons)
       CHIBI_ECONOMY_ICONS.delete(this.#document);
     this.#document.removeEventListener("keydown", this.#onKeyDown);
+    this.#root.removeEventListener("dragstart", this.#onDragStart);
     this.#unsubscribe?.();
     this.#unsubscribeAcceptedBoundary?.();
     this.#unsubscribeAcceptedBoundary = null;
     this.#cancelPresentations();
     this.#boardHost.destroy();
     this.#root.replaceChildren();
+  }
+
+  /**
+   * The interface is not selectable, so nothing in it is draggable either:
+   * images, links and stray selections never start a drag. Text fields keep
+   * their own drag behaviour.
+   */
+  readonly #onDragStart = (event: Event): void => {
+    const target = event.target;
+    if (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement
+    )
+      return;
+    event.preventDefault();
+  };
+
+  /**
+   * Closes the open dismissable popup (recruit help, unit info, or a
+   * tech/menu overlay) and reports whether it did. Shared by Escape and the
+   * scrim; the mandatory reward, results and error dialogs never close.
+   */
+  #dismissPopup(): boolean {
+    if (this.#selectedRecruitHelp !== null) this.#closeRecruitHelp();
+    else if (this.#selectedUnitHelpId !== null) this.#closeUnitHelp();
+    else if (this.#screen !== "MATCH") this.#closeOverlay();
+    else return false;
+    return true;
   }
 
   readonly #onKeyDown = (event: KeyboardEvent): void => {
@@ -598,13 +648,13 @@ export class Ruleset7DomAppView {
         this.#draft.humanColor,
         COLOR_LABELS,
       ),
-      input(this.#document, "Seed", "v7-seed", this.#draft.seedText),
       text(
         this.#document,
         "p",
         mapTypeDescriptionV7(this.#draft.mapType),
         "v7-map-type-description",
       ),
+      this.#seedChoice(),
     );
     form.append(this.#factionFields());
     const launch = button(
@@ -643,7 +693,13 @@ export class Ruleset7DomAppView {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.#readDraft(form);
-      const setup = setupFrom(this.#draft);
+      // "New map" draws its seed here, once per launch; the engine only
+      // ever sees the resulting number.
+      const setup = setupFrom(
+        this.#draft.seedMode === "NEW"
+          ? { ...this.#draft, seedText: String(this.#randomSeed() >>> 0) }
+          : this.#draft,
+      );
       if (setup === null) {
         this.#error = "Seed must be a whole number (0–4294967295).";
         this.#render();
@@ -653,6 +709,57 @@ export class Ruleset7DomAppView {
     });
     main.append(form, this.#ruleset6Link());
     return main;
+  }
+
+  /**
+   * The two-state map choice: "New map" (default; a random seed is drawn at
+   * launch) or "Use seed", which reveals the seed field. The field stays in
+   * the form while hidden so the typed seed survives switching back.
+   */
+  #seedChoice(): HTMLElement {
+    const group = el(this.#document, "div", "v7-seed-choice");
+    group.setAttribute("role", "group");
+    group.setAttribute("aria-label", "Map seed");
+    const toggle = el(this.#document, "div", "v7-seed-toggle");
+    const hint = text(
+      this.#document,
+      "p",
+      "A new random map every game.",
+      "v7-seed-hint",
+    );
+    const field = input(
+      this.#document,
+      "Seed",
+      "v7-seed",
+      this.#draft.seedText,
+    );
+    field.classList.add("v7-seed-field");
+    const buttons = (["NEW", "SEED"] as const).map((mode) => {
+      const option = button(
+        this.#document,
+        mode === "NEW" ? "New map" : "Use seed",
+        mode === "NEW" ? "seed-mode-new" : "seed-mode-seed",
+        "v7-seed-option",
+      );
+      option.onclick = () => {
+        this.#draft = { ...this.#draft, seedMode: mode };
+        sync();
+        if (mode === "SEED") field.querySelector("input")?.focus();
+      };
+      return [mode, option] as const;
+    });
+    const sync = (): void => {
+      const mode = this.#draft.seedMode;
+      group.dataset.seedMode = mode.toLowerCase();
+      for (const [candidate, option] of buttons)
+        option.setAttribute("aria-pressed", String(candidate === mode));
+      field.hidden = mode !== "SEED";
+      hint.hidden = mode !== "NEW";
+    };
+    sync();
+    toggle.append(...buttons.map(([, option]) => option));
+    group.append(toggle, hint, field);
+    return group;
   }
 
   /** Per-seat faction choice (Human, Undead or Goblin): one select per seat. */
@@ -1038,6 +1145,12 @@ export class Ruleset7DomAppView {
       warning.dataset.v7Region = "save-warning";
       nextChildren.push(warning);
     }
+    // Every popup dims the rest of the screen with a scrim that also takes
+    // the pointer, so no click reaches the board or HUD behind it.
+    const popup = nextChildren.find(
+      (child) => child.getAttribute("aria-modal") === "true",
+    );
+    if (popup !== undefined) nextChildren.push(this.#scrim(popup));
     reconcileMatchChildren(main, board, nextChildren);
     if (
       dock !== null &&
@@ -2159,6 +2272,34 @@ export class Ruleset7DomAppView {
     return this.#highContrast ? "HIGH_CONTRAST" : "DARK";
   }
 
+  /** Tech, Help/menu screens, unit info and recruit help close on demand. */
+  #popupDismissable(popup: HTMLElement): boolean {
+    const region = popup.dataset.v7Region ?? "";
+    return (
+      region.startsWith("overlay-") ||
+      region === "unit-help" ||
+      region === "recruit-help"
+    );
+  }
+
+  /**
+   * The dim layer behind a popup. A click on it closes a dismissable popup
+   * (as Escape and the close button do); behind the mandatory reward,
+   * results and error dialogs it only blocks the click.
+   */
+  #scrim(popup: HTMLElement): HTMLElement {
+    const scrim = el(this.#document, "div", "v7-scrim");
+    scrim.dataset.v7Region = "scrim";
+    const dismissable = this.#popupDismissable(popup);
+    scrim.dataset.dismissable = String(dismissable);
+    scrim.setAttribute("aria-hidden", "true");
+    scrim.onclick = (event) => {
+      event.stopPropagation();
+      if (dismissable) this.#dismissPopup();
+    };
+    return scrim;
+  }
+
   #overlay(view: PlayerViewV7): HTMLElement {
     const overlay = el(this.#document, "section", "v7-overlay");
     overlay.dataset.screen = this.#screen.toLowerCase();
@@ -2778,6 +2919,19 @@ export class Ruleset7DomAppView {
     );
     remove.onclick = () => void this.#deleteSave();
     game.append(restart, remove);
+    const setup = this.#snapshot.view?.setup;
+    const seed = el(this.#document, "p", "v7-map-seed");
+    seed.dataset.v7MapSeed = setup === undefined ? "" : String(setup.seed);
+    seed.append(
+      "Map seed: ",
+      text(
+        this.#document,
+        "strong",
+        setup === undefined ? "–" : String(setup.seed),
+        "v7-copyable",
+      ),
+    );
+    seed.title = "Choose “Use seed” in a new game to replay this map.";
     const developer = this.#document.createElement("details");
     developer.className = "v7-developer-tools";
     const safe = button(this.#document, "Export game log", "export-safe-log");
@@ -2799,7 +2953,7 @@ export class Ruleset7DomAppView {
       text(this.#document, "summary", "Developer tools"),
       developerActions,
     );
-    section.append(display, game, developer);
+    section.append(display, game, seed, developer);
     return section;
   }
 
@@ -2859,6 +3013,14 @@ export class Ruleset7DomAppView {
       action.onclick = () => void this.#dispatch(command);
       modal.append(action);
     }
+    const hint = text(
+      this.#document,
+      "p",
+      "Choose a reward to continue.",
+      "v7-mandatory-hint",
+    );
+    hint.dataset.v7MandatoryHint = "true";
+    modal.append(hint);
     modal.dataset.v7Region = "mandatory-reward";
     return modal;
   }
@@ -2997,6 +3159,7 @@ export class Ruleset7DomAppView {
     const sizes = compatibleSizes(aiCount);
     const requested = Number(value(form, "v7-board-size"));
     this.#draft = {
+      seedMode: this.#draft.seedMode,
       aiCount,
       aiMode:
         value(form, "v7-ai-mode") === "COOPERATIVE" ? "COOPERATIVE" : "RIVAL",
@@ -3373,6 +3536,9 @@ export class Ruleset7DomAppView {
     const modal = main.querySelector<HTMLElement>('[aria-modal="true"]');
     for (const child of [...main.children]) {
       const element = child as HTMLElement;
+      // The scrim stays clickable (never inert) but hidden from assistive
+      // technology; it holds nothing focusable.
+      if (element.dataset.v7Region === "scrim") continue;
       element.inert = modal !== null && element !== modal;
       if (element.inert) element.setAttribute("aria-hidden", "true");
       else element.removeAttribute("aria-hidden");

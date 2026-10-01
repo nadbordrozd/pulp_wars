@@ -104,6 +104,7 @@ describe("Ruleset 7 art-set switch", () => {
         storage: null,
         settingsStorage: settings,
       });
+      chooseSeed();
       document
         .querySelector<HTMLButtonElement>('[data-action="launch"]')
         ?.click();
@@ -343,4 +344,11 @@ async function waitUntil(predicate: () => boolean): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
   throw new Error("condition not reached");
+}
+
+/** Setup defaults to "New map"; these launches need the fixed seed field. */
+function chooseSeed(): void {
+  document
+    .querySelector<HTMLButtonElement>('[data-action="seed-mode-seed"]')
+    ?.click();
 }

@@ -295,6 +295,7 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
       result.then(()=>__boardPerf.calls.push({name:'dispatch-resolved',start,duration:performance.now()-start}));
       return result;
     };
+    document.querySelector('[data-action="seed-mode-seed"]').click();
     document.querySelector('#v7-seed').value='20';
     document.querySelector('#v7-seed').dispatchEvent(new Event('input',{bubbles:true}));
     document.querySelector('[data-action="launch"]').click();

@@ -260,6 +260,13 @@ coffin, red`. A Grave has no owner and may share a tile with a unit of any
 faction, so it carries no key colour and must stay readable, below the
 unit, when a unit stands on it.
 
+Since `pulp_wars-6gd.4` the board no longer draws this raster. Every explored
+Grave is a small code-drawn tombstone in the tile's bottom-right corner (18
+CSS px on an 80 CSS px tile, drawn above units, in both art sets; see the
+[screen flow](../../ui/SCREEN_FLOW.md#current-ruleset-7-playtest-round-3-interface-overlay)).
+The 40 x 40 `GRAVE` raster stays registered in the manifest but is unused on
+the board.
+
 ### Cities and villages
 
 **Decided: Undead share the Human settlement art.** The runtime keys city
@@ -334,9 +341,10 @@ question of the draft:
    menacing, gory or horror.
 7. **Palette:** grey-green moss stays as the third secondary colour, as
    small accents only.
-8. **Grave marker:** unowned and resource-sized (about 40 x 40), drawn
-   under units; its placement on the tile belongs to the Grave marker UI
-   bead.
+8. **Grave marker:** unowned and resource-sized (about 40 x 40). The raster
+   stays registered but is unused on the board since `pulp_wars-6gd.4`: the
+   board draws a small code-drawn tombstone in the tile's bottom-right
+   corner, above units.
 
 The brown wording in
 [chibi direction section 4](../CHIBI_ART_DIRECTION.md#4-owner-colour) is

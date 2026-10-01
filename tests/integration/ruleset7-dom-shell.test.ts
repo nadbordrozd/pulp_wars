@@ -298,6 +298,7 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.querySelector("h1")?.textContent).toBe("Pulp Wars");
     expect(document.body.textContent).not.toContain("ORIGINAL_BASELINE");
     requiredInput("v7-seed").value = "2";
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     expect(document.querySelector(".v7-match-root")).not.toBeNull();
@@ -393,6 +394,7 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("keeps settings route-scoped, exposes spoiler-safe export labels, and reports current save deletion", async () => {
     const app = bootstrapRuleset7App(document, { storage: null });
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     openMenuItem("settings");
@@ -420,6 +422,7 @@ describe("Ruleset 7 DOM shell", () => {
     // pulp_wars-wwc: seed 4 opens with the human seat on revision-16 maps
     // (seed 1 now opens with the AI).
     requiredInput("v7-seed").value = "4";
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     const wait = app.controller
@@ -450,6 +453,7 @@ describe("Ruleset 7 DOM shell", () => {
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
     requiredButton('[data-action="show-replace"]').click();
     requiredInput("v7-seed").value = "2";
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     openMenuItem("main-menu");
@@ -505,6 +509,7 @@ describe("Ruleset 7 DOM shell", () => {
     const app = bootstrapRuleset7App(document, { storage: null });
     // pulp_wars-wwc: a human-first seed on revision-16 maps (was 1).
     requiredInput("v7-seed").value = "4";
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     expect(document.querySelector('[data-action^="research-"]')).toBeNull();
@@ -884,6 +889,7 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("isolates modal input, traps focus and restores the opening control", async () => {
     const app = bootstrapRuleset7App(document, { storage: null });
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     const before = app.controller.snapshot().view?.commandIndex;
@@ -940,6 +946,7 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("persists shared motion, speed, scale and contrast settings", async () => {
     const first = bootstrapRuleset7App(document, { storage: null });
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => first.controller.snapshot().phase === "ACTIVE");
     openMenuItem("settings");
@@ -954,6 +961,7 @@ describe("Ruleset 7 DOM shell", () => {
 
     document.body.innerHTML = '<div id="app"></div>';
     const second = bootstrapRuleset7App(document, { storage: null });
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => second.controller.snapshot().phase === "ACTIVE");
     openMenuItem("settings");
@@ -981,6 +989,7 @@ describe("Ruleset 7 DOM shell", () => {
         },
       },
     });
+    chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     openMenuItem("settings");
@@ -1462,4 +1471,11 @@ async function waitUntil(predicate: () => boolean): Promise<void> {
 async function flushMicrotasks(): Promise<void> {
   for (let index = 0; index < 5; index += 1)
     await new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+/** Setup defaults to "New map"; these launches need the fixed seed field. */
+function chooseSeed(): void {
+  document
+    .querySelector<HTMLButtonElement>('[data-action="seed-mode-seed"]')
+    ?.click();
 }

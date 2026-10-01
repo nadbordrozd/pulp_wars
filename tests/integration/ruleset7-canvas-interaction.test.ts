@@ -39,6 +39,7 @@ describe("Ruleset 7 Canvas interaction", () => {
       storage: null,
       boardHost: host,
     });
+    chooseSeed();
     document
       .querySelector<HTMLButtonElement>('[data-action="launch"]')
       ?.click();
@@ -418,6 +419,7 @@ describe("Ruleset 7 Canvas interaction", () => {
     if (seed === null) throw new Error("seed missing");
     // Seed 1: the human moves first with two Fruit by its revision-14 capital.
     seed.value = "1";
+    chooseSeed();
     document
       .querySelector<HTMLButtonElement>('[data-action="launch"]')
       ?.click();
@@ -480,6 +482,7 @@ describe("Ruleset 7 Canvas interaction", () => {
     const seed = document.querySelector<HTMLInputElement>("#v7-seed");
     if (seed === null) throw new Error("seed missing");
     seed.value = "0";
+    chooseSeed();
     document
       .querySelector<HTMLButtonElement>('[data-action="launch"]')
       ?.click();
@@ -517,6 +520,7 @@ describe("Ruleset 7 Canvas interaction", () => {
       storage: null,
       boardHost: host,
     });
+    chooseSeed();
     document
       .querySelector<HTMLButtonElement>('[data-action="launch"]')
       ?.click();
@@ -1027,4 +1031,11 @@ function pointerEvent(
   Object.defineProperty(event, "pointerId", { value: pointerId });
   Object.defineProperty(event, "pointerType", { value: "touch" });
   return event;
+}
+
+/** Setup defaults to "New map"; these launches need the fixed seed field. */
+function chooseSeed(): void {
+  document
+    .querySelector<HTMLButtonElement>('[data-action="seed-mode-seed"]')
+    ?.click();
 }

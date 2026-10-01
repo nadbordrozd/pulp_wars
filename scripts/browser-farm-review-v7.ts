@@ -63,6 +63,8 @@ try {
   await evaluate(connection, "try { localStorage.clear(); } catch {} ");
   await connection.send("Page.reload");
   await waitFor(connection, `document.querySelector('[data-v7-setup]')`);
+  // Setup defaults to "New map"; a fixed seed needs "Use seed" first.
+  await click(connection, '[data-action="seed-mode-seed"]');
   await setValue(connection, "#v7-seed", "1");
   await click(connection, '[data-action="launch"]');
   await waitForHuman(connection);

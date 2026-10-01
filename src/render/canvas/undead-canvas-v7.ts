@@ -33,46 +33,80 @@ const BONE = "#efe8cf";
 const BADGE_FILL = "#231a2c";
 
 /**
- * A grey headstone with an engraved cross on a brown mound. It is drawn
- * below units and above terrain, resources and improvements, and shares no
- * colour or shape with treasure chests or resources.
+ * Grave corner marker frames, relative to the cell centre in world units
+ * (128 = one cell). The marker sits in the bottom-right corner, which no
+ * unit overlay uses: the seat badge and HP bar are on the left or below the
+ * sprite, the faction badge, Field Defense and affliction markers on the
+ * left or top, and status chips and the capital crown along the top. It is
+ * 28.8 world units in both art sets, which is 18 CSS px on an 80 CSS px
+ * cell (CHIBI zoom step 1, camera.zoom 0.625), and scales with zoom. `chibiBesideCity` keeps it left of the CHIBI population
+ * column on a city tile.
  */
-export function drawGraveMarkerV7(
+export const GRAVE_MARKER_FRAME_V7 = {
+  legacy: { left: 34, top: 34, size: 28.8 },
+  chibi: { left: 34, top: 34, size: 28.8 },
+  chibiBesideCity: { left: 15, top: 34, size: 28.8 },
+} as const;
+
+/**
+ * A small code-drawn tombstone: a pale round-topped headstone with a dark
+ * outline and an engraved cross. It is drawn above units, so a Grave under a
+ * unit stays visible, and shares no shape with the other corner markers.
+ */
+export function drawGraveCornerMarkerV7(
   context: CanvasRenderingContext2D,
   x: number,
   y: number,
   zoom: number,
-  highContrast: boolean,
+  options: {
+    readonly chibi: boolean;
+    /** The tile also holds a city (moves the CHIBI marker off its pips). */
+    readonly besideCity: boolean;
+    readonly highContrast: boolean;
+  },
 ): void {
-  const z = (value: number): number => value * zoom;
+  const frame = !options.chibi
+    ? GRAVE_MARKER_FRAME_V7.legacy
+    : options.besideCity
+      ? GRAVE_MARKER_FRAME_V7.chibiBesideCity
+      : GRAVE_MARKER_FRAME_V7.chibi;
+  const size = frame.size * zoom;
+  const left = x + frame.left * zoom;
+  const top = y + frame.top * zoom;
+  // Headstone geometry on a unit square.
+  const u = (value: number): number => value * size;
+  const stoneLeft = left + u(0.2);
+  const stoneRight = left + u(0.8);
+  const shoulder = top + u(0.38);
+  const base = top + u(0.9);
+  const outline = Math.max(1, u(0.1));
   context.save();
   context.lineJoin = "round";
   context.lineCap = "round";
-  context.fillStyle = highContrast ? "#000000" : "#5a4636";
-  context.strokeStyle = highContrast ? "#ffffff" : "#221a14";
-  context.lineWidth = Math.max(1, z(2.5));
+  // Ground line under the stone.
+  context.strokeStyle = options.highContrast ? "#000000" : "#16130f";
+  context.lineWidth = outline * 1.6;
   context.beginPath();
-  context.ellipse(x, y + z(30), z(34), z(11), 0, 0, Math.PI * 2);
-  context.fill();
+  context.moveTo(left + u(0.06), base);
+  context.lineTo(left + u(0.94), base);
   context.stroke();
-  context.fillStyle = highContrast ? "#ffffff" : "#b8bcb5";
-  context.strokeStyle = highContrast ? "#000000" : "#24282a";
-  context.lineWidth = Math.max(1, z(3));
+  context.fillStyle = options.highContrast ? "#ffffff" : "#d9dcd4";
+  context.lineWidth = outline;
   context.beginPath();
-  context.moveTo(x - z(17), y + z(30));
-  context.lineTo(x - z(17), y - z(8));
-  context.arc(x, y - z(8), z(17), Math.PI, 0);
-  context.lineTo(x + z(17), y + z(30));
+  context.moveTo(stoneLeft, base);
+  context.lineTo(stoneLeft, shoulder);
+  context.arc(left + u(0.5), shoulder, u(0.3), Math.PI, 0);
+  context.lineTo(stoneRight, base);
   context.closePath();
   context.fill();
   context.stroke();
-  context.strokeStyle = highContrast ? "#000000" : "#4a5054";
-  context.lineWidth = Math.max(1, z(3.5));
+  context.strokeStyle = options.highContrast ? "#000000" : "#3a4044";
+  context.lineWidth = Math.max(1, u(0.09));
   context.beginPath();
-  context.moveTo(x, y - z(15));
-  context.lineTo(x, y + z(13));
-  context.moveTo(x - z(8), y - z(5));
-  context.lineTo(x + z(8), y - z(5));
+  context.moveTo(left + u(0.5), top + u(0.28));
+  context.lineTo(left + u(0.5), top + u(0.7));
+  context.moveTo(left + u(0.36), top + u(0.42));
+  context.lineTo(left + u(0.64), top + u(0.42));
   context.stroke();
   context.restore();
 }

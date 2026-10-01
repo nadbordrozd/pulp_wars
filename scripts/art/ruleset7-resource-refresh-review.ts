@@ -339,7 +339,7 @@ async function captureBrowser(outputDirectory: string): Promise<void> {
     );
     await browserEval(
       connection,
-      `(() => { const input = document.querySelector('#v7-seed'); const launch = document.querySelector('[data-action="launch"]'); if (!(input instanceof HTMLInputElement) || !(launch instanceof HTMLButtonElement)) throw new Error('v7 setup unavailable'); input.value = '20'; input.dispatchEvent(new Event('input', { bubbles: true })); launch.click(); })()`,
+      `(() => { document.querySelector('[data-action="seed-mode-seed"]')?.click(); const input = document.querySelector('#v7-seed'); const launch = document.querySelector('[data-action="launch"]'); if (!(input instanceof HTMLInputElement) || !(launch instanceof HTMLButtonElement)) throw new Error('v7 setup unavailable'); input.value = '20'; input.dispatchEvent(new Event('input', { bubbles: true })); launch.click(); })()`,
     );
     await browserWait(
       connection,

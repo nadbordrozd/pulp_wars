@@ -85,6 +85,8 @@ try {
     connection,
     `document.querySelector('[data-v7-setup]') !== null`,
   );
+  // Setup defaults to "New map"; a fixed seed needs "Use seed" first.
+  await click(connection, '[data-action="seed-mode-seed"]');
   await click(connection, "#v7-seed");
   await key(connection, "a", "KeyA", 2);
   await connection.send("Input.insertText", { text: "20" });

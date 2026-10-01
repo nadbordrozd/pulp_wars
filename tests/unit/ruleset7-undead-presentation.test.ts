@@ -21,9 +21,11 @@ import {
 } from "../../src/render/canvas/board-renderer-v7";
 import type { ArtSubjectV7 } from "../../src/assets/chibi-art-v7";
 import type { ChibiBoardArtV7 } from "../../src/render/canvas/chibi-art-resolver-v7";
-import { CHIBI_WORLD_SCALE } from "../../src/render/canvas/chibi-geometry-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
-import { UNDEAD_BADGE_FRAME_V7 } from "../../src/render/canvas/undead-canvas-v7";
+import {
+  GRAVE_MARKER_FRAME_V7,
+  UNDEAD_BADGE_FRAME_V7,
+} from "../../src/render/canvas/undead-canvas-v7";
 import { tacticalAttachmentsV7 } from "../../src/render/tactical-presentation-v7";
 import {
   combatPreviewNoteV7,
@@ -44,7 +46,7 @@ const NO_SELECTION = {
 } as const;
 
 describe("Revision 13 Undead presentation", () => {
-  it("draws explored Graves between improvements and units and badges Undead units", () => {
+  it("plans explored Graves as corner markers above units and badges Undead units", () => {
     const state = undeadShowcaseFixtureV7();
     const view = viewForV7(state, state.humanPlayerId);
     const plan = buildBoardRenderPlanV7(
@@ -54,10 +56,16 @@ describe("Revision 13 Undead presentation", () => {
     );
     const graves = plan.entries.filter((entry) => entry.kind === "GRAVE");
     expect(graves.map((entry) => entry.at)).toEqual(view.graves);
-    expect(graves.every((entry) => entry.layer > 4 && entry.layer < 5)).toBe(
-      true,
-    );
     const units = plan.entries.filter((entry) => entry.kind === "UNIT");
+    // The marker belongs above every piece (units are layer 5), and no
+    // showcase Grave shares its tile with a city.
+    expect(
+      graves.every(
+        (entry) =>
+          entry.layer > Math.max(...units.map((unit) => unit.layer)) &&
+          entry.attachmentSlot === 0,
+      ),
+    ).toBe(true);
     const undead = units.filter((entry) => entry.faction === "UNDEAD");
     expect(undead.map((entry) => entry.label).sort()).toEqual(
       [
@@ -227,11 +235,10 @@ describe("Revision 13 Undead presentation", () => {
     expect(undeadCommandLabelV7("RALLY", "UNDEAD")).toBe("Frenzy");
   });
 
-  it("draws the Grave marker and the Undead badge in both art sets", () => {
+  it("draws the Grave corner marker and the Undead badge in both art sets", () => {
     const state = undeadShowcaseFixtureV7();
     const view = viewForV7(state, state.humanPlayerId);
     const plan = buildBoardRenderPlanV7(view, [], NO_SELECTION);
-    const grave = UNDEAD_SHOWCASE_V7.looseGrave;
     const banshee = UNDEAD_SHOWCASE_V7.banshee;
     const camera = { offsetX: 64, offsetY: 64, zoom: 1 };
     for (const artSet of ["LEGACY", "CHIBI"] as const) {
@@ -246,22 +253,37 @@ describe("Revision 13 Undead presentation", () => {
         artSet,
         // CHIBI Human units resolve a registered raster, so they use the
         // chibi overlay frame. No Undead raster is registered, so Undead
-        // units fall back to the Human sprite of their role (with the badge),
-        // and the Grave keeps its code-drawn marker.
+        // units fall back to the Human sprite of their role (with the badge).
         chibiArt: fixtureChibiArt(
           (subject) =>
             subject.startsWith("UNIT:") && !subject.startsWith("UNIT:UNDEAD:"),
         ),
       });
-      // The Grave mound is an ellipse centred just below its cell centre.
-      expect(
-        log.some(
-          (call) =>
-            call[0] === "ellipse" &&
-            call[1] === 64 + grave.x * 128 &&
-            call[2] === 64 + grave.y * 128 + 30,
-        ),
-      ).toBe(true);
+      // Every Grave is a small code-drawn tombstone in the bottom-right
+      // corner of its cell: no mound, no raster, in either art set.
+      const frame0 =
+        artSet === "CHIBI"
+          ? GRAVE_MARKER_FRAME_V7.chibi
+          : GRAVE_MARKER_FRAME_V7.legacy;
+      expect(frame0.left).toBeGreaterThan(0);
+      expect(frame0.top).toBeGreaterThan(0);
+      expect(frame0.left + frame0.size).toBeLessThanOrEqual(64);
+      expect(frame0.top + frame0.size).toBeLessThanOrEqual(64);
+      // 14–18 CSS px on an 80 CSS px cell (128 world units).
+      expect((frame0.size * 80) / 128).toBeGreaterThanOrEqual(14);
+      expect((frame0.size * 80) / 128).toBeLessThanOrEqual(18.001);
+      expect(log.some((call) => call[0] === "ellipse")).toBe(false);
+      const lastImage = log.reduce(
+        (last, call, index) => (call[0] === "drawImage" ? index : last),
+        -1,
+      );
+      expect(lastImage).toBeGreaterThan(-1);
+      for (const at of view.graves) {
+        const index = graveMarkerIndex(log, at, frame0);
+        // Drawn after every sprite, so the Ghoul standing on its Grave
+        // never hides the marker.
+        expect(index).toBeGreaterThan(lastImage);
+      }
       // The faction badge is a disc on the art-set frame of the Banshee.
       const frame =
         artSet === "CHIBI"
@@ -281,7 +303,7 @@ describe("Revision 13 Undead presentation", () => {
     }
   });
 
-  it("draws registered Undead rasters without the badge and the chibi Grave", () => {
+  it("draws registered Undead rasters without the badge and never the Grave raster", () => {
     const state = undeadShowcaseFixtureV7();
     const view = viewForV7(state, state.humanPlayerId);
     const plan = buildBoardRenderPlanV7(view, [], NO_SELECTION);
@@ -334,22 +356,14 @@ describe("Revision 13 Undead presentation", () => {
     // Undead units never draw the Human sprite of their role in its place.
     expect(subjects).not.toContain("UNIT:CAPTAIN");
     expect(subjects).toContain("UNIT:FIGHTER");
-    // The Grave raster is centred on its cell; no code-drawn mound.
-    expect(subjects.filter((subject) => subject === "GRAVE")).toHaveLength(
-      view.graves.length,
-    );
+    // The large Grave raster is no longer drawn even when registered: each
+    // Grave is the code-drawn corner marker.
+    expect(subjects).not.toContain("GRAVE");
     expect(all.some((call) => call[0] === "ellipse")).toBe(false);
-    const grave = UNDEAD_SHOWCASE_V7.looseGrave;
-    expect(
-      all.some(
-        (call) =>
-          call[0] === "drawImage" &&
-          (call[1] as { subject?: string }).subject === "GRAVE" &&
-          call[2] === 64 + grave.x * 128 - 20 * CHIBI_SCALE &&
-          call[3] === 64 + grave.y * 128 - 20 * CHIBI_SCALE &&
-          call[4] === 40 * CHIBI_SCALE,
-      ),
-    ).toBe(true);
+    for (const at of view.graves)
+      expect(
+        graveMarkerIndex(all, at, GRAVE_MARKER_FRAME_V7.chibi),
+      ).toBeGreaterThan(-1);
     // A loading Undead raster still means Undead art: no stand-in, no badge.
     const loading = draw(
       (subject) =>
@@ -602,8 +616,25 @@ function recordingContext(): {
   return { context: context as CanvasRenderingContext2D, log };
 }
 
-/** Chibi master pixels per world unit at zoom 1 (128-unit cells, 80 px tiles). */
-const CHIBI_SCALE = 1 / CHIBI_WORLD_SCALE;
+/**
+ * Index of the headstone arc of the Grave corner marker at `at` (camera
+ * offset 64, zoom 1), or -1 when it was not drawn.
+ */
+function graveMarkerIndex(
+  log: readonly (readonly unknown[])[],
+  at: CoordV7,
+  frame: { readonly left: number; readonly top: number; readonly size: number },
+): number {
+  const near = (value: unknown, expected: number): boolean =>
+    typeof value === "number" && Math.abs(value - expected) < 1e-6;
+  return log.findIndex(
+    (call) =>
+      call[0] === "arc" &&
+      near(call[1], 64 + at.x * 128 + frame.left + frame.size * 0.5) &&
+      near(call[2], 64 + at.y * 128 + frame.top + frame.size * 0.38) &&
+      near(call[3], frame.size * 0.3),
+  );
+}
 
 /**
  * A CHIBI art fake: `ready` subjects resolve to an image tagged with the

@@ -60,6 +60,83 @@ describe("Ruleset 7 board renderer", () => {
     expect(JSON.stringify(view.board.tiles)).toBe(before);
   });
 
+  it("draws no coast or Shallow/Deep water line and keeps territory borders", () => {
+    const state = exploredAllV7(initialV7(1516));
+    const base = viewForV7(state, state.humanPlayerId);
+    // Row 0: land, Shallow Water, Deep Water, Deep Water; row 1: all Shallow.
+    const view = {
+      ...base,
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          tile.at.y > 1 || tile.at.x > 3
+            ? tile
+            : tile.at.y === 0 && tile.at.x === 0
+              ? { ...tile, terrain: "GRASS" as const, biome: "PLAINS" as const }
+              : {
+                  ...tile,
+                  terrain:
+                    tile.at.y === 0 && tile.at.x >= 2
+                      ? ("DEEP_WATER" as const)
+                      : ("SHALLOW_WATER" as const),
+                  biome: null,
+                  resource: null,
+                  improvement: null,
+                },
+        ),
+      },
+    };
+    // The plan is shared by the LEGACY and CHIBI art sets.
+    const plan = buildBoardRenderPlanV7(view, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    // Neither the land/water coast nor the Shallow/Deep edge plans a line.
+    expect(
+      plan.entries.some(
+        (entry) =>
+          (entry.kind as string) === "WATER_BOUNDARY" ||
+          entry.key.startsWith("water-"),
+      ),
+    ).toBe(false);
+    // Nothing dashed is stroked in the old coast or depth line colours.
+    const strokes: string[] = [];
+    const context = new Proxy(
+      {},
+      {
+        get: (target, key) =>
+          key === "canvas"
+            ? undefined
+            : key === "measureText"
+              ? (text: string) => ({ width: text.length * 7 })
+              : key in target
+                ? Reflect.get(target, key)
+                : () => {},
+        set: (target, key, value) => {
+          if (key === "strokeStyle") strokes.push(String(value));
+          return Reflect.set(target, key, value);
+        },
+      },
+    ) as CanvasRenderingContext2D;
+    for (const artSet of ["LEGACY", "CHIBI"] as const)
+      drawBoardV7({
+        context,
+        viewport: { width: 1600, height: 1600 },
+        devicePixelRatio: 1,
+        camera: { offsetX: 64, offsetY: 64, zoom: 1 },
+        plan,
+        images: { resolve: () => ({}) as CanvasImageSource },
+        artSet,
+      });
+    expect(strokes.length).toBeGreaterThan(0);
+    expect(strokes).not.toContain("#ecdfb7");
+    expect(strokes).not.toContain("#b7d8d4");
+    expect(
+      plan.entries.some((entry) => entry.kind === "TERRITORY_BOUNDARY"),
+    ).toBe(true);
+  });
+
   it("keeps square row depth, unit-over-improvement, accepted sites and map targets", () => {
     const state = exploredAllV7(initialV7(1516));
     const view = viewForV7(state, state.humanPlayerId);

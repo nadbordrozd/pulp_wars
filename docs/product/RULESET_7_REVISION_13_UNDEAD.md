@@ -660,7 +660,9 @@ The browser UI (`pulp_wars-vkq.8`) must, at requirement level:
   the combat preview text;
 - show "Frenzy" and "Frenzied" for Undead support, and explain Restless in
   the unit status and on the unavailable Recover action;
-- render a Grave marker on every explored Grave tile, below units; and
+- render a Grave marker on every explored Grave tile: a small indicator in
+  the tile's bottom-right corner, drawn above units so a Grave under a unit
+  stays visible (changed from "below units" by `pulp_wars-6gd.4`); and
 - look identical to revision 12 in matches without an Undead seat.
 
 ### 10.2 Development flag and placeholder art

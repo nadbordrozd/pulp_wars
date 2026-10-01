@@ -82,11 +82,12 @@ an Undead seat looks and behaves exactly as in revision 12.
   the Human sprite of the role plus a bone skull badge on a near-black disc
   (legacy: right of the sprite above the HP bar; CHIBI: the cell's top-left
   corner), distinct from owner colour. DOM unit art, training buttons,
-  recruit help and reward art follow the same rule. An explored Grave is
-  drawn above terrain, resources and improvements and below units; without
-  its CHIBI raster it is a code-drawn grey headstone with a cross on a brown
-  mound. The tile dock shows a Grave chip and a unit standing on one shows
-  "On a Grave".
+  recruit help and reward art follow the same rule. An explored Grave is a
+  small code-drawn tombstone marker in its tile's bottom-right corner, drawn
+  above units (see the
+  [playtest round 3 overlay](#current-ruleset-7-playtest-round-3-interface-overlay));
+  the registered CHIBI Grave raster is no longer drawn on the board. The tile
+  dock shows a Grave chip and a unit standing on one shows "On a Grave".
 - Selecting an own unit previews its offered revision-13 command on the
   board: a Banshee's radius-2 Wail area with per-target damage (red for a
   kill), a Necromancer's Graves that will rise ("Rise"), and a Ghoul's
@@ -282,6 +283,63 @@ Wave 2` → `Yours −3` → `−3`), keeping its lethal red or hazard styling;
   present), and "... It ends sooner if this Lich dies." when no seat can Tend.
 - **Review.** `npm run review:ruleset7-goblin-ui` captures these surfaces in
   both art sets at desktop and phone widths (dev server only).
+
+## Current Ruleset 7 playtest round 3 interface overlay
+
+This overlay (`pulp_wars-6gd.4`) applies to the current Ruleset 7 route in
+both art sets. Where an older section below disagrees, this overlay wins.
+
+- **No text selection.** The whole interface (`.v7-app-shell`: setup, HUD,
+  docks, tech tree, dialogs, toasts) is not selectable as text
+  (`user-select: none`), and nothing in it starts a drag (images, icons,
+  links). Text fields stay editable and selectable, and two deliberately
+  copyable texts opt back in: the map seed in Settings and the save-recovery
+  diagnostic.
+- **Setup: New map or Use seed.** Setup has a two-state control in a group
+  labelled "Map seed". **New map** is the default: the seed field is hidden,
+  the hint reads "A new random map every game.", and each launch draws a
+  fresh random seed (0–4294967295) in the DOM layer. **Use seed** reveals the
+  Seed field (default 42) with the unchanged whole-number validation; a seed
+  typed there survives switching back and forth. The choice lasts for the
+  page session and is not saved. The engine only ever receives the resulting
+  number, so matches stay deterministic and saves hold nothing new.
+- **Map seed.** Settings shows `Map seed: N` for the current match (selectable
+  text), so a map can be replayed by choosing Use seed in a new game. Restart
+  and Play again keep the current match's seed; a new game from the resume
+  screen offers the same New map / Use seed choice.
+- **Popups dim the screen.** The tech tree, Leaderboard, Achievements, Help,
+  Settings, unit info (`?`), recruit help, the reward choice, the achievement
+  notice, results and the error panel all sit over a dim scrim that covers
+  the board, HUD and docks. The scrim takes every pointer event, so no click
+  reaches the board. The selection dock is still not a popup and never dims
+  the map.
+- **Click outside to close.** A click on the scrim closes the tech tree, the
+  menu screens (Leaderboard, Achievements, Help, Settings), unit info and
+  recruit help, exactly like Escape and the close button, and returns focus
+  to the control that opened them. The reward choice, achievement notice,
+  results and error panel ignore scrim clicks. The reward choice ends with
+  the hint "Choose a reward to continue." and still has no close button and
+  ignores Escape.
+- **Close button.** Dismissable popups share one close button: a 44 CSS px
+  light disc with a dark ✕, pinned to the popup's top-right corner and sticky
+  while a long popup scrolls. It is the popup's first focusable control and
+  receives focus when the popup opens. Focus trapping, focus return,
+  `aria-modal` and the inert background are unchanged; the scrim itself is
+  `aria-hidden` and holds nothing focusable.
+- **Graves.** An explored Grave is a small tombstone marker (pale headstone
+  with a cross, dark outline) in the **bottom-right corner** of its tile, 18
+  CSS px on an 80 CSS px tile and scaling with zoom, in both art sets. That
+  corner is free of the seat badge and HP bar (left or below the sprite), the
+  faction, Field Defense and affliction markers (left and top), and status
+  chips and the capital crown (top). On a city tile the CHIBI marker sits
+  just left of the population column. Markers are drawn after every unit and
+  overlay, so a Grave under a unit stays visible. The tile dock's Grave chip,
+  the unit's "On a Grave" chip, the map cursor description, and the Raise
+  Dead and Devour previews are unchanged.
+- **Water.** No boundary lines are drawn around water: neither the former
+  pale-yellow dashed coast line between land and water nor the dashed line
+  between Shallow and Deep Water. The terrain art alone tells them apart.
+  Territory borders and landing markers are unchanged.
 
 ## 0. Ruleset-6 replacement contract
 

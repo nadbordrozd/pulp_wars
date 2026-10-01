@@ -62,6 +62,52 @@ describe("Ruleset 7 browser smoke script", () => {
       "scripts/browser-smoke-v7-controls.ts",
     );
   });
+  it("chooses Use seed before every fixed seed and checks the New map default", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const replaceSeed = source.slice(
+      source.indexOf("async function replaceSeedInput("),
+      source.indexOf("async function pressKey("),
+    );
+    // The seed field is hidden until "Use seed" is chosen, so the helper
+    // chooses it before it clicks the field.
+    const chosen = replaceSeed.indexOf("await chooseUseSeed(connection)");
+    expect(chosen).toBeGreaterThan(-1);
+    expect(chosen).toBeLessThan(
+      replaceSeed.indexOf('await pointerClick(connection, "#v7-seed")'),
+    );
+    const choose = source.slice(
+      source.indexOf("async function chooseUseSeed("),
+      source.indexOf("async function replaceSeedInput("),
+    );
+    expect(choose).toContain(
+      "await pointerClick(connection, '[data-action=\"seed-mode-seed\"]')",
+    );
+    expect(choose).toContain("dataset.seedMode === 'seed'");
+    expect(choose).toContain("closest('label')?.hidden === false");
+    // Every fast-forward launch types a fixed seed first.
+    const launches = [
+      ...source.matchAll(
+        /await replaceSeedInput\(connection, "0"\);\s*await launchWithFastForward\(connection\)/g,
+      ),
+    ];
+    expect(launches).toHaveLength(4);
+    // The art probes launch the default and assert it is "New map".
+    const probe = source.slice(
+      source.indexOf("async function probeChibiArtSet("),
+      source.indexOf("async function probeUndeadSetup("),
+    );
+    expect(probe).toContain("dataset.seedMode === 'new'");
+    expect(probe).toContain("closest('label')?.hidden === true");
+    // The naval smoke keeps its fixed default seed.
+    const naval = readFileSync("scripts/browser-naval-smoke-v7.ts", "utf8");
+    const navalSeed = naval.indexOf(
+      "click('[data-action=\"seed-mode-seed\"]')",
+    );
+    expect(navalSeed).toBeGreaterThan(-1);
+    expect(navalSeed).toBeLessThan(
+      naval.indexOf("click('[data-action=\"launch\"]')"),
+    );
+  });
   it("probes the CHIBI default, the persisted ?art=legacy opt-out and a reset", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = source.slice(

@@ -1851,7 +1851,7 @@ async function captureInGame(
       );
       await evaluate(
         connection,
-        `(() => { const seed = document.querySelector('#v7-seed'); if (seed) { seed.value = '67'; seed.dispatchEvent(new Event('change', { bubbles: true })); } })()`,
+        `(() => { document.querySelector('[data-action="seed-mode-seed"]')?.click(); const seed = document.querySelector('#v7-seed'); if (seed) { seed.value = '67'; seed.dispatchEvent(new Event('change', { bubbles: true })); } })()`,
       );
       // The setup form re-renders on change; click the fresh Play button.
       await waitFor(

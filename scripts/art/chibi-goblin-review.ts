@@ -662,6 +662,11 @@ async function captureMatch(
         connection,
         `globalThis.__GOBLIN_REVIEW_OLD__ !== true && document.readyState === 'complete' && document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
       );
+      // Setup defaults to "New map"; a fixed seed needs "Use seed" first.
+      await evaluate(
+        connection,
+        `document.querySelector('[data-action="seed-mode-seed"]')?.click()`,
+      );
       // The setup form re-renders on change: set each field, then wait.
       for (const [selector, value] of [
         ["#v7-seed", "67"],

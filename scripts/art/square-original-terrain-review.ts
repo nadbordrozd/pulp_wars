@@ -1488,7 +1488,7 @@ async function createRuleset7RendererCapture(
     );
     await evaluateReadability(
       connection,
-      `(() => { const seed = document.querySelector('#v7-seed'); if (seed instanceof HTMLInputElement) { seed.value = '1'; seed.dispatchEvent(new Event('input', { bubbles: true })); } const launch = document.querySelector('[data-action="launch"]'); if (!(launch instanceof HTMLElement)) throw new Error('Ruleset 7 launch missing'); launch.click(); })()`,
+      `(() => { document.querySelector('[data-action="seed-mode-seed"]')?.click(); const seed = document.querySelector('#v7-seed'); if (seed instanceof HTMLInputElement) { seed.value = '1'; seed.dispatchEvent(new Event('input', { bubbles: true })); } const launch = document.querySelector('[data-action="launch"]'); if (!(launch instanceof HTMLElement)) throw new Error('Ruleset 7 launch missing'); launch.click(); })()`,
     );
     await waitForReadabilityExpression(
       connection,

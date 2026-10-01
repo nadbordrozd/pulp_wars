@@ -134,6 +134,8 @@ try {
           throw new Error('map type select missing');
         mapTypeSelect.value = mapType;
         mapTypeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        // Setup defaults to "New map"; keep the fixed default seed.
+        click('[data-action="seed-mode-seed"]');
         click('[data-action="launch"]');
         await waitFor(
           () => controller.snapshot().phase === 'ACTIVE' && controller.snapshot().view?.setup.mapType === mapType,

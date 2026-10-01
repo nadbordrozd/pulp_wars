@@ -40,7 +40,7 @@ import {
   drawAfflictionMarkerV7,
   drawPreviewTextStackV7,
   type PreviewTextBoxV7,
-  drawGraveMarkerV7,
+  drawGraveCornerMarkerV7,
   drawUndeadBadgeV7,
   type AbilityPreviewStyleV7,
   type AfflictionSubjectV7,
@@ -193,7 +193,6 @@ export interface BoardRenderPlanEntryV7 {
     | "REACH"
     | "STATUS"
     | "LINK"
-    | "WATER_BOUNDARY"
     | "TERRITORY_BOUNDARY"
     | "SELECTION"
     | "CURSOR"
@@ -416,7 +415,8 @@ export function buildBoardRenderPlanV7(
         label: "Field defense",
       });
   }
-  addWaterBoundaries(entries, view);
+  // No water-boundary lines are planned (playtest round 3, pulp_wars-6gd.4):
+  // coasts and the Shallow/Deep edge read from the terrain art alone.
   for (const city of view.cities)
     entries.push({
       key: `city:${city.id}`,
@@ -442,15 +442,20 @@ export function buildBoardRenderPlanV7(
       artSubject: "TREASURE",
       label: "Treasure",
     });
-  // Revision 13: explored Graves sit above ground art and below every unit.
+  // Revision 13 Graves are a small corner marker (playtest round 3,
+  // pulp_wars-6gd.4) drawn above every piece, so a unit standing on the
+  // Grave never hides it. On a city tile the marker moves clear of the
+  // CHIBI population column (attachment slot 1).
+  const cityCells = new Set(view.cities.map((city) => coordKey(city.at)));
   for (const at of view.graves)
     entries.push({
       key: `grave:${at.x},${at.y}`,
       kind: "GRAVE",
-      layer: 4.5,
+      layer: 5.5,
       at,
       artSubject: "GRAVE",
       label: "Grave",
+      attachmentSlot: cityCells.has(coordKey(at)) ? 1 : 0,
     });
   const plaguedIds = new Set(view.plagued.map((entry) => entry.unitId));
   const bittenIds = new Set(view.bitten.map((entry) => entry.unitId));
@@ -914,6 +919,9 @@ export function drawBoardV7(input: {
   // below (a giant's upward overflow), so the overlays are drawn after every
   // piece, in plan order, and no sprite can hide them.
   const deferredChibiOverlays: (() => void)[] = [];
+  // Grave corner markers are drawn last in both art sets, over every piece
+  // and its overlays.
+  const deferredGraveMarkers: (() => void)[] = [];
   // CHIBI draws every road casing before any road fill, so a corner join
   // and its cell's road read as one path instead of crossing outlines.
   // A Road (or a corner join) on tall terrain passes under the tree or rock
@@ -958,7 +966,6 @@ export function drawBoardV7(input: {
     for (const entry of input.plan.entries) {
       if (
         entry.kind === "LINK" ||
-        entry.kind === "WATER_BOUNDARY" ||
         entry.kind === "TARGET" ||
         entry.kind === "TERRITORY_BOUNDARY" ||
         entry.kind === "REACH" ||
@@ -1110,35 +1117,15 @@ export function drawBoardV7(input: {
         continue;
       }
       if (entry.kind === "GRAVE") {
-        // CHIBI draws the registered Grave raster (nothing while it loads);
-        // LEGACY and a missing raster keep the code-drawn marker.
-        const chibi = resolveChibi(entry);
-        if (chibi?.kind === "READY") {
-          const rect = chibiDestinationRect(
-            { x, y },
-            camera,
-            chibi.asset,
-            devicePixelRatio,
-          );
-          context.save();
-          context.globalAlpha = sceneAlpha;
-          context.imageSmoothingEnabled = chibi.smoothing;
-          context.drawImage(
-            chibi.image,
-            rect.x,
-            rect.y,
-            rect.width,
-            rect.height,
-          );
-          context.restore();
-        } else if (chibi === null || chibi.kind === "MISSING")
-          drawGraveMarkerV7(
-            context,
-            x,
-            y,
-            camera.zoom,
-            input.highContrast ?? false,
-          );
+        const chibi = chibiArt !== undefined;
+        const slot = entry.attachmentSlot ?? 0;
+        deferredGraveMarkers.push(() =>
+          drawGraveCornerMarkerV7(context, x, y, camera.zoom, {
+            chibi,
+            besideCity: slot > 0,
+            highContrast: input.highContrast ?? false,
+          }),
+        );
         continue;
       }
       if (entry.kind === "STATUS") {
@@ -1514,6 +1501,7 @@ export function drawBoardV7(input: {
       }
     }
   for (const drawOverlays of deferredChibiOverlays) drawOverlays();
+  for (const drawMarker of deferredGraveMarkers) drawMarker();
   const targetEdgeKeys = new Set(
     input.plan.entries.flatMap((entry) =>
       entry.kind === "TARGET"
@@ -1554,20 +1542,6 @@ export function drawBoardV7(input: {
         continue;
       drawTerritoryBoundary(context, camera, boundary, roadCells);
     }
-    context.restore();
-  }
-  for (const boundary of input.plan.entries) {
-    if (boundary.kind !== "WATER_BOUNDARY" || boundary.edge === undefined)
-      continue;
-    context.save();
-    context.strokeStyle = boundary.label === "DEPTH" ? "#b7d8d4" : "#ecdfb7";
-    context.lineWidth = (boundary.label === "DEPTH" ? 4 : 3) * camera.zoom;
-    context.setLineDash(
-      boundary.label === "DEPTH"
-        ? [6 * camera.zoom, 4 * camera.zoom]
-        : [10 * camera.zoom, 5 * camera.zoom],
-    );
-    strokeTileEdge(context, camera, boundary.at, boundary.edge);
     context.restore();
   }
   drawAbilityAreasV7(context, camera, input.plan.entries);
@@ -1794,55 +1768,6 @@ function addTerritoryBoundaries(
           ? {}
           : { counterpartOwnerColor }),
       });
-    }
-  }
-}
-
-function addWaterBoundaries(
-  entries: BoardRenderPlanEntryV7[],
-  view: PlayerViewV7,
-): void {
-  const byKey = new Map(
-    view.board.tiles.map((tile) => [coordKey(tile.at), tile] as const),
-  );
-  for (const tile of view.board.tiles) {
-    if (!tile.explored) continue;
-    for (const [dx, dy, edge, opposite] of [
-      [1, 0, "EAST", "WEST"],
-      [0, 1, "SOUTH", "NORTH"],
-    ] as const) {
-      const neighbor = byKey.get(
-        coordKey({ x: tile.at.x + dx, y: tile.at.y + dy }),
-      );
-      if (neighbor === undefined || !neighbor.explored) continue;
-      const tileWater = tile.biome === null;
-      const neighborWater = neighbor.biome === null;
-      if (tileWater !== neighborWater) {
-        const water = tileWater ? tile : neighbor;
-        entries.push({
-          key: `water-coast:${tile.at.x},${tile.at.y}:${edge}`,
-          kind: "WATER_BOUNDARY",
-          layer: 6,
-          at: water.at,
-          edge: tileWater ? edge : opposite,
-          label: "COAST",
-        });
-      } else if (
-        tileWater &&
-        tile.terrain !== neighbor.terrain &&
-        (tile.terrain === "SHALLOW_WATER" ||
-          neighbor.terrain === "SHALLOW_WATER")
-      ) {
-        const shallow = tile.terrain === "SHALLOW_WATER" ? tile : neighbor;
-        entries.push({
-          key: `water-depth:${tile.at.x},${tile.at.y}:${edge}`,
-          kind: "WATER_BOUNDARY",
-          layer: 6,
-          at: shallow.at,
-          edge: shallow === tile ? edge : opposite,
-          label: "DEPTH",
-        });
-      }
     }
   }
 }
