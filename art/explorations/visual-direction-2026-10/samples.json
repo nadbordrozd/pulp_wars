@@ -1,0 +1,42 @@
+{
+  "bead": "pulp_wars-3tq.1",
+  "note": "Exploration sample sprites of the visual-direction study. The URLs are served by the Vite dev server from the repository root; nothing here is registered as production art.",
+  "assets": [
+    {
+      "id": "chibi-sample-accent-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "url": "/art/explorations/visual-direction-2026-10/assets/chibi-sample-accent-fighter.png",
+      "ownerMaskUrl": "/art/explorations/visual-direction-2026-10/assets/chibi-sample-accent-fighter.mask.png",
+      "recipe": "fighter-accent-edit-b",
+      "candidate": 0,
+      "ownerCoverage": 0.1588
+    },
+    {
+      "id": "chibi-sample-accent-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "url": "/art/explorations/visual-direction-2026-10/assets/chibi-sample-accent-marksman.png",
+      "ownerMaskUrl": "/art/explorations/visual-direction-2026-10/assets/chibi-sample-accent-marksman.mask.png",
+      "recipe": "marksman-accent-edit",
+      "candidate": 0,
+      "ownerCoverage": 0.2766
+    },
+    {
+      "id": "chibi-sample-accent-knight",
+      "subject": "UNIT:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "url": "/art/explorations/visual-direction-2026-10/assets/chibi-sample-accent-knight.png",
+      "ownerMaskUrl": "/art/explorations/visual-direction-2026-10/assets/chibi-sample-accent-knight.mask.png",
+      "recipe": "knight-accent-edit",
+      "candidate": 0,
+      "ownerCoverage": 0.125
+    }
+  ]
+}

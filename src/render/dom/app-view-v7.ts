@@ -52,6 +52,12 @@ import {
   storeBoardSaturationV7,
 } from "../../app/board-saturation-v7";
 import {
+  loadBoardVisualDirectionV7,
+  storeBoardVisualDirectionV7,
+} from "../../app/board-visual-direction-v7";
+import type { ChibiArtRegistryV7 } from "../../assets/chibi-art-v7";
+import { RECOMMENDED_DIRECTION_V7 } from "../canvas/visual-direction-v7";
+import {
   SETTINGS_STORAGE_KEY,
   parseSettings,
   type StorageAdapter,
@@ -335,6 +341,9 @@ export class Ruleset7DomAppView {
   #uiScale: 1 | 1.25 | 1.5 | 2 = 1;
   /** Developer experiment (pulp_wars-x6c); presentation only. */
   #boardSaturation: BoardSaturationV7 = DEFAULT_BOARD_SATURATION_V7;
+  /** Developer experiment (pulp_wars-3tq.1); presentation only, off by default. */
+  #visualDirection = false;
+  #visualDirectionSamples: ChibiArtRegistryV7 | null = null;
   #developerToolsOpen = false;
   #pendingFocusAction: string | null = null;
   #matchShell: HTMLElement | null = null;
@@ -396,6 +405,8 @@ export class Ruleset7DomAppView {
       // Restricted storage must not prevent the public UI from mounting.
     }
     this.#boardSaturation = loadBoardSaturationV7(this.#settingsStorage);
+    this.#visualDirection = loadBoardVisualDirectionV7(this.#settingsStorage);
+    if (this.#visualDirection) this.#loadVisualDirectionSamples();
     this.#snapshot = controller.snapshot();
     this.#document.addEventListener("keydown", this.#onKeyDown);
     this.#root.addEventListener("dragstart", this.#onDragStart);
@@ -1248,6 +1259,14 @@ export class Ruleset7DomAppView {
       highContrast: this.#highContrast,
       artSet: this.#artSet,
       saturation: this.#boardSaturation,
+      ...(this.#visualDirection
+        ? {
+            visualDirection: RECOMMENDED_DIRECTION_V7,
+            ...(this.#visualDirectionSamples === null
+              ? {}
+              : { visualDirectionSamples: this.#visualDirectionSamples }),
+          }
+        : {}),
       interaction: {
         selection: this.#selection,
         selectedUnitId,
@@ -3013,6 +3032,7 @@ export class Ruleset7DomAppView {
     developer.append(
       text(this.#document, "summary", "Developer tools"),
       this.#saturationControls(),
+      this.#visualDirectionControl(),
       developerActions,
     );
     section.append(display, game, seed, developer);
@@ -3082,6 +3102,56 @@ export class Ruleset7DomAppView {
       reset,
     );
     return group;
+  }
+
+  /**
+   * Developer experiment (bead pulp_wars-3tq.1): one checkbox that draws the
+   * board in the recommended visual direction (chibi art set only). It
+   * updates the board and local storage in place, like the sliders.
+   */
+  #visualDirectionControl(): HTMLElement {
+    const group = el(this.#document, "fieldset", "v7-saturation-tools");
+    group.append(text(this.#document, "legend", "Visual direction"));
+    const label = this.#document.createElement("label");
+    label.className = "v7-visual-direction-toggle";
+    const input = this.#document.createElement("input");
+    input.type = "checkbox";
+    input.id = "v7-visual-direction";
+    input.checked = this.#visualDirection;
+    input.addEventListener("change", () => {
+      this.#visualDirection = input.checked;
+      if (!storeBoardVisualDirectionV7(this.#settingsStorage, input.checked))
+        this.#error = "Settings could not be saved.";
+      if (input.checked) this.#loadVisualDirectionSamples();
+      this.#refreshBoard();
+    });
+    label.append(
+      input,
+      this.#document.createTextNode(
+        " Recommended direction (experiment, chibi art only)",
+      ),
+    );
+    group.append(label);
+    return group;
+  }
+
+  /** The exploration sample sprites, fetched only once the toggle is on. */
+  #loadVisualDirectionSamples(): void {
+    if (this.#visualDirectionSamples !== null) return;
+    void import("../canvas/visual-direction-samples-v7")
+      .then((module) => {
+        this.#visualDirectionSamples = module.visualDirectionSampleRegistryV7();
+        if (this.#visualDirection) this.#refreshBoard();
+      })
+      .catch(() => {
+        // Without the samples the direction draws the production sprites.
+      });
+  }
+
+  #refreshBoard(): void {
+    const view = this.#snapshot.view;
+    if (view !== null && view !== undefined)
+      this.#boardHost.update(this.#boardModel(view));
   }
 
   #setBoardSaturation(saturation: BoardSaturationV7): void {

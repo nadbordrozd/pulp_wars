@@ -1544,6 +1544,26 @@
   font-weight: 800;
 }
 
+.v7-visual-direction-toggle {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.v7-visual-direction-toggle input {
+  flex: none;
+  width: 1.3rem;
+  height: 1.3rem;
+  min-height: 0;
+  margin: 0;
+  accent-color: var(--gold);
+}
+
 .v7-saturation-row {
   display: grid;
   grid-template-columns: minmax(8rem, max-content) minmax(0, 1fr) 3.2rem;

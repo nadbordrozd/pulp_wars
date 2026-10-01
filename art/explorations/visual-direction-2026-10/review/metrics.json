@@ -1,0 +1,196 @@
+{
+  "bead": "pulp_wars-3tq.1",
+  "command": "npm run art:visual-direction-review",
+  "basis": "desktop 1440 x 900 at DPR 1, zoom 1, the 13 x 11 scene patch; unit pixels are those that differ between the scene with and without units",
+  "metrics": {
+    "today": {
+      "label": "Today (shipping)",
+      "backgroundEdgeDensity": 108.68,
+      "backgroundSaturatedShare": 0.132,
+      "unitToBackgroundEdgeRatio": 2.54,
+      "unitFigureGroundDistance": 75.6,
+      "playerColourOnUnitsShare": 0.376,
+      "backgroundPlayerColourPerMille": 71.7
+    },
+    "f-building-owner-off": {
+      "label": "Factor: no player colour on buildings and cities (stone grey)",
+      "backgroundEdgeDensity": 108.62,
+      "backgroundSaturatedShare": 0.112,
+      "unitToBackgroundEdgeRatio": 2.54,
+      "unitFigureGroundDistance": 75.1,
+      "playerColourOnUnitsShare": 0.484,
+      "backgroundPlayerColourPerMille": 46.1
+    },
+    "f-unit-owner-accent": {
+      "label": "Factor: unit garment cream, player colour on crest or hood only",
+      "backgroundEdgeDensity": 108.68,
+      "backgroundSaturatedShare": 0.132,
+      "unitToBackgroundEdgeRatio": 2.72,
+      "unitFigureGroundDistance": 77.1,
+      "playerColourOnUnitsShare": 0.26,
+      "backgroundPlayerColourPerMille": 71.7
+    },
+    "f-unit-owner-none": {
+      "label": "Factor: unit garment cream, no player colour on the sprite",
+      "backgroundEdgeDensity": 108.68,
+      "backgroundSaturatedShare": 0.132,
+      "unitToBackgroundEdgeRatio": 2.8,
+      "unitFigureGroundDistance": 77.9,
+      "playerColourOnUnitsShare": 0.166,
+      "backgroundPlayerColourPerMille": 71.7
+    },
+    "f-building-saturation": {
+      "label": "Factor: building and city saturation 50%",
+      "backgroundEdgeDensity": 108.7,
+      "backgroundSaturatedShare": 0.035,
+      "unitToBackgroundEdgeRatio": 2.54,
+      "unitFigureGroundDistance": 73.8,
+      "playerColourOnUnitsShare": 0.54,
+      "backgroundPlayerColourPerMille": 36.2
+    },
+    "f-building-lightness": {
+      "label": "Factor: buildings and cities lighter, lower contrast",
+      "backgroundEdgeDensity": 83.63,
+      "backgroundSaturatedShare": 0.126,
+      "unitToBackgroundEdgeRatio": 3.27,
+      "unitFigureGroundDistance": 71.9,
+      "playerColourOnUnitsShare": 0.301,
+      "backgroundPlayerColourPerMille": 111
+    },
+    "f-building-outline": {
+      "label": "Factor: buildings and cities with a soft coloured outline",
+      "backgroundEdgeDensity": 101.21,
+      "backgroundSaturatedShare": 0.132,
+      "unitToBackgroundEdgeRatio": 2.72,
+      "unitFigureGroundDistance": 74.7,
+      "playerColourOnUnitsShare": 0.373,
+      "backgroundPlayerColourPerMille": 72.6
+    },
+    "f-building-scale": {
+      "label": "Factor: buildings at 80% size",
+      "backgroundEdgeDensity": 89.74,
+      "backgroundSaturatedShare": 0.098,
+      "unitToBackgroundEdgeRatio": 3.05,
+      "unitFigureGroundDistance": 74,
+      "playerColourOnUnitsShare": 0.454,
+      "backgroundPlayerColourPerMille": 52.3
+    },
+    "f-chrome": {
+      "label": "Factor: reduced chrome (HP only when damaged, no badge, calm roads, thin borders)",
+      "backgroundEdgeDensity": 99.38,
+      "backgroundSaturatedShare": 0.134,
+      "unitToBackgroundEdgeRatio": 2.82,
+      "unitFigureGroundDistance": 78.3,
+      "playerColourOnUnitsShare": 0.343,
+      "backgroundPlayerColourPerMille": 73.5
+    },
+    "f-terrain": {
+      "label": "Factor: calmer terrain texture (contrast 60%, soft outlines)",
+      "backgroundEdgeDensity": 97.47,
+      "backgroundSaturatedShare": 0.126,
+      "unitToBackgroundEdgeRatio": 2.83,
+      "unitFigureGroundDistance": 75.1,
+      "playerColourOnUnitsShare": 0.387,
+      "backgroundPlayerColourPerMille": 68.7
+    },
+    "f-unit-base": {
+      "label": "Factor: base disc under each unit",
+      "backgroundEdgeDensity": 108.68,
+      "backgroundSaturatedShare": 0.132,
+      "unitToBackgroundEdgeRatio": 2.4,
+      "unitFigureGroundDistance": 73.5,
+      "playerColourOnUnitsShare": 0.48,
+      "backgroundPlayerColourPerMille": 71.7
+    },
+    "f-unit-halo": {
+      "label": "Factor: light rim around each unit",
+      "backgroundEdgeDensity": 108.68,
+      "backgroundSaturatedShare": 0.132,
+      "unitToBackgroundEdgeRatio": 2.81,
+      "unitFigureGroundDistance": 78.8,
+      "playerColourOnUnitsShare": 0.381,
+      "backgroundPlayerColourPerMille": 71.7
+    },
+    "c1-sliders": {
+      "label": "C1 Sliders only: buildings and cities at 50% saturation",
+      "backgroundEdgeDensity": 108.7,
+      "backgroundSaturatedShare": 0.035,
+      "unitToBackgroundEdgeRatio": 2.54,
+      "unitFigureGroundDistance": 73.8,
+      "playerColourOnUnitsShare": 0.54,
+      "backgroundPlayerColourPerMille": 36.2
+    },
+    "c2-neutral-buildings": {
+      "label": "C2 Receded faction-colour buildings, units and chrome as today",
+      "backgroundEdgeDensity": 81.44,
+      "backgroundSaturatedShare": 0.093,
+      "unitToBackgroundEdgeRatio": 3.35,
+      "unitFigureGroundDistance": 71.1,
+      "playerColourOnUnitsShare": 0.435,
+      "backgroundPlayerColourPerMille": 59.8
+    },
+    "c3-badges": {
+      "label": "C3 Receded buildings, cream units, player on a shape badge only",
+      "backgroundEdgeDensity": 62.73,
+      "backgroundSaturatedShare": 0.094,
+      "unitToBackgroundEdgeRatio": 4.91,
+      "unitFigureGroundDistance": 75.2,
+      "playerColourOnUnitsShare": 0.21,
+      "backgroundPlayerColourPerMille": 60
+    },
+    "c4-ring": {
+      "label": "C4 Receded buildings, accent units, base ring",
+      "backgroundEdgeDensity": 62.73,
+      "backgroundSaturatedShare": 0.094,
+      "unitToBackgroundEdgeRatio": 4.65,
+      "unitFigureGroundDistance": 74.7,
+      "playerColourOnUnitsShare": 0.352,
+      "backgroundPlayerColourPerMille": 60
+    },
+    "c5-disc": {
+      "label": "C5 Receded buildings, accent units (code-side), base disc",
+      "backgroundEdgeDensity": 62.73,
+      "backgroundSaturatedShare": 0.094,
+      "unitToBackgroundEdgeRatio": 4.36,
+      "unitFigureGroundDistance": 73.2,
+      "playerColourOnUnitsShare": 0.428,
+      "backgroundPlayerColourPerMille": 60
+    },
+    "c6-disc-full-garment": {
+      "label": "C6 Receded buildings, full player garments, base disc",
+      "backgroundEdgeDensity": 62.73,
+      "backgroundSaturatedShare": 0.094,
+      "unitToBackgroundEdgeRatio": 4.04,
+      "unitFigureGroundDistance": 72,
+      "playerColourOnUnitsShare": 0.511,
+      "backgroundPlayerColourPerMille": 60
+    },
+    "c7-slate-roofs": {
+      "label": "C7 As recommended, slate roofs instead of muted brick",
+      "backgroundEdgeDensity": 62.68,
+      "backgroundSaturatedShare": 0.094,
+      "unitToBackgroundEdgeRatio": 4.4,
+      "unitFigureGroundDistance": 75.6,
+      "playerColourOnUnitsShare": 0.467,
+      "backgroundPlayerColourPerMille": 59.2
+    },
+    "c8-round-bases": {
+      "label": "C8 As recommended, every base round (colour alone tells players apart)",
+      "backgroundEdgeDensity": 62.73,
+      "backgroundSaturatedShare": 0.094,
+      "unitToBackgroundEdgeRatio": 4.4,
+      "unitFigureGroundDistance": 76,
+      "playerColourOnUnitsShare": 0.464,
+      "backgroundPlayerColourPerMille": 60
+    },
+    "recommended": {
+      "label": "Recommended direction",
+      "backgroundEdgeDensity": 62.73,
+      "backgroundSaturatedShare": 0.094,
+      "unitToBackgroundEdgeRatio": 4.39,
+      "unitFigureGroundDistance": 75.7,
+      "playerColourOnUnitsShare": 0.464,
+      "backgroundPlayerColourPerMille": 60
+    }
+  }
+}

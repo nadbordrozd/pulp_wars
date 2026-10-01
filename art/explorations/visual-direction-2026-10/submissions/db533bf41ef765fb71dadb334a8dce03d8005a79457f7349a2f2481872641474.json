@@ -1,0 +1,37 @@
+{
+  "id": "marksman-accent-edit",
+  "jobId": "475089ea-721a-4651-8d4e-669cd8399f8a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "visual-direction-2026-10",
+    "asset": "chibi-sample-accent-marksman",
+    "subject": "UNIT:MARKSMAN",
+    "faction": "TEST-HUMAN-ACCENT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 71011,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the long tunic and the trousers to plain cream-white cloth with cool grey shading. Keep only the pointed hood and its short shoulder cape bright red. Keep the longbow, the quiver and the boots. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+      }
+    ],
+    "prompt": "Recolour the long tunic and the trousers to plain cream-white cloth with cool grey shading. Keep only the pointed hood and its short shoulder cape bright red. Keep the longbow, the quiver and the boots. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "negativePrompt": "",
+    "description": "Recolour the long tunic and the trousers to plain cream-white cloth with cool grey shading. Keep only the pointed hood and its short shoulder cape bright red. Keep the longbow, the quiver and the boots. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "editInstruction": "Recolour the long tunic and the trousers to plain cream-white cloth with cool grey shading. Keep only the pointed hood and its short shoulder cape bright red. Keep the longbow, the quiver and the boots. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "source": {
+      "batch": "1",
+      "recipe": "marksman-c",
+      "candidate": 0,
+      "sha256": "9c7f8e86122b18d98176d2290093b1e4da2a5ad48265a987cced85301ca6f6a1"
+    }
+  }
+}

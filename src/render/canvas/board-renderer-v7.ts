@@ -112,6 +112,13 @@ import {
 } from "./chibi-geometry-v7";
 import { chibiMountainFringeEdgesV7 } from "./chibi-terrain-fringe-v7";
 import { RULESET7_PLAYER_COLORS } from "./owner-recolour-v7";
+import {
+  CALM_ROAD_STROKES_V7,
+  drawDirectedPieceChromeV7,
+  drawDirectedTerritoryBoundaryV7,
+  drawDirectedUnitBaseV7,
+  type BoardDirectionRuntimeV7,
+} from "./visual-direction-v7";
 
 export type BoardSelectionV7 =
   | { readonly kind: "TILE"; readonly at: CoordV7 }
@@ -944,6 +951,11 @@ export function drawBoardV7(input: {
     readonly levels: BoardSaturationV7;
     readonly cache: SpriteSaturationCacheV7;
   };
+  /**
+   * Developer experiment (bead pulp_wars-3tq.1): a visual direction for the
+   * CHIBI art set. Omitted, the frame is drawn exactly as before.
+   */
+  readonly direction?: BoardDirectionRuntimeV7;
 }): void {
   const { context, viewport, devicePixelRatio } = input;
   const saturationOf = (entry: BoardRenderPlanEntryV7): number => {
@@ -967,7 +979,11 @@ export function drawBoardV7(input: {
       ? image
       : input.saturation.cache.resolve(image, percent);
   };
-  const chibiArt = input.artSet === "CHIBI" ? input.chibiArt : undefined;
+  const chibiArt =
+    input.artSet === "CHIBI"
+      ? (input.direction?.art ?? input.chibiArt)
+      : undefined;
+  const direction = chibiArt === undefined ? undefined : input.direction?.spec;
   // CHIBI cells land on whole device pixels; LEGACY keeps its exact camera.
   const camera =
     chibiArt === undefined
@@ -1261,9 +1277,10 @@ export function drawBoardV7(input: {
           camera.zoom,
           chibiArt === undefined
             ? ROAD_STROKES_V7
-            : pass === "ROAD_CASING"
-              ? CHIBI_ROAD_STROKES_V7.slice(0, 1)
-              : CHIBI_ROAD_STROKES_V7.slice(1),
+            : (direction?.chrome.roads === "CALM"
+                ? CALM_ROAD_STROKES_V7
+                : CHIBI_ROAD_STROKES_V7
+              ).slice(...(pass === "ROAD_CASING" ? [0, 1] : [1])),
         );
         continue;
       }
@@ -1406,21 +1423,34 @@ export function drawBoardV7(input: {
                     devicePixelRatio,
                   );
           let alpha = 1;
+          if (
+            direction !== undefined &&
+            entry.kind === "UNIT" &&
+            chibiReady !== null
+          )
+            drawDirectedUnitBaseV7(
+              context,
+              direction,
+              entry,
+              rect,
+              camera.zoom,
+            );
           if (entry.kind === "UNIT") {
             // The ready cue is the attached outline alone: in both art sets
             // the sprite stays opaque at its own size, so neither it nor the
             // city under it is hidden. Widths follow the sprite's own scale.
-            const readiness = entry.ready
-              ? readinessUnitStyleV7(
-                  input.readinessElapsedMs ?? 0,
-                  input.reducedMotion ?? false,
-                  input.highContrast ?? false,
-                  chibiReady === null
-                    ? camera.zoom
-                    : chibiMasterScale(camera) *
-                        (garrisoned ? CHIBI_GARRISON_SCALE : 1),
-                )
-              : null;
+            const readiness =
+              entry.ready && direction?.chrome.ready !== "BASE"
+                ? readinessUnitStyleV7(
+                    input.readinessElapsedMs ?? 0,
+                    input.reducedMotion ?? false,
+                    input.highContrast ?? false,
+                    chibiReady === null
+                      ? camera.zoom
+                      : chibiMasterScale(camera) *
+                          (garrisoned ? CHIBI_GARRISON_SCALE : 1),
+                  )
+                : null;
             const scale = readiness?.scale ?? 1;
             const jump =
               input.selectionJump?.unitId === Number(entry.key.slice(5))
@@ -1497,10 +1527,25 @@ export function drawBoardV7(input: {
           context.restore();
         }
       }
+      const directedGarrison =
+        entry.kind === "UNIT" && settlementCells.has(coordKey(entry.at));
       const drawPieceOverlays = (): void => {
+        const directed =
+          direction === undefined || !chibiPiece
+            ? null
+            : drawDirectedPieceChromeV7(
+                context,
+                direction,
+                entry,
+                x,
+                y,
+                camera.zoom,
+                directedGarrison,
+              );
         if (
           (entry.kind === "UNIT" || entry.kind === "CITY") &&
-          entry.ownerColor !== undefined
+          entry.ownerColor !== undefined &&
+          directed?.badge !== true
         ) {
           const badge = chibiPiece
             ? CHIBI_OVERLAY_FRAME_V7.seatBadge
@@ -1570,7 +1615,12 @@ export function drawBoardV7(input: {
               devicePixelRatio,
             });
           }
-        if (entry.kind === "CITY" && entry.capital === true && chibiPiece)
+        if (
+          entry.kind === "CITY" &&
+          entry.capital === true &&
+          chibiPiece &&
+          directed?.crown !== true
+        )
           drawCapitalCrownV7(context, x, y, camera.zoom);
         if (entry.kind === "CITY") {
           const width = Math.max(1, (entry.value ?? 1) + 1);
@@ -1604,7 +1654,8 @@ export function drawBoardV7(input: {
         if (
           entry.kind === "UNIT" &&
           entry.hp !== undefined &&
-          entry.maxHp !== undefined
+          entry.maxHp !== undefined &&
+          directed?.hp !== true
         ) {
           const share = Math.max(0, Math.min(1, entry.hp / entry.maxHp));
           context.fillStyle = "#101718";
@@ -1707,7 +1758,9 @@ export function drawBoardV7(input: {
         targetEdgeKeys.has(edgeKey(boundary.at, boundary.edge))
       )
         continue;
-      drawTerritoryBoundary(context, camera, boundary, roadCells);
+      if (direction?.chrome.borders === "SOLID")
+        drawDirectedTerritoryBoundaryV7(context, camera, boundary);
+      else drawTerritoryBoundary(context, camera, boundary, roadCells);
     }
     context.restore();
   }

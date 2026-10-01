@@ -81,6 +81,12 @@ import {
   type BoardSaturationV7,
   type SpriteSaturationCacheV7,
 } from "./sprite-saturation-v7";
+import {
+  createDirectedChibiArtV7,
+  type BoardDirectionRuntimeV7,
+  type BoardVisualDirectionV7,
+} from "./visual-direction-v7";
+import type { ChibiArtRegistryV7 } from "../../assets/chibi-art-v7";
 
 export interface BoardHostModelV7 {
   readonly matchInstanceId: string | number;
@@ -99,6 +105,13 @@ export interface BoardHostModelV7 {
    * percent. Omitted, or 100, draws exactly as without it.
    */
   readonly saturation?: BoardSaturationV7;
+  /**
+   * Developer experiment (pulp_wars-3tq.1): a visual direction for the
+   * CHIBI art set. Omitted draws exactly as without it.
+   */
+  readonly visualDirection?: BoardVisualDirectionV7;
+  /** Resolves the direction's exploration sample sprites, when loaded. */
+  readonly visualDirectionSamples?: ChibiArtRegistryV7;
 }
 
 export interface BoardHostCallbacksV7 {
@@ -128,6 +141,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #chibiArt: ChibiBoardArtV7;
   readonly #glowCache: BoardGlowCacheV7;
   readonly #saturationCache: SpriteSaturationCacheV7;
+  #direction: {
+    readonly key: string;
+    readonly registry: ChibiArtRegistryV7 | undefined;
+    readonly runtime: BoardDirectionRuntimeV7;
+  } | null = null;
   readonly #planCache: {
     view: PlayerViewV7;
     commands: BoardHostModelV7["offeredCommands"];
@@ -831,6 +849,41 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     return this.#model?.artSet ?? "LEGACY";
   }
 
+  /** The direction's wrapped art resolver, rebuilt only when it changes. */
+  #directionRuntime(
+    spec: BoardVisualDirectionV7,
+    registry: ChibiArtRegistryV7 | undefined,
+  ): BoardDirectionRuntimeV7 {
+    const key = JSON.stringify(spec);
+    const cached = this.#direction;
+    if (cached?.key === key && cached.registry === registry)
+      return cached.runtime;
+    const environment = browserChibiRasterEnvironmentV7(this.#document);
+    const runtime: BoardDirectionRuntimeV7 = {
+      spec,
+      art: createDirectedChibiArtV7({
+        base: this.#chibiArt,
+        direction: spec,
+        environment,
+        ...(registry === undefined
+          ? {}
+          : {
+              samples: createChibiArtResolverV7({
+                environment,
+                registry,
+                redraw: () => {
+                  this.#glowCache.clear();
+                  this.#draw();
+                },
+              }),
+            }),
+      }),
+    };
+    this.#direction = { key, registry, runtime };
+    this.#glowCache.clear();
+    return runtime;
+  }
+
   /** Public diagnostics for the art set and its exact cell size. */
   #syncArtSetDataset(): void {
     const canvas = this.#canvas;
@@ -905,6 +958,14 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
                 levels: model.saturation,
                 cache: this.#saturationCache,
               },
+            }),
+        ...(model.visualDirection === undefined
+          ? {}
+          : {
+              direction: this.#directionRuntime(
+                model.visualDirection,
+                model.visualDirectionSamples,
+              ),
             }),
         previewFocus: this.#hovered ?? this.#focused,
         labelSafeArea,

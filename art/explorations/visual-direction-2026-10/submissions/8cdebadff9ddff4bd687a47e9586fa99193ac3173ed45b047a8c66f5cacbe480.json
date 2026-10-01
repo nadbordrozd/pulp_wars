@@ -1,0 +1,37 @@
+{
+  "id": "knight-accent-edit",
+  "jobId": "7606cb97-1ab2-4616-b556-d01e9375ce4c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "visual-direction-2026-10",
+    "asset": "chibi-sample-accent-knight",
+    "subject": "UNIT:KNIGHT",
+    "faction": "TEST-HUMAN-ACCENT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 71021,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the horse's cloth barding to plain cream-white cloth with cool grey shading and a narrow bright red trim along its bottom edge. Add a small bright red triangular pennant just below the lance point. Keep the bright red plume, the steel helm, the white horse and the lance. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+      }
+    ],
+    "prompt": "Recolour the horse's cloth barding to plain cream-white cloth with cool grey shading and a narrow bright red trim along its bottom edge. Add a small bright red triangular pennant just below the lance point. Keep the bright red plume, the steel helm, the white horse and the lance. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "negativePrompt": "",
+    "description": "Recolour the horse's cloth barding to plain cream-white cloth with cool grey shading and a narrow bright red trim along its bottom edge. Add a small bright red triangular pennant just below the lance point. Keep the bright red plume, the steel helm, the white horse and the lance. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "editInstruction": "Recolour the horse's cloth barding to plain cream-white cloth with cool grey shading and a narrow bright red trim along its bottom edge. Add a small bright red triangular pennant just below the lance point. Keep the bright red plume, the steel helm, the white horse and the lance. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "source": {
+      "batch": "2",
+      "recipe": "knight-a-edit",
+      "candidate": 0,
+      "sha256": "ce7b285004dc863ed8377fe98bc5407792dc4976def9f2e61f54c6e5c0abae0d"
+    }
+  }
+}

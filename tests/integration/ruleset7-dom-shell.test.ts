@@ -1095,6 +1095,52 @@ describe("Ruleset 7 DOM shell", () => {
     third.destroy();
   });
 
+  it("keeps the visual-direction experiment off by default and toggles it live and persistently (pulp_wars-3tq.1)", async () => {
+    const key = "pulpWars.ruleset7.boardVisualDirection.v1";
+    const host = new CapturingBoardHost();
+    const first = bootstrapRuleset7App(document, {
+      storage: null,
+      boardHost: host,
+    });
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => first.controller.snapshot().phase === "ACTIVE");
+    // Off by default: the board model carries no direction at all.
+    expect(host.model).not.toBeNull();
+    expect(host.model !== null && "visualDirection" in host.model).toBe(false);
+    expect(window.localStorage.getItem(key)).toBeNull();
+    openMenuItem("settings");
+    const toggle = requiredInput("v7-visual-direction");
+    expect(toggle.type).toBe("checkbox");
+    expect(toggle.checked).toBe(false);
+    expect(toggle.closest("label")?.textContent).toContain(
+      "Recommended direction",
+    );
+    toggle.click();
+    expect(host.model?.visualDirection?.unit.base).toBe("DISC");
+    expect(window.localStorage.getItem(key)).toBe('{"recommended":true}');
+    // Presentation only: the shared settings envelope is untouched.
+    expect(window.localStorage.getItem("pulpWars.settings.v1")).toBeNull();
+    requiredInput("v7-visual-direction").click();
+    expect(host.model !== null && "visualDirection" in host.model).toBe(false);
+    expect(window.localStorage.getItem(key)).toBe('{"recommended":false}');
+    requiredInput("v7-visual-direction").click();
+    first.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    const restoredHost = new CapturingBoardHost();
+    const second = bootstrapRuleset7App(document, {
+      storage: null,
+      boardHost: restoredHost,
+    });
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => second.controller.snapshot().phase === "ACTIVE");
+    expect(restoredHost.model?.visualDirection?.unit.base).toBe("DISC");
+    second.destroy();
+    window.localStorage.removeItem(key);
+  });
+
   it("starts with defaults when the supplied settings adapter cannot be read", async () => {
     const app = bootstrapRuleset7App(document, {
       storage: null,

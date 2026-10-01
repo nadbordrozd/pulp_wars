@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "batch": "visual-direction-2026-10",
+  "title": "Visual direction study: Human sample units with a fixed cream-and-steel identity and a small player-colour accent (exploration, never registered)",
+  "bead": "pulp_wars-3tq.1",
+  "faction": "TEST-HUMAN-ACCENT",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-sample-accent-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-sample-accent-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-sample-accent-knight",
+      "subject": "UNIT:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "fighter-accent-edit",
+      "asset": "chibi-sample-accent-fighter",
+      "endpoint": "edit-image-pixen",
+      "seed": 71001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "1",
+        "recipe": "fighter-h-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour his bright red tunic and sleeves to plain cream-white cloth with cool grey shading. Paint the whole face of the round shield solid bright red, keeping its light steel rim and boss. Keep the bright red helmet crest, the steel helmet and the sword. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+      "notes": "Edit of the accepted production sprite, so the silhouette stays: the garment becomes cream cloth and only a small accent keeps the key red."
+    },
+    {
+      "id": "marksman-accent-edit",
+      "asset": "chibi-sample-accent-marksman",
+      "endpoint": "edit-image-pixen",
+      "seed": 71011,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "1",
+        "recipe": "marksman-c",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the long tunic and the trousers to plain cream-white cloth with cool grey shading. Keep only the pointed hood and its short shoulder cape bright red. Keep the longbow, the quiver and the boots. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+      "notes": "Edit of the accepted production sprite, so the silhouette stays: the garment becomes cream cloth and only a small accent keeps the key red."
+    },
+    {
+      "id": "knight-accent-edit",
+      "asset": "chibi-sample-accent-knight",
+      "endpoint": "edit-image-pixen",
+      "seed": 71021,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "2",
+        "recipe": "knight-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the horse's cloth barding to plain cream-white cloth with cool grey shading and a narrow bright red trim along its bottom edge. Add a small bright red triangular pennant just below the lance point. Keep the bright red plume, the steel helm, the white horse and the lance. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+      "notes": "Edit of the accepted production sprite, so the silhouette stays: the garment becomes cream cloth and only a small accent keeps the key red."
+    },
+    {
+      "id": "fighter-accent-edit-b",
+      "asset": "chibi-sample-accent-fighter",
+      "endpoint": "edit-image-pixen",
+      "seed": 71002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "1",
+        "recipe": "fighter-h-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the clothes: the tunic and sleeves become plain cream-white cloth with cool grey shading instead of red. Paint the flat face of the round shield solid bright red inside its light steel rim. The helmet crest stays bright red. His face stays light skin-coloured with dark eyes, exactly as it is, and the helmet, sword and boots do not change. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+      "notes": "fighter-accent-edit painted the face red. This instruction names the face and limits the change to the clothes and the shield."
+    }
+  ]
+}

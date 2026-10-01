@@ -1,0 +1,37 @@
+{
+  "id": "fighter-accent-edit-b",
+  "jobId": "916d40c9-d12f-4514-bac8-fa30ee19e81d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "visual-direction-2026-10",
+    "asset": "chibi-sample-accent-fighter",
+    "subject": "UNIT:FIGHTER",
+    "faction": "TEST-HUMAN-ACCENT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 71002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the clothes: the tunic and sleeves become plain cream-white cloth with cool grey shading instead of red. Paint the flat face of the round shield solid bright red inside its light steel rim. The helmet crest stays bright red. His face stays light skin-coloured with dark eyes, exactly as it is, and the helmet, sword and boots do not change. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+      }
+    ],
+    "prompt": "Change only the clothes: the tunic and sleeves become plain cream-white cloth with cool grey shading instead of red. Paint the flat face of the round shield solid bright red inside its light steel rim. The helmet crest stays bright red. His face stays light skin-coloured with dark eyes, exactly as it is, and the helmet, sword and boots do not change. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "negativePrompt": "",
+    "description": "Change only the clothes: the tunic and sleeves become plain cream-white cloth with cool grey shading instead of red. Paint the flat face of the round shield solid bright red inside its light steel rim. The helmet crest stays bright red. His face stays light skin-coloured with dark eyes, exactly as it is, and the helmet, sword and boots do not change. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "editInstruction": "Change only the clothes: the tunic and sleeves become plain cream-white cloth with cool grey shading instead of red. Paint the flat face of the round shield solid bright red inside its light steel rim. The helmet crest stays bright red. His face stays light skin-coloured with dark eyes, exactly as it is, and the helmet, sword and boots do not change. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "source": {
+      "batch": "1",
+      "recipe": "fighter-h-edit",
+      "candidate": 0,
+      "sha256": "b4f093038b28a6e136c616ca51504828f3971d4abc74dbbf4e6b92c6036e7790"
+    }
+  }
+}
