@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "batch": "human-demo-units",
+  "title": "Human demo: Fighter, Marksman and Knight in fixed high-medieval crimson and gold heraldry (exploration, never registered)",
+  "bead": "pulp_wars-3tq.3",
+  "faction": "TEST-HUMAN-HERALDIC",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-demo-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-demo-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-demo-knight",
+      "subject": "UNIT:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "fighter-heraldic-edit",
+      "asset": "chibi-demo-fighter",
+      "endpoint": "edit-image-pixen",
+      "seed": 74001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "1",
+        "recipe": "fighter-h-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval man-at-arms: a deep crimson red surcoat with a bold gold-yellow cross on the chest and a gold hem, over steel chainmail sleeves; the round shield becomes a pointed heater shield painted crimson red with a gold-yellow lion; a gold band around the steel helmet under the crimson crest. Keep the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+      "notes": "Edit of the accepted production Fighter, so the silhouette stays and the other, unconverted Human units still match."
+    },
+    {
+      "id": "marksman-heraldic-edit",
+      "asset": "chibi-demo-marksman",
+      "endpoint": "edit-image-pixen",
+      "seed": 74011,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "1",
+        "recipe": "marksman-c",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval longbowman: a deep crimson red hood with a gold-yellow trim, a cream padded gambeson with a crimson and gold tabard on the chest, steel-grey hose, a dark brown leather belt, bracer and boots. Keep the longbow, quiver, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+    },
+    {
+      "id": "knight-heraldic-edit",
+      "asset": "chibi-demo-knight",
+      "endpoint": "edit-image-pixen",
+      "seed": 74021,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "2",
+        "recipe": "knight-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval knight: the horse's cloth becomes deep crimson red with a wide gold-yellow trim; a crimson and gold surcoat over steel mail; a steel great helm with a gold crown band and a crimson plume; a small crimson and gold pennant below the lance point. Keep the white horse, lance, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves."
+    },
+    {
+      "id": "fighter-heraldic-a",
+      "asset": "chibi-demo-fighter",
+      "endpoint": "create-image-pixen",
+      "seed": 74002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "bow, quiver"
+    },
+    {
+      "id": "marksman-heraldic-a",
+      "asset": "chibi-demo-marksman",
+      "endpoint": "create-image-pixen",
+      "seed": 74012,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "knight-heraldic-a",
+      "asset": "chibi-demo-knight",
+      "endpoint": "create-image-pixen",
+      "seed": 74022,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "negativeAddendum": "bow, quiver"
+    }
+  ]
+}

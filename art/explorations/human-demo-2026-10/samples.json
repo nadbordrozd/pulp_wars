@@ -1,0 +1,411 @@
+{
+  "bead": "pulp_wars-3tq.3",
+  "note": "Sample sprites of the Human demo of the visual-direction study, cut by scripts/art/visual-direction/demo-samples.ts. Nothing here is registered as production art; the developer toggle loads the 'demo' set through src/render/canvas/visual-direction-samples-v7.ts.",
+  "assets": [
+    {
+      "id": "chibi-demo-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-fighter.png",
+      "emptyOwnerMask": "art/explorations/human-demo-2026-10/assets/chibi-demo-fighter.mask.png",
+      "source": "art/explorations/human-demo-2026-10/units",
+      "recipe": "fighter-heraldic-edit",
+      "candidate": 0,
+      "derivation": "AS_IS",
+      "artBounds": {
+        "left": 3,
+        "right": 54,
+        "top": 3,
+        "bottom": 74
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-marksman.png",
+      "emptyOwnerMask": "art/explorations/human-demo-2026-10/assets/chibi-demo-marksman.mask.png",
+      "source": "art/explorations/human-demo-2026-10/units",
+      "recipe": "marksman-heraldic-edit",
+      "candidate": 0,
+      "derivation": "AS_IS",
+      "artBounds": {
+        "left": 0,
+        "right": 54,
+        "top": 6,
+        "bottom": 75
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-knight",
+      "subject": "UNIT:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-knight.png",
+      "emptyOwnerMask": "art/explorations/human-demo-2026-10/assets/chibi-demo-knight.mask.png",
+      "source": "art/explorations/human-demo-2026-10/units",
+      "recipe": "knight-heraldic-edit",
+      "candidate": 0,
+      "derivation": "AS_IS",
+      "artBounds": {
+        "left": 5,
+        "right": 65,
+        "top": 4,
+        "bottom": 82
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-farm",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "width": 80,
+      "height": 80,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-farm.png",
+      "source": "art/explorations/human-demo-2026-10/farm",
+      "recipe": "farm-field-a-edit-2",
+      "candidate": 0,
+      "derivation": "FARM_ROWS",
+      "artBounds": {
+        "left": 2,
+        "right": 77,
+        "top": 5,
+        "bottom": 75
+      },
+      "sets": ["demo", "style-a", "style-b"]
+    },
+    {
+      "id": "chibi-style-a-windmill",
+      "subject": "IMPROVEMENT:WINDMILL",
+      "assetClass": "BUILDING",
+      "width": 80,
+      "height": 88,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-style-a-windmill.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-soft",
+      "recipe": "windmill-soft-a",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 12,
+        "right": 67,
+        "top": 12,
+        "bottom": 84
+      },
+      "sets": ["style-a"]
+    },
+    {
+      "id": "chibi-style-a-forge",
+      "subject": "IMPROVEMENT:FORGE",
+      "assetClass": "BUILDING",
+      "width": 80,
+      "height": 88,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-style-a-forge.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-soft",
+      "recipe": "forge-soft-a",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 12,
+        "right": 67,
+        "top": 14,
+        "bottom": 84
+      },
+      "sets": ["style-a"]
+    },
+    {
+      "id": "chibi-style-a-market",
+      "subject": "IMPROVEMENT:MARKET",
+      "assetClass": "BUILDING",
+      "width": 80,
+      "height": 88,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-style-a-market.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-soft",
+      "recipe": "market-soft-a",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 11,
+        "right": 67,
+        "top": 18,
+        "bottom": 84
+      },
+      "sets": ["style-a"]
+    },
+    {
+      "id": "chibi-demo-windmill",
+      "subject": "IMPROVEMENT:WINDMILL",
+      "assetClass": "BUILDING",
+      "width": 64,
+      "height": 72,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-windmill.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "windmill-flat-a",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 5,
+        "right": 57,
+        "top": 2,
+        "bottom": 68
+      },
+      "sets": ["demo", "style-b"]
+    },
+    {
+      "id": "chibi-style-b-forge",
+      "subject": "IMPROVEMENT:FORGE",
+      "assetClass": "BUILDING",
+      "width": 64,
+      "height": 64,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-style-b-forge.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "forge-flat-a",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 12,
+        "right": 50,
+        "top": 10,
+        "bottom": 60
+      },
+      "sets": ["style-b"]
+    },
+    {
+      "id": "chibi-style-b-market",
+      "subject": "IMPROVEMENT:MARKET",
+      "assetClass": "BUILDING",
+      "width": 64,
+      "height": 64,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-style-b-market.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "market-flat-a",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 11,
+        "right": 52,
+        "top": 21,
+        "bottom": 60
+      },
+      "sets": ["style-b"]
+    },
+    {
+      "id": "chibi-demo-lumber-camp",
+      "subject": "IMPROVEMENT:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "width": 72,
+      "height": 72,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-lumber-camp.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "lumber-camp-b-a-edit",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 12,
+        "right": 59,
+        "top": 26,
+        "bottom": 68
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-sawmill",
+      "subject": "IMPROVEMENT:SAWMILL",
+      "assetClass": "BUILDING",
+      "width": 72,
+      "height": 72,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-sawmill.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "sawmill-b-a-edit",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 7,
+        "right": 64,
+        "top": 11,
+        "bottom": 68
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-forge",
+      "subject": "IMPROVEMENT:FORGE",
+      "assetClass": "BUILDING",
+      "width": 72,
+      "height": 72,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-forge.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "forge-b-a-edit",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 14,
+        "right": 57,
+        "top": 12,
+        "bottom": 68
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-workshop",
+      "subject": "IMPROVEMENT:WORKSHOP",
+      "assetClass": "BUILDING",
+      "width": 72,
+      "height": 72,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-workshop.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "workshop-b-a-edit",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 15,
+        "right": 56,
+        "top": 15,
+        "bottom": 68
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-market",
+      "subject": "IMPROVEMENT:MARKET",
+      "assetClass": "BUILDING",
+      "width": 72,
+      "height": 72,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-market.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "market-b-a-edit",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 7,
+        "right": 64,
+        "top": 2,
+        "bottom": 68
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-monument",
+      "subject": "IMPROVEMENT:MONUMENT",
+      "assetClass": "BUILDING",
+      "width": 48,
+      "height": 72,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-monument.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "monument-b-b-edit",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 14,
+        "right": 32,
+        "top": 12,
+        "bottom": 68
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-port",
+      "subject": "IMPROVEMENT:PORT",
+      "assetClass": "BUILDING",
+      "width": 72,
+      "height": 72,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-port.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "port-b-a",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 9,
+        "right": 61,
+        "top": 6,
+        "bottom": 68
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-shipyard",
+      "subject": "IMPROVEMENT:SHIPYARD",
+      "assetClass": "BUILDING",
+      "width": 72,
+      "height": 72,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-shipyard.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "shipyard-b-a",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 8,
+        "right": 63,
+        "top": 14,
+        "bottom": 68
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "width": 80,
+      "height": 80,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-city-1.png",
+      "emptyOwnerMask": "art/explorations/human-demo-2026-10/assets/chibi-demo-city-1.mask.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "city-1-c-a-edit",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 5,
+        "right": 74,
+        "top": 18,
+        "bottom": 76
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-city-2",
+      "subject": "CITY:2",
+      "assetClass": "SETTLEMENT",
+      "width": 88,
+      "height": 80,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-city-2.png",
+      "emptyOwnerMask": "art/explorations/human-demo-2026-10/assets/chibi-demo-city-2.mask.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "city-2-c-a-edit",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 4,
+        "right": 83,
+        "top": 5,
+        "bottom": 76
+      },
+      "sets": ["demo"]
+    },
+    {
+      "id": "chibi-demo-city-3",
+      "subject": "CITY:3",
+      "assetClass": "SETTLEMENT",
+      "width": 96,
+      "height": 88,
+      "file": "art/explorations/human-demo-2026-10/assets/chibi-demo-city-3.png",
+      "emptyOwnerMask": "art/explorations/human-demo-2026-10/assets/chibi-demo-city-3.mask.png",
+      "source": "art/explorations/human-demo-2026-10/buildings-flat",
+      "recipe": "city-3-c-a-edit-2",
+      "candidate": 0,
+      "derivation": "SEATED",
+      "artBounds": {
+        "left": 0,
+        "right": 95,
+        "top": 3,
+        "bottom": 84
+      },
+      "sets": ["demo"]
+    }
+  ]
+}

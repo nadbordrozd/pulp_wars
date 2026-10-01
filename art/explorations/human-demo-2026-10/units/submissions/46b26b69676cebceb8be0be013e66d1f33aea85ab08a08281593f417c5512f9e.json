@@ -1,0 +1,37 @@
+{
+  "id": "knight-heraldic-edit",
+  "jobId": "69b14bde-488e-48c8-b810-e7e00cf2c8c3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "human-demo-units",
+    "asset": "chibi-demo-knight",
+    "subject": "UNIT:KNIGHT",
+    "faction": "TEST-HUMAN-HERALDIC",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 74021,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval knight: the horse's cloth becomes deep crimson red with a wide gold-yellow trim; a crimson and gold surcoat over steel mail; a steel great helm with a gold crown band and a crimson plume; a small crimson and gold pennant below the lance point. Keep the white horse, lance, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval knight: the horse's cloth becomes deep crimson red with a wide gold-yellow trim; a crimson and gold surcoat over steel mail; a steel great helm with a gold crown band and a crimson plume; a small crimson and gold pennant below the lance point. Keep the white horse, lance, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval knight: the horse's cloth becomes deep crimson red with a wide gold-yellow trim; a crimson and gold surcoat over steel mail; a steel great helm with a gold crown band and a crimson plume; a small crimson and gold pennant below the lance point. Keep the white horse, lance, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "editInstruction": "Redraw him as a high-medieval knight: the horse's cloth becomes deep crimson red with a wide gold-yellow trim; a crimson and gold surcoat over steel mail; a steel great helm with a gold crown band and a crimson plume; a small crimson and gold pennant below the lance point. Keep the white horse, lance, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "source": {
+      "batch": "2",
+      "recipe": "knight-a-edit",
+      "candidate": 0,
+      "sha256": "ce7b285004dc863ed8377fe98bc5407792dc4976def9f2e61f54c6e5c0abae0d"
+    }
+  }
+}

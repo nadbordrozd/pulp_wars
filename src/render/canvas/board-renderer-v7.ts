@@ -135,6 +135,7 @@ import { chibiMountainFringeEdgesV7 } from "./chibi-terrain-fringe-v7";
 import { RULESET7_PLAYER_COLORS } from "./owner-recolour-v7";
 import {
   CALM_ROAD_STROKES_V7,
+  drawDirectedFlagV7,
   drawDirectedPieceChromeV7,
   drawDirectedTerritoryBoundaryV7,
   drawDirectedUnitBaseV7,
@@ -1523,6 +1524,8 @@ export function drawBoardV7(input: {
       // A unit or city drawn with (or loading) a registered chibi raster uses
       // the chibi overlay frame; legacy fallbacks keep the legacy overlays.
       let chibiPiece = false;
+      // Visual direction: the piece's pennant was drawn on its own art.
+      let directedFlag = false;
       // An Undead or Goblin unit shown with its own faction raster needs no
       // badge.
       let factionArt = false;
@@ -1693,6 +1696,15 @@ export function drawBoardV7(input: {
               rect.height,
             );
           context.restore();
+          if (direction !== undefined && chibiReady !== null)
+            directedFlag = drawDirectedFlagV7(
+              context,
+              direction,
+              entry,
+              chibiReady.asset.id,
+              rect,
+              chibiMasterScale(camera),
+            );
         }
       }
       const directedGarrison =
@@ -1723,6 +1735,7 @@ export function drawBoardV7(input: {
                 y,
                 camera.zoom,
                 directedGarrison,
+                directedFlag,
               );
         if (
           (entry.kind === "UNIT" || entry.kind === "CITY") &&

@@ -1342,3 +1342,66 @@ describe("chibi runtime registry", () => {
     );
   });
 });
+
+describe("exploration style overrides (pulp_wars-3tq.3)", () => {
+  const DEMO = "art/explorations/human-demo-2026-10";
+
+  it("replaces a fragment only for the run that carries it, and records where it came from", async () => {
+    const production = await loadFragments(ROOT);
+    const flat = await loadExploration(ROOT, `${DEMO}/buildings-flat`);
+    expect(batchManifestProblems(flat.manifest, flat.fragments)).toEqual([]);
+    const asset = flat.manifest.assets.find(
+      (candidate) => candidate.subject === "IMPROVEMENT:WINDMILL",
+    );
+    if (asset === undefined) throw new Error("the windmill sample is missing");
+    const prompt = layeredPrompt(flat.fragments, flat.manifest, asset, {});
+    const source = (layer: string): string | undefined =>
+      prompt.layers.find((entry) => entry.layer === layer)?.source;
+    // The run's own style (with its negative) and class text; the camera is
+    // still the production fragment.
+    expect(source("style")).toBe(
+      `${DEMO}/buildings-flat/fragments/style.txt + ${DEMO}/buildings-flat/fragments/style.negative.txt`,
+    );
+    expect(source("class")).toContain(
+      `${DEMO}/buildings-flat/fragments/class-building.txt`,
+    );
+    expect(source("camera")).toBe(
+      "scripts/art/chibi/fragments/camera-three-quarter.txt",
+    );
+    expect(prompt.prompt).toContain("flat-shaded minimalist pixel art");
+    expect(prompt.prompt).not.toContain(production.style.text);
+    // Production fragments and another exploration run are untouched.
+    expect((await loadFragments(ROOT)).style).toEqual(production.style);
+    const dryRun = await loadExploration(
+      ROOT,
+      "art/explorations/faction-layer-dry-run/materials-motifs-only",
+    );
+    expect(dryRun.fragments.style).toEqual(production.style);
+    expect(dryRun.fragments.classes).toEqual(production.classes);
+  });
+
+  it("keeps every demo run valid and unregistered", async () => {
+    const registered = new Set(CHIBI_ART_ASSETS_V7.map((entry) => entry.id));
+    for (const run of ["units", "buildings-soft", "buildings-flat", "farm"]) {
+      const loaded = await loadExploration(ROOT, `${DEMO}/${run}`);
+      expect(
+        batchManifestProblems(loaded.manifest, loaded.fragments),
+        run,
+      ).toEqual([]);
+      for (const asset of loaded.manifest.assets)
+        expect(registered.has(asset.id), asset.id).toBe(false);
+      const records = await loadRecords(
+        explorationLayout(ROOT, `${DEMO}/${run}`),
+        loaded.manifest.batch,
+      );
+      // Every recipe in the manifest was generated, and each has a receipt.
+      expect(Object.keys(records.recipes).sort(), run).toEqual(
+        loaded.manifest.recipes.map((recipe) => recipe.id).sort(),
+      );
+      expect(
+        (await readdir(path.join(ROOT, DEMO, run, "submissions"))).length,
+        run,
+      ).toBe(loaded.manifest.recipes.length);
+    }
+  });
+});

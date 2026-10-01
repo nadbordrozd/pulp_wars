@@ -1,0 +1,9 @@
+{
+  "faction": "TEST-HUMAN-FARM",
+  "note": "Subject layer of the Human demo Farm (bead pulp_wars-3tq.3). Exploration only.",
+  "subjects": {
+    "IMPROVEMENT:FARM": "Subject: a wheat field as a flat pattern seen straight from above: four straight horizontal rows of small golden-straw wheat plants, each row running in one line from the left edge to the right edge of the image, each row made of small separate round wheat tufts side by side, with wide empty transparent gaps between the rows, the gaps as wide as the rows; nothing at all between the rows; only wheat. Crops only.",
+    "IMPROVEMENT:FARM/ROW": "Subject: one single straight horizontal row of small golden-straw wheat plants standing side by side, seen from the front and slightly above, running from the left edge to the right edge of the image like one line of a planted field; each plant is a small simple tuft of pale straw stalks with soft golden grain heads; the row is low, only about a third of the image height, with empty transparent space above and below it. Crops only.",
+    "IMPROVEMENT:FARM/TUFT": "Subject: one single small wheat plant: a tiny simple tuft of five pale straw stalks with soft golden grain heads, seen from the front and slightly above, alone in the middle of the image. Crops only."
+  }
+}

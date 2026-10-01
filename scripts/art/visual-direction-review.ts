@@ -24,13 +24,27 @@
  *       with a small accent mask (no capture needed)
  *   metrics.json                 the measurements quoted in the document
  *
+ * With --demo (npm run art:visual-direction-demo-review, bead
+ * pulp_wars-3tq.3) it writes the Human demo's evidence instead, to
+ * art/explorations/human-demo-2026-10/review, from an all-Human Showcase:
+ *
+ *   before-after-busy-<viewport>-zoom-<step>.png      the busy bench
+ *   before-after-showcase-<viewport>-zoom-<step>.png  the Showcase itself
+ *   demo-scene-desktop.png        the demo patch (scene.ts, DEMO)
+ *   building-style-candidates-x4.png  every building style sample tried
+ *   building-styles-bench-desktop.png style A against style B on the bench
+ *   buildings-old-new.png         each improvement and city, 1:1 and x4
+ *   farm.png                      one Farm, a 3 x 3 block, Roads under it
+ *   base-plates.png               the base variants on land and water
+ *   same-unit-phone-zoom-0.75.png four players' units, colour-vision sims
+ *
  * The scene and the variants are scripts/art/visual-direction/scene.ts and
  * variants.ts. Captures start Vite on --port (never the user's 6173) and
  * use headless Chrome from CHROME_PATH. No PixelLab call is made.
  */
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
@@ -42,11 +56,14 @@ import {
 } from "../../src/render/canvas/owner-recolour-v7";
 import { HUMAN_GARMENT_COLOUR_V7 } from "../../src/render/canvas/visual-direction-v7";
 import {
+  HUMAN_DEMO_VARIANTS_V7,
   VISUAL_DIRECTION_VARIANTS_V7,
   type VisualDirectionVariantV7,
 } from "./visual-direction/variants";
 
 const ROOT = process.cwd();
+const DEMO_MODE = process.argv.includes("--demo");
+const DEMO_EXPLORATION = "art/explorations/human-demo-2026-10";
 const EXPLORATION = "art/explorations/visual-direction-2026-10";
 
 function option(name: string): string | undefined {
@@ -58,7 +75,10 @@ function option(name: string): string | undefined {
 const CAPTURES = path.resolve(
   option("--captures") ?? path.join(tmpdir(), "pulp-wars-visual-direction"),
 );
-const OUT = path.resolve(option("--out") ?? path.join(EXPLORATION, "review"));
+const OUT = path.resolve(
+  option("--out") ??
+    path.join(DEMO_MODE ? DEMO_EXPLORATION : EXPLORATION, "review"),
+);
 
 const VIEWPORTS = [
   { name: "desktop", width: 1440, height: 900, dpr: 1, mobile: false },
@@ -66,7 +86,8 @@ const VIEWPORTS = [
 ] as const;
 type Viewport = (typeof VIEWPORTS)[number];
 const ZOOMS = ["1", "0.75"] as const;
-type Kind = "BUSY" | "NO_UNITS" | "EMPTY" | "MARKER";
+type Kind =
+  "BUSY" | "NO_UNITS" | "EMPTY" | "MARKER" | "DEMO" | "DEMO_MARKER" | "LIVE";
 
 function captureFile(
   variant: string,
@@ -204,15 +225,8 @@ interface CaptureJob {
   readonly variant: VisualDirectionVariantV7;
   readonly kind: Kind;
   readonly zooms: readonly string[];
-}
-
-async function sampleAssets(): Promise<unknown[]> {
-  const file = path.join(ROOT, EXPLORATION, "samples.json");
-  if (!existsSync(file)) return [];
-  const parsed = JSON.parse(await readFile(file, "utf8")) as {
-    assets?: unknown[];
-  };
-  return parsed.assets ?? [];
+  /** Omitted: every viewport. */
+  readonly viewports?: readonly string[];
 }
 
 async function captureJobs(
@@ -220,13 +234,18 @@ async function captureJobs(
   viewport: Viewport,
   jobs: readonly CaptureJob[],
 ): Promise<void> {
-  const samples = await sampleAssets();
   for (const job of jobs) {
+    if (job.viewports !== undefined && !job.viewports.includes(viewport.name))
+      continue;
+    if (job.zooms.length === 0) continue;
     const options = {
       kind: job.kind,
       ...(job.variant.direction === undefined
         ? {}
-        : { direction: job.variant.direction, samples }),
+        : {
+            direction: job.variant.direction,
+            sampleSet: job.variant.sampleSet ?? "STUDY",
+          }),
     };
     await evaluate(
       connection,
@@ -337,7 +356,11 @@ async function captureAll(
       // every run frames the scene identically.
       await evaluate(
         connection,
-        `(() => { const type = document.querySelector('#v7-map-type'); type.value = 'SHOWCASE'; type.dispatchEvent(new Event('change', { bubbles: true })); document.querySelector('[data-action="launch"]').click(); return true; })()`,
+        // The demo plays an all-Human Showcase: three rivals, every seat
+        // Human, so the LIVE captures show one faction in four colours.
+        DEMO_MODE
+          ? `(() => { const change = (element, value) => { element.value = value; element.dispatchEvent(new Event('change', { bubbles: true })); }; change(document.querySelector('#v7-ai-count'), '3'); change(document.querySelector('#v7-map-type'), 'SHOWCASE'); for (const seat of [0, 1, 2, 3]) change(document.querySelector('#v7-faction-' + seat), 'ORIGINAL'); document.querySelector('[data-action="launch"]').click(); return true; })()`
+          : `(() => { const type = document.querySelector('#v7-map-type'); type.value = 'SHOWCASE'; type.dispatchEvent(new Event('change', { bubbles: true })); document.querySelector('[data-action="launch"]').click(); return true; })()`,
       );
       await waitFor(
         connection,
@@ -352,7 +375,7 @@ async function captureAll(
           // The unit-free map is only measured, on the desktop at zoom 1;
           // the marker pair locates the scene in every framing.
           zooms:
-            job.kind === "BUSY" || job.variant.id === "today"
+            DEMO_MODE || job.kind === "BUSY" || job.variant.id === "today"
               ? job.zooms
               : viewport.name === "desktop"
                 ? ["1"]
@@ -629,12 +652,14 @@ interface Point {
  * The centre of the scene's capital cell in device pixels: the middle of
  * the selection outline that the MARKER capture adds to the NO_UNITS one.
  */
-async function capitalCentre(viewport: string, zoom: string): Promise<Point> {
-  const empty = await loadRaster(
-    captureFile("today", "NO_UNITS", viewport, zoom),
-  );
+async function capitalCentre(
+  viewport: string,
+  zoom: string,
+  pair: readonly [Kind, Kind] = ["NO_UNITS", "MARKER"],
+): Promise<Point> {
+  const empty = await loadRaster(captureFile("today", pair[0], viewport, zoom));
   const marker = await loadRaster(
-    captureFile("today", "MARKER", viewport, zoom),
+    captureFile("today", pair[1], viewport, zoom),
   );
   let left = empty.width;
   let right = -1;
@@ -1028,8 +1053,485 @@ async function compose(): Promise<void> {
   ]);
 }
 
+// ------------------------------------------------------------ Human demo
+
+const DEMO_VARIANT = (id: string): VisualDirectionVariantV7 => {
+  const found = HUMAN_DEMO_VARIANTS_V7.find((variant) => variant.id === id);
+  if (found === undefined) throw new Error(`unknown demo variant ${id}`);
+  return found;
+};
+
+function demoJobs(zooms: readonly string[]): CaptureJob[] {
+  if (TODAY === undefined) throw new Error("the today variant is required");
+  const demo = DEMO_VARIANT("demo");
+  const desktopOnly = { zooms: ["1"], viewports: ["desktop"] };
+  return [
+    ...[TODAY, demo].flatMap((variant) => [
+      { variant, kind: "BUSY" as const, zooms },
+      { variant, kind: "LIVE" as const, zooms },
+      { variant, kind: "DEMO" as const, ...desktopOnly },
+    ]),
+    { variant: TODAY, kind: "NO_UNITS", zooms },
+    { variant: TODAY, kind: "MARKER", zooms },
+    { variant: TODAY, kind: "DEMO_MARKER", ...desktopOnly },
+    ...["demo-style-a", "demo-style-b"].map((id) => ({
+      variant: DEMO_VARIANT(id),
+      kind: "BUSY" as const,
+      ...desktopOnly,
+    })),
+    ...["demo-base-disc", "demo-base-ring", "demo-base-round"].map((id) => ({
+      variant: DEMO_VARIANT(id),
+      kind: "DEMO" as const,
+      ...desktopOnly,
+    })),
+  ];
+}
+
+interface Rgba {
+  readonly width: number;
+  readonly height: number;
+  readonly data: Buffer;
+}
+
+async function loadSprite(file: string): Promise<Rgba | null> {
+  const full = path.join(ROOT, file);
+  if (!existsSync(full)) return null;
+  const { data, info } = await sharp(full)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  return { width: info.width, height: info.height, data };
+}
+
+/** The first candidate of a raw candidate sheet (edits hold two). */
+function firstCandidate(sheet: Rgba, width: number, height: number): Rgba {
+  const data = Buffer.alloc(width * height * 4);
+  for (let y = 0; y < height; y += 1)
+    sheet.data.copy(
+      data,
+      y * width * 4,
+      y * sheet.width * 4,
+      (y * sheet.width + width) * 4,
+    );
+  return { width, height, data };
+}
+
+/** A sprite bottom-centred on a grass (or water) cell, as a panel raster. */
+function onGround(
+  sprite: Rgba | null,
+  cell: { readonly width: number; readonly height: number },
+  ground: readonly number[] = [137, 183, 91],
+): Raster {
+  const data = Buffer.alloc(cell.width * cell.height * 3);
+  const left =
+    sprite === null ? 0 : Math.floor((cell.width - sprite.width) / 2);
+  const top = sprite === null ? 0 : cell.height - sprite.height;
+  for (let y = 0; y < cell.height; y += 1)
+    for (let x = 0; x < cell.width; x += 1) {
+      const sx = x - left;
+      const sy = y - top;
+      const inside =
+        sprite !== null &&
+        sx >= 0 &&
+        sy >= 0 &&
+        sx < sprite.width &&
+        sy < sprite.height;
+      const offset = inside ? (sy * sprite.width + sx) * 4 : 0;
+      const alpha = inside ? (sprite.data[offset + 3] ?? 0) / 255 : 0;
+      for (let channel = 0; channel < 3; channel += 1)
+        data[(y * cell.width + x) * 3 + channel] = Math.round(
+          (inside ? (sprite.data[offset + channel] ?? 0) : 0) * alpha +
+            (ground[channel] ?? 0) * (1 - alpha),
+        );
+    }
+  return { width: cell.width, height: cell.height, data };
+}
+
+function enlarge(raster: Raster, factor: number): Raster {
+  const width = raster.width * factor;
+  const height = raster.height * factor;
+  const data = Buffer.alloc(width * height * 3);
+  for (let y = 0; y < height; y += 1)
+    for (let x = 0; x < width; x += 1)
+      raster.data.copy(
+        data,
+        (y * width + x) * 3,
+        (Math.floor(y / factor) * raster.width + Math.floor(x / factor)) * 3,
+        (Math.floor(y / factor) * raster.width + Math.floor(x / factor)) * 3 +
+          3,
+      );
+  return { width, height, data };
+}
+
+/** Rasters side by side on the sheet background, bottom-aligned. */
+function beside(rasters: readonly Raster[], gap = 8): Raster {
+  const width =
+    rasters.reduce((sum, raster) => sum + raster.width, 0) +
+    gap * (rasters.length - 1);
+  const height = Math.max(...rasters.map((raster) => raster.height));
+  const data = Buffer.alloc(width * height * 3);
+  for (let index = 0; index < width * height; index += 1)
+    data.set([28, 36, 38], index * 3);
+  let left = 0;
+  for (const raster of rasters) {
+    for (let y = 0; y < raster.height; y += 1)
+      raster.data.copy(
+        data,
+        ((height - raster.height + y) * width + left) * 3,
+        y * raster.width * 3,
+        (y + 1) * raster.width * 3,
+      );
+    left += raster.width + gap;
+  }
+  return { width, height, data };
+}
+
+const WATER = [143, 211, 222] as const;
+
+/** Old and new sprite of every improvement and city tier, 1:1 and x4. */
+async function buildingsSheet(): Promise<void> {
+  const rows: readonly (readonly [string, string, string])[] = [
+    ["Farm", "buildings/chibi-farm", "chibi-demo-farm"],
+    ["Lumber Camp", "buildings/chibi-lumber-camp", "chibi-demo-lumber-camp"],
+    ["Windmill", "buildings/chibi-windmill", "chibi-demo-windmill"],
+    ["Sawmill", "buildings/chibi-sawmill", "chibi-demo-sawmill"],
+    ["Forge", "buildings/chibi-forge", "chibi-demo-forge"],
+    ["Workshop", "buildings/chibi-workshop", "chibi-demo-workshop"],
+    ["Market", "buildings/chibi-market", "chibi-demo-market"],
+    ["Monument", "buildings/chibi-monument", "chibi-demo-monument"],
+    ["Port", "buildings/chibi-port", "chibi-demo-port"],
+    ["Shipyard", "buildings/chibi-shipyard", "chibi-demo-shipyard"],
+    ["City 1", "settlements/chibi-city-1", "chibi-demo-city-1"],
+    ["City 2", "settlements/chibi-city-2", "chibi-demo-city-2"],
+    ["City 3", "settlements/chibi-city-3", "chibi-demo-city-3"],
+  ];
+  const cell = { width: 96, height: 104 };
+  const panels: Panel[] = [];
+  for (const [label, old, fresh] of rows) {
+    const ground = label === "Port" || label === "Shipyard" ? WATER : undefined;
+    const before = onGround(
+      await loadSprite(`public/assets/chibi/${old}.png`),
+      cell,
+      ground,
+    );
+    const after = onGround(
+      await loadSprite(`${DEMO_EXPLORATION}/assets/${fresh}.png`),
+      cell,
+      ground,
+    );
+    panels.push({
+      label: `${label}: old, new (1:1 and x4)`,
+      raster: beside([before, after, enlarge(before, 4), enlarge(after, 4)]),
+    });
+  }
+  await writeGrid(path.join(OUT, "buildings-old-new.png"), panels, 2);
+}
+
+/** Every building style sample tried, x4, with its verdict. */
+async function styleCandidatesSheet(): Promise<void> {
+  const cell = { width: 96, height: 96 };
+  const entries: readonly (readonly [string, string, number, number])[] = [
+    [
+      "Today: Windmill",
+      "public/assets/chibi/buildings/chibi-windmill.png",
+      80,
+      88,
+    ],
+    ["Today: Forge", "public/assets/chibi/buildings/chibi-forge.png", 80, 88],
+    ["Today: Market", "public/assets/chibi/buildings/chibi-market.png", 80, 88],
+    [
+      "A soft chibi (Pixen, 80 x 88)",
+      `${DEMO_EXPLORATION}/buildings-soft/raw/windmill-soft-a.png`,
+      80,
+      88,
+    ],
+    [
+      "A soft chibi",
+      `${DEMO_EXPLORATION}/buildings-soft/raw/forge-soft-a.png`,
+      80,
+      88,
+    ],
+    [
+      "A soft chibi",
+      `${DEMO_EXPLORATION}/buildings-soft/raw/market-soft-a.png`,
+      80,
+      88,
+    ],
+    [
+      "B flat, small (Pixen, 64 px): chosen",
+      `${DEMO_EXPLORATION}/buildings-flat/raw/windmill-flat-a.png`,
+      64,
+      72,
+    ],
+    [
+      "B flat, small",
+      `${DEMO_EXPLORATION}/buildings-flat/raw/forge-flat-a.png`,
+      64,
+      64,
+    ],
+    [
+      "B flat, small",
+      `${DEMO_EXPLORATION}/buildings-flat/raw/market-flat-a.png`,
+      64,
+      64,
+    ],
+    [
+      "Rejected: Pixflux flat shading",
+      `${DEMO_EXPLORATION}/buildings-flat/raw/windmill-flux-a.png`,
+      64,
+      72,
+    ],
+    [
+      "Rejected: Pixflux flat shading",
+      `${DEMO_EXPLORATION}/buildings-flat/raw/forge-flux-a.png`,
+      64,
+      64,
+    ],
+    [
+      "Rejected: Pixflux flat shading",
+      `${DEMO_EXPLORATION}/buildings-flat/raw/market-flux-a.png`,
+      64,
+      64,
+    ],
+    [
+      "Rejected: Pixen lineless",
+      `${DEMO_EXPLORATION}/buildings-flat/raw/windmill-flat-b.png`,
+      64,
+      72,
+    ],
+    [
+      "Rejected: Pixflux lineless",
+      `${DEMO_EXPLORATION}/buildings-flat/raw/forge-flux-b.png`,
+      64,
+      64,
+    ],
+    [
+      "Not used: a flag in the art (key red)",
+      `${DEMO_EXPLORATION}/buildings-flat/raw/port-b-a-flag.png`,
+      72,
+      72,
+    ],
+    [
+      "Not used: a flag in the art (key red)",
+      `${DEMO_EXPLORATION}/buildings-flat/raw/city-1-c-a-flag.png`,
+      96,
+      96,
+    ],
+  ];
+  const panels: Panel[] = [];
+  for (const [label, file, width, height] of entries) {
+    const sheet = await loadSprite(file);
+    if (sheet === null) continue;
+    panels.push({
+      label,
+      raster: onGround(firstCandidate(sheet, width, height), cell),
+    });
+  }
+  if (panels.length > 0)
+    await writeGrid(
+      path.join(OUT, "building-style-candidates-x4.png"),
+      panels,
+      3,
+      4,
+    );
+}
+
+/** A block of cells of the DEMO capture (desktop, zoom 1, 80 px cells). */
+async function demoCells(
+  variant: VisualDirectionVariantV7,
+  cells: {
+    readonly x: number;
+    readonly y: number;
+    readonly w: number;
+    readonly h: number;
+  },
+  label = variant.label,
+): Promise<Panel | null> {
+  const file = captureFile(variant.id, "DEMO", "desktop", "1");
+  if (!existsSync(file)) return null;
+  const centre = await capitalCentre("desktop", "1", ["DEMO", "DEMO_MARKER"]);
+  // The capital is cell (5,4) of the patch.
+  return {
+    label,
+    raster: crop(await loadRaster(file), {
+      left: centre.x - 40 + (cells.x - 5) * 80,
+      top: centre.y - 40 + (cells.y - 4) * 80,
+      width: cells.w * 80,
+      height: cells.h * 80,
+    }),
+  };
+}
+
+async function composeDemo(): Promise<void> {
+  await mkdir(OUT, { recursive: true });
+  if (TODAY === undefined) throw new Error("the today variant is required");
+  const demo = DEMO_VARIANT("demo");
+  await styleCandidatesSheet();
+  await buildingsSheet();
+  const [, phone] = VIEWPORTS;
+  for (const viewport of VIEWPORTS)
+    for (const zoom of ZOOMS) {
+      const size =
+        viewport.name === "phone"
+          ? { width: 390, height: 600 }
+          : { width: 1120, height: 900 };
+      const busy = present([
+        await panel(TODAY, viewport, zoom, size),
+        await panel(demo, viewport, zoom, size),
+      ]);
+      if (busy.length === 2)
+        await writeGrid(
+          path.join(OUT, `before-after-busy-${viewport.name}-zoom-${zoom}.png`),
+          busy,
+          2,
+        );
+      // The Showcase is the running match: the whole board view, cropped
+      // about its middle to the same window.
+      const live = async (
+        variant: VisualDirectionVariantV7,
+      ): Promise<Panel | null> => {
+        const file = captureFile(variant.id, "LIVE", viewport.name, zoom);
+        if (!existsSync(file)) return null;
+        const raster = await loadRaster(file);
+        return {
+          label: `${variant.label} · all-Human Showcase`,
+          raster: centred(
+            raster,
+            size.width * viewport.dpr,
+            size.height * viewport.dpr,
+            { x: raster.width / 2, y: raster.height / 2 },
+          ),
+        };
+      };
+      const showcase = present([await live(TODAY), await live(demo)]);
+      if (showcase.length === 2)
+        await writeGrid(
+          path.join(
+            OUT,
+            `before-after-showcase-${viewport.name}-zoom-${zoom}.png`,
+          ),
+          showcase,
+          2,
+        );
+    }
+  const whole = { x: 0, y: 0, w: 11, h: 8 };
+  const scene = present([
+    await demoCells(TODAY, whole),
+    await demoCells(demo, whole),
+  ]);
+  if (scene.length > 0)
+    await writeGrid(path.join(OUT, "demo-scene-desktop.png"), scene, 1);
+  // The Farm: one alone, the 3 x 3 block and the Roads under it.
+  const farmCells = { x: 0, y: 0, w: 5, h: 4 };
+  const farms = present([
+    await demoCells(
+      TODAY,
+      farmCells,
+      "Today: one Farm, a 3 x 3 block, Roads under it",
+    ),
+    await demoCells(
+      demo,
+      farmCells,
+      "Demo: rows with gaps; the Roads stay visible",
+    ),
+  ]);
+  const farmSprites: Panel[] = [];
+  for (const [label, file] of [
+    ["Today's Farm sprite", "public/assets/chibi/buildings/chibi-farm.png"],
+    [
+      "The demo's Farm sprite",
+      `${DEMO_EXPLORATION}/assets/chibi-demo-farm.png`,
+    ],
+  ] as const)
+    farmSprites.push({
+      label: `${label}, x5`,
+      raster: enlarge(
+        onGround(await loadSprite(file), { width: 80, height: 80 }),
+        5,
+      ),
+    });
+  if (farms.length > 0)
+    await writeGrid(path.join(OUT, "farm.png"), [...farms, ...farmSprites], 2);
+  // Bases: the units north of the cities and beside them, and the ships.
+  const land = { x: 4, y: 0, w: 6, h: 4 };
+  const water = { x: 0, y: 6, w: 10, h: 2 };
+  const bases: Panel[] = [];
+  for (const id of [
+    "demo-base-disc",
+    "demo-base-ring",
+    "demo",
+    "demo-base-round",
+  ]) {
+    const variant =
+      id === "demo" ? DEMO_VARIANT("demo-base-plate") : DEMO_VARIANT(id);
+    const source = { ...variant, id };
+    const landPanel = await demoCells(source, land);
+    const waterPanel = await demoCells(source, water);
+    if (landPanel === null || waterPanel === null) continue;
+    bases.push({
+      label: variant.label,
+      raster: beside([landPanel.raster, waterPanel.raster]),
+    });
+  }
+  if (bases.length > 0)
+    await writeGrid(path.join(OUT, "base-plates.png"), bases, 1);
+  const desktop = VIEWPORTS[0];
+  const benchSize = { width: 720, height: 560 };
+  const styles = present([
+    await panel(TODAY, desktop, "1", benchSize),
+    await panel(DEMO_VARIANT("demo-style-a"), desktop, "1", benchSize),
+    await panel(DEMO_VARIANT("demo-style-b"), desktop, "1", benchSize),
+  ]);
+  if (styles.length === 3)
+    await writeGrid(
+      path.join(OUT, "building-styles-bench-desktop.png"),
+      styles,
+      3,
+    );
+  const phoneSize = { width: 390, height: 520 };
+  const hard = present([
+    await panel(TODAY, phone, "0.75", phoneSize),
+    await panel(demo, phone, "0.75", phoneSize),
+  ]);
+  if (hard.length === 2)
+    await writeGrid(
+      path.join(OUT, "same-unit-phone-zoom-0.75.png"),
+      (["normal", "deuteranopia", "protanopia"] as const).flatMap((vision) =>
+        hard.map((entry) => ({
+          label: `${entry.label} · ${vision}`,
+          raster:
+            vision === "normal" ? entry.raster : simulate(entry.raster, vision),
+        })),
+      ),
+      2,
+      2 / 3,
+    );
+}
+
 async function main(): Promise<void> {
   await mkdir(CAPTURES, { recursive: true });
+  if (DEMO_MODE) {
+    const viewportNames = option("--viewports")?.split(",");
+    const viewports = VIEWPORTS.filter(
+      (viewport) =>
+        viewportNames === undefined || viewportNames.includes(viewport.name),
+    );
+    if (!process.argv.includes("--skip-capture")) {
+      const only = option("--variants")?.split(",");
+      const jobs = demoJobs(option("--zooms")?.split(",") ?? [...ZOOMS]).filter(
+        (job) => only === undefined || only.includes(job.variant.id),
+      );
+      const port = Number.parseInt(option("--port") ?? "6461", 10);
+      const server = await startDevServer(port);
+      try {
+        await captureAll(`http://localhost:${port}/`, viewports, jobs);
+      } finally {
+        stopDevServer(server);
+      }
+    }
+    await composeDemo();
+    return;
+  }
   const only = option("--variants")?.split(",");
   const variants = VISUAL_DIRECTION_VARIANTS_V7.filter(
     (variant) => only === undefined || only.includes(variant.id),

@@ -56,11 +56,24 @@ export interface BoardVisualDirectionV7 {
     readonly owner: OwnerAreaColourV7;
     /** Keeps a small flag (where the art has one) in the player colour. */
     readonly accent: boolean;
+    /** Draws the exploration sample sprite where one exists (untoned). */
+    readonly samples: boolean;
+    /**
+     * A small code-drawn pennant in the player colour on the buildings that
+     * have an authored anchor (DIRECTION_FLAG_ANCHORS_V7).
+     */
+    readonly flags: boolean;
   };
   readonly city: SpriteToneV7 & {
     readonly owner: OwnerAreaColourV7;
     readonly accent: boolean;
-    /** A code-drawn pennant in the player colour replaces the seat badge. */
+    /** Draws the exploration sample sprite where one exists (untoned). */
+    readonly samples: boolean;
+    /**
+     * A code-drawn pennant in the player colour replaces the seat badge: on
+     * the art's authored anchor (DIRECTION_FLAG_ANCHORS_V7) when it has one,
+     * else on a pole at the cell's top-left corner.
+     */
     readonly banner: boolean;
   };
   /** Terrain tiles, tall terrain, resources and Treasure. */
@@ -72,7 +85,13 @@ export interface BoardVisualDirectionV7 {
     readonly accent: boolean;
     /** Draws the exploration sample sprites where one exists. */
     readonly samples: boolean;
-    readonly base: "NONE" | "DISC" | "RING";
+    /**
+     * DISC is the study's heavy filled ellipse with a near-black outline,
+     * RING its outline alone; PLATE is the demo's lighter plate: smaller,
+     * with a rim in a darker tone of the player colour instead of black.
+     * A ship's base is always a wake-like ring, whatever the style.
+     */
+    readonly base: "NONE" | "DISC" | "RING" | "PLATE";
     /** SEAT gives each seat's base its own outline (round, pointed, ...). */
     readonly baseShape: "ROUND" | "SEAT";
     /** A light rim outside the black outline, where the canvas has room. */
@@ -92,11 +111,18 @@ export interface BoardVisualDirectionV7 {
 
 /** Draws exactly like no direction at all (used to test the wiring). */
 export const BASELINE_DIRECTION_V7: BoardVisualDirectionV7 = {
-  building: { ...UNCHANGED_TONE_V7, owner: "PLAYER", accent: false },
+  building: {
+    ...UNCHANGED_TONE_V7,
+    owner: "PLAYER",
+    accent: false,
+    samples: false,
+    flags: false,
+  },
   city: {
     ...UNCHANGED_TONE_V7,
     owner: "PLAYER",
     accent: false,
+    samples: false,
     banner: false,
   },
   terrain: UNCHANGED_TONE_V7,
@@ -137,6 +163,8 @@ export const RECOMMENDED_DIRECTION_V7: BoardVisualDirectionV7 = {
     scale: 100,
     owner: HUMAN_ROOF_COLOUR_V7,
     accent: false,
+    samples: false,
+    flags: false,
   },
   city: {
     saturation: 85,
@@ -146,6 +174,7 @@ export const RECOMMENDED_DIRECTION_V7: BoardVisualDirectionV7 = {
     scale: 100,
     owner: HUMAN_ROOF_COLOUR_V7,
     accent: false,
+    samples: false,
     banner: true,
   },
   terrain: {
@@ -171,6 +200,64 @@ export const RECOMMENDED_DIRECTION_V7: BoardVisualDirectionV7 = {
     roads: "CALM",
     borders: "SOLID",
   },
+};
+
+/** The Human faction's fixed cloth colour in the demo: heraldic crimson. */
+export const HUMAN_CRIMSON_COLOUR_V7 = "#a8202c";
+
+/**
+ * The Human demo (bead pulp_wars-3tq.3, VISUAL_DIRECTION_2026-10.md, "Human
+ * demo"): what the developer toggle draws. Buildings, cities and the three
+ * sample units are re-created sprites in fixed faction colours (loaded from
+ * the lazily imported sample module); the player is shown by a seat-shaped
+ * plate under each unit, a pennant on each city and on the few buildings
+ * that have a mast or a ridge for one, and the territory border. A Human
+ * unit without a sample yet wears the faction crimson by code.
+ */
+export const HUMAN_DEMO_DIRECTION_V7: BoardVisualDirectionV7 = {
+  building: {
+    ...RECOMMENDED_DIRECTION_V7.building,
+    samples: true,
+    flags: true,
+  },
+  city: { ...RECOMMENDED_DIRECTION_V7.city, samples: true },
+  terrain: RECOMMENDED_DIRECTION_V7.terrain,
+  unit: {
+    owner: HUMAN_CRIMSON_COLOUR_V7,
+    accent: false,
+    samples: true,
+    base: "PLATE",
+    baseShape: "SEAT",
+    halo: false,
+  },
+  chrome: RECOMMENDED_DIRECTION_V7.chrome,
+};
+
+/**
+ * Where a code-drawn player pennant attaches to a sprite, by asset id, in
+ * master pixels from the sprite's top-left corner: the top of the pole.
+ * `pole` is the length of pole drawn downward from there (0 when the art
+ * has its own mast). Buildings without an entry get no pennant: a Farm, a
+ * Mine, a Windmill or a Forge says nothing more with a flag, and their
+ * territory already shows the owner.
+ */
+export interface DirectionFlagAnchorV7 {
+  readonly x: number;
+  readonly y: number;
+  readonly pole: number;
+}
+
+export const DIRECTION_FLAG_ANCHORS_V7: Readonly<
+  Record<string, DirectionFlagAnchorV7>
+> = {
+  // The tower's cone tip; the keep's cone tip; the side of the great tower
+  // (above it the pennant would hide the base of a unit to the north).
+  "chibi-demo-city-1": { x: 40, y: 7, pole: 12 },
+  "chibi-demo-city-2": { x: 43.5, y: 0, pole: 6 },
+  "chibi-demo-city-3": { x: 55, y: 10, pole: 0 },
+  // The pier's own bare mast, and a pole on the boathouse ridge.
+  "chibi-demo-port": { x: 49.5, y: 22, pole: 0 },
+  "chibi-demo-shipyard": { x: 21, y: 4, pole: 11 },
 };
 
 const clampPercent = (value: unknown, low: number, high: number): number =>
@@ -530,7 +617,13 @@ export function createDirectedChibiArtV7(input: {
     colour: OwnerAreaColourV7,
     accent: boolean,
   ): ChibiResolutionV7 => {
-    if (colour === "PLAYER" || !humanPiece(request.subject))
+    // A ship's sail stays in the player colour: ships are shared by every
+    // faction, and on water the sail is the marker a base cannot be.
+    if (
+      colour === "PLAYER" ||
+      !humanPiece(request.subject) ||
+      directionUnitAfloatV7(request.subject)
+    )
       return base.resolve(request);
     const fixed = base.resolve({ ...request, ownerColor: colour });
     if (fixed.kind !== "READY" || !accent || request.ownerColor === undefined)
@@ -636,6 +729,12 @@ export function createDirectedChibiArtV7(input: {
         };
       }
       const settings = group === "CITY" ? direction.city : direction.building;
+      // A re-created sample sprite is drawn as authored: its colours are the
+      // faction's already, so it takes neither the tone nor an owner colour.
+      if (settings.samples && input.samples !== undefined) {
+        const sample = input.samples.resolve(request);
+        if (sample.kind !== "MISSING") return sample;
+      }
       const resolved = ownerAreas(request, settings.owner, settings.accent);
       return resolved.kind === "READY"
         ? withTone(resolved, settings)
@@ -675,14 +774,21 @@ export function drawDirectedUnitBaseV7(
   zoom: number,
 ): void {
   if (direction.unit.base === "NONE" || entry.ownerColor === undefined) return;
+  const style = direction.unit.base;
   const scale = sprite.height / 80;
   const centreX = sprite.x + sprite.width / 2;
-  const radiusX = Math.min(sprite.width * 0.5, 30 * (sprite.height / 80));
-  const radiusY = radiusX * 0.36;
+  const afloat = directionUnitAfloatV7(entry.artSubject);
+  const radiusX = afloat
+    ? sprite.width * 0.44
+    : Math.min(sprite.width * 0.5, (style === "PLATE" ? 26 : 30) * scale);
+  const radiusY = radiusX * (afloat ? 0.3 : style === "PLATE" ? 0.34 : 0.36);
   // The feet stand about 5 master pixels above the canvas bottom.
   const centreY = sprite.y + sprite.height - radiusY - 1 * scale;
   const ready = entry.ready === true && direction.chrome.ready === "BASE";
-  const seat = direction.unit.baseShape === "SEAT" ? (entry.ownerSeat ?? 0) : 0;
+  // A ship's ring is always round: a wake has no corners, and its sail
+  // already shows the player.
+  const seat =
+    direction.unit.baseShape === "SEAT" && !afloat ? (entry.ownerSeat ?? 0) : 0;
   const ellipse = (grow: number): void =>
     seatBasePath(
       context,
@@ -693,10 +799,13 @@ export function drawDirectedUnitBaseV7(
       radiusY + grow * zoom,
     );
   context.save();
-  if (direction.unit.base === "RING") {
+  if (style === "RING" || afloat) {
+    // A hull stands in this ring like in its own wake; nothing is filled,
+    // so the water stays visible.
+    const thin = style === "PLATE";
     ellipse(0);
-    context.strokeStyle = OUTLINE;
-    context.lineWidth = (ready ? 10 : 7) * zoom;
+    context.strokeStyle = thin ? darkerColourV7(entry.ownerColor) : OUTLINE;
+    context.lineWidth = (ready ? 10 : thin ? 5 : 7) * zoom;
     context.stroke();
     if (ready) {
       context.strokeStyle = READY_RIM;
@@ -704,8 +813,26 @@ export function drawDirectedUnitBaseV7(
       context.stroke();
     }
     context.strokeStyle = entry.ownerColor;
-    context.lineWidth = 4 * zoom;
+    context.lineWidth = (thin ? 3 : 4) * zoom;
     context.stroke();
+    context.restore();
+    return;
+  }
+  if (style === "PLATE") {
+    if (ready) {
+      ellipse(5.5);
+      context.fillStyle = OUTLINE;
+      context.fill();
+      ellipse(4.5);
+      context.fillStyle = READY_RIM;
+      context.fill();
+    }
+    ellipse(1.5);
+    context.fillStyle = darkerColourV7(entry.ownerColor);
+    context.fill();
+    ellipse(0);
+    context.fillStyle = entry.ownerColor;
+    context.fill();
     context.restore();
     return;
   }
@@ -724,6 +851,102 @@ export function drawDirectedUnitBaseV7(
   context.fillStyle = entry.ownerColor;
   context.fill();
   context.restore();
+}
+
+/** Ships and the embarked transport: their base is a ring on the water. */
+export function directionUnitAfloatV7(
+  subject: ArtSubjectV7 | undefined,
+): boolean {
+  return (
+    subject === "UNIT:PATROL_BOAT" ||
+    subject === "UNIT:BATTLESHIP" ||
+    subject === "UNIT:EMBARKED_TRANSPORT"
+  );
+}
+
+/** A darker tone of a `#rrggbb` colour, for rims that are not black. */
+export function darkerColourV7(colour: string): string {
+  const rgb = parseHexColourV7(colour);
+  if (rgb === null) return OUTLINE;
+  return `#${[rgb.r, rgb.g, rgb.b]
+    .map((value) =>
+      Math.round(value * 0.45)
+        .toString(16)
+        .padStart(2, "0"),
+    )
+    .join("")}`;
+}
+
+/**
+ * The player pennant on a building or a city that has an authored anchor:
+ * a short pole (unless the art has its own mast) and a small swallow-tailed
+ * flag in the owner colour; a city's is larger and carries the seat shape,
+ * gold for the capital. `sprite` is the drawn rect of the art and `scale`
+ * the CSS pixels per master pixel. Returns whether a pennant was drawn.
+ */
+export function drawDirectedFlagV7(
+  context: CanvasRenderingContext2D,
+  direction: BoardVisualDirectionV7,
+  entry: BoardRenderPlanEntryV7,
+  assetId: string,
+  sprite: DirectedRectV7,
+  scale: number,
+): boolean {
+  const city = entry.kind === "CITY";
+  if (
+    !(city ? direction.city.banner : direction.building.flags) ||
+    (entry.kind !== "IMPROVEMENT" && !city) ||
+    entry.ownerColor === undefined
+  )
+    return false;
+  const anchor = DIRECTION_FLAG_ANCHORS_V7[assetId];
+  if (anchor === undefined) return false;
+  const x = sprite.x + anchor.x * scale;
+  const top = sprite.y + anchor.y * scale;
+  const width = (city ? 17 : 11) * scale;
+  const height = (city ? 11 : 7) * scale;
+  context.save();
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  const pole = Math.max(anchor.pole, 0) * scale;
+  if (pole > 0) {
+    context.beginPath();
+    context.moveTo(x, top);
+    context.lineTo(x, top + pole);
+    context.strokeStyle = "#4a3b2e";
+    context.lineWidth = 2.6 * scale;
+    context.stroke();
+    context.strokeStyle = "#d9cdb4";
+    context.lineWidth = 1.2 * scale;
+    context.stroke();
+  }
+  context.beginPath();
+  context.moveTo(x, top);
+  context.lineTo(x + width, top);
+  context.lineTo(x + width * 0.72, top + height / 2);
+  context.lineTo(x + width, top + height);
+  context.lineTo(x, top + height);
+  context.closePath();
+  context.fillStyle = entry.ownerColor;
+  context.strokeStyle = darkerColourV7(entry.ownerColor);
+  context.lineWidth = 1.2 * scale;
+  context.fill();
+  context.stroke();
+  if (city) {
+    seatShapePath(
+      context,
+      entry.ownerSeat ?? 0,
+      x + width * 0.36,
+      top + height / 2,
+      height * 0.27,
+    );
+    context.fillStyle = entry.capital === true ? "#f4c542" : "#fff8e6";
+    context.fill();
+    context.lineWidth = 0.8 * scale;
+    context.stroke();
+  }
+  context.restore();
+  return true;
 }
 
 /**
@@ -837,6 +1060,8 @@ export function drawDirectedPieceChromeV7(
   y: number,
   zoom: number,
   garrisoned = false,
+  /** The city's pennant was already drawn on its art's own anchor. */
+  flagDrawn = false,
 ): DirectedChromeHandledV7 {
   if (entry.kind !== "UNIT" && entry.kind !== "CITY") return NOTHING_HANDLED;
   const { chrome } = direction;
@@ -858,7 +1083,7 @@ export function drawDirectedPieceChromeV7(
   if (entry.kind === "CITY" && direction.city.banner) {
     badge = true;
     crown = entry.capital === true;
-    if (entry.ownerColor !== undefined) {
+    if (entry.ownerColor !== undefined && !flagDrawn) {
       // A pennant on a pole at the cell's top-left corner.
       const poleX = x - 52 * zoom;
       const top = y - 78 * zoom;

@@ -91,6 +91,15 @@ const PIECE_OPTIONS = {
   direction: "south-east",
 } as const;
 
+/** Flat-shaded pieces through Pixflux (bead pulp_wars-3tq.3). */
+const FLAT_PIECE_OPTIONS = {
+  outline: "selective outline",
+  shading: "flat shading",
+  detail: "low detail",
+  view: "low top-down",
+  direction: "south-east",
+} as const;
+
 /** Status markers and effects (vkq.14): flat, front-on, black outline. */
 const EFFECT_OPTIONS = {
   "create-image-pixflux": {
@@ -151,15 +160,23 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     derivation: "as-is",
     options: { "create-image-pixen": PIECE_OPTIONS },
   },
+  // Pixflux is allowed for buildings since the Human demo of the
+  // visual-direction study (bead pulp_wars-3tq.3): it is the only endpoint
+  // with a shading option, so a flat-shaded building style could be tried.
+  // Its samples ignored the subject and drew ground plates; every accepted
+  // building still comes from Pixen, which honours the camera.
   building: {
     camera: "three-quarter",
     factionLayer: true,
     assetClasses: ["BUILDING"],
-    generators: ["create-image-pixen"],
+    generators: ["create-image-pixen", "create-image-pixflux"],
     editPass: true,
     noBackground: true,
     derivation: "as-is",
-    options: { "create-image-pixen": PIECE_OPTIONS },
+    options: {
+      "create-image-pixen": PIECE_OPTIONS,
+      "create-image-pixflux": FLAT_PIECE_OPTIONS,
+    },
   },
   // Bead pulp_wars-6gd.5: the Farm is a field of grain with no building.
   // The building class text ("one single building") and the faction layer

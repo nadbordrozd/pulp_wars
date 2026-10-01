@@ -1,0 +1,358 @@
+{
+  "schemaVersion": 1,
+  "batch": "human-demo-farm",
+  "recipes": {
+    "farm-field-a": {
+      "id": "farm-field-a",
+      "asset": "chibi-demo-farm-field",
+      "jobId": "sync-6f4894f8-d953-48da-9a7f-769b36b0d4fb",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "human-demo-farm",
+        "asset": "chibi-demo-farm-field",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-HUMAN-FARM",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 75001,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "high top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "art/explorations/human-demo-2026-10/farm/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "art/explorations/human-demo-2026-10/farm/fragments/camera-three-quarter.txt",
+            "text": "Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/human-demo-2026-10/farm/fragments/class-crop-field.txt + scripts/art/chibi/fragments/class-crop-field.negative.txt",
+            "text": "Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent.",
+            "negative": "pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/human-demo-2026-10/farm/subjects.json",
+            "text": "Subject: a wheat field as a flat pattern seen straight from above: four straight horizontal rows of small golden-straw wheat plants, each row running in one line from the left edge to the right edge of the image, each row made of small separate round wheat tufts side by side, with wide empty transparent gaps between the rows, the gaps as wide as the rows; nothing at all between the rows; only wheat. Crops only."
+          }
+        ],
+        "prompt": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast. Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves. Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent. Subject: a wheat field as a flat pattern seen straight from above: four straight horizontal rows of small golden-straw wheat plants, each row running in one line from the left edge to the right edge of the image, each row made of small separate round wheat tufts side by side, with wide empty transparent gaps between the rows, the gaps as wide as the rows; nothing at all between the rows; only wheat. Crops only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit",
+        "description": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast. Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves. Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent. Subject: a wheat field as a flat pattern seen straight from above: four straight horizontal rows of small golden-straw wheat plants, each row running in one line from the left edge to the right edge of the image, each row made of small separate round wheat tufts side by side, with wide empty transparent gaps between the rows, the gaps as wide as the rows; nothing at all between the rows; only wheat. Crops only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit."
+      },
+      "submittedAt": "2026-10-01T22:19:03.884Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/farm/raw/farm-field-a.png",
+      "rawSheetSha256": "99de8d07034e3a4081617f6d461bd50e6c52bbf3b70474ed389b5ad96ede7082",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.5119,
+          "footprintWidthShare": 0.9865,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T22:20:02.408Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Right structure (four edge-to-edge rows of tufts), but soil bands and a painted fake transparency chequerboard between the rows. Source of the edits.",
+        "reviewedAt": "2026-10-01T23:01:29.349Z"
+      }
+    },
+    "farm-field-a-edit": {
+      "id": "farm-field-a-edit",
+      "asset": "chibi-demo-farm-field",
+      "jobId": "21b800da-d248-44e5-85f0-60a3bf7ae3f8",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "human-demo-farm",
+        "asset": "chibi-demo-farm-field",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-HUMAN-FARM",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 75002,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Erase everything that is not a wheat plant: remove all the brown soil, the dark lines and the grey-green chequered pattern between the rows, so that the space between the four rows of wheat is completely empty and transparent. Keep only the golden wheat plants of the four rows, each with a thin dark straw-brown outline, exactly where they are."
+          }
+        ],
+        "prompt": "Erase everything that is not a wheat plant: remove all the brown soil, the dark lines and the grey-green chequered pattern between the rows, so that the space between the four rows of wheat is completely empty and transparent. Keep only the golden wheat plants of the four rows, each with a thin dark straw-brown outline, exactly where they are.",
+        "negativePrompt": "",
+        "description": "Erase everything that is not a wheat plant: remove all the brown soil, the dark lines and the grey-green chequered pattern between the rows, so that the space between the four rows of wheat is completely empty and transparent. Keep only the golden wheat plants of the four rows, each with a thin dark straw-brown outline, exactly where they are.",
+        "editInstruction": "Erase everything that is not a wheat plant: remove all the brown soil, the dark lines and the grey-green chequered pattern between the rows, so that the space between the four rows of wheat is completely empty and transparent. Keep only the golden wheat plants of the four rows, each with a thin dark straw-brown outline, exactly where they are.",
+        "source": {
+          "recipe": "farm-field-a",
+          "candidate": 0,
+          "sha256": "99de8d07034e3a4081617f6d461bd50e6c52bbf3b70474ed389b5ad96ede7082"
+        }
+      },
+      "submittedAt": "2026-10-01T22:21:45.200Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/farm/raw/farm-field-a-edit.png",
+      "rawSheetSha256": "dd40a513ac8852c913ae3b959661a5521ecf3b4a5fd8f7b92b646b980f4c588f",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.5344,
+          "footprintWidthShare": 0.8649,
+          "suspect": true
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.5344,
+          "footprintWidthShare": 0.8649,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T22:22:33.044Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Real transparent gaps, but thin dark orange ears that read as dotted lines at 1:1. Source of farm-field-a-edit-2, which is used.",
+        "reviewedAt": "2026-10-01T23:01:32.602Z"
+      }
+    },
+    "farm-field-a-edit-2": {
+      "id": "farm-field-a-edit-2",
+      "asset": "chibi-demo-farm-field",
+      "jobId": "f063ffde-911d-4823-acf5-b816964ede94",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "human-demo-farm",
+        "asset": "chibi-demo-farm-field",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-HUMAN-FARM",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 75003,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent."
+          }
+        ],
+        "prompt": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent.",
+        "negativePrompt": "",
+        "description": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent.",
+        "editInstruction": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent.",
+        "source": {
+          "recipe": "farm-field-a-edit",
+          "candidate": 0,
+          "sha256": "7f2e9d1e38f6d318e5a9c0c30558b4288c648a5d9268181e811d26b717fd5b33"
+        }
+      },
+      "submittedAt": "2026-10-01T22:44:37.765Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/farm/raw/farm-field-a-edit-2.png",
+      "rawSheetSha256": "bc7db6ff60ddb45ba17e6fd3f0629aa52588bba82560cb2ee907a3c9a53fd651",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.4047,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.4047,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T22:45:46.002Z"
+    },
+    "farm-row-a": {
+      "id": "farm-row-a",
+      "asset": "chibi-demo-farm-row",
+      "jobId": "sync-be2e85de-3bad-4594-8beb-ec14f903752d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "human-demo-farm",
+        "asset": "chibi-demo-farm-row",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-HUMAN-FARM",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 32
+        },
+        "seed": 75011,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "art/explorations/human-demo-2026-10/farm/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "art/explorations/human-demo-2026-10/farm/fragments/camera-three-quarter.txt",
+            "text": "Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/human-demo-2026-10/farm/fragments/class-crop-field.txt + scripts/art/chibi/fragments/class-crop-field.negative.txt",
+            "text": "Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent.",
+            "negative": "pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/human-demo-2026-10/farm/subjects.json",
+            "text": "Subject: one single straight horizontal row of small golden-straw wheat plants standing side by side, seen from the front and slightly above, running from the left edge to the right edge of the image like one line of a planted field; each plant is a small simple tuft of pale straw stalks with soft golden grain heads; the row is low, only about a third of the image height, with empty transparent space above and below it. Crops only."
+          }
+        ],
+        "prompt": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast. Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves. Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent. Subject: one single straight horizontal row of small golden-straw wheat plants standing side by side, seen from the front and slightly above, running from the left edge to the right edge of the image like one line of a planted field; each plant is a small simple tuft of pale straw stalks with soft golden grain heads; the row is low, only about a third of the image height, with empty transparent space above and below it. Crops only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit",
+        "description": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast. Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves. Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent. Subject: one single straight horizontal row of small golden-straw wheat plants standing side by side, seen from the front and slightly above, running from the left edge to the right edge of the image like one line of a planted field; each plant is a small simple tuft of pale straw stalks with soft golden grain heads; the row is low, only about a third of the image height, with empty transparent space above and below it. Crops only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit."
+      },
+      "submittedAt": "2026-10-01T22:20:02.420Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 32
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/farm/raw/farm-row-a.png",
+      "rawSheetSha256": "e90c7517de7011336be0ec7c160424443847b2c78c17034e39c12b9c9cc71b4a",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T22:20:44.146Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "One thin strip of wheat on an opaque dark chequerboard; too thin to stack into a field.",
+        "reviewedAt": "2026-10-01T23:01:30.385Z"
+      }
+    },
+    "farm-tuft-a": {
+      "id": "farm-tuft-a",
+      "asset": "chibi-demo-farm-tuft",
+      "jobId": "sync-e43102b6-98f7-41f3-a65f-3d8aaa4fb4d4",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "human-demo-farm",
+        "asset": "chibi-demo-farm-tuft",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-HUMAN-FARM",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 32,
+          "height": 32
+        },
+        "seed": 75021,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "art/explorations/human-demo-2026-10/farm/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "art/explorations/human-demo-2026-10/farm/fragments/camera-three-quarter.txt",
+            "text": "Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/human-demo-2026-10/farm/fragments/class-crop-field.txt + scripts/art/chibi/fragments/class-crop-field.negative.txt",
+            "text": "Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent.",
+            "negative": "pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/human-demo-2026-10/farm/subjects.json",
+            "text": "Subject: one single small wheat plant: a tiny simple tuft of five pale straw stalks with soft golden grain heads, seen from the front and slightly above, alone in the middle of the image. Crops only."
+          }
+        ],
+        "prompt": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast. Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves. Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent. Subject: one single small wheat plant: a tiny simple tuft of five pale straw stalks with soft golden grain heads, seen from the front and slightly above, alone in the middle of the image. Crops only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit",
+        "description": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast. Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves. Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent. Subject: one single small wheat plant: a tiny simple tuft of five pale straw stalks with soft golden grain heads, seen from the front and slightly above, alone in the middle of the image. Crops only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit."
+      },
+      "submittedAt": "2026-10-01T22:20:44.148Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 32,
+        "height": 32
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/farm/raw/farm-tuft-a.png",
+      "rawSheetSha256": "636af5d768c0698735456516c53704720cd6f9c5b411424a0ff5d6c6165bf113",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 1,
+          "footprintWidthShare": 0.875,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T22:21:10.402Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A single tuft on an isometric grass block; too big (20 px) for four rows in a tile.",
+        "reviewedAt": "2026-10-01T23:01:31.505Z"
+      }
+    }
+  },
+  "assets": {}
+}

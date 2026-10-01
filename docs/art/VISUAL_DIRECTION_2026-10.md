@@ -1,7 +1,10 @@
 # Visual direction study, October 2026: less clutter, faction colours, player markers
 
-**Status:** exploration for bead `pulp_wars-3tq.1`, waiting for the user's
-review (`pulp_wars-3tq.2`). Nothing here changes the production manifest,
+**Status:** exploration for bead `pulp_wars-3tq.1`. The user reviewed it
+(`pulp_wars-3tq.2`) and asked for a fully worked-out demo of the Human
+faction before any rollout; that demo is [section 11](#11-human-demo) (bead
+`pulp_wars-3tq.3`), which also changes some of the rules proposed below and
+what the developer toggle draws. Nothing here changes the production manifest,
 the asset registry or what the game draws by default. The
 [chibi art direction](CHIBI_ART_DIRECTION.md) still governs production art;
 section 6 lists the rules that would change if this direction is approved.
@@ -40,7 +43,10 @@ recommend, on the Human faction and three units only.
   and portrait, roughly 120 calls (about US$1.50) for all four factions.
   This study used 4 PixelLab calls.
 - **See it live.** Settings > Developer tools > Visual direction switches a
-  real game to the recommended direction (chibi art set; off by default).
+  real game to the direction (chibi art set; off by default). Since the
+  Human demo it draws [section 11](#11-human-demo), not the study's
+  recommendation; the study's sheets are still reproduced by
+  `npm run art:visual-direction-review`.
 
 Key comparisons (all under
 [`art/explorations/visual-direction-2026-10/review/`](../../art/explorations/visual-direction-2026-10/review/)):
@@ -397,6 +403,287 @@ sample and extracts its mask with the production key-colour band.
    Teal)?
 6. Ready cue on the base, or keep today's glow?
 7. Go ahead with steps 1 and 2 (code only) before any regeneration?
+
+## 11. Human demo
+
+**Status:** bead `pulp_wars-3tq.3`, waiting for the user's review
+(`pulp_wars-3tq.4`). It answers the user's decisions on the study
+(recorded on `pulp_wars-3tq.2`): shaped base plates; buildings in faction
+colours with a small player flag only where it makes sense; the HP bar only
+when damaged; Humans in a high-medieval look, red and gold allowed; every
+building and city re-created, not toned; and a Farm of crop rows with gaps.
+Nothing ships by default: the demo is what the developer toggle
+(Settings > Developer tools > Visual direction, "Human faction demo") now
+draws, and with the toggle off the board is drawn exactly as before.
+
+To see it, start a Showcase match with three rivals and every seat Human,
+with `?art=chibi`, and switch the toggle on. Sections 6 and 8 above are the
+study's proposal; where this section differs, this section is the current
+proposal.
+
+![Today beside the Human demo on a phone at zoom 1](../../art/explorations/human-demo-2026-10/review/before-after-busy-phone-zoom-1.png)
+
+Evidence, all under
+[`art/explorations/human-demo-2026-10/review/`](../../art/explorations/human-demo-2026-10/review/),
+written by `npm run art:visual-direction-demo-review`:
+
+| Image                                                     | Shows                                                               |
+| --------------------------------------------------------- | ------------------------------------------------------------------- |
+| `before-after-busy-{desktop,phone}-zoom-{1,0.75}.png`     | the busy bench of section 3, today beside the demo                  |
+| `before-after-showcase-{desktop,phone}-zoom-{1,0.75}.png` | a real all-Human Showcase match, today beside the demo              |
+| `demo-scene-desktop.png`                                  | the demo patch: Farms and Roads, units north of cities, ships       |
+| `building-style-candidates-x4.png`                        | every building style sample tried, with the rejected ones           |
+| `building-styles-bench-desktop.png`                       | style A against style B on the bench, with units on and beside them |
+| `buildings-old-new.png`                                   | every improvement and city tier, old and new, 1:1 and x4            |
+| `farm.png`                                                | one Farm, a 3 x 3 block, Roads passing under it, and the sprite x5  |
+| `base-plates.png`                                         | the base variants on land, north of cities and on water             |
+| `same-unit-phone-zoom-0.75.png`                           | four players' units, as seen and under two colour-vision deficits   |
+
+### What was chosen, and why
+
+**Units: crimson and gold heraldry, as edits of the accepted sprites.** The
+Fighter wears a crimson surcoat with a gold cross and carries a heater
+shield with a gold lion; the Marksman a crimson hood with a gold trim over
+a cream gambeson; the Knight a crowned great helm, a crimson caparison with
+a gold trim and a lance pennant. They are `edit-image-pixen` edits of the
+production sprites, so the silhouettes, sizes and feet stay and the eight
+Human units not yet redone still stand beside them without a break. Fresh
+creations of the same three were darker, taller and less chibi, and were
+rejected. Nothing on a unit changes with the player: the three samples
+carry no owner area (an empty mask), and a Human unit without a sample has
+its old owner area painted the faction crimson `#a8202c` by code.
+
+![The demo patch: today above, the Human demo below](../../art/explorations/human-demo-2026-10/review/demo-scene-desktop.png)
+
+**Buildings: style B, smaller and calmer, in fixed faction colours.** Two
+treatments were generated for the Windmill, the Forge and the Market and
+judged on the bench:
+
+- _A, soft chibi:_ the production style at the full 80 x 88 canvas, with a
+  dark-brown outline, less detail and muted colours.
+- _B, flatter and smaller:_ a "flat-shaded minimalist" style text, a thin
+  outline in a darker tone of each colour, a 64 to 72 px canvas, so the art
+  is about 70% of the tile and grass shows round it.
+
+Both are far calmer than today. B was chosen: the smaller footprint is what
+separates the layers on a square grid, where a unit cannot stand in front
+of a building, and at 1:1 its roofs read as one tone where A's still read
+as texture. The honest limit: Pixen does not draw truly flat shading when
+asked, so B is "simpler and smaller", not Polytopia-flat. Pixflux has a
+flat-shading option and was tried (four calls): it ignored the subject and
+drew generic cottages on ground plates, so it was rejected, as was a
+lineless Pixen sample that turned to mush at 1:1.
+
+![Every building style sample tried](../../art/explorations/human-demo-2026-10/review/building-style-candidates-x4.png)
+
+All ten improvements and City 1 to 3 were then re-created in style B: cream
+plaster with dark oak framing, pale stone and terracotta roofs. None has a
+flag, a banner or any player colour in its art.
+
+![Old and new sprite of every improvement and city tier](../../art/explorations/human-demo-2026-10/review/buildings-old-new.png)
+
+**Flags: drawn in code, on five pieces only.** A generated flag would have
+to be masked and recoloured, and at this size the generator neither places
+nor colours it reliably enough to trust. This was tried on the Port and
+City 1 (two edits, last row of the style sheet above): the generator did
+add a tidy small red flag, but the production key-colour band then also
+takes terracotta roof pixels, so the automatic mask is two to three times
+the flag (146 and 98 pixels, spread over the roofs) and would speckle the
+roofs in the player colour. It would need a hand-corrected mask per
+building, or roofs kept away from red, which the Human palette is not. So
+the art is neutral and the renderer draws a small swallow-tailed pennant
+in the exact player colour at an authored anchor per sprite
+(`DIRECTION_FLAG_ANCHORS_V7`): the same shape, size and colour on every
+building, at no generation cost. Which pieces fly one:
+
+| Piece                                                   | Pennant | Reason                                                        |
+| ------------------------------------------------------- | ------- | ------------------------------------------------------------- |
+| City 1, 2, 3                                            | yes     | on the tower; larger, with the seat shape, gold for a capital |
+| Port                                                    | yes     | the pier has a bare mast for it                               |
+| Shipyard                                                | yes     | a pole on the boathouse ridge; ships are built for one player |
+| Lumber Camp, Sawmill, Workshop, Forge, Market, Monument | no      | a flag adds nothing the territory border does not say         |
+| Farm, Mine, Windmill                                    | no      | a field, a hole in a mountain and a mill have no flagpole     |
+
+Fewer is better here: on the bench every extra pennant was one more
+saturated mark competing with the bases.
+
+**Farm: rows of wheat with real gaps.** The Farm is an 80 x 80 sprite that
+fills its square cell: four horizontal rows of wheat tufts running edge to
+edge, with transparent gaps between them. It has no outline box, no
+parallelogram, no soil and no owner colour. The cut script moves the rows
+to an even 20 px pitch, so the gaps fall on the cell's centre line and on
+its top and bottom edges: stacked Farms keep one rhythm and read as one
+field, and a Road through the cell centre lies in a gap. The renderer
+already draws Roads before improvements, so nothing had to change there: a
+Road under a Farm shows through every gap (fully when it runs along the
+rows, as a dashed line across them). The wheat is orange-gold calmed toward
+pale straw, clearly a crop and clearly not the Gold player's yellow.
+
+![The Farm: today and in the demo](../../art/explorations/human-demo-2026-10/review/farm.png)
+
+Pixen could not draw this directly: it painted soil bands and a fake
+transparency chequerboard between the rows. An edit that erased everything
+but the plants gave real gaps, and a second edit made the thin ears lush.
+
+**Bases: a smaller plate with a rim in a darker player tone.** Three were
+compared on the same units: the study's disc (60 x 22 px, near-black
+outline), a thick ring, and a smaller plate (52 x 18 px) whose rim is a
+darker tone of the player colour. The ring is lost under the sprites'
+black outlines; the disc is the heaviest mark on the map; the plate reads
+at a glance and stops looking like a sign. Each seat keeps its shape
+(round, pointed, square, swallow-tailed), as the user chose.
+
+- _Ships:_ a filled plate on water looks like a raft. A ship keeps its sail
+  in the player colour (ships are shared by every faction) and stands in a
+  thin round ring, like its own wake; nothing is filled.
+- _A unit north of a city:_ today's cities reach 24 px into the cell above
+  and hide the base there. The new cities are drawn inside their cell (City
+  3 reaches 5 px up with one narrow tower), and City 3's pennant flies from
+  the side of its tower instead of above it, so the base stays visible.
+
+![Base variants on land, north of cities and on water](../../art/explorations/human-demo-2026-10/review/base-plates.png)
+
+**Chrome**, as in the study: no seat badge; the HP bar only for a damaged
+unit, on the base; the ready cue as a bright rim round the base; thin solid
+territory borders; calm Roads. The seat shapes make a numbered badge
+unnecessary for colour-blind players (see `same-unit-phone-zoom-0.75.png`).
+
+**Terrain** is unchanged art, toned as in the study.
+
+### The rules, now concrete
+
+These replace rules 1, 2, 4, 6, 7, 8 and 9 of section 6.
+
+1. **Faction colours are fixed and may be saturated.** Human: crimson
+   `#a8202c` and gold on steel and cream for units; cream plaster, dark oak,
+   pale stone and terracotta roofs for buildings. A faction colour may be
+   close to a player colour: the player is never read from a garment or a
+   roof.
+2. **The player colour appears only on:** the base under a unit, a ship's
+   sail and ring, the pennant of a city, a Port and a Shipyard, the
+   territory border, and the interface.
+3. **Units** keep the chibi style, the black outline and full saturation,
+   and carry no owner area (ships excepted). A redone unit is an edit of
+   its accepted sprite unless its design changes.
+4. **Buildings and cities** are generated in the calmer building style:
+   simpler shapes, an outline in a darker tone of each colour, no flag in
+   the art. An improvement is 64 to 72 px wide on its canvas and stands at
+   the bottom of its cell; a city fills the cell's width and stays inside
+   its height (at most 8 px above it).
+5. **A pennant** is drawn in code at an authored anchor, and only on a
+   piece with a mast, a tower or a ridge that a flag belongs on.
+6. **The Farm** is a full-cell pattern of crop rows with transparent gaps,
+   with no outline box and no owner colour; its gaps lie on the cell's
+   centre line and edges.
+7. **The base** is a flat plate about 52 x 18 CSS px at zoom 1 in the
+   player colour, with a rim in a darker tone of it, in the seat's shape; a
+   ship's is an unfilled round ring.
+
+### Known weaknesses
+
+- **The buildings are calmer, not flat.** See above; a truly flat style
+  would need another generator or hand-made art.
+- **The set is not perfectly even.** City 1 is cream plaster with a heavier
+  outline, City 2 grey stone and City 3 pale sandstone; the roofs are a
+  fairly strong terracotta. The Sawmill shows a wheel, not a saw blade; the
+  Market is a house with an awning and lost its crates in the ground-removal
+  edit; the Lumber Camp lost its pine trees and reads as a cottage with
+  logs. Production versions need the normal per-asset review.
+- **The Mine and the Village are not re-created.** A Mine is a Mountain
+  terrain sprite and a Village is neutral; both are only toned by code.
+- **Improvements are one shared set.** The runtime has one subject per
+  improvement for every faction, so with the toggle on an Undead, Goblin or
+  Dinosaur player's improvements also draw as Human buildings. Their units
+  keep the player-coloured garments on a base and their cities are toned,
+  as in the study. Only an all-Human match shows a finished look.
+- **The interface does not match.** Portraits, train buttons and the dock
+  still show the old sprites with whole-garment player colour.
+- **The Farm** leaves a 4 px seam between side-by-side Farms, hides part of
+  a diagonal Road, and its calm straw tone is applied by the cut script,
+  not drawn by the generator.
+- **Ships** still show the player on a whole sail. It reads well and no one
+  wears it, but it is the one large player-coloured surface left.
+- **Seat shapes** are still less pretty than round plates (the last row of
+  `base-plates.png` shows all round).
+- **Coral and Teal under red-green colour blindness.** Both plates turn a
+  dark olive that is also close to the grass, so they are told apart by
+  shape alone and are less visible than the Gold and Violet plates
+  (`same-unit-phone-zoom-0.75.png`). The darker rim helps; a palette change
+  would help more. Unchanged from the study.
+- **The ready cue** on the base has not been tried in play.
+- **Runtime:** the samples are separate files loaded on demand, and a unit
+  or city sample goes through the owner recolour with an empty mask. A
+  rollout registers them as production assets without masks.
+
+### Rollout estimate for all factions
+
+This demo used 52 PixelLab calls (about US$0.50): 6 for the three units, 6
+for style A and the first style B samples, 4 rejected Pixflux and 1
+lineless sample, 28 for the other buildings and cities (most needed a
+ground-removal edit; the cities were generated twice, the second time
+larger), 2 for the flag comparison, and 5 for the Farm. With the recipes now stable, a building or
+city costs about 2.2 calls (one creation, one edit, an occasional retry)
+and a unit edit about 1.3.
+
+| Step | Work                                                                                                                                                 | Means                           | PixelLab calls |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | -------------- |
+| 1    | Renderer: plates, ship rings, pennant anchors, HP when damaged, ready rim, borders, Roads; drop the toggle. Unit and city subjects lose their masks. | Code, tests, browser smoke      | 0              |
+| 2    | Human: accept the 13 building and city samples and the Farm as production assets after per-asset review; redo any that fail it.                      | Pipeline `accept`, a few redos  | about 10       |
+| 3    | Human: the other 8 unit sprites and 11 portraits, as edits.                                                                                          | PixelLab edits                  | about 25       |
+| 4    | Decide whether improvements become per-faction (new `IMPROVEMENT:<FACTION>:<ID>` subjects). If yes: 10 improvements for each of three factions.      | Code, PixelLab                  | about 65       |
+| 5    | Undead, Goblin, Dinosaur: 9 city sprites restyled, 25 unit sprites and 24 portraits moved from player garments to fixed faction colours.             | PixelLab edits, palette choices | about 85       |
+| 6    | Art direction and class documents, faction fragments, mask QA rules (no owner area), `art:validate`.                                                 | Docs, pipeline                  | 0              |
+
+About 185 calls (about US$2) with per-faction improvements, about 120
+without. As before, review time is the cost that matters: roughly 100
+sprites and portraits to look at one by one. Suggested order: 1, 2, 3, 6,
+then one faction at a time; until a faction is redone it runs as today's
+sprites on a base, which looks consistent, if not finished.
+
+### What the demo produced
+
+- **Runtime (off by default):** `HUMAN_DEMO_DIRECTION_V7`, the plate and
+  ship ring, `drawDirectedFlagV7` and its anchors, and sample sprites for
+  buildings and cities in
+  [`visual-direction-v7.ts`](../../src/render/canvas/visual-direction-v7.ts);
+  one hook in `board-renderer-v7.ts` (the pennant, after the sprite); the
+  sample sets in
+  [`visual-direction-samples-v7.ts`](../../src/render/canvas/visual-direction-samples-v7.ts),
+  still imported only when the toggle is on. The test that the baseline
+  direction issues the same canvas calls as no direction still holds.
+- **Pipeline:** an exploration run may override prompt fragments in its own
+  `fragments/` directory, and buildings may be generated with Pixflux (see
+  [CHIBI_PIPELINE.md](CHIBI_PIPELINE.md#exploration-runs)).
+- **Exploration runs** under
+  [`art/explorations/human-demo-2026-10/`](../../art/explorations/human-demo-2026-10/):
+  `units/`, `buildings-soft/` (style A), `buildings-flat/` (style B, the
+  cities and the Pixflux samples) and `farm/`, each with its `batch.json`
+  (recipes, seeds, instructions), `faction.md`, `subjects.json`, `fragments/`,
+  `records.json` (requests, job ids and every rejection with its reason),
+  `submissions/` and `raw/`. `assets/` holds the cut sprites and
+  `samples.json` says which candidate each came from.
+- **Cut script:**
+  [`scripts/art/visual-direction/demo-samples.ts`](../../scripts/art/visual-direction/demo-samples.ts)
+  (no PixelLab call): seats each building at the bottom of its canvas,
+  crops the cities, evens the Farm's rows.
+- **Test bench:** `npm run art:visual-direction-demo-review`; the scenes
+  `DEMO` and `LIVE` in
+  [`scene.ts`](../../scripts/art/visual-direction/scene.ts).
+
+### Open questions for the user
+
+1. Is building style B right, or should the buildings be flatter still
+   (which means leaving Pixen for buildings), or larger?
+2. Are pennants on the cities, the Port and the Shipyard the right set, or
+   should improvements carry none at all?
+3. Is the Farm what you had in mind: four rows, this density, this colour?
+   Should the rows also break where a Road crosses them?
+4. Shaped plates, or all round (last row of `base-plates.png`)?
+5. Ships: is the player colour on the whole sail acceptable?
+6. Should each faction get its own improvement sprites (65 more calls and
+   new runtime subjects), or do all factions share one neutral set?
+7. Should the three city tiers share one stone (all sandstone, say)?
+8. Roll out in the order above?
 
 ## Sources
 

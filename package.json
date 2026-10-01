@@ -65,6 +65,7 @@
     "art:chibi-faction-cities-review": "tsx scripts/art/chibi-faction-cities-review.ts",
     "art:chibi-playtest3-review": "tsx scripts/art/chibi-playtest3-review.ts",
     "art:visual-direction-review": "tsx scripts/art/visual-direction-review.ts",
+    "art:visual-direction-demo-review": "tsx scripts/art/visual-direction-review.ts --demo",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "diagnose:mountain-live": "tsx scripts/browser-smoke-v6.ts --mountain-live",
     "smoke:browser": "tsx scripts/browser-smoke-v7.ts",

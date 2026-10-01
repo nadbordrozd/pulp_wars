@@ -1,0 +1,36 @@
+{
+  "id": "sawmill-b-a-edit",
+  "jobId": "b13df6fc-fe4c-47e6-ac72-33d651bf8a9f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "human-demo-buildings-flat",
+    "asset": "chibi-demo-b-sawmill",
+    "subject": "IMPROVEMENT:SAWMILL",
+    "faction": "TEST-HUMAN-FLAT",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 73212,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "sawmill-b-a",
+      "candidate": 0,
+      "sha256": "84b618f8cbaad43fa1f409362c62d8e3d9e5de1bef51d8a78dd4e3f575ac4ce8"
+    }
+  }
+}

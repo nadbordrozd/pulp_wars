@@ -1,0 +1,463 @@
+{
+  "schemaVersion": 1,
+  "batch": "human-demo-units",
+  "recipes": {
+    "fighter-heraldic-a": {
+      "id": "fighter-heraldic-a",
+      "asset": "chibi-demo-fighter",
+      "jobId": "sync-91df3589-e7ba-4eab-b9cb-734bc28bded8",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "human-demo-units",
+        "asset": "chibi-demo-fighter",
+        "subject": "UNIT:FIGHTER",
+        "faction": "TEST-HUMAN-HERALDIC",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 74002,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/human-demo-2026-10/units/faction.md#prompt-fragment + art/explorations/human-demo-2026-10/units/faction.md#negative-fragment",
+            "text": "Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "art/explorations/human-demo-2026-10/units/fragments/owner.txt",
+            "text": "Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player."
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/human-demo-2026-10/units/subjects.json",
+            "text": "Subject: Fighter, a chunky cute high-medieval man-at-arms with a huge round head about half of the figure's height and a tiny sturdy body: a rounded steel helmet with a gold-yellow band and a short crimson crest over a mail coif, a deep crimson red surcoat with a bold gold-yellow cross on the chest over steel chainmail sleeves, an oversized steel sword held up in the right hand, a big pointed heater shield on the left arm painted crimson red with a gold-yellow lion, dark boots; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "bow, quiver"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player. Subject: Fighter, a chunky cute high-medieval man-at-arms with a huge round head about half of the figure's height and a tiny sturdy body: a rounded steel helmet with a gold-yellow band and a short crimson crest over a mail coif, a deep crimson red surcoat with a bold gold-yellow cross on the chest over steel chainmail sleeves, an oversized steel sword held up in the right hand, a big pointed heater shield on the left arm painted crimson red with a gold-yellow lion, dark boots; simple shapes and very few details.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player. Subject: Fighter, a chunky cute high-medieval man-at-arms with a huge round head about half of the figure's height and a tiny sturdy body: a rounded steel helmet with a gold-yellow band and a short crimson crest over a mail coif, a deep crimson red surcoat with a bold gold-yellow cross on the chest over steel chainmail sleeves, an oversized steel sword held up in the right hand, a big pointed heater shield on the left arm painted crimson red with a gold-yellow lion, dark boots; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver."
+      },
+      "submittedAt": "2026-10-01T22:21:03.860Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/units/raw/fighter-heraldic-a.png",
+      "rawSheetSha256": "80ee56870b80fdaa7fad0941b84fd4aa5c72563ef77cb553aad4ec4915560574",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.015,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T22:21:42.538Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A fresh creation: closed great helm, darker maroon, taller and less chibi than the accepted Fighter. The edit of the production sprite keeps its silhouette and matches the unconverted units.",
+        "reviewedAt": "2026-10-01T23:01:26.083Z"
+      }
+    },
+    "fighter-heraldic-edit": {
+      "id": "fighter-heraldic-edit",
+      "asset": "chibi-demo-fighter",
+      "jobId": "3bea807d-3310-43d9-8fb6-ff6b25160624",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "human-demo-units",
+        "asset": "chibi-demo-fighter",
+        "subject": "UNIT:FIGHTER",
+        "faction": "TEST-HUMAN-HERALDIC",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 74001,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw him as a high-medieval man-at-arms: a deep crimson red surcoat with a bold gold-yellow cross on the chest and a gold hem, over steel chainmail sleeves; the round shield becomes a pointed heater shield painted crimson red with a gold-yellow lion; a gold band around the steel helmet under the crimson crest. Keep the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+          }
+        ],
+        "prompt": "Redraw him as a high-medieval man-at-arms: a deep crimson red surcoat with a bold gold-yellow cross on the chest and a gold hem, over steel chainmail sleeves; the round shield becomes a pointed heater shield painted crimson red with a gold-yellow lion; a gold band around the steel helmet under the crimson crest. Keep the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+        "negativePrompt": "",
+        "description": "Redraw him as a high-medieval man-at-arms: a deep crimson red surcoat with a bold gold-yellow cross on the chest and a gold hem, over steel chainmail sleeves; the round shield becomes a pointed heater shield painted crimson red with a gold-yellow lion; a gold band around the steel helmet under the crimson crest. Keep the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+        "editInstruction": "Redraw him as a high-medieval man-at-arms: a deep crimson red surcoat with a bold gold-yellow cross on the chest and a gold hem, over steel chainmail sleeves; the round shield becomes a pointed heater shield painted crimson red with a gold-yellow lion; a gold band around the steel helmet under the crimson crest. Keep the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+        "source": {
+          "batch": "1",
+          "recipe": "fighter-h-edit",
+          "candidate": 0,
+          "sha256": "b4f093038b28a6e136c616ca51504828f3971d4abc74dbbf4e6b92c6036e7790"
+        }
+      },
+      "submittedAt": "2026-10-01T22:19:03.901Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/units/raw/fighter-heraldic-edit.png",
+      "rawSheetSha256": "c32bd90352de1e266783a5990b6df5043d7ca46fbb9b294dce15c5d256ca066e",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.1146,
+          "footprintWidthShare": 0.7308,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.1146,
+          "footprintWidthShare": 0.7308,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T22:19:40.669Z"
+    },
+    "knight-heraldic-a": {
+      "id": "knight-heraldic-a",
+      "asset": "chibi-demo-knight",
+      "jobId": "sync-7f116c64-6571-4d0e-b73e-fbb6e228acde",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "human-demo-units",
+        "asset": "chibi-demo-knight",
+        "subject": "UNIT:KNIGHT",
+        "faction": "TEST-HUMAN-HERALDIC",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 74022,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/human-demo-2026-10/units/faction.md#prompt-fragment + art/explorations/human-demo-2026-10/units/faction.md#negative-fragment",
+            "text": "Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "art/explorations/human-demo-2026-10/units/fragments/owner.txt",
+            "text": "Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player."
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/human-demo-2026-10/units/subjects.json",
+            "text": "Subject: Knight, a chunky cute armoured knight with a very big head riding a big sturdy white warhorse seen from the front-right: a steel great helm with a gold-yellow crown band and a big crimson plume, a crimson surcoat with a gold-yellow lion over steel chainmail, a long wooden lance with a steel point and a small crimson and gold pennant held upright, the horse covered in a big deep crimson red cloth caparison with a wide gold-yellow trim, a steel chanfron on the horse's head; simple shapes and very few details; the horse's hooves are the lowest thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "bow, quiver"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player. Subject: Knight, a chunky cute armoured knight with a very big head riding a big sturdy white warhorse seen from the front-right: a steel great helm with a gold-yellow crown band and a big crimson plume, a crimson surcoat with a gold-yellow lion over steel chainmail, a long wooden lance with a steel point and a small crimson and gold pennant held upright, the horse covered in a big deep crimson red cloth caparison with a wide gold-yellow trim, a steel chanfron on the horse's head; simple shapes and very few details; the horse's hooves are the lowest thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player. Subject: Knight, a chunky cute armoured knight with a very big head riding a big sturdy white warhorse seen from the front-right: a steel great helm with a gold-yellow crown band and a big crimson plume, a crimson surcoat with a gold-yellow lion over steel chainmail, a long wooden lance with a steel point and a small crimson and gold pennant held upright, the horse covered in a big deep crimson red cloth caparison with a wide gold-yellow trim, a steel chanfron on the horse's head; simple shapes and very few details; the horse's hooves are the lowest thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver."
+      },
+      "submittedAt": "2026-10-01T22:22:30.638Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/units/raw/knight-heraldic-a.png",
+      "rawSheetSha256": "59f78fb1fc50a99eb4fe8a62c56bfb57de3092ddef53aa9c4f85bd48f6c3ef0d",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0761,
+          "footprintWidthShare": 0.8148,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T22:23:28.180Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A fresh creation, not needed: the edit of the production Knight already carries the crimson and gold caparison, crown band and pennant.",
+        "reviewedAt": "2026-10-01T23:01:28.264Z"
+      }
+    },
+    "knight-heraldic-edit": {
+      "id": "knight-heraldic-edit",
+      "asset": "chibi-demo-knight",
+      "jobId": "69b14bde-488e-48c8-b810-e7e00cf2c8c3",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "human-demo-units",
+        "asset": "chibi-demo-knight",
+        "subject": "UNIT:KNIGHT",
+        "faction": "TEST-HUMAN-HERALDIC",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 74021,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw him as a high-medieval knight: the horse's cloth becomes deep crimson red with a wide gold-yellow trim; a crimson and gold surcoat over steel mail; a steel great helm with a gold crown band and a crimson plume; a small crimson and gold pennant below the lance point. Keep the white horse, lance, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves."
+          }
+        ],
+        "prompt": "Redraw him as a high-medieval knight: the horse's cloth becomes deep crimson red with a wide gold-yellow trim; a crimson and gold surcoat over steel mail; a steel great helm with a gold crown band and a crimson plume; a small crimson and gold pennant below the lance point. Keep the white horse, lance, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+        "negativePrompt": "",
+        "description": "Redraw him as a high-medieval knight: the horse's cloth becomes deep crimson red with a wide gold-yellow trim; a crimson and gold surcoat over steel mail; a steel great helm with a gold crown band and a crimson plume; a small crimson and gold pennant below the lance point. Keep the white horse, lance, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+        "editInstruction": "Redraw him as a high-medieval knight: the horse's cloth becomes deep crimson red with a wide gold-yellow trim; a crimson and gold surcoat over steel mail; a steel great helm with a gold crown band and a crimson plume; a small crimson and gold pennant below the lance point. Keep the white horse, lance, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+        "source": {
+          "batch": "2",
+          "recipe": "knight-a-edit",
+          "candidate": 0,
+          "sha256": "ce7b285004dc863ed8377fe98bc5407792dc4976def9f2e61f54c6e5c0abae0d"
+        }
+      },
+      "submittedAt": "2026-10-01T22:20:21.934Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/units/raw/knight-heraldic-edit.png",
+      "rawSheetSha256": "2c8d15725a8901aed77c66b44cbeecc362d6ef8e4e9052149d771295e8be10e7",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0031,
+          "footprintWidthShare": 0.623,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0031,
+          "footprintWidthShare": 0.623,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T22:21:03.856Z"
+    },
+    "marksman-heraldic-a": {
+      "id": "marksman-heraldic-a",
+      "asset": "chibi-demo-marksman",
+      "jobId": "sync-e041dc2d-3c99-43cf-9ea1-85cdd563f3ea",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "human-demo-units",
+        "asset": "chibi-demo-marksman",
+        "subject": "UNIT:MARKSMAN",
+        "faction": "TEST-HUMAN-HERALDIC",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 74012,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/human-demo-2026-10/units/faction.md#prompt-fragment + art/explorations/human-demo-2026-10/units/faction.md#negative-fragment",
+            "text": "Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "art/explorations/human-demo-2026-10/units/fragments/owner.txt",
+            "text": "Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player."
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/human-demo-2026-10/units/subjects.json",
+            "text": "Subject: Marksman, a chunky cute high-medieval longbowman with a very big head (about half of the figure's height) and a tiny sturdy body: a deep crimson red pointed hood with gold-yellow trim over the head and shoulders showing the face, a cream padded gambeson with a crimson and gold tabard on the chest, a big tall longbow held upright in the left hand, a quiver of white-feathered arrows on the back, dark brown belt and boots; no shield, no sword, no helmet."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player. Subject: Marksman, a chunky cute high-medieval longbowman with a very big head (about half of the figure's height) and a tiny sturdy body: a deep crimson red pointed hood with gold-yellow trim over the head and shoulders showing the face, a cream padded gambeson with a crimson and gold tabard on the chest, a big tall longbow held upright in the left hand, a quiver of white-feathered arrows on the back, dark brown belt and boots; no shield, no sword, no helmet.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player. Subject: Marksman, a chunky cute high-medieval longbowman with a very big head (about half of the figure's height) and a tiny sturdy body: a deep crimson red pointed hood with gold-yellow trim over the head and shoulders showing the face, a cream padded gambeson with a crimson and gold tabard on the chest, a big tall longbow held upright in the left hand, a quiver of white-feathered arrows on the back, dark brown belt and boots; no shield, no sword, no helmet. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd."
+      },
+      "submittedAt": "2026-10-01T22:21:42.542Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/units/raw/marksman-heraldic-a.png",
+      "rawSheetSha256": "914582ffd2c8f7d4f21c087cb06535fbff17318f035cf82d308ebb01149c3147",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.2186,
+          "footprintWidthShare": 0.64,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T22:22:30.636Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A fresh creation: darker maroon hood, drawing the bow sideways, a different silhouette from the accepted Marksman. The edit is kept.",
+        "reviewedAt": "2026-10-01T23:01:27.157Z"
+      }
+    },
+    "marksman-heraldic-edit": {
+      "id": "marksman-heraldic-edit",
+      "asset": "chibi-demo-marksman",
+      "jobId": "87b3a4d5-5302-4243-bad9-98ce0489f862",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "human-demo-units",
+        "asset": "chibi-demo-marksman",
+        "subject": "UNIT:MARKSMAN",
+        "faction": "TEST-HUMAN-HERALDIC",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 74011,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Redraw him as a high-medieval longbowman: a deep crimson red hood with a gold-yellow trim, a cream padded gambeson with a crimson and gold tabard on the chest, steel-grey hose, a dark brown leather belt, bracer and boots. Keep the longbow, quiver, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+          }
+        ],
+        "prompt": "Redraw him as a high-medieval longbowman: a deep crimson red hood with a gold-yellow trim, a cream padded gambeson with a crimson and gold tabard on the chest, steel-grey hose, a dark brown leather belt, bracer and boots. Keep the longbow, quiver, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+        "negativePrompt": "",
+        "description": "Redraw him as a high-medieval longbowman: a deep crimson red hood with a gold-yellow trim, a cream padded gambeson with a crimson and gold tabard on the chest, steel-grey hose, a dark brown leather belt, bracer and boots. Keep the longbow, quiver, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+        "editInstruction": "Redraw him as a high-medieval longbowman: a deep crimson red hood with a gold-yellow trim, a cream padded gambeson with a crimson and gold tabard on the chest, steel-grey hose, a dark brown leather belt, bracer and boots. Keep the longbow, quiver, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+        "source": {
+          "batch": "1",
+          "recipe": "marksman-c",
+          "candidate": 0,
+          "sha256": "9c7f8e86122b18d98176d2290093b1e4da2a5ad48265a987cced85301ca6f6a1"
+        }
+      },
+      "submittedAt": "2026-10-01T22:19:40.687Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/human-demo-2026-10/units/raw/marksman-heraldic-edit.png",
+      "rawSheetSha256": "0512192b894402404df8016f41dfe1d807d7a78910c722ef7366986f70e59a10",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.1369,
+          "footprintWidthShare": 0.6364,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.1369,
+          "footprintWidthShare": 0.6364,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T22:20:21.927Z"
+    }
+  },
+  "assets": {}
+}

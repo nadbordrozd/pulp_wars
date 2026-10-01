@@ -1,0 +1,37 @@
+{
+  "id": "fighter-heraldic-edit",
+  "jobId": "3bea807d-3310-43d9-8fb6-ff6b25160624",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "human-demo-units",
+    "asset": "chibi-demo-fighter",
+    "subject": "UNIT:FIGHTER",
+    "faction": "TEST-HUMAN-HERALDIC",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 74001,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval man-at-arms: a deep crimson red surcoat with a bold gold-yellow cross on the chest and a gold hem, over steel chainmail sleeves; the round shield becomes a pointed heater shield painted crimson red with a gold-yellow lion; a gold band around the steel helmet under the crimson crest. Keep the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval man-at-arms: a deep crimson red surcoat with a bold gold-yellow cross on the chest and a gold hem, over steel chainmail sleeves; the round shield becomes a pointed heater shield painted crimson red with a gold-yellow lion; a gold band around the steel helmet under the crimson crest. Keep the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval man-at-arms: a deep crimson red surcoat with a bold gold-yellow cross on the chest and a gold hem, over steel chainmail sleeves; the round shield becomes a pointed heater shield painted crimson red with a gold-yellow lion; a gold band around the steel helmet under the crimson crest. Keep the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "editInstruction": "Redraw him as a high-medieval man-at-arms: a deep crimson red surcoat with a bold gold-yellow cross on the chest and a gold hem, over steel chainmail sleeves; the round shield becomes a pointed heater shield painted crimson red with a gold-yellow lion; a gold band around the steel helmet under the crimson crest. Keep the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "source": {
+      "batch": "1",
+      "recipe": "fighter-h-edit",
+      "candidate": 0,
+      "sha256": "b4f093038b28a6e136c616ca51504828f3971d4abc74dbbf4e6b92c6036e7790"
+    }
+  }
+}

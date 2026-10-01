@@ -3,8 +3,10 @@
  * pulp_wars-3tq.1). Each is today's rendering with some levers changed;
  * `today` passes no direction at all, so it is the shipping board.
  */
+import type { VisualDirectionSampleSetV7 } from "../../../src/render/canvas/visual-direction-samples-v7";
 import {
   BASELINE_DIRECTION_V7,
+  HUMAN_DEMO_DIRECTION_V7,
   HUMAN_GARMENT_COLOUR_V7,
   HUMAN_ROOF_COLOUR_V7,
   RECOMMENDED_DIRECTION_V7,
@@ -16,6 +18,8 @@ export interface VisualDirectionVariantV7 {
   readonly label: string;
   /** Omitted: the shipping rendering. */
   readonly direction?: BoardVisualDirectionV7;
+  /** The sample sprites a direction draws; the first study's by default. */
+  readonly sampleSet?: VisualDirectionSampleSetV7;
 }
 
 type Patch = {
@@ -168,6 +172,53 @@ export const VISUAL_DIRECTION_VARIANTS_V7: readonly VisualDirectionVariantV7[] =
     ),
     variant("recommended", "Recommended direction", R),
   ];
+
+const D = HUMAN_DEMO_DIRECTION_V7;
+
+/**
+ * The Human demo (bead pulp_wars-3tq.3): the direction the developer toggle
+ * draws, the two building styles compared on three buildings, and the base
+ * plates compared on the same units.
+ */
+export const HUMAN_DEMO_VARIANTS_V7: readonly VisualDirectionVariantV7[] = [
+  { id: "demo", label: "Human demo", direction: D, sampleSet: "DEMO" },
+  {
+    id: "demo-style-a",
+    label: "Style A: chibi buildings, soft outline, full size",
+    direction: D,
+    sampleSet: "STYLE_A",
+  },
+  {
+    id: "demo-style-b",
+    label: "Style B: flatter, simpler, smaller buildings (chosen)",
+    direction: D,
+    sampleSet: "STYLE_B",
+  },
+  {
+    id: "demo-base-disc",
+    label: "Base: the study's disc (large, near-black outline)",
+    direction: patched(D, { unit: { base: "DISC" } }),
+    sampleSet: "DEMO",
+  },
+  {
+    id: "demo-base-ring",
+    label: "Base: thick ring",
+    direction: patched(D, { unit: { base: "RING" } }),
+    sampleSet: "DEMO",
+  },
+  {
+    id: "demo-base-plate",
+    label: "Base: smaller plate, rim in a darker player tone (chosen)",
+    direction: D,
+    sampleSet: "DEMO",
+  },
+  {
+    id: "demo-base-round",
+    label: "Base: the chosen plate, every seat round",
+    direction: patched(D, { unit: { baseShape: "ROUND" } }),
+    sampleSet: "DEMO",
+  },
+];
 
 export const HUMAN_COLOURS_V7 = {
   roof: HUMAN_ROOF_COLOUR_V7,

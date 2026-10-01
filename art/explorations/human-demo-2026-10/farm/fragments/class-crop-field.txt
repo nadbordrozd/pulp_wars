@@ -1,0 +1,1 @@
+Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent.

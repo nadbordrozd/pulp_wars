@@ -1114,10 +1114,10 @@ describe("Ruleset 7 DOM shell", () => {
     expect(toggle.type).toBe("checkbox");
     expect(toggle.checked).toBe(false);
     expect(toggle.closest("label")?.textContent).toContain(
-      "Recommended direction",
+      "Human faction demo",
     );
     toggle.click();
-    expect(host.model?.visualDirection?.unit.base).toBe("DISC");
+    expect(host.model?.visualDirection?.unit.base).toBe("PLATE");
     expect(window.localStorage.getItem(key)).toBe('{"recommended":true}');
     // Presentation only: the shared settings envelope is untouched.
     expect(window.localStorage.getItem("pulpWars.settings.v1")).toBeNull();
@@ -1136,7 +1136,7 @@ describe("Ruleset 7 DOM shell", () => {
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => second.controller.snapshot().phase === "ACTIVE");
-    expect(restoredHost.model?.visualDirection?.unit.base).toBe("DISC");
+    expect(restoredHost.model?.visualDirection?.unit.base).toBe("PLATE");
     second.destroy();
     window.localStorage.removeItem(key);
   });

@@ -1,0 +1,36 @@
+{
+  "id": "farm-field-a-edit",
+  "jobId": "21b800da-d248-44e5-85f0-60a3bf7ae3f8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "human-demo-farm",
+    "asset": "chibi-demo-farm-field",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-HUMAN-FARM",
+    "recipeClass": "crop-field",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 75002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything that is not a wheat plant: remove all the brown soil, the dark lines and the grey-green chequered pattern between the rows, so that the space between the four rows of wheat is completely empty and transparent. Keep only the golden wheat plants of the four rows, each with a thin dark straw-brown outline, exactly where they are."
+      }
+    ],
+    "prompt": "Erase everything that is not a wheat plant: remove all the brown soil, the dark lines and the grey-green chequered pattern between the rows, so that the space between the four rows of wheat is completely empty and transparent. Keep only the golden wheat plants of the four rows, each with a thin dark straw-brown outline, exactly where they are.",
+    "negativePrompt": "",
+    "description": "Erase everything that is not a wheat plant: remove all the brown soil, the dark lines and the grey-green chequered pattern between the rows, so that the space between the four rows of wheat is completely empty and transparent. Keep only the golden wheat plants of the four rows, each with a thin dark straw-brown outline, exactly where they are.",
+    "editInstruction": "Erase everything that is not a wheat plant: remove all the brown soil, the dark lines and the grey-green chequered pattern between the rows, so that the space between the four rows of wheat is completely empty and transparent. Keep only the golden wheat plants of the four rows, each with a thin dark straw-brown outline, exactly where they are.",
+    "source": {
+      "recipe": "farm-field-a",
+      "candidate": 0,
+      "sha256": "99de8d07034e3a4081617f6d461bd50e6c52bbf3b70474ed389b5ad96ede7082"
+    }
+  }
+}

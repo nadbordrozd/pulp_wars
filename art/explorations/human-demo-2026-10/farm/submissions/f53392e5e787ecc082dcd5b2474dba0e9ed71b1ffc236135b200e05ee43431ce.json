@@ -1,0 +1,51 @@
+{
+  "id": "farm-row-a",
+  "jobId": "sync-be2e85de-3bad-4594-8beb-ec14f903752d",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "human-demo-farm",
+    "asset": "chibi-demo-farm-row",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-HUMAN-FARM",
+    "recipeClass": "crop-field",
+    "requestSize": {
+      "width": 80,
+      "height": 32
+    },
+    "seed": 75011,
+    "noBackground": true,
+    "options": {
+      "outline": "selective outline",
+      "detail": "low detail",
+      "view": "low top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/human-demo-2026-10/farm/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "art/explorations/human-demo-2026-10/farm/fragments/camera-three-quarter.txt",
+        "text": "Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/human-demo-2026-10/farm/fragments/class-crop-field.txt + scripts/art/chibi/fragments/class-crop-field.negative.txt",
+        "text": "Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent.",
+        "negative": "pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/human-demo-2026-10/farm/subjects.json",
+        "text": "Subject: one single straight horizontal row of small golden-straw wheat plants standing side by side, seen from the front and slightly above, running from the left edge to the right edge of the image like one line of a planted field; each plant is a small simple tuft of pale straw stalks with soft golden grain heads; the row is low, only about a third of the image height, with empty transparent space above and below it. Crops only."
+      }
+    ],
+    "prompt": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast. Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves. Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent. Subject: one single straight horizontal row of small golden-straw wheat plants standing side by side, seen from the front and slightly above, running from the left edge to the right edge of the image like one line of a planted field; each plant is a small simple tuft of pale straw stalks with soft golden grain heads; the row is low, only about a third of the image height, with empty transparent space above and below it. Crops only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit",
+    "description": "Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast. Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves. Class: crop plants for a square map tile of a strategy game, calmer and paler than a unit: small simple plants in soft gold and pale straw with a thin outline in a darker straw tone (never black), flat colours, no box, no border and no frame around them, and no soil. Everything that is not a plant is transparent. Subject: one single straight horizontal row of small golden-straw wheat plants standing side by side, seen from the front and slightly above, running from the left edge to the right edge of the image like one line of a planted field; each plant is a small simple tuft of pale straw stalks with soft golden grain heads; the row is low, only about a third of the image height, with empty transparent space above and below it. Crops only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit."
+  }
+}

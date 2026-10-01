@@ -20,8 +20,19 @@ import type {
   ChibiResolutionV7,
 } from "../../src/render/canvas/chibi-art-resolver-v7";
 import {
+  HUMAN_DEMO_SAMPLE_ASSETS_V7,
+  VISUAL_DIRECTION_SAMPLE_SETS_V7,
+  visualDirectionSampleRegistryV7,
+} from "../../src/render/canvas/visual-direction-samples-v7";
+import {
   BASELINE_DIRECTION_V7,
+  DIRECTION_FLAG_ANCHORS_V7,
+  HUMAN_DEMO_DIRECTION_V7,
   RECOMMENDED_DIRECTION_V7,
+  darkerColourV7,
+  directionUnitAfloatV7,
+  drawDirectedFlagV7,
+  drawDirectedUnitBaseV7,
   UNCHANGED_TONE_V7,
   createDirectedChibiArtV7,
   directionSubjectGroupV7,
@@ -486,5 +497,293 @@ describe("board drawing with a visual direction (pulp_wars-3tq.1)", () => {
       ).length;
     expect(dashes(stock)).toBeGreaterThan(0);
     expect(dashes(directed)).toBe(0);
+  });
+});
+
+describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
+  const at = { x: 0, y: 0 };
+  const sampleArt = (
+    subjects: readonly ArtSubjectV7[],
+  ): ChibiBoardArtV7 & { readonly requests: ChibiArtRequestV7[] } => {
+    const requests: ChibiArtRequestV7[] = [];
+    return {
+      requests,
+      resolve: (request) => {
+        requests.push(request);
+        return subjects.includes(request.subject)
+          ? {
+              kind: "READY",
+              asset: { id: `sample-${request.subject}` } as ChibiArtAssetV7,
+              image: raster(`sample:${request.subject}`),
+              density: 1,
+              smoothing: false,
+              cacheKey: `sample:${request.subject}`,
+            }
+          : { kind: "MISSING" };
+      },
+    };
+  };
+
+  it("draws a re-created building or city sample as authored, without tone or pixel work", () => {
+    const base = chibiArt();
+    const readPixels = vi.fn(environment.readPixels);
+    const art = createDirectedChibiArtV7({
+      base,
+      direction: HUMAN_DEMO_DIRECTION_V7,
+      environment: { ...environment, readPixels },
+      samples: sampleArt(["IMPROVEMENT:WINDMILL", "CITY:1", "UNIT:FIGHTER"]),
+    });
+    for (const subject of [
+      "IMPROVEMENT:WINDMILL",
+      "CITY:1",
+      "UNIT:FIGHTER",
+    ] as const) {
+      const resolved = art.resolve({
+        subject,
+        at,
+        ownerColor: CORAL,
+        deviceScale: 1,
+      });
+      expect(resolved.kind === "READY" && resolved.image).toBe(
+        raster(`sample:${subject}`),
+      );
+      expect(resolved.kind === "READY" && resolved.cacheKey).toBe(
+        `sample:${subject}`,
+      );
+    }
+    expect(readPixels).not.toHaveBeenCalled();
+    // A building without a sample still recedes by tone, in the faction
+    // colour; the study's direction never asks for building samples.
+    const forge = art.resolve({
+      subject: "IMPROVEMENT:FORGE",
+      at,
+      ownerColor: CORAL,
+      deviceScale: 1,
+    });
+    expect(forge.kind === "READY" && forge.cacheKey).toContain("|tone:");
+    const study = createDirectedChibiArtV7({
+      base,
+      direction: RECOMMENDED_DIRECTION_V7,
+      environment,
+      samples: sampleArt(["IMPROVEMENT:WINDMILL"]),
+    });
+    const mill = study.resolve({
+      subject: "IMPROVEMENT:WINDMILL",
+      at,
+      ownerColor: CORAL,
+      deviceScale: 1,
+    });
+    expect(mill.kind === "READY" && mill.image).not.toBe(
+      raster("sample:IMPROVEMENT:WINDMILL"),
+    );
+  });
+
+  it("gives a Human unit without a sample the faction crimson, and leaves a ship's sail to the player", () => {
+    const base = chibiArt();
+    const art = createDirectedChibiArtV7({
+      base,
+      direction: HUMAN_DEMO_DIRECTION_V7,
+      environment,
+    });
+    art.resolve({
+      subject: "UNIT:GUARD",
+      at,
+      ownerColor: CORAL,
+      deviceScale: 1,
+    });
+    expect(base.requests.at(-1)?.ownerColor).toBe(
+      HUMAN_DEMO_DIRECTION_V7.unit.owner,
+    );
+    for (const subject of [
+      "UNIT:PATROL_BOAT",
+      "UNIT:BATTLESHIP",
+      "UNIT:EMBARKED_TRANSPORT",
+      "UNIT:UNDEAD:FIGHTER",
+    ] as const) {
+      art.resolve({ subject, at, ownerColor: CORAL, deviceScale: 1 });
+      expect(base.requests.at(-1)?.ownerColor, subject).toBe(CORAL);
+    }
+    expect(directionUnitAfloatV7("UNIT:PATROL_BOAT")).toBe(true);
+    expect(directionUnitAfloatV7("UNIT:FIGHTER")).toBe(false);
+    expect(directionUnitAfloatV7(undefined)).toBe(false);
+  });
+
+  it("registers every demo sample, with a sample for each improvement and city tier", () => {
+    for (const set of ["STUDY", "DEMO", "STYLE_A", "STYLE_B"] as const) {
+      expect(VISUAL_DIRECTION_SAMPLE_SETS_V7[set].length).toBeGreaterThan(0);
+      expect(() => visualDirectionSampleRegistryV7(set)).not.toThrow();
+    }
+    const registry = visualDirectionSampleRegistryV7();
+    for (const subject of [
+      "UNIT:FIGHTER",
+      "UNIT:MARKSMAN",
+      "UNIT:KNIGHT",
+      "IMPROVEMENT:FARM",
+      "IMPROVEMENT:LUMBER_CAMP",
+      "IMPROVEMENT:WINDMILL",
+      "IMPROVEMENT:SAWMILL",
+      "IMPROVEMENT:FORGE",
+      "IMPROVEMENT:WORKSHOP",
+      "IMPROVEMENT:MARKET",
+      "IMPROVEMENT:MONUMENT",
+      "IMPROVEMENT:PORT",
+      "IMPROVEMENT:SHIPYARD",
+      "CITY:1",
+      "CITY:2",
+      "CITY:3",
+    ] as const)
+      expect(registry.variants(subject), subject).toHaveLength(1);
+    // The Farm fills its square cell exactly; no improvement overflows
+    // upward and a city by 8 px at most (today's reach 24), so a unit
+    // north of a city keeps its base.
+    const farm = registry.variants("IMPROVEMENT:FARM")[0];
+    expect([farm?.width, farm?.height]).toEqual([80, 80]);
+    for (const asset of HUMAN_DEMO_SAMPLE_ASSETS_V7)
+      if (!asset.subject.startsWith("UNIT:"))
+        expect(asset.height, asset.id).toBeLessThanOrEqual(
+          asset.subject.startsWith("CITY:") ? 88 : 80,
+        );
+    // Every pennant anchor belongs to a demo sample and lies inside it.
+    const anchors = Object.entries(DIRECTION_FLAG_ANCHORS_V7);
+    expect(anchors.length).toBeGreaterThan(0);
+    for (const [id, anchor] of anchors) {
+      const asset = HUMAN_DEMO_SAMPLE_ASSETS_V7.find(
+        (candidate) => candidate.id === id,
+      );
+      expect(asset, id).toBeDefined();
+      if (asset === undefined) continue;
+      expect(anchor.x).toBeGreaterThanOrEqual(0);
+      expect(anchor.x).toBeLessThan(asset.width);
+      expect(anchor.y).toBeGreaterThanOrEqual(0);
+      expect(anchor.y + anchor.pole).toBeLessThan(asset.height);
+    }
+    // No pennant on a field of wheat, a windmill or a forge.
+    for (const id of [
+      "chibi-demo-farm",
+      "chibi-demo-windmill",
+      "chibi-demo-forge",
+    ])
+      expect(DIRECTION_FLAG_ANCHORS_V7[id], id).toBeUndefined();
+    for (const id of [
+      "chibi-demo-city-1",
+      "chibi-demo-city-2",
+      "chibi-demo-city-3",
+    ])
+      expect(DIRECTION_FLAG_ANCHORS_V7[id], id).toBeDefined();
+  });
+
+  it("draws a pennant in the player colour only on an anchored, owned piece", () => {
+    const rect = { x: 100, y: 100, width: 80, height: 80 };
+    const pennant = (
+      direction: BoardVisualDirectionV7,
+      piece: BoardRenderPlanEntryV7,
+      id: string,
+    ) => {
+      const { context, log } = recordingContext();
+      const drawn = drawDirectedFlagV7(context, direction, piece, id, rect, 1);
+      return { drawn, log };
+    };
+    const city = entry("CITY", 0, 0, "building-city-1", "CITY:1", {
+      ownerColor: CORAL,
+      ownerSeat: 0,
+      capital: true,
+    });
+    const flown = pennant(HUMAN_DEMO_DIRECTION_V7, city, "chibi-demo-city-1");
+    expect(flown.drawn).toBe(true);
+    const fills = flown.log
+      .filter((call) => call[0] === "set" && call[1] === "fillStyle")
+      .map((call) => call[2]);
+    expect(fills).toContain(CORAL);
+    // The capital's seat shape is gold.
+    expect(fills).toContain("#f4c542");
+    // Nothing at all is drawn without an anchor, an owner or the setting.
+    for (const [direction, piece, id] of [
+      [HUMAN_DEMO_DIRECTION_V7, city, "chibi-city-1"],
+      [
+        HUMAN_DEMO_DIRECTION_V7,
+        entry("CITY", 0, 0, "building-city-1", "CITY:1", { ownerSeat: 0 }),
+        "chibi-demo-city-1",
+      ],
+      [BASELINE_DIRECTION_V7, city, "chibi-demo-city-1"],
+      [
+        HUMAN_DEMO_DIRECTION_V7,
+        entry("IMPROVEMENT", 0, 0, "building-farm", "IMPROVEMENT:FARM", {
+          ownerColor: CORAL,
+        }),
+        "chibi-demo-farm",
+      ],
+      [
+        HUMAN_DEMO_DIRECTION_V7,
+        entry("UNIT", 0, 0, "unit-fighter", "UNIT:FIGHTER", {
+          ownerColor: CORAL,
+        }),
+        "chibi-demo-city-1",
+      ],
+    ] as const) {
+      const none = pennant(direction, piece, id);
+      expect(none.drawn).toBe(false);
+      expect(none.log).toEqual([]);
+    }
+  });
+
+  it("draws a plate with a rim in a darker player tone, and a round unfilled ring under a ship", () => {
+    const sprite = { x: 0, y: 0, width: 56, height: 80 };
+    const base = (piece: BoardRenderPlanEntryV7) => {
+      const { context, log } = recordingContext();
+      drawDirectedUnitBaseV7(
+        context,
+        HUMAN_DEMO_DIRECTION_V7,
+        piece,
+        sprite,
+        1,
+      );
+      return log;
+    };
+    const fills = (log: readonly LogEntry[]) =>
+      log
+        .filter((call) => call[0] === "set" && call[1] === "fillStyle")
+        .map((call) => call[2]);
+    const count = (log: readonly LogEntry[], name: string) =>
+      log.filter((call) => call[0] === name).length;
+    expect(darkerColourV7("#ffffff")).toBe("#737373");
+    const teal = "#28b7a4";
+    const fighter = base(
+      entry("UNIT", 0, 0, "unit-fighter", "UNIT:FIGHTER", {
+        ownerColor: teal,
+        ownerSeat: 1,
+      }),
+    );
+    // Seat 2's plate is pointed: a path, no ellipse; no near-black outline.
+    expect(count(fighter, "ellipse")).toBe(0);
+    expect(count(fighter, "fill")).toBe(2);
+    expect(fills(fighter)).toEqual([darkerColourV7(teal), teal]);
+    const ready = base(
+      entry("UNIT", 0, 0, "unit-fighter", "UNIT:FIGHTER", {
+        ownerColor: teal,
+        ownerSeat: 0,
+        ready: true,
+      }),
+    );
+    expect(fills(ready)).toContain("#fff6cf");
+    const ship = base(
+      entry("UNIT", 0, 0, "unit-patrol-boat", "UNIT:PATROL_BOAT", {
+        ownerColor: teal,
+        ownerSeat: 1,
+      }),
+    );
+    // Whatever the seat, the ship's ring is an ellipse and nothing is filled.
+    expect(count(ship, "ellipse")).toBe(1);
+    expect(count(ship, "fill")).toBe(0);
+    expect(count(ship, "stroke")).toBe(2);
+  });
+
+  it("the demo direction draws the board with plates, pennants and no stock chrome", () => {
+    const directed = draw(HUMAN_DEMO_DIRECTION_V7);
+    const fills = directed
+      .filter((call) => call[0] === "set" && call[1] === "fillStyle")
+      .map((call) => call[2]);
+    expect(fills).toContain(darkerColourV7(CORAL));
+    expect(directed.filter((call) => call[0] === "fillText")).toHaveLength(0);
+    expect(fills).not.toContain("#65d889");
   });
 });

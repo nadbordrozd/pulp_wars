@@ -1,0 +1,731 @@
+{
+  "schemaVersion": 1,
+  "batch": "human-demo-buildings-flat",
+  "title": "Human demo, building style B: flat-shaded, simpler, smaller buildings in fixed muted faction colours (exploration, never registered)",
+  "bead": "pulp_wars-3tq.3",
+  "faction": "TEST-HUMAN-FLAT",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-demo-flat-windmill",
+      "subject": "IMPROVEMENT:WINDMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 64,
+        "height": 72
+      }
+    },
+    {
+      "id": "chibi-demo-flat-forge",
+      "subject": "IMPROVEMENT:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "id": "chibi-demo-flat-market",
+      "subject": "IMPROVEMENT:MARKET",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "id": "chibi-demo-b-lumber-camp",
+      "subject": "IMPROVEMENT:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      }
+    },
+    {
+      "id": "chibi-demo-b-sawmill",
+      "subject": "IMPROVEMENT:SAWMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      }
+    },
+    {
+      "id": "chibi-demo-b-forge",
+      "subject": "IMPROVEMENT:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      }
+    },
+    {
+      "id": "chibi-demo-b-workshop",
+      "subject": "IMPROVEMENT:WORKSHOP",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      }
+    },
+    {
+      "id": "chibi-demo-b-market",
+      "subject": "IMPROVEMENT:MARKET",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      }
+    },
+    {
+      "id": "chibi-demo-b-monument",
+      "subject": "IMPROVEMENT:MONUMENT",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      }
+    },
+    {
+      "id": "chibi-demo-b-port",
+      "subject": "IMPROVEMENT:PORT",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      }
+    },
+    {
+      "id": "chibi-demo-b-shipyard",
+      "subject": "IMPROVEMENT:SHIPYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      }
+    },
+    {
+      "id": "chibi-demo-b-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-demo-b-city-2",
+      "subject": "CITY:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-demo-b-city-3",
+      "subject": "CITY:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-demo-c-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 96
+      }
+    },
+    {
+      "id": "chibi-demo-c-city-2",
+      "subject": "CITY:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 96
+      }
+    },
+    {
+      "id": "chibi-demo-c-city-3",
+      "subject": "CITY:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 96
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "windmill-flat-a",
+      "asset": "chibi-demo-flat-windmill",
+      "endpoint": "create-image-pixen",
+      "seed": 73101,
+      "requestSize": {
+        "width": 64,
+        "height": 72
+      },
+      "options": {
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "forge-flat-a",
+      "asset": "chibi-demo-flat-forge",
+      "endpoint": "create-image-pixen",
+      "seed": 73111,
+      "requestSize": {
+        "width": 64,
+        "height": 64
+      },
+      "options": {
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "market-flat-a",
+      "asset": "chibi-demo-flat-market",
+      "endpoint": "create-image-pixen",
+      "seed": 73121,
+      "requestSize": {
+        "width": 64,
+        "height": 64
+      },
+      "options": {
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "windmill-flat-b",
+      "asset": "chibi-demo-flat-windmill",
+      "endpoint": "create-image-pixen",
+      "seed": 73102,
+      "requestSize": {
+        "width": 64,
+        "height": 72
+      },
+      "options": {
+        "outline": "lineless"
+      },
+      "notes": "The same request without any outline, to compare lineless against a thin toned outline."
+    },
+    {
+      "id": "windmill-flux-a",
+      "asset": "chibi-demo-flat-windmill",
+      "endpoint": "create-image-pixflux",
+      "seed": 73151,
+      "requestSize": {
+        "width": 64,
+        "height": 72
+      },
+      "notes": "Pixflux with flat shading: Pixen ignores 'flat' and still draws texture."
+    },
+    {
+      "id": "forge-flux-a",
+      "asset": "chibi-demo-flat-forge",
+      "endpoint": "create-image-pixflux",
+      "seed": 73161,
+      "requestSize": {
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "id": "market-flux-a",
+      "asset": "chibi-demo-flat-market",
+      "endpoint": "create-image-pixflux",
+      "seed": 73171,
+      "requestSize": {
+        "width": 64,
+        "height": 64
+      }
+    },
+    {
+      "id": "forge-flux-b",
+      "asset": "chibi-demo-flat-forge",
+      "endpoint": "create-image-pixflux",
+      "seed": 73162,
+      "requestSize": {
+        "width": 64,
+        "height": 64
+      },
+      "options": {
+        "outline": "lineless"
+      }
+    },
+    {
+      "id": "lumber-camp-b-a",
+      "asset": "chibi-demo-b-lumber-camp",
+      "endpoint": "create-image-pixen",
+      "seed": 73201,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "sawmill-b-a",
+      "asset": "chibi-demo-b-sawmill",
+      "endpoint": "create-image-pixen",
+      "seed": 73211,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "forge-b-a",
+      "asset": "chibi-demo-b-forge",
+      "endpoint": "create-image-pixen",
+      "seed": 73221,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "workshop-b-a",
+      "asset": "chibi-demo-b-workshop",
+      "endpoint": "create-image-pixen",
+      "seed": 73231,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "market-b-a",
+      "asset": "chibi-demo-b-market",
+      "endpoint": "create-image-pixen",
+      "seed": 73241,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "monument-b-a",
+      "asset": "chibi-demo-b-monument",
+      "endpoint": "create-image-pixen",
+      "seed": 73251,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "port-b-a",
+      "asset": "chibi-demo-b-port",
+      "endpoint": "create-image-pixen",
+      "seed": 73261,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "shipyard-b-a",
+      "asset": "chibi-demo-b-shipyard",
+      "endpoint": "create-image-pixen",
+      "seed": 73271,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "city-1-b-a",
+      "asset": "chibi-demo-b-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 73301,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "city-2-b-a",
+      "asset": "chibi-demo-b-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 73311,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "city-3-b-a",
+      "asset": "chibi-demo-b-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 73321,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "lumber-camp-b-a-edit",
+      "asset": "chibi-demo-b-lumber-camp",
+      "endpoint": "edit-image-pixen",
+      "seed": 73202,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "lumber-camp-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "lumber-camp-b-a stands on a grass and dirt plate."
+    },
+    {
+      "id": "sawmill-b-a-edit",
+      "asset": "chibi-demo-b-sawmill",
+      "endpoint": "edit-image-pixen",
+      "seed": 73212,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "sawmill-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "sawmill-b-a stands on a dirt plate."
+    },
+    {
+      "id": "forge-b-a-edit",
+      "asset": "chibi-demo-b-forge",
+      "endpoint": "edit-image-pixen",
+      "seed": 73222,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "forge-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "forge-b-a has a thin grass plate under the smithy."
+    },
+    {
+      "id": "workshop-b-a-edit",
+      "asset": "chibi-demo-b-workshop",
+      "endpoint": "edit-image-pixen",
+      "seed": 73232,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "workshop-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "workshop-b-a stands on a round dirt base."
+    },
+    {
+      "id": "market-b-a-edit",
+      "asset": "chibi-demo-b-market",
+      "endpoint": "edit-image-pixen",
+      "seed": 73242,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "market-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "market-b-a stands on a dirt plate."
+    },
+    {
+      "id": "city-1-b-a-edit",
+      "asset": "chibi-demo-b-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 73302,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "city-1-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "city-1-b-a has a thin dark plate under the cottages."
+    },
+    {
+      "id": "city-2-b-a-edit",
+      "asset": "chibi-demo-b-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 73312,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "city-2-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "city-2-b-a stands on a grass plate."
+    },
+    {
+      "id": "city-3-b-a-edit",
+      "asset": "chibi-demo-b-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 73322,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "city-3-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "city-3-b-a stands on a grass plate with a courtyard."
+    },
+    {
+      "id": "monument-b-b",
+      "asset": "chibi-demo-b-monument",
+      "endpoint": "create-image-pixen",
+      "seed": 73252,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "Only the obelisk: one single tall stone needle standing alone, with no house, no chapel and no wall behind or beside it, and no plinth, steps or ground under it.",
+      "negativeAddendum": "house, chapel, church, roof, wall",
+      "notes": "monument-b-a drew a chapel behind the obelisk on a dirt plate."
+    },
+    {
+      "id": "city-1-c-a",
+      "asset": "chibi-demo-c-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 73401,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "notes": "city-1-b-a-edit is clean but only about 62 px wide in its 80 px canvas: a city must fill its tile and outrank the improvements. Requested larger, as the chibi direction says."
+    },
+    {
+      "id": "city-1-c-a-edit",
+      "asset": "chibi-demo-c-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 73402,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-1-c-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same."
+    },
+    {
+      "id": "city-2-c-a",
+      "asset": "chibi-demo-c-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 73411,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "notes": "city-2-b-a-edit is clean but only about 62 px wide in its 80 px canvas: a city must fill its tile and outrank the improvements. Requested larger, as the chibi direction says."
+    },
+    {
+      "id": "city-2-c-a-edit",
+      "asset": "chibi-demo-c-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 73412,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-2-c-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same."
+    },
+    {
+      "id": "city-3-c-a",
+      "asset": "chibi-demo-c-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 73421,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "options": {
+        "outline": "selective outline"
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "notes": "city-3-b-a-edit is clean but only about 62 px wide in its 80 px canvas: a city must fill its tile and outrank the improvements. Requested larger, as the chibi direction says."
+    },
+    {
+      "id": "city-3-c-a-edit",
+      "asset": "chibi-demo-c-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 73422,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-3-c-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same."
+    },
+    {
+      "id": "monument-b-b-edit",
+      "asset": "chibi-demo-b-monument",
+      "endpoint": "edit-image-pixen",
+      "seed": 73253,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "source": {
+        "recipe": "monument-b-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the house behind the obelisk and remove the grass and dirt plate under it, so only the tall pale stone obelisk with the golden star on its tip remains, standing alone on a transparent background with nothing under it and nothing behind it. Keep the obelisk, its colours, outline and art style exactly the same.",
+      "notes": "monument-b-b again drew a chapel behind the obelisk, on a grass plate."
+    },
+    {
+      "id": "city-3-c-a-edit-2",
+      "asset": "chibi-demo-c-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 73423,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-3-c-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Repaint the dark grey-brown stone of the walls, towers and keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and make the house roofs inside the walls a clear terracotta red. Keep the shapes, the walls, the towers, the keep, the transparent courtyard, the outline and the art style exactly the same, on a transparent background with nothing under the walls.",
+      "notes": "city-3-c-a-edit is clean, but its dark grey-brown stone makes the biggest city the dullest piece on the map, darker than City 1 and 2."
+    },
+    {
+      "id": "port-b-a-flag",
+      "asset": "chibi-demo-b-port",
+      "endpoint": "edit-image-pixen",
+      "seed": 73262,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "port-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add one small plain pennant flag in solid bright red (#d8262c) at the top of the thin wooden mast pole on the pier, flying to the right, about ten pixels long. Nothing else is red. Keep the building, the pier, the mast, the colours, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "Comparison for the flag decision: a generated flag in the key colour, to be masked and recoloured, against a pennant drawn in code."
+    },
+    {
+      "id": "city-1-c-a-flag",
+      "asset": "chibi-demo-c-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 73403,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-1-c-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Add one small plain pennant flag in solid bright red (#d8262c) on a short pole at the tip of the tower roof, flying to the right, about twelve pixels long. Nothing else is bright red. Keep the tower, the cottages, the colours, the outline and the art style exactly the same, on a transparent background with nothing under the buildings.",
+      "notes": "Comparison for the flag decision (see port-b-a-flag)."
+    }
+  ]
+}

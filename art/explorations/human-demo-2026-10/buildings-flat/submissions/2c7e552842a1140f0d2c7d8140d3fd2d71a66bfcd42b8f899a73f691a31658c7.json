@@ -1,0 +1,36 @@
+{
+  "id": "forge-b-a-edit",
+  "jobId": "974cb853-166d-4057-baa0-481fd5559468",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "human-demo-buildings-flat",
+    "asset": "chibi-demo-b-forge",
+    "subject": "IMPROVEMENT:FORGE",
+    "faction": "TEST-HUMAN-FLAT",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 73222,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "forge-b-a",
+      "candidate": 0,
+      "sha256": "772be109b8d06a0bc6e2df7a31ab35ac33e0f62406ee2f51261779dce2577265"
+    }
+  }
+}

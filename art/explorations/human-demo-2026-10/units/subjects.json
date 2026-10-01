@@ -1,0 +1,9 @@
+{
+  "faction": "TEST-HUMAN-HERALDIC",
+  "note": "Subject layer of the Human demo units (bead pulp_wars-3tq.3). Exploration only.",
+  "subjects": {
+    "UNIT:FIGHTER": "Subject: Fighter, a chunky cute high-medieval man-at-arms with a huge round head about half of the figure's height and a tiny sturdy body: a rounded steel helmet with a gold-yellow band and a short crimson crest over a mail coif, a deep crimson red surcoat with a bold gold-yellow cross on the chest over steel chainmail sleeves, an oversized steel sword held up in the right hand, a big pointed heater shield on the left arm painted crimson red with a gold-yellow lion, dark boots; simple shapes and very few details.",
+    "UNIT:MARKSMAN": "Subject: Marksman, a chunky cute high-medieval longbowman with a very big head (about half of the figure's height) and a tiny sturdy body: a deep crimson red pointed hood with gold-yellow trim over the head and shoulders showing the face, a cream padded gambeson with a crimson and gold tabard on the chest, a big tall longbow held upright in the left hand, a quiver of white-feathered arrows on the back, dark brown belt and boots; no shield, no sword, no helmet.",
+    "UNIT:KNIGHT": "Subject: Knight, a chunky cute armoured knight with a very big head riding a big sturdy white warhorse seen from the front-right: a steel great helm with a gold-yellow crown band and a big crimson plume, a crimson surcoat with a gold-yellow lion over steel chainmail, a long wooden lance with a steel point and a small crimson and gold pennant held upright, the horse covered in a big deep crimson red cloth caparison with a wide gold-yellow trim, a steel chanfron on the horse's head; simple shapes and very few details; the horse's hooves are the lowest thing in the image."
+  }
+}

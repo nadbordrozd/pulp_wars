@@ -1,0 +1,36 @@
+{
+  "id": "port-b-a-flag",
+  "jobId": "f46f3a71-321b-4248-9bdc-fe737570f48f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "human-demo-buildings-flat",
+    "asset": "chibi-demo-b-port",
+    "subject": "IMPROVEMENT:PORT",
+    "faction": "TEST-HUMAN-FLAT",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 73262,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add one small plain pennant flag in solid bright red (#d8262c) at the top of the thin wooden mast pole on the pier, flying to the right, about ten pixels long. Nothing else is red. Keep the building, the pier, the mast, the colours, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add one small plain pennant flag in solid bright red (#d8262c) at the top of the thin wooden mast pole on the pier, flying to the right, about ten pixels long. Nothing else is red. Keep the building, the pier, the mast, the colours, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add one small plain pennant flag in solid bright red (#d8262c) at the top of the thin wooden mast pole on the pier, flying to the right, about ten pixels long. Nothing else is red. Keep the building, the pier, the mast, the colours, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Add one small plain pennant flag in solid bright red (#d8262c) at the top of the thin wooden mast pole on the pier, flying to the right, about ten pixels long. Nothing else is red. Keep the building, the pier, the mast, the colours, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "port-b-a",
+      "candidate": 0,
+      "sha256": "4a74d1177b53e470175764e179287ab9348560e11224cf93ff6d442326d3eb51"
+    }
+  }
+}

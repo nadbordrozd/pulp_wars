@@ -430,6 +430,56 @@ export function explorationDirectory(directory: string): string {
 }
 
 /**
+ * An exploration run may try another style: a file in its own `fragments/`
+ * directory replaces the production fragment of the same name for that run
+ * only (`style.txt`, `owner.txt`, `camera-<name>.txt`, `class-<name>.txt`,
+ * each `.negative.txt` beside its text). Records and receipts store every
+ * layer's source and text, so such a request stays reproducible. Production
+ * batches never read these files.
+ */
+async function explorationFragmentOverrides(
+  root: string,
+  relative: string,
+  production: FragmentLibrary,
+): Promise<FragmentLibrary> {
+  const directory = `${relative}/fragments`;
+  const read = async (name: string): Promise<string | null> => {
+    const file = path.join(root, directory, name);
+    return (await exists(file)) ? (await readFile(file, "utf8")).trim() : null;
+  };
+  const override = async (
+    name: string,
+    fragment: Fragment,
+  ): Promise<Fragment> => {
+    const text = await read(`${name}.txt`);
+    const negative =
+      fragment.negativeSource === undefined
+        ? null
+        : await read(`${name}.negative.txt`);
+    return {
+      ...fragment,
+      ...(text === null ? {} : { source: `${directory}/${name}.txt`, text }),
+      ...(negative === null
+        ? {}
+        : { negativeSource: `${directory}/${name}.negative.txt`, negative }),
+    };
+  };
+  const camera = { ...production.camera };
+  for (const name of Object.keys(camera) as ChibiCamera[])
+    camera[name] = await override(`camera-${name}`, camera[name]);
+  const classes = { ...production.classes };
+  for (const name of Object.keys(classes) as ChibiRecipeClass[])
+    classes[name] = await override(`class-${name}`, classes[name]);
+  return {
+    ...production,
+    style: await override("style", production.style),
+    owner: await override("owner", production.owner),
+    camera,
+    classes,
+  };
+}
+
+/**
  * The manifest and fragment library of an exploration run: the production
  * fragments plus the run's TEST- faction and its subject texts. The faction
  * must not exist in docs/art/factions, so a test faction can never be
@@ -473,11 +523,12 @@ export async function loadExploration(
     throw new Error(
       `${subjectsSource} is for ${subjects.faction}, not ${manifest.faction}`,
     );
+  const styled = await explorationFragmentOverrides(root, relative, production);
   return {
     directory: relative,
     manifest,
     fragments: {
-      ...production,
+      ...styled,
       factions: { ...production.factions, [manifest.faction]: fragment },
       subjects: {
         ...production.subjects,

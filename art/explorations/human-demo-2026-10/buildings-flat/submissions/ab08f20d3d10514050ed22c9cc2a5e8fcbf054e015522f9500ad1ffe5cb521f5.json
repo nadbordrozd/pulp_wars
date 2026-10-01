@@ -1,0 +1,36 @@
+{
+  "id": "city-3-c-a-edit-2",
+  "jobId": "28f9caab-8623-487e-91a9-0ce82f3d56fb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "human-demo-buildings-flat",
+    "asset": "chibi-demo-c-city-3",
+    "subject": "CITY:3",
+    "faction": "TEST-HUMAN-FLAT",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 73423,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Repaint the dark grey-brown stone of the walls, towers and keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and make the house roofs inside the walls a clear terracotta red. Keep the shapes, the walls, the towers, the keep, the transparent courtyard, the outline and the art style exactly the same, on a transparent background with nothing under the walls."
+      }
+    ],
+    "prompt": "Repaint the dark grey-brown stone of the walls, towers and keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and make the house roofs inside the walls a clear terracotta red. Keep the shapes, the walls, the towers, the keep, the transparent courtyard, the outline and the art style exactly the same, on a transparent background with nothing under the walls.",
+    "negativePrompt": "",
+    "description": "Repaint the dark grey-brown stone of the walls, towers and keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and make the house roofs inside the walls a clear terracotta red. Keep the shapes, the walls, the towers, the keep, the transparent courtyard, the outline and the art style exactly the same, on a transparent background with nothing under the walls.",
+    "editInstruction": "Repaint the dark grey-brown stone of the walls, towers and keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and make the house roofs inside the walls a clear terracotta red. Keep the shapes, the walls, the towers, the keep, the transparent courtyard, the outline and the art style exactly the same, on a transparent background with nothing under the walls.",
+    "source": {
+      "recipe": "city-3-c-a-edit",
+      "candidate": 0,
+      "sha256": "6ea0ee4fb528bd898e5f51663f466cfbe58fd2681a2788be46a08be6caa12e58"
+    }
+  }
+}

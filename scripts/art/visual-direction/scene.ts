@@ -33,13 +33,25 @@ import {
   type ChibiArtAssetV7,
 } from "../../../src/assets/chibi-art-v7";
 import { CanvasBoardHostV7 } from "../../../src/render/canvas/board-host-v7";
+import {
+  VISUAL_DIRECTION_SAMPLE_SETS_V7,
+  type VisualDirectionSampleSetV7,
+} from "../../../src/render/canvas/visual-direction-samples-v7";
 import type { BoardVisualDirectionV7 } from "../../../src/render/canvas/visual-direction-v7";
 
 type Tile = PlayerViewV7["board"]["tiles"][number];
 type Seat = "A" | "B" | "C" | "D";
 
 export type VisualDirectionSceneKindV7 =
-  "BUSY" | "NO_UNITS" | "EMPTY" | "MARKER";
+  | "BUSY"
+  | "NO_UNITS"
+  | "EMPTY"
+  | "MARKER"
+  /** The Human demo's compact patch (bead pulp_wars-3tq.3), see DEMO. */
+  | "DEMO"
+  | "DEMO_MARKER"
+  /** The running match exactly as it is (an all-Human Showcase). */
+  | "LIVE";
 
 const TERRAIN: Readonly<Record<string, TerrainIdV7>> = {
   g: "GRASS",
@@ -73,6 +85,8 @@ const ROLE: Readonly<Record<string, UnitRoleIdV7>> = {
   F: "FIGHTER",
   M: "MARKSMAN",
   K: "KNIGHT",
+  P: "PATROL_BOAT",
+  B: "BATTLESHIP",
 };
 
 /**
@@ -251,6 +265,121 @@ const BUSY: readonly (readonly string[])[] = [
   ],
 ];
 const CAPITAL: CoordV7 = { x: 6, y: 5 };
+
+/**
+ * DEMO, 11 x 8 cells around the capital (5,4), the cases the Human demo has
+ * to settle: a single Farm, a 3 x 3 block of Farms with Roads passing under
+ * it both ways, a unit directly north of each city tier, every improvement
+ * alone (row 4) and with a unit on it (row 5), and ships of all four
+ * players on shallow and deep water beside Ports and a Shipyard.
+ */
+const DEMO: readonly (readonly string[])[] = [
+  [
+    "gA/farm",
+    "gA",
+    "gA/road",
+    "gA",
+    "gB/F:A:100",
+    "gB",
+    "gC/M:D:100",
+    "gC",
+    "gD/K:B:100",
+    "gD",
+    "g-",
+  ],
+  [
+    "gA",
+    "gA/farm",
+    "gA/farm/road",
+    "gA/farm",
+    "gB/city1",
+    "gB/F:B:100",
+    "gC/city2/F:C:100",
+    "gC",
+    "gD/city3",
+    "gD/K:D:100:r",
+    "g-",
+  ],
+  [
+    "gA/road",
+    "gA/farm/road",
+    "gA/farm/road",
+    "gA/farm/road",
+    "gA/road",
+    "gB/M:B:40",
+    "gC",
+    "gC/F:C:100:r",
+    "gD",
+    "gD/M:D:100",
+    "g-",
+  ],
+  [
+    "gA",
+    "gA/farm",
+    "gA/farm/road",
+    "gA/farm",
+    "gA",
+    "gA/F:A:100",
+    "gA/K:A:100",
+    "gA/M:A:100",
+    "gA",
+    "gA",
+    "g-",
+  ],
+  [
+    "fA/lumber",
+    "gA/saw",
+    "gA/road",
+    "gA/mill",
+    "gA/forge",
+    "gA/city3*",
+    "gA/shop",
+    "gA/market",
+    "gA/monument",
+    "mA/mine",
+    "g-",
+  ],
+  [
+    "fA/lumber/F:A:100",
+    "gA/saw/F:B:100",
+    "gA/mill/M:C:100",
+    "gA/forge/K:D:100",
+    "gA/shop/F:A:70",
+    "gA/market/M:B:100",
+    "gA/farm/F:C:100",
+    "gA/farm/K:A:100",
+    "gA/farm/road/M:D:100",
+    "mA/mine/F:B:100",
+    "g-",
+  ],
+  [
+    "sA/port",
+    "sA/P:A:100",
+    "sA/yard",
+    "sA/B:B:100",
+    "sA/fish",
+    "sB/port",
+    "sB/P:C:100:r",
+    "s-/P:D:60",
+    "sC/port",
+    "s-/B:A:100",
+    "s-",
+  ],
+  [
+    "d-",
+    "d-",
+    "d-/B:D:100",
+    "d-",
+    "d-",
+    "d-",
+    "d-/P:B:100",
+    "d-",
+    "d-",
+    "d-",
+    "d-",
+  ],
+];
+const DEMO_CAPITAL: CoordV7 = { x: 5, y: 4 };
 const SEATS: readonly Seat[] = ["A", "B", "C", "D"];
 const COLOURS = ["CORAL", "TEAL", "GOLD", "VIOLET"] as const;
 
@@ -335,8 +464,13 @@ export function visualDirectionSceneViewV7(
   live: PlayerViewV7,
   kind: VisualDirectionSceneKindV7,
 ): VisualDirectionSceneV7 {
-  const rows = BUSY.length;
-  const columns = BUSY[0]?.length ?? 0;
+  if (kind === "LIVE")
+    return { view: live, capitalAt: { x: 0, y: 0 }, commands: [] };
+  const demo = kind === "DEMO" || kind === "DEMO_MARKER";
+  const LAYOUT = demo ? DEMO : BUSY;
+  const CAPITAL_AT = demo ? DEMO_CAPITAL : CAPITAL;
+  const rows = LAYOUT.length;
+  const columns = LAYOUT[0]?.length ?? 0;
   if (live.board.width < columns || live.board.height < rows)
     throw new Error(`the scene needs a ${columns} x ${rows} board`);
   const viewerId = live.viewer.id;
@@ -354,11 +488,11 @@ export function visualDirectionSceneViewV7(
   const origin = {
     x: Math.max(
       0,
-      Math.min(live.board.width - columns, liveCapital.at.x - CAPITAL.x),
+      Math.min(live.board.width - columns, liveCapital.at.x - CAPITAL_AT.x),
     ),
     y: Math.max(
       0,
-      Math.min(live.board.height - rows, liveCapital.at.y - CAPITAL.y),
+      Math.min(live.board.height - rows, liveCapital.at.y - CAPITAL_AT.y),
     ),
   };
   // Seat A is the viewer; B-D are synthetic Human seats.
@@ -376,7 +510,7 @@ export function visualDirectionSceneViewV7(
   const cityId = (seat: Seat): CityId =>
     (Number(liveCapital.id) + 500 + SEATS.indexOf(seat)) as CityId;
   const cellAt = (at: CoordV7): ParsedCell | undefined => {
-    const cell = BUSY[at.y - origin.y]?.[at.x - origin.x];
+    const cell = LAYOUT[at.y - origin.y]?.[at.x - origin.x];
     return cell === undefined ? undefined : parse(cell);
   };
   const bare = kind === "EMPTY";
@@ -410,7 +544,7 @@ export function visualDirectionSceneViewV7(
   const cities: PlayerViewV7["cities"][number][] = [];
   const units: PlayerViewV7["units"][number][] = [];
   const commands: CommandV7[] = [];
-  BUSY.forEach((row, y) =>
+  LAYOUT.forEach((row, y) =>
     row.forEach((text, x) => {
       const cell = parse(text);
       const at = { x: origin.x + x, y: origin.y + y };
@@ -428,14 +562,21 @@ export function visualDirectionSceneViewV7(
           population: cell.city.level,
           isCapital: cell.city.capital,
         });
-      if (kind !== "BUSY" || cell.unit === null) return;
+      if (
+        (kind !== "BUSY" && kind !== "DEMO" && kind !== "DEMO_MARKER") ||
+        cell.unit === null
+      )
+        return;
       const id = (9000 + y * columns + x) as typeof template.id;
       units.push({
         ...template,
         id,
         ownerId: playerId(cell.unit.seat),
         role: cell.unit.role,
-        form: "LAND",
+        form:
+          cell.unit.role === "PATROL_BOAT" || cell.unit.role === "BATTLESHIP"
+            ? "NAVAL"
+            : "LAND",
         at,
         hp: Math.max(1, Math.round((template.maxHp * cell.unit.hp) / 100)),
         activation: { ...template.activation, handled: !cell.unit.ready },
@@ -491,7 +632,7 @@ export function visualDirectionSceneViewV7(
     }
   return {
     commands,
-    capitalAt: { x: origin.x + CAPITAL.x, y: origin.y + CAPITAL.y },
+    capitalAt: { x: origin.x + CAPITAL_AT.x, y: origin.y + CAPITAL_AT.y },
     view: {
       ...live,
       players,
@@ -512,8 +653,10 @@ export interface VisualDirectionSceneOptionsV7 {
   readonly kind: VisualDirectionSceneKindV7;
   /** Omitted: today's rendering. */
   readonly direction?: BoardVisualDirectionV7;
-  /** Exploration sample sprites the direction's units may draw. */
+  /** Exploration sample sprites the direction may draw. */
   readonly samples?: readonly ChibiArtAssetV7[];
+  /** A named sample set of visual-direction-samples-v7.ts instead. */
+  readonly sampleSet?: VisualDirectionSampleSetV7;
 }
 
 /** Mounts a full-screen CHIBI board host over the page showing the scene. */
@@ -536,10 +679,14 @@ export function showVisualDirectionSceneV7(
     onCommand: () => undefined,
   });
   const scene = visualDirectionSceneViewV7(live, options.kind);
+  const sampleAssets =
+    options.sampleSet === undefined
+      ? options.samples
+      : VISUAL_DIRECTION_SAMPLE_SETS_V7[options.sampleSet];
   const samples =
-    options.samples === undefined || options.samples.length === 0
+    sampleAssets === undefined || sampleAssets.length === 0
       ? undefined
-      : buildChibiArtRegistryV7(options.samples);
+      : buildChibiArtRegistryV7(sampleAssets);
   if (samples !== undefined && samples.problems.length > 0)
     throw new Error(samples.problems.join("; "));
   host.update({
@@ -548,7 +695,7 @@ export function showVisualDirectionSceneV7(
     offeredCommands: scene.commands,
     interaction: {
       selection:
-        options.kind === "MARKER"
+        options.kind === "MARKER" || options.kind === "DEMO_MARKER"
           ? { kind: "TILE", at: scene.capitalAt }
           : null,
       selectedUnitId: null,

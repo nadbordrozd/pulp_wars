@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "batch": "human-demo-buildings-soft",
+  "title": "Human demo, building style A: chibi buildings in fixed muted faction colours with a soft outline (exploration, never registered)",
+  "bead": "pulp_wars-3tq.3",
+  "faction": "TEST-HUMAN-SOFT",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-demo-soft-windmill",
+      "subject": "IMPROVEMENT:WINDMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-demo-soft-forge",
+      "subject": "IMPROVEMENT:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-demo-soft-market",
+      "subject": "IMPROVEMENT:MARKET",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 88
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "windmill-soft-a",
+      "asset": "chibi-demo-soft-windmill",
+      "endpoint": "create-image-pixen",
+      "seed": 72101,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "options": {
+        "outline": "single color outline"
+      }
+    },
+    {
+      "id": "forge-soft-a",
+      "asset": "chibi-demo-soft-forge",
+      "endpoint": "create-image-pixen",
+      "seed": 72111,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "options": {
+        "outline": "single color outline"
+      }
+    },
+    {
+      "id": "market-soft-a",
+      "asset": "chibi-demo-soft-market",
+      "endpoint": "create-image-pixen",
+      "seed": 72121,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "options": {
+        "outline": "single color outline"
+      }
+    }
+  ]
+}

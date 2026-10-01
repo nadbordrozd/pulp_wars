@@ -63,7 +63,7 @@ import {
   storeBoardVisualDirectionV7,
 } from "../../app/board-visual-direction-v7";
 import type { ChibiArtRegistryV7 } from "../../assets/chibi-art-v7";
-import { RECOMMENDED_DIRECTION_V7 } from "../canvas/visual-direction-v7";
+import { HUMAN_DEMO_DIRECTION_V7 } from "../canvas/visual-direction-v7";
 import {
   SETTINGS_STORAGE_KEY,
   parseSettings,
@@ -1342,7 +1342,7 @@ export class Ruleset7DomAppView {
       saturation: this.#boardSaturation,
       ...(this.#visualDirection
         ? {
-            visualDirection: RECOMMENDED_DIRECTION_V7,
+            visualDirection: HUMAN_DEMO_DIRECTION_V7,
             ...(this.#visualDirectionSamples === null
               ? {}
               : { visualDirectionSamples: this.#visualDirectionSamples }),
@@ -3499,9 +3499,10 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * Developer experiment (bead pulp_wars-3tq.1): one checkbox that draws the
-   * board in the recommended visual direction (chibi art set only). It
-   * updates the board and local storage in place, like the sliders.
+   * Developer experiment (beads pulp_wars-3tq.1 and pulp_wars-3tq.3): one
+   * checkbox that draws the board in the visual direction's Human demo
+   * (chibi art set only). It updates the board and local storage in place,
+   * like the sliders.
    */
   #visualDirectionControl(): HTMLElement {
     const group = el(this.#document, "fieldset", "v7-saturation-tools");
@@ -3522,7 +3523,7 @@ export class Ruleset7DomAppView {
     label.append(
       input,
       this.#document.createTextNode(
-        " Recommended direction (experiment, chibi art only)",
+        " Human faction demo (experiment, chibi art only)",
       ),
     );
     group.append(label);

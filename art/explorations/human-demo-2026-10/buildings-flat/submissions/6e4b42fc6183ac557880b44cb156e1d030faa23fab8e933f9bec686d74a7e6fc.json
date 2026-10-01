@@ -1,0 +1,68 @@
+{
+  "id": "city-2-b-a",
+  "jobId": "sync-54e2ddd2-50fe-4734-aef3-b56ad08b29ac",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "human-demo-buildings-flat",
+    "asset": "chibi-demo-b-city-2",
+    "subject": "CITY:2",
+    "faction": "TEST-HUMAN-FLAT",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 73311,
+    "noBackground": true,
+    "options": {
+      "outline": "selective outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/human-demo-2026-10/buildings-flat/fragments/style.txt + art/explorations/human-demo-2026-10/buildings-flat/fragments/style.negative.txt",
+        "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/human-demo-2026-10/buildings-flat/faction.md#prompt-fragment + art/explorations/human-demo-2026-10/buildings-flat/faction.md#negative-fragment",
+        "text": "Faction: a high-medieval kingdom around the year 1250. Buildings are made of pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour.",
+        "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, flag, banner, pennant, heraldry, bright red, neon, saturated colours, people, soldier, person, character"
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/human-demo-2026-10/buildings-flat/fragments/class-settlement.txt + scripts/art/chibi/fragments/class-settlement.negative.txt",
+        "text": "Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "art/explorations/human-demo-2026-10/buildings-flat/fragments/owner.txt",
+        "text": "Colours: only the fixed muted faction colours named above. No flag, no banner and no bright red anywhere; nothing is painted in a team colour."
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/human-demo-2026-10/buildings-flat/subjects.json",
+        "text": "Subject: a level-2 walled town, clearly bigger than a small town: five cottages with cream plaster walls and dusty terracotta roofs packed around a square pale stone keep, a pale stone wall across the front with a gate and one round corner tower with a dusty terracotta cone roof; no flag. Buildings only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The building is drawn large and fills most of the image, touching neither edge."
+      }
+    ],
+    "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a high-medieval kingdom around the year 1250. Buildings are made of pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Colours: only the fixed muted faction colours named above. No flag, no banner and no bright red anywhere; nothing is painted in a team colour. Subject: a level-2 walled town, clearly bigger than a small town: five cottages with cream plaster walls and dusty terracotta roofs packed around a square pale stone keep, a pale stone wall across the front with a gate and one round corner tower with a dusty terracotta cone roof; no flag. Buildings only. The building is drawn large and fills most of the image, touching neither edge.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, flag, banner, pennant, heraldry, bright red, neon, saturated colours, people, soldier, person, character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, crowd",
+    "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a high-medieval kingdom around the year 1250. Buildings are made of pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Colours: only the fixed muted faction colours named above. No flag, no banner and no bright red anywhere; nothing is painted in a team colour. Subject: a level-2 walled town, clearly bigger than a small town: five cottages with cream plaster walls and dusty terracotta roofs packed around a square pale stone keep, a pale stone wall across the front with a gate and one round corner tower with a dusty terracotta cone roof; no flag. Buildings only. The building is drawn large and fills most of the image, touching neither edge. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, flag, banner, pennant, heraldry, bright red, neon, saturated colours, people, soldier, person, character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, crowd."
+  }
+}

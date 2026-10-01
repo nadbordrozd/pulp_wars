@@ -1,0 +1,18 @@
+{
+  "faction": "TEST-HUMAN-FLAT",
+  "note": "Subject layer of building style B of the Human demo (bead pulp_wars-3tq.3). Exploration only.",
+  "subjects": {
+    "IMPROVEMENT:WINDMILL": "Subject: a windmill: one round tower of cream plaster on a pale stone footing with a small oak door, a dusty terracotta cone roof, and four big sail arms of oak lattice with plain cream canvas, set in a big X on the front and wider than the tower; no fence, no field. Buildings only.",
+    "IMPROVEMENT:FORGE": "Subject: a blacksmith's forge: a squat square pale stone smithy with a dusty terracotta roof, a tall square grey stone chimney with one small puff of pale smoke, a wide open front arch with a small orange fire glow inside, and a big dark steel anvil in front of the arch. Buildings only.",
+    "IMPROVEMENT:MARKET": "Subject: a market: one open market stall of oak posts under a big awning of wide cream and dusty terracotta stripes, two oak crates of yellow pears and green cabbages under it and one oak barrel beside it; wide and low, open with no walls. Buildings only.",
+    "IMPROVEMENT:SAWMILL": "Subject: a sawmill: a low open-sided shed of oak posts under a wide dusty terracotta roof, a big round steel circular saw blade standing upright at its front, and a neat stack of three pale cut logs beside it; wide and low. Buildings only.",
+    "IMPROVEMENT:WORKSHOP": "Subject: a craftsman's workshop: a two-storey cream plaster house with dark oak timber framing and a steep dusty terracotta roof, with one big steel cogwheel mounted on the front gable and a wide open door. Buildings only.",
+    "IMPROVEMENT:LUMBER_CAMP": "Subject: a lumber camp: a small low log cabin of oak logs with a dusty terracotta roof, a big neat stack of pale cut logs beside it and a tree stump with an axe stuck in it; wide and low. Buildings only.",
+    "IMPROVEMENT:PORT": "Subject: a small harbour pier: a wide wooden pier deck of oak planks on thick oak posts, a small cream plaster harbour hut with a dusty terracotta roof on the pier, one bare tall wooden mast pole with no flag at the corner of the pier, two mooring posts and a coil of rope. Buildings only.",
+    "IMPROVEMENT:SHIPYARD": "Subject: a shipyard: a half-built oak boat hull showing its curved ribs resting on wooden trestles, a tall wooden crane with a rope and hook leaning over it, and a small plank boathouse with a dusty terracotta roof behind them. Buildings only.",
+    "IMPROVEMENT:MONUMENT": "Subject: a monument: one tall slender pale stone obelisk rising straight out of the ground with no plinth and no steps, with a small golden star on its tip and a carved stone wreath on its front; tall and narrow. Buildings only.",
+    "CITY:1": "Subject: a small level-1 town: one short round pale stone tower with a dusty terracotta cone roof and three small cottages with cream plaster walls and dusty terracotta roofs pressed around its foot; no wall, no flag. Buildings only.",
+    "CITY:2": "Subject: a level-2 walled town, clearly bigger than a small town: five cottages with cream plaster walls and dusty terracotta roofs packed around a square pale stone keep, a pale stone wall across the front with a gate and one round corner tower with a dusty terracotta cone roof; no flag. Buildings only.",
+    "CITY:3": "Subject: a large level-3 castle city, the biggest settlement: many small houses with cream plaster walls and dusty terracotta roofs packed inside a crenellated pale grey stone ring wall with a gate, two round stone corner towers with dusty terracotta cone roofs and a tall square central keep with battlements; no flag. Buildings only."
+  }
+}

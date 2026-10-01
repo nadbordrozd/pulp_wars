@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "batch": "human-demo-farm",
+  "title": "Human demo: the Farm as rows of crop plants with gaps (exploration, never registered)",
+  "bead": "pulp_wars-3tq.3",
+  "faction": "TEST-HUMAN-FARM",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-demo-farm-field",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-demo-farm-row",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 32
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/ROW"
+    },
+    {
+      "id": "chibi-demo-farm-tuft",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 32,
+        "height": 32
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/TUFT"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "farm-field-a",
+      "asset": "chibi-demo-farm-field",
+      "endpoint": "create-image-pixen",
+      "seed": 75001,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "view": "high top-down",
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "farm-row-a",
+      "asset": "chibi-demo-farm-row",
+      "endpoint": "create-image-pixen",
+      "seed": 75011,
+      "requestSize": {
+        "width": 80,
+        "height": 32
+      },
+      "options": {
+        "view": "low top-down",
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "farm-tuft-a",
+      "asset": "chibi-demo-farm-tuft",
+      "endpoint": "create-image-pixen",
+      "seed": 75021,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "options": {
+        "view": "low top-down",
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "farm-field-a-edit",
+      "asset": "chibi-demo-farm-field",
+      "endpoint": "edit-image-pixen",
+      "seed": 75002,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "farm-field-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything that is not a wheat plant: remove all the brown soil, the dark lines and the grey-green chequered pattern between the rows, so that the space between the four rows of wheat is completely empty and transparent. Keep only the golden wheat plants of the four rows, each with a thin dark straw-brown outline, exactly where they are.",
+      "notes": "farm-field-a has the right structure (four edge-to-edge rows of small tufts) but Pixen painted soil bands and a fake transparency chequerboard between the rows."
+    },
+    {
+      "id": "farm-field-a-edit-2",
+      "asset": "chibi-demo-farm-field",
+      "endpoint": "edit-image-pixen",
+      "seed": 75003,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "farm-field-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent.",
+      "notes": "farm-field-a-edit has the right structure and real gaps, but its ears are thin and dark orange, so a Farm reads as dotted lines at 1:1."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "id": "knight-heraldic-a",
+  "jobId": "sync-7f116c64-6571-4d0e-b73e-fbb6e228acde",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "human-demo-units",
+    "asset": "chibi-demo-knight",
+    "subject": "UNIT:KNIGHT",
+    "faction": "TEST-HUMAN-HERALDIC",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 74022,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/human-demo-2026-10/units/faction.md#prompt-fragment + art/explorations/human-demo-2026-10/units/faction.md#negative-fragment",
+        "text": "Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown.",
+        "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "art/explorations/human-demo-2026-10/units/fragments/owner.txt",
+        "text": "Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player."
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/human-demo-2026-10/units/subjects.json",
+        "text": "Subject: Knight, a chunky cute armoured knight with a very big head riding a big sturdy white warhorse seen from the front-right: a steel great helm with a gold-yellow crown band and a big crimson plume, a crimson surcoat with a gold-yellow lion over steel chainmail, a long wooden lance with a steel point and a small crimson and gold pennant held upright, the horse covered in a big deep crimson red cloth caparison with a wide gold-yellow trim, a steel chanfron on the horse's head; simple shapes and very few details; the horse's hooves are the lowest thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "bow, quiver"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player. Subject: Knight, a chunky cute armoured knight with a very big head riding a big sturdy white warhorse seen from the front-right: a steel great helm with a gold-yellow crown band and a big crimson plume, a crimson surcoat with a gold-yellow lion over steel chainmail, a long wooden lance with a steel point and a small crimson and gold pennant held upright, the horse covered in a big deep crimson red cloth caparison with a wide gold-yellow trim, a steel chanfron on the horse's head; simple shapes and very few details; the horse's hooves are the lowest thing in the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a proud high-medieval kingdom around the year 1250: knights and men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow trim and gold-yellow heraldic lions and crosses, over polished steel chainmail and helmets and cream linen; steel is shaded with darker blue-grey, cloth with a deeper tone of its own colour, leather is dark brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Faction colours: the deep crimson red and the gold-yellow are this kingdom's fixed heraldic colours and must be clearly visible from a distance; the red is deep and rich. No team colour: nothing changes with the player. Subject: Knight, a chunky cute armoured knight with a very big head riding a big sturdy white warhorse seen from the front-right: a steel great helm with a gold-yellow crown band and a big crimson plume, a crimson surcoat with a gold-yellow lion over steel chainmail, a long wooden lance with a steel point and a small crimson and gold pennant held upright, the horse covered in a big deep crimson red cloth caparison with a wide gold-yellow trim, a steel chanfron on the horse's head; simple shapes and very few details; the horse's hooves are the lowest thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, magic glow, glowing runes, wings, blue cloth, green cloth, purple cloth, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver."
+  }
+}

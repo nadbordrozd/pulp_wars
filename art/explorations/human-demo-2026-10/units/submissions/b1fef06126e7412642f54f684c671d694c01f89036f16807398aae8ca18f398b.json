@@ -1,0 +1,37 @@
+{
+  "id": "marksman-heraldic-edit",
+  "jobId": "87b3a4d5-5302-4243-bad9-98ce0489f862",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "human-demo-units",
+    "asset": "chibi-demo-marksman",
+    "subject": "UNIT:MARKSMAN",
+    "faction": "TEST-HUMAN-HERALDIC",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 74011,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval longbowman: a deep crimson red hood with a gold-yellow trim, a cream padded gambeson with a crimson and gold tabard on the chest, steel-grey hose, a dark brown leather belt, bracer and boots. Keep the longbow, quiver, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval longbowman: a deep crimson red hood with a gold-yellow trim, a cream padded gambeson with a crimson and gold tabard on the chest, steel-grey hose, a dark brown leather belt, bracer and boots. Keep the longbow, quiver, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval longbowman: a deep crimson red hood with a gold-yellow trim, a cream padded gambeson with a crimson and gold tabard on the chest, steel-grey hose, a dark brown leather belt, bracer and boots. Keep the longbow, quiver, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "editInstruction": "Redraw him as a high-medieval longbowman: a deep crimson red hood with a gold-yellow trim, a cream padded gambeson with a crimson and gold tabard on the chest, steel-grey hose, a dark brown leather belt, bracer and boots. Keep the longbow, quiver, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "source": {
+      "batch": "1",
+      "recipe": "marksman-c",
+      "candidate": 0,
+      "sha256": "9c7f8e86122b18d98176d2290093b1e4da2a5ad48265a987cced85301ca6f6a1"
+    }
+  }
+}

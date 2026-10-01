@@ -466,3 +466,21 @@ faction is refused if it also exists in `docs/art/factions`, and
 `art:validate` rejects any `TEST-` faction there. The faction-layer dry run
 ([factions README](factions/README.md#dry-run-test-clockwork-bead-pulp_wars-tt31))
 is the first exploration run.
+
+**Trying another style** (bead `pulp_wars-3tq.3`): a run may carry its own
+`fragments/` directory. A file there replaces the production fragment of the
+same name for that run only: `style.txt`, `owner.txt`, `camera-<name>.txt`
+and `class-<name>.txt`, each with its `.negative.txt` where the production
+fragment has one. Records and receipts store every layer's source and text,
+so the request stays reproducible; production batches never read these
+files, and a test checks that another run and the production library are
+unchanged. The Human demo of the
+[visual-direction study](VISUAL_DIRECTION_2026-10.md#11-human-demo) uses it
+for its flatter building style and its top-down Farm
+(`art/explorations/human-demo-2026-10/`).
+
+Buildings may also be generated with `create-image-pixflux`
+(default options: selective outline, flat shading, low detail), the only
+endpoint with a shading option. The demo's four Pixflux samples ignored the
+subject and drew ground plates, so every accepted building still comes from
+Pixen.
