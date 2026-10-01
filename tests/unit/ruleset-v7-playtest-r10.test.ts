@@ -45,8 +45,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 10 playtest corrections", () => {
   it("uses the exact current identity while retaining numeric schema 7", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r17");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r17.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r18");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r18.current");
     expect(initialV7().schemaVersion).toBe(7);
   });
 
@@ -224,8 +224,25 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
       nextEntityId: roadState.nextEntityId + 1,
       units: [...roadState.units, blocker].sort((a, b) => a.id - b.id),
     });
+    // Revision 18: an own unit on the Road is passed but never ended on; a
+    // unit of another player still blocks.
     expect(
       validateMovementPathV7(occupied, ownUnit(occupied), [
+        intermediate,
+        destination,
+      ]),
+    ).toMatchObject({ legal: true, destination });
+    expect(
+      validateMovementPathV7(occupied, ownUnit(occupied), [intermediate]),
+    ).toMatchObject({ legal: false, reason: "OCCUPIED" });
+    const hostileOccupied = checkedV7({
+      ...roadState,
+      units: roadState.units.map((unit) =>
+        unit.id === enemy.id ? { ...unit, at: intermediate } : unit,
+      ),
+    });
+    expect(
+      validateMovementPathV7(hostileOccupied, ownUnit(hostileOccupied), [
         intermediate,
         destination,
       ]),

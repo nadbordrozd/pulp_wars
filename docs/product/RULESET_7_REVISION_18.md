@@ -1,8 +1,9 @@
 # Ruleset 7 revision 18: friendly pass-through, road bonus by origin, and the Showcase setup
 
-**Status:** contract (`pulp_wars-6gd.1`), not yet implemented. It is
-implemented by two beads in order: `pulp_wars-6gd.2` (identity, movement,
-roads, queries, AI, UI previews) and `pulp_wars-6gd.3` (Showcase setup); see
+**Status:** contract (`pulp_wars-6gd.1`). Sections 2–4 (identity, movement,
+roads, queries, AI, UI previews) are implemented by `pulp_wars-6gd.2` and
+folded into the [current rules](RULESET_7_CURRENT.md); section 5 (Showcase
+setup) is not yet implemented and belongs to `pulp_wars-6gd.3`; see
 [section 8](#8-implementation-split-and-sequencing).
 
 **Ruleset ID:** `pulp-wars-poc-7r18`

@@ -51,21 +51,21 @@ describe("ruleset-7 exact public-planning performance", () => {
       id: "captured-command-300",
       view: () => captured(300),
       commandHash:
-        "53c225c8e425f892ab32e45dabb67577f62ff5b61bd6349d67f581bdb72fb20f",
+        "68b640b47cff455890b0d253cbbdf1dfe7a23bd38e7665d5d0cd7032a1e31651",
       resultHash:
-        "b78f740fb03edfc245efedbe4c2e5b9d1e3ee7dada87368bfebe6773dbb61d70",
-      operations: 66_220,
+        "b32cb8941a64df8d59e6b302c253ccaaa5a1459768943025ec1a35f526181f5b",
+      operations: 66_235,
     },
     {
       id: "captured-command-425",
       view: () => captured(425),
       commandHash:
-        "4cdd217f92eb085b3365e9a3f7795cc32a8fcfbe52e2809327b66f5598326c86",
+        "1effba1c7759d740bb58c232774d2a9a88bf4f344ee97396ea094b6eabf3be6a",
       // Revision 16 caps a Market at 3 Coins; with the cap at 4 the
       // revision-15 value 209b3326… returns.
       resultHash:
-        "749e1adf0999320ae10e56db10cb45e7088e9e21658543c4e53c371db3d25f43",
-      operations: 94_408,
+        "c92698816b7e41a8c3313cd84763f570b359bd1804d1a1e8d452fbc5df10dbc5",
+      operations: 94_442,
     },
   ] as const;
 

@@ -16,13 +16,16 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (revision 17, Human, Undead and Goblin)
+## Current release contract (revision 18, Human, Undead and Goblin)
 
-The current runtime is `pulp-wars-poc-7r17` (autosave
-`pulpWars.save.v7r17.current`) with three playable factions, described by
+The current runtime is `pulp-wars-poc-7r18` (autosave
+`pulpWars.save.v7r18.current`) with three playable factions, described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md), into which
 `pulp_wars-0ao.9` folded the
-[revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md).
+[revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md)
+and `pulp_wars-6gd.2` the movement and identity sections of the
+[revision-18 overlay](../product/RULESET_7_REVISION_18.md) (friendly
+pass-through and the Road half cost by origin).
 The Undead and the Goblins are part of the default route: match setup always
 offers a Human/Undead/Goblin choice for the human and each AI seat (all
 Human by default), and there is no development flag (`pulp_wars-vkq.16`
@@ -32,12 +35,12 @@ not rerun its matrix.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the revision-17 identity (ruleset ID, autosave key, the
+  contract. It checks the revision-18 identity (ruleset ID, autosave key, the
   `ORIGINAL`/`UNDEAD`/`GOBLIN` faction and tree orders, and a
   Human-against-Undead setup), confirms that the archived corpus below still
   carries the revision-2 identity, and runs the revision contract tests
-  (including the Undead faction, revisions 14–16, the Goblin faction and
-  Goblin rules suites, persistence, and the DOM shell and landing tests; the
+  (including the Undead faction, revisions 14–16 and 18, the Goblin faction
+  and Goblin rules suites, persistence, and the DOM shell and landing tests; the
   Goblin explosion, AI, and presentation suites run in `npm run check`). It
   keeps no checked corpus or fingerprint of its own and has no `:refresh`
   variant, so a release has nothing to regenerate there.
@@ -82,11 +85,11 @@ not rerun its matrix.
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
-  (revision-17) captures. The revision-2 validator described below as
+  (revision-18) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
 
-The revision-17 release gates, in the order they are run from the reviewed
+The current release gates, in the order they are run from the reviewed
 release revision (the `cross-cutting/release` profile plus the Ruleset 7 and
 Goblin additions):
 

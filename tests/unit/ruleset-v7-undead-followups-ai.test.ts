@@ -7,6 +7,7 @@ import {
 import {
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
+  createPlayableGameV7,
   effectiveRoleRuleV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
@@ -288,7 +289,13 @@ describe("vkq.21 Normal AI: Liches and Vampires stay ashore", () => {
     const undead = required(
       result.state.players.find((player) => player.faction === "UNDEAD"),
     ).id;
-    const roles = new Map<number, UnitRoleIdV7>();
+    // Revision 18: the starting unit may be among the first to embark, so
+    // the role map starts from the initial state.
+    const created = createPlayableGameV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    const roles = new Map<number, UnitRoleIdV7>(
+      created.state.units.map((unit) => [unit.id, unit.role]),
+    );
     const embarked: UnitRoleIdV7[] = [];
     for (const record of result.commandLog)
       for (const event of record.events) {

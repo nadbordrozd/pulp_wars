@@ -346,10 +346,12 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // pulp_wars-1mc: the seed-3 Continents match used before now enters the
     // Human seat's endgame siege at round 9 (three cities against one) and
     // the Undead seat never reaches a Lich; seed 5 Pangea still did until the
-    // revision-16 economy numbers, and seed 4 Pangea does with them.
+    // revision-16 economy numbers, and seed 4 Pangea did with them. Under the
+    // revision-18 movement rules seed 4 no longer reaches a Lich within 40
+    // rounds; seed 8 Pangea does.
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 4,
+      seed: 8,
       width: 11,
       height: 11,
       aiCount: 1,

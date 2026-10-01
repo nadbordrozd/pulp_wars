@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r17` (revision 17), for all three playable factions, Human
+`pulp-wars-poc-7r18` (revision 18), for all three playable factions, Human
 (`ORIGINAL`), Undead (`UNDEAD`), and Goblin (`GOBLIN`). It folds in revision
 12 (free opening technology, Fruit visible from the start, Fertile Ground
 revealed by Gathering, resources kept under improvements, Normal AI opening
@@ -11,9 +11,12 @@ of revisions [13](RULESET_7_REVISION_13_UNDEAD.md) (the Undead faction),
 Vampire, villages, and income caps),
 [15](RULESET_7_REVISION_15_BALANCE.md) (three-turn Plague, 18-HP Zombie),
 [16](RULESET_7_REVISION_16.md) (16a: orthogonal Shallow Water and the capital
-growth guarantee; 16b: 2-tile boats and landing; 16c: economy deflation), and
+growth guarantee; 16b: 2-tile boats and landing; 16c: economy deflation),
 [17](RULESET_7_REVISION_17_GOBLINS.md) (the Goblin faction, with the
-`pulp_wars-0ao.7` tuned numbers). The Undead and the Goblins are part of the
+`pulp_wars-0ao.7` tuned numbers), and [18](RULESET_7_REVISION_18.md)
+(friendly pass-through and the Road half cost by origin; its Showcase setup,
+section 5 of that overlay, is not implemented yet and is folded by
+`pulp_wars-6gd.3`). The Undead and the Goblins are part of the
 ordinary game: faction choice is offered in every match setup, with no
 development flag. Every number below was checked against the engine code at
 the time of writing.
@@ -30,8 +33,9 @@ overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
 [13](RULESET_7_REVISION_13_UNDEAD.md),
 [14](RULESET_7_REVISION_14_BALANCE.md),
 [15](RULESET_7_REVISION_15_BALANCE.md),
-[16](RULESET_7_REVISION_16.md), and
-[17](RULESET_7_REVISION_17_GOBLINS.md). Those documents remain as design
+[16](RULESET_7_REVISION_16.md),
+[17](RULESET_7_REVISION_17_GOBLINS.md), and the movement and identity
+sections of [18](RULESET_7_REVISION_18.md). Those documents remain as design
 history, exact schema/ordering detail, measurements, and acceptance
 provenance. When one of them disagrees with this document, this document
 describes the current rules. In particular, the [baseline](RULESET_7.md)
@@ -46,7 +50,7 @@ Goblins, Goblin Attack 2 and Defense 1, Kaboom 4, death blasts 3/5/5); the
 values here are current. Where a document and the code disagreed, the code's
 behavior is the rule and is stated below;
 [Known discrepancies](#20-known-discrepancies) lists no discrepancy as of
-revision 17.
+revision 18.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague, and
@@ -80,10 +84,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                         |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r17`                                                                                  |
+| Ruleset                                    | `pulp-wars-poc-7r18`                                                                                  |
 | Game-state schema                          | `7`                                                                                                   |
 | Command/event/save/replay numeric versions | `7`                                                                                                   |
-| Browser autosave                           | `pulpWars.save.v7r17.current`                                                                         |
+| Browser autosave                           | `pulpWars.save.v7r18.current`                                                                         |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                            |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`                                                                        |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`                                    |
@@ -92,9 +96,11 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r16`) are rejected, never migrated.
+  `pulp-wars-poc-7r17`) are rejected, never migrated. Revision 18 changed no
+  setup, state, command, event, or view shape, only Move legality and cost,
+  so a revision-17 command stream is not replayable.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r16.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r17.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -713,16 +719,29 @@ require Engineering. Roads always coexist.
 
 ### 9.2 Road movement
 
-- With Roads, a land step between two adjacent usable Road nodes (orthogonal
-  or diagonal) costs half a movement point, so a Move-1 unit crosses two such
-  edges.
-- A Road step also ignores the Forest and Mountain movement stop; Mountain
-  entry still needs Engineering.
+- **Cost by origin** (revision 18). With Roads, a step (orthogonal or
+  diagonal) costs half a movement point when the tile being **left** is a
+  usable Road node for the mover's owner, and a full point otherwise. The
+  tile being entered does not matter: it needs no Road, and it may be
+  unexplored, a Forest, a Mountain, or a dock the unit embarks on. Entering a
+  Road tile from a roadless tile costs a full point. So a Move-1 unit that
+  stands on a Road tile with a Road tile next to it reaches the tile beyond
+  them, Road or not; a single Road tile under the unit adds no reach.
+- A step that leaves a water tile always costs a full point (water has no
+  Roads), so naval and embarked movement has no Road discount.
+- **Road edge.** A step whose two ends are both usable Road nodes also
+  ignores the Forest and Mountain movement stop. A half-cost step onto a
+  roadless Forest or Mountain still ends the Move there. Mountain entry still
+  needs Engineering.
+- A unit on a Road tile or its own city center next to an own active, empty
+  Port or Shipyard embarks at half cost: a Move-1 unit one Road tile from its
+  city center reaches a dock beside that center and embarks in one Move.
 - Movement edges need no connection to the capital.
 - The engine's Road-movement capability field is named
   `connectedOrthogonalStepCost2` for historical reasons; the half cost applies
   to orthogonal and diagonal steps and needs no capital connection, as stated
-  above.
+  above. The engine and the public step-cost rule are the same, so previews,
+  offered paths, and reach estimates agree with the engine.
 
 ### 9.3 Road population and land trade
 
@@ -967,8 +986,9 @@ General roster rules:
 ### 12.1 Movement
 
 - Movement is eight-way; Chebyshev distance defines adjacency, range, sight,
-  and ZOC. A Move has `2 * Move` half-points; an ordinary step costs 2 and a
-  usable Road edge costs 1.
+  and ZOC. A Move has `2 * Move` half-points; a step costs 1 when the tile
+  being left is a usable Road node and 2 otherwise
+  ([section 9.2](#92-road-movement)).
 - A Move ends on entering an unexplored cell, a Forest (unless a Road edge or
   Fieldcraft freedom for the `RAIDER` and `MARKSMAN` roles: Raider and
   Marksman, Ghoul and Banshee, Wolf Rider and Bomb Chucker), a Mountain
@@ -976,9 +996,43 @@ General roster rules:
   or a cell in hostile ZOC. A path that continues past such a stop is illegal.
 - Land units need Engineering to enter Mountain and cannot enter water except
   by embarking.
-- Cells with a visible unit are blocked; a hidden occupant or newly seen ZOC
-  interrupts the Move at the prior cell instead.
+- **Occupancy and friendly pass-through** (revision 18). A unit never ends a
+  Move on an occupied tile. A step that holds a visible unit of another
+  player, allied or hostile, is illegal (`OCCUPIED`) anywhere in the path. An
+  intermediate step that holds one of the mover's **own** units (land,
+  embarked, or naval) is entered as if it were empty: same cost, same entry
+  requirements, same sight reveal, and the same stop rules, so an own unit
+  standing where the Move would have to stop (a roadless Forest or Mountain
+  without the exceptions above, hostile ZOC, or an unexplored cell) cannot be
+  passed, and own units never cancel hostile ZOC. A passed tile counts in the
+  path length (Charge, the embarked landing budget). This holds on land, on
+  water, and for embarked units, including a boat passing a dock that holds
+  an own unit and a land unit passing its own garrisoned city center, and for
+  the Raider's escape Move. It applies to `MOVE` only: Push, the advance,
+  Overrun and Ram, reward-unit displacement, embarking (the dock must be
+  empty), and `DISEMBARK` still need an empty cell, and passing a tile never
+  captures, besieges, blockades, blocks training, takes treasure, destroys
+  Field Defense, or raises or devours a Grave. Allied units are not own
+  units: allies share no exploration, so only the mover's own units, which
+  its owner always sees, can be passed.
+- **Interrupted Moves.** A hidden occupant on the next step (`OCCUPIED`),
+  impassable terrain that was unexplored before the command
+  (`ENGINEERING_REQUIRED`), or hostile ZOC first seen during the Move (`ZOC`)
+  interrupts the Move, which is still accepted. The mover stands on the last
+  tile it entered; if that tile holds an own unit, it ends on the last tile
+  of the entered path that holds no unit, or on its starting tile if there
+  is none. `UNIT_MOVED.path` is the entered path cut to that tile (omitted
+  when the mover stays on its starting tile), `movedPathLength` is its
+  length, `activation.moved` is true, and `UNIT_MOVE_INTERRUPTED.at` (the
+  tile that could not be entered, or where the new ZOC was met) may be more
+  than one cell from the final tile. Every tile revealed up to the
+  interruption stays explored.
 - Allied AI units cannot enter each other's territory.
+- The public movement query offers exactly the legal destinations it can
+  know: it expands through the viewer's own units, never returns an occupied
+  tile, keeps the cheapest path to each destination, and every offered `MOVE`
+  is accepted. When a viewer estimates the reach of a visible unit of another
+  seat, that unit passes through the visible units of its own owner only.
 - **ZOC:** a hostile land unit projects ZOC onto adjacent land cells. A naval
   unit projects it onto adjacent water it could enter. A land unit projects
   onto adjacent water only against an afloat unit it could attack at range 1.
@@ -1152,11 +1206,17 @@ units on the tile receive none. There is no other city-center defense bonus.
 
 - **Water movement:** only naval and embarked units enter water. Shallow Water
   needs Shorecraft (via embarking or training), Deep Water needs Navigation.
-  Every water step costs a full movement point. Patrol Boats, Battleships, and
-  embarked units all have Move 2.
+  Every step that leaves a water tile costs a full movement point. Patrol
+  Boats, Battleships, and embarked units all have Move 2. A naval or embarked
+  unit passes through its owner's boats and transports and cannot end on one
+  ([section 12.1](#121-movement)); pass-through adds no landing cell, it only
+  widens where a two-cell water Move can end.
 - **Embarking:** a land unit embarks by ending a Move on an own active, empty
-  Port or Shipyard (Shorecraft). It keeps its identity, HP, kills, and home
-  city and is exhausted for the turn.
+  Port or Shipyard (Shorecraft); a dock that holds any unit, own or not,
+  cannot be embarked on (`OCCUPIED`). The embark step costs half when the
+  tile left is a usable Road node ([section 9.2](#92-road-movement)). The
+  unit keeps its identity, HP, kills, and home city and is exhausted for the
+  turn.
 - **Disembarking:** on a later turn an embarked unit may move through water,
   then `DISEMBARK` onto an adjacent (Chebyshev 1) empty land cell it can enter
   (Mountain needs Engineering; no allied territory). Landing costs one of the
@@ -1326,9 +1386,20 @@ units on the tile receive none. There is no other city-center defense bonus.
   their centers and approach tiles for its capturers, and commits a combined
   attack when this turn's offered attacks kill the center's defender next to a
   ready capturer (`src/ai/v7-endgame.ts`).
+- **Movement estimates** (revision 18). Normal moves only through offered
+  commands, so it uses pass-through and the Road half cost by origin as they
+  are offered. Its private route estimates follow the same rules from public
+  information: the replacement-defender search passes own units and never
+  ends on one; the threat reach of a visible unit of another seat passes that
+  seat's own visible units, stops at every other unit, and pays half for a
+  step that leaves a Road node usable by that seat; the endgame route field
+  of a land unit with Move 2 or more crosses the viewer's own units, while a
+  Move-1 unit, which cannot pay for a second step, keeps the field in which
+  every unit is a wall.
 - One city action is compared across land training, every dock, and Land
   Grant. Roads are built only along one corridor of at most eight missing tiles
-  from the original capital to a chosen city.
+  from the original capital to a chosen city; the corridor still includes the
+  city's last tile, which Road population needs although movement does not.
 - Each owner turn is capped at 128 accepted commands and scheduled through
   bounded, resumable work units; elapsed time never affects decisions.
 - Details: [Greedy Normal AI](../architecture/NORMAL_AI.md),
@@ -1874,6 +1945,7 @@ Every death is credited to at most one player:
 | 17       | `pulp-wars-poc-7r17` | Goblin faction: roster, Warrens, Gang Up, Kaboom, death blasts and chains, friendly-fire bombs, Plunder, WAAAGH!, Troll regeneration; `END_TURN` blockade events   | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)               |
 | 17       | `pulp-wars-poc-7r17` | `pulp_wars-0ao.7` tuning: one starting Goblin; Goblin Attack 1.5, Defense 0.5, Kaboom 5; death blasts 2/4/4; Goblin-only Normal AI changes                         | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)               |
 | 17 (fix) | `pulp-wars-poc-7r17` | `pulp_wars-0ao.15`: landing ends the activation for every faction (no Attack, Kaboom, Move, or Disband after landing)                                              | [revision 16](RULESET_7_REVISION_16.md)                       |
+| 18       | `pulp-wars-poc-7r18` | Movement (`pulp_wars-6gd.2`): a Move passes through the mover's own units and never ends on one; the Road half cost depends only on the tile being left            | [revision 18](RULESET_7_REVISION_18.md)                       |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -1950,8 +2022,11 @@ no cure for Plague or Bitten, and their Help and status sentences say so.
 
 ## 20. Known discrepancies
 
-No discrepancy is open: as of revision 17 (`pulp-wars-poc-7r17`) the rules in
-this document match the code.
+No discrepancy is open: as of revision 18 (`pulp-wars-poc-7r18`) the rules in
+this document match the code. The Showcase setup of the
+[revision-18 overlay](RULESET_7_REVISION_18.md) (its section 5) is specified
+but not implemented or folded yet (`pulp_wars-6gd.3`); until then a
+`SHOWCASE` setup is `INVALID_SETUP`.
 
 The revision 13–17 overlays keep superseded values (for example the
 Lich's Attack 2.5 and 20-HP Zombie in revision 13, unlimited Plague in

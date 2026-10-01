@@ -194,10 +194,23 @@ describe("ruleset-7 public movement bounds", () => {
     expect(
       movementStepCost2V7(cut, human, { x: 2, y: 2 }, { x: 3, y: 2 }),
     ).toBe(1);
+    // Revision 18: the step leaving the own city center still costs 1, the
+    // step leaving the now roadless (1, 1) costs 2, and the step leaving the
+    // Road tile (2, 2) costs 1 (revision 17 charged 2 + 2 + 1).
+    expect(
+      movementStepCost2V7(cut, human, { x: 0, y: 0 }, { x: 1, y: 1 }),
+    ).toBe(1);
+    expect(
+      movementStepCost2V7(cut, human, { x: 1, y: 1 }, { x: 2, y: 2 }),
+    ).toBe(2);
     const cutView = viewForV7(cut, human.id);
     expect(
       validatePlayerMovementPathV7(cutView, publicMover, path),
-    ).toMatchObject({ legal: false, reason: "BUDGET_EXCEEDED" });
+    ).toMatchObject({ legal: true, spentPoints2: 4 });
+    expect(validateMovementPathV7(cut, mover, path)).toMatchObject({
+      legal: true,
+      spentPoints2: 4,
+    });
   });
 
   it("routes connected Roads through owned cities and drops the bridge on capture", () => {
@@ -326,9 +339,15 @@ describe("ruleset-7 public movement bounds", () => {
     const capturedMover = capturedView.units.find(
       (unit) => unit.id === mover.id,
     )!;
+    // Revision 18: only the step leaving the captured center loses the half
+    // cost (1 + 1 + 2; revision 17 charged 1 + 2 + 2 and exceeded the budget).
     expect(
       validatePlayerMovementPathV7(capturedView, capturedMover, path),
-    ).toMatchObject({ legal: false });
+    ).toMatchObject({ legal: true, spentPoints2: 4 });
+    expect(validateMovementPathV7(captured, mover, path)).toMatchObject({
+      legal: true,
+      spentPoints2: 4,
+    });
     const onRoad = (source: typeof view) => ({
       ...source,
       units: source.units.map((unit) =>

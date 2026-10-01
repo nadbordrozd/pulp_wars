@@ -58,11 +58,27 @@ export interface ReachablePathV7 {
   readonly spentPoints2: number;
 }
 
-/** Validates ordinary movement. */
+/**
+ * Validates ordinary movement. A Move passes through tiles held by the
+ * mover's own units as if they were empty, but never ends on one.
+ */
 export function validateMovementPathV7(
   state: GameStateV7,
   unit: UnitStateV7,
   path: readonly CoordV7[],
+): MovementPathResultV7 {
+  return validateMovementPathWithOptionsV7(state, unit, path, false);
+}
+
+/**
+ * `passThroughProbe` treats the last step as an intermediate one for
+ * occupancy only, so an enumeration can extend a path across an own unit.
+ */
+function validateMovementPathWithOptionsV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+  path: readonly CoordV7[],
+  passThroughProbe: boolean,
 ): MovementPathResultV7 {
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const player = requirePlayer(state, unit.ownerId);
@@ -77,6 +93,9 @@ export function validateMovementPathV7(
   const revealed: CoordV7[] = [];
   const traversedPath: CoordV7[] = [];
   let current = unit.at;
+  // Whether the tile being left is a usable Road node for the owner: it
+  // alone decides the step cost (revision 18, section 4.1).
+  let currentRoadNode = isUsableRoadNodeV7(state, player, current);
   let spentPoints2 = 0;
 
   for (let index = 0; index < path.length; index += 1) {
@@ -88,9 +107,7 @@ export function validateMovementPathV7(
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
     const wasExplored = contains(explored, step);
     const wasKnownBeforeCommand = contains(knownBeforeCommand, step);
-    spentPoints2 += wasExplored
-      ? movementStepCost2V7(state, player, current, step)
-      : 2;
+    spentPoints2 += currentRoadNode ? 1 : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     const owner = tileOwner(state, tile);
@@ -102,7 +119,11 @@ export function validateMovementPathV7(
         candidate.hp > 0 &&
         same(candidate.at, step),
     );
-    const occupied = occupant !== undefined;
+    const passesOwnUnit =
+      occupant !== undefined &&
+      occupant.ownerId === unit.ownerId &&
+      (passThroughProbe || index < path.length - 1);
+    const occupied = occupant !== undefined && !passesOwnUnit;
     const water =
       tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER";
     const autoEmbark =
@@ -130,27 +151,20 @@ export function validateMovementPathV7(
       if (occupantVisible || (engineeringRequired && wasKnownBeforeCommand))
         return {
           legal: false,
-          reason: occupied
-            ? "OCCUPIED"
-            : tile.terrain === "MOUNTAIN"
-              ? "ENGINEERING_REQUIRED"
-              : "ENGINEERING_REQUIRED",
+          reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
         };
+      const entered = lastFreeEnteredPath(state, unit, traversedPath);
       return {
         legal: true,
-        destination: current,
-        traversedPath,
+        destination: entered.at(-1) ?? unit.at,
+        traversedPath: entered,
         spentPoints2,
         stopped: true,
         explored,
         revealed: unique(revealed),
         interruption: {
           at: step,
-          reason: occupied
-            ? "OCCUPIED"
-            : tile.terrain === "MOUNTAIN"
-              ? "ENGINEERING_REQUIRED"
-              : "ENGINEERING_REQUIRED",
+          reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
         },
       };
     }
@@ -171,25 +185,30 @@ export function validateMovementPathV7(
     const newlyEncounteredZoc =
       entersZoc &&
       !inHostileZoc(state, { ...unit, at: step }, step, knownBeforeCommand);
+    // The stop is waived only on a Road edge: both ends usable Road nodes.
+    const stepRoadNode = isUsableRoadNodeV7(state, player, step);
     const terrainStops =
-      !isUsableRoadEdgeV7(state, player, current, step) &&
+      !(currentRoadNode && stepRoadNode) &&
       (tile.terrain === "MOUNTAIN" ||
         (tile.terrain === "FOREST" && !ignoresForest));
     const stops = !wasExplored || terrainStops || entersZoc;
     traversedPath.push(step);
     current = step;
+    currentRoadNode = stepRoadNode;
     if (stops && index < path.length - 1) {
-      if (newlyEncounteredZoc)
+      if (newlyEncounteredZoc) {
+        const entered = lastFreeEnteredPath(state, unit, traversedPath);
         return {
           legal: true,
-          destination: current,
-          traversedPath,
+          destination: entered.at(-1) ?? unit.at,
+          traversedPath: entered,
           spentPoints2,
           stopped: true,
           explored,
           revealed: unique(revealed),
           interruption: { at: step, reason: "ZOC" },
         };
+      }
       return {
         legal: false,
         reason: !wasExplored
@@ -242,7 +261,12 @@ export function reachableMovementPathsV7(
     const current = path.at(-1) ?? unit.at;
     for (const destination of adjacent(state, current)) {
       const candidate = [...path, destination];
-      const validation = validateMovementPathV7(state, unit, candidate);
+      const validation = validateMovementPathWithOptionsV7(
+        state,
+        unit,
+        candidate,
+        true,
+      );
       if (
         !validation.legal ||
         validation.traversedPath.length !== candidate.length
@@ -251,12 +275,23 @@ export function reachableMovementPathsV7(
       const destinationKey = key(validation.destination);
       const prior = best.get(destinationKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
+      // An own-occupied tile is never a destination; it is only passed, and
+      // only when the Move would not have to stop on it.
+      const ownOccupied = state.units.some(
+        (other) =>
+          other.id !== unit.id &&
+          other.hp > 0 &&
+          other.ownerId === unit.ownerId &&
+          same(other.at, destination),
+      );
+      if (ownOccupied && validation.stopped) continue;
       best.set(destinationKey, validation.spentPoints2);
-      results.set(destinationKey, {
-        destination: validation.destination,
-        path: candidate,
-        spentPoints2: validation.spentPoints2,
-      });
+      if (!ownOccupied)
+        results.set(destinationKey, {
+          destination: validation.destination,
+          path: candidate,
+          spentPoints2: validation.spentPoints2,
+        });
       if (!validation.stopped) queue.push(candidate);
     }
   }
@@ -285,6 +320,7 @@ export function reachablePlayerMovementPathsV7(
         unit,
         candidate,
         context,
+        true,
       );
       if (
         !validation.legal ||
@@ -294,12 +330,20 @@ export function reachablePlayerMovementPathsV7(
       const destinationKey = key(validation.destination);
       const prior = best.get(destinationKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
+      // An own-occupied tile is never a destination; it is only passed, and
+      // only when the Move would not have to stop on it.
+      const ownOccupied =
+        context.unitsByPosition
+          .get(destinationKey)
+          ?.some((other) => other.id !== unit.id) === true;
+      if (ownOccupied && validation.stopped) continue;
       best.set(destinationKey, validation.spentPoints2);
-      results.set(destinationKey, {
-        destination: validation.destination,
-        path: candidate,
-        spentPoints2: validation.spentPoints2,
-      });
+      if (!ownOccupied)
+        results.set(destinationKey, {
+          destination: validation.destination,
+          path: candidate,
+          spentPoints2: validation.spentPoints2,
+        });
       if (!validation.stopped) queue.push(candidate);
     }
   }
@@ -318,6 +362,27 @@ export function validatePlayerMovementPathV7(
     unit,
     path,
     publicMovementContextV7(view),
+    false,
+  );
+}
+
+/**
+ * Route-search form of `validatePlayerMovementPathV7`: an own unit on the
+ * last step is passed instead of rejected, so a private search can extend a
+ * path across it. Such a path is never a legal `MOVE` by itself; the caller
+ * must not treat an own-occupied tile as an end tile.
+ */
+export function validatePlayerMovementPassagePathV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  path: readonly CoordV7[],
+): MovementPathResultV7 {
+  return validatePlayerMovementPathWithContextV7(
+    view,
+    unit,
+    path,
+    publicMovementContextV7(view),
+    true,
   );
 }
 
@@ -366,12 +431,18 @@ function validatePlayerMovementPathWithContextV7(
   unit: PublicUnitV7,
   path: readonly CoordV7[],
   context: PublicMovementContextV7,
+  passThroughProbe: boolean,
 ): MovementPathResultV7 {
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const role = unitRoleRuleV7(view, unit);
   const capabilities = context.capabilities;
   const budget2 = (unit.form === "EMBARKED" ? EMBARKED_MOVE_V7 : role.move) * 2;
   let current = unit.at;
+  let currentRoadNode = isUsablePublicRoadNodeV7(
+    view,
+    publicTileAt(view, current),
+    context,
+  );
   let spentPoints2 = 0;
   const traversedPath: CoordV7[] = [];
   for (let index = 0; index < path.length; index += 1) {
@@ -403,15 +474,21 @@ function validatePlayerMovementPathWithContextV7(
       )
         return { legal: false, reason: "ENGINEERING_REQUIRED" };
     }
-    spentPoints2 += publicStepCost2(view, current, tile, context);
+    spentPoints2 += currentRoadNode ? 1 : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
       return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
+    // Only the mover's own visible units can be passed, and never ended on.
+    const passesOwnUnits = passThroughProbe || index < path.length - 1;
     if (
       context.unitsByPosition
         .get(key(step))
-        ?.some((candidate) => candidate.id !== unit.id)
+        ?.some(
+          (candidate) =>
+            candidate.id !== unit.id &&
+            !(passesOwnUnits && candidate.ownerId === unit.ownerId),
+        )
     )
       return { legal: false, reason: "OCCUPIED" };
     if (
@@ -430,14 +507,16 @@ function validatePlayerMovementPathWithContextV7(
       unit.role,
     );
     const entersZoc = publicHostileZoc(view, unit, step, context);
+    const stepRoadNode = isUsablePublicRoadNodeV7(view, tile, context);
     const terrainStops =
       tile.explored &&
-      !isUsablePublicRoadEdgeV7(view, current, tile, context) &&
+      !(currentRoadNode && stepRoadNode) &&
       (tile.terrain === "MOUNTAIN" ||
         (tile.terrain === "FOREST" && !ignoresForest));
     const stops = !tile.explored || terrainStops || entersZoc;
     traversedPath.push(step);
     current = step;
+    currentRoadNode = stepRoadNode;
     if (stops && index < path.length - 1)
       return {
         legal: false,
@@ -473,44 +552,45 @@ function validatePlayerMovementPathWithContextV7(
   };
 }
 
+/**
+ * A step costs half when the tile being left is a usable Road node for the
+ * mover's owner; the tile being entered does not matter.
+ */
 export function movementStepCost2V7(
   state: Pick<GameStateV7, "board" | "cities">,
   player: PlayerStateV7,
   from: CoordV7,
   to: CoordV7,
 ): 1 | 2 {
-  if (!player.researchedTechs.includes("ROADS") || chebyshev(from, to) !== 1)
-    return 2;
-  const fromTile = tileAtV7(state.board, from);
-  const toTile = tileAtV7(state.board, to);
-  if (fromTile === undefined || toTile === undefined) return 2;
-  if (fromTile.biome === null || toTile.biome === null) return 2;
-  const fromOwner = tileOwner(state, fromTile);
-  const toOwner = tileOwner(state, toTile);
-  const fromRoad =
-    fromTile.road && (fromOwner === null || fromOwner === player.id);
-  const toRoad = toTile.road && (toOwner === null || toOwner === player.id);
-  const fromCity = ownedCity(state, player.id, from);
-  const toCity = ownedCity(state, player.id, to);
-  return (fromRoad || fromCity) && (toRoad || toCity) ? 1 : 2;
+  if (chebyshev(from, to) !== 1) return 2;
+  return isUsableRoadNodeV7(state, player, from) ? 1 : 2;
 }
 
-function isUsableRoadEdgeV7(
+function isUsableRoadNodeV7(
   state: Pick<GameStateV7, "board" | "cities">,
   player: PlayerStateV7,
-  from: CoordV7,
-  to: CoordV7,
+  at: CoordV7,
 ): boolean {
-  return movementStepCost2V7(state, player, from, to) === 1;
+  if (!player.researchedTechs.includes("ROADS")) return false;
+  const tile = tileAtV7(state.board, at);
+  if (tile === undefined || tile.biome === null) return false;
+  if (ownedCity(state, player.id, at)) return true;
+  const owner = tileOwner(state, tile);
+  return tile.road && (owner === null || owner === player.id);
 }
 
-function isUsablePublicRoadEdgeV7(
+function isUsablePublicRoadNodeV7(
   view: PlayerViewV7,
-  from: CoordV7,
-  to: PlayerTileViewV7,
+  tile: PlayerTileViewV7 | undefined,
   context: PublicMovementContextV7,
 ): boolean {
-  return publicStepCost2(view, from, to, context) === 1;
+  if (!view.viewer.researchedTechs.includes("ROADS")) return false;
+  if (tile?.explored !== true || tile.biome === null) return false;
+  if (context.ownedCityKeys.has(key(tile.at))) return true;
+  return (
+    tile.road &&
+    (tile.territoryOwnerId === null || tile.territoryOwnerId === view.viewer.id)
+  );
 }
 
 export function unitSightRadiusAtV7(
@@ -715,29 +795,26 @@ function publicProjectsZocV7(
     rule.range >= 1
   );
 }
-function publicStepCost2(
-  view: PlayerViewV7,
-  from: CoordV7,
-  to: PlayerTileViewV7,
-  context = publicMovementContextV7(view),
-): 1 | 2 {
-  if (
-    !view.viewer.researchedTechs.includes("ROADS") ||
-    chebyshev(from, to.at) !== 1
-  )
-    return 2;
-  const fromTile = publicTileAt(view, from);
-  if (fromTile?.explored !== true || to.explored !== true) return 2;
-  const fromRoad =
-    fromTile.road &&
-    (fromTile.territoryOwnerId === null ||
-      fromTile.territoryOwnerId === view.viewer.id);
-  const toRoad =
-    to.road &&
-    (to.territoryOwnerId === null || to.territoryOwnerId === view.viewer.id);
-  const fromCity = context.ownedCityKeys.has(key(fromTile.at));
-  const toCity = context.ownedCityKeys.has(key(to.at));
-  return (fromRoad || fromCity) && (toRoad || toCity) ? 1 : 2;
+/**
+ * The entered path cut back to its last tile that holds no other unit. An
+ * interrupted Move never leaves the mover on a tile it was only passing.
+ */
+function lastFreeEnteredPath(
+  state: Pick<GameStateV7, "units">,
+  unit: UnitStateV7,
+  entered: readonly CoordV7[],
+): readonly CoordV7[] {
+  for (let length = entered.length; length > 0; length -= 1) {
+    const at = entered[length - 1];
+    if (
+      at !== undefined &&
+      !state.units.some(
+        (other) => other.id !== unit.id && other.hp > 0 && same(other.at, at),
+      )
+    )
+      return entered.slice(0, length);
+  }
+  return [];
 }
 
 function tileOwner(

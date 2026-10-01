@@ -3,11 +3,12 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r17`. Role facts resolve through the owner's
+previews under `pulp-wars-poc-7r18`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
-duration valuation, the endgame siege mode (`pulp_wars-1mc`), and the
-revision-17 Goblin play (`pulp_wars-0ao.6`) are summarized below.
+duration valuation, the endgame siege mode (`pulp_wars-1mc`), the
+revision-17 Goblin play (`pulp_wars-0ao.6`), and the revision-18 movement
+estimates (`pulp_wars-6gd.2`) are summarized below.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
@@ -307,10 +308,12 @@ on for a viewer when
   own land unit (expansion comes first; a village only reachable by sea, or
   one a unit already stands on, does not hold the endgame back).
 
-The targets are that seat's visible cities. The plan holds one breadth-first
+The targets are that seat's visible cities. The plan holds a breadth-first
 route field: steps from each explored, enterable, unoccupied land tile to the
 nearest target center, with every occupied tile a wall (Mountains need
-Engineering). If a target seat's city has never been explored and every
+Engineering). Revision 18 adds a second field for land units with Move 2 or
+more, in which the viewer's own units are passable
+([below](#revision-18-movement-estimates-pulp_wars-6gd2)). If a target seat's city has never been explored and every
 living hostile seat is a target, the field's sources are the unexplored
 tiles within two of that seat's explored territory (the city is there), or
 the unexplored map edge when none is known. Everything below is gated on the
@@ -517,6 +520,44 @@ Against Goblins (every seat in such a match):
   be worth it (for a hostile unit that could Kaboom the same units on its own
   turn, blast chip damage alone is no extra cost and killed own units count
   once).
+
+## Revision-18 movement estimates (`pulp_wars-6gd.2`)
+
+Revision 18 lets a Move pass through the mover's own units (never ending on
+one) and charges half for a step that leaves a usable Road node, whatever
+tile it enters
+([current rules §9.2](../product/RULESET_7_CURRENT.md#92-road-movement) and
+[§12.1](../product/RULESET_7_CURRENT.md#121-movement)). Normal moves only
+through offered commands, so it uses both rules without a new heuristic. Its
+private estimates were brought in line, from public information only and
+with no PRNG use, elapsed-time input, or new work-unit kind:
+
+- **Replacement defender** (`hasReplacementPathWorkV7`). The path search uses
+  the public validator's route form (`validatePlayerMovementPassagePathV7`):
+  an own-occupied tile is expanded when the Move would not stop on it and is
+  never accepted as the replacement's end tile.
+- **Threat reach** (`publicThreatenedTilesWorkV7`). A visible unit of another
+  seat passes the visible units of its own owner and no other unit's, cannot
+  end on any unit, and cannot pass an own unit on a tile where it would stop
+  (a roadless Forest or Mountain, or hostile zone of control). A step costs
+  half when the tile left is a Road node for that unit's owner; the Forest
+  and Mountain stop is waived only when both ends are such nodes.
+- **Endgame route fields** (`src/ai/v7-endgame.ts`). A land unit with Move 2
+  or more reads `passRouteDistanceByKey`, in which the viewer's own units are
+  passable; no offered Move ends on one, so they are never end tiles. A
+  Move-1 unit spends its whole budget on one roadless step and can never
+  pass a unit, so it keeps `routeDistanceByKey`, in which every unit is a
+  wall; this keeps the `pulp_wars-1mc` routing of a capturer around its own
+  siege line. Another seat's units are walls in both fields. Training and
+  landing read the walls field.
+- **Road corridor.** Unchanged: it still builds every missing tile to the
+  chosen city, because Road population needs the last tile although movement
+  no longer does.
+
+The public-planning benchmarks were rechecked: the two captured late views
+offer more Moves (operations 66,220 → 66,235 and 94,408 → 94,442), and the
+public validator now derives the Road-node fact of each tile once per step,
+so the captured view's tile reads stay under the 6,000 bound.
 
 ## Revision-8 merged industry and processor adjacency
 

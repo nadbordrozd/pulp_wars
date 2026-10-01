@@ -1708,7 +1708,11 @@ describe("ruleset-7 Goblin Kaboom threat reach", () => {
       tiles.some((tile) => sameV7(tile, where));
     for (const unit of [goblin, cart]) {
       const tiles = queryThreatenedTilesV7(state, unit.id, viewer);
-      expect(has(tiles, at(4, 2))).toBe(false);
+      // Revision 18: the Rocket Cart sails through the Goblin's transport to
+      // (0, 0) or (1, 0), so its ordinary range-3 envelope now holds (4, 2);
+      // (5, 5) stays out of every envelope.
+      expect(has(tiles, at(4, 2))).toBe(unit === cart);
+      expect(has(tiles, at(5, 5))).toBe(false);
       // The public query covers the Normal AI's reach model.
       for (const where of publicThreatenedTilesForPolicyV7(
         view,

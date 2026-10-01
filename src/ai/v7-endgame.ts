@@ -32,9 +32,17 @@ export interface EndgamePlanV7 {
    * Steps from each explored, enterable, unoccupied land tile to the nearest
    * target center over such tiles (8-way). Occupied tiles are walls, so a
    * unit routes around a line of its own Catapults instead of stopping at
-   * the Chebyshev minimum behind it.
+   * the Chebyshev minimum behind it. This is the field of a Move-1 unit,
+   * which can never pass a unit: every step costs its whole budget.
    */
   readonly routeDistanceByKey: ReadonlyMap<string, number>;
+  /**
+   * Revision 18: the same field for a land unit with Move 2 or more, which
+   * passes through the viewer's own units. Own-occupied tiles are part of
+   * the field (passable) but are never end tiles: no offered Move ends on
+   * one. Tiles held by another seat's units stay walls.
+   */
+  readonly passRouteDistanceByKey: ReadonlyMap<string, number>;
 }
 
 const key = (at: CoordV7) => `${at.y},${at.x}`;
@@ -134,7 +142,8 @@ export function endgamePlanForPolicyV7(
   return {
     targets,
     targetCityIds: new Set(targets.map((city) => city.id)),
-    routeDistanceByKey: routeDistances(view, sources),
+    routeDistanceByKey: routeDistances(view, sources, false),
+    passRouteDistanceByKey: routeDistances(view, sources, true),
   };
 }
 
@@ -187,9 +196,14 @@ function landReachableKeys(
 function routeDistances(
   view: PlayerViewV7,
   sources: readonly CoordV7[],
+  passesOwnUnits: boolean,
 ): ReadonlyMap<string, number> {
   const { width, height } = view.board;
-  const occupied = new Set(view.units.map((unit) => key(unit.at)));
+  const occupied = new Set(
+    view.units
+      .filter((unit) => !passesOwnUnits || unit.ownerId !== view.viewer.id)
+      .map((unit) => key(unit.at)),
+  );
   const distances = new Map<string, number>();
   const queue: CoordV7[] = [];
   for (const at of sources) {
@@ -224,14 +238,20 @@ function routeDistances(
 
 /**
  * Route distance from `at` to the nearest target center. An occupied tile
- * (the unit's own) is one step more than its best free neighbour.
+ * outside the field (the unit's own) is one step more than its best
+ * neighbour in the field. `passesOwnUnits` selects the revision-18 field of
+ * a unit that can pass through the viewer's own units.
  */
 export function endgameRouteDistanceV7(
   plan: EndgamePlanV7,
   view: PlayerViewV7,
   at: CoordV7,
+  passesOwnUnits = false,
 ): number {
-  const direct = plan.routeDistanceByKey.get(key(at));
+  const field = passesOwnUnits
+    ? plan.passRouteDistanceByKey
+    : plan.routeDistanceByKey;
+  const direct = field.get(key(at));
   if (direct !== undefined) return direct;
   let best = Number.POSITIVE_INFINITY;
   for (let dy = -1; dy <= 1; dy += 1)
@@ -241,7 +261,7 @@ export function endgameRouteDistanceV7(
       const y = at.y + dy;
       if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
         continue;
-      const value = plan.routeDistanceByKey.get(key({ x, y }));
+      const value = field.get(key({ x, y }));
       if (value !== undefined) best = Math.min(best, value + 1);
     }
   return best;

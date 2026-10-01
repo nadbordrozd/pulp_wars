@@ -13,7 +13,7 @@ import {
 import type { CommandV7 } from "../engine/v7/commands";
 import { marketCoinsV7 } from "../engine/v7/economy";
 import type { CombatPreviewV7 } from "../engine/v7/events";
-import { validatePlayerMovementPathV7 } from "../engine/v7/movement";
+import { validatePlayerMovementPassagePathV7 } from "../engine/v7/movement";
 import {
   createPublicCommandWorkV7,
   createPublicPlanningWorkV7,
@@ -1341,6 +1341,15 @@ function* hasReplacementPathWorkV7(
       unitRoleRuleV7(view, unit).defense2 < 4
     )
       continue;
+    // Revision 18: the replacement may pass through own units but cannot end
+    // on one, so an own-occupied tile is expanded and never accepted.
+    const ownOccupied = new Set(
+      view.units.flatMap((other) =>
+        other.id !== unit.id && other.hp > 0 && other.ownerId === unit.ownerId
+          ? [coordKey(other.at)]
+          : [],
+      ),
+    );
     const queue: CoordV7[][] = [[]];
     const best = new Map([[coordKey(unit.at), 0]]);
     for (let cursor = 0; cursor < queue.length; cursor += 1) {
@@ -1349,7 +1358,11 @@ function* hasReplacementPathWorkV7(
       const current = path.at(-1) ?? unit.at;
       for (const next of neighbors8V7(view, current)) {
         const candidate = [...path, next];
-        const validation = validatePlayerMovementPathV7(view, unit, candidate);
+        const validation = validatePlayerMovementPassagePathV7(
+          view,
+          unit,
+          candidate,
+        );
         if (pathWork !== undefined) pathWork.replacementPathValidations += 1;
         yield;
         if (
@@ -1362,7 +1375,9 @@ function* hasReplacementPathWorkV7(
           (best.get(key) ?? Number.POSITIVE_INFINITY) <= validation.spentPoints2
         )
           continue;
-        if (same(next, target)) return true;
+        const passedOnly = ownOccupied.has(key);
+        if (passedOnly && validation.stopped) continue;
+        if (!passedOnly && same(next, target)) return true;
         best.set(key, validation.spentPoints2);
         if (!validation.stopped) queue.push(candidate);
       }
@@ -2236,26 +2251,29 @@ function* publicThreatenedTilesWorkV7(
       for (const next of neighbors8V7(view, current.at)) {
         const tile = tileAtPublicV7(view, next);
         if (!publicMovementTilePossible(view, unit, tile, lookup)) continue;
-        if (
-          (lookup.occupantsByKey.get(coordKey(tile.at)) ?? []).some(
-            (occupant) => occupant.id !== unit.id && same(occupant.at, tile.at),
-          )
-        )
+        // Revision 18: a unit passes through the visible units of its own
+        // owner, never another seat's, and cannot end on any unit.
+        const occupants = (
+          lookup.occupantsByKey.get(coordKey(tile.at)) ?? []
+        ).filter(
+          (occupant) => occupant.id !== unit.id && same(occupant.at, tile.at),
+        );
+        if (occupants.some((occupant) => occupant.ownerId !== unit.ownerId))
           continue;
-        const roadStep =
-          unit.form === "LAND" &&
-          priorRoadNode &&
-          publicRoadNodeForOwner(tile, unit.ownerId, lookup);
-        const spent2 = current.spent2 + (roadStep ? 1 : 2);
+        const passedOnly = occupants.length > 0;
+        // Revision 18: leaving a usable Road node costs half; the Forest and
+        // Mountain stop is still waived only when both ends are Road nodes.
+        const roadCost = unit.form === "LAND" && priorRoadNode;
+        const roadEdge =
+          roadCost && publicRoadNodeForOwner(tile, unit.ownerId, lookup);
+        const spent2 = current.spent2 + (roadCost ? 1 : 2);
         if (spent2 > facts.move * 2) continue;
         const key = coordKey(tile.at);
         if ((best.get(key) ?? Number.POSITIVE_INFINITY) <= spent2) continue;
-        best.set(key, spent2);
-        origins.set(key, tile.at);
         const terrainStop =
           unit.form === "LAND" &&
           tile.explored &&
-          !roadStep &&
+          !roadEdge &&
           (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
         const hostileZoc = neighbors8V7(view, tile.at).some((adjacent) =>
           (lookup.occupantsByKey.get(coordKey(adjacent)) ?? []).some(
@@ -2268,7 +2286,11 @@ function* publicThreatenedTilesWorkV7(
               publicProjectsZocForThreatV7(view, occupant, unit, tile),
           ),
         );
-        if (!terrainStop && !hostileZoc) queue.push({ at: tile.at, spent2 });
+        const stops = terrainStop || hostileZoc;
+        if (passedOnly && stops) continue;
+        best.set(key, spent2);
+        if (!passedOnly) origins.set(key, tile.at);
+        if (!stops) queue.push({ at: tile.at, spent2 });
       }
       yield;
     }
@@ -5001,6 +5023,16 @@ const ENDGAME_CAPTURER_TARGET_V7 = 4;
 const ENDGAME_SIEGE_TARGET_V7 = 3;
 const ENDGAME_TRAINING_BIAS_V7 = 16;
 
+/**
+ * Revision 18: a land unit with Move 2 or more can pass through the viewer's
+ * own units, so its endgame route crosses their tiles. A Move-1 unit spends
+ * its whole budget on one roadless step and keeps the field in which every
+ * unit is a wall.
+ */
+function passesOwnUnitsV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
+  return unit.form === "LAND" && unitRoleRuleV7(view, unit).move >= 2;
+}
+
 /** Own units matching `wanted` that can route to an endgame target. */
 function endgameRoutedUnitsV7(
   context: PolicyContextV7,
@@ -5013,7 +5045,14 @@ function endgameRoutedUnitsV7(
     (unit) =>
       unit.ownerId === view.viewer.id &&
       wanted(unit) &&
-      Number.isFinite(endgameRouteDistanceV7(plan, view, unit.at)),
+      Number.isFinite(
+        endgameRouteDistanceV7(
+          plan,
+          view,
+          unit.at,
+          passesOwnUnitsV7(view, unit),
+        ),
+      ),
   ).length;
 }
 
@@ -5027,7 +5066,14 @@ function endgameCapturersWaitingV7(context: PolicyContextV7): boolean {
       unit.ownerId === view.viewer.id &&
       canCaptureV7(view, unit) &&
       endgameTargetAtV7(plan, unit.at) === undefined &&
-      Number.isFinite(endgameRouteDistanceV7(plan, view, unit.at)),
+      Number.isFinite(
+        endgameRouteDistanceV7(
+          plan,
+          view,
+          unit.at,
+          passesOwnUnitsV7(view, unit),
+        ),
+      ),
   );
 }
 
@@ -5065,15 +5111,21 @@ function endgameCapturerShouldApproachV7(
     !canCaptureV7(context.view, actor)
   )
     return false;
-  const route = endgameRouteDistanceV7(plan, context.view, actor.at);
+  const route = endgameRouteDistanceV7(
+    plan,
+    context.view,
+    actor.at,
+    passesOwnUnitsV7(context.view, actor),
+  );
   return Number.isFinite(route) && route > 1;
 }
 
 /**
  * Endgame movement: a non-capturing unit leaves a target center for a fresh
  * adjacent capturer and does not squat on one near capturers; capturers and
- * siege units close in along public land routes (units are walls) as long
- * as the destination is not in visible lethal reach.
+ * siege units close in along public land routes (units are walls, except
+ * that a Move-2+ unit routes through the viewer's own units) as long as the
+ * destination is not in visible lethal reach.
  */
 function endgameMoveValueV7(
   context: PolicyContextV7,
@@ -5125,7 +5177,10 @@ function endgameMoveValueV7(
   }
   const siege = unitRoleRuleV7(view, actor).tacticalRole === "SIEGE";
   if (!capture && !siege) return unchanged;
-  const next = plan.routeDistanceByKey.get(coordKey(to));
+  const passes = passesOwnUnitsV7(view, actor);
+  const next = (
+    passes ? plan.passRouteDistanceByKey : plan.routeDistanceByKey
+  ).get(coordKey(to));
   if (next === undefined) return unchanged;
   let ring = false;
   if (siege) {
@@ -5140,7 +5195,7 @@ function endgameMoveValueV7(
       return unchanged;
     ring = rangeTo <= 3;
   }
-  const from = endgameRouteDistanceV7(plan, view, actor.at);
+  const from = endgameRouteDistanceV7(plan, view, actor.at, passes);
   const progress = Number.isFinite(from) ? from - next : 1;
   if (progress <= 0 && !ring) return unchanged;
   if (visibleImmediateDamage(view, actor, to, context) >= actor.hp)

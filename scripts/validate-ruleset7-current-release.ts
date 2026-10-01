@@ -21,8 +21,8 @@ const archive = JSON.parse(
 if (archive.rulesetId !== "pulp-wars-poc-7r2")
   throw new Error("Archived revision-2 release corpus identity changed");
 if (
-  RULESET_7_ID !== "pulp-wars-poc-7r17" ||
-  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r17.current" ||
+  RULESET_7_ID !== "pulp-wars-poc-7r18" ||
+  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r18.current" ||
   parseMatchSetupV7({
     rulesetId: RULESET_7_ID,
     seed: 0,
@@ -40,7 +40,7 @@ if (
   FACTION_TREE_IDS_V7.join(",") !==
     "ORIGINAL_BASELINE_V5,UNDEAD_BASELINE_V1,GOBLIN_BASELINE_V1"
 )
-  throw new Error("Current revision-17 release identity is invalid");
+  throw new Error("Current revision-18 release identity is invalid");
 
 const vitest = path.join(root, "node_modules/vitest/vitest.mjs");
 const result = spawnSync(
@@ -69,6 +69,7 @@ const result = spawnSync(
     "tests/unit/ruleset-v7-revision16-naval.test.ts",
     "tests/unit/ruleset-v7-goblin-faction.test.ts",
     "tests/unit/ruleset-v7-goblin-rules.test.ts",
+    "tests/unit/ruleset-v7-revision18.test.ts",
     "tests/unit/ruleset-v7-save.test.ts",
     "tests/unit/persistence-v7.test.ts",
     "tests/integration/ruleset7-biome-browser.test.ts",

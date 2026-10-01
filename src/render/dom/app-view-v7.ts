@@ -172,6 +172,12 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "RESEARCH",
   "CHOOSE_CITY_REWARD",
 ]);
+/** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
+export const OWN_UNIT_PASS_THROUGH_TEXT_V7 =
+  "Units can move through your own units but cannot stop on them.";
+export const ROAD_MOVEMENT_TEXT_V7 =
+  "Leaving a Road tile costs half a move; the tile you move onto needs no Road.";
+
 /** Revision 16 (section 5.4) unit and help text for boats and transports. */
 export const AT_SEA_MOVE_TEXT_V7 = "At sea: Move 2; landing uses 1 of it.";
 
@@ -2335,6 +2341,8 @@ export class Ruleset7DomAppView {
     const undeadViewer = view?.viewer.faction === "UNDEAD";
     for (const tip of [
       "Select a unit, then a highlighted tile to move or attack.",
+      OWN_UNIT_PASS_THROUGH_TEXT_V7,
+      ROAD_MOVEMENT_TEXT_V7,
       "Select your city to train units.",
       "Select a tile in your land to harvest or build.",
       "Spend coins on technology to unlock more. Your first technology is free.",
@@ -4066,7 +4074,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r17",
+    rulesetId: "pulp-wars-poc-7r18",
     seed,
     width: draft.boardSize,
     height: draft.boardSize,
@@ -4181,7 +4189,7 @@ function effectDescription(
     case "ROLE_SIGHT":
       return `${label(effect.role)} sight ${effect.radius}`;
     case "ROAD_MOVEMENT":
-      return "Road edges cost half a movement point";
+      return ROAD_MOVEMENT_TEXT_V7;
     case "OWNED_CITY_CAPACITY_BONUS":
       return `Cities support +${effect.capacity} unit`;
     case "ADJACENT_START_TURN_HEALING":
@@ -4233,7 +4241,7 @@ function navalTechnologyNotesV7(
     return ["Drill identifies resource-free mountains safe to Blast"];
   if (technology === "ROADS")
     return [
-      "Usable Road and owned-city edges cost half movement",
+      "Your city centers count as Road tiles",
       "Connected owned cities and the original capital each gain population",
     ];
   // Revision 17: Goblin Commerce (Plunder) earns no trade.

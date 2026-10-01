@@ -44,7 +44,7 @@ describe("ruleset-7 exact public query indexing", () => {
     const commands = queryPlayerCommandsV7(measured.view);
 
     expect(canonicalHash(commands)).toBe(
-      "53c225c8e425f892ab32e45dabb67577f62ff5b61bd6349d67f581bdb72fb20f",
+      "68b640b47cff455890b0d253cbbdf1dfe7a23bd38e7665d5d0cd7032a1e31651",
     );
     const reads = measured.reads();
     expect(reads.tileReads).toBeLessThan(6_000);
@@ -57,10 +57,10 @@ describe("ruleset-7 exact public query indexing", () => {
 
     const planned = drain(measured.view, commands, 113);
     expect(planned.operations).toBe(
-      66_220 + publicPlanningFactScanOperations(measured.view),
+      66_235 + publicPlanningFactScanOperations(measured.view),
     );
     expect(canonicalHash(planned.result)).toBe(
-      "b78f740fb03edfc245efedbe4c2e5b9d1e3ee7dada87368bfebe6773dbb61d70",
+      "b32cb8941a64df8d59e6b302c253ccaaa5a1459768943025ec1a35f526181f5b",
     );
   });
 
