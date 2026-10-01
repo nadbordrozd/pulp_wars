@@ -4,6 +4,7 @@ import type {
   PlayerViewV7,
 } from "../../engine/index";
 import type { Ruleset7TacticalUiSymbolId } from "../../assets/ruleset7-tactical-ui-symbols";
+import type { ExplosionBlastV7 } from "./goblin-explosion-v7";
 
 export type CorePresentationStepV7 =
   | {
@@ -24,6 +25,20 @@ export type CorePresentationStepV7 =
       readonly from: CoordV7;
       readonly to: CoordV7;
       readonly durationMs: 230 | 280;
+      /** Revision 17: a Goblin Bomb Chucker lobs a round black bomb. */
+      readonly projectile?: "BOMB";
+    }
+  | {
+      /**
+       * Revision 17: one wave of projected `EXPLOSION_RESOLVED` events (or a
+       * Bomb Chucker's bomb burst), every blast of the wave together.
+       */
+      readonly kind: "EXPLOSION";
+      readonly wave: number;
+      readonly blasts: readonly ExplosionBlastV7[];
+      readonly durationMs: 520 | 360;
+      /** Another player's blast: the camera frames it, like enemy moves. */
+      readonly followCamera?: true;
     }
   | {
       readonly kind: "VISIBILITY_CROSSFADE";
@@ -124,6 +139,7 @@ export function corePresentationPlanV7(
   let healingAdded = false;
   let visibilityCrossfadeAdded = false;
   let gravesAdded = false;
+  let lastExplosionIndex = -1;
   const graves = envelope.events.flatMap((event) =>
     event.kind === "GRAVE_CREATED" &&
     explored.has(`${event.at.x},${event.at.y}`)
@@ -222,9 +238,13 @@ export function corePresentationPlanV7(
         attacker.role === "MARKSMAN" ||
         attacker.role === "CATAPULT" ||
         attacker.role === "BATTLESHIP";
+      // Revision 17: a Goblin Bomb Chucker's bomb arcs like a Catapult shot.
+      const bomb =
+        attacker.role === "MARKSMAN" &&
+        factionOf(before, attacker.ownerId) === "GOBLIN";
       steps.push({
         kind:
-          attacker.role === "CATAPULT"
+          attacker.role === "CATAPULT" || bomb
             ? "CATAPULT"
             : ranged
               ? "RANGED"
@@ -233,7 +253,27 @@ export function corePresentationPlanV7(
         from: attacker.at,
         to: defender.at,
         durationMs: ranged ? 280 : 230,
+        ...(bomb ? { projectile: "BOMB" as const } : {}),
       });
+      // The bomb bursts on its target and puffs on each splashed unit.
+      if (bomb)
+        steps.push({
+          kind: "EXPLOSION",
+          wave: 1,
+          blasts: [
+            {
+              at: defender.at,
+              kind: "BOMB",
+              hits: event.preview.splash.flatMap((splash) => {
+                const victim = before.units.find(
+                  (unit) => unit.id === splash.unitId,
+                );
+                return victim === undefined ? [] : [victim.at];
+              }),
+            },
+          ],
+          durationMs: 360,
+        });
       // The Lich (an Undead Catapult) bursts on its target and splash cells.
       if (
         attacker.role === "CATAPULT" &&
@@ -277,6 +317,34 @@ export function corePresentationPlanV7(
             lethal: splash.dies,
             durationMs: 100,
           });
+      }
+    } else if (event.kind === "EXPLOSION_RESOLVED") {
+      // Revision 17: one burst per wave, in wave order (events arrive in
+      // chain order); blasts of one wave burst together.
+      const blast: ExplosionBlastV7 = {
+        at: event.at,
+        kind: event.cause,
+        hits: event.results.map((result) => result.at),
+      };
+      const last = steps.at(-1);
+      if (
+        last?.kind === "EXPLOSION" &&
+        lastExplosionIndex === steps.length - 1 &&
+        last.wave === event.wave
+      )
+        steps[lastExplosionIndex] = {
+          ...last,
+          blasts: [...last.blasts, blast],
+        };
+      else {
+        steps.push({
+          kind: "EXPLOSION",
+          wave: event.wave,
+          blasts: [blast],
+          durationMs: 520,
+          ...(enemyTurn ? { followCamera: true as const } : {}),
+        });
+        lastExplosionIndex = steps.length - 1;
       }
     } else if (event.kind === "COMBAT_SPLASH_DAMAGE") {
       for (const splash of event.splash) {

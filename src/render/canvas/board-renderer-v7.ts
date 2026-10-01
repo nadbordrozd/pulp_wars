@@ -14,6 +14,8 @@ import type {
 } from "../../engine/index";
 import {
   playerFactionV7,
+  previewAttackExplosionsV7,
+  previewKaboomV7,
   previewDevourV7,
   previewRaiseDeadV7,
   previewTendWoundedV7,
@@ -44,6 +46,13 @@ import {
   type AfflictionSubjectV7,
 } from "./undead-canvas-v7";
 import { drawGoblinBadgeV7 } from "./goblin-canvas-v7";
+import {
+  blastPreviewPresentationV7,
+  goblinAttackPreviewTextV7,
+  matchHasGoblinV7,
+  splashEntryFriendlyV7,
+  type BlastPreviewPresentationV7,
+} from "../goblin-presentation-v7";
 import {
   RULESET6_UNIT_ART_GEOMETRY,
   RULESET7_CAPTAIN_ART_GEOMETRY,
@@ -102,6 +111,12 @@ export interface BoardRenderInteractionV7 {
   readonly selectedUnitId: number | null;
   readonly selectedAchievement: null;
   readonly cursor?: CoordV7 | null;
+  /**
+   * Revision 17: the own unit whose offered Kaboom is previewed on the board
+   * (its Kaboom button is hovered, focused, or armed); null or omitted
+   * shows none.
+   */
+  readonly kaboomPreviewUnitId?: number | null;
 }
 
 /**
@@ -124,8 +139,21 @@ export interface MapCommandTargetV7 {
   readonly followUp?: Extract<CommandV7, { kind: "DISEMBARK" }>;
   readonly previewLabel?: string;
   readonly semanticLabel?: string;
-  /** Revision 13: Lifesteal and Infect outcome line (Undead matches only). */
+  /**
+   * Revision 13: Lifesteal and Infect outcome line (Undead matches only);
+   * revision 17 adds "Gang Up +N" (Goblin matches only).
+   */
   readonly previewNote?: string;
+  /**
+   * Revision 17 (Goblin matches only): death-blast, chain, bomb-splash and
+   * friendly-fire warnings, one warning box each under the target.
+   */
+  readonly previewWarnings?: readonly string[];
+  /**
+   * Revision 17: the death blasts this attack sets off (Goblin matches
+   * only), shown on the board while the target is focused.
+   */
+  readonly blast?: BlastPreviewPresentationV7;
   /** Revision 13: public splash entries of this attack (Undead matches only). */
   readonly splash?: readonly {
     readonly at: CoordV7;
@@ -133,6 +161,8 @@ export interface MapCommandTargetV7 {
     readonly dies: boolean;
     /** Revision 14: this Lich attack newly plagues the splashed unit. */
     readonly plagued?: boolean;
+    /** Revision 17: a Bomb Chucker's bomb hits an own or allied unit. */
+    readonly friendly?: boolean;
   }[];
 }
 
@@ -563,9 +593,25 @@ export function buildBoardRenderPlanV7(
   addTerritoryBoundaries(entries, view, interaction.selection);
   if (selectedUnitId !== null)
     addAbilityPreviews(entries, view, commands, selectedUnitId);
-  const targets = dedupeMapTargets(
-    mapTargets(view, commands, interaction.selectedUnitId),
-  );
+  if (
+    interaction.kaboomPreviewUnitId !== undefined &&
+    interaction.kaboomPreviewUnitId !== null
+  )
+    addKaboomPreview(entries, view, commands, interaction.kaboomPreviewUnitId);
+  // Revision 17: while a Kaboom! is previewed its blast is the only
+  // preview of that unit, so its Move and Attack targets step aside.
+  const kaboomPreview =
+    interaction.kaboomPreviewUnitId !== undefined &&
+    interaction.kaboomPreviewUnitId !== null &&
+    interaction.kaboomPreviewUnitId === interaction.selectedUnitId &&
+    commands.some(
+      (command) =>
+        command.kind === "KABOOM" &&
+        command.unitId === interaction.kaboomPreviewUnitId,
+    );
+  const targets = kaboomPreview
+    ? []
+    : dedupeMapTargets(mapTargets(view, commands, interaction.selectedUnitId));
   const targetEdges = mapTargetEdges(targets);
   for (const target of targets)
     entries.push({
@@ -1583,18 +1629,47 @@ export function drawBoardV7(input: {
   const defer = (draw: () => void): void => {
     labels.push(draw);
   };
+  // Revision 17: a blast or friendly bomb splash places its labels on their
+  // own cells first and paints them last, so an attack's label stack is the
+  // one nudged aside, no hit label lands on the wrong unit, and none is
+  // hidden. Other matches keep their label order.
+  const goblinAreaFirst = input.plan.targets.some(
+    (target) =>
+      target.blast !== undefined ||
+      target.splash?.some((item) => item.friendly === true) === true,
+  );
+  const paints: (() => void)[] = [];
+  const paintLater = goblinAreaFirst
+    ? (paint: () => void): void => {
+        paints.push(paint);
+      }
+    : undefined;
+  const drawAreaPreviews = (): void => {
+    drawSplashPreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      placer,
+      defer,
+      paintLater,
+    );
+    drawAttackBlastPreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      placer,
+      defer,
+      paintLater,
+    );
+  };
+  if (goblinAreaFirst) drawAreaPreviews();
   for (const target of input.plan.entries) {
     if (target.kind !== "TARGET") continue;
     drawMapTarget(context, camera, target, placer, defer);
   }
-  drawSplashPreviewV7(
-    context,
-    camera,
-    input.plan,
-    input.previewFocus ?? null,
-    placer,
-    defer,
-  );
+  if (!goblinAreaFirst) drawAreaPreviews();
   for (const entry of input.plan.entries) {
     if (entry.kind !== "ABILITY_TARGET" || entry.abilityStyle === undefined)
       continue;
@@ -1611,6 +1686,7 @@ export function drawBoardV7(input: {
     );
   }
   for (const draw of labels) draw();
+  for (const paint of paints) paint();
   const statusPulse = input.statusPulse;
   if (
     statusPulse !== null &&
@@ -1891,6 +1967,13 @@ function drawMapTarget(
             baseline: 1.2,
           },
         ]),
+    ...(entry.target?.previewWarnings ?? []).map((warning) => ({
+      text: warning,
+      fill: "#4d3500f2",
+      color: "#ffe9a8",
+      lineBox: 1.6,
+      baseline: 1.2,
+    })),
   ];
   if (boxes.length > 0)
     defer(() => {
@@ -1940,6 +2023,7 @@ function drawSplashPreviewV7(
   focus: CoordV7 | null,
   placer: PreviewLabelPlacerV7,
   defer: (draw: () => void) => void,
+  paintLater?: (paint: () => void) => void,
 ): void {
   const splashTargets = plan.targets.filter(
     (target) => target.family === "ATTACK" && target.splash !== undefined,
@@ -1974,11 +2058,66 @@ function drawSplashPreviewV7(
       x(item.at),
       y(item.at),
       camera.zoom,
-      "SPLASH",
-      item.plagued === true ? `−${item.damage} · Plague` : `−${item.damage}`,
+      item.friendly === true ? "BLAST_FRIENDLY" : "SPLASH",
+      `${item.friendly === true ? "Yours " : ""}−${item.damage}${item.plagued === true ? " · Plague" : ""}`,
       item.dies,
       placer,
       defer,
+      paintLater,
+    );
+}
+
+/**
+ * Revision 17: the death-blast chain of the focused attack target (or of
+ * the only attack target with one): blast areas and hit labels.
+ */
+function drawAttackBlastPreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+  placer: PreviewLabelPlacerV7,
+  defer: (draw: () => void) => void,
+  paintLater?: (paint: () => void) => void,
+): void {
+  const blastTargets = plan.targets.filter(
+    (target) => target.family === "ATTACK" && target.blast !== undefined,
+  );
+  const target =
+    (focus === null
+      ? undefined
+      : blastTargets.find((candidate) => same(candidate.at, focus))) ??
+    (blastTargets.length === 1 ? blastTargets[0] : undefined);
+  const blast = target?.blast;
+  if (blast === undefined) return;
+  const x = (at: CoordV7): number =>
+    camera.offsetX + at.x * TILE_WIDTH * camera.zoom;
+  const y = (at: CoordV7): number =>
+    camera.offsetY + at.y * TILE_HEIGHT * camera.zoom;
+  const area = new Set(blast.area.map(coordKey));
+  context.save();
+  context.strokeStyle = abilityAreaStrokeV7("BLAST");
+  context.lineWidth = 3 * camera.zoom;
+  context.setLineDash([6 * camera.zoom, 4 * camera.zoom]);
+  for (const at of blast.area) {
+    drawAbilityAreaCellV7(context, x(at), y(at), camera.zoom, "BLAST");
+    for (const edge of TILE_EDGES)
+      if (!area.has(coordKey(neighborAcross(at, edge))))
+        strokeTileEdge(context, camera, at, edge);
+  }
+  context.restore();
+  for (const cell of blast.cells)
+    drawAbilityTargetV7(
+      context,
+      x(cell.at),
+      y(cell.at),
+      camera.zoom,
+      cell.friendly ? "BLAST_FRIENDLY" : "BLAST",
+      cell.label,
+      cell.lethal,
+      placer,
+      defer,
+      paintLater,
     );
 }
 
@@ -2408,6 +2547,52 @@ function addAbilityPreviews(
   }
 }
 
+/**
+ * Revision 17 Kaboom preview from the public `previewKaboomV7`: every blast
+ * area of the chain, and one label per hit cell (damage, friendly fire,
+ * chain waves). Nothing is added unless Kaboom is offered for the unit.
+ */
+function addKaboomPreview(
+  entries: BoardRenderPlanEntryV7[],
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  previewUnitId: number,
+): void {
+  const unitId = view.units.find((unit) => unit.id === previewUnitId)?.id;
+  if (
+    unitId === undefined ||
+    !commands.some(
+      (command) => command.kind === "KABOOM" && command.unitId === unitId,
+    )
+  )
+    return;
+  const preview = previewKaboomV7(view, unitId);
+  if (preview === null) return;
+  const blast = blastPreviewPresentationV7(view, preview, unitId);
+  const area = new Set(blast.area.map(coordKey));
+  for (const at of blast.area)
+    entries.push({
+      key: `ability-area:BLAST:${coordKey(at)}`,
+      kind: "ABILITY_AREA",
+      layer: 7,
+      at,
+      abilityStyle: "BLAST",
+      targetEdges: TILE_EDGES.filter(
+        (edge) => !area.has(coordKey(neighborAcross(at, edge))),
+      ),
+    });
+  for (const cell of blast.cells)
+    entries.push({
+      key: `ability-target:BLAST:${coordKey(cell.at)}`,
+      kind: "ABILITY_TARGET",
+      layer: 7.5,
+      at: cell.at,
+      abilityStyle: cell.friendly ? "BLAST_FRIENDLY" : "BLAST",
+      label: cell.label,
+      lethal: cell.lethal,
+    });
+}
+
 function neighborAcross(at: CoordV7, edge: TileEdge): CoordV7 {
   if (edge === "NORTH") return { x: at.x, y: at.y - 1 };
   if (edge === "SOUTH") return { x: at.x, y: at.y + 1 };
@@ -2455,6 +2640,7 @@ function commandMapTargets(
   selectedUnitId: number | null,
 ): MapCommandTargetV7[] {
   const undeadMatch = matchHasUndeadV7(view);
+  const goblinMatch = matchHasGoblinV7(view);
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
     if (command.kind === "MOVE" && command.unitId === selectedUnitId) {
@@ -2479,12 +2665,61 @@ function commandMapTargets(
         command.unitId,
         command.targetUnitId,
       );
-      const note =
+      const undeadNote =
         undeadMatch && preview !== null ? combatPreviewNoteV7(preview) : null;
-      const semanticNote =
+      const undeadSemanticNote =
         undeadMatch && preview !== null
           ? combatPreviewSemanticNoteV7(preview, view)
           : null;
+      // Revision 17 (Goblin matches only): Gang Up, the death blasts the
+      // attack sets off, and friendly bomb splash.
+      const chain =
+        goblinMatch && preview !== null
+          ? previewAttackExplosionsV7(
+              view,
+              command.unitId,
+              command.targetUnitId,
+            )
+          : null;
+      const goblin =
+        goblinMatch && preview !== null
+          ? goblinAttackPreviewTextV7(view, preview, chain)
+          : null;
+      const attacker = view.units.find((unit) => unit.id === command.unitId);
+      const friendlySplash =
+        preview === null || attacker === undefined || !goblinMatch
+          ? new Set<number>()
+          : new Set(
+              preview.splash
+                .filter((item) =>
+                  splashEntryFriendlyV7(view, attacker.ownerId, item.unitId),
+                )
+                .map((item) => item.unitId),
+            );
+      const noteParts = [undeadNote, goblin?.gangUp ?? null].filter(
+        (part): part is string => part !== null,
+      );
+      const note = noteParts.length === 0 ? null : noteParts.join(" · ");
+      const semanticParts = [
+        undeadSemanticNote,
+        goblin?.semantic ?? null,
+      ].filter((part): part is string => part !== null);
+      const semanticNote =
+        semanticParts.length === 0 ? null : semanticParts.join(" ");
+      const warnings =
+        goblin === null || goblin.warnings.length === 0
+          ? null
+          : goblin.warnings;
+      const blast =
+        chain !== null && chain.explosions.length > 0
+          ? blastPreviewPresentationV7(view, chain, null, command.unitId)
+          : null;
+      const splashSentence =
+        preview === null || preview.splash.length === 0
+          ? ""
+          : friendlySplash.size > 0
+            ? ` Splash affects ${preview.splash.length} adjacent ${preview.splash.length === 1 ? "unit" : "units"} (${friendlySplash.size} yours) for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(", ")}.`
+            : ` Splash affects ${preview.splash.length} adjacent hostile units for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(", ")}.`;
       return [
         {
           at: target.at,
@@ -2497,10 +2732,14 @@ function commandMapTargets(
           ...(preview === null
             ? {}
             : {
-                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${preview.splash.length > 0 ? ` Splash affects ${preview.splash.length} adjacent hostile units for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(", ")}.` : ""}${semanticNote === null ? "" : ` ${semanticNote}`}`,
+                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${splashSentence}${semanticNote === null ? "" : ` ${semanticNote}`}`,
               }),
           ...(note === null ? {} : { previewNote: note }),
-          ...(undeadMatch && preview !== null && preview.splash.length > 0
+          ...(warnings === null ? {} : { previewWarnings: warnings }),
+          ...(blast === null ? {} : { blast }),
+          ...((undeadMatch || goblinMatch) &&
+          preview !== null &&
+          preview.splash.length > 0
             ? {
                 splash: preview.splash.map((item) => ({
                   at: item.at,
@@ -2508,6 +2747,9 @@ function commandMapTargets(
                   dies: item.dies,
                   ...(preview.plagued.includes(item.unitId)
                     ? { plagued: true }
+                    : {}),
+                  ...(friendlySplash.has(item.unitId)
+                    ? { friendly: true }
                     : {}),
                 })),
               }

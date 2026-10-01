@@ -12,7 +12,15 @@ import {
 } from "./preview-label-layout-v7";
 
 export type AbilityPreviewStyleV7 =
-  "WAIL" | "RAISE" | "DEVOUR" | "SPLASH" | "TEND";
+  | "WAIL"
+  | "RAISE"
+  | "DEVOUR"
+  | "SPLASH"
+  | "TEND"
+  /** Revision 17: a previewed blast area and the units it hits. */
+  | "BLAST"
+  /** Revision 17: an own or allied unit hit by a blast or bomb (warning). */
+  | "BLAST_FRIENDLY";
 
 /** Legacy and CHIBI Undead badge frames, relative to the cell centre. */
 export const UNDEAD_BADGE_FRAME_V7 = {
@@ -398,7 +406,14 @@ const STYLE_COLORS: Readonly<
   DEVOUR: { fill: "rgba(255, 128, 104, 0.2)", stroke: "#ff9a84" },
   SPLASH: { fill: "rgba(255, 170, 70, 0.18)", stroke: "#ffb35c" },
   TEND: { fill: "rgba(103, 229, 202, 0.18)", stroke: "#67e5ca" },
+  // Revision 17: the blast is unowned (GOBLIN.md), so its preview uses the
+  // pale spark cream; friendly fire adds yellow-and-charcoal hazard stripes.
+  BLAST: { fill: "rgba(255, 248, 208, 0.24)", stroke: "#fff8d0" },
+  BLAST_FRIENDLY: { fill: "rgba(255, 216, 74, 0.2)", stroke: "#ffd84a" },
 };
+
+/** Dark stripes that turn the friendly-fire outline into a hazard band. */
+const HAZARD_STRIPE = "#1b1b1f";
 
 /** Faint fill of one previewed area cell (Wail radius or splash ring). */
 export function drawAbilityAreaCellV7(
@@ -438,6 +453,12 @@ export function drawAbilityTargetV7(
   lethal: boolean,
   placer?: PreviewLabelPlacerV7,
   defer?: (draw: () => void) => void,
+  /**
+   * Revision 17: with this, the label is placed when `defer` runs but
+   * painted later, so a blast label keeps its cell and stays on top of an
+   * attack's label stack placed after it.
+   */
+  paintLater?: (paint: () => void) => void,
 ): void {
   const size = 128 * zoom;
   context.save();
@@ -450,6 +471,16 @@ export function drawAbilityTargetV7(
     size - 18 * zoom,
     size - 18 * zoom,
   );
+  if (style === "BLAST_FRIENDLY") {
+    context.strokeStyle = HAZARD_STRIPE;
+    context.setLineDash([7 * zoom, 7 * zoom]);
+    context.strokeRect(
+      x - size / 2 + 9 * zoom,
+      y - size / 2 + 9 * zoom,
+      size - 18 * zoom,
+      size - 18 * zoom,
+    );
+  }
   context.restore();
   const drawLabel = (): void => {
     context.save();
@@ -475,15 +506,30 @@ export function drawAbilityTargetV7(
               bottom: y + size / 2,
             },
           );
-    context.fillStyle = lethal ? "#8f1f22ee" : "#171722e6";
-    context.fillRect(left, top, width, height);
-    context.strokeStyle = STYLE_COLORS[style].stroke;
-    context.lineWidth = Math.max(1, 1.5 * zoom);
-    context.setLineDash([]);
-    context.strokeRect(left, top, width, height);
-    context.fillStyle = "#fff8df";
-    context.fillText(label, left + width / 2, top + font * 1.05);
     context.restore();
+    const paint = (): void => {
+      context.save();
+      context.font = `${800} ${font}px system-ui`;
+      context.textAlign = "center";
+      context.fillStyle = lethal
+        ? "#8f1f22ee"
+        : style === "BLAST_FRIENDLY"
+          ? "#4d3500f2"
+          : "#171722e6";
+      context.fillRect(left, top, width, height);
+      context.strokeStyle = STYLE_COLORS[style].stroke;
+      context.lineWidth = Math.max(
+        1,
+        (style === "BLAST_FRIENDLY" ? 2.5 : 1.5) * zoom,
+      );
+      context.setLineDash([]);
+      context.strokeRect(left, top, width, height);
+      context.fillStyle = "#fff8df";
+      context.fillText(label, left + width / 2, top + font * 1.05);
+      context.restore();
+    };
+    if (paintLater === undefined) paint();
+    else paintLater(paint);
   };
   if (defer === undefined) drawLabel();
   else defer(drawLabel);

@@ -24,7 +24,9 @@ export type UiIconIdV7 =
   | "devour"
   | "wail"
   | "plague"
-  | "bite";
+  | "bite"
+  | "goblin"
+  | "bomb";
 
 const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   hp: "M12 20.5 4.2 12.8a4.6 4.6 0 0 1 6.5-6.5L12 7.6l1.3-1.3a4.6 4.6 0 0 1 6.5 6.5Z",
@@ -56,6 +58,63 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   plague:
     "M7.5 15.5a3.5 3.5 0 0 1-.4-7A5 5 0 0 1 16.6 7.6a3.9 3.9 0 0 1 .4 7.9ZM9 18.5v1.5M12.5 18.5v2.5M16 18.5v1.5",
   bite: "M4 8.5l2.7 4.5 2.6-4.5 2.7 4.5 2.7-4.5 2.6 4.5L20 8.5M5.5 18l2.3-3.5 2.4 3.5 1.8-3.5 1.8 3.5 2.4-3.5 2.3 3.5",
+  // Revision 17: a goblin head with long sideways ears (the Goblin badge;
+  // the eyes are even-odd holes when filled). The Kaboom! bomb is drawn
+  // from BOMB_PARTS; this path is only its single-stroke outline.
+  goblin:
+    "M12 7.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10ZM7.4 10.6 1.8 8.4l5.4 5ZM16.6 10.6l5.6-2.2-5.4 5ZM10 11.2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2ZM14 11.2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z",
+  bomb: "M14.2 9.6A6.5 6.5 0 1 1 10.4 8M13 7.4l2.4 2.4M14.2 8.6l1.6-1.6c.9-.9 2.2-1.1 3.2-.4M19.5 2.5v2M22 5h-2M21 3.5l-1 1",
+};
+
+/** One shape of a multi-part icon; `fill` may be a fixed colour. */
+interface IconPartV7 {
+  readonly d: string;
+  readonly fill: string;
+  readonly stroke: string;
+  readonly width: number;
+}
+
+/**
+ * Revision 17 Kaboom! (docs/art/factions/GOBLIN.md: "a round black bomb with
+ * a lit cream fuse and a pale spark"): a filled charcoal round body with a
+ * light rim and glint in the button's colour, a fuse cap, a short curved
+ * fuse, and a four-point pale spark at its tip.
+ */
+const BOMB_PARTS: readonly IconPartV7[] = [
+  {
+    d: "M10 7.6a6.9 6.9 0 1 0 0 13.8 6.9 6.9 0 0 0 0-13.8Z",
+    fill: "#2b2d33",
+    stroke: "currentColor",
+    width: 1.6,
+  },
+  {
+    d: "M6.2 13.4a4.2 4.2 0 0 1 2.6-3.1",
+    fill: "none",
+    stroke: "currentColor",
+    width: 1.5,
+  },
+  {
+    d: "M13.1 8.2l2.3-2.3 2 2-2.3 2.3Z",
+    fill: "#2b2d33",
+    stroke: "currentColor",
+    width: 1.3,
+  },
+  {
+    d: "M16.6 6.4c.5-1.7 1.8-2.6 3.3-2.5",
+    fill: "none",
+    stroke: "currentColor",
+    width: 1.6,
+  },
+  {
+    d: "M20.2.4l1.1 2.4 2.4 1.1-2.4 1.1-1.1 2.4-1.1-2.4-2.4-1.1 2.4-1.1Z",
+    fill: "#fff8d0",
+    stroke: "#2b2d33",
+    width: 0.6,
+  },
+];
+
+const PARTS: Partial<Record<UiIconIdV7, readonly IconPartV7[]>> = {
+  bomb: BOMB_PARTS,
 };
 
 const FILLED: ReadonlySet<UiIconIdV7> = new Set([
@@ -76,6 +135,23 @@ export function uiIconV7(
   svg.setAttribute("focusable", "false");
   svg.setAttribute("class", className);
   svg.dataset.icon = id;
+  const parts = PARTS[id];
+  if (parts !== undefined) {
+    for (const part of parts) {
+      const shape = documentRoot.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path",
+      );
+      shape.setAttribute("d", part.d);
+      shape.setAttribute("fill", part.fill);
+      shape.setAttribute("stroke", part.stroke);
+      shape.setAttribute("stroke-width", String(part.width));
+      shape.setAttribute("stroke-linecap", "round");
+      shape.setAttribute("stroke-linejoin", "round");
+      svg.append(shape);
+    }
+    return svg;
+  }
   const path = documentRoot.createElementNS(
     "http://www.w3.org/2000/svg",
     "path",

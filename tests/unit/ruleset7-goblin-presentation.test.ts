@@ -1,0 +1,694 @@
+import { describe, expect, it } from "vitest";
+import {
+  applyCommandV7,
+  previewAttackExplosionsV7,
+  previewKaboomV7,
+  projectEventsV7,
+  queryCombatPreviewV7,
+  queryPlayerCommandsV7,
+  viewForV7,
+  type CommandV7,
+  type CoordV7,
+  type GameStateV7,
+  type PlayerViewV7,
+} from "../../src/engine/index";
+import {
+  GOBLIN_HELP_RULES_V7,
+  blastPreviewPresentationV7,
+  goblinAttackPreviewTextV7,
+  goblinBoundaryNoticeV7,
+  goblinFieldDefenseBlockedV7,
+  goblinRecruitNotesV7,
+  goblinUnitInfoLinesV7,
+  kaboomPreviewTextV7,
+  kaboomTooltipV7,
+  matchHasGoblinV7,
+  technologyNameV7,
+} from "../../src/render/goblin-presentation-v7";
+import {
+  portraitSubjectV7,
+  technologySubjectV7,
+} from "../../src/assets/chibi-ui-art-v7";
+import {
+  buildBoardRenderPlanV7,
+  drawBoardV7,
+  type BoardRenderPlanEntryV7,
+} from "../../src/render/canvas/board-renderer-v7";
+import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
+import { panToFrameArea } from "../../src/render/canvas/geometry";
+import {
+  GOBLIN_BLAST_PALETTE_V7,
+  drawBombProjectileV7,
+  drawExplosionFeedbackV7,
+} from "../../src/render/canvas/goblin-explosion-v7";
+import {
+  GOBLIN_ATTACK_CHAIN_V7,
+  GOBLIN_SHOWCASE_V7,
+  goblinAttackChainFixtureV7,
+  goblinShowcaseFixtureV7,
+} from "../fixtures/v7-goblin-ui";
+import { goblinArenaV7, seatIdV7 } from "../fixtures/v7-goblin-arena";
+
+const AT = GOBLIN_SHOWCASE_V7;
+const NO_INTERACTION = {
+  selection: null,
+  selectedUnitId: null,
+  selectedAchievement: null,
+} as const;
+
+describe("Revision 17 Goblin presentation text", () => {
+  it("summarises a Kaboom chain with friendly fire, waves and Plunder", () => {
+    const view = showcaseView();
+    const kaboom = unitAt(view, AT.kaboom);
+    const preview = required(previewKaboomV7(view, kaboom.id));
+    const text = kaboomPreviewTextV7(view, preview);
+    expect(text.summary).toBe("Hits 5 units: 3 enemy, 2 yours. Kills 2.");
+    expect(text.chain).toEqual([
+      "Chain reaction: your Rocket Cart explodes (5 damage)",
+    ]);
+    expect(text.friendlyFire).toBe(
+      "Friendly fire: 2 of your units hit, 1 killed",
+    );
+    expect(text.plunder).toBe("Plunder: +1 Coins");
+    expect(text.fog).toBe(null);
+    expect(text.bitten).toBe(null);
+    expect(text.fieldDefense).toBe(null);
+    expect(text.chip).toBe("5 hit · 2 ✕");
+    expect(text.friendlyChip).toBe("2 yours hit");
+    expect(kaboomTooltipV7(4)).toBe(
+      "Blow up: 4 damage to every other unit in the 3×3 square, yours too. This unit dies.",
+    );
+  });
+
+  it("labels every hit cell of a chain on the board, own units as Yours", () => {
+    const view = showcaseView();
+    const kaboom = unitAt(view, AT.kaboom);
+    const preview = required(previewKaboomV7(view, kaboom.id));
+    const blast = blastPreviewPresentationV7(view, preview, kaboom.id);
+    expect(
+      blast.cells.map((cell) => [
+        cell.at,
+        cell.label,
+        cell.lethal,
+        cell.friendly,
+      ]),
+    ).toEqual([
+      [AT.ownGoblin, "Yours −4", false, true],
+      [AT.kaboom, "Kaboom!", true, false],
+      [AT.enemyFighter, "−4", false, false],
+      [AT.rocketCart, "Yours −3 · Wave 2", true, true],
+      [AT.enemyRaider, "−3", true, false],
+      [AT.enemyMarksman, "−5", false, false],
+    ]);
+    expect(blast.sources).toEqual([
+      { at: AT.kaboom, wave: 1 },
+      { at: AT.rocketCart, wave: 2 },
+    ]);
+    // Two 3 × 3 areas that share four cells.
+    expect(blast.area).toHaveLength(14);
+  });
+
+  it("warns about a Bitten Kaboom, lost Field Defense and fog", () => {
+    const state = goblinArenaV7(
+      ["GOBLIN", "UNDEAD"],
+      [
+        { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
+        { seat: 1, role: "GUARD", at: { x: 1, y: 1 } },
+      ],
+    );
+    const goblin = state.units[0];
+    const zombie = state.units[1];
+    if (goblin === undefined || zombie === undefined)
+      throw new Error("pieces missing");
+    const bitten: GameStateV7 = {
+      ...state,
+      bitten: [
+        {
+          unitId: goblin.id,
+          biterPlayerId: zombie.ownerId,
+          biterUnitId: zombie.id,
+        },
+      ],
+      board: {
+        ...state.board,
+        tiles: state.board.tiles.map((tile) =>
+          tile.at.x === 5 && tile.at.y === 3
+            ? { ...tile, fieldDefense: true }
+            : tile,
+        ),
+      },
+    };
+    const view = viewForV7(bitten, bitten.humanPlayerId);
+    const preview = required(previewKaboomV7(view, goblin.id));
+    const text = kaboomPreviewTextV7(view, preview);
+    expect(text.bitten).toBe("Bitten: this unit will rise as an enemy Zombie");
+    expect(text.fieldDefense).toBe("Destroys Field Defense on 1 tile");
+    // The rising Zombie on the exploder's tile is hit by its own blast.
+    expect(
+      blastPreviewPresentationV7(view, preview, goblin.id).cells.find(
+        (cell) => cell.at.x === 4 && cell.at.y === 3,
+      )?.label,
+    ).toBe("Kaboom! · Zombie −4");
+    expect(
+      kaboomPreviewTextV7(view, { ...preview, touchesUnexplored: true }).fog,
+    ).toBe("The blast may reach unexplored tiles");
+  });
+
+  it("shows Gang Up and a friendly bomb splash in the attack preview", () => {
+    const view = showcaseView();
+    const chucker = unitAt(view, AT.bombChucker);
+    const target = unitAt(view, AT.bombTarget);
+    const preview = required(queryCombatPreviewV7(view, chucker.id, target.id));
+    const chain = previewAttackExplosionsV7(view, chucker.id, target.id);
+    expect(goblinAttackPreviewTextV7(view, preview, chain)).toEqual({
+      gangUp: "Gang Up +1",
+      warnings: ["Bomb splash hits your Goblin"],
+      semantic:
+        "Gang Up adds 1 Attack from your units next to the target. Bomb splash hits your Goblin.",
+    });
+  });
+
+  it("warns a Human attacker about an exploding target and its chain", () => {
+    const state = goblinAttackChainFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const attacker = unitAt(view, GOBLIN_ATTACK_CHAIN_V7.attacker);
+    const target = unitAt(view, GOBLIN_ATTACK_CHAIN_V7.bombChucker);
+    const preview = required(
+      queryCombatPreviewV7(view, attacker.id, target.id),
+    );
+    const chain = required(
+      previewAttackExplosionsV7(view, attacker.id, target.id),
+    );
+    expect(goblinAttackPreviewTextV7(view, preview, chain).warnings).toEqual([
+      "Enemy Bomb Chucker explodes on death: 3 damage around it",
+      "Chain reaction: enemy Rocket Cart explodes (5 damage)",
+      "Blasts hit 3 of your units, 0 killed",
+    ]);
+    const cells = blastPreviewPresentationV7(
+      view,
+      chain,
+      null,
+      attacker.id,
+    ).cells;
+    // The attacker advances onto the Bomb Chucker's tile and is hit there.
+    expect(
+      cells.find((cell) => same(cell.at, GOBLIN_ATTACK_CHAIN_V7.bombChucker))
+        ?.label,
+    ).toBe("Attacker −8");
+    expect(
+      cells.find((cell) => same(cell.at, GOBLIN_ATTACK_CHAIN_V7.rocketCart))
+        ?.label,
+    ).toBe("−2 · Wave 2");
+  });
+
+  it("lists Goblin unit info from the public Goblin mechanics", () => {
+    const view = showcaseView();
+    const stats = (at: CoordV7) =>
+      required(
+        view.unitStats.find((entry) => entry.unitId === unitAt(view, at).id)
+          ?.goblin,
+      );
+    const names = (role: "FIGHTER" | "MARKSMAN" | "JUGGERNAUT", at: CoordV7) =>
+      goblinUnitInfoLinesV7(role, stats(at), role === "MARKSMAN").map(
+        (line) => line.name,
+      );
+    expect(names("FIGHTER", AT.kaboom)).toEqual([
+      "Kaboom 4",
+      "Gang Up",
+      "No Field Defense",
+    ]);
+    expect(names("MARKSMAN", AT.bombChucker)).toEqual([
+      "Kaboom 4",
+      "Explodes on death (3)",
+      "Bombs",
+      "Gang Up",
+    ]);
+    expect(names("JUGGERNAUT", AT.troll)).toEqual([
+      "Regenerates 4 HP each turn",
+      "Gang Up",
+    ]);
+    expect(goblinRecruitNotesV7("FIGHTER", "GOBLIN")).toContain(
+      "No Field Defense: Goblins cannot build Field Defense; use an Orc Brute",
+    );
+    expect(goblinRecruitNotesV7("FIGHTER", "ORIGINAL")).toEqual([]);
+    expect(GOBLIN_HELP_RULES_V7.map(([name]) => name)).toEqual([
+      "Horde",
+      "Gang Up",
+      "Kaboom",
+      "Death blasts",
+      "Chain reactions",
+      "Bombs",
+      "Plunder",
+      "WAAAGH!",
+      "Trolls",
+      "Discipline",
+    ]);
+  });
+
+  it("explains the Goblin Field Defense restriction where a Fighter could build it", () => {
+    const state = goblinArenaV7(
+      ["GOBLIN", "ORIGINAL"],
+      [
+        { seat: 0, role: "FIGHTER", at: { x: 8, y: 9 } },
+        { seat: 0, role: "GUARD", at: { x: 9, y: 9 } },
+        { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
+      ],
+    );
+    const view = viewForV7(state, state.humanPlayerId);
+    const [home, brute, away] = view.units;
+    if (home === undefined || brute === undefined || away === undefined)
+      throw new Error("pieces missing");
+    expect(goblinFieldDefenseBlockedV7(view, home.id)).toBe(true);
+    // The Orc Brute is offered the command; a Goblin outside territory is not.
+    expect(goblinFieldDefenseBlockedV7(view, brute.id)).toBe(false);
+    expect(
+      queryPlayerCommandsV7(view).some(
+        (command) =>
+          command.kind === "BUILD_FIELD_DEFENSE" && command.unitId === brute.id,
+      ),
+    ).toBe(true);
+    expect(goblinFieldDefenseBlockedV7(view, away.id)).toBe(false);
+  });
+
+  it("logs explosions, Plunder, regeneration and WAAAGH!", () => {
+    const state = goblinShowcaseFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const kaboom = boundary(state, {
+      kind: "KABOOM",
+      unitId: unitAt(view, AT.kaboom).id,
+    });
+    expect(
+      goblinBoundaryNoticeV7(kaboom.events.events, kaboom.before, kaboom.after),
+    ).toEqual({
+      text: "Your Goblin blew up: 4 hit, 2 killed · Your Rocket Cart exploded: 1 hit, 0 killed · Plunder: +1 Coins",
+      toast: true,
+    });
+    const rally = boundary(state, {
+      kind: "RALLY",
+      unitId: unitAt(view, AT.warboss).id,
+    });
+    expect(
+      goblinBoundaryNoticeV7(rally.events.events, rally.before, rally.after),
+    ).toEqual({
+      text: "Your Orc Warboss: WAAAGH! +1 Attack for 1 unit",
+      toast: true,
+    });
+    const regenerated = goblinBoundaryNoticeV7(
+      [
+        {
+          kind: "UNITS_REGENERATED",
+          playerId: view.viewer.id,
+          results: [
+            { unitId: unitAt(view, AT.troll).id, amount: 4, hpAfter: 34 },
+          ],
+        },
+      ],
+      view,
+      view,
+    );
+    expect(regenerated).toEqual({
+      text: "Your Troll regenerated 4 HP",
+      toast: true,
+    });
+  });
+
+  it("names technologies and Goblin art by the viewer's faction", () => {
+    expect(technologyNameV7("COMMERCE", "GOBLIN")).toBe("Plunder");
+    // Other names keep their revision-16 sentence case for every viewer.
+    for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const) {
+      expect(technologyNameV7("NAVAL_ENGINEERING", faction)).toBe(
+        "Naval engineering",
+      );
+      expect(technologyNameV7("CHIVALRY", faction)).toBe("Chivalry");
+    }
+    expect(technologyNameV7("COMMERCE", "ORIGINAL")).toBe("Commerce");
+    expect(portraitSubjectV7("FIGHTER", "GOBLIN")).toBe("UNIT:GOBLIN:FIGHTER");
+    expect(portraitSubjectV7("BATTLESHIP", "GOBLIN")).toBe(
+      "PORTRAIT:BATTLESHIP",
+    );
+    expect(portraitSubjectV7("FIGHTER", "ORIGINAL")).toBe("PORTRAIT:FIGHTER");
+    expect(technologySubjectV7("DRILL", "GOBLIN")).toBe("UNIT:GOBLIN:GUARD");
+    expect(technologySubjectV7("ADMINISTRATION", "GOBLIN")).toBe(
+      "UNIT:GOBLIN:CAPTAIN",
+    );
+    expect(technologySubjectV7("DRILL", "ORIGINAL")).toBe("UNIT:GUARD");
+  });
+
+  it("stays silent in matches without a Goblin seat", () => {
+    const state = goblinArenaV7(
+      ["ORIGINAL", "UNDEAD"],
+      [
+        { seat: 0, role: "CAPTAIN", at: { x: 4, y: 3 } },
+        { seat: 0, role: "FIGHTER", at: { x: 5, y: 3 } },
+        { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
+      ],
+    );
+    const view = viewForV7(state, state.humanPlayerId);
+    expect(matchHasGoblinV7(view)).toBe(false);
+    const rally = boundary(state, {
+      kind: "RALLY",
+      unitId: unitAt(view, { x: 4, y: 3 }).id,
+    });
+    expect(
+      goblinBoundaryNoticeV7(rally.events.events, rally.before, rally.after),
+    ).toBe(null);
+  });
+});
+
+describe("Revision 17 Goblin board previews", () => {
+  it("adds the Kaboom blast preview and hides the unit's other targets", () => {
+    const view = showcaseView();
+    const kaboom = unitAt(view, AT.kaboom);
+    const commands = queryPlayerCommandsV7(view);
+    const selection = { kind: "UNIT" as const, unitId: kaboom.id };
+    const plain = buildBoardRenderPlanV7(view, commands, {
+      ...NO_INTERACTION,
+      selection,
+      selectedUnitId: kaboom.id,
+    });
+    expect(plain.entries.some((entry) => entry.abilityStyle === "BLAST")).toBe(
+      false,
+    );
+    expect(plain.targets.length).toBeGreaterThan(0);
+    const previewed = buildBoardRenderPlanV7(view, commands, {
+      ...NO_INTERACTION,
+      selection,
+      selectedUnitId: kaboom.id,
+      kaboomPreviewUnitId: kaboom.id,
+    });
+    expect(previewed.targets).toEqual([]);
+    const targets = previewed.entries.filter(
+      (entry): entry is BoardRenderPlanEntryV7 =>
+        entry.kind === "ABILITY_TARGET",
+    );
+    expect(
+      targets.map((entry) => [entry.label, entry.abilityStyle, entry.lethal]),
+    ).toEqual([
+      ["Yours −4", "BLAST_FRIENDLY", false],
+      ["Kaboom!", "BLAST", true],
+      ["−4", "BLAST", false],
+      ["Yours −3 · Wave 2", "BLAST_FRIENDLY", true],
+      ["−3", "BLAST", true],
+      ["−5", "BLAST", false],
+    ]);
+    expect(
+      previewed.entries.filter((entry) => entry.kind === "ABILITY_AREA"),
+    ).toHaveLength(14);
+  });
+
+  it("marks friendly bomb splash and Gang Up on the attack target", () => {
+    const view = showcaseView();
+    const chucker = unitAt(view, AT.bombChucker);
+    const plan = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
+      ...NO_INTERACTION,
+      selection: { kind: "UNIT", unitId: chucker.id },
+      selectedUnitId: chucker.id,
+    });
+    const target = required(
+      plan.targets.find((candidate) => same(candidate.at, AT.bombTarget)),
+    );
+    expect(target.previewNote).toBe("Gang Up +1");
+    expect(target.previewWarnings).toEqual(["Bomb splash hits your Goblin"]);
+    expect(target.splash).toEqual([
+      { at: AT.bombHelper, damage: 4, dies: false, friendly: true },
+    ]);
+    expect(target.semanticLabel).toContain(
+      "Splash affects 1 adjacent unit (1 yours) for 4.",
+    );
+  });
+
+  it("carries the death-blast chain of a Human attack on an exploding unit", () => {
+    const state = goblinAttackChainFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const attacker = unitAt(view, GOBLIN_ATTACK_CHAIN_V7.attacker);
+    const plan = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
+      ...NO_INTERACTION,
+      selection: { kind: "UNIT", unitId: attacker.id },
+      selectedUnitId: attacker.id,
+    });
+    const target = required(
+      plan.targets.find((candidate) =>
+        same(candidate.at, GOBLIN_ATTACK_CHAIN_V7.bombChucker),
+      ),
+    );
+    expect(target.blast?.sources.map((source) => source.wave)).toEqual([1, 2]);
+    expect(target.previewWarnings).toEqual([
+      "Enemy Bomb Chucker explodes on death: 3 damage around it",
+      "Chain reaction: enemy Rocket Cart explodes (5 damage)",
+      "Blasts hit 3 of your units, 0 killed",
+    ]);
+    // The lone blast target draws its areas and hit labels.
+    const { context, log } = recordingContext();
+    drawBoardV7({
+      context,
+      viewport: { width: 1200, height: 900 },
+      devicePixelRatio: 1,
+      camera: { offsetX: 100, offsetY: 100, zoom: 0.625 },
+      plan,
+      images: { resolve: () => null },
+    });
+    const texts = log
+      .filter((call) => call[0] === "fillText")
+      .map((call) => call[1]);
+    expect(texts).toContain("Attacker −8");
+    expect(texts).toContain("−2 · Wave 2");
+  });
+
+  it("keeps Human-only attack previews free of Goblin fields", () => {
+    const state = goblinArenaV7(
+      ["ORIGINAL", "ORIGINAL"],
+      [
+        { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
+        { seat: 1, role: "FIGHTER", at: { x: 5, y: 3 } },
+      ],
+    );
+    const view = viewForV7(state, state.humanPlayerId);
+    const attacker = unitAt(view, { x: 4, y: 3 });
+    const plan = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
+      ...NO_INTERACTION,
+      selection: { kind: "UNIT", unitId: attacker.id },
+      selectedUnitId: attacker.id,
+      kaboomPreviewUnitId: attacker.id,
+    });
+    const target = required(
+      plan.targets.find((candidate) => candidate.family === "ATTACK"),
+    );
+    expect(target.previewWarnings).toBeUndefined();
+    expect(target.previewNote).toBeUndefined();
+    expect(target.blast).toBeUndefined();
+    expect(target.splash).toBeUndefined();
+    expect(plan.entries.some((entry) => entry.abilityStyle === "BLAST")).toBe(
+      false,
+    );
+  });
+});
+
+describe("Revision 17 Kaboom! framing geometry", () => {
+  it("pans the least distance into the band and never when already inside", () => {
+    const camera = { offsetX: 0, offsetY: 0, zoom: 1 };
+    const viewport = { width: 400, height: 800 };
+    const band = { top: 60, bottom: 500 };
+    // Already inside: no pan.
+    expect(
+      panToFrameArea(
+        camera,
+        { left: 100, top: 100, right: 200, bottom: 200 },
+        viewport,
+        band,
+      ),
+    ).toEqual({ x: 0, y: 0 });
+    // Left of the view and under the dock: the least shift on each axis.
+    expect(
+      panToFrameArea(
+        camera,
+        { left: -50, top: 400, right: 100, bottom: 600 },
+        viewport,
+        band,
+      ),
+    ).toEqual({ x: 58, y: -108 });
+    // Too tall for the band: its top edge aligns under the HUD.
+    expect(
+      panToFrameArea(
+        camera,
+        { left: 0, top: 0, right: 100, bottom: 900 },
+        viewport,
+        band,
+      ).y,
+    ).toBe(68);
+  });
+});
+
+describe("Revision 17 explosion feedback", () => {
+  it("plans one burst per wave in wave order, and the Bomb Chucker's bomb", () => {
+    const state = goblinShowcaseFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const kaboom = boundary(state, {
+      kind: "KABOOM",
+      unitId: unitAt(view, AT.kaboom).id,
+    });
+    const steps = corePresentationPlanV7(
+      kaboom.before,
+      kaboom.events,
+      kaboom.after,
+    ).filter((step) => step.kind === "EXPLOSION");
+    expect(
+      steps.map((step) =>
+        step.kind === "EXPLOSION"
+          ? [
+              step.wave,
+              step.blasts.map((blast) => [blast.kind, blast.at, blast.hits]),
+              step.followCamera,
+            ]
+          : null,
+      ),
+    ).toEqual([
+      [
+        1,
+        [
+          [
+            "KABOOM",
+            AT.kaboom,
+            [AT.ownGoblin, AT.enemyFighter, AT.rocketCart, AT.enemyRaider],
+          ],
+        ],
+        undefined,
+      ],
+      [2, [["DEATH", AT.rocketCart, [AT.enemyMarksman]]], undefined],
+    ]);
+    const bomb = boundary(state, {
+      kind: "ATTACK",
+      unitId: unitAt(view, AT.bombChucker).id,
+      targetUnitId: unitAt(view, AT.bombTarget).id,
+    });
+    const bombSteps = corePresentationPlanV7(
+      bomb.before,
+      bomb.events,
+      bomb.after,
+    );
+    expect(bombSteps[0]).toMatchObject({
+      kind: "CATAPULT",
+      projectile: "BOMB",
+    });
+    expect(bombSteps[1]).toMatchObject({
+      kind: "EXPLOSION",
+      blasts: [{ kind: "BOMB", at: AT.bombTarget, hits: [AT.bombHelper] }],
+    });
+  });
+
+  it("draws the bang in the unowned blast palette, frozen under reduced motion", () => {
+    const feedback = {
+      wave: 1,
+      progress: 0.1,
+      blasts: [
+        {
+          at: { x: 2, y: 2 },
+          kind: "KABOOM" as const,
+          hits: [{ x: 1, y: 1 }],
+        },
+      ],
+    };
+    const camera = { offsetX: 0, offsetY: 0, zoom: 1 };
+    const full = recordingContext();
+    drawExplosionFeedbackV7(full.context, camera, feedback, false);
+    const reduced = recordingContext();
+    drawExplosionFeedbackV7(reduced.context, camera, feedback, true);
+    const midpoint = recordingContext();
+    drawExplosionFeedbackV7(
+      midpoint.context,
+      camera,
+      { ...feedback, progress: 0.5 },
+      false,
+    );
+    // Reduced motion draws exactly the midpoint frame.
+    expect(reduced.log).toEqual(midpoint.log);
+    expect(full.log).not.toEqual(midpoint.log);
+    const palette = new Set<string>(Object.values(GOBLIN_BLAST_PALETTE_V7));
+    for (const style of [...full.styles, ...midpoint.styles])
+      expect(palette.has(style), style).toBe(true);
+    // The 3 × 3 area outline at the midpoint spans three cells.
+    expect(
+      midpoint.log.some(
+        (call) =>
+          call[0] === "strokeRect" && call[3] === 384 && call[4] === 384,
+      ),
+    ).toBe(true);
+    const bomb = recordingContext();
+    drawBombProjectileV7(bomb.context, 10, 10, 1, 0.5);
+    expect(bomb.log.some((call) => call[0] === "arc")).toBe(true);
+  });
+});
+
+function showcaseView(): PlayerViewV7 {
+  const state = goblinShowcaseFixtureV7();
+  return viewForV7(state, state.humanPlayerId);
+}
+
+function boundary(
+  state: GameStateV7,
+  command: CommandV7,
+): {
+  readonly before: PlayerViewV7;
+  readonly after: PlayerViewV7;
+  readonly events: ReturnType<typeof projectEventsV7>;
+} {
+  const actor = seatIdV7(state, 0);
+  const result = applyCommandV7(state, actor, command);
+  if (!result.accepted) throw new Error(result.error.code);
+  return {
+    before: viewForV7(state, actor),
+    after: viewForV7(result.state, actor),
+    events: projectEventsV7(state, result.state, actor, result.events),
+  };
+}
+
+function unitAt(
+  view: PlayerViewV7,
+  at: CoordV7,
+): PlayerViewV7["units"][number] {
+  const unit = view.units.find((candidate) => same(candidate.at, at));
+  if (unit === undefined) throw new Error(`no unit at ${at.x},${at.y}`);
+  return unit;
+}
+
+function same(left: CoordV7, right: CoordV7): boolean {
+  return left.x === right.x && left.y === right.y;
+}
+
+function required<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined)
+    throw new Error("Required Goblin presentation value missing");
+  return value;
+}
+
+function recordingContext(): {
+  readonly context: CanvasRenderingContext2D;
+  readonly log: (readonly unknown[])[];
+  readonly styles: string[];
+} {
+  const log: (readonly unknown[])[] = [];
+  const styles: string[] = [];
+  const context = new Proxy(
+    {},
+    {
+      get: (target, key) =>
+        key === "canvas"
+          ? undefined
+          : key === "measureText"
+            ? (text: string) => ({ width: text.length * 7 })
+            : key in target
+              ? Reflect.get(target, key)
+              : (...args: unknown[]) => {
+                  log.push([String(key), ...args]);
+                },
+      set: (target, key, value) => {
+        if (
+          (key === "fillStyle" || key === "strokeStyle") &&
+          typeof value === "string"
+        )
+          styles.push(value);
+        return Reflect.set(target, key, value);
+      },
+    },
+  );
+  return { context: context as CanvasRenderingContext2D, log, styles };
+}

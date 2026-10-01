@@ -6,7 +6,11 @@ import type {
   TechnologyIdV7,
   UnitRoleIdV7,
 } from "../engine/index";
-import type { ArtSubjectV7, UndeadArtRoleV7 } from "./chibi-art-v7";
+import type {
+  ArtSubjectV7,
+  GoblinArtRoleV7,
+  UndeadArtRoleV7,
+} from "./chibi-art-v7";
 
 /**
  * CHIBI art subjects of the Ruleset 7 interface (bead pulp_wars-67q.11).
@@ -23,14 +27,20 @@ import type { ArtSubjectV7, UndeadArtRoleV7 } from "./chibi-art-v7";
 
 const NAVAL_ROLES: readonly UnitRoleIdV7[] = ["PATROL_BOAT", "BATTLESHIP"];
 
-/** The portrait of a role for a faction: Undead land roles have their own. */
+/**
+ * The portrait of a role for a faction: Undead land roles have their own.
+ * Revision 17 Goblin land roles have no portrait yet (pulp_wars-0ao.8), so
+ * they show their Goblin map sprite; without it the Human sprite and the
+ * Goblin badge.
+ */
 export function portraitSubjectV7(
   role: UnitRoleIdV7,
   faction: FactionIdV7,
 ): ArtSubjectV7 {
-  return faction === "UNDEAD" && !NAVAL_ROLES.includes(role)
-    ? `PORTRAIT:UNDEAD:${role as UndeadArtRoleV7}`
-    : `PORTRAIT:${role}`;
+  if (NAVAL_ROLES.includes(role)) return `PORTRAIT:${role}`;
+  if (faction === "UNDEAD") return `PORTRAIT:UNDEAD:${role as UndeadArtRoleV7}`;
+  if (faction === "GOBLIN") return `UNIT:GOBLIN:${role as GoblinArtRoleV7}`;
+  return `PORTRAIT:${role}`;
 }
 
 /** Map subject of an improvement; a Mine is drawn as its mined mountain. */
@@ -79,21 +89,24 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
 
 /**
  * Technology art for a viewer's faction: the units and portraits a
- * technology shows follow the faction (an Undead Drill shows the Zombie).
+ * technology shows follow the faction (an Undead Drill shows the Zombie, a
+ * Goblin Drill the Orc Brute).
  */
 export function technologySubjectV7(
   tech: TechnologyIdV7,
   faction: FactionIdV7,
 ): ArtSubjectV7 {
   const subject: ArtSubjectV7 = CHIBI_TECH_ART_SUBJECTS_V7[tech];
-  if (faction !== "UNDEAD") return subject;
+  if (faction === "ORIGINAL") return subject;
   if (subject.startsWith("PORTRAIT:"))
     return portraitSubjectV7(
       subject.slice("PORTRAIT:".length) as UnitRoleIdV7,
       faction,
     );
   if (subject === "UNIT:KNIGHT" || subject === "UNIT:GUARD")
-    return `UNIT:UNDEAD:${subject.slice("UNIT:".length) as UndeadArtRoleV7}`;
+    return faction === "UNDEAD"
+      ? `UNIT:UNDEAD:${subject.slice("UNIT:".length) as UndeadArtRoleV7}`
+      : `UNIT:GOBLIN:${subject.slice("UNIT:".length) as GoblinArtRoleV7}`;
   return subject;
 }
 

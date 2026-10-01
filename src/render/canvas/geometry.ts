@@ -392,3 +392,39 @@ function squaredDistance(left: Point, right: Point): number {
   const dy = left.y - right.y;
   return dx * dx + dy * dy;
 }
+
+/**
+ * The least camera pan (CSS px) that brings a world `area` wholly inside the
+ * visible region (the canvas width and the vertical `band` left by the HUD
+ * and the dock), less `margin` on every side. An axis whose area does not fit
+ * aligns its leading edge (left or top); an axis already inside does not
+ * move. The zoom never changes.
+ */
+export function panToFrameArea(
+  camera: CameraState,
+  area: WorldBounds,
+  viewport: Size,
+  band: ScreenBand,
+  margin = 8,
+): Point {
+  const axis = (
+    min: number,
+    max: number,
+    offset: number,
+    low: number,
+    high: number,
+  ): number => {
+    const start = offset + min * camera.zoom;
+    const end = offset + max * camera.zoom;
+    const lo = low + margin;
+    const hi = high - margin;
+    if (end - start > hi - lo) return lo - start;
+    if (start < lo) return lo - start;
+    if (end > hi) return hi - end;
+    return 0;
+  };
+  return {
+    x: axis(area.left, area.right, camera.offsetX, 0, viewport.width),
+    y: axis(area.top, area.bottom, camera.offsetY, band.top, band.bottom),
+  };
+}

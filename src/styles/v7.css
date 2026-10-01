@@ -2147,3 +2147,96 @@
   height: 1.15rem;
   padding: 0.12rem;
 }
+
+/*
+ * Revision 17 Goblins (docs/art/factions/GOBLIN.md): the goblin head badge
+ * is olive on charcoal with a cream rim, apart from every owner colour and
+ * from the Undead skull.
+ */
+.v7-goblin-badge {
+  border-color: #efe6c8;
+  background: #33363d;
+  color: #9aa83e;
+}
+
+.v7-goblin-badge path {
+  stroke: #33363d;
+}
+
+.v7-faction-chip[data-faction="goblin"] {
+  border: 1px solid #efe6c855;
+  background: #33363d;
+  color: #d6df9a;
+}
+
+.v7-command-icon[data-icon="bomb"] {
+  color: #efe6c8;
+}
+
+.v7-warrens-chip {
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+
+/* Friendly fire on the Kaboom! chip reads as a warning. */
+.v7-kaboom-chip[data-friendly-fire="true"] {
+  background: #ffd84a;
+  color: #1b1b1f;
+}
+
+.v7-context-action[data-kaboom="armed"] {
+  outline: 3px solid #fff8d0;
+  outline-offset: 1px;
+}
+
+.v7-context-action[data-disabled-reason="goblin-field-defense"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* The armed Kaboom! confirmation spans the whole dock. */
+.v7-kaboom-preview {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 0.4rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #fff8d066;
+  border-radius: 12px;
+  background: rgb(43 45 51 / 92%);
+}
+
+.v7-kaboom-summary {
+  margin: 0;
+  font-weight: 800;
+}
+
+.v7-kaboom-lines {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.v7-kaboom-line.is-warning {
+  padding: 0.2rem 0.5rem;
+  border-left: 4px solid #ffd84a;
+  border-radius: 6px;
+  background: #4d3500;
+  color: #ffe9a8;
+  font-weight: 800;
+}
+
+.v7-kaboom-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.v7-help-goblin .v7-help-rule strong {
+  margin-right: 0.25rem;
+}

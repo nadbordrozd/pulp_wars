@@ -16,14 +16,39 @@ export function undeadFixtureMountExpressionV7(
   fixture: UndeadUiFixtureNameV7,
   artSet: "LEGACY" | "CHIBI",
 ): string {
+  return ruleset7FixtureMountExpressionV7({
+    module: "/tests/fixtures/v7-undead-ui.ts",
+    fixture,
+    artSet,
+    global: "__UNDEAD_REVIEW__",
+    extras:
+      "at: fixtures.UNDEAD_SHOWCASE_V7, afflictions: fixtures.AFFLICTION_SHOWCASE_V7",
+  });
+}
+
+/**
+ * The shared fixture mount (Undead and, revision 17, Goblin UI fixtures):
+ * replaces the running app with a `Ruleset7DomAppView` over a local fixture
+ * controller and exposes `globalThis[global]` ({ boardHost, traces, view,
+ * snapshotView, ...extras }).
+ */
+export function ruleset7FixtureMountExpressionV7(options: {
+  readonly module: string;
+  readonly fixture: string;
+  readonly artSet: "LEGACY" | "CHIBI";
+  readonly global: string;
+  /** Object-literal members evaluated with `fixtures` in scope. */
+  readonly extras: string;
+}): string {
+  const global = JSON.stringify(options.global);
   return `(async () => {
       const engine = await import('/src/engine/index.ts');
-      const fixtures = await import('/tests/fixtures/v7-undead-ui.ts');
+      const fixtures = await import(${JSON.stringify(options.module)});
       const { Ruleset7DomAppView } = await import('/src/render/dom/app-view-v7.ts');
       const { CanvasBoardHostV7 } = await import('/src/render/canvas/board-host-v7.ts');
       globalThis.__PULP_WARS_APP__?.destroy();
-      globalThis.__UNDEAD_REVIEW__?.view?.destroy?.();
-      let state = fixtures[${JSON.stringify(fixture)}]();
+      globalThis[${global}]?.view?.destroy?.();
+      let state = fixtures[${JSON.stringify(options.fixture)}]();
       const subscribers = new Set();
       const boundarySubscribers = new Set();
       const traces = [];
@@ -63,8 +88,8 @@ export function undeadFixtureMountExpressionV7(
       };
       const root = document.querySelector('#app');
       const boardHost = new CanvasBoardHostV7(document);
-      const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: null, artSet: ${JSON.stringify(artSet)} });
-      globalThis.__UNDEAD_REVIEW__ = { boardHost, traces, view, at: fixtures.UNDEAD_SHOWCASE_V7, afflictions: fixtures.AFFLICTION_SHOWCASE_V7, snapshotView: () => snapshot().view };
+      const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: null, artSet: ${JSON.stringify(options.artSet)} });
+      globalThis[${global}] = { boardHost, traces, view, snapshotView: () => snapshot().view, ${options.extras} };
     })()`;
 }
 

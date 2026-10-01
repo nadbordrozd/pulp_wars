@@ -17,6 +17,9 @@ import type {
 import {
   cityUnitCapacityForV7,
   effectiveRoleRuleV7,
+  factionRulesV7,
+  playerFactionV7,
+  previewKaboomV7,
   unitRoleRuleV7,
   unitRoleMechanicsV7,
   previewDevourV7,
@@ -105,6 +108,22 @@ import {
   unitIsUndeadV7,
   wailPreviewDescriptionV7,
 } from "../undead-presentation-v7";
+import {
+  GOBLIN_FIELD_DEFENSE_EXPLANATION_V7,
+  GOBLIN_HELP_RULES_V7,
+  goblinAbilityDescriptionV7,
+  goblinAbilityNameV7,
+  goblinBoundaryNoticeV7,
+  goblinCommandLabelV7,
+  goblinFieldDefenseBlockedV7,
+  goblinRecruitNotesV7,
+  goblinUnitInfoLinesV7,
+  kaboomPreviewTextV7,
+  kaboomTooltipV7,
+  matchHasGoblinV7,
+  technologyNameV7,
+  type KaboomPreviewTextV7,
+} from "../goblin-presentation-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -135,11 +154,14 @@ const COLOR_LABELS: Readonly<Record<string, string>> = {
   GOLD: "Gold",
   VIOLET: "Violet",
 };
-const FACTIONS: readonly FactionIdV7[] = ["ORIGINAL", "UNDEAD"];
+const FACTIONS: readonly FactionIdV7[] = ["ORIGINAL", "UNDEAD", "GOBLIN"];
 const FACTION_LABELS: Readonly<Record<string, string>> = {
   ORIGINAL: "Human",
   UNDEAD: "Undead",
+  GOBLIN: "Goblin",
 };
+/** Non-Human factions drawn with a placeholder badge over Human art. */
+type FactionBadgeV7 = "UNDEAD" | "GOBLIN" | null;
 const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "MOVE",
   "ATTACK",
@@ -186,7 +208,7 @@ interface DraftV7 {
   readonly seedText: string;
   readonly humanColor: PlayerColorV7;
   readonly mapType: MapTypeV7;
-  /** Seat factions (seat 0 is the human); used only with the Undead flag. */
+  /** Seat factions (seat 0 is the human): Human, Undead or Goblin. */
   readonly factions: readonly FactionIdV7[];
 }
 
@@ -226,6 +248,13 @@ export class Ruleset7DomAppView {
   #selectedModifier: string | null = null;
   #selectedRecruitHelp: UnitRoleIdV7 | null = null;
   #selectedUnitHelpId: number | null = null;
+  /**
+   * Revision 17: the own unit whose Kaboom! is armed (its preview stays on
+   * the board and the dock asks for confirmation), and the unit whose
+   * Kaboom! button is hovered or focused (preview only).
+   */
+  #kaboomArmedUnitId: number | null = null;
+  #kaboomHoverUnitId: number | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
@@ -373,7 +402,14 @@ export class Ruleset7DomAppView {
       event.preventDefault();
       this.#boardHost.resetInspectionCycle?.();
       if (this.#screen !== "MATCH") this.#screen = "MATCH";
-      else this.#selection = null;
+      else if (this.#kaboomArmedUnitId !== null) {
+        // Revision 17: Escape first disarms an armed Kaboom!.
+        this.#kaboomArmedUnitId = null;
+        this.#kaboomHoverUnitId = null;
+        this.#pendingFocusAction = "command-kaboom";
+        this.#render();
+        return;
+      } else this.#selection = null;
       this.#render();
       this.#queueBoardFocus();
       return;
@@ -617,7 +653,7 @@ export class Ruleset7DomAppView {
     return main;
   }
 
-  /** Per-seat faction choice (Human or Undead): one labelled select per seat. */
+  /** Per-seat faction choice (Human, Undead or Goblin): one select per seat. */
   #factionFields(): HTMLElement {
     const fieldset = el(this.#document, "fieldset", "v7-setup-factions");
     fieldset.dataset.v7Factions = "true";
@@ -751,6 +787,8 @@ export class Ruleset7DomAppView {
       this.#boardHost.mount(board, {
         onSelection: (selection) => {
           this.#selection = selection;
+          this.#kaboomArmedUnitId = null;
+          this.#kaboomHoverUnitId = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
           this.#selectedModifier = null;
@@ -1023,6 +1061,9 @@ export class Ruleset7DomAppView {
 
   #boardModel(view: PlayerViewV7): Parameters<BoardHostV7["update"]>[0] {
     const activeId = view.turnOrder[view.activeSeatIndex];
+    const selectedUnitId =
+      this.#selection?.kind === "UNIT" ? this.#selection.unitId : null;
+    const kaboomUnitId = this.#kaboomArmedUnitId ?? this.#kaboomHoverUnitId;
     return {
       matchInstanceId: this.#matchInstance,
       view,
@@ -1041,9 +1082,13 @@ export class Ruleset7DomAppView {
       artSet: this.#artSet,
       interaction: {
         selection: this.#selection,
-        selectedUnitId:
-          this.#selection?.kind === "UNIT" ? this.#selection.unitId : null,
+        selectedUnitId,
         selectedAchievement: null,
+        // Revision 17: the hovered, focused or armed Kaboom! of the selected
+        // unit previews its blast on the board.
+        ...(kaboomUnitId !== null && kaboomUnitId === selectedUnitId
+          ? { kaboomPreviewUnitId: kaboomUnitId }
+          : {}),
       },
     };
   }
@@ -1069,7 +1114,10 @@ export class Ruleset7DomAppView {
       const roleRule = unitRoleRuleV7(view, unit);
       const roleLabel = roleRule.label;
       const undeadUnit = unitIsUndeadV7(view, unit);
-      const unitFaction = undeadUnit ? "UNDEAD" : "ORIGINAL";
+      // Revision 17: every unit resolves through its owner's faction.
+      const unitFaction = playerFactionV7(view, unit.ownerId);
+      const unitBadge: FactionBadgeV7 =
+        unitFaction === "ORIGINAL" ? null : unitFaction;
       const unitSubject = unitArtSubjectV7({ ...unit, faction: unitFaction });
       const unitColour = this.#playerColour(view, unit.ownerId);
       const dockArt = this.#chibiArt(
@@ -1085,7 +1133,7 @@ export class Ruleset7DomAppView {
             : RULESET7_UNIT_ART_IDS[unit.role],
           unit.form === "EMBARKED" ? `${roleLabel} (at sea)` : roleLabel,
           true,
-          undeadUnit && dockArt?.factionArt !== true,
+          dockArt?.factionArt === true ? null : unitBadge,
           dockArt?.element,
         ),
       );
@@ -1104,14 +1152,14 @@ export class Ruleset7DomAppView {
             );
       }
       const identityColumn = dock.querySelector<HTMLElement>(".v7-identity");
-      if (undeadUnit) {
+      if (unitBadge !== null) {
         const faction = text(
           this.#document,
           "span",
-          factionNameV7("UNDEAD"),
+          factionNameV7(unitBadge),
           "v7-chip v7-faction-chip",
         );
-        faction.dataset.faction = "undead";
+        faction.dataset.faction = unitBadge.toLowerCase();
         identityColumn?.append(faction);
       }
       identityColumn?.append(
@@ -1148,7 +1196,16 @@ export class Ruleset7DomAppView {
       if (unit.role === "KNIGHT" && unit.activation.overrunActive) {
         const state = el(this.#document, "section", "v7-tactical-state");
         state.dataset.tacticalState = "overrun";
-        state.append(text(this.#document, "strong", "Overrun: attack again"));
+        state.append(
+          text(
+            this.#document,
+            "strong",
+            // Revision 17: Overrun is labelled Ram for Scrap Buggies.
+            unitFaction === "GOBLIN"
+              ? "Ram: attack again"
+              : "Overrun: attack again",
+          ),
+        );
         unitDetails.append(state);
       }
       if (unit.activation.escapeAvailable) {
@@ -1307,6 +1364,24 @@ export class Ruleset7DomAppView {
           );
           abilities.append(entry);
         }
+        // Revision 17: Kaboom and death-blast damage, bombs, regeneration,
+        // Gang Up and the Field Defense restriction from `stats.goblin`.
+        if (stats.goblin !== undefined && unit.form !== "EMBARKED") {
+          const mechanics = unitRoleMechanicsV7(view, unit);
+          for (const line of goblinUnitInfoLinesV7(
+            unit.role,
+            stats.goblin,
+            mechanics.splash && mechanics.splashTargets === "ALL",
+          )) {
+            const entry = el(this.#document, "p", "v7-unit-ability");
+            entry.dataset.goblinInfo = line.id;
+            entry.append(
+              text(this.#document, "strong", line.name),
+              text(this.#document, "span", line.description),
+            );
+            abilities.append(entry);
+          }
+        }
         if (
           undeadUnit &&
           unit.role === "CATAPULT" &&
@@ -1335,6 +1410,32 @@ export class Ruleset7DomAppView {
           command.unitId === unit.id &&
           !NON_BUTTON_COMMANDS.has(command.kind),
       );
+      if (goblinFieldDefenseBlockedV7(view, unit.id)) {
+        // Revision 17 (section 5.3): the Goblin never builds Field Defense;
+        // aria-disabled keeps the explanation reachable by keyboard.
+        const fortify = button(
+          this.#document,
+          "",
+          "goblin-field-defense",
+          "v7-context-action",
+        );
+        fortify.append(
+          createTacticalSymbolV7(
+            this.#document,
+            "ui-action-field-defense",
+            this.#tacticalTheme(),
+          ),
+          text(this.#document, "span", "Fortify", "v7-action-label"),
+        );
+        fortify.setAttribute("aria-disabled", "true");
+        fortify.dataset.disabledReason = "goblin-field-defense";
+        fortify.title = GOBLIN_FIELD_DEFENSE_EXPLANATION_V7;
+        fortify.setAttribute(
+          "aria-label",
+          `Fortify unavailable. ${GOBLIN_FIELD_DEFENSE_EXPLANATION_V7}`,
+        );
+        actions.append(fortify);
+      }
       if (restlessRecoverBlockedV7(view, unit)) {
         const recover = button(
           this.#document,
@@ -1385,6 +1486,8 @@ export class Ruleset7DomAppView {
         dock.dataset.hasActions = "true";
         dock.append(actions);
       }
+      const kaboomPanel = this.#kaboomPanel(view, unit.id);
+      if (kaboomPanel !== null) dock.append(kaboomPanel);
       if (this.#selectedUnitHelpId === unit.id) {
         const modal = el(this.#document, "section", "v7-unit-help-dialog");
         modal.setAttribute("role", "dialog");
@@ -1406,7 +1509,7 @@ export class Ruleset7DomAppView {
           unitColour,
         );
         header.append(
-          undeadArt(
+          factionBadgeArt(
             this.#document,
             helpArt?.element ??
               art(
@@ -1416,7 +1519,7 @@ export class Ruleset7DomAppView {
                   : RULESET7_UNIT_ART_IDS[unit.role],
                 "",
               ),
-            undeadUnit && helpArt?.factionArt !== true,
+            helpArt?.factionArt === true ? null : unitBadge,
           ),
           text(this.#document, "h2", roleLabel),
         );
@@ -1443,7 +1546,7 @@ export class Ruleset7DomAppView {
           `building-city-${cityTier}`,
           city.isCapital ? "Capital" : "City",
           true,
-          false,
+          null,
           this.#chibiArt(
             `CITY:${cityTier}`,
             CHIBI_DOM_BOXES_V7.dock,
@@ -1508,6 +1611,21 @@ export class Ruleset7DomAppView {
           uiIconV7(this.#document, "units"),
           `${assigned}/${capacity}`,
         );
+        // Revision 17 Warrens: a Goblin city holds one extra unit.
+        const warrens = factionRulesV7(view.viewer.faction).cityCapacityBonus;
+        if (warrens > 0) {
+          const bonus = text(
+            this.#document,
+            "span",
+            `+${warrens} Warrens`,
+            "v7-chip v7-warrens-chip",
+          );
+          bonus.dataset.capacity = "warrens";
+          bonus.title =
+            "Goblin Warrens: every Goblin city holds one extra unit";
+          unitsValue.append(bonus);
+          units.title = `Units supported by this city (includes +${warrens} Warrens)`;
+        }
         units.append(text(this.#document, "dt", "Units"), unitsValue);
         const income = el(this.#document, "div", "v7-city-stat");
         income.dataset.stat = "income";
@@ -1618,7 +1736,7 @@ export class Ruleset7DomAppView {
             asset,
             name,
             true,
-            false,
+            null,
             this.#chibiArt(
               tileSubject,
               CHIBI_DOM_BOXES_V7.dock,
@@ -1787,26 +1905,30 @@ export class Ruleset7DomAppView {
         CHIBI_DOM_BOXES_V7.action,
         this.#viewerColour(),
       );
+      const trainBadge: FactionBadgeV7 =
+        command.kind === "TRAIN" && this.#viewerFaction() !== "ORIGINAL"
+          ? (this.#viewerFaction() as "UNDEAD" | "GOBLIN")
+          : null;
       if (commandArt !== null)
         action.prepend(
-          undeadArt(
+          factionBadgeArt(
             this.#document,
             commandArt.element,
-            command.kind === "TRAIN" &&
-              this.#viewerFaction() === "UNDEAD" &&
-              !commandArt.factionArt,
+            commandArt.factionArt ? null : trainBadge,
           ),
         );
       else if (artId !== null)
         action.prepend(
-          command.kind === "TRAIN" && this.#viewerFaction() === "UNDEAD"
-            ? undeadArt(this.#document, art(this.#document, artId, ""), true)
-            : art(this.#document, artId, ""),
+          factionBadgeArt(
+            this.#document,
+            art(this.#document, artId, ""),
+            trainBadge,
+          ),
         );
-      const undeadIcon = UNDEAD_COMMAND_ICONS[command.kind];
-      if (undeadIcon !== undefined && commandArt === null)
+      const factionIcon = FACTION_COMMAND_ICONS[command.kind];
+      if (factionIcon !== undefined && commandArt === null)
         action.prepend(
-          uiIconV7(this.#document, undeadIcon, "v7-ui-icon v7-command-icon"),
+          uiIconV7(this.#document, factionIcon, "v7-ui-icon v7-command-icon"),
         );
       if (command.kind === "BUILD_FIELD_DEFENSE")
         action.prepend(
@@ -1876,6 +1998,10 @@ export class Ruleset7DomAppView {
               ),
             );
         }
+      } else if (command.kind === "KABOOM") {
+        // Revision 17: the blast preview is shown on hover or focus and while
+        // armed; activating the button arms it and asks for confirmation.
+        this.#decorateKaboomButton(action, command.unitId);
       } else if (
         command.kind === "WAIL" ||
         command.kind === "RAISE_DEAD" ||
@@ -1925,7 +2051,10 @@ export class Ruleset7DomAppView {
         }
       }
       action.disabled = this.#localBusy();
-      action.onclick = () => void this.#dispatch(command);
+      action.onclick =
+        command.kind === "KABOOM"
+          ? () => this.#toggleKaboom(command.unitId)
+          : () => void this.#dispatch(command);
       if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL") {
         const card = el(this.#document, "div", "v7-train-card");
         const help = button(
@@ -2064,7 +2193,10 @@ export class Ruleset7DomAppView {
       ...(undeadViewer
         ? UNDEAD_HELP_TIPS
         : [
-            "A Raider that survives an attack may move again (Escape).",
+            // Revision 17: Goblin Wolf Riders have no Escape.
+            ...(view?.viewer.faction === "GOBLIN"
+              ? []
+              : ["A Raider that survives an attack may move again (Escape)."]),
             ...(view !== null && matchHasUndeadV7(view)
               ? [
                   "Units that fall in battle on land leave Graves. Undead raise or devour them, and Zombie kills rise as Zombies.",
@@ -2101,12 +2233,20 @@ export class Ruleset7DomAppView {
       );
       keys.append(row);
     }
-    section.append(
-      text(this.#document, "h2", "How to play"),
-      tips,
-      text(this.#document, "h3", "Keyboard"),
-      keys,
-    );
+    section.append(text(this.#document, "h2", "How to play"), tips);
+    // Revision 17 (section 11.3): one sentence per Goblin rule, for every
+    // viewer of a match with a Goblin seat.
+    if (view !== null && matchHasGoblinV7(view)) {
+      const rules = this.#document.createElement("ul");
+      rules.className = "v7-help-tips v7-help-goblin";
+      for (const [name, sentence] of GOBLIN_HELP_RULES_V7) {
+        const item = el(this.#document, "li", "v7-help-rule");
+        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
+        rules.append(item);
+      }
+      section.append(text(this.#document, "h3", "Goblins"), rules);
+    }
+    section.append(text(this.#document, "h3", "Keyboard"), keys);
     return section;
   }
 
@@ -2176,6 +2316,7 @@ export class Ruleset7DomAppView {
         },
         this.#selectedTech,
         (tech) => this.#technologyChibiArt(tech)?.element ?? null,
+        this.#viewerFaction(),
       );
       const option = this.#document.createElement("option");
       option.value = laneId;
@@ -2197,9 +2338,11 @@ export class Ruleset7DomAppView {
   }
 
   #techDetail(node: PublicTechnologyNodeV7): HTMLElement {
+    const faction = this.#viewerFaction();
+    const name = technologyNameV7(node.id, faction);
     const detail = el(this.#document, "aside", "v7-tech-detail");
     detail.dataset.techState = node.state.toLowerCase();
-    detail.setAttribute("aria-label", `${title(node.id)} details`);
+    detail.setAttribute("aria-label", `${name} details`);
     const close = iconButton(
       this.#document,
       "close",
@@ -2227,7 +2370,7 @@ export class Ruleset7DomAppView {
             ? text(
                 this.#document,
                 "p",
-                `Requires ${node.missingPrerequisites.map(title).join(", ")}`,
+                `Requires ${node.missingPrerequisites.map((tech) => technologyNameV7(tech, faction)).join(", ")}`,
                 "v7-tech-status is-locked",
               )
             : node.affordable
@@ -2243,9 +2386,9 @@ export class Ruleset7DomAppView {
       identity(
         this.#document,
         RULESET7_TECH_ART_IDS[node.id],
-        title(node.id),
+        name,
         false,
-        false,
+        null,
         this.#technologyChibiArt(node.id)?.element,
       ),
     );
@@ -2270,7 +2413,7 @@ export class Ruleset7DomAppView {
         entry.dataset.effectGroup = group.id;
         unlocks.append(entry);
       }
-    for (const note of navalTechnologyNotesV7(node.id))
+    for (const note of navalTechnologyNotesV7(node.id, faction))
       unlocks.append(text(this.#document, "li", note));
     const achievement = techAchievementV7(node.id);
     if (achievement !== null) {
@@ -2300,8 +2443,8 @@ export class Ruleset7DomAppView {
       research.setAttribute(
         "aria-label",
         node.cost === 0
-          ? `Research ${title(node.id)} for free`
-          : `Research ${title(node.id)} for ${node.cost} Coins`,
+          ? `Research ${name} for free`
+          : `Research ${name} for ${node.cost} Coins`,
       );
       research.onclick = () => {
         this.#pendingFocusAction = `tech-${node.id.toLowerCase()}`;
@@ -2338,11 +2481,13 @@ export class Ruleset7DomAppView {
       this.#viewerColour(),
     );
     header.append(
-      undeadArt(
+      factionBadgeArt(
         this.#document,
         recruitArt?.element ??
           art(this.#document, RULESET7_UNIT_ART_IDS[role], ""),
-        faction === "UNDEAD" && recruitArt?.factionArt !== true,
+        recruitArt?.factionArt === true || faction === "ORIGINAL"
+          ? null
+          : faction,
       ),
       text(this.#document, "h2", presentation.label),
       economyChips(this.#document, { cost: rule.cost ?? 0 }),
@@ -2402,7 +2547,7 @@ export class Ruleset7DomAppView {
           ? `${playerName(entry.seat)} (you)`
           : playerName(entry.seat),
       );
-      if (matchHasUndeadV7(view)) {
+      if (matchHasFactionsV7(view)) {
         const faction = text(
           this.#document,
           "span",
@@ -2680,12 +2825,14 @@ export class Ruleset7DomAppView {
         this.#playerColour(view, view.viewer.id),
       );
       action.append(
-        undeadArt(
+        factionBadgeArt(
           this.#document,
           rewardArt?.element ?? art(this.#document, rewardArtIdV7(reward), ""),
-          view.viewer.faction === "UNDEAD" &&
+          view.viewer.faction !== "ORIGINAL" &&
             (reward === "MILITIA" || reward === "JUGGERNAUT") &&
-            rewardArt?.factionArt !== true,
+            rewardArt?.factionArt !== true
+            ? view.viewer.faction
+            : null,
         ),
         text(this.#document, "strong", name),
         text(this.#document, "span", detail, "v7-reward-detail"),
@@ -2851,7 +2998,9 @@ export class Ruleset7DomAppView {
           `#v7-faction-${seat}`,
         );
         if (field === null) return prior;
-        return field.value === "UNDEAD" ? "UNDEAD" : "ORIGINAL";
+        return field.value === "UNDEAD" || field.value === "GOBLIN"
+          ? field.value
+          : "ORIGINAL";
       }),
     };
   }
@@ -2915,6 +3064,8 @@ export class Ruleset7DomAppView {
   /** Resolves true when the command was accepted and its presentation ran. */
   async #dispatch(command: CommandV7): Promise<boolean> {
     if (this.#localBusy()) return false;
+    this.#kaboomArmedUnitId = null;
+    this.#kaboomHoverUnitId = null;
     const restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
@@ -3244,6 +3395,162 @@ export class Ruleset7DomAppView {
     }, 3200);
   }
 
+  /**
+   * Revision 17: the Kaboom! button carries its tooltip, a summary chip and
+   * the full preview in its accessible name; hover and focus preview the
+   * blast on the board without re-rendering the dock.
+   */
+  #decorateKaboomButton(action: HTMLButtonElement, unitId: UnitId): void {
+    const view = this.#snapshot.view;
+    if (view === null) return;
+    const preview = previewKaboomV7(view, unitId);
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    const damage =
+      unit === undefined ? null : unitRoleMechanicsV7(view, unit).kaboomDamage;
+    const tooltip = damage === null ? null : kaboomTooltipV7(damage);
+    const summary =
+      preview === null ? null : kaboomPreviewTextV7(view, preview);
+    action.title =
+      tooltip ?? commandLabel({ kind: "KABOOM", unitId }, "GOBLIN");
+    action.setAttribute(
+      "aria-label",
+      [
+        "Kaboom!",
+        ...(tooltip === null ? [] : [tooltip]),
+        ...(summary === null ? [] : [summary.description]),
+      ].join(" · "),
+    );
+    action.setAttribute(
+      "aria-pressed",
+      String(this.#kaboomArmedUnitId === unitId),
+    );
+    action.dataset.kaboom =
+      this.#kaboomArmedUnitId === unitId ? "armed" : "ready";
+    if (summary !== null) {
+      action.append(
+        text(
+          this.#document,
+          "span",
+          summary.chip,
+          "v7-undead-preview-chip v7-kaboom-chip",
+        ),
+      );
+      if (summary.friendlyChip !== null) {
+        const warning = text(
+          this.#document,
+          "span",
+          summary.friendlyChip,
+          "v7-undead-preview-chip v7-kaboom-chip",
+        );
+        warning.dataset.friendlyFire = "true";
+        action.append(warning);
+      }
+    }
+    const show = (): void => {
+      if (this.#kaboomHoverUnitId === unitId) return;
+      this.#kaboomHoverUnitId = unitId;
+      this.#syncBoard();
+    };
+    const hide = (): void => {
+      if (this.#kaboomHoverUnitId !== unitId) return;
+      this.#kaboomHoverUnitId = null;
+      this.#syncBoard();
+    };
+    action.addEventListener("pointerenter", show);
+    action.addEventListener("focus", show);
+    action.addEventListener("pointerleave", hide);
+    action.addEventListener("blur", hide);
+  }
+
+  /** Arms or disarms the selected unit's Kaboom!. */
+  #toggleKaboom(unitId: UnitId): void {
+    if (this.#localBusy()) return;
+    const arming = this.#kaboomArmedUnitId !== unitId;
+    this.#kaboomArmedUnitId = arming ? unitId : null;
+    this.#kaboomHoverUnitId = null;
+    this.#pendingFocusAction = arming ? "confirm-kaboom" : "command-kaboom";
+    this.#render();
+  }
+
+  /**
+   * The armed Kaboom! confirmation: the preview summary, chain lines, the
+   * friendly-fire, Bitten and fog warnings, Plunder, Field Defense lost, and
+   * Confirm and Cancel. Null unless this unit's Kaboom! is armed and offered.
+   */
+  #kaboomPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    if (this.#kaboomArmedUnitId !== unitId) return null;
+    const command = this.#snapshot.offeredCommands.find(
+      (candidate) => candidate.kind === "KABOOM" && candidate.unitId === unitId,
+    );
+    const preview =
+      command === undefined ? null : previewKaboomV7(view, unitId);
+    if (command === undefined || preview === null) {
+      this.#kaboomArmedUnitId = null;
+      return null;
+    }
+    const summary: KaboomPreviewTextV7 = kaboomPreviewTextV7(view, preview);
+    const panel = el(this.#document, "section", "v7-kaboom-preview");
+    panel.dataset.v7Kaboom = "armed";
+    panel.setAttribute("aria-label", "Kaboom! preview");
+    panel.append(
+      text(this.#document, "p", summary.summary, "v7-kaboom-summary"),
+    );
+    const lines = this.#document.createElement("ul");
+    lines.className = "v7-kaboom-lines";
+    const line = (
+      content: string | null,
+      id: string,
+      warning = false,
+    ): void => {
+      if (content === null) return;
+      const item = text(
+        this.#document,
+        "li",
+        content,
+        warning ? "v7-kaboom-line is-warning" : "v7-kaboom-line",
+      );
+      item.dataset.kaboomLine = id;
+      lines.append(item);
+    };
+    line(summary.friendlyFire, "friendly-fire", true);
+    line(summary.bitten, "bitten", true);
+    for (const chain of summary.chain) line(chain, "chain");
+    line(summary.plunder, "plunder");
+    line(summary.fieldDefense, "field-defense");
+    line(summary.fog, "fog", true);
+    if (lines.childElementCount > 0) panel.append(lines);
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const confirm = button(
+      this.#document,
+      "Confirm Kaboom!",
+      "confirm-kaboom",
+      "destructive v7-kaboom-confirm",
+    );
+    confirm.setAttribute(
+      "aria-label",
+      `Confirm Kaboom!: this unit dies. ${summary.description}`,
+    );
+    confirm.disabled = this.#localBusy();
+    confirm.onclick = () => void this.#dispatch(command);
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "cancel-kaboom",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#toggleKaboom(unitId);
+    buttons.append(confirm, cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /** Redraws the board (for example a Kaboom! preview) without the DOM. */
+  #syncBoard(): void {
+    const view = this.#snapshot.view;
+    if (view === null || this.#matchRoot === null || this.#destroyed) return;
+    this.#boardHost.update(this.#boardModel(view));
+  }
+
   /** The viewer's faction; labels always use the viewer's own registration. */
   #viewerFaction(): FactionIdV7 {
     const view = this.#snapshot.view;
@@ -3422,7 +3729,10 @@ function appendTechNode(
   selected: TechnologyIdV7 | null,
   /** CHIBI art for a technology card, or null to keep the legacy art. */
   chibiArt: (tech: TechnologyIdV7) => HTMLElement | null = () => null,
+  /** The viewer's faction, which names the technologies (Plunder). */
+  faction: FactionIdV7 = "ORIGINAL",
 ): void {
+  const name = technologyNameV7(layout.node.id, faction);
   const node = el(documentRoot, "div", "v7-tech-node");
   const card = button(
     documentRoot,
@@ -3446,10 +3756,7 @@ function appendTechNode(
     image.style.height = `${artworkLayout.image.height}px`;
   }
   artFrame.append(image);
-  card.append(
-    artFrame,
-    text(documentRoot, "span", title(layout.node.id), "v7-tech-name"),
-  );
+  card.append(artFrame, text(documentRoot, "span", name, "v7-tech-name"));
   const achievement = techAchievementV7(layout.node.id);
   if (achievement !== null) {
     const badge = el(documentRoot, "span", "v7-tech-achievement");
@@ -3468,18 +3775,15 @@ function appendTechNode(
     card.append(cost);
     card.setAttribute(
       "aria-label",
-      `${title(layout.node.id)}, ${free ? "free" : `${layout.node.cost} Coins`}${layout.node.state === "BLOCKED" ? ", locked" : ""}`,
+      `${name}, ${free ? "free" : `${layout.node.cost} Coins`}${layout.node.state === "BLOCKED" ? ", locked" : ""}`,
     );
     if (layout.node.state === "DISABLED") {
       card.setAttribute("aria-disabled", "true");
-      card.setAttribute(
-        "aria-label",
-        `${title(layout.node.id)}, unavailable on Dry Land maps`,
-      );
+      card.setAttribute("aria-label", `${name}, unavailable on Dry Land maps`);
     }
   } else {
     card.append(text(documentRoot, "span", "✓", "v7-tech-check"));
-    card.setAttribute("aria-label", `${title(layout.node.id)}, researched`);
+    card.setAttribute("aria-label", `${name}, researched`);
   }
   card.onclick = () => choose(layout.node);
   node.append(card);
@@ -3492,7 +3796,15 @@ function appendTechNode(
       edge.style.gridColumn = `span ${child.leafCount}`;
       edge.dataset.parentTech = layout.node.id;
       edge.dataset.childTech = child.node.id;
-      appendTechNode(documentRoot, edge, child, choose, selected, chibiArt);
+      appendTechNode(
+        documentRoot,
+        edge,
+        child,
+        choose,
+        selected,
+        chibiArt,
+        faction,
+      );
       children.append(edge);
     }
     node.append(children);
@@ -3504,7 +3816,8 @@ function identity(
   assetId: string,
   label: string,
   normalizePaintedSize = false,
-  undead = false,
+  /** Undead or Goblin placeholder badge over Human art; null for none. */
+  badge: FactionBadgeV7 = null,
   /** CHIBI art already sized for its box; replaces the legacy asset. */
   chibiImage?: HTMLElement,
 ): HTMLElement {
@@ -3529,9 +3842,9 @@ function identity(
     image.style.height = `${layout.height}px`;
   }
   viewport.append(image);
-  if (undead) {
-    viewport.dataset.faction = "undead";
-    viewport.append(uiIconV7(documentRoot, "skull", "v7-undead-badge"));
+  if (badge !== null) {
+    viewport.dataset.faction = badge.toLowerCase();
+    viewport.append(factionBadgeIcon(documentRoot, badge));
   }
   identity.append(viewport, text(documentRoot, "h2", label));
   return identity;
@@ -3641,7 +3954,12 @@ function trainingCostForViewV7(
 }
 function incomeDescription(view: PlayerViewV7): string {
   const cities = view.cities.filter((city) => city.ownerId === view.viewer.id);
-  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, land trade, sea trade, Market, population deficit, and siege effects. Connected cities grow with Roads; Commerce earns trade. City income: Level (max ${CITY_LEVEL_INCOME_CAP_V7}) + capital + trade + Markets.`;
+  // Revision 17: Goblins never earn land trade; their Commerce is Plunder.
+  const commerce =
+    view.viewer.faction === "GOBLIN"
+      ? "Plunder earns Coins for kills"
+      : "Commerce earns trade";
+  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, land trade, sea trade, Market, population deficit, and siege effects. Connected cities grow with Roads; ${commerce}. City income: Level (max ${CITY_LEVEL_INCOME_CAP_V7}) + capital + trade + Markets.`;
 }
 function tileCity(view: PlayerViewV7, at: CoordV7): number | null {
   const tile = view.board.tiles.find((entry) => same(entry.at, at));
@@ -3699,7 +4017,10 @@ function effectDescription(
     case "PLUNDER":
       return `+${effect.coins} Coin for each enemy unit your units or blasts kill`;
     case "OVERRUN":
-      return "Knights advance after a kill and may attack again";
+      // Revision 17: the Goblin Overrun is Ram.
+      return faction === "GOBLIN"
+        ? "Ram: Scrap Buggies advance after a kill and may attack again"
+        : "Knights advance after a kill and may attack again";
     case "CHARGE_BONUS":
       return `${label("RAIDER")}s gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
     case "MELEE_FIELD_DEMOLITION":
@@ -3713,6 +4034,7 @@ function effectDescription(
 
 function navalTechnologyNotesV7(
   technology: PublicTechnologyNodeV7["id"],
+  faction: FactionIdV7,
 ): readonly string[] {
   if (technology === "SHORECRAFT") return ["Board ships at active Ports"];
   if (technology === "NAVIGATION")
@@ -3726,7 +4048,9 @@ function navalTechnologyNotesV7(
       "Usable Road and owned-city edges cost half movement",
       "Connected owned cities and the original capital each gain population",
     ];
-  if (technology === "COMMERCE") return ["Connected cities earn trade"];
+  // Revision 17: Goblin Commerce (Plunder) earns no trade.
+  if (technology === "COMMERCE")
+    return faction === "GOBLIN" ? [] : ["Connected cities earn trade"];
   return [];
 }
 
@@ -3858,6 +4182,9 @@ export function recruitmentRolePresentationV7(
     restrictions.push("Can't attack. Wails instead.");
   if (faction === "UNDEAD" && !ship)
     restrictions.push("Restless: recovers only in your territory.");
+  // Revision 17: Kaboom, death blasts, bombs, regeneration, Gang Up and
+  // the Field Defense restriction from the Goblin registration.
+  restrictions.push(...goblinRecruitNotesV7(roleId, faction));
   return {
     label: role.label,
     stats: [
@@ -3903,6 +4230,8 @@ function abilityDescription(
 ): string | null {
   const undead = undeadAbilityDescriptionV7(ability, faction);
   if (undead !== null) return undead;
+  const goblin = goblinAbilityDescriptionV7(ability, faction);
+  if (goblin !== null) return goblin;
   switch (ability) {
     case "ATTACK":
       return minimum > 1
@@ -4006,10 +4335,16 @@ function boundaryNoticeV7(
 ): { readonly text: string | null; readonly toast: boolean } {
   const special = specialBoundaryNoticeV7(events, after.viewer.id);
   const undead = undeadBoundaryNoticeV7(events, before, after);
-  if (undead === null) return { text: special, toast: special !== null };
+  // Revision 17: explosions, Plunder, Troll regeneration and WAAAGH!
+  const goblin = goblinBoundaryNoticeV7(events, before, after);
+  const parts = [undead?.text ?? null, goblin?.text ?? null, special].filter(
+    (part): part is string => part !== null,
+  );
+  if (undead === null && goblin === null)
+    return { text: special, toast: special !== null };
   return {
-    text: special === null ? undead.text : `${undead.text} · ${special}`,
-    toast: special !== null || undead.toast,
+    text: parts.join(" · "),
+    toast: special !== null || undead?.toast === true || goblin?.toast === true,
   };
 }
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
@@ -4026,6 +4361,11 @@ function rewardLabel(
     return ["Militia", "A free Skeleton"];
   if (faction === "UNDEAD" && reward === "JUGGERNAUT")
     return ["Abomination", "A giant unit"];
+  // Revision 17: Goblin Militia is two Goblins; the giant is a Troll.
+  if (faction === "GOBLIN" && reward === "MILITIA")
+    return ["Militia", "Two free Goblins"];
+  if (faction === "GOBLIN" && reward === "JUGGERNAUT")
+    return ["Troll", "A giant unit"];
   if (reward === "SURVEY") return ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];
@@ -4073,6 +4413,8 @@ function commandLabel(command: CommandV7, faction: FactionIdV7): string {
     return effectiveRoleRuleV7(command.role, faction).label;
   const undead = undeadCommandLabelV7(command.kind, faction);
   if (undead !== null) return undead;
+  const goblin = goblinCommandLabelV7(command.kind, faction);
+  if (goblin !== null) return goblin;
   if (command.kind === "BUILD_MONUMENT") return "Monument";
   return COMMAND_LABELS[command.kind] ?? title(command.kind);
 }
@@ -4388,14 +4730,27 @@ function populationMeter(
 function abilityName(ability: string, faction: FactionIdV7): string {
   const undead = undeadAbilityNameV7(ability, faction);
   if (undead !== null) return undead;
+  const goblin = goblinAbilityNameV7(ability, faction);
+  if (goblin !== null) return goblin;
   if (ability === "TEND_WOUNDED") return "Tend";
   return title(ability);
 }
 
-/** Leaderboard, banner and turn names; faction appears only in Undead matches. */
+/**
+ * True in a match with an Undead or Goblin seat, where the leaderboard and
+ * turn status name each player's faction.
+ */
+function matchHasFactionsV7(view: PlayerViewV7): boolean {
+  return matchHasUndeadV7(view) || matchHasGoblinV7(view);
+}
+
+/**
+ * Leaderboard, banner and turn names; faction appears only in matches with
+ * an Undead or Goblin seat.
+ */
 function playerTitle(view: PlayerViewV7, seat: number): string {
   const player = view.players.find((candidate) => candidate.seat === seat);
-  return matchHasUndeadV7(view) && player !== undefined
+  return matchHasFactionsV7(view) && player !== undefined
     ? `${playerName(seat)} (${factionNameV7(player.faction)})`
     : playerName(seat);
 }
@@ -4415,10 +4770,12 @@ const UNDEAD_HELP_TIPS: readonly string[] = [
 const TEND_CURES_DESCRIPTION =
   "Heals nearby wounded troops by 2 and cures their Plague and bites.";
 
-const UNDEAD_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
+const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   RAISE_DEAD: "grave",
   DEVOUR: "devour",
   WAIL: "wail",
+  // Revision 17: a round bomb with a lit fuse (GOBLIN.md Kaboom icon).
+  KABOOM: "bomb",
 };
 
 function undeadCommandPreview(
@@ -4453,16 +4810,28 @@ function undeadCommandPreview(
       };
 }
 
-/** Wraps Human placeholder art with the Undead faction badge (spec 10.2). */
-function undeadArt(
+/**
+ * Wraps Human placeholder art with the Undead (spec 10.2) or Goblin (revision
+ * 17 section 11.4) faction badge; null keeps the art unwrapped.
+ */
+function factionBadgeArt(
   documentRoot: Document,
   image: HTMLElement,
-  undead: boolean,
+  badge: FactionBadgeV7,
 ): HTMLElement {
-  if (!undead) return image;
+  if (badge === null) return image;
   const frame = el(documentRoot, "span", "v7-undead-art");
-  frame.dataset.faction = "undead";
-  const badge = uiIconV7(documentRoot, "skull", "v7-undead-badge");
-  frame.append(image, badge);
+  frame.dataset.faction = badge.toLowerCase();
+  frame.append(image, factionBadgeIcon(documentRoot, badge));
   return frame;
+}
+
+/** The Undead skull badge, or the Goblin head badge. */
+function factionBadgeIcon(
+  documentRoot: Document,
+  badge: "UNDEAD" | "GOBLIN",
+): SVGSVGElement {
+  return badge === "UNDEAD"
+    ? uiIconV7(documentRoot, "skull", "v7-undead-badge")
+    : uiIconV7(documentRoot, "goblin", "v7-undead-badge v7-goblin-badge");
 }

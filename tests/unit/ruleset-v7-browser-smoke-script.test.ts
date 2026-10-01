@@ -35,10 +35,11 @@ describe("Ruleset 7 browser smoke script", () => {
 
   it("arms transient controls before trusted pointer launch and waits for the native select to close", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
-    // Default match, its natural outcome, and the default-route Undead match.
+    // Default match, its natural outcome, and the default-route Undead and
+    // Goblin matches.
     expect(
       source.match(/await launchWithFastForward\(connection\)/g),
-    ).toHaveLength(3);
+    ).toHaveLength(4);
     expect(source).toContain(
       'await typeSelectValue(connection, "#v7-ai-count", "2")',
     );
@@ -102,6 +103,37 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain('["UNDEAD","UNDEAD"]');
     expect(probe).not.toContain("flagUrl");
   });
+  it("plays a Goblin Kaboom! through the default setup and resumes the save", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = source.slice(
+      source.indexOf("async function probeGoblinMatch("),
+      source.indexOf("async function driveDefaultMatchToOutcome("),
+    );
+
+    expect(source).toContain("await probeGoblinMatch(connection)");
+    expect(probe).toContain('JSON.stringify(["Human", "Undead", "Goblin"])');
+    expect(probe).toContain(
+      "document.querySelector('#v7-faction-0')?.value === 'GOBLIN'",
+    );
+    expect(probe).toContain('JSON.stringify(["GOBLIN", "ORIGINAL"])');
+    expect(probe).toContain('await pressKey(connection, "Enter", "Enter")');
+    expect(probe).toContain(
+      `await pointerClick(connection, '[data-action="command-kaboom"]')`,
+    );
+    expect(probe).toContain(
+      `document.querySelector('[data-v7-kaboom="armed"]')`,
+    );
+    expect(probe).toContain(
+      `await pointerClick(connection, '[data-action="confirm-kaboom"]')`,
+    );
+    expect(probe).toContain("includes('Your Goblin blew up')");
+    expect(probe).toContain(`'["GOBLIN","ORIGINAL"]'`);
+    expect(probe.indexOf("confirm-kaboom")).toBeLessThan(
+      probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
+    );
+    // No fixture import: the probe also runs against a deployed bundle.
+    expect(probe).not.toContain("/tests/fixtures/");
+  });
   it("waits for a fresh complete document and installed controller after reload", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
 
@@ -152,9 +184,10 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(BROWSER_RELEASE_SOURCE_PATHS_V7).toContain(
       "scripts/browser-smoke-output.ts",
     );
-    // Two release captures, four Undead setup probe captures, and one
-    // revision-14 Plague/Bitten fixture capture per art set (in a loop).
-    expect(source.match(/await capture\(/g)).toHaveLength(7);
+    // Two release captures, four Undead setup probe captures, one
+    // revision-14 Plague/Bitten fixture capture per art set (in a loop), and
+    // three revision-17 Goblin probe captures.
+    expect(source.match(/await capture\(/g)).toHaveLength(10);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");
@@ -166,7 +199,7 @@ describe("Ruleset 7 browser smoke script", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     expect(
       source.match(/await replaceSeedInput\(connection, "0"\)/g),
-    ).toHaveLength(3);
+    ).toHaveLength(4);
     expect(source).toContain('commands: ["selectAll"]');
     expect(source).toContain("if (actual !== value)");
   });

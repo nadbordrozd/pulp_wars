@@ -8,6 +8,12 @@ import {
   afflictionCursorCueV7,
   unitIsUndeadV7,
 } from "../undead-presentation-v7";
+import { unitIsGoblinV7 } from "../goblin-presentation-v7";
+import {
+  drawBombProjectileV7,
+  drawExplosionFeedbackV7,
+  type ExplosionFeedbackV7,
+} from "./goblin-explosion-v7";
 import {
   MAX_ZOOM,
   MIN_ZOOM,
@@ -17,6 +23,7 @@ import {
   fitCamera,
   frameCameraOnArea,
   panCamera,
+  panToFrameArea,
   pickGridTile,
   projectGrid,
   screenToWorld,
@@ -158,6 +165,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     readonly to: CoordV7;
     readonly progress: number;
     readonly catapult: boolean;
+    /** Revision 17: a Bomb Chucker's round black bomb. */
+    readonly bomb?: boolean;
   } | null = null;
   #impact: {
     readonly at: CoordV7;
@@ -174,6 +183,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #pinnedSupportFeedback: readonly SupportFeedbackV7[] = [];
   #effectArtRequested = false;
   #windmillHealingFeedback: WindmillHealingFeedbackV7 | null = null;
+  /** Revision 17: the explosion wave bursting on the effects overlay. */
+  #explosionFeedback: ExplosionFeedbackV7 | null = null;
+  /** Review tooling only (pinExplosionFeedback): bursts frozen mid-animation. */
+  #pinnedExplosionFeedback: readonly ExplosionFeedbackV7[] = [];
   #crossfade: {
     readonly before: PlayerViewV7;
     readonly after: PlayerViewV7;
@@ -186,6 +199,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     readonly next: "UNDERLYING" | "UNIT";
   } | null = null;
   #observedCommandIndex: number | null = null;
+  /**
+   * Revision 17: the Kaboom! preview last framed (unit, visible band and
+   * viewport), so the camera frames a blast once per preview and band and a
+   * player's own pan is not undone by a later redraw.
+   */
+  #kaboomFramedKey: string | null = null;
+  #cameraPanFrame: number | null = null;
 
   constructor(documentRoot: Document) {
     this.#document = documentRoot;
@@ -324,9 +344,74 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         band: this.#unobscuredBand(true),
       });
     }
+    this.#frameKaboomPreview(model);
     this.#describe();
     this.#draw();
     this.#syncAmbientFrame();
+  }
+
+  /**
+   * Revision 17: while a Kaboom! is previewed (focused, hovered or armed),
+   * pans the camera the least distance that shows every blast area of the
+   * chain above the dock and below the HUD. The zoom never changes; reduced
+   * motion jumps, full motion eases for a moment.
+   */
+  #frameKaboomPreview(model: BoardHostModelV7): void {
+    const unitId = model.interaction.kaboomPreviewUnitId ?? null;
+    if (unitId === null) {
+      this.#kaboomFramedKey = null;
+      return;
+    }
+    const band = this.#unobscuredBand();
+    const key = `${unitId}:${Math.round(band.top)}:${Math.round(band.bottom)}:${this.#viewport.width}x${this.#viewport.height}`;
+    if (key === this.#kaboomFramedKey) return;
+    this.#kaboomFramedKey = key;
+    const area = cellWorldBounds(
+      this.#planFor(model.view, model.offeredCommands)
+        .entries.filter(
+          (entry) =>
+            entry.kind === "ABILITY_AREA" && entry.abilityStyle === "BLAST",
+        )
+        .map((entry) => entry.at),
+    );
+    if (area === null) return;
+    const delta = panToFrameArea(this.#camera, area, this.#viewport, band);
+    if (delta.x === 0 && delta.y === 0) return;
+    this.#panCameraTo(panCamera(this.#camera, delta), model.motion === "FULL");
+  }
+
+  #panCameraTo(target: CameraState, animate: boolean): void {
+    this.#cancelCameraPan();
+    const browser = this.#document.defaultView;
+    if (
+      !animate ||
+      browser === null ||
+      typeof browser.requestAnimationFrame !== "function"
+    ) {
+      this.#camera = target;
+      return;
+    }
+    const start = this.#camera;
+    const startedAt = this.#now();
+    const step = (): void => {
+      const progress = Math.min(1, (this.#now() - startedAt) / 180);
+      const eased = 1 - (1 - progress) * (1 - progress);
+      this.#camera = {
+        ...start,
+        offsetX: start.offsetX + (target.offsetX - start.offsetX) * eased,
+        offsetY: start.offsetY + (target.offsetY - start.offsetY) * eased,
+      };
+      this.#draw();
+      this.#cameraPanFrame =
+        progress < 1 ? browser.requestAnimationFrame(step) : null;
+    };
+    this.#cameraPanFrame = browser.requestAnimationFrame(step);
+  }
+
+  #cancelCameraPan(): void {
+    if (this.#cameraPanFrame !== null)
+      this.#document.defaultView?.cancelAnimationFrame(this.#cameraPanFrame);
+    this.#cameraPanFrame = null;
   }
 
   activate(at: CoordV7): void {
@@ -339,6 +424,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   zoom(direction: "IN" | "OUT"): void {
     this.#cameraFollowAllowed = false;
+    this.#cancelCameraPan();
     if (this.#artSet() === "CHIBI") {
       this.#camera = zoomChibiCameraAt(
         this.#camera,
@@ -387,6 +473,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#supportFeedback = null;
     this.#pinnedSupportFeedback = [];
     this.#windmillHealingFeedback = null;
+    this.#explosionFeedback = null;
+    this.#pinnedExplosionFeedback = [];
     this.#drawSupportOverlay();
     this.#crossfade = null;
     this.#selectionJump = null;
@@ -432,9 +520,28 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const windmillSteps = steps.filter(
         (step) => step.kind === "WINDMILL_HEALING",
       );
-      if (supportSteps.length > 0 || windmillSteps.length > 0) {
+      const explosionSteps = steps.filter((step) => step.kind === "EXPLOSION");
+      if (
+        supportSteps.length > 0 ||
+        windmillSteps.length > 0 ||
+        explosionSteps.length > 0
+      ) {
         this.#presentedView = after;
         this.#draw();
+        // Revision 17: each explosion wave holds its midpoint burst, in
+        // wave order, long enough to read.
+        for (const step of explosionSteps) {
+          this.#explosionFeedback = {
+            wave: step.wave,
+            blasts: step.blasts,
+            progress: 0.5,
+          };
+          this.#drawSupportOverlay();
+          await this.#animate(260 * durationScale, () => undefined);
+          if (token !== this.#presentationToken) return;
+          this.#explosionFeedback = null;
+          this.#drawSupportOverlay();
+        }
         for (const step of supportSteps) {
           await this.#animate(100 * durationScale, () => {
             this.#supportFeedback = {
@@ -464,7 +571,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#windmillHealingFeedback = null;
           this.#drawSupportOverlay();
         }
-        if (supportSteps.length + windmillSteps.length === steps.length) {
+        if (
+          supportSteps.length + windmillSteps.length + explosionSteps.length ===
+          steps.length
+        ) {
           this.#presentedView = null;
           this.#draw();
           return;
@@ -531,6 +641,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             step.from,
             step.to,
             280 * durationScale,
+            step.projectile === "BOMB",
           );
         if (token !== this.#presentationToken) return;
         this.#presentedView = after;
@@ -596,6 +707,32 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       } else if (step.kind === "DAMAGE") {
         this.#presentedView = after;
         await this.#animateImpact(step.at, step.durationMs * durationScale);
+        if (token !== this.#presentationToken) return;
+      } else if (step.kind === "EXPLOSION") {
+        // Revision 17: the blast bursts over the units it hits, then the
+        // board shows the result under the fading smoke.
+        const first = step.blasts[0];
+        if (first !== undefined && step.followCamera === true)
+          this.#followCamera(first.at);
+        this.#draw();
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          if (progress >= 0.45 && this.#presentedView !== after) {
+            this.#presentedView = after;
+            this.#draw();
+          }
+          this.#explosionFeedback = {
+            wave: step.wave,
+            blasts: step.blasts,
+            progress,
+          };
+          this.#drawSupportOverlay();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#explosionFeedback = null;
+        this.#presentedView = after;
+        this.#drawSupportOverlay();
+        // A short beat between chain waves.
+        await this.#animate(90 * durationScale, () => undefined);
         if (token !== this.#presentationToken) return;
       }
       if (token !== this.#presentationToken) return;
@@ -775,7 +912,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       context.save();
       context.strokeStyle = "#19282a";
       context.lineWidth = 2 * this.#camera.zoom;
-      if (this.#projectile.catapult) {
+      if (this.#projectile.bomb === true)
+        drawBombProjectileV7(context, x, y, this.#camera.zoom, progress);
+      else if (this.#projectile.catapult) {
         context.fillStyle = "#6d665e";
         context.beginPath();
         context.arc(x, y, 7 * this.#camera.zoom, 0, Math.PI * 2);
@@ -863,6 +1002,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#drawSupportOverlay();
   }
 
+  /**
+   * Review tooling and tests: draws the given explosion waves at their fixed
+   * progress on the effects canvas until cleared with an empty list. The
+   * game never calls it; presentations clear it.
+   */
+  pinExplosionFeedback(feedback: readonly ExplosionFeedbackV7[]): void {
+    this.#pinnedExplosionFeedback = feedback;
+    this.#drawSupportOverlay();
+  }
+
   #drawSupportOverlay(): void {
     const context = this.#effectsContext;
     const canvas = this.#effectsCanvas;
@@ -873,6 +1022,24 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const effectArt = this.#supportEffectArt();
     for (const pinned of this.#pinnedSupportFeedback)
       drawSupportFeedbackV7(context, this.#camera, pinned, false, effectArt);
+    for (const pinned of this.#pinnedExplosionFeedback)
+      drawExplosionFeedbackV7(context, this.#camera, pinned, false);
+    const explosion = this.#explosionFeedback;
+    if (explosion === null) {
+      delete canvas.dataset.explosionWave;
+      delete canvas.dataset.explosionBlasts;
+      delete canvas.dataset.explosionProgress;
+    } else {
+      canvas.dataset.explosionWave = String(explosion.wave);
+      canvas.dataset.explosionBlasts = String(explosion.blasts.length);
+      canvas.dataset.explosionProgress = explosion.progress.toFixed(3);
+      drawExplosionFeedbackV7(
+        context,
+        this.#camera,
+        explosion,
+        this.#model?.motion === "REDUCED",
+      );
+    }
     const feedback = this.#supportFeedback;
     const windmill = this.#windmillHealingFeedback;
     if (feedback === null && windmill === null) {
@@ -1009,6 +1176,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   readonly #onPointerDown = (event: PointerEvent): void => {
     this.#cameraFollowAllowed = false;
+    this.#cancelCameraPan();
     const canvas = this.#canvas;
     if (canvas === null) return;
     const point = localPoint(canvas, event);
@@ -1145,7 +1313,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const splashAt = (cell: CoordV7 | null): boolean =>
       cell !== null &&
       this.#planFor(model.view, model.offeredCommands).targets.some(
-        (target) => target.splash !== undefined && same(target.at, cell),
+        (target) =>
+          (target.splash !== undefined || target.blast !== undefined) &&
+          same(target.at, cell),
       );
     if (splashAt(prior) || splashAt(at)) this.#draw();
   }
@@ -1324,6 +1494,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   #detach(): void {
+    this.#cancelCameraPan();
     if (this.#animationFrame !== null)
       this.#document.defaultView?.cancelAnimationFrame(this.#animationFrame);
     this.#animationFrame = null;
@@ -1426,9 +1597,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     from: CoordV7,
     to: CoordV7,
     duration: number,
+    bomb = false,
   ): Promise<void> {
     await this.#animate(duration, (progress) => {
-      this.#projectile = { from, to, progress, catapult };
+      this.#projectile = { from, to, progress, catapult, bomb };
       this.#draw();
     });
     this.#projectile = null;
@@ -1556,9 +1728,11 @@ function unitName(
   view: PlayerViewV7,
   unit: PlayerViewV7["units"][number],
 ): string {
-  return unitIsUndeadV7(view, unit)
-    ? `Undead ${unitRoleRuleV7(view, unit).label}`
-    : title(unit.role);
+  if (unitIsUndeadV7(view, unit))
+    return `Undead ${unitRoleRuleV7(view, unit).label}`;
+  if (unitIsGoblinV7(view, unit))
+    return `Goblin ${unitRoleRuleV7(view, unit).label}`;
+  return title(unit.role);
 }
 /** Pixel wheel delta for one CHIBI zoom step (one ordinary mouse notch). */
 const CHIBI_WHEEL_STEP_DELTA = 50;

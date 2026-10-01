@@ -564,6 +564,7 @@ try {
 
   const chibi = await probeChibiArtSet(connection);
   const undead = await probeUndeadSetup(connection);
+  const goblin = await probeGoblinMatch(connection);
   await evaluate(
     connection,
     `localStorage.removeItem('pulpWars.save.current')`,
@@ -646,7 +647,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -1048,6 +1049,153 @@ async function probeAfflictionFixture(
     `(() => { globalThis.__UNDEAD_REVIEW__?.view?.destroy?.(); delete globalThis.__UNDEAD_REVIEW__; })()`,
   );
   return "Plague/Bitten fixture markers, chips and Disband explained in LEGACY and CHIBI";
+}
+
+/**
+ * Revision 17 Goblins in the default route (pulp_wars-0ao.5): setup offers
+ * Goblin for every seat, a Goblin-vs-Human match launches from the
+ * production setup, the human's starting Goblin (on its capital) is selected
+ * from the keyboard and blown up through the Kaboom! button, its armed
+ * preview and the confirmation, and the save resumes with its Goblin seat on
+ * a fresh default-route load. It uses no fixture, so it also runs against a
+ * deployed bundle.
+ */
+async function probeGoblinMatch(connection: Connection): Promise<string> {
+  const defaultUrl = (): string => {
+    const url = new URL(baseUrl);
+    url.searchParams.delete("art");
+    return url.href;
+  };
+  const navigateFresh = async (
+    url: string,
+    readiness: string,
+  ): Promise<void> => {
+    await evaluate(
+      connection,
+      `globalThis.__V7_GOBLIN_PRIOR_DOCUMENT__ = true`,
+    );
+    await connection.send("Page.navigate", { url });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_GOBLIN_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
+    );
+  };
+  const saveKey = "pulpWars.save.v7r17.current";
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(
+    defaultUrl(),
+    `document.querySelector('[data-v7-factions]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
+  );
+  const options = await evaluate<readonly string[]>(
+    connection,
+    `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
+  );
+  if (JSON.stringify(options) !== JSON.stringify(["Human", "Undead", "Goblin"]))
+    throw new Error(
+      `Goblin faction option missing: ${JSON.stringify(options)}`,
+    );
+  await evaluate(connection, `document.querySelector('#v7-faction-0').focus()`);
+  // Typeahead on the focused, closed select: "G" selects Goblin.
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "keyDown",
+    key: "G",
+    code: "KeyG",
+    text: "G",
+    windowsVirtualKeyCode: 71,
+  });
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "keyUp",
+    key: "G",
+    code: "KeyG",
+    windowsVirtualKeyCode: 71,
+  });
+  await waitForExpression(
+    connection,
+    `document.querySelector('#v7-faction-0')?.value === 'GOBLIN' && document.querySelector('#v7-faction-1')?.value === 'ORIGINAL'`,
+  );
+  await capture(connection, "goblin-setup-desktop.png");
+  await replaceSeedInput(connection, "0");
+  await launchWithFastForward(connection);
+  const humanTurn = `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId && v.pendingChoices.length === 0; })()`;
+  await waitForExpression(connection, humanTurn, 900);
+  const ownUnits = `globalThis.__PULP_WARS_APP__.controller.snapshot().view.units.filter((unit) => unit.ownerId === globalThis.__PULP_WARS_APP__.controller.snapshot().view.viewer.id).length`;
+  const started = await evaluate<{
+    readonly factions: readonly string[];
+    readonly viewer: string;
+    readonly units: number;
+  }>(
+    connection,
+    `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; return { factions: view.setup.factions, viewer: view.viewer.faction, units: ${ownUnits} }; })()`,
+  );
+  if (
+    JSON.stringify(started.factions) !==
+      JSON.stringify(["GOBLIN", "ORIGINAL"]) ||
+    started.viewer !== "GOBLIN" ||
+    started.units < 1
+  )
+    throw new Error(`Goblin setup launch failed: ${JSON.stringify(started)}`);
+  // The board cursor starts on the capital, where the first Goblin stands.
+  await evaluate(
+    connection,
+    `document.querySelector('canvas.board-canvas-v7').focus()`,
+  );
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock h2')?.textContent === 'Goblin' && document.querySelector('[data-action="command-kaboom"]:not(:disabled)') !== null`,
+  );
+  const button = await evaluate<string | null>(
+    connection,
+    `document.querySelector('[data-action="command-kaboom"]').getAttribute('aria-label')`,
+  );
+  if (
+    !(button ?? "").startsWith(
+      "Kaboom! · Blow up: 4 damage to every other unit in the 3×3 square, yours too. This unit dies. · Hits ",
+    )
+  )
+    throw new Error(`Kaboom! preview missing: ${String(button)}`);
+  await pointerClick(connection, '[data-action="command-kaboom"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-kaboom="armed"]') !== null && document.querySelector('[data-action="confirm-kaboom"]:not(:disabled)') !== null && globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex >= 0`,
+  );
+  const summary = await evaluate<string>(
+    connection,
+    `document.querySelector('.v7-kaboom-summary')?.textContent ?? ''`,
+  );
+  if (!/^Hits \d+ units?: \d+ enemy, \d+ yours\. Kills \d+\.$/.test(summary))
+    throw new Error(`Kaboom! summary missing: ${summary}`);
+  await capture(connection, "goblin-kaboom-armed-desktop.png");
+  await pointerClick(connection, '[data-action="confirm-kaboom"]');
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && ${ownUnits} === ${started.units - 1} && (document.querySelector('#v7-live')?.textContent ?? '').includes('Your Goblin blew up'); })()`,
+    300,
+  );
+  await capture(connection, "goblin-kaboom-result-desktop.png");
+  // The save resumes on a fresh default-route load with its Goblin seat.
+  await navigateFresh(
+    defaultUrl(),
+    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
+  );
+  await touchClick(connection, '[data-action="resume"]');
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && JSON.stringify(s.view?.setup.factions) === '["GOBLIN","ORIGINAL"]' && ${ownUnits} === ${started.units - 1}; })()`,
+    900,
+  );
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(
+    defaultUrl(),
+    `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
+  );
+  return `Goblin-vs-Human launch, Kaboom! (${summary}) and resume`;
 }
 
 async function driveDefaultMatchToOutcome(

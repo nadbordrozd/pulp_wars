@@ -43,14 +43,24 @@ export function tacticalAttachmentsV7(
             key: `inspired:${unit.id}`,
             at: unit.at,
             symbolId: "ui-status-inspired",
-            label:
+            label: inspiredLabelV7(
               view.players.find((player) => player.id === unit.ownerId)
-                ?.faction === "UNDEAD"
-                ? "Frenzied by Necromancer Frenzy: +1 next Attack"
-                : "Inspired by Captain Rally: +1 next Attack",
+                ?.faction,
+            ),
             pulse: false,
           },
         ]
       : [],
   );
+}
+
+function inspiredLabelV7(
+  faction: PlayerViewV7["players"][number]["faction"] | undefined,
+): string {
+  if (faction === "UNDEAD")
+    return "Frenzied by Necromancer Frenzy: +1 next Attack";
+  // Revision 17: Goblin Inspired units show WAAAGH!.
+  if (faction === "GOBLIN")
+    return "WAAAGH! from an Orc Warboss: +1 next Attack";
+  return "Inspired by Captain Rally: +1 next Attack";
 }

@@ -65,6 +65,7 @@ describe("Revision 13 Undead DOM", () => {
       expect([...field.options].map((option) => option.textContent)).toEqual([
         "Human",
         "Undead",
+        "Goblin",
       ]);
       expect(field.value).toBe("ORIGINAL");
       field.value = "UNDEAD";
