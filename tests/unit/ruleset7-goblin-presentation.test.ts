@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  GOBLIN_ROLE_MECHANICS_V7,
   applyCommandV7,
   previewAttackExplosionsV7,
   previewKaboomV7,
@@ -59,6 +60,41 @@ import {
 } from "../fixtures/v7-goblin-arena";
 
 const AT = GOBLIN_SHOWCASE_V7;
+// Blast damages come from the Goblin registry, so these expectations follow
+// the section 14.1 tuning (`pulp_wars-0ao.7`) instead of pinning numbers.
+const KABOOM = blastDamage(GOBLIN_ROLE_MECHANICS_V7.FIGHTER.kaboomDamage);
+const CHUCKER_KABOOM = blastDamage(
+  GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.kaboomDamage,
+);
+const CHUCKER_BLAST = blastDamage(
+  GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.deathBlastDamage,
+);
+const CART_BLAST = blastDamage(
+  GOBLIN_ROLE_MECHANICS_V7.CATAPULT.deathBlastDamage,
+);
+// The showcase's 3-HP Rocket Cart and Raider, and the attack chain's 2-HP
+// Rocket Cart, take at most their HP.
+const SHOWCASE_LOW_HP = 3;
+const CHAIN_CART_HP = 2;
+// Board labels of the showcase Kaboom chain, in (y, x) order.
+const SHOWCASE_BLAST_LABELS = [
+  `Yours −${KABOOM}`,
+  "Kaboom!",
+  `−${KABOOM}`,
+  `Yours −${Math.min(KABOOM, SHOWCASE_LOW_HP)} · Wave 2`,
+  `−${Math.min(KABOOM, SHOWCASE_LOW_HP)}`,
+  `−${CART_BLAST}`,
+];
+const ATTACK_CHAIN_WARNINGS = [
+  `Enemy Bomb Chucker explodes on death: ${CHUCKER_BLAST} damage around it`,
+  `Chain reaction: enemy Rocket Cart explodes (${CART_BLAST} damage)`,
+  "Blasts hit 3 of your units, 0 killed",
+];
+
+function blastDamage(value: number | null): number {
+  if (value === null) throw new Error("blast damage missing");
+  return value;
+}
 const NO_INTERACTION = {
   selection: null,
   selectedUnitId: null,
@@ -73,7 +109,7 @@ describe("Revision 17 Goblin presentation text", () => {
     const text = kaboomPreviewTextV7(view, preview);
     expect(text.summary).toBe("Hits 5 units: 3 enemy, 2 yours. Kills 2.");
     expect(text.chain).toEqual([
-      "Chain reaction: your Rocket Cart explodes (5 damage)",
+      `Chain reaction: your Rocket Cart explodes (${CART_BLAST} damage)`,
     ]);
     expect(text.friendlyFire).toBe(
       "Friendly fire: 2 of your units hit, 1 killed",
@@ -101,14 +137,21 @@ describe("Revision 17 Goblin presentation text", () => {
         cell.lethal,
         cell.friendly,
       ]),
-    ).toEqual([
-      [AT.ownGoblin, "Yours −4", false, true],
-      [AT.kaboom, "Kaboom!", true, false],
-      [AT.enemyFighter, "−4", false, false],
-      [AT.rocketCart, "Yours −3 · Wave 2", true, true],
-      [AT.enemyRaider, "−3", true, false],
-      [AT.enemyMarksman, "−5", false, false],
-    ]);
+    ).toEqual(
+      [
+        [AT.ownGoblin, false, true],
+        [AT.kaboom, true, false],
+        [AT.enemyFighter, false, false],
+        [AT.rocketCart, true, true],
+        [AT.enemyRaider, true, false],
+        [AT.enemyMarksman, false, false],
+      ].map(([at, lethal, friendly], index) => [
+        at,
+        SHOWCASE_BLAST_LABELS[index],
+        lethal,
+        friendly,
+      ]),
+    );
     expect(blast.sources).toEqual([
       { at: AT.kaboom, wave: 1 },
       { at: AT.rocketCart, wave: 2 },
@@ -157,7 +200,7 @@ describe("Revision 17 Goblin presentation text", () => {
       blastPreviewPresentationV7(view, preview, goblin.id).cells.find(
         (cell) => cell.at.x === 4 && cell.at.y === 3,
       )?.label,
-    ).toBe("Kaboom! · Zombie −4");
+    ).toBe(`Kaboom! · Zombie −${KABOOM}`);
     expect(
       kaboomPreviewTextV7(view, { ...preview, touchesUnexplored: true }).fog,
     ).toBe("The blast may reach unexplored tiles");
@@ -190,11 +233,7 @@ describe("Revision 17 Goblin presentation text", () => {
       previewAttackExplosionsV7(view, attacker.id, target.id),
     );
     const text = goblinAttackPreviewTextV7(view, preview, chain);
-    expect(text.warnings).toEqual([
-      "Enemy Bomb Chucker explodes on death: 3 damage around it",
-      "Chain reaction: enemy Rocket Cart explodes (5 damage)",
-      "Blasts hit 3 of your units, 0 killed",
-    ]);
+    expect(text.warnings).toEqual(ATTACK_CHAIN_WARNINGS);
     // Bead pulp_wars-0ao.12: the crowded-board summary of those lines.
     expect(text.summary).toBe("Chain: 2 blasts · 3 yours hit");
     const cells = blastPreviewPresentationV7(
@@ -207,11 +246,11 @@ describe("Revision 17 Goblin presentation text", () => {
     expect(
       cells.find((cell) => same(cell.at, GOBLIN_ATTACK_CHAIN_V7.bombChucker))
         ?.label,
-    ).toBe("Attacker −8");
+    ).toBe(`Attacker −${CHUCKER_BLAST + CART_BLAST}`);
     expect(
       cells.find((cell) => same(cell.at, GOBLIN_ATTACK_CHAIN_V7.rocketCart))
         ?.label,
-    ).toBe("−2 · Wave 2");
+    ).toBe(`−${Math.min(CHUCKER_BLAST, CHAIN_CART_HP)} · Wave 2`);
   });
 
   it("lists Goblin unit info from the public Goblin mechanics", () => {
@@ -226,13 +265,13 @@ describe("Revision 17 Goblin presentation text", () => {
         (line) => line.name,
       );
     expect(names("FIGHTER", AT.kaboom)).toEqual([
-      "Kaboom 4",
+      `Kaboom ${KABOOM}`,
       "Gang Up",
       "No Field Defense",
     ]);
     expect(names("MARKSMAN", AT.bombChucker)).toEqual([
-      "Kaboom 4",
-      "Explodes on death (3)",
+      `Kaboom ${CHUCKER_KABOOM}`,
+      `Explodes on death (${CHUCKER_BLAST})`,
       "Bombs",
       "Gang Up",
     ]);
@@ -396,14 +435,20 @@ describe("Revision 17 Goblin board previews", () => {
     );
     expect(
       targets.map((entry) => [entry.label, entry.abilityStyle, entry.lethal]),
-    ).toEqual([
-      ["Yours −4", "BLAST_FRIENDLY", false],
-      ["Kaboom!", "BLAST", true],
-      ["−4", "BLAST", false],
-      ["Yours −3 · Wave 2", "BLAST_FRIENDLY", true],
-      ["−3", "BLAST", true],
-      ["−5", "BLAST", false],
-    ]);
+    ).toEqual(
+      [
+        ["BLAST_FRIENDLY", false],
+        ["BLAST", true],
+        ["BLAST", false],
+        ["BLAST_FRIENDLY", true],
+        ["BLAST", true],
+        ["BLAST", false],
+      ].map(([style, lethal], index) => [
+        SHOWCASE_BLAST_LABELS[index],
+        style,
+        lethal,
+      ]),
+    );
     expect(
       previewed.entries.filter((entry) => entry.kind === "ABILITY_AREA"),
     ).toHaveLength(14);
@@ -445,11 +490,7 @@ describe("Revision 17 Goblin board previews", () => {
       ),
     );
     expect(target.blast?.sources.map((source) => source.wave)).toEqual([1, 2]);
-    expect(target.previewWarnings).toEqual([
-      "Enemy Bomb Chucker explodes on death: 3 damage around it",
-      "Chain reaction: enemy Rocket Cart explodes (5 damage)",
-      "Blasts hit 3 of your units, 0 killed",
-    ]);
+    expect(target.previewWarnings).toEqual(ATTACK_CHAIN_WARNINGS);
     // The lone blast target draws its areas and hit labels.
     const { context, log } = recordingContext();
     drawBoardV7({
@@ -463,8 +504,10 @@ describe("Revision 17 Goblin board previews", () => {
     const texts = log
       .filter((call) => call[0] === "fillText")
       .map((call) => call[1]);
-    expect(texts).toContain("Attacker −8");
-    expect(texts).toContain("−2 · Wave 2");
+    expect(texts).toContain(`Attacker −${CHUCKER_BLAST + CART_BLAST}`);
+    expect(texts).toContain(
+      `−${Math.min(CHUCKER_BLAST, CHAIN_CART_HP)} · Wave 2`,
+    );
   });
 
   it("keeps Human-only attack previews free of Goblin fields", () => {

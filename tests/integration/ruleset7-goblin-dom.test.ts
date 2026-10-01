@@ -2,6 +2,7 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 import {
+  GOBLIN_ROLE_MECHANICS_V7,
   applyCommandV7,
   projectEventsV7,
   queryPlayerCommandsV7,
@@ -35,6 +36,15 @@ import {
 import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
 
 const AT = GOBLIN_SHOWCASE_V7;
+// Blast damages from the Goblin registry (tuned by `pulp_wars-0ao.7`), so
+// the expected text follows future tuning.
+const KABOOM = GOBLIN_ROLE_MECHANICS_V7.FIGHTER.kaboomDamage ?? 0;
+const CHUCKER_KABOOM = GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.kaboomDamage ?? 0;
+const CHUCKER_BLAST = GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.deathBlastDamage ?? 0;
+const CART_BLAST = GOBLIN_ROLE_MECHANICS_V7.CATAPULT.deathBlastDamage ?? 0;
+const kaboomText = (damage: number) =>
+  `Blow up: ${damage} damage to every other unit in the 3×3 square, yours too. This unit dies.`;
+const CART_CHAIN = `Chain reaction: your Rocket Cart explodes (${CART_BLAST} damage)`;
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -96,11 +106,9 @@ describe("Revision 17 Goblin DOM", () => {
     );
     expect(actionLabels()).toEqual(["Kaboom!", "Disband", "Wait"]);
     const kaboom = requiredButton("command-kaboom");
-    expect(kaboom.title).toBe(
-      "Blow up: 4 damage to every other unit in the 3×3 square, yours too. This unit dies.",
-    );
+    expect(kaboom.title).toBe(kaboomText(KABOOM));
     expect(kaboom.getAttribute("aria-label")).toBe(
-      "Kaboom! · Blow up: 4 damage to every other unit in the 3×3 square, yours too. This unit dies. · Hits 5 units: 3 enemy, 2 yours. Kills 2. Chain reaction: your Rocket Cart explodes (5 damage). Friendly fire: 2 of your units hit, 1 killed. Plunder: +1 Coins.",
+      `Kaboom! · ${kaboomText(KABOOM)} · Hits 5 units: 3 enemy, 2 yours. Kills 2. ${CART_CHAIN}. Friendly fire: 2 of your units hit, 1 killed. Plunder: +1 Coins.`,
     );
     expect(
       [...kaboom.querySelectorAll(".v7-kaboom-chip")].map(
@@ -140,7 +148,7 @@ describe("Revision 17 Goblin DOM", () => {
       ]),
     ).toEqual([
       ["friendly-fire", "Friendly fire: 2 of your units hit, 1 killed"],
-      ["chain", "Chain reaction: your Rocket Cart explodes (5 damage)"],
+      ["chain", CART_CHAIN],
       ["plunder", "Plunder: +1 Coins"],
     ]);
     expect(requiredButton("command-kaboom").getAttribute("aria-pressed")).toBe(
@@ -202,8 +210,8 @@ describe("Revision 17 Goblin DOM", () => {
         ),
       ].map((entry) => entry.textContent),
     ).toEqual([
-      "Kaboom 4Blow up: 4 damage to every other unit in the 3×3 square, yours too. This unit dies.",
-      "Explodes on death (3)However it dies, it deals 3 damage to every other unit in the 3×3 square, yours too.",
+      `Kaboom ${CHUCKER_KABOOM}${kaboomText(CHUCKER_KABOOM)}`,
+      `Explodes on death (${CHUCKER_BLAST})However it dies, it deals ${CHUCKER_BLAST} damage to every other unit in the 3×3 square, yours too.`,
       "BombsIts bomb also hits every unit next to the target, yours included.",
       "Gang Up+1 Attack per ally next to the target (max +2)",
     ]);
@@ -332,7 +340,7 @@ describe("Revision 17 Goblin DOM", () => {
     const recruit = recruitmentRolePresentationV7("FIGHTER", "GOBLIN");
     expect(recruit.label).toBe("Goblin");
     expect(recruit.restrictions).toContain(
-      "Kaboom 4: Blow up: 4 damage to every other unit in the 3×3 square, yours too. This unit dies.",
+      `Kaboom ${KABOOM}: ${kaboomText(KABOOM)}`,
     );
   });
 

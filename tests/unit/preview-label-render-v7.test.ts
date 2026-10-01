@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  GOBLIN_ROLE_MECHANICS_V7,
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
@@ -608,15 +609,20 @@ describe("dense Goblin preview labels never overlap (pulp_wars-0ao.12)", () => {
       y: 290,
     });
     const drawn = texts.map((text) => text.text);
+    // The blasts follow the Goblin registry (tuned by `pulp_wars-0ao.7`):
+    // the Bomb Chucker's death blast hits the Guard and the attacker, the
+    // Rocket Cart's (2 HP, wave 2) the attacker and the Marksman.
+    const chucker = GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.deathBlastDamage ?? 0;
+    const cart = GOBLIN_ROLE_MECHANICS_V7.CATAPULT.deathBlastDamage ?? 0;
     // The hit labels keep their cells; the attack keeps its damage line
     // (wrapped at the phone zoom) and the long warnings collapse into the
     // short summary.
     expect(drawn).toEqual(
       expect.arrayContaining([
-        "Yours −3",
-        "Attacker −8",
-        "−2 · Wave 2",
-        "Yours −5",
+        `Yours −${chucker}`,
+        `Attacker −${chucker + cart}`,
+        `−${Math.min(chucker, 2)} · Wave 2`,
+        `Yours −${cart}`,
         "Deal 2",
         "take 0",
         "Chain: 2 blasts",

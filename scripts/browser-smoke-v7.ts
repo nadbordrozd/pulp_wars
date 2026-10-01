@@ -1058,7 +1058,11 @@ async function probeAfflictionFixture(
  * from the keyboard and blown up through the Kaboom! button, its armed
  * preview and the confirmation, and the save resumes with its Goblin seat on
  * a fresh default-route load. It uses no fixture, so it also runs against a
- * deployed bundle.
+ * deployed bundle. The Kaboom damage is read from the page's own public unit
+ * stats (not a literal), so tuning never breaks the probe; since
+ * `pulp_wars-0ao.7` a seat starts with one Goblin, whose turn-1 blast
+ * usually hits nobody, so a zero-hit preview ("Hits 0 units: ...") is
+ * accepted as long as the summary, the confirmation, and the result run.
  */
 async function probeGoblinMatch(connection: Connection): Promise<string> {
   const defaultUrl = (): string => {
@@ -1147,16 +1151,20 @@ async function probeGoblinMatch(connection: Connection): Promise<string> {
     connection,
     `document.querySelector('.v7-selection-dock h2')?.textContent === 'Goblin' && document.querySelector('[data-action="command-kaboom"]:not(:disabled)') !== null`,
   );
-  const button = await evaluate<string | null>(
+  const button = await evaluate<{
+    readonly label: string | null;
+    readonly damage: number | null;
+  }>(
     connection,
-    `document.querySelector('[data-action="command-kaboom"]').getAttribute('aria-label')`,
+    `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const goblin = view.units.find((unit) => unit.ownerId === view.viewer.id && unit.role === 'FIGHTER'); const stats = view.unitStats.find((entry) => entry.unitId === goblin?.id); return { label: document.querySelector('[data-action="command-kaboom"]').getAttribute('aria-label'), damage: stats?.goblin?.kaboomDamage ?? null }; })()`,
   );
   if (
-    !(button ?? "").startsWith(
-      "Kaboom! · Blow up: 4 damage to every other unit in the 3×3 square, yours too. This unit dies. · Hits ",
+    button.damage === null ||
+    !(button.label ?? "").startsWith(
+      `Kaboom! · Blow up: ${button.damage} damage to every other unit in the 3×3 square, yours too. This unit dies. · Hits `,
     )
   )
-    throw new Error(`Kaboom! preview missing: ${String(button)}`);
+    throw new Error(`Kaboom! preview missing: ${JSON.stringify(button)}`);
   await pointerClick(connection, '[data-action="command-kaboom"]');
   await waitForExpression(
     connection,
