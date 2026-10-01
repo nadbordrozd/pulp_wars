@@ -1,0 +1,36 @@
+{
+  "id": "wolf-rider-b-edit-3",
+  "jobId": "4d6e7b28-a200-402f-ac47-f02f48d651af",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-wolf-rider",
+    "subject": "UNIT:GOBLIN:RAIDER",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17205,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the brown spear shaft light grey iron and the brown straps and boots charcoal grey. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the brown spear shaft light grey iron and the brown straps and boots charcoal grey. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the brown spear shaft light grey iron and the brown straps and boots charcoal grey. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the brown spear shaft light grey iron and the brown straps and boots charcoal grey. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "wolf-rider-b-edit-2",
+      "candidate": 0,
+      "sha256": "1aa19c3576c6358ad0265abbcd6398811baa8d8031dde605b0860fe346e3d1dc"
+    }
+  }
+}

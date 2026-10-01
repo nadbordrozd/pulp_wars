@@ -25,7 +25,7 @@ export type ArtSubjectV7 =
   | `IMPROVEMENT:${ImprovementIdV7}`
   | `UNIT:${UnitRoleIdV7 | "EMBARKED_TRANSPORT"}`
   | `UNIT:UNDEAD:${UndeadArtRoleV7}`
-  /** Revision 17: placeholders until bead pulp_wars-0ao.8 (GOBLIN.md). */
+  /** Revision 17: the Goblin units (bead pulp_wars-0ao.8, GOBLIN.md). */
   | `UNIT:GOBLIN:${GoblinArtRoleV7}`
   | `CITY:${1 | 2 | 3}`
   | "SITE:VILLAGE"
@@ -55,7 +55,8 @@ export type ChibiEffectSubjectV7 =
  * Interface (DOM) subjects, batch 5 (bead pulp_wars-67q.11). The board never
  * asks for them; the DOM art hook (src/render/dom/chibi-dom-art-v7.ts) does.
  * `PORTRAIT:<ROLE>` is a head-and-shoulders unit portrait (train buttons,
- * rewards, technology cards); `PORTRAIT:UNDEAD:<ROLE>` is the Undead one.
+ * rewards, technology cards); `PORTRAIT:UNDEAD:<ROLE>` is the Undead one and
+ * `PORTRAIT:GOBLIN:<ROLE>` the Goblin one (bead pulp_wars-0ao.8).
  * `ICON:*` are unowned icons: dedicated technology icons, command and action
  * icons (`ICON:ACTION:UNDEAD:RALLY` is the Undead Frenzy), city rewards and
  * the HUD economy icons.
@@ -63,6 +64,7 @@ export type ChibiEffectSubjectV7 =
 export type UiArtSubjectV7 =
   | `PORTRAIT:${UnitRoleIdV7}`
   | `PORTRAIT:UNDEAD:${UndeadArtRoleV7}`
+  | `PORTRAIT:GOBLIN:${GoblinArtRoleV7}`
   | `ICON:TECH:${TechnologyIdV7}`
   | `ICON:ACTION:${CommandV7["kind"]}`
   | "ICON:ACTION:UNDEAD:RALLY"
@@ -112,8 +114,9 @@ export function unitArtSubjectV7(unit: {
  * The subject whose art stands in while a faction subject has no usable
  * raster: `UNIT:UNDEAD:<ROLE>` falls back to the Human `UNIT:<ROLE>` (drawn
  * with the Undead badge), and likewise `PORTRAIT:UNDEAD:<ROLE>` and
- * `ICON:ACTION:UNDEAD:RALLY`; `UNIT:GOBLIN:<ROLE>` falls back to the Human
- * sprite with the Goblin badge. Every other subject has no fallback.
+ * `ICON:ACTION:UNDEAD:RALLY`; `UNIT:GOBLIN:<ROLE>` and `PORTRAIT:GOBLIN:<ROLE>`
+ * fall back to the Human art with the Goblin badge. Every other subject has
+ * no fallback.
  */
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
@@ -185,19 +188,6 @@ export interface ChibiArtAssetV7 {
    * Master = body over ground, pixel for pixel (checked by art:validate).
    */
   readonly layers?: ChibiTallTerrainLayersV7;
-  /**
-   * Set on a programmatic placeholder (not PixelLab art): it is checked
-   * against its generator's records instead of the pipeline records, and
-   * the named bead replaces it with reviewed art.
-   */
-  readonly placeholder?: ChibiPlaceholderV7;
-}
-
-export interface ChibiPlaceholderV7 {
-  /** The checked-in generator's records file. */
-  readonly records: string;
-  /** The bead that replaces the placeholder with reviewed PixelLab art. */
-  readonly replacedBy: string;
 }
 
 export interface ChibiTallTerrainLayersV7 {

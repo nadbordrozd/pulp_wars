@@ -1,0 +1,36 @@
+{
+  "id": "orc-brute-a-edit-b",
+  "jobId": "b3f1594d-d2a3-48ad-a1ec-3b481dabff2d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-orc-brute",
+    "subject": "UNIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17405,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Give him a round dented iron shield with a bright red painted face on his left arm, and make the red tunic reach his knees. Keep every other pixel, the spiked iron pot helmet, the grey-olive face with tusks, the big grey iron cleaver, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Give him a round dented iron shield with a bright red painted face on his left arm, and make the red tunic reach his knees. Keep every other pixel, the spiked iron pot helmet, the grey-olive face with tusks, the big grey iron cleaver, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Give him a round dented iron shield with a bright red painted face on his left arm, and make the red tunic reach his knees. Keep every other pixel, the spiked iron pot helmet, the grey-olive face with tusks, the big grey iron cleaver, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Give him a round dented iron shield with a bright red painted face on his left arm, and make the red tunic reach his knees. Keep every other pixel, the spiked iron pot helmet, the grey-olive face with tusks, the big grey iron cleaver, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "orc-brute-a-edit",
+      "candidate": 0,
+      "sha256": "91d2175ce611b14687967495c6228aeac559725e5c5e33b268a8ef8aa26dc695"
+    }
+  }
+}

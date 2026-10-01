@@ -1,0 +1,36 @@
+{
+  "id": "orc-warboss-a-edit-2",
+  "jobId": "4240192b-73b2-4f6e-af0e-dda85bc832c5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-orc-warboss",
+    "subject": "UNIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17504,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the bright red cape bigger, spreading wide behind both shoulders and hanging down to his boots, and make the red tunic reach his knees. Keep every other pixel, the horned iron helmet, the face with tusks and open mouth, the tin megaphone, the shoulder plates, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the bright red cape bigger, spreading wide behind both shoulders and hanging down to his boots, and make the red tunic reach his knees. Keep every other pixel, the horned iron helmet, the face with tusks and open mouth, the tin megaphone, the shoulder plates, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the bright red cape bigger, spreading wide behind both shoulders and hanging down to his boots, and make the red tunic reach his knees. Keep every other pixel, the horned iron helmet, the face with tusks and open mouth, the tin megaphone, the shoulder plates, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the bright red cape bigger, spreading wide behind both shoulders and hanging down to his boots, and make the red tunic reach his knees. Keep every other pixel, the horned iron helmet, the face with tusks and open mouth, the tin megaphone, the shoulder plates, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "orc-warboss-a-edit",
+      "candidate": 0,
+      "sha256": "e4d97ac9bd443e1f0b3a43007a67b3d4c1c3b30cad137068563b93f332b406c2"
+    }
+  }
+}

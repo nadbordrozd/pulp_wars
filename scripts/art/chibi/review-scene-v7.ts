@@ -21,7 +21,9 @@
  *   (`UNIT:UNDEAD:<ROLE>`, pulp_wars-vkq.12) are <ROLE> pieces: the viewer
  *   is Undead too, so both land rows show the Undead art, an extra Human
  *   seat owns the scale Fighter, and `GRAVE` places a bare Grave and one
- *   under the rival's Skeleton in the middle row.
+ *   under the rival's Skeleton in the middle row. Goblin subjects
+ *   (`UNIT:GOBLIN:<ROLE>`, pulp_wars-0ao.8) work the same way with a Goblin
+ *   viewer and rival, so both land rows show the Goblin art.
  * - RESOURCES (9 x 7): for a batch of resource subjects only (the Game and
  *   Fruit variants, pulp_wars-glz): a field of Game on Forest and Fruit on
  *   Grass in runs of three or more, so every coordinate-hashed variant shows
@@ -252,6 +254,12 @@ export interface ChibiReviewSceneLayoutV7 {
    */
   readonly undeadViewer: boolean;
   /**
+   * Goblin rosters only (pulp_wars-0ao.8): the viewer and the rival are
+   * Goblins (this wins over the Undead rival), and an extra Human seat owns
+   * a Fighter for scale.
+   */
+  readonly goblinRoster: boolean;
+  /**
    * Extra Human seats, in colours no seat uses: HUMAN for Undead rosters,
    * HUMAN and EXTRA for the resource field (all four player colours).
    */
@@ -263,13 +271,14 @@ type ExtraSeat = "HUMAN" | "EXTRA";
 type Owner = "VIEWER" | "RIVAL";
 
 /**
- * The unit role of a roster subject: `UNIT:UNDEAD:<ROLE>` is <ROLE> owned by
- * an Undead seat, `UNIT:<ROLE>` is <ROLE>.
+ * The unit role of a roster subject: `UNIT:UNDEAD:<ROLE>` and
+ * `UNIT:GOBLIN:<ROLE>` are <ROLE> owned by an Undead or Goblin seat,
+ * `UNIT:<ROLE>` is <ROLE>.
  */
 function subjectName(subject: string): string {
-  return subject.startsWith("UNIT:UNDEAD:")
-    ? subject.slice("UNIT:UNDEAD:".length)
-    : subject.slice(subject.indexOf(":") + 1);
+  for (const prefix of ["UNIT:UNDEAD:", "UNIT:GOBLIN:"])
+    if (subject.startsWith(prefix)) return subject.slice(prefix.length);
+  return subject.slice(subject.indexOf(":") + 1);
 }
 
 /** One roster row: the subjects left to right, empty ground around them. */
@@ -325,6 +334,7 @@ export function chibiReviewSceneLayoutV7(
       capital: SHOWCASE_CAPITAL,
       undeadRival: false,
       undeadViewer: false,
+      goblinRoster: false,
       extraSeats: ["HUMAN", "EXTRA"],
     };
   const roster = subjects.filter(
@@ -339,6 +349,7 @@ export function chibiReviewSceneLayoutV7(
       capital: SHOWCASE_CAPITAL,
       undeadRival: false,
       undeadViewer: false,
+      goblinRoster: false,
       extraSeats: [],
     };
   const land = roster.filter((subject) => !WATER_SUBJECTS.has(subject));
@@ -348,10 +359,15 @@ export function chibiReviewSceneLayoutV7(
   // extra Human seat) for scale and, when the batch has the Grave, a bare
   // Grave and one under the rival's Skeleton.
   const undead = roster.some((subject) => subject.startsWith("UNIT:UNDEAD:"));
+  const goblin = roster.some((subject) => subject.startsWith("UNIT:GOBLIN:"));
   const graves = undead && subjects.includes("GRAVE");
   const middle = Array.from({ length: ROSTER_COLUMNS }, (_, x): Cell =>
     x === ROSTER_CAPITAL.x - 1
-      ? { terrain: G, owner: undead ? "HUMAN" : "VIEWER", unit: "FIGHTER" }
+      ? {
+          terrain: G,
+          owner: undead || goblin ? "HUMAN" : "VIEWER",
+          unit: "FIGHTER",
+        }
       : x === ROSTER_CAPITAL.x + 1
         ? {
             terrain: G,
@@ -375,7 +391,8 @@ export function chibiReviewSceneLayoutV7(
     capital: ROSTER_CAPITAL,
     undeadRival: true,
     undeadViewer: undead,
-    extraSeats: undead ? ["HUMAN"] : [],
+    goblinRoster: goblin,
+    extraSeats: undead || goblin ? ["HUMAN"] : [],
   };
 }
 
@@ -512,14 +529,20 @@ export function chibiReviewSceneViewV7(
   return {
     ...live,
     players: [
-      ...(scene.undeadRival
+      ...(scene.goblinRoster
         ? live.players.map((player) =>
-            player.id === rival.id ||
-            (scene.undeadViewer && player.id === viewerId)
-              ? { ...player, faction: "UNDEAD" as const }
+            player.id === rival.id || player.id === viewerId
+              ? { ...player, faction: "GOBLIN" as const }
               : player,
           )
-        : live.players),
+        : scene.undeadRival
+          ? live.players.map((player) =>
+              player.id === rival.id ||
+              (scene.undeadViewer && player.id === viewerId)
+                ? { ...player, faction: "UNDEAD" as const }
+                : player,
+            )
+          : live.players),
       ...extras.values(),
     ],
     board: { ...live.board, tiles, territoryBorders: [] },

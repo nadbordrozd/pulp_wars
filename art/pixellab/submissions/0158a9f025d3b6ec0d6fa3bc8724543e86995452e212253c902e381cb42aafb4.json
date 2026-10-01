@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-c-edit-4",
+  "jobId": "661ac9d4-35c8-4484-b6a4-b4c71790e1ca",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17609,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint over the dark bands and the brown square patches on the rocket's body with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are, with the same pose, outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Paint over the dark bands and the brown square patches on the rocket's body with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are, with the same pose, outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Paint over the dark bands and the brown square patches on the rocket's body with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are, with the same pose, outline and art style, on a transparent background.",
+    "editInstruction": "Paint over the dark bands and the brown square patches on the rocket's body with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are, with the same pose, outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-c-edit-3",
+      "candidate": 0,
+      "sha256": "28ceec6dd0d0d59a23e8e8603b8cbccdbf0bb598090f9d25afb61bc62a9a84e0"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-goblin-orc-warboss-a-edit",
+  "jobId": "7abd983c-79d7-491c-be0c-bd4e7141b15e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-orc-warboss",
+    "subject": "PORTRAIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5753,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the bright red cape bigger so it wraps both shoulders and fills the whole bottom of the portrait, make the horns pale cream, and make the brown straps charcoal grey. Keep the grey-olive face with tusks and shouting mouth, the horned iron helmet, the tin megaphone, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the bright red cape bigger so it wraps both shoulders and fills the whole bottom of the portrait, make the horns pale cream, and make the brown straps charcoal grey. Keep the grey-olive face with tusks and shouting mouth, the horned iron helmet, the tin megaphone, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the bright red cape bigger so it wraps both shoulders and fills the whole bottom of the portrait, make the horns pale cream, and make the brown straps charcoal grey. Keep the grey-olive face with tusks and shouting mouth, the horned iron helmet, the tin megaphone, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the bright red cape bigger so it wraps both shoulders and fills the whole bottom of the portrait, make the horns pale cream, and make the brown straps charcoal grey. Keep the grey-olive face with tusks and shouting mouth, the horned iron helmet, the tin megaphone, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-goblin-orc-warboss-a",
+      "candidate": 0,
+      "sha256": "12c2d63bec2bf9058d465c1039bdc1df8bb21d33302fc38d6d31276ef893fa13"
+    }
+  }
+}

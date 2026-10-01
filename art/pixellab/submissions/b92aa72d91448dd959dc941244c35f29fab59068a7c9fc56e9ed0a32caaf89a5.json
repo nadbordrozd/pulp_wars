@@ -1,0 +1,69 @@
+{
+  "id": "goblin-a",
+  "jobId": "sync-f54f0e61-9345-4482-9368-5bdb2214db11",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17101,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+        "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+        "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/GOBLIN.json",
+        "text": "Subject: Goblin, a chunky cute scrappy little goblin with a huge round head about half of the figure's height and a small hunched body leaning forward, the head and ears filling the whole width of the image: yellow-olive green skin shaded darker olive, two long pointed ears sticking straight out sideways, a long pointy nose, big cream eyes with black pupils and a wide jagged toothy grin, a small bright red bandana tied over the top of the head with two short knot tails, a big bright red patched tunic with square stitched patches covering the chest, belly and legs down to the knees, a charcoal grey belt, an oversized jagged light grey iron dagger held up in the right hand, bare olive green hands and big bare olive green feet; simple shapes and very few details; clearly a sneaky little stabber, not a soldier with a shield."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The grin is dark with small cream teeth, never a red or pink mouth. The belt is charcoal grey and the dagger light grey iron, never brown.",
+        "negative": "shield, helmet, sword, bow, quiver, bomb, red mouth, pink mouth, red eyes, brown belt, brown feet"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Goblin, a chunky cute scrappy little goblin with a huge round head about half of the figure's height and a small hunched body leaning forward, the head and ears filling the whole width of the image: yellow-olive green skin shaded darker olive, two long pointed ears sticking straight out sideways, a long pointy nose, big cream eyes with black pupils and a wide jagged toothy grin, a small bright red bandana tied over the top of the head with two short knot tails, a big bright red patched tunic with square stitched patches covering the chest, belly and legs down to the knees, a charcoal grey belt, an oversized jagged light grey iron dagger held up in the right hand, bare olive green hands and big bare olive green feet; simple shapes and very few details; clearly a sneaky little stabber, not a soldier with a shield. The grin is dark with small cream teeth, never a red or pink mouth. The belt is charcoal grey and the dagger light grey iron, never brown.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, helmet, sword, bow, quiver, bomb, red mouth, pink mouth, red eyes, brown belt, brown feet",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Goblin, a chunky cute scrappy little goblin with a huge round head about half of the figure's height and a small hunched body leaning forward, the head and ears filling the whole width of the image: yellow-olive green skin shaded darker olive, two long pointed ears sticking straight out sideways, a long pointy nose, big cream eyes with black pupils and a wide jagged toothy grin, a small bright red bandana tied over the top of the head with two short knot tails, a big bright red patched tunic with square stitched patches covering the chest, belly and legs down to the knees, a charcoal grey belt, an oversized jagged light grey iron dagger held up in the right hand, bare olive green hands and big bare olive green feet; simple shapes and very few details; clearly a sneaky little stabber, not a soldier with a shield. The grin is dark with small cream teeth, never a red or pink mouth. The belt is charcoal grey and the dagger light grey iron, never brown. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, helmet, sword, bow, quiver, bomb, red mouth, pink mouth, red eyes, brown belt, brown feet."
+  }
+}

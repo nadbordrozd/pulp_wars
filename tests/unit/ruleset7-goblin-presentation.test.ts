@@ -374,14 +374,17 @@ describe("Revision 17 Goblin presentation text", () => {
       expect(technologyNameV7("CHIVALRY", faction)).toBe("Chivalry");
     }
     expect(technologyNameV7("COMMERCE", "ORIGINAL")).toBe("Commerce");
-    expect(portraitSubjectV7("FIGHTER", "GOBLIN")).toBe("UNIT:GOBLIN:FIGHTER");
+    // Goblin land roles have their own portraits (pulp_wars-0ao.8).
+    expect(portraitSubjectV7("FIGHTER", "GOBLIN")).toBe(
+      "PORTRAIT:GOBLIN:FIGHTER",
+    );
     expect(portraitSubjectV7("BATTLESHIP", "GOBLIN")).toBe(
       "PORTRAIT:BATTLESHIP",
     );
     expect(portraitSubjectV7("FIGHTER", "ORIGINAL")).toBe("PORTRAIT:FIGHTER");
     expect(technologySubjectV7("DRILL", "GOBLIN")).toBe("UNIT:GOBLIN:GUARD");
     expect(technologySubjectV7("ADMINISTRATION", "GOBLIN")).toBe(
-      "UNIT:GOBLIN:CAPTAIN",
+      "PORTRAIT:GOBLIN:CAPTAIN",
     );
     expect(technologySubjectV7("DRILL", "ORIGINAL")).toBe("UNIT:GUARD");
   });

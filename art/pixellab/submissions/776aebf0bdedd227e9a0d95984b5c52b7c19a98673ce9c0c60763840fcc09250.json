@@ -1,0 +1,69 @@
+{
+  "id": "portrait-goblin-goblin-b",
+  "jobId": "sync-0094fe0f-ec00-49e6-a927-ac322700c30e",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-goblin",
+    "subject": "PORTRAIT:GOBLIN:FIGHTER",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5701,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+        "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+        "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/GOBLIN.json",
+        "text": "Subject: Goblin portrait, head and shoulders of a chunky cute scrappy little goblin: a huge round yellow-olive green head with two long pointed ears sticking straight out sideways, a long pointy nose, big cream eyes and a wide jagged toothy grin, a small bright red bandana tied over the top of the head, a plain bright red tunic over the thin shoulders and chest, and an oversized jagged light grey iron dagger raised beside the head; no armour."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The skin is yellow-olive green, never brown or tan. The bright red garment is plain flat bright red with a slightly darker red shadow and fills the whole bottom of the bust; no armour on the shoulders.",
+        "negative": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Goblin portrait, head and shoulders of a chunky cute scrappy little goblin: a huge round yellow-olive green head with two long pointed ears sticking straight out sideways, a long pointy nose, big cream eyes and a wide jagged toothy grin, a small bright red bandana tied over the top of the head, a plain bright red tunic over the thin shoulders and chest, and an oversized jagged light grey iron dagger raised beside the head; no armour. The skin is yellow-olive green, never brown or tan. The bright red garment is plain flat bright red with a slightly darker red shadow and fills the whole bottom of the bust; no armour on the shoulders.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, red mouth, pink mouth, red eyes, brown straps, brown skin, armour, pauldrons",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Goblin portrait, head and shoulders of a chunky cute scrappy little goblin: a huge round yellow-olive green head with two long pointed ears sticking straight out sideways, a long pointy nose, big cream eyes and a wide jagged toothy grin, a small bright red bandana tied over the top of the head, a plain bright red tunic over the thin shoulders and chest, and an oversized jagged light grey iron dagger raised beside the head; no armour. The skin is yellow-olive green, never brown or tan. The bright red garment is plain flat bright red with a slightly darker red shadow and fills the whole bottom of the bust; no armour on the shoulders. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, red mouth, pink mouth, red eyes, brown straps, brown skin, armour, pauldrons."
+  }
+}

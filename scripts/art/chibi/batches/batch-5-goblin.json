@@ -1,0 +1,480 @@
+{
+  "schemaVersion": 1,
+  "batch": "5-goblin",
+  "title": "Chibi batch 5: Goblin interface portraits",
+  "bead": "pulp_wars-0ao.8",
+  "faction": "GOBLIN",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-portrait-goblin-goblin",
+      "subject": "PORTRAIT:GOBLIN:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-goblin-wolf-rider",
+      "subject": "PORTRAIT:GOBLIN:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-goblin-bomb-chucker",
+      "subject": "PORTRAIT:GOBLIN:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-goblin-orc-brute",
+      "subject": "PORTRAIT:GOBLIN:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-goblin-orc-warboss",
+      "subject": "PORTRAIT:GOBLIN:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-goblin-orc-warboss.mask-override.png",
+        "masterPixelSha256": "3f1ddc53e263fa6fc41ad23d54228243be5671461b45cd1990d67d45e39e3c95",
+        "reason": "The automatic mask plus the 20 deeper key-like shades of the cape and collar that touch it (the keyLike band), so no crimson shading stays red for another owner. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-portrait-goblin-rocket-cart",
+      "subject": "PORTRAIT:GOBLIN:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-goblin-scrap-buggy",
+      "subject": "PORTRAIT:GOBLIN:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "maskOverride": {
+        "path": "scripts/art/chibi/overrides/chibi-portrait-goblin-scrap-buggy.mask-override.png",
+        "masterPixelSha256": "545a88ab9b87d44868342bc69420dd1e1ce19a20cd1e3f2bc22c06eecf331ec4",
+        "reason": "The automatic mask plus the 24 deeper key-like shades of the body panels and cap that touch it (the keyLike band), so no crimson shading stays red for another owner. No QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-portrait-goblin-troll",
+      "subject": "PORTRAIT:GOBLIN:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "portrait-goblin-goblin-a",
+      "asset": "chibi-portrait-goblin-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 5700,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons"
+    },
+    {
+      "id": "portrait-goblin-goblin-b",
+      "asset": "chibi-portrait-goblin-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 5701,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is yellow-olive green, never brown or tan. The bright red garment is plain flat bright red with a slightly darker red shadow and fills the whole bottom of the bust; no armour on the shoulders.",
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons",
+      "notes": "portrait-goblin-goblin-a has armour and only 7.0% owner area (COVERAGE_LOW)."
+    },
+    {
+      "id": "portrait-goblin-wolf-rider-a",
+      "asset": "chibi-portrait-goblin-wolf-rider",
+      "endpoint": "create-image-pixen",
+      "seed": 5710,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons"
+    },
+    {
+      "id": "portrait-goblin-wolf-rider-b",
+      "asset": "chibi-portrait-goblin-wolf-rider",
+      "endpoint": "create-image-pixen",
+      "seed": 5711,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The goblin's skin is yellow-olive green, never brown or tan, and the wolf is dark slate grey. The bright red garment is plain flat bright red with a slightly darker red shadow and fills the whole bottom of the bust; no armour on the shoulders.",
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons",
+      "notes": "portrait-goblin-wolf-rider-a drew a brown-skinned cat-like face (107 brown pixels)."
+    },
+    {
+      "id": "portrait-goblin-bomb-chucker-a",
+      "asset": "chibi-portrait-goblin-bomb-chucker",
+      "endpoint": "create-image-pixen",
+      "seed": 5720,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons"
+    },
+    {
+      "id": "portrait-goblin-bomb-chucker-b",
+      "asset": "chibi-portrait-goblin-bomb-chucker",
+      "endpoint": "create-image-pixen",
+      "seed": 5721,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is yellow-olive green, never brown or tan. The bright red garment is plain flat bright red with a slightly darker red shadow and fills the whole bottom of the bust; no armour on the shoulders.",
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons",
+      "notes": "portrait-goblin-bomb-chucker-a is close (21.1%); another seed with the colour addendum."
+    },
+    {
+      "id": "portrait-goblin-orc-brute-a",
+      "asset": "chibi-portrait-goblin-orc-brute",
+      "endpoint": "create-image-pixen",
+      "seed": 5730,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin"
+    },
+    {
+      "id": "portrait-goblin-orc-brute-b",
+      "asset": "chibi-portrait-goblin-orc-brute",
+      "endpoint": "create-image-pixen",
+      "seed": 5731,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is grey-olive green, never brown. The bright red tunic fills the bottom of the bust and the shield's face is bright red.",
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin",
+      "notes": "portrait-goblin-orc-brute-a has 12.9% owner area (COVERAGE_LOW) and crimson shading."
+    },
+    {
+      "id": "portrait-goblin-orc-warboss-a",
+      "asset": "chibi-portrait-goblin-orc-warboss",
+      "endpoint": "create-image-pixen",
+      "seed": 5740,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin"
+    },
+    {
+      "id": "portrait-goblin-orc-warboss-b",
+      "asset": "chibi-portrait-goblin-orc-warboss",
+      "endpoint": "create-image-pixen",
+      "seed": 5741,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is grey-olive green, never brown; the horns are pale cream. The bright red cape and tunic fill the whole bottom of the bust.",
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin",
+      "notes": "portrait-goblin-orc-warboss-a is the right chief but 9.8% owner area (COVERAGE_LOW), orange horns and brown straps."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-a",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5750,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons"
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-b",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5751,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket is plain flat bright red with a slightly darker red shadow; the cart is charcoal grey.",
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons",
+      "notes": "portrait-goblin-rocket-cart-a has crimson shading (25 pixels) and grey patches on the rocket."
+    },
+    {
+      "id": "portrait-goblin-scrap-buggy-a",
+      "asset": "chibi-portrait-goblin-scrap-buggy",
+      "endpoint": "create-image-pixen",
+      "seed": 5760,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons"
+    },
+    {
+      "id": "portrait-goblin-scrap-buggy-b",
+      "asset": "chibi-portrait-goblin-scrap-buggy",
+      "endpoint": "create-image-pixen",
+      "seed": 5761,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The buggy is seen from the front-right, the whole vehicle visible; its body panels are plain flat bright red; the driver is small with yellow-olive green skin.",
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons",
+      "notes": "portrait-goblin-scrap-buggy-a is a jumble: the driver's goggled face fills the image and the buggy hardly reads."
+    },
+    {
+      "id": "portrait-goblin-troll-a",
+      "asset": "chibi-portrait-goblin-troll",
+      "endpoint": "create-image-pixen",
+      "seed": 5770,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons"
+    },
+    {
+      "id": "portrait-goblin-troll-b",
+      "asset": "chibi-portrait-goblin-troll",
+      "endpoint": "create-image-pixen",
+      "seed": 5771,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skin is stone grey-green, never tan, pink or brown. The bright red garment is plain flat bright red with a slightly darker red shadow and fills the whole bottom of the bust; no armour on the shoulders.",
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons",
+      "notes": "portrait-goblin-troll-a has a tan-pink head instead of grey-green skin and 13.3% owner area (COVERAGE_LOW)."
+    },
+    {
+      "id": "portrait-goblin-goblin-b-edit",
+      "asset": "chibi-portrait-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 5750,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-goblin-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the grey armour from his shoulder and make the bright red tunic bigger so it fills the whole bottom of the portrait across both shoulders and the chest. Keep the yellow-olive face with long sideways ears, big eyes and toothy grin, the red bandana, the grey blade, outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-goblin-goblin-b has the right head (yellow-olive, long sideways ears, grin, red bandana) but grey shoulder armour and 15.9% owner area; portrait-goblin-goblin-a (7.0%) wears armour."
+    },
+    {
+      "id": "portrait-goblin-wolf-rider-b-edit",
+      "asset": "chibi-portrait-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 5751,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-wolf-rider-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make the goblin's face yellow-olive green, and make every brown strap and the brown spear shaft charcoal grey. Keep the bright red hood and tunic, the dark grey wolf head with open jaws beside him, outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-goblin-wolf-rider-b has the right composition (goblin in a red hood with the wolf's head at his side) but brown straps (57 brown pixels) and red-brown shading (21 pixels); portrait-goblin-wolf-rider-a drew a brown cat-like face."
+    },
+    {
+      "id": "portrait-goblin-orc-brute-a-edit",
+      "asset": "chibi-portrait-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 5752,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-orc-brute-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the bright red tunic bigger so it fills the whole bottom of the portrait across his shoulders and chest, and paint the face of the round shield bright red. Keep the grey-olive face with tusks, the dark iron pot helmet, outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-goblin-orc-brute-a is the right orc (pot helmet, tusks, round shield) but 12.9% owner area (COVERAGE_LOW) and crimson shading; portrait-goblin-orc-brute-b (8.2%) wears spiked armour."
+    },
+    {
+      "id": "portrait-goblin-orc-warboss-a-edit",
+      "asset": "chibi-portrait-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 5753,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-orc-warboss-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the bright red cape bigger so it wraps both shoulders and fills the whole bottom of the portrait, make the horns pale cream, and make the brown straps charcoal grey. Keep the grey-olive face with tusks and shouting mouth, the horned iron helmet, the tin megaphone, outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-goblin-orc-warboss-a is the right chief (horned helmet, megaphone, red cape) but 9.8% owner area (COVERAGE_LOW), orange horns and brown straps; portrait-goblin-orc-warboss-b likewise (9.8%) with crimson shading."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-a-edit",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 5754,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-rocket-cart-a",
+        "candidate": 0
+      },
+      "editInstruction": "Paint over the grey patches and dark spots on the rocket with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. Keep the grey nose cone and fins, the charcoal cart, the tiny goblin, outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-goblin-rocket-cart-a is the right whole rocket cart, but grey patches split the rocket and its shading is crimson (25 pixels); portrait-goblin-rocket-cart-b turned the rocket into a red-brown ball with a face (RED_BROWN_MATERIAL)."
+    },
+    {
+      "id": "portrait-goblin-troll-a-edit",
+      "asset": "chibi-portrait-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 5755,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-troll-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make his skin stone grey-green with dark olive moss tufts, not tan or pink, and make the bright red smock bigger so it fills the whole bottom of the portrait across his huge shoulders. Keep the big drooping nose, tusks, the stone club on his shoulder, outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-goblin-troll-a has the right bust (huge nose, tusks, stone club, red smock) but a tan-pink head and 13.3% owner area; portrait-goblin-troll-b (4.0%) wears armour."
+    },
+    {
+      "id": "portrait-goblin-scrap-buggy-c",
+      "asset": "chibi-portrait-goblin-scrap-buggy",
+      "endpoint": "create-image-pixen",
+      "seed": 5762,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The whole buggy is seen from the side, low and wide, filling the width of the square; the driver is small, only his head with the red cap and goggles shows above the body. The body panels are plain flat bright red; the driver's face is yellow-olive green, never red.",
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, red skin, red face, close-up, big face",
+      "notes": "portrait-goblin-scrap-buggy-a and -b are close-ups where the driver's goggled face fills the image (b's face is red, in the owner key), so the buggy does not read."
+    },
+    {
+      "id": "portrait-goblin-scrap-buggy-d",
+      "asset": "chibi-portrait-goblin-scrap-buggy",
+      "endpoint": "create-image-pixen",
+      "seed": 5763,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The whole buggy is seen from the side, low and wide, filling the width of the square; the driver is small, only his head with the red cap and goggles shows above the body. The body panels are plain flat bright red; the driver's face is yellow-olive green, never red.",
+      "negativeAddendum": "red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, red skin, red face, close-up, big face",
+      "notes": "portrait-goblin-scrap-buggy-a and -b are close-ups where the driver's goggled face fills the image (b's face is red, in the owner key), so the buggy does not read."
+    },
+    {
+      "id": "portrait-goblin-orc-warboss-a-edit-2",
+      "asset": "chibi-portrait-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 5756,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-orc-warboss-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Give him a bright red tunic over the chest between the shoulder plates, the same bright red as the cape, so red fills the bottom of the portrait. Keep every other pixel, the horned iron helmet with cream horns, the grey-olive face with tusks, the tin megaphone, the red cape, outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-goblin-orc-warboss-a-edit has the red cape around both shoulders and cream horns, but the chest is dark armour: 13.6% owner area (COVERAGE_LOW)."
+    },
+    {
+      "id": "portrait-goblin-scrap-buggy-d-edit",
+      "asset": "chibi-portrait-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 5764,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-scrap-buggy-d",
+        "candidate": 0
+      },
+      "editInstruction": "Paint the buggy's whole body plain bright red with a darker red shadow, never crimson or purple, and make the driver's face yellow-olive green. Keep the spiked grey ram, the dark wheels, the exhaust with its soot puff, the driver's red cap and goggles, outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-goblin-scrap-buggy-d is the whole buggy from the side with a small goggled driver, but its shading is crimson-purple (96 pixels) and the red panels are small (15.1%); portrait-goblin-scrap-buggy-c has a blue-grey helmeted driver and 12.1% owner area."
+    },
+    {
+      "id": "portrait-goblin-troll-a-edit-2",
+      "asset": "chibi-portrait-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 5757,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-troll-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour his head, nose and hands a cool stone grey-green like a mossy rock, with dark olive moss on top, so no skin is tan, beige or pink. Keep every other pixel, the red smock, the tusks, the stone club, outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-goblin-troll-a-edit fixed the smock (25.1% owner area) but the head stays tan-beige instead of stone grey-green."
+    },
+    {
+      "id": "portrait-goblin-orc-warboss-a-edit-b",
+      "asset": "chibi-portrait-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 5758,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-orc-warboss-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Paint the dark chest under his chin exactly the same bright red as his cape. Change nothing else: keep every other pixel, outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-goblin-orc-warboss-a-edit-2 painted the chest a red-brown (210 pixels, RED_BROWN_MATERIAL) that would stay red for every owner; a single-focus instruction that names the cape's red."
+    }
+  ]
+}

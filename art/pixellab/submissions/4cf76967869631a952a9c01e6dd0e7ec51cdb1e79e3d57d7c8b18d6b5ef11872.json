@@ -1,0 +1,36 @@
+{
+  "id": "portrait-goblin-scrap-buggy-d-edit",
+  "jobId": "f06b3a99-b637-4d26-b024-1371d0c3b72c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-scrap-buggy",
+    "subject": "PORTRAIT:GOBLIN:KNIGHT",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5764,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint the buggy's whole body plain bright red with a darker red shadow, never crimson or purple, and make the driver's face yellow-olive green. Keep the spiked grey ram, the dark wheels, the exhaust with its soot puff, the driver's red cap and goggles, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Paint the buggy's whole body plain bright red with a darker red shadow, never crimson or purple, and make the driver's face yellow-olive green. Keep the spiked grey ram, the dark wheels, the exhaust with its soot puff, the driver's red cap and goggles, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Paint the buggy's whole body plain bright red with a darker red shadow, never crimson or purple, and make the driver's face yellow-olive green. Keep the spiked grey ram, the dark wheels, the exhaust with its soot puff, the driver's red cap and goggles, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Paint the buggy's whole body plain bright red with a darker red shadow, never crimson or purple, and make the driver's face yellow-olive green. Keep the spiked grey ram, the dark wheels, the exhaust with its soot puff, the driver's red cap and goggles, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-goblin-scrap-buggy-d",
+      "candidate": 0,
+      "sha256": "dfdfd9b8b6a5f508dd1c9ec610db12a1a83a648d5fe9eb60ba8e076927a7f5b4"
+    }
+  }
+}

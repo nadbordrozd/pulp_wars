@@ -102,9 +102,10 @@ recipe asks for an "item sprite" that floats alone on transparency.
 Portraits are owned (`PORTRAIT:*` subjects need a mask); icons are not.
 
 A batch is one faction, so batch 5 is split: `batch-5.json` (ORIGINAL:
-Human portraits, ship portraits and every Human or shared icon) and
+Human portraits, ship portraits and every Human or shared icon),
 `batch-5-undead.json` (UNDEAD: Undead portraits and the Undead command
-icons). The review of batch 5 shows both.
+icons) and `batch-5-goblin.json` (GOBLIN portraits, bead `pulp_wars-0ao.8`).
+The review of batch 5 shows all three.
 
 ### Building on earlier batches
 
@@ -280,6 +281,18 @@ rival's on Deep Water). The roster's rival is drawn as Undead, so the skull
 badge and the HP bar and seat badge are checked on every unit class. The
 captures keep the `ingame-scene-*` names; `index.json` labels each as a
 showcase or a roster.
+
+A Goblin unit roster (`UNIT:GOBLIN:<ROLE>`, batch `goblin`) is drawn like
+an Undead one, with a Goblin viewer and rival and an extra Human seat for
+the scale Fighter. `npm run art:chibi-goblin-review` (bead
+`pulp_wars-0ao.8`) runs the batch review of batch `goblin` and adds
+`faction-units-{1x,x4}.png` and `faction-portraits-{1x,x4}.png` (every Goblin
+unit and portrait beside the Human and Undead one of its role, in the key
+colour and the four player colours, with the mask at x4) and
+`goblin-match-*.png` captures of a fresh Goblin-vs-Undead match in CHIBI
+(board at zoom 1 and 0.75 on desktop and phone, the unit dock, the training
+dock and the technology tree), indexed in `goblin-index.json`. Its captures
+start Vite on port 6301 unless `--port` says otherwise.
 
 Interface batches (every asset a `PORTRAIT` or `ICON`, batch 5) get
 interface sheets instead: each portrait or icon on the dark dock panel in

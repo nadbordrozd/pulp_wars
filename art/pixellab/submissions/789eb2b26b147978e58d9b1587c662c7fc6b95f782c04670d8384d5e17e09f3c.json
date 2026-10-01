@@ -1,0 +1,36 @@
+{
+  "id": "goblin-a-edit",
+  "jobId": "3470746c-0c9e-4193-b51a-35d85b3e34b1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17104,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the grey shoulder plates and arm armour so his thin arms are bare olive skin. Make the bright red tunic much bigger, covering shoulders, chest, belly and legs to the knees, its patches the same bright red. Make brown straps and belts charcoal grey. Keep the olive face with long sideways ears, nose and grin, the red bandana, the dagger, pose, outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the grey shoulder plates and arm armour so his thin arms are bare olive skin. Make the bright red tunic much bigger, covering shoulders, chest, belly and legs to the knees, its patches the same bright red. Make brown straps and belts charcoal grey. Keep the olive face with long sideways ears, nose and grin, the red bandana, the dagger, pose, outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the grey shoulder plates and arm armour so his thin arms are bare olive skin. Make the bright red tunic much bigger, covering shoulders, chest, belly and legs to the knees, its patches the same bright red. Make brown straps and belts charcoal grey. Keep the olive face with long sideways ears, nose and grin, the red bandana, the dagger, pose, outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the grey shoulder plates and arm armour so his thin arms are bare olive skin. Make the bright red tunic much bigger, covering shoulders, chest, belly and legs to the knees, its patches the same bright red. Make brown straps and belts charcoal grey. Keep the olive face with long sideways ears, nose and grin, the red bandana, the dagger, pose, outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "goblin-a",
+      "candidate": 0,
+      "sha256": "2acc5ac05ba2de5dd5e786cc50aa409bdea61754085095e51f986a40e42df510"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-goblin-goblin-b-edit",
+  "jobId": "fc3e265e-9c03-49e1-a9b7-1a107288b6a8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-goblin",
+    "subject": "PORTRAIT:GOBLIN:FIGHTER",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5750,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the grey armour from his shoulder and make the bright red tunic bigger so it fills the whole bottom of the portrait across both shoulders and the chest. Keep the yellow-olive face with long sideways ears, big eyes and toothy grin, the red bandana, the grey blade, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the grey armour from his shoulder and make the bright red tunic bigger so it fills the whole bottom of the portrait across both shoulders and the chest. Keep the yellow-olive face with long sideways ears, big eyes and toothy grin, the red bandana, the grey blade, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the grey armour from his shoulder and make the bright red tunic bigger so it fills the whole bottom of the portrait across both shoulders and the chest. Keep the yellow-olive face with long sideways ears, big eyes and toothy grin, the red bandana, the grey blade, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the grey armour from his shoulder and make the bright red tunic bigger so it fills the whole bottom of the portrait across both shoulders and the chest. Keep the yellow-olive face with long sideways ears, big eyes and toothy grin, the red bandana, the grey blade, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-goblin-goblin-b",
+      "candidate": 0,
+      "sha256": "52ad32c104e2ae337a66669ae03fc0ef12410d470fc4df145b2761c29acc60d8"
+    }
+  }
+}

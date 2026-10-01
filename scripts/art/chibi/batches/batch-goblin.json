@@ -1,0 +1,783 @@
+{
+  "schemaVersion": 1,
+  "batch": "goblin",
+  "title": "Goblin art: the eight Goblin units",
+  "bead": "pulp_wars-0ao.8",
+  "faction": "GOBLIN",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-goblin-goblin",
+      "subject": "UNIT:GOBLIN:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-goblin-wolf-rider",
+      "subject": "UNIT:GOBLIN:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-goblin-bomb-chucker",
+      "subject": "UNIT:GOBLIN:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-goblin-orc-brute",
+      "subject": "UNIT:GOBLIN:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-goblin-orc-warboss",
+      "subject": "UNIT:GOBLIN:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 27,
+        "y": 40
+      }
+    },
+    {
+      "id": "chibi-goblin-rocket-cart",
+      "subject": "UNIT:GOBLIN:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      }
+    },
+    {
+      "id": "chibi-goblin-scrap-buggy",
+      "subject": "UNIT:GOBLIN:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-goblin-troll",
+      "subject": "UNIT:GOBLIN:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "goblin-a",
+      "asset": "chibi-goblin-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 17101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The grin is dark with small cream teeth, never a red or pink mouth. The belt is charcoal grey and the dagger light grey iron, never brown.",
+      "negativeAddendum": "shield, helmet, sword, bow, quiver, bomb, red mouth, pink mouth, red eyes, brown belt, brown feet"
+    },
+    {
+      "id": "bomb-chucker-a",
+      "asset": "chibi-goblin-bomb-chucker",
+      "endpoint": "create-image-pixen",
+      "seed": 17301,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The grin is dark with small cream teeth, never a red or pink mouth. The satchel, straps and goggle straps are charcoal grey, never brown; the spark is tiny and pale yellow-white, never orange.",
+      "negativeAddendum": "bow, quiver, arrows, dagger, shield, flames, explosion, red mouth, pink mouth, orange spark, brown satchel, brown straps"
+    },
+    {
+      "id": "troll-a",
+      "asset": "chibi-goblin-troll",
+      "endpoint": "create-image-pixen",
+      "seed": 17801,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The mouth is dark with cream tusks, never red or pink. The stone club is light grey stone, never brown wood; any belt or strap is charcoal grey.",
+      "negativeAddendum": "armour, pauldrons, hammer, chains, manacles, bolts, stitched skin, bomb, red mouth, pink mouth, wooden club, brown club, brown belt"
+    },
+    {
+      "id": "wolf-rider-a",
+      "asset": "chibi-goblin-wolf-rider",
+      "endpoint": "create-image-pixen",
+      "seed": 17201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The rider wears no armour and no shoulder plates. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The wolf's open jaws are dark grey inside with cream fangs, never a red or pink mouth or tongue. Reins, straps and the spear shaft are charcoal grey or light grey iron, never brown.",
+      "negativeAddendum": "horse, pony, hooves, saddle horn, bow, bomb, armour, pauldrons, shoulder plates, red mouth, pink tongue, red tongue, brown fur, brown wolf, brown saddle, brown straps",
+      "notes": "Batch after the sample (Goblin, Bomb Chucker, Troll): the sample showed that the faction's scrap-iron materials invite armour and that 'patched' garments come back with dark spots, so the addendum asks for no extra armour and same-red patches."
+    },
+    {
+      "id": "orc-brute-a",
+      "asset": "chibi-goblin-orc-brute",
+      "endpoint": "create-image-pixen",
+      "seed": 17401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "No shoulder plates and no body armour: the big red tunic is the largest shape of the figure. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The mouth is dark with cream tusks, never red or pink. The belt, straps and boots are charcoal grey and the cleaver handle grey iron, never brown.",
+      "negativeAddendum": "spear, tower shield, bow, quiver, bomb, pauldrons, shoulder plates, body armour, red mouth, pink mouth, wooden shield, brown shield, brown boots, brown belt",
+      "notes": "Batch after the sample (Goblin, Bomb Chucker, Troll): the sample showed that the faction's scrap-iron materials invite armour and that 'patched' garments come back with dark spots, so the addendum asks for no extra armour and same-red patches."
+    },
+    {
+      "id": "orc-warboss-a",
+      "asset": "chibi-goblin-orc-warboss",
+      "endpoint": "create-image-pixen",
+      "seed": 17501,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The big red cape and red tunic are the largest shapes of the figure; the only armour is the two small spiky shoulder plates and the horned helmet. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The open shouting mouth is dark grey inside with cream tusks, never red or pink. The belt, straps and boots are charcoal grey, never brown.",
+      "negativeAddendum": "banner, flag, pole, feather, shield, bow, quiver, bomb, breastplate, body armour, red mouth, pink mouth, pink tongue, brown boots, brown belt, brown horns",
+      "notes": "Batch after the sample (Goblin, Bomb Chucker, Troll): the sample showed that the faction's scrap-iron materials invite armour and that 'patched' garments come back with dark spots, so the addendum asks for no extra armour and same-red patches."
+    },
+    {
+      "id": "rocket-cart-a",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 17601,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The tiny goblin crew wears a charcoal grey tunic with only a small red bandana, and crouches clearly apart from the rocket, behind the rear wheel, with a gap of empty space between them, so the big red rocket stays one separate shape. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The spark is tiny and pale yellow-white, never orange.",
+      "negativeAddendum": "catapult arm, bucket, rope, horse, flames, smoke trail, explosion, wood, wooden cart, brown cart, orange spark, red tunic, armour",
+      "notes": "Batch after the sample (Goblin, Bomb Chucker, Troll): the sample showed that the faction's scrap-iron materials invite armour and that 'patched' garments come back with dark spots, so the addendum asks for no extra armour and same-red patches."
+    },
+    {
+      "id": "scrap-buggy-a",
+      "asset": "chibi-goblin-scrap-buggy",
+      "endpoint": "create-image-pixen",
+      "seed": 17701,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The wheels are dark iron with grey spikes, never black rubber tyres; the soot cloud is round charcoal grey puffs, never orange flame. The driver wears no armour. Nothing is brown.",
+      "negativeAddendum": "horse, lance, rocket, flames, fire, explosion, wood, wooden cart, brown seat, brown cart, orange exhaust, rubber tyres, armour",
+      "notes": "Batch after the sample (Goblin, Bomb Chucker, Troll): the sample showed that the faction's scrap-iron materials invite armour and that 'patched' garments come back with dark spots, so the addendum asks for no extra armour and same-red patches."
+    },
+    {
+      "id": "goblin-b",
+      "asset": "chibi-goblin-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 17102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "He wears no armour and no shoulder plates: the big bright red patched tunic is the largest shape of the figure, from the shoulders down to the knees, and the bandana is bright red too. The grin is dark with small cream teeth, never a red or pink mouth. The belt is charcoal grey and the dagger light grey iron, never brown.",
+      "negativeAddendum": "shield, helmet, sword, bow, quiver, bomb, armour, pauldrons, shoulder plates, shoulder spikes, red mouth, pink mouth, red eyes, brown belt, brown feet",
+      "notes": "goblin-a reads as a goblin (ears, nose, grin, dagger) but wears big gunmetal pauldrons and armour that leave only 16.9% owner area, and is busier than the Human set."
+    },
+    {
+      "id": "goblin-c",
+      "asset": "chibi-goblin-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 17103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "He wears no armour and no shoulder plates: the big bright red patched tunic is the largest shape of the figure, from the shoulders down to the knees, and the bandana is bright red too. The grin is dark with small cream teeth, never a red or pink mouth. The belt is charcoal grey and the dagger light grey iron, never brown.",
+      "negativeAddendum": "shield, helmet, sword, bow, quiver, bomb, armour, pauldrons, shoulder plates, shoulder spikes, red mouth, pink mouth, red eyes, brown belt, brown feet",
+      "notes": "As goblin-b, another seed."
+    },
+    {
+      "id": "bomb-chucker-b",
+      "asset": "chibi-goblin-bomb-chucker",
+      "endpoint": "create-image-pixen",
+      "seed": 17302,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "His skin is yellow-olive green, never brown, tan or orange. He wears no armour and no shoulder plates: the big bright red patched tunic is the largest shape of the figure, from the shoulders down to the knees, and the flying cap is bright red too. The grin is dark with small cream teeth, never a red or pink mouth. The satchel and straps are charcoal grey, never brown; the spark is tiny and pale yellow-white, never orange.",
+      "negativeAddendum": "bow, quiver, arrows, dagger, shield, flames, explosion, armour, pauldrons, shoulder plates, brown skin, tan skin, orange skin, red mouth, pink mouth, orange spark, brown satchel, brown straps, brown cap",
+      "notes": "bomb-chucker-a has the right raised bomb, goggles and satchel, but brown-tan skin and brown straps (254 brown pixels), gunmetal armour, and only 13.1% owner area (COVERAGE_LOW)."
+    },
+    {
+      "id": "bomb-chucker-c",
+      "asset": "chibi-goblin-bomb-chucker",
+      "endpoint": "create-image-pixen",
+      "seed": 17303,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "His skin is yellow-olive green, never brown, tan or orange. He wears no armour and no shoulder plates: the big bright red patched tunic is the largest shape of the figure, from the shoulders down to the knees, and the flying cap is bright red too. The grin is dark with small cream teeth, never a red or pink mouth. The satchel and straps are charcoal grey, never brown; the spark is tiny and pale yellow-white, never orange.",
+      "negativeAddendum": "bow, quiver, arrows, dagger, shield, flames, explosion, armour, pauldrons, shoulder plates, brown skin, tan skin, orange skin, red mouth, pink mouth, orange spark, brown satchel, brown straps, brown cap",
+      "notes": "As bomb-chucker-b, another seed."
+    },
+    {
+      "id": "troll-b",
+      "asset": "chibi-goblin-troll",
+      "endpoint": "create-image-pixen",
+      "seed": 17802,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "He wears no armour, no shoulder plates and no belt: the huge bright red patched smock covers his whole barrel belly, hips and legs down to the knees and is the biggest shape of the figure. The club is one knobbly pale grey stone with no wooden handle. The mouth is dark with cream tusks, never red or pink.",
+      "negativeAddendum": "armour, pauldrons, shoulder plates, belt, hammer, chains, manacles, bolts, stitched skin, bomb, red mouth, pink mouth, wooden club, wooden handle, brown club, brown belt, brown straps",
+      "notes": "troll-a is the right hulking mossy troll with a stone club, but the smock is a small loincloth (7.6% owner area), the club handle and belts are brown (336 brown pixels) and he wears a blue shoulder plate."
+    },
+    {
+      "id": "troll-c",
+      "asset": "chibi-goblin-troll",
+      "endpoint": "create-image-pixen",
+      "seed": 17803,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "He wears no armour, no shoulder plates and no belt: the huge bright red patched smock covers his whole barrel belly, hips and legs down to the knees and is the biggest shape of the figure. The club is one knobbly pale grey stone with no wooden handle. The mouth is dark with cream tusks, never red or pink.",
+      "negativeAddendum": "armour, pauldrons, shoulder plates, belt, hammer, chains, manacles, bolts, stitched skin, bomb, red mouth, pink mouth, wooden club, wooden handle, brown club, brown belt, brown straps",
+      "notes": "As troll-b, another seed."
+    },
+    {
+      "id": "goblin-a-edit",
+      "asset": "chibi-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 17104,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the grey shoulder plates and arm armour so his thin arms are bare olive skin. Make the bright red tunic much bigger, covering shoulders, chest, belly and legs to the knees, its patches the same bright red. Make brown straps and belts charcoal grey. Keep the olive face with long sideways ears, nose and grin, the red bandana, the dagger, pose, outline and style exactly the same, on a transparent background.",
+      "notes": "goblin-a has the best silhouette (long sideways ears, bandana, long nose, raised dagger) but grey pauldrons and arm armour leave 16.9% owner area; goblin-b hides the ears under an iron helmet and goblin-c (12.8%) wears a hood and armour."
+    },
+    {
+      "id": "bomb-chucker-c-edit",
+      "asset": "chibi-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 17304,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-c",
+        "candidate": 0
+      },
+      "editInstruction": "Make the tunic and flying cap one flat bright red with a slightly darker red shadow, never pink or crimson, and make the tunic bigger, covering chest, belly and legs to the knees. Make brown gloves, straps, belt and satchel charcoal grey. Keep the olive face, long ear, iron goggles, the big black bomb raised high with its pale spark, pose, outline and style exactly the same, on a transparent background.",
+      "notes": "bomb-chucker-c has the strongest silhouette (big black bomb raised overhead, goggles, long ear) but crimson-pink shading on the cap and tunic (133 pink pixels), red-brown leather (51 pixels) and only 8.6% owner area."
+    },
+    {
+      "id": "bomb-chucker-b-edit",
+      "asset": "chibi-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 17305,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make every brown glove, sleeve, strap, belt, boot and satchel charcoal grey, and make the bright red tunic bigger so it covers his chest, belly and legs down to the knees, with its patches the same bright red. Keep the olive green face, the red flying cap with round iron goggles, the round black bomb raised high with its small pale spark, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
+      "notes": "bomb-chucker-b has the right design and 18.9% owner area but brown gloves, straps and boots (236 brown pixels)."
+    },
+    {
+      "id": "troll-a-edit",
+      "asset": "chibi-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 17804,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "troll-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the blue shoulder plate and the belts so his shoulders are bare grey-green skin with moss. Make the bright red smock huge, covering his whole belly, hips and legs to the knees, its patches the same bright red. Make the club handle light grey stone, nothing brown. Keep the hunched body, drooping nose, tusks, moss, the stone club on his shoulder, pose, outline and style exactly the same, on a transparent background.",
+      "notes": "troll-a has the right troll (hunched mossy lump, drooping nose, tusks, stone club on the shoulder) but a small loincloth (7.6% owner area), a brown handle and belts and a blue shoulder plate; troll-b and troll-c wear spiked armour and troll-c holds a blade."
+    },
+    {
+      "id": "goblin-a-edit-2",
+      "asset": "chibi-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 17105,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the dark spots from the red tunic so it is plain bright red with a slightly darker red shadow, and make the wrist wraps and belt charcoal grey with nothing brown. Keep every other pixel, the olive face with long sideways ears, nose and grin, the red bandana, the dagger, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "goblin-a-edit has the right owner area (31.8%) and silhouette, but the tunic patches came out as dark olive-brown spots that stay dark for every owner, and the wrist wraps are brown."
+    },
+    {
+      "id": "bomb-chucker-b-edit-2",
+      "asset": "chibi-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 17306,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Make the brown boots, belt, gloves and bomb handle charcoal grey, so nothing is brown, and make his skin a clear yellow-olive green. Keep every other pixel, the red flying cap with round iron goggles, the red tunic, the round black bomb raised high with its small pale spark, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "bomb-chucker-b-edit has 35.6% owner area and the right design; brown boots and belt remain (71 brown pixels). bomb-chucker-c-edit kept its crimson-pink shading (236 pixels), which stays red for every owner."
+    },
+    {
+      "id": "troll-a-edit-2",
+      "asset": "chibi-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 17805,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "troll-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the dark spots from the red smock so it is plain bright red with a slightly darker red shadow, and make the brown wrist straps charcoal grey, so nothing is brown. Keep every other pixel, the hunched grey-green body with moss, the drooping nose, tusks, the stone club on his shoulder, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "troll-a-edit has 28.5% owner area and the right troll, but dark olive spots on the smock and brown wrist straps (115 brown pixels)."
+    },
+    {
+      "id": "bomb-chucker-b-edit-3",
+      "asset": "chibi-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 17307,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-b-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Make the dark brown boots and the brown belt the same charcoal grey as his gloves. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "bomb-chucker-b-edit-2 is right apart from dark brown boots and belt (80 brown pixels); a single-focus instruction, as for the Lich lining."
+    },
+    {
+      "id": "bomb-chucker-b-edit-4",
+      "asset": "chibi-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 17308,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-b-edit-3",
+        "candidate": 0
+      },
+      "editInstruction": "Make the brown belt around his waist charcoal grey, and make the orange spark on the bomb's fuse pale yellow-white. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "bomb-chucker-b-edit-3 fixed the boots; the belt stays brown (39 brown pixels) and the fuse spark is orange (26 pixels), which GOBLIN.md keeps pale yellow-white."
+    },
+    {
+      "id": "wolf-rider-b",
+      "asset": "chibi-goblin-wolf-rider",
+      "endpoint": "create-image-pixen",
+      "seed": 17202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The rider wears no armour and no shoulder plates. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The wolf's open jaws are dark grey inside with cream fangs, never a red or pink mouth or tongue. Reins, straps and the spear shaft are charcoal grey or light grey iron, never brown.",
+      "negativeAddendum": "horse, pony, hooves, saddle horn, bow, bomb, armour, pauldrons, shoulder plates, red mouth, pink tongue, red tongue, brown fur, brown wolf, brown saddle, brown straps",
+      "notes": "As wolf-rider-a, another seed."
+    },
+    {
+      "id": "orc-brute-b",
+      "asset": "chibi-goblin-orc-brute",
+      "endpoint": "create-image-pixen",
+      "seed": 17402,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "No shoulder plates and no body armour: the big red tunic is the largest shape of the figure. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The mouth is dark with cream tusks, never red or pink. The belt, straps and boots are charcoal grey and the cleaver handle grey iron, never brown.",
+      "negativeAddendum": "spear, tower shield, bow, quiver, bomb, pauldrons, shoulder plates, body armour, red mouth, pink mouth, wooden shield, brown shield, brown boots, brown belt",
+      "notes": "As orc-brute-a, another seed."
+    },
+    {
+      "id": "orc-warboss-b",
+      "asset": "chibi-goblin-orc-warboss",
+      "endpoint": "create-image-pixen",
+      "seed": 17502,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The big red cape and red tunic are the largest shapes of the figure; the only armour is the two small spiky shoulder plates and the horned helmet. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The open shouting mouth is dark grey inside with cream tusks, never red or pink. The belt, straps and boots are charcoal grey, never brown.",
+      "negativeAddendum": "banner, flag, pole, feather, shield, bow, quiver, bomb, breastplate, body armour, red mouth, pink mouth, pink tongue, brown boots, brown belt, brown horns",
+      "notes": "As orc-warboss-a, another seed."
+    },
+    {
+      "id": "rocket-cart-b",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 17602,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The tiny goblin crew wears a charcoal grey tunic with only a small red bandana, and crouches clearly apart from the rocket, behind the rear wheel, with a gap of empty space between them, so the big red rocket stays one separate shape. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The spark is tiny and pale yellow-white, never orange.",
+      "negativeAddendum": "catapult arm, bucket, rope, horse, flames, smoke trail, explosion, wood, wooden cart, brown cart, orange spark, red tunic, armour",
+      "notes": "As rocket-cart-a, another seed."
+    },
+    {
+      "id": "scrap-buggy-b",
+      "asset": "chibi-goblin-scrap-buggy",
+      "endpoint": "create-image-pixen",
+      "seed": 17702,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The wheels are dark iron with grey spikes, never black rubber tyres; the soot cloud is round charcoal grey puffs, never orange flame. The driver wears no armour. Nothing is brown.",
+      "negativeAddendum": "horse, lance, rocket, flames, fire, explosion, wood, wooden cart, brown seat, brown cart, orange exhaust, rubber tyres, armour",
+      "notes": "As scrap-buggy-a, another seed."
+    },
+    {
+      "id": "wolf-rider-b-edit",
+      "asset": "chibi-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 17203,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "wolf-rider-b",
+        "candidate": 0
+      },
+      "editInstruction": "Replace the rider's grey armour with a bright red tunic, and make the red saddle blanket bigger so it hangs down the wolf's side. Make the brown saddle, straps and boots charcoal grey and the inside of the wolf's mouth dark grey, not pink. Keep the goblin's olive face, ears and red bandana, the spear, the dark grey wolf, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "wolf-rider-b has the right rider (big olive goblin head, sideways ears, red bandana, spear) on a dark grey wolf with open jaws, but grey armour on the rider, brown saddle and boots (234 brown pixels), a pink mouth (59 pixels) and 14.3% owner area. wolf-rider-a (9.8%) has an armoured rider and a small blanket."
+    },
+    {
+      "id": "orc-brute-a-edit",
+      "asset": "chibi-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 17403,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-brute-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the brown beard to show a heavy grey-olive jaw with two cream tusks, and remove the shoulder and arm armour. Give him a big bright red sleeveless tunic covering his chest, belly and legs to the knees. Make every brown strap charcoal grey. Keep the spiked iron pot helmet, the round dented iron shield, the grey-olive skin, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "orc-brute-a is a broad orc with a spiked pot helmet and round shield, but has a brown beard, heavy shoulder armour, brown straps (202 brown pixels) and 7.1% owner area. orc-brute-b is a small brown-skinned figure (6.5%)."
+    },
+    {
+      "id": "orc-warboss-a-edit",
+      "asset": "chibi-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 17503,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-warboss-a",
+        "candidate": 0
+      },
+      "editInstruction": "Give him a big bright red tunic covering his chest, belly and legs to the knees, in front of the red cape, and make the brown belt, straps and boots charcoal grey. Keep the horned iron helmet, the grey-olive face with tusks and open shouting mouth, the tin megaphone, the spiky shoulder plates, the red cape, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "orc-warboss-a is the right war chief (horned iron helmet, megaphone at the mouth, red cape, spiky shoulder plates) but the tunic is small (11.7% owner area) and the straps are brown. orc-warboss-b has red-brown skin (RED_BROWN_MATERIAL)."
+    },
+    {
+      "id": "scrap-buggy-a-edit",
+      "asset": "chibi-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 17703,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "scrap-buggy-a",
+        "candidate": 0
+      },
+      "editInstruction": "Paint all of the buggy's body panels one flat bright red, and make the driver's skin yellow-olive green, not orange. Make every brown part charcoal grey. Keep the red flying cap and goggles, the spiked grey iron ram, the dark iron wheels, the exhaust pipe with its round grey soot cloud, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "scrap-buggy-a is the right jalopy (spiked front ram, goggled driver in a red cap, exhaust with a round soot cloud) but the red panels are broken up (15.6% owner area), the driver's skin is orange-yellow and some parts are brown. scrap-buggy-b has a brown seat and frame (332 brown pixels)."
+    },
+    {
+      "id": "rocket-cart-a-edit",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 17603,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the brown wooden wheels dark iron, remove the orange flame at the rocket's tail, and move the little goblin off the rocket so he crouches on the ground behind the rear wheel in a charcoal tunic. Keep the big red rocket with its grey nose cone and fins, the dark iron cart, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "rocket-cart-a has a fat red rocket tilted forward on a dark cart, but brown wooden wheels (233 brown pixels), an orange tail flame, and the goblin sits on top of the rocket, merging with it. rocket-cart-b points almost straight up and has two crew with pink human skin."
+    },
+    {
+      "id": "rocket-cart-c",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 17604,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "Only one tiny goblin crew: he stands on the ground behind the cart's rear wheel, never on or in front of the rocket, with a gap of empty space between him and the rocket, so the big red rocket stays one separate shape. He wears a charcoal grey tunic with only a small red bandana, and his skin is yellow-olive green. The cart has two big spiked dark iron wheels. Every bright red part is plain flat bright red with a slightly darker red shadow. The spark is tiny and pale yellow-white, never orange flame.",
+      "negativeAddendum": "catapult arm, bucket, rope, horse, flames, smoke trail, explosion, wood, wooden cart, brown cart, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human",
+      "notes": "rocket-cart-a and -b put the crew on top of or in front of the rocket and drew four wheels; this addendum places one crew on the ground behind the rear wheel."
+    },
+    {
+      "id": "rocket-cart-d",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 17605,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "Only one tiny goblin crew: he stands on the ground behind the cart's rear wheel, never on or in front of the rocket, with a gap of empty space between him and the rocket, so the big red rocket stays one separate shape. He wears a charcoal grey tunic with only a small red bandana, and his skin is yellow-olive green. The cart has two big spiked dark iron wheels. Every bright red part is plain flat bright red with a slightly darker red shadow. The spark is tiny and pale yellow-white, never orange flame.",
+      "negativeAddendum": "catapult arm, bucket, rope, horse, flames, smoke trail, explosion, wood, wooden cart, brown cart, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human",
+      "notes": "rocket-cart-a and -b put the crew on top of or in front of the rocket and drew four wheels; this addendum places one crew on the ground behind the rear wheel."
+    },
+    {
+      "id": "orc-brute-c",
+      "asset": "chibi-goblin-orc-brute",
+      "endpoint": "create-image-pixen",
+      "seed": 17413,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "No beard: a bare heavy grey-olive jaw with two cream tusks. No shoulder plates and no body armour: the big red tunic is the largest shape of the figure. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The mouth is dark with cream tusks, never red or pink. The belt, straps and boots are charcoal grey and the cleaver handle grey iron, never brown.",
+      "negativeAddendum": "spear, tower shield, bow, quiver, bomb, pauldrons, shoulder plates, body armour, red mouth, pink mouth, wooden shield, brown shield, brown boots, brown belt, beard, brown skin",
+      "notes": "orc-brute-a grew a brown beard and heavy armour; orc-brute-b has brown skin."
+    },
+    {
+      "id": "wolf-rider-b-edit-2",
+      "asset": "chibi-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 17204,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "wolf-rider-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Make the brown straps, reins and saddle charcoal grey, and make the dark shadow of the red blanket a deeper red, never brown. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "wolf-rider-b-edit is right (20.1% owner area, red tunic and blanket, dark grey wolf) apart from brown straps and saddle (106 brown pixels) and red-brown blanket shading (36 pixels)."
+    },
+    {
+      "id": "orc-brute-a-edit-2",
+      "asset": "chibi-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 17404,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-brute-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Make the bright red sleeveless tunic longer and wider so it covers his whole belly, hips and legs down to the knees. Keep every other pixel, the spiked iron pot helmet, the grey-olive face with tusks, the big grey iron cleaver, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "orc-brute-a-edit is the right orc (grey-olive, tusks, spiked pot helmet, red sleeveless tunic, big cleaver) but the tunic stops at the hips: 13.6% owner area (COVERAGE_LOW)."
+    },
+    {
+      "id": "orc-brute-a-edit-b",
+      "asset": "chibi-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 17405,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-brute-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Give him a round dented iron shield with a bright red painted face on his left arm, and make the red tunic reach his knees. Keep every other pixel, the spiked iron pot helmet, the grey-olive face with tusks, the big grey iron cleaver, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "GOBLIN.md's fallback for an Orc Brute under the 15% owner minimum: paint the round shield's face bright red (it stays round, so it still reads apart from the Guard's tower shield)."
+    },
+    {
+      "id": "orc-warboss-a-edit-2",
+      "asset": "chibi-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 17504,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-warboss-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Make the bright red cape bigger, spreading wide behind both shoulders and hanging down to his boots, and make the red tunic reach his knees. Keep every other pixel, the horned iron helmet, the face with tusks and open mouth, the tin megaphone, the shoulder plates, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "orc-warboss-a-edit has the bigger tunic but still 14.5% owner area (COVERAGE_LOW); the cape shows only on one side."
+    },
+    {
+      "id": "scrap-buggy-a-edit-2",
+      "asset": "chibi-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 17704,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "scrap-buggy-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the grey patches, dark spots and rivets from the red body panels so they are big plain bright red areas with a slightly darker red shadow. Keep every other pixel, the goggled driver in a red cap, the spiked grey ram, the dark iron wheels, the exhaust and soot cloud, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "scrap-buggy-a-edit has red panels and an olive driver, but grey patches, dark spots and rivets break the red into small pieces (15.6% owner area, fragmented mask)."
+    },
+    {
+      "id": "rocket-cart-c-edit",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 17606,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-c",
+        "candidate": 0
+      },
+      "editInstruction": "Make every brown part of the cart frame charcoal grey, and remove the orange flame at the rocket's tail, leaving only a tiny pale yellow-white spark on a short cream fuse. Keep every other pixel, the big red rocket with grey nose and fins, the two dark iron wheels, the tiny goblin, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "rocket-cart-c is the right rocket cart (one fat red rocket tilted forward on a two-wheeled iron cart, the tiny charcoal-clad crew apart from the rocket) but brown frame parts (187 brown pixels), red-brown shading (29 pixels) and an orange tail flame. rocket-cart-d points almost straight up with the crew overlapping it; rocket-cart-a-edit added extra crew and kept the flame."
+    },
+    {
+      "id": "wolf-rider-b-edit-3",
+      "asset": "chibi-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 17205,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "wolf-rider-b-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Make the brown spear shaft light grey iron and the brown straps and boots charcoal grey. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "wolf-rider-b-edit-2 barely changed: the spear shaft, straps and boots are still brown (116 brown pixels); a single-focus instruction."
+    },
+    {
+      "id": "orc-warboss-a-edit-3",
+      "asset": "chibi-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 17505,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-warboss-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Make the two horns pale cream white instead of orange-tan, and make the inside of the open mouth dark grey instead of red. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "orc-warboss-a-edit-2 is right (18.5% owner area, cape on both sides) apart from orange-tan horns (47 orange pixels) and a red-brown mouth that stays red for every owner."
+    },
+    {
+      "id": "rocket-cart-c-edit-2",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 17607,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-c-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Make the dark crimson and purple shading on the rocket a darker shade of the same bright red, so the whole rocket body is bright red with a darker red shadow. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "rocket-cart-c-edit fixed the frame and the flame, but the rocket's shading is crimson-purple (61 pixels) outside the mask, so it stays crimson for every owner, and the owner area is 15.6%."
+    },
+    {
+      "id": "rocket-cart-c-edit-3",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 17608,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-c-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the few dark purple pixels in the shadow under the red rocket to dark red. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "rocket-cart-c-edit-2 repainted the nose cone, fins and cart crimson (437 crimson-purple pixels); this asks for the purple shadow pixels only."
+    },
+    {
+      "id": "rocket-cart-c-edit-4",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 17609,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-c-edit-3",
+        "candidate": 0
+      },
+      "editInstruction": "Paint over the dark bands and the brown square patches on the rocket's body with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are, with the same pose, outline and art style, on a transparent background.",
+      "notes": "rocket-cart-c-edit-3 fixed the crimson shading (1 pixel left), but dark bands and brown patches split the rocket (15.7% owner area, 54 brown pixels)."
+    }
+  ]
+}

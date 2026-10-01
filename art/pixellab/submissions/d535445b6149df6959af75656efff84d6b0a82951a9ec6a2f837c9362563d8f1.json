@@ -1,0 +1,36 @@
+{
+  "id": "bomb-chucker-b-edit-4",
+  "jobId": "902635fc-5e4f-488d-bb0a-9e3fd2fd47f2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17308,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the brown belt around his waist charcoal grey, and make the orange spark on the bomb's fuse pale yellow-white. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the brown belt around his waist charcoal grey, and make the orange spark on the bomb's fuse pale yellow-white. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the brown belt around his waist charcoal grey, and make the orange spark on the bomb's fuse pale yellow-white. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the brown belt around his waist charcoal grey, and make the orange spark on the bomb's fuse pale yellow-white. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "bomb-chucker-b-edit-3",
+      "candidate": 0,
+      "sha256": "7998d204dcd7b5091dcd596ba7ce7dba6dbedb3d4e2db1f6a4b28a2e8a9c0d84"
+    }
+  }
+}

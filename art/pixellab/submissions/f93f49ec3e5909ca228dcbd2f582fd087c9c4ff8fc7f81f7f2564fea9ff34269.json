@@ -1,0 +1,36 @@
+{
+  "id": "portrait-goblin-troll-a-edit-2",
+  "jobId": "51f35eb1-3355-4ddb-b322-25f6b69661c9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-troll",
+    "subject": "PORTRAIT:GOBLIN:JUGGERNAUT",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5757,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour his head, nose and hands a cool stone grey-green like a mossy rock, with dark olive moss on top, so no skin is tan, beige or pink. Keep every other pixel, the red smock, the tusks, the stone club, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour his head, nose and hands a cool stone grey-green like a mossy rock, with dark olive moss on top, so no skin is tan, beige or pink. Keep every other pixel, the red smock, the tusks, the stone club, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour his head, nose and hands a cool stone grey-green like a mossy rock, with dark olive moss on top, so no skin is tan, beige or pink. Keep every other pixel, the red smock, the tusks, the stone club, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour his head, nose and hands a cool stone grey-green like a mossy rock, with dark olive moss on top, so no skin is tan, beige or pink. Keep every other pixel, the red smock, the tusks, the stone club, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-goblin-troll-a-edit",
+      "candidate": 0,
+      "sha256": "382685fc1a55fea68c6cd7525850bbe0ef49b03596b9a814fa9d2fc02dddb253"
+    }
+  }
+}

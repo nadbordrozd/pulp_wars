@@ -1,0 +1,523 @@
+{
+  "batch": "goblin",
+  "bead": "pulp_wars-0ao.8",
+  "title": "Goblin art: the eight Goblin units",
+  "dryRun": false,
+  "faction": "GOBLIN",
+  "tileCssPx": 80,
+  "owners": {
+    "A": "#f06762",
+    "B": "#28b7a4"
+  },
+  "maskThresholds": {
+    "alphaMin": 128,
+    "owner": {
+      "hue": {
+        "from": 340,
+        "to": 5
+      },
+      "saturationMin": 0.65,
+      "valueMin": 0.3
+    },
+    "redBrown": {
+      "hue": {
+        "from": 5.0001,
+        "to": 15
+      },
+      "saturationMin": 0.45,
+      "valueMin": 0.3
+    },
+    "keyLike": {
+      "hue": {
+        "from": 335,
+        "to": 5
+      },
+      "saturationMin": 0.5,
+      "valueMin": 0.2
+    },
+    "minComponentPixels": 3,
+    "embeddedNeighbourMin": 5,
+    "redBrownMaterialMaxShare": 0.03,
+    "coverage": {
+      "min": 0.15,
+      "targetMin": 0.2,
+      "targetMax": 0.4,
+      "max": 0.55
+    }
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "assets": [
+    {
+      "id": "chibi-goblin-goblin",
+      "subject": "UNIT:GOBLIN:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "goblin-a-edit-2",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-goblin-goblin.png",
+        "sha256": "078acc2a1db50bde70d5b203e0f55a238908e4e0103095aae1d38bfaed59fd13",
+        "pixelSha256": "1cd2402199a26010acbfb6693e825eadb87ef964dacc9f2ab75b28cc5f21a86b",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.1727,
+        "footprintWidthShare": 0.5849,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-goblin-goblin.mask.png",
+        "source": "AUTO",
+        "coverage": 0.361,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-goblin-wolf-rider",
+      "subject": "UNIT:GOBLIN:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "wolf-rider-b-edit-3",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-goblin-wolf-rider.png",
+        "sha256": "d98643bc206ea31d8519c229108eac9a0010aa6303161bf3029f1803267b7580",
+        "pixelSha256": "ab75a9bc7855dd8f38175034cf5d7433257b810a78d2c23b5d4bcab0fe184a5f",
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7097,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-goblin-wolf-rider.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2001,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-goblin-bomb-chucker",
+      "subject": "UNIT:GOBLIN:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "bomb-chucker-b-edit-4",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-goblin-bomb-chucker.png",
+        "sha256": "b9667782368236b4e5bc2a15f5555e684eb987d488979d2a9ff058cdefe95df7",
+        "pixelSha256": "26e65fc05e0e470b25c2181d18fae526d9295415a2f8a1c6712a9103599bcb11",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.0339,
+        "footprintWidthShare": 0.7174,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-goblin-bomb-chucker.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3545,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-goblin-orc-brute",
+      "subject": "UNIT:GOBLIN:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "orc-brute-a-edit-b",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-goblin-orc-brute.png",
+        "sha256": "6fdf96b43057a251a0322f981aa1303a1151f881a2de0baa5610f36719fd792f",
+        "pixelSha256": "74eec1eb8f0c640ca032a3ae723201497d04a84f9d8af659cb64aa166b903a40",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0,
+        "footprintWidthShare": 0.8491,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-goblin-orc-brute.mask.png",
+        "source": "AUTO",
+        "coverage": 0.1845,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-goblin-orc-warboss",
+      "subject": "UNIT:GOBLIN:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "orc-warboss-a-edit-3",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-goblin-orc-warboss.png",
+        "sha256": "4e59c5716e2e348a9ea7148b5489bfb1ef2e8906e05dc06d729fd7874ce8e939",
+        "pixelSha256": "75c4b49513f7288917156d14869caba84e5ccfbb3789b63df92f361a45d7fd22",
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 27,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0,
+        "footprintWidthShare": 0.9107,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-goblin-orc-warboss.mask.png",
+        "source": "AUTO",
+        "coverage": 0.1782,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-goblin-rocket-cart",
+      "subject": "UNIT:GOBLIN:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "rocket-cart-c-edit-4",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-goblin-rocket-cart.png",
+        "sha256": "a71455094329977b4a9798a8af4708305b22216c61d5e0d1be16a2987f0f5c2a",
+        "pixelSha256": "0e524b81a802831d600d5b486f3e01c8cd81f3dd0ab7267a16c7c54c4aff9fae",
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 13,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7213,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-goblin-rocket-cart.mask.png",
+        "source": "AUTO",
+        "coverage": 0.1916,
+        "coverageOnTarget": false,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-goblin-scrap-buggy",
+      "subject": "UNIT:GOBLIN:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "scrap-buggy-a-edit-2",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-goblin-scrap-buggy.png",
+        "sha256": "e82f3a9cf9b9a0ae8aa2d9bd95f444ca1898d677a174935c8f12dc9ee3f9fef8",
+        "pixelSha256": "0d71b8f912105e5345f7e8baf30e9630ed3930f64abd187470cbabeb5b5465a4",
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0,
+        "footprintWidthShare": 0.9559,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-goblin-scrap-buggy.mask.png",
+        "source": "AUTO",
+        "coverage": 0.2031,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    },
+    {
+      "id": "chibi-goblin-troll",
+      "subject": "UNIT:GOBLIN:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "troll-a-edit-2",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-goblin-troll.png",
+        "sha256": "ad3d8676773d8c6c5dde3c1e5bee1f8863b22950c3b808e243db879cdbeba82d",
+        "pixelSha256": "151f03dbd4d33db989998c1ec02309cb91fcf4e21ad5896a8f895bbbcb1ee885",
+        "width": 88,
+        "height": 104
+      },
+      "anchor": {
+        "x": 44,
+        "y": 64
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 24,
+        "down": 0
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.1179,
+        "footprintWidthShare": 0.8592,
+        "suspect": false
+      },
+      "mask": {
+        "path": "public/assets/chibi/units/chibi-goblin-troll.mask.png",
+        "source": "AUTO",
+        "coverage": 0.3204,
+        "coverageOnTarget": true,
+        "qa": "PASS",
+        "failures": [],
+        "waived": []
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/sheet-1x.png",
+      "width": 1042,
+      "height": 1140,
+      "sha256": "450aaee1efad2cc5110c1c2732517f7e6d7262b47f1442644217d8649093aa38"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/sheet-x4.png",
+      "width": 2370,
+      "height": 3828,
+      "sha256": "370eee08fac4c0c6a84adb81efdd3172f711affe1a30fdaf036399adc1707fa7"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/phone-mock.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "13d9b64dba4db303a3d3f6e6f17eba50e8bb85df54e29abc774ceb1056a4e936"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/desktop-mock.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "daec33cb72439d2c42a2a5b98a05003aaa216abd78d3528250b24fb34bbc3608"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f514acbcbbddd27f5c85e68ac5d8fc8a4e6a31ed684c8f06bfa0097856c6e6c3"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8a7efbcd6abf47ba4aeb204491f4c0e47ef8e5998dfa2c008fcdab12c37ff089"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0ed9feb0d76474bd3cbfb2cddca223c0d858b31cbad7d2535c5dd83e7bdba14f"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2ee898a089b9b777e12dc7ba0c4cfe42b35b6ca17bdc0414bfef8e9a226f3c66"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "c455b8dc6cfdf3ed768f567b83075f20959b27e1c68f1fa2323e5b87c91b7ce0"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "6007808d7c852d603de06c67aa97543b582953d2fa63e86b523bc6b508a63b92"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "1f865433c206e3115cc7a4f4627ffb22bc56af58045b56692f393536a82d6971"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "271a457d2d8b22ac48a84fa2943d02e033575689a64cd5e84c011a0caf55f40a"
+    }
+  ],
+  "captures": {
+    "note": "Captured from the running game with ?art=chibi; subjects without a registered chibi raster still draw their legacy art.",
+    "shots": [
+      {
+        "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-desktop-zoom-1.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic roster)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-desktop-zoom-0.75.png",
+        "viewport": "1440x900 CSS at DPR 1 (synthetic roster)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-phone-zoom-1.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic roster)",
+        "zoomStep": "1",
+        "tileCssPx": "80",
+        "artSet": "CHIBI"
+      },
+      {
+        "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-phone-zoom-0.75.png",
+        "viewport": "390x844 CSS at DPR 3 (synthetic roster)",
+        "zoomStep": "0.75",
+        "tileCssPx": "60",
+        "artSet": "CHIBI"
+      }
+    ]
+  },
+  "phoneLinks": "art/pixellab/reviews/chibi-batch-goblin/phone-links.md"
+}

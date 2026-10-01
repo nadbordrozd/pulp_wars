@@ -1,0 +1,36 @@
+{
+  "id": "portrait-goblin-orc-warboss-a-edit-b",
+  "jobId": "76ab5191-d8ba-4fbe-8039-696408d91653",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-orc-warboss",
+    "subject": "PORTRAIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5758,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint the dark chest under his chin exactly the same bright red as his cape. Change nothing else: keep every other pixel, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Paint the dark chest under his chin exactly the same bright red as his cape. Change nothing else: keep every other pixel, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Paint the dark chest under his chin exactly the same bright red as his cape. Change nothing else: keep every other pixel, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Paint the dark chest under his chin exactly the same bright red as his cape. Change nothing else: keep every other pixel, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-goblin-orc-warboss-a-edit",
+      "candidate": 0,
+      "sha256": "0e0cbf169382100b8638cb2f60a0118697468584bc91a02cae1879aecd740a01"
+    }
+  }
+}

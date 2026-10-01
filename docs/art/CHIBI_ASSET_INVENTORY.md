@@ -92,23 +92,26 @@ is the unowned Grave marker: RESOURCE, 40 x 40, centred, no mask; without a
 raster (and in LEGACY) the code-drawn marker stays. Prompts and recipes:
 [UNDEAD.md](factions/UNDEAD.md) and `scripts/art/chibi/batches/batch-undead.json`.
 
-**Goblin subjects (revision 17, placeholders from bead `pulp_wars-0ao.4`).**
-A Goblin land unit asks for `UNIT:GOBLIN:<ROLE>` (Goblin `FIGHTER`, Wolf
-Rider `RAIDER`, Bomb Chucker `MARKSMAN`, Orc Brute `GUARD`, Orc Warboss
-`CAPTAIN`, Rocket Cart `CATAPULT`, Scrap Buggy `KNIGHT`, Troll
-`JUGGERNAUT`) with the canvas, class and mask of the Human role above; the
-Scrap Buggy's anchor sits 3 px right of the default so its soot cloud and
-rear wheel clear the HP bar and seat badge. Until bead `pulp_wars-0ao.8`
-registers PixelLab art, these subjects are programmatic placeholders drawn
-by [`goblin-placeholders.ts`](../../scripts/art/chibi/goblin-placeholders.ts)
-(`npm run art:goblin-placeholders`, then `-- check` and `-- sheet`) into
-`public/assets/chibi/placeholders/`, recorded in
-[`goblin-placeholders.json`](../../scripts/art/chibi/placeholders/goblin-placeholders.json)
-and marked with `placeholder` in the runtime manifest. Without a usable
-raster (and always in LEGACY) a Goblin unit draws the Human sprite of its
-role with the Goblin badge, an olive goblin head on a charcoal disc in the
-Undead badge's corner. Goblin Patrol Boats, Battleships and embarked
-transports use the Human subjects, with the badge. Review evidence:
+**Goblin subjects (revision 17, bead `pulp_wars-0ao.8`).** A Goblin land
+unit asks for `UNIT:GOBLIN:<ROLE>` (Goblin `FIGHTER`, Wolf Rider `RAIDER`,
+Bomb Chucker `MARKSMAN`, Orc Brute `GUARD`, Orc Warboss `CAPTAIN`, Rocket
+Cart `CATAPULT`, Scrap Buggy `KNIGHT`, Troll `JUGGERNAUT`) with the canvas,
+class and mask of the Human role above. Two anchors move right of the
+default so the art clears the HP bar and seat badge: the Orc Warboss's cape
+by 1 px (`27, 40`) and the Scrap Buggy's rear wheel by 4 px (`32, 48`). The
+rasters are PixelLab art from batch `goblin`
+(`scripts/art/chibi/batches/batch-goblin.json`), and the dock, training
+buttons and technology cards use the `PORTRAIT:GOBLIN:<ROLE>` busts of batch
+`5-goblin` (the Rocket Cart and Scrap Buggy shown whole). Without a usable
+raster (and always in LEGACY) a Goblin unit or portrait draws the Human art
+of its role with the Goblin badge, an olive goblin head on a charcoal disc
+in the Undead badge's corner. Goblin Patrol Boats, Battleships and embarked
+transports use the Human subjects, with the badge. Prompts and recipes:
+[GOBLIN.md](factions/GOBLIN.md) and `scripts/art/chibi/subjects/GOBLIN.json`;
+review evidence: `npm run art:chibi-goblin-review` into
+`art/pixellab/reviews/chibi-batch-goblin/`. The programmatic placeholders of
+bead `pulp_wars-0ao.4` and their generator were removed when this art was
+registered; their evidence stays in
 `art/pixellab/reviews/chibi-goblin-placeholders/`.
 
 ## Map overlays drawn in code (no raster today)
@@ -154,7 +157,8 @@ rewards and on technology cards.)
 ## Batch 5: the interface in CHIBI
 
 Bead `pulp_wars-67q.11`. Records: `scripts/art/chibi/records/batch-5.json`
-(ORIGINAL) and `batch-5-undead.json` (UNDEAD); masters under
+(ORIGINAL), `batch-5-undead.json` (UNDEAD) and `batch-5-goblin.json`
+(GOBLIN portraits, bead `pulp_wars-0ao.8`); masters under
 `public/assets/chibi/portraits/` and `public/assets/chibi/icons/`.
 
 **The DOM hook.** [`chibi-dom-art-v7.ts`](../../src/render/dom/chibi-dom-art-v7.ts)
@@ -172,23 +176,24 @@ registers.
 
 | Interface use                       | CHIBI subject                                                                                                                 | Owner colour            |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| Selection dock and unit help (unit) | the unit's map subject (`UNIT:<ROLE>`, `UNIT:UNDEAD:<ROLE>`, embarked transport)                                              | the unit's owner        |
+| Selection dock and unit help (unit) | the unit's map subject (`UNIT:<ROLE>`, `UNIT:UNDEAD:<ROLE>`, `UNIT:GOBLIN:<ROLE>`, embarked transport)                        | the unit's owner        |
 | Selection dock (city, tile)         | `CITY:<level>`; the improvement, resource or terrain map subject (a Mine is its mined mountain)                               | city or territory owner |
-| Train buttons, recruit help         | `PORTRAIT:<ROLE>`, `PORTRAIT:UNDEAD:<ROLE>` for an Undead viewer's land roles                                                 | the viewer              |
+| Train buttons, recruit help         | `PORTRAIT:<ROLE>`; `PORTRAIT:UNDEAD:<ROLE>` or `PORTRAIT:GOBLIN:<ROLE>` for an Undead or Goblin viewer's land roles           | the viewer              |
 | Technology cards and detail         | `CHIBI_TECH_ART_SUBJECTS_V7` in [`chibi-ui-art-v7.ts`](../../src/assets/chibi-ui-art-v7.ts)                                   | the viewer              |
 | Command and action buttons          | `ICON:ACTION:<KIND>` (Frenzy: `ICON:ACTION:UNDEAD:RALLY`); build and harvest commands their map subject; Capture the Village  | the viewer              |
 | City rewards                        | `ICON:REWARD:*`, `ICON:HUD:COIN` (Stockpile, Treasury), `ICON:HUD:POPULATION` (Boom), faction portraits (Militia, Juggernaut) | the viewer              |
 | Leaderboard city count              | `CITY:1`                                                                                                                      | that player             |
 | Inline and HUD coin and population  | `ICON:HUD:COIN`, `ICON:HUD:POPULATION`                                                                                        | none                    |
 
-Undead portraits and Frenzy fall back to the Human art (with the skull
-badge on units, as on the map) while they have no raster; with their own
-art the badge is dropped.
+Undead and Goblin portraits and Frenzy fall back to the Human art (with
+the faction badge on units, as on the map) while they have no raster; with
+their own art the badge is dropped.
 
 **Technology cards.** Where LEGACY reuses a map sprite, CHIBI reuses the
 chibi map sprite (Gathering the Fruit bush, Farming the Farm, Chivalry the
 Knight, Naval Engineering the Battleship, and so on; an Undead viewer's
-Chivalry and Drill show the Vampire and Zombie). Portrait and action reuse
+Chivalry and Drill show the Vampire and Zombie, a Goblin viewer's the Scrap
+Buggy and Orc Brute). Portrait and action reuse
 follows LEGACY too: Administration the Captain portrait, Scouting the
 Raider, Marksmanship the Marksman, Planning the Expand reward, Raiding
 Pillage, Explosives Blast Mountain, Roads Build Road. Fieldcraft,

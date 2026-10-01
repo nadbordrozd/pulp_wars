@@ -1,0 +1,36 @@
+{
+  "id": "orc-brute-a-edit-2",
+  "jobId": "6f6a2e8d-7ade-4351-8887-b2b0a984cbff",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-orc-brute",
+    "subject": "UNIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17404,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the bright red sleeveless tunic longer and wider so it covers his whole belly, hips and legs down to the knees. Keep every other pixel, the spiked iron pot helmet, the grey-olive face with tusks, the big grey iron cleaver, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the bright red sleeveless tunic longer and wider so it covers his whole belly, hips and legs down to the knees. Keep every other pixel, the spiked iron pot helmet, the grey-olive face with tusks, the big grey iron cleaver, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the bright red sleeveless tunic longer and wider so it covers his whole belly, hips and legs down to the knees. Keep every other pixel, the spiked iron pot helmet, the grey-olive face with tusks, the big grey iron cleaver, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the bright red sleeveless tunic longer and wider so it covers his whole belly, hips and legs down to the knees. Keep every other pixel, the spiked iron pot helmet, the grey-olive face with tusks, the big grey iron cleaver, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "orc-brute-a-edit",
+      "candidate": 0,
+      "sha256": "91d2175ce611b14687967495c6228aeac559725e5c5e33b268a8ef8aa26dc695"
+    }
+  }
+}

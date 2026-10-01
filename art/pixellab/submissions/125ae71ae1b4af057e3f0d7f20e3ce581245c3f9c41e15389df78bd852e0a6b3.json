@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-c-edit-3",
+  "jobId": "cfe8c1b6-90ee-4aa5-aad5-2b198813768c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17608,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the few dark purple pixels in the shadow under the red rocket to dark red. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are: keep every other pixel, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the few dark purple pixels in the shadow under the red rocket to dark red. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the few dark purple pixels in the shadow under the red rocket to dark red. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the few dark purple pixels in the shadow under the red rocket to dark red. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-c-edit",
+      "candidate": 0,
+      "sha256": "c54f866160ebb8036e124b746d42f01a05939161b11fed8cd79f0c464f951dbe"
+    }
+  }
+}

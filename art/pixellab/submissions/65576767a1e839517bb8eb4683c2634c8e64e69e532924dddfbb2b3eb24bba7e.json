@@ -1,0 +1,36 @@
+{
+  "id": "portrait-goblin-troll-a-edit",
+  "jobId": "08b606f0-9112-4e17-a26e-e89db09564e1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-troll",
+    "subject": "PORTRAIT:GOBLIN:JUGGERNAUT",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5755,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make his skin stone grey-green with dark olive moss tufts, not tan or pink, and make the bright red smock bigger so it fills the whole bottom of the portrait across his huge shoulders. Keep the big drooping nose, tusks, the stone club on his shoulder, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make his skin stone grey-green with dark olive moss tufts, not tan or pink, and make the bright red smock bigger so it fills the whole bottom of the portrait across his huge shoulders. Keep the big drooping nose, tusks, the stone club on his shoulder, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make his skin stone grey-green with dark olive moss tufts, not tan or pink, and make the bright red smock bigger so it fills the whole bottom of the portrait across his huge shoulders. Keep the big drooping nose, tusks, the stone club on his shoulder, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make his skin stone grey-green with dark olive moss tufts, not tan or pink, and make the bright red smock bigger so it fills the whole bottom of the portrait across his huge shoulders. Keep the big drooping nose, tusks, the stone club on his shoulder, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-goblin-troll-a",
+      "candidate": 0,
+      "sha256": "11158e399469fa1f09cf5c5856962ae9467921f969628606590c1501f428f446"
+    }
+  }
+}

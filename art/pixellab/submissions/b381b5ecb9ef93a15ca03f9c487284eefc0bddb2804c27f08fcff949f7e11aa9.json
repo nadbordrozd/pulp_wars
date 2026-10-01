@@ -1,0 +1,36 @@
+{
+  "id": "orc-brute-a-edit",
+  "jobId": "ceca4cd1-dc2c-43cd-aecb-fb246a315b27",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-orc-brute",
+    "subject": "UNIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17403,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the brown beard to show a heavy grey-olive jaw with two cream tusks, and remove the shoulder and arm armour. Give him a big bright red sleeveless tunic covering his chest, belly and legs to the knees. Make every brown strap charcoal grey. Keep the spiked iron pot helmet, the round dented iron shield, the grey-olive skin, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the brown beard to show a heavy grey-olive jaw with two cream tusks, and remove the shoulder and arm armour. Give him a big bright red sleeveless tunic covering his chest, belly and legs to the knees. Make every brown strap charcoal grey. Keep the spiked iron pot helmet, the round dented iron shield, the grey-olive skin, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the brown beard to show a heavy grey-olive jaw with two cream tusks, and remove the shoulder and arm armour. Give him a big bright red sleeveless tunic covering his chest, belly and legs to the knees. Make every brown strap charcoal grey. Keep the spiked iron pot helmet, the round dented iron shield, the grey-olive skin, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the brown beard to show a heavy grey-olive jaw with two cream tusks, and remove the shoulder and arm armour. Give him a big bright red sleeveless tunic covering his chest, belly and legs to the knees. Make every brown strap charcoal grey. Keep the spiked iron pot helmet, the round dented iron shield, the grey-olive skin, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "orc-brute-a",
+      "candidate": 0,
+      "sha256": "e84712c164efaf37f6bec4a125b3506850e525f6cb89deba787dfbc3f50f147f"
+    }
+  }
+}

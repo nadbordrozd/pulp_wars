@@ -10,9 +10,10 @@ The file is named after the runtime faction id `GOBLIN`: the pipeline reads
 layer 3 from `docs/art/factions/<faction>.md` for a batch manifest whose
 `faction` is `GOBLIN`, so edit the two `text` blocks under **Prompt
 fragment** and **Negative fragment** here and nowhere else. The sprite bead
-(`pulp_wars-0ao.8`) copies the subject lines below into
-`scripts/art/chibi/subjects/GOBLIN.json`; a line may still be tuned there
-when the sample shows it needs it, within the rules of this document.
+(`pulp_wars-0ao.8`) copied the subject lines below into
+`scripts/art/chibi/subjects/GOBLIN.json` unchanged; what the sample taught
+went into recipe addenda and edits instead (see
+[Sprite findings](#sprite-findings-bead-pulp_wars-0ao8)).
 
 The roster and rules come from the
 [revision-17 Goblin spec](../../product/RULESET_7_REVISION_17_GOBLINS.md)
@@ -115,12 +116,14 @@ This guides the subject lines; it is not sent to PixelLab.
   Kaboom needs no prop.
 - **Settlements:** shared with the Humans (see
   [Cities and villages](#cities-and-villages)).
-- **Portraits and icons (with `pulp_wars-0ao.8` or later):** each
-  `PORTRAIT:GOBLIN:<ROLE>` line repeats its unit's head, owner garment and
-  signature item as a head-and-shoulders bust (vehicles whole). Command
-  icons are item sprites in the same vocabulary: Kaboom a round black bomb
-  with a lit cream fuse and a pale spark; WAAAGH! the Warboss's tin
-  megaphone.
+- **Portraits (bead `pulp_wars-0ao.8`, batch `5-goblin`):** each
+  `PORTRAIT:GOBLIN:<ROLE>` line in `scripts/art/chibi/subjects/GOBLIN.json`
+  repeats its unit's head, owner garment and signature item as a
+  head-and-shoulders bust (the Rocket Cart and Scrap Buggy whole). The dock,
+  training buttons and technology cards use them.
+- **Command icons (not drawn yet):** item sprites in the same vocabulary:
+  Kaboom a round black bomb with a lit cream fuse and a pale spark; WAAAGH!
+  the Warboss's tin megaphone.
 
 ## Subject lines
 
@@ -128,11 +131,10 @@ Approved lines for `scripts/art/chibi/subjects/GOBLIN.json`, written like the
 Human and Undead lines. Each unit line carries the full body language and
 puts the owner colour on a garment (or a vehicle's painted parts) that
 covers the torso and legs. In the JSON file each is keyed by the runtime
-subject `UNIT:GOBLIN:<ROLE>`, which the renderer must ask for first and
-replace with the placeholder (bead `pulp_wars-0ao.4`) while no raster is
-registered; the manifest subject pattern in
-`scripts/art/chibi/batch-manifest.ts` accepts only `UNDEAD` today and needs
-`GOBLIN` added in the sprite bead. Canvases follow the
+subject `UNIT:GOBLIN:<ROLE>`, which the renderer asks for first and replaces
+with the Human sprite plus the Goblin badge while no raster is usable; the
+manifest subject pattern in `scripts/art/chibi/batch-manifest.ts` accepts
+`UNDEAD` and `GOBLIN` faction subjects. Canvases follow the
 [asset inventory](../CHIBI_ASSET_INVENTORY.md).
 
 **Goblin** (`FIGHTER`, standard unit 56 x 80):
@@ -308,10 +310,11 @@ stable, so they should already carry the silhouette key of each unit:
 A crude but correct silhouette beats a detailed one: the placeholders are
 what balance and UI testers will learn the roster from.
 
-They are drawn by `scripts/art/chibi/goblin-placeholders.ts` (`npm run
-art:goblin-placeholders`) and registered with a `placeholder` marker; the
-[asset inventory](../CHIBI_ASSET_INVENTORY.md) lists the files, and the
-sprite bead replaces every marked entry.
+They were drawn by a programmatic generator and registered with a
+`placeholder` marker. The sprite bead (`pulp_wars-0ao.8`) replaced every
+marked entry with PixelLab art and removed the generator, its PNGs and the
+marker; the review evidence stays in
+`art/pixellab/reviews/chibi-goblin-placeholders/`.
 
 ### Explosion effects
 
@@ -358,6 +361,48 @@ the same role's unit that the silhouette must read apart from.
 | Patrol Boat, Battleship   | Human art | Human art                                | reused unchanged (spec section 3)                                                                                                                      |
 | City 1–3, village         | Human art | Human art                                | shared Human art                                                                                                                                       |
 
+## Sprite findings (bead `pulp_wars-0ao.8`)
+
+Batch `goblin` (`scripts/art/chibi/batches/batch-goblin.json`) holds the
+eight units and batch `5-goblin` the eight portraits; every request, seed,
+addendum, edit and verdict is in those manifests and their records. The
+sample was the Goblin, the Bomb Chucker and the Troll (the three most
+different silhouettes and sizes); the Orc Brute followed in the batch. What
+the sample showed, and how the recipes answer it without changing the
+approved lines above:
+
+- **The faction fragment's "riveted scrap iron plates" invite armour.**
+  Pixen put gunmetal pauldrons, arm plates or spiked shoulders on nearly
+  every first candidate, which hid the tunic (owner area 5–17%) and made the
+  figures busier than the Human and Undead sets. Recipe addenda say "no
+  armour and no shoulder plates" (except the Warboss's small spiky plates
+  and the Brute's pot helmet), and edits removed what remained.
+- **"Patched" garments come back with dark olive or brown spots** that stay
+  dark for every owner. Addenda and edits ask for plain flat red with
+  same-red patches.
+- **Brown still drifts in** on straps, belts, boots, spear shafts, the
+  Rocket Cart's wheels and a Troll club handle, and once as tan skin.
+  Single-focus edits ("make the brown belt charcoal grey; change nothing
+  else") worked where broad ones did not, as for the Undead.
+- **Crimson-purple shading** on the rocket and a portrait buggy fell outside
+  the mask; a single-focus edit fixed the rocket, and two portraits (Orc
+  Warboss, Scrap Buggy) carry a checked-in keyLike mask override that adds
+  the deeper key shades.
+- **The Rocket Cart's crew** (0ao.4 review): the accepted cart has one tiny
+  crew in charcoal with only a red bandana, outlined apart from a plain red
+  rocket, so the crew no longer merges with it.
+- **The Orc Brute** stayed under the owner minimum with only its tunic, so
+  it took this document's fallback: the round shield's face is red.
+- **Anchors:** the Warboss's cape and the Scrap Buggy's rear wheel reached
+  the HP bar and seat-badge strips; their anchors move 1 px and 4 px right.
+
+Accepted owner areas: Goblin 36.1%, Wolf Rider 20.0%, Bomb Chucker 35.4%,
+Orc Brute 18.4%, Orc Warboss 17.8%, Rocket Cart 19.2%, Scrap Buggy 20.3%,
+Troll 32.0%; every mask passes QA. Review evidence: `npm run
+art:chibi-goblin-review` writes `art/pixellab/reviews/chibi-batch-goblin/`
+(the batch review, the faction comparison sheets for units and portraits,
+and a Goblin match in CHIBI).
+
 ## Checks for the sprite bead
 
 - [x] The prompt fragment names no figure and no building.
@@ -366,5 +411,7 @@ the same role's unit that the silhouette must read apart from.
       and legs.
 - [x] Feet, hands, handles, stocks and shields have non-brown colours.
 - [x] No settlement lines: Goblins share the Human city and village art.
-- [ ] The sample (Goblin, Bomb Chucker, Orc Brute) passes mask QA and reads
+- [x] The sample (Goblin, Bomb Chucker, Troll) passes mask QA and reads
       apart from the Human and Undead sets at zoom 0.75.
+- [x] The whole roster and its portraits pass mask QA, clear the HP bar and
+      seat-badge strips (giants exempt) and replace every placeholder.

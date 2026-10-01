@@ -1,0 +1,83 @@
+{
+  "bead": "pulp_wars-0ao.8",
+  "batches": [
+    "goblin",
+    "5-goblin"
+  ],
+  "owners": {
+    "CORAL": "#f06762",
+    "TEAL": "#28b7a4",
+    "GOLD": "#e2b63f",
+    "VIOLET": "#a277d2"
+  },
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+  "captures": "A fresh Goblin (seat 0) vs Undead (seat 1) match, seed 67, captured from the running game with ?art=chibi.",
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/faction-units-1x.png",
+      "width": 776,
+      "height": 1164,
+      "sha256": "b8e24a4a4560f8526c69b76178039ea6ce9e5ea661ec4f7305ae39f5c19067c6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/faction-portraits-1x.png",
+      "width": 552,
+      "height": 844,
+      "sha256": "db89d963ab1da87348d3124703a27392520886ad1693046ec662c9509168bf41"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/faction-units-x4.png",
+      "width": 3382,
+      "height": 3852,
+      "sha256": "ddea1ee7a1d93798c7a4f96383811149ecc36664b7e8afcf7603a4fbeacdd3b6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/faction-portraits-x4.png",
+      "width": 2358,
+      "height": 2572,
+      "sha256": "b89654a93f9258929caa5b310bb9541b3cf0a0906e0517739082f1c2776f5909"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "510e9e7ae6ddb0dab253be845cc4a38674d4ed7e5e10de13ec3431c09b812b09"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d057833be0d18f1502b8dc05871b4ba972b6a9f71657ac0537db9ed4778af449"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-unit-dock-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "08f083636d5010e2f6bfe1100212fdf4d6ed60d26043788dd6ebb5039d8032b7"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-city-dock-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "29a4a4533b51c791c8052004e803af1f32f0516c7ad3f7c4999317b34e0d14b1"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-tech-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b830c047c9d002ef0e0a0f2f0ec610dc5d5a9a2163007c9c8a1e20156d262508"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "3076fd80fed1f49f40dad0b59c18e05502f2109b737c892478e74ab768f2b215"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "04e6c480e89fa8c6ea9b5f5938c30d08c1557c716c7e9dc29fcaf272678f2623"
+    }
+  ]
+}

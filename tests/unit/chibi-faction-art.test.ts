@@ -244,7 +244,7 @@ describe("Faction-aware chibi subjects", () => {
   });
 });
 
-describe("Goblin faction art (pulp_wars-0ao.4 placeholders)", () => {
+describe("Goblin faction art (pulp_wars-0ao.8)", () => {
   it("gives Goblin land units their own subject and keeps shared art for ships and transports", () => {
     expect(
       unitArtSubjectV7({ role: "FIGHTER", form: "LAND", faction: "GOBLIN" }),
@@ -262,9 +262,12 @@ describe("Goblin faction art (pulp_wars-0ao.4 placeholders)", () => {
     expect(chibiFallbackSubjectV7("UNIT:GOBLIN:CATAPULT")).toBe(
       "UNIT:CATAPULT",
     );
+    expect(chibiFallbackSubjectV7("PORTRAIT:GOBLIN:CAPTAIN")).toBe(
+      "PORTRAIT:CAPTAIN",
+    );
   });
 
-  it("resolves every Goblin land role to its registered placeholder as faction art", () => {
+  it("resolves every Goblin land role's unit and portrait to registered PixelLab art", () => {
     const built = buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7);
     expect(built.problems).toEqual([]);
     const art = createChibiArtResolverV7({
@@ -281,21 +284,25 @@ describe("Goblin faction art (pulp_wars-0ao.4 placeholders)", () => {
       "CATAPULT",
       "KNIGHT",
       "JUGGERNAUT",
-    ] as const) {
-      const resolved = resolveChibiWithFallbackV7(
-        art,
-        request(`UNIT:GOBLIN:${role}`),
-      );
-      expect(resolved.factionArt, role).toBe(true);
-      if (resolved.resolution.kind !== "READY") throw new Error(role);
-      expect(resolved.resolution.asset.placeholder?.replacedBy).toBe(
-        "pulp_wars-0ao.8",
-      );
-      // Recoloured through the owner mask, like every owned unit.
-      expect(resolved.resolution.cacheKey).toBe(
-        `chibi:${resolved.resolution.asset.id}@1#${RULESET7_PLAYER_COLORS.TEAL}`,
-      );
-    }
+    ] as const)
+      for (const [subject, prefix] of [
+        [`UNIT:GOBLIN:${role}`, "chibi-goblin-"],
+        [`PORTRAIT:GOBLIN:${role}`, "chibi-portrait-goblin-"],
+      ] as const) {
+        const resolved = resolveChibiWithFallbackV7(art, request(subject));
+        expect(resolved.factionArt, subject).toBe(true);
+        if (resolved.resolution.kind !== "READY") throw new Error(subject);
+        expect(resolved.resolution.asset.id.startsWith(prefix), subject).toBe(
+          true,
+        );
+        // Recoloured through the owner mask, like every owned unit.
+        expect(resolved.resolution.cacheKey).toBe(
+          `chibi:${resolved.resolution.asset.id}@1#${RULESET7_PLAYER_COLORS.TEAL}`,
+        );
+      }
+    // The programmatic placeholders of pulp_wars-0ao.4 are gone.
+    for (const asset of CHIBI_ART_ASSETS_V7)
+      expect(asset.url).not.toContain("placeholder");
   });
 
   it("falls back from a Goblin subject without a usable raster to the Human sprite", () => {

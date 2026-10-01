@@ -1,0 +1,36 @@
+{
+  "id": "orc-warboss-a-edit-3",
+  "jobId": "01263b2b-0f41-4695-a661-c5fb768aaa23",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-orc-warboss",
+    "subject": "UNIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17505,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the two horns pale cream white instead of orange-tan, and make the inside of the open mouth dark grey instead of red. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the two horns pale cream white instead of orange-tan, and make the inside of the open mouth dark grey instead of red. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the two horns pale cream white instead of orange-tan, and make the inside of the open mouth dark grey instead of red. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the two horns pale cream white instead of orange-tan, and make the inside of the open mouth dark grey instead of red. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "orc-warboss-a-edit-2",
+      "candidate": 0,
+      "sha256": "acea43eb4738554dc5f4de4bb656c75d5e7b4fd02cc6e8060dfd78aa982334cc"
+    }
+  }
+}

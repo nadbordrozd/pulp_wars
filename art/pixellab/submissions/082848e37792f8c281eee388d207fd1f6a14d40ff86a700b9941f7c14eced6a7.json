@@ -1,0 +1,69 @@
+{
+  "id": "orc-brute-a",
+  "jobId": "sync-95285ea2-1ea4-4e3d-a60d-80b11887cd54",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-orc-brute",
+    "subject": "UNIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17401,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+        "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+        "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/GOBLIN.json",
+        "text": "Subject: Orc Brute, a chunky cute big broad orc with a huge round head about half of the figure's height and a wide heavy body filling the whole width of the image: grey-olive green skin shaded darker grey-olive, a heavy jaw with two cream tusks jutting up from an underbite, a flat nose, small grumpy eyes under a heavy brow, small pointed ears, a dented dark gunmetal iron pot helmet with one short spike, a big bright red patched sleeveless tunic with square stitched patches over the chest, belly and legs down to the knees, a round dented dark gunmetal iron shield with a spiky boss on the left arm, a huge chunky light grey iron cleaver raised in the right hand, charcoal grey boots, wide braced stance; simple shapes and very few details; clearly a big shield bruiser, not a spearman."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "No shoulder plates and no body armour: the big red tunic is the largest shape of the figure. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The mouth is dark with cream tusks, never red or pink. The belt, straps and boots are charcoal grey and the cleaver handle grey iron, never brown.",
+        "negative": "spear, tower shield, bow, quiver, bomb, pauldrons, shoulder plates, body armour, red mouth, pink mouth, wooden shield, brown shield, brown boots, brown belt"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Orc Brute, a chunky cute big broad orc with a huge round head about half of the figure's height and a wide heavy body filling the whole width of the image: grey-olive green skin shaded darker grey-olive, a heavy jaw with two cream tusks jutting up from an underbite, a flat nose, small grumpy eyes under a heavy brow, small pointed ears, a dented dark gunmetal iron pot helmet with one short spike, a big bright red patched sleeveless tunic with square stitched patches over the chest, belly and legs down to the knees, a round dented dark gunmetal iron shield with a spiky boss on the left arm, a huge chunky light grey iron cleaver raised in the right hand, charcoal grey boots, wide braced stance; simple shapes and very few details; clearly a big shield bruiser, not a spearman. No shoulder plates and no body armour: the big red tunic is the largest shape of the figure. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The mouth is dark with cream tusks, never red or pink. The belt, straps and boots are charcoal grey and the cleaver handle grey iron, never brown.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, spear, tower shield, bow, quiver, bomb, pauldrons, shoulder plates, body armour, red mouth, pink mouth, wooden shield, brown shield, brown belt",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Orc Brute, a chunky cute big broad orc with a huge round head about half of the figure's height and a wide heavy body filling the whole width of the image: grey-olive green skin shaded darker grey-olive, a heavy jaw with two cream tusks jutting up from an underbite, a flat nose, small grumpy eyes under a heavy brow, small pointed ears, a dented dark gunmetal iron pot helmet with one short spike, a big bright red patched sleeveless tunic with square stitched patches over the chest, belly and legs down to the knees, a round dented dark gunmetal iron shield with a spiky boss on the left arm, a huge chunky light grey iron cleaver raised in the right hand, charcoal grey boots, wide braced stance; simple shapes and very few details; clearly a big shield bruiser, not a spearman. No shoulder plates and no body armour: the big red tunic is the largest shape of the figure. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The mouth is dark with cream tusks, never red or pink. The belt, straps and boots are charcoal grey and the cleaver handle grey iron, never brown. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, spear, tower shield, bow, quiver, bomb, pauldrons, shoulder plates, body armour, red mouth, pink mouth, wooden shield, brown shield, brown belt."
+  }
+}

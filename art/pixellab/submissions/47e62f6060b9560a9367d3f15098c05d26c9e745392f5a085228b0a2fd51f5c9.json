@@ -1,0 +1,36 @@
+{
+  "id": "goblin-a-edit-2",
+  "jobId": "bc8b9fb6-25f3-4f5e-ba74-6153161d1a1d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17105,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the dark spots from the red tunic so it is plain bright red with a slightly darker red shadow, and make the wrist wraps and belt charcoal grey with nothing brown. Keep every other pixel, the olive face with long sideways ears, nose and grin, the red bandana, the dagger, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the dark spots from the red tunic so it is plain bright red with a slightly darker red shadow, and make the wrist wraps and belt charcoal grey with nothing brown. Keep every other pixel, the olive face with long sideways ears, nose and grin, the red bandana, the dagger, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the dark spots from the red tunic so it is plain bright red with a slightly darker red shadow, and make the wrist wraps and belt charcoal grey with nothing brown. Keep every other pixel, the olive face with long sideways ears, nose and grin, the red bandana, the dagger, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the dark spots from the red tunic so it is plain bright red with a slightly darker red shadow, and make the wrist wraps and belt charcoal grey with nothing brown. Keep every other pixel, the olive face with long sideways ears, nose and grin, the red bandana, the dagger, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "goblin-a-edit",
+      "candidate": 0,
+      "sha256": "8c6ad6f017aafbe020c882a3d007696f962cd0ba594cd119c110703d9e1a991d"
+    }
+  }
+}

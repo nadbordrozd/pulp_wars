@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-a-edit",
+  "jobId": "52ae0709-75d2-4a7e-93cf-f5a61cc14bca",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17603,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the brown wooden wheels dark iron, remove the orange flame at the rocket's tail, and move the little goblin off the rocket so he crouches on the ground behind the rear wheel in a charcoal tunic. Keep the big red rocket with its grey nose cone and fins, the dark iron cart, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the brown wooden wheels dark iron, remove the orange flame at the rocket's tail, and move the little goblin off the rocket so he crouches on the ground behind the rear wheel in a charcoal tunic. Keep the big red rocket with its grey nose cone and fins, the dark iron cart, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the brown wooden wheels dark iron, remove the orange flame at the rocket's tail, and move the little goblin off the rocket so he crouches on the ground behind the rear wheel in a charcoal tunic. Keep the big red rocket with its grey nose cone and fins, the dark iron cart, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the brown wooden wheels dark iron, remove the orange flame at the rocket's tail, and move the little goblin off the rocket so he crouches on the ground behind the rear wheel in a charcoal tunic. Keep the big red rocket with its grey nose cone and fins, the dark iron cart, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-a",
+      "candidate": 0,
+      "sha256": "473321b74bc22304edc2ee1b399d6991c664b682e8e11ca8e6292db733b90009"
+    }
+  }
+}

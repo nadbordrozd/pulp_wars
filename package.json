@@ -60,7 +60,7 @@
     "art:chibi": "tsx scripts/art/chibi-pipeline.ts",
     "art:chibi-batch-review": "tsx scripts/art/chibi-batch-review.ts",
     "art:chibi-faction-dry-run-review": "tsx scripts/art/chibi-faction-dry-run-review.ts",
-    "art:goblin-placeholders": "tsx scripts/art/goblin-placeholders.ts",
+    "art:chibi-goblin-review": "tsx scripts/art/chibi-goblin-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "diagnose:mountain-live": "tsx scripts/browser-smoke-v6.ts --mountain-live",
     "smoke:browser": "tsx scripts/browser-smoke-v7.ts",

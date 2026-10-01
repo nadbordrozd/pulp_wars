@@ -1,0 +1,36 @@
+{
+  "id": "wolf-rider-b-edit",
+  "jobId": "1d01b841-2428-4316-9a67-421c2df83c17",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-wolf-rider",
+    "subject": "UNIT:GOBLIN:RAIDER",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Replace the rider's grey armour with a bright red tunic, and make the red saddle blanket bigger so it hangs down the wolf's side. Make the brown saddle, straps and boots charcoal grey and the inside of the wolf's mouth dark grey, not pink. Keep the goblin's olive face, ears and red bandana, the spear, the dark grey wolf, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Replace the rider's grey armour with a bright red tunic, and make the red saddle blanket bigger so it hangs down the wolf's side. Make the brown saddle, straps and boots charcoal grey and the inside of the wolf's mouth dark grey, not pink. Keep the goblin's olive face, ears and red bandana, the spear, the dark grey wolf, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Replace the rider's grey armour with a bright red tunic, and make the red saddle blanket bigger so it hangs down the wolf's side. Make the brown saddle, straps and boots charcoal grey and the inside of the wolf's mouth dark grey, not pink. Keep the goblin's olive face, ears and red bandana, the spear, the dark grey wolf, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Replace the rider's grey armour with a bright red tunic, and make the red saddle blanket bigger so it hangs down the wolf's side. Make the brown saddle, straps and boots charcoal grey and the inside of the wolf's mouth dark grey, not pink. Keep the goblin's olive face, ears and red bandana, the spear, the dark grey wolf, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "wolf-rider-b",
+      "candidate": 0,
+      "sha256": "b55f611d5f6a1d635dba0012008ec9618b264fc7c14984e934b6331bb4d22568"
+    }
+  }
+}

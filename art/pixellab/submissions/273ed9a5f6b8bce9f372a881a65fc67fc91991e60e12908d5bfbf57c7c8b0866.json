@@ -1,0 +1,36 @@
+{
+  "id": "wolf-rider-b-edit-2",
+  "jobId": "bfcae26c-e95c-44ec-ad4c-669f426ad19a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-wolf-rider",
+    "subject": "UNIT:GOBLIN:RAIDER",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17204,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the brown straps, reins and saddle charcoal grey, and make the dark shadow of the red blanket a deeper red, never brown. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the brown straps, reins and saddle charcoal grey, and make the dark shadow of the red blanket a deeper red, never brown. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the brown straps, reins and saddle charcoal grey, and make the dark shadow of the red blanket a deeper red, never brown. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the brown straps, reins and saddle charcoal grey, and make the dark shadow of the red blanket a deeper red, never brown. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "wolf-rider-b-edit",
+      "candidate": 0,
+      "sha256": "2fcbbae689a5dfc1a63d5fba255ece84d32d8cc954894d577430669a2ba66552"
+    }
+  }
+}

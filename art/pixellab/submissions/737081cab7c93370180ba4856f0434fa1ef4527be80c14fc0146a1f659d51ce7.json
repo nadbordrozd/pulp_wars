@@ -1,0 +1,36 @@
+{
+  "id": "portrait-goblin-orc-brute-a-edit",
+  "jobId": "682cd0e8-220b-4065-b3e7-260b8c143f0c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-orc-brute",
+    "subject": "PORTRAIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5752,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the bright red tunic bigger so it fills the whole bottom of the portrait across his shoulders and chest, and paint the face of the round shield bright red. Keep the grey-olive face with tusks, the dark iron pot helmet, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the bright red tunic bigger so it fills the whole bottom of the portrait across his shoulders and chest, and paint the face of the round shield bright red. Keep the grey-olive face with tusks, the dark iron pot helmet, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the bright red tunic bigger so it fills the whole bottom of the portrait across his shoulders and chest, and paint the face of the round shield bright red. Keep the grey-olive face with tusks, the dark iron pot helmet, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the bright red tunic bigger so it fills the whole bottom of the portrait across his shoulders and chest, and paint the face of the round shield bright red. Keep the grey-olive face with tusks, the dark iron pot helmet, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-goblin-orc-brute-a",
+      "candidate": 0,
+      "sha256": "c9f428791b24144c2e2aa8dc7fcb2d15a17a45878b20a9a2a6d6a851041d9c17"
+    }
+  }
+}

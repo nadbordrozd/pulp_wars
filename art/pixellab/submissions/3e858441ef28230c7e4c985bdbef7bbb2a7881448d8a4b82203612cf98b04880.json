@@ -1,0 +1,36 @@
+{
+  "id": "orc-warboss-a-edit",
+  "jobId": "5515df80-4622-4a27-bf9a-3eb7f46726f8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-orc-warboss",
+    "subject": "UNIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17503,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Give him a big bright red tunic covering his chest, belly and legs to the knees, in front of the red cape, and make the brown belt, straps and boots charcoal grey. Keep the horned iron helmet, the grey-olive face with tusks and open shouting mouth, the tin megaphone, the spiky shoulder plates, the red cape, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Give him a big bright red tunic covering his chest, belly and legs to the knees, in front of the red cape, and make the brown belt, straps and boots charcoal grey. Keep the horned iron helmet, the grey-olive face with tusks and open shouting mouth, the tin megaphone, the spiky shoulder plates, the red cape, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Give him a big bright red tunic covering his chest, belly and legs to the knees, in front of the red cape, and make the brown belt, straps and boots charcoal grey. Keep the horned iron helmet, the grey-olive face with tusks and open shouting mouth, the tin megaphone, the spiky shoulder plates, the red cape, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Give him a big bright red tunic covering his chest, belly and legs to the knees, in front of the red cape, and make the brown belt, straps and boots charcoal grey. Keep the horned iron helmet, the grey-olive face with tusks and open shouting mouth, the tin megaphone, the spiky shoulder plates, the red cape, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "orc-warboss-a",
+      "candidate": 0,
+      "sha256": "50fd7ad66e3fb49eb3eccc3ed6593b5d070cc9f2705882999034cc959c4bfc0b"
+    }
+  }
+}

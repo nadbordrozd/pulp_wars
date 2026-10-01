@@ -28,10 +28,9 @@ import type {
 const NAVAL_ROLES: readonly UnitRoleIdV7[] = ["PATROL_BOAT", "BATTLESHIP"];
 
 /**
- * The portrait of a role for a faction: Undead land roles have their own.
- * Revision 17 Goblin land roles have no portrait yet (pulp_wars-0ao.8), so
- * they show their Goblin map sprite; without it the Human sprite and the
- * Goblin badge.
+ * The portrait of a role for a faction: Undead and (revision 17, bead
+ * pulp_wars-0ao.8) Goblin land roles have their own; naval roles share the
+ * Human ship portraits.
  */
 export function portraitSubjectV7(
   role: UnitRoleIdV7,
@@ -39,7 +38,7 @@ export function portraitSubjectV7(
 ): ArtSubjectV7 {
   if (NAVAL_ROLES.includes(role)) return `PORTRAIT:${role}`;
   if (faction === "UNDEAD") return `PORTRAIT:UNDEAD:${role as UndeadArtRoleV7}`;
-  if (faction === "GOBLIN") return `UNIT:GOBLIN:${role as GoblinArtRoleV7}`;
+  if (faction === "GOBLIN") return `PORTRAIT:GOBLIN:${role as GoblinArtRoleV7}`;
   return `PORTRAIT:${role}`;
 }
 

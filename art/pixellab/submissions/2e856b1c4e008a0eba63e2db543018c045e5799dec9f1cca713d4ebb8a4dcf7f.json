@@ -1,0 +1,36 @@
+{
+  "id": "scrap-buggy-a-edit-2",
+  "jobId": "385a82ea-9a08-4a68-a0c1-f05172f00767",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-scrap-buggy",
+    "subject": "UNIT:GOBLIN:KNIGHT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17704,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the grey patches, dark spots and rivets from the red body panels so they are big plain bright red areas with a slightly darker red shadow. Keep every other pixel, the goggled driver in a red cap, the spiked grey ram, the dark iron wheels, the exhaust and soot cloud, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the grey patches, dark spots and rivets from the red body panels so they are big plain bright red areas with a slightly darker red shadow. Keep every other pixel, the goggled driver in a red cap, the spiked grey ram, the dark iron wheels, the exhaust and soot cloud, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the grey patches, dark spots and rivets from the red body panels so they are big plain bright red areas with a slightly darker red shadow. Keep every other pixel, the goggled driver in a red cap, the spiked grey ram, the dark iron wheels, the exhaust and soot cloud, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the grey patches, dark spots and rivets from the red body panels so they are big plain bright red areas with a slightly darker red shadow. Keep every other pixel, the goggled driver in a red cap, the spiked grey ram, the dark iron wheels, the exhaust and soot cloud, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "scrap-buggy-a-edit",
+      "candidate": 0,
+      "sha256": "e2ca26b578501046182a83561f99d8fb20d86672fbd180371f5f762a7524eec8"
+    }
+  }
+}

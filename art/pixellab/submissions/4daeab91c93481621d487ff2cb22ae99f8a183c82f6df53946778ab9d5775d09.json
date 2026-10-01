@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-c-edit-2",
+  "jobId": "58a4e74a-c2ec-4e73-9789-05a9ceeb595f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17607,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the dark crimson and purple shading on the rocket a darker shade of the same bright red, so the whole rocket body is bright red with a darker red shadow. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the dark crimson and purple shading on the rocket a darker shade of the same bright red, so the whole rocket body is bright red with a darker red shadow. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the dark crimson and purple shading on the rocket a darker shade of the same bright red, so the whole rocket body is bright red with a darker red shadow. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the dark crimson and purple shading on the rocket a darker shade of the same bright red, so the whole rocket body is bright red with a darker red shadow. Change nothing else: keep every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-c-edit",
+      "candidate": 0,
+      "sha256": "c54f866160ebb8036e124b746d42f01a05939161b11fed8cd79f0c464f951dbe"
+    }
+  }
+}

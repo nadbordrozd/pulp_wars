@@ -1,15 +1,5 @@
 /// <reference types="vite/client" />
-import type { ChibiArtAssetV7, ChibiPlaceholderV7 } from "./chibi-art-v7";
-
-/**
- * Programmatic Goblin placeholders (bead pulp_wars-0ao.4), drawn by
- * scripts/art/chibi/goblin-placeholders.ts, not PixelLab art. Bead
- * pulp_wars-0ao.8 replaces every entry that carries this marker.
- */
-const GOBLIN_PLACEHOLDER: ChibiPlaceholderV7 = {
-  records: "scripts/art/chibi/placeholders/goblin-placeholders.json",
-  replacedBy: "pulp_wars-0ao.8",
-};
+import type { ChibiArtAssetV7 } from "./chibi-art-v7";
 
 /**
  * Accepted CHIBI art-set rasters for Ruleset 7 (?art=chibi). Batch beads add
@@ -1048,122 +1038,198 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 48,
     url: chibiArtUrl("assets/chibi/resources/chibi-fruit-pear.png"),
   },
-  // Goblin placeholders (pulp_wars-0ao.4): UNIT:GOBLIN:<ROLE> on the Human
-  // role's canvas and class anchor, until pulp_wars-0ao.8 registers art.
+  // Goblin (pulp_wars-0ao.8, batch goblin): UNIT:GOBLIN:<ROLE> units.
   {
-    id: "chibi-goblin-placeholder-goblin",
+    id: "chibi-goblin-goblin",
     subject: "UNIT:GOBLIN:FIGHTER",
     assetClass: "STANDARD_UNIT",
     width: 56,
     height: 80,
-    url: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-goblin.png",
-    ),
+    url: chibiArtUrl("assets/chibi/units/chibi-goblin-goblin.png"),
     ownerMaskUrl: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-goblin.mask.png",
+      "assets/chibi/units/chibi-goblin-goblin.mask.png",
     ),
-    placeholder: GOBLIN_PLACEHOLDER,
   },
   {
-    id: "chibi-goblin-placeholder-wolf-rider",
+    id: "chibi-goblin-wolf-rider",
     subject: "UNIT:GOBLIN:RAIDER",
     assetClass: "LARGE_UNIT",
     width: 72,
     height: 88,
-    url: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-wolf-rider.png",
-    ),
+    url: chibiArtUrl("assets/chibi/units/chibi-goblin-wolf-rider.png"),
     ownerMaskUrl: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-wolf-rider.mask.png",
+      "assets/chibi/units/chibi-goblin-wolf-rider.mask.png",
     ),
-    placeholder: GOBLIN_PLACEHOLDER,
   },
   {
-    id: "chibi-goblin-placeholder-bomb-chucker",
+    id: "chibi-goblin-bomb-chucker",
     subject: "UNIT:GOBLIN:MARKSMAN",
     assetClass: "STANDARD_UNIT",
     width: 56,
     height: 80,
-    url: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-bomb-chucker.png",
-    ),
+    url: chibiArtUrl("assets/chibi/units/chibi-goblin-bomb-chucker.png"),
     ownerMaskUrl: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-bomb-chucker.mask.png",
+      "assets/chibi/units/chibi-goblin-bomb-chucker.mask.png",
     ),
-    placeholder: GOBLIN_PLACEHOLDER,
   },
   {
-    id: "chibi-goblin-placeholder-orc-brute",
+    id: "chibi-goblin-orc-brute",
     subject: "UNIT:GOBLIN:GUARD",
     assetClass: "STANDARD_UNIT",
     width: 56,
     height: 80,
-    url: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-orc-brute.png",
-    ),
+    url: chibiArtUrl("assets/chibi/units/chibi-goblin-orc-brute.png"),
     ownerMaskUrl: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-orc-brute.mask.png",
+      "assets/chibi/units/chibi-goblin-orc-brute.mask.png",
     ),
-    placeholder: GOBLIN_PLACEHOLDER,
   },
   {
-    id: "chibi-goblin-placeholder-orc-warboss",
+    id: "chibi-goblin-orc-warboss",
     subject: "UNIT:GOBLIN:CAPTAIN",
     assetClass: "STANDARD_UNIT",
     width: 56,
     height: 80,
-    url: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-orc-warboss.png",
-    ),
+    url: chibiArtUrl("assets/chibi/units/chibi-goblin-orc-warboss.png"),
+    // 1 px right of the default so the cape's left edge clears the seat badge.
+    anchor: { x: 27, y: 40 },
     ownerMaskUrl: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-orc-warboss.mask.png",
+      "assets/chibi/units/chibi-goblin-orc-warboss.mask.png",
     ),
-    placeholder: GOBLIN_PLACEHOLDER,
   },
   {
-    id: "chibi-goblin-placeholder-rocket-cart",
+    id: "chibi-goblin-rocket-cart",
     subject: "UNIT:GOBLIN:CATAPULT",
     assetClass: "LARGE_UNIT",
     width: 72,
     height: 88,
-    url: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-rocket-cart.png",
-    ),
+    url: chibiArtUrl("assets/chibi/units/chibi-goblin-rocket-cart.png"),
     ownerMaskUrl: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-rocket-cart.mask.png",
+      "assets/chibi/units/chibi-goblin-rocket-cart.mask.png",
     ),
-    placeholder: GOBLIN_PLACEHOLDER,
   },
   {
-    id: "chibi-goblin-placeholder-scrap-buggy",
+    id: "chibi-goblin-scrap-buggy",
     subject: "UNIT:GOBLIN:KNIGHT",
     assetClass: "LARGE_UNIT",
     width: 72,
     height: 88,
-    url: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-scrap-buggy.png",
-    ),
-    // 3 px right of the default so the soot cloud and rear wheel clear the
-    // HP bar and seat badge.
-    anchor: { x: 33, y: 48 },
+    url: chibiArtUrl("assets/chibi/units/chibi-goblin-scrap-buggy.png"),
+    // 4 px right of the default so the rear wheel clears the HP bar and seat badge.
+    anchor: { x: 32, y: 48 },
     ownerMaskUrl: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-scrap-buggy.mask.png",
+      "assets/chibi/units/chibi-goblin-scrap-buggy.mask.png",
     ),
-    placeholder: GOBLIN_PLACEHOLDER,
   },
   {
-    id: "chibi-goblin-placeholder-troll",
+    id: "chibi-goblin-troll",
     subject: "UNIT:GOBLIN:JUGGERNAUT",
     assetClass: "GIANT_UNIT",
     width: 88,
     height: 104,
+    url: chibiArtUrl("assets/chibi/units/chibi-goblin-troll.png"),
+    ownerMaskUrl: chibiArtUrl("assets/chibi/units/chibi-goblin-troll.mask.png"),
+  },
+  // Goblin portraits (pulp_wars-0ao.8, batch 5-goblin): PORTRAIT:GOBLIN:<ROLE>
+  // busts for the dock and recruitment (the Rocket Cart and Scrap Buggy whole).
+  {
+    id: "chibi-portrait-goblin-goblin",
+    subject: "PORTRAIT:GOBLIN:FIGHTER",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/portraits/chibi-portrait-goblin-goblin.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-goblin.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-goblin-wolf-rider",
+    subject: "PORTRAIT:GOBLIN:RAIDER",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
     url: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-troll.png",
+      "assets/chibi/portraits/chibi-portrait-goblin-wolf-rider.png",
     ),
     ownerMaskUrl: chibiArtUrl(
-      "assets/chibi/placeholders/chibi-goblin-placeholder-troll.mask.png",
+      "assets/chibi/portraits/chibi-portrait-goblin-wolf-rider.mask.png",
     ),
-    placeholder: GOBLIN_PLACEHOLDER,
+  },
+  {
+    id: "chibi-portrait-goblin-bomb-chucker",
+    subject: "PORTRAIT:GOBLIN:MARKSMAN",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-bomb-chucker.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-bomb-chucker.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-goblin-orc-brute",
+    subject: "PORTRAIT:GOBLIN:GUARD",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-orc-brute.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-orc-brute.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-goblin-orc-warboss",
+    subject: "PORTRAIT:GOBLIN:CAPTAIN",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-orc-warboss.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-orc-warboss.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-goblin-rocket-cart",
+    subject: "PORTRAIT:GOBLIN:CATAPULT",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-rocket-cart.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-rocket-cart.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-goblin-scrap-buggy",
+    subject: "PORTRAIT:GOBLIN:KNIGHT",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-scrap-buggy.png",
+    ),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-scrap-buggy.mask.png",
+    ),
+  },
+  {
+    id: "chibi-portrait-goblin-troll",
+    subject: "PORTRAIT:GOBLIN:JUGGERNAUT",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/portraits/chibi-portrait-goblin-troll.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-goblin-troll.mask.png",
+    ),
   },
 ];
 

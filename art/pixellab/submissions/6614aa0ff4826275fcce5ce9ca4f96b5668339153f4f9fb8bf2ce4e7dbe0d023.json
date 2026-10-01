@@ -1,0 +1,69 @@
+{
+  "id": "bomb-chucker-c",
+  "jobId": "sync-1f570e32-6f32-4020-aafd-e106e97455a0",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17303,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+        "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+        "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/GOBLIN.json",
+        "text": "Subject: Bomb Chucker, a chunky cute little goblin bomb thrower with a huge round head about half of the figure's height and a small hunched body, the head and ears filling the whole width of the image: yellow-olive green skin shaded darker olive, long pointed ears sticking out sideways, a big excited grin, a bright red patched flying cap with big round dark iron goggles pushed up on the forehead, a big bright red patched tunic with square stitched patches covering the chest, belly and legs down to the knees, the right arm raised high holding one big round black bomb above the head with a short cream fuse and a small pale yellow-white spark, a bulging charcoal grey satchel of round black bombs on the left hip, bare olive green feet; simple shapes and very few details; clearly a bomb thrower, not an archer."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "His skin is yellow-olive green, never brown, tan or orange. He wears no armour and no shoulder plates: the big bright red patched tunic is the largest shape of the figure, from the shoulders down to the knees, and the flying cap is bright red too. The grin is dark with small cream teeth, never a red or pink mouth. The satchel and straps are charcoal grey, never brown; the spark is tiny and pale yellow-white, never orange.",
+        "negative": "bow, quiver, arrows, dagger, shield, flames, explosion, armour, pauldrons, shoulder plates, brown skin, tan skin, orange skin, red mouth, pink mouth, orange spark, brown satchel, brown straps, brown cap"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Bomb Chucker, a chunky cute little goblin bomb thrower with a huge round head about half of the figure's height and a small hunched body, the head and ears filling the whole width of the image: yellow-olive green skin shaded darker olive, long pointed ears sticking out sideways, a big excited grin, a bright red patched flying cap with big round dark iron goggles pushed up on the forehead, a big bright red patched tunic with square stitched patches covering the chest, belly and legs down to the knees, the right arm raised high holding one big round black bomb above the head with a short cream fuse and a small pale yellow-white spark, a bulging charcoal grey satchel of round black bombs on the left hip, bare olive green feet; simple shapes and very few details; clearly a bomb thrower, not an archer. His skin is yellow-olive green, never brown, tan or orange. He wears no armour and no shoulder plates: the big bright red patched tunic is the largest shape of the figure, from the shoulders down to the knees, and the flying cap is bright red too. The grin is dark with small cream teeth, never a red or pink mouth. The satchel and straps are charcoal grey, never brown; the spark is tiny and pale yellow-white, never orange.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, dagger, shield, flames, explosion, armour, pauldrons, shoulder plates, brown skin, tan skin, orange skin, red mouth, pink mouth, orange spark, brown satchel, brown straps, brown cap",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Bomb Chucker, a chunky cute little goblin bomb thrower with a huge round head about half of the figure's height and a small hunched body, the head and ears filling the whole width of the image: yellow-olive green skin shaded darker olive, long pointed ears sticking out sideways, a big excited grin, a bright red patched flying cap with big round dark iron goggles pushed up on the forehead, a big bright red patched tunic with square stitched patches covering the chest, belly and legs down to the knees, the right arm raised high holding one big round black bomb above the head with a short cream fuse and a small pale yellow-white spark, a bulging charcoal grey satchel of round black bombs on the left hip, bare olive green feet; simple shapes and very few details; clearly a bomb thrower, not an archer. His skin is yellow-olive green, never brown, tan or orange. He wears no armour and no shoulder plates: the big bright red patched tunic is the largest shape of the figure, from the shoulders down to the knees, and the flying cap is bright red too. The grin is dark with small cream teeth, never a red or pink mouth. The satchel and straps are charcoal grey, never brown; the spark is tiny and pale yellow-white, never orange. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, dagger, shield, flames, explosion, armour, pauldrons, shoulder plates, brown skin, tan skin, orange skin, red mouth, pink mouth, orange spark, brown satchel, brown straps, brown cap."
+  }
+}

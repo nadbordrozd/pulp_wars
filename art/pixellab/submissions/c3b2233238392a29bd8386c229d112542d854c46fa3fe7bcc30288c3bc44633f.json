@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-c-edit",
+  "jobId": "767f91d6-6346-48d8-864a-63d17bfeb8ad",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17606,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make every brown part of the cart frame charcoal grey, and remove the orange flame at the rocket's tail, leaving only a tiny pale yellow-white spark on a short cream fuse. Keep every other pixel, the big red rocket with grey nose and fins, the two dark iron wheels, the tiny goblin, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make every brown part of the cart frame charcoal grey, and remove the orange flame at the rocket's tail, leaving only a tiny pale yellow-white spark on a short cream fuse. Keep every other pixel, the big red rocket with grey nose and fins, the two dark iron wheels, the tiny goblin, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make every brown part of the cart frame charcoal grey, and remove the orange flame at the rocket's tail, leaving only a tiny pale yellow-white spark on a short cream fuse. Keep every other pixel, the big red rocket with grey nose and fins, the two dark iron wheels, the tiny goblin, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make every brown part of the cart frame charcoal grey, and remove the orange flame at the rocket's tail, leaving only a tiny pale yellow-white spark on a short cream fuse. Keep every other pixel, the big red rocket with grey nose and fins, the two dark iron wheels, the tiny goblin, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-c",
+      "candidate": 0,
+      "sha256": "165479eac83d3f55516dddcdbfdb8698377d80dc13f8bcd9f0d4658a2f902265"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "troll-a-edit-2",
+  "jobId": "038e4afa-1e72-48b3-b2d9-5ae66f902894",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-troll",
+    "subject": "UNIT:GOBLIN:JUGGERNAUT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 17805,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the dark spots from the red smock so it is plain bright red with a slightly darker red shadow, and make the brown wrist straps charcoal grey, so nothing is brown. Keep every other pixel, the hunched grey-green body with moss, the drooping nose, tusks, the stone club on his shoulder, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the dark spots from the red smock so it is plain bright red with a slightly darker red shadow, and make the brown wrist straps charcoal grey, so nothing is brown. Keep every other pixel, the hunched grey-green body with moss, the drooping nose, tusks, the stone club on his shoulder, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the dark spots from the red smock so it is plain bright red with a slightly darker red shadow, and make the brown wrist straps charcoal grey, so nothing is brown. Keep every other pixel, the hunched grey-green body with moss, the drooping nose, tusks, the stone club on his shoulder, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the dark spots from the red smock so it is plain bright red with a slightly darker red shadow, and make the brown wrist straps charcoal grey, so nothing is brown. Keep every other pixel, the hunched grey-green body with moss, the drooping nose, tusks, the stone club on his shoulder, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "troll-a-edit",
+      "candidate": 0,
+      "sha256": "2700705ac52c00763ee7a6a7f93f5f686a0871b98aaa305b14994a3e309b5eb6"
+    }
+  }
+}

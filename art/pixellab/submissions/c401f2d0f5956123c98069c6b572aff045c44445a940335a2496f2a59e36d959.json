@@ -1,0 +1,36 @@
+{
+  "id": "portrait-goblin-rocket-cart-a-edit",
+  "jobId": "563c3e82-bf54-45a6-a8b7-b1c9cf010ea9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-rocket-cart",
+    "subject": "PORTRAIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5754,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint over the grey patches and dark spots on the rocket with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. Keep the grey nose cone and fins, the charcoal cart, the tiny goblin, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Paint over the grey patches and dark spots on the rocket with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. Keep the grey nose cone and fins, the charcoal cart, the tiny goblin, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Paint over the grey patches and dark spots on the rocket with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. Keep the grey nose cone and fins, the charcoal cart, the tiny goblin, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Paint over the grey patches and dark spots on the rocket with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. Keep the grey nose cone and fins, the charcoal cart, the tiny goblin, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-goblin-rocket-cart-a",
+      "candidate": 0,
+      "sha256": "8f1f13b47e032ba97a45aa90fae2a9bb277b84ee55f4797e6f73517490d29a54"
+    }
+  }
+}

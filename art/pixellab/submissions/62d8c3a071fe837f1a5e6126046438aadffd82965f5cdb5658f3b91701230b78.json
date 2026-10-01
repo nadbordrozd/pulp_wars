@@ -1,0 +1,36 @@
+{
+  "id": "troll-a-edit",
+  "jobId": "99445842-3b57-4ba2-bd53-8be980593eda",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-troll",
+    "subject": "UNIT:GOBLIN:JUGGERNAUT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 17804,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the blue shoulder plate and the belts so his shoulders are bare grey-green skin with moss. Make the bright red smock huge, covering his whole belly, hips and legs to the knees, its patches the same bright red. Make the club handle light grey stone, nothing brown. Keep the hunched body, drooping nose, tusks, moss, the stone club on his shoulder, pose, outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the blue shoulder plate and the belts so his shoulders are bare grey-green skin with moss. Make the bright red smock huge, covering his whole belly, hips and legs to the knees, its patches the same bright red. Make the club handle light grey stone, nothing brown. Keep the hunched body, drooping nose, tusks, moss, the stone club on his shoulder, pose, outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the blue shoulder plate and the belts so his shoulders are bare grey-green skin with moss. Make the bright red smock huge, covering his whole belly, hips and legs to the knees, its patches the same bright red. Make the club handle light grey stone, nothing brown. Keep the hunched body, drooping nose, tusks, moss, the stone club on his shoulder, pose, outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the blue shoulder plate and the belts so his shoulders are bare grey-green skin with moss. Make the bright red smock huge, covering his whole belly, hips and legs to the knees, its patches the same bright red. Make the club handle light grey stone, nothing brown. Keep the hunched body, drooping nose, tusks, moss, the stone club on his shoulder, pose, outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "troll-a",
+      "candidate": 0,
+      "sha256": "33197fd3dcad757b1252264d3c4a394095d573c1fe4d12121857c94a2508648f"
+    }
+  }
+}

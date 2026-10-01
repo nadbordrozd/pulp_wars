@@ -1,0 +1,36 @@
+{
+  "id": "scrap-buggy-a-edit",
+  "jobId": "8db45a35-0b0d-4b63-9877-f7004e7d7b08",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-scrap-buggy",
+    "subject": "UNIT:GOBLIN:KNIGHT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17703,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint all of the buggy's body panels one flat bright red, and make the driver's skin yellow-olive green, not orange. Make every brown part charcoal grey. Keep the red flying cap and goggles, the spiked grey iron ram, the dark iron wheels, the exhaust pipe with its round grey soot cloud, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Paint all of the buggy's body panels one flat bright red, and make the driver's skin yellow-olive green, not orange. Make every brown part charcoal grey. Keep the red flying cap and goggles, the spiked grey iron ram, the dark iron wheels, the exhaust pipe with its round grey soot cloud, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Paint all of the buggy's body panels one flat bright red, and make the driver's skin yellow-olive green, not orange. Make every brown part charcoal grey. Keep the red flying cap and goggles, the spiked grey iron ram, the dark iron wheels, the exhaust pipe with its round grey soot cloud, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Paint all of the buggy's body panels one flat bright red, and make the driver's skin yellow-olive green, not orange. Make every brown part charcoal grey. Keep the red flying cap and goggles, the spiked grey iron ram, the dark iron wheels, the exhaust pipe with its round grey soot cloud, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "scrap-buggy-a",
+      "candidate": 0,
+      "sha256": "9b95d6bdfc478528149d691225cc43a5055d4392801a07c75bb1dd4f4fd1967e"
+    }
+  }
+}

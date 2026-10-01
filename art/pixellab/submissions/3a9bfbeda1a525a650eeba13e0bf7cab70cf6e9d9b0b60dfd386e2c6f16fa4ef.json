@@ -1,0 +1,36 @@
+{
+  "id": "portrait-goblin-wolf-rider-b-edit",
+  "jobId": "37dfd22f-1801-40ff-8d02-098f606e76c8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-wolf-rider",
+    "subject": "PORTRAIT:GOBLIN:RAIDER",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5751,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the goblin's face yellow-olive green, and make every brown strap and the brown spear shaft charcoal grey. Keep the bright red hood and tunic, the dark grey wolf head with open jaws beside him, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the goblin's face yellow-olive green, and make every brown strap and the brown spear shaft charcoal grey. Keep the bright red hood and tunic, the dark grey wolf head with open jaws beside him, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the goblin's face yellow-olive green, and make every brown strap and the brown spear shaft charcoal grey. Keep the bright red hood and tunic, the dark grey wolf head with open jaws beside him, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the goblin's face yellow-olive green, and make every brown strap and the brown spear shaft charcoal grey. Keep the bright red hood and tunic, the dark grey wolf head with open jaws beside him, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-goblin-wolf-rider-b",
+      "candidate": 0,
+      "sha256": "0e40247eb50ad6740d799edbd7e923b85088cee5505103ac5c971e4fc6539129"
+    }
+  }
+}

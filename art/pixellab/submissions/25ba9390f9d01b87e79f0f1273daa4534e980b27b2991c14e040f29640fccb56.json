@@ -1,0 +1,36 @@
+{
+  "id": "portrait-goblin-orc-warboss-a-edit-2",
+  "jobId": "e2fb9cc6-f7de-40e2-8d57-9e278c09a74a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-portrait-goblin-orc-warboss",
+    "subject": "PORTRAIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5756,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Give him a bright red tunic over the chest between the shoulder plates, the same bright red as the cape, so red fills the bottom of the portrait. Keep every other pixel, the horned iron helmet with cream horns, the grey-olive face with tusks, the tin megaphone, the red cape, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Give him a bright red tunic over the chest between the shoulder plates, the same bright red as the cape, so red fills the bottom of the portrait. Keep every other pixel, the horned iron helmet with cream horns, the grey-olive face with tusks, the tin megaphone, the red cape, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Give him a bright red tunic over the chest between the shoulder plates, the same bright red as the cape, so red fills the bottom of the portrait. Keep every other pixel, the horned iron helmet with cream horns, the grey-olive face with tusks, the tin megaphone, the red cape, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Give him a bright red tunic over the chest between the shoulder plates, the same bright red as the cape, so red fills the bottom of the portrait. Keep every other pixel, the horned iron helmet with cream horns, the grey-olive face with tusks, the tin megaphone, the red cape, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-goblin-orc-warboss-a-edit",
+      "candidate": 0,
+      "sha256": "0e0cbf169382100b8638cb2f60a0118697468584bc91a02cae1879aecd740a01"
+    }
+  }
+}

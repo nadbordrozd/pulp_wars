@@ -1,0 +1,69 @@
+{
+  "id": "orc-warboss-a",
+  "jobId": "sync-65c8afe9-5c8c-464b-93e5-30971ee8ce9f",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-orc-warboss",
+    "subject": "UNIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 17501,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+        "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+        "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "owner",
+        "source": "scripts/art/chibi/fragments/owner.txt",
+        "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/GOBLIN.json",
+        "text": "Subject: Orc Warboss, a chunky cute big bossy orc chief with a huge round head about half of the figure's height and a broad stocky body filling the whole width of the image: grey-olive green skin shaded darker grey-olive, two cream tusks and a wide open shouting mouth, a dark gunmetal iron helmet with two big curved cream horns, a huge bright red patched cape spread behind the shoulders, a bright red patched tunic over the chest, belly and legs down to the knees, spiky dark gunmetal shoulder plates, a big dented light grey tin megaphone cone held to the mouth in the right hand, the left fist raised, charcoal grey boots; simple shapes and very few details; clearly a yelling war chief, not a standard bearer."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The big red cape and red tunic are the largest shapes of the figure; the only armour is the two small spiky shoulder plates and the horned helmet. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The open shouting mouth is dark grey inside with cream tusks, never red or pink. The belt, straps and boots are charcoal grey, never brown.",
+        "negative": "banner, flag, pole, feather, shield, bow, quiver, bomb, breastplate, body armour, red mouth, pink mouth, pink tongue, brown boots, brown belt, brown horns"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Orc Warboss, a chunky cute big bossy orc chief with a huge round head about half of the figure's height and a broad stocky body filling the whole width of the image: grey-olive green skin shaded darker grey-olive, two cream tusks and a wide open shouting mouth, a dark gunmetal iron helmet with two big curved cream horns, a huge bright red patched cape spread behind the shoulders, a bright red patched tunic over the chest, belly and legs down to the knees, spiky dark gunmetal shoulder plates, a big dented light grey tin megaphone cone held to the mouth in the right hand, the left fist raised, charcoal grey boots; simple shapes and very few details; clearly a yelling war chief, not a standard bearer. The big red cape and red tunic are the largest shapes of the figure; the only armour is the two small spiky shoulder plates and the horned helmet. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The open shouting mouth is dark grey inside with cream tusks, never red or pink. The belt, straps and boots are charcoal grey, never brown.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, banner, flag, pole, feather, shield, bow, quiver, bomb, breastplate, body armour, red mouth, pink mouth, pink tongue, brown belt, brown horns",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Orc Warboss, a chunky cute big bossy orc chief with a huge round head about half of the figure's height and a broad stocky body filling the whole width of the image: grey-olive green skin shaded darker grey-olive, two cream tusks and a wide open shouting mouth, a dark gunmetal iron helmet with two big curved cream horns, a huge bright red patched cape spread behind the shoulders, a bright red patched tunic over the chest, belly and legs down to the knees, spiky dark gunmetal shoulder plates, a big dented light grey tin megaphone cone held to the mouth in the right hand, the left fist raised, charcoal grey boots; simple shapes and very few details; clearly a yelling war chief, not a standard bearer. The big red cape and red tunic are the largest shapes of the figure; the only armour is the two small spiky shoulder plates and the horned helmet. Every bright red garment or painted part is plain flat bright red with a slightly darker red shadow; its patches are the same bright red with thin black stitches, never dark spots. The open shouting mouth is dark grey inside with cream tusks, never red or pink. The belt, straps and boots are charcoal grey, never brown. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, banner, flag, pole, feather, shield, bow, quiver, bomb, breastplate, body armour, red mouth, pink mouth, pink tongue, brown belt, brown horns."
+  }
+}
