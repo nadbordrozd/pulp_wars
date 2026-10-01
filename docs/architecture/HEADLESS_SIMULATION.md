@@ -72,6 +72,12 @@ Revision 17 (`pulp_wars-0ao.7`) adds the Goblin pairings (`GH`, `HG`, `GU`,
 the Goblin telemetry (`summary.goblin`, computed by replaying each Goblin
 match's command log); see
 [the Goblin balance report](../validation/RULESET_7_GOBLIN_BALANCE.md).
+The per-match headless result itself has no Goblin block: losses count every
+death (Kaboom and explosion deaths included), Bomb Chucker bomb splash (own
+units included) counts in the attacker's damage and kills and in the
+`undead` splash counters like any splash, and explosion damage and kills are
+credited to no role or faction. Faction-keyed fields (`factionRoles`,
+`overcapacityStatesByFaction`) include a `GOBLIN` entry.
 
 ## Ruleset-7 revision-2 historical implementation contract
 

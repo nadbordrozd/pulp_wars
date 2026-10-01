@@ -1,10 +1,13 @@
 # Ruleset 7 revision 17: Goblin faction
 
-**Status:** contract (`pulp_wars-0ao.1`), not yet implemented. It is
-implemented by the child beads of `pulp_wars-0ao` in the order of
-[section 13](#13-implementation-split-and-test-expectations). The running game
-is described by [Ruleset 7: current rules](RULESET_7_CURRENT.md)
-(`pulp-wars-poc-7r16`) until `pulp_wars-0ao.9` folds this overlay into it.
+**Status:** implemented and folded into
+[Ruleset 7: current rules](RULESET_7_CURRENT.md) (`pulp-wars-poc-7r17`,
+`pulp_wars-0ao.9`), which describes the running three-faction game and wins
+wherever this document differs. This contract (`pulp_wars-0ao.1`), as
+amended by the child beads of `pulp_wars-0ao` (notably the
+[section 14.4](#144-tuning-record-pulp_wars-0ao7) tuning record), remains as
+design history, decision provenance, and exact schema detail. The fold's
+corrections of this text are listed in the current rules' revision history.
 
 **Ruleset ID:** `pulp-wars-poc-7r17`
 
@@ -762,8 +765,13 @@ tiers, branches, and prerequisites).
   tile it can reach this turn, and includes Gang Up in melee estimates.
 - `publicUnitStatsV7` exposes Kaboom and death-blast damage, the WAAAGH!
   radius, regeneration, and the Field Defense restriction from the owner's
-  registration. `previewCityCapacityV7` includes Warrens. The technology tree
-  query returns the viewer's technology names (Plunder for a Goblin viewer).
+  registration. `previewCityCapacityV7` includes Warrens. Technology display
+  names are resolved in the UI, not by the technology tree query, which
+  returns IDs only (root decision, `pulp_wars-0ao.9` fold note): the UI
+  helper `technologyNameV7` (`src/render/goblin-presentation-v7.ts`) applies
+  `TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7` (Plunder for a Goblin viewer's
+  `COMMERCE`) and otherwise keeps the existing sentence-case names, so Human
+  and Undead viewers read exactly as before.
 - `PublicPlayerV7` and the leaderboard carry `GOBLIN` and
   `GOBLIN_BASELINE_V1` for Goblin seats.
 
@@ -898,14 +906,24 @@ One sentence per rule, shown in Help for every viewer:
 
 ### 11.4 Placeholder and final art
 
-`pulp_wars-0ao.4` provides programmatic placeholder sprites for the eight
+`pulp_wars-0ao.4` provided programmatic placeholder sprites for the eight
 Goblin land units (Goblin, Wolf Rider, Bomb Chucker, Orc Brute, Orc Warboss,
 Rocket Cart, Scrap Buggy, Troll) at the chibi unit-contract dimensions with
-the owner mask, wired as the Goblin faction art in both art sets, plus a city
-tint, following the Undead faction-art wiring. Goblin boats use the Human
-boat art. `pulp_wars-0ao.8` replaces the placeholders with reviewed PixelLab
-sprites after the roster is stable. The explosion animation hook of
-[section 11.1](#111-surfaces) may be a code-native effect.
+the owner mask, wired as the Goblin faction art following the Undead
+faction-art wiring. There is **no Goblin city tint** (root decision on
+`pulp_wars-0ao.4`): Goblin cities use the shared settlement art, as Undead
+cities do. Goblin boats use the Human boat art. `pulp_wars-0ao.8` replaced
+the placeholders with reviewed PixelLab chibi sprites and added PixelLab
+portraits for the eight units (`PORTRAIT:GOBLIN:<ROLE>`), with the
+`npm run art:chibi-goblin-review` command; the LEGACY art set (or a CHIBI
+Goblin subject without a raster) draws the Human art with the Goblin badge.
+The explosion animation is a code-native effect. `pulp_wars-0ao.14` added
+PixelLab CHIBI command icons for Kaboom! (`ICON:ACTION:KABOOM`, a round black
+bomb with a lit cream fuse) and WAAAGH! (`ICON:ACTION:GOBLIN:RALLY`, the
+Warboss's grey tin megaphone); LEGACY (or CHIBI without the raster) keeps the
+code-drawn Kaboom! glyph, redrawn by `pulp_wars-0ao.17` as a solid black bomb
+with a fuse rising from the top so it cannot read as the male symbol, and the
+Rally art for WAAAGH!.
 
 ## 12. Unchanged Human and Undead behaviour
 

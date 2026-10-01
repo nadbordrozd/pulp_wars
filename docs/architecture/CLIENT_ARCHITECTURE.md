@@ -4,9 +4,12 @@
 
 The current client runs `pulp-wars-poc-7r17` (autosave
 `pulpWars.save.v7r17.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r16.current`), whose rules for both factions, Human and Undead, are described by
+through `pulpWars.save.v7r16.current`), whose rules for all three factions,
+Human, Undead, and Goblin, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). That document
 folds in the
+[revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md)
+(`pulp_wars-0ao.9`), the
 [revision-13 Undead overlay](../product/RULESET_7_REVISION_13_UNDEAD.md),
 [revision-14 balance overlay](../product/RULESET_7_REVISION_14_BALANCE.md)
 (Plague, Bitten, and the income, village, Vampire, and Lich changes),
@@ -22,10 +25,20 @@ Bitten UI surfaces are described in the
 [Screen Flow revision-14 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-14-plague-and-bitten-overlay)
 and read only the public `plagued` and `bitten` view lists, previews, and
 projected events. The engine registers the faction per seat, and the setup UI
-always offers a Human/Undead choice for the human and each AI seat (all Human
-by default); there is no URL flag for it (`pulp_wars-vkq.16` removed the
+always offers a Human/Undead/Goblin choice for the human and each AI seat (all
+Human by default); there is no URL flag for it (`pulp_wars-vkq.16` removed the
 former `?undead=1` development flag and `src/app/undead-flag-v7.ts`). Saves
-with Undead seats load and resume like any other. Undead presentation reads
+with Undead or Goblin seats load and resume like any other. Goblin
+presentation (`pulp_wars-0ao.5`, `0ao.12`) likewise reads only public views,
+the public Kaboom, attack-explosion, and combat previews, the public unit
+stats' `goblin` block, and projected events
+(`src/render/goblin-presentation-v7.ts`,
+`src/render/canvas/goblin-canvas-v7.ts` for the LEGACY badge, and
+`src/render/canvas/goblin-explosion-v7.ts` for the code-native blast effect),
+with the approved PixelLab CHIBI Goblin sprites and portraits
+(`pulp_wars-0ao.8`), as described in the
+[Screen Flow revision-17 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-17-goblin-overlay).
+Undead presentation reads
 only public views, previews and projected events
 (`src/render/undead-presentation-v7.ts`,
 `src/render/canvas/undead-canvas-v7.ts`): approved CHIBI Undead rasters, the
@@ -48,8 +61,10 @@ bounded `NormalPolicyWorkV7` callbacks over a retained public view.
 The public city projection exposes `cityActionAvailable` only to the owner.
 Start Turn projects ordered Windmill healing events, and Canvas coalesces their
 visible sources and recipients on the existing effects canvas. Roads-derived
-population, Commerce-doubled Market income, Drill-visible Ore, and the Raiding
-Pillage assignment flow through public queries and previews. The current Port
+population and land trade, Market income (1 Coin plus 1 per distinct adjacent
+family, at most 3; Commerce has not doubled it since revision 14),
+Drill-visible Ore, and the Raiding Pillage assignment flow through public
+queries and previews. The current Port
 and Fish map, dock, action, and technology presentation uses the accepted
 revision-11 source IDs and manifest geometry.
 

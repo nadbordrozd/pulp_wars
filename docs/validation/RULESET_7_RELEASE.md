@@ -16,40 +16,116 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (revision 16, Human and Undead)
+## Current release contract (revision 17, Human, Undead and Goblin)
 
-The current runtime is `pulp-wars-poc-7r16` with two playable factions. The
-Undead are part of the default route: match setup always offers a
-Human/Undead choice for the human and each AI seat (all Human by default), and
-there is no `?undead=1` development flag (`pulp_wars-vkq.16` removed it).
+The current runtime is `pulp-wars-poc-7r17` (autosave
+`pulpWars.save.v7r17.current`) with three playable factions, described by
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md), into which
+`pulp_wars-0ao.9` folded the
+[revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md).
+The Undead and the Goblins are part of the default route: match setup always
+offers a Human/Undead/Goblin choice for the human and each AI seat (all
+Human by default), and there is no development flag (`pulp_wars-vkq.16`
+removed `?undead=1`; the Goblins never had one). Goblin balance evidence is
+the [Goblin balance report](RULESET_7_GOBLIN_BALANCE.md); the release does
+not rerun its matrix.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the revision-16 identity (ruleset ID, autosave key, the
-  `ORIGINAL`/`UNDEAD` faction and tree orders, and a Human-against-Undead
-  setup), confirms that the archived corpus below still carries the
-  revision-2 identity, and runs the revision contract tests (including the
-  Undead faction, revisions 14–16, persistence, and the DOM shell and landing
-  tests). It keeps no checked corpus or fingerprint of its own and has no
-  `:refresh` variant, so a release has nothing to regenerate there.
+  contract. It checks the revision-17 identity (ruleset ID, autosave key, the
+  `ORIGINAL`/`UNDEAD`/`GOBLIN` faction and tree orders, and a
+  Human-against-Undead setup), confirms that the archived corpus below still
+  carries the revision-2 identity, and runs the revision contract tests
+  (including the Undead faction, revisions 14–16, the Goblin faction and
+  Goblin rules suites, persistence, and the DOM shell and landing tests; the
+  Goblin explosion, AI, and presentation suites run in `npm run check`). It
+  keeps no checked corpus or fingerprint of its own and has no `:refresh`
+  variant, so a release has nothing to regenerate there.
 - `npm run smoke:browser` runs the default route with no `ruleset` parameter:
-  the natural Human match below, the CHIBI art-set probe, and an Undead probe
+  the natural Human match below, the CHIBI art-set probe, an Undead probe
   that finds the per-seat faction selects on the default setup (both Human),
   picks Undead for both seats from the keyboard, plays the Undead-vs-Undead
-  match to its outcome, and resumes the save on a fresh default-route load.
-  Against a development server it then resumes a scripted Undead save to
+  match to its outcome, and resumes the save on a fresh default-route load
+  (against a development server it then resumes a scripted Undead save to
   dispatch Raise Dead and mounts the Plague and Bitten fixture; with
-  `--deployed` it stops after launch and resume.
+  `--deployed` it stops after launch and resume), and a **Goblin probe**
+  (`pulp_wars-0ao.5`, `0ao.7`). The Goblin probe checks that every seat's
+  select offers exactly Human, Undead and Goblin, picks Goblin for seat 0
+  from the keyboard, launches a Goblin-vs-Human match from the production
+  setup, selects the starting Goblin on its capital from the keyboard, checks
+  the Kaboom! button's accessible name (its tooltip sentence with the Kaboom
+  damage read from the page's public unit stats, not a literal, and the hit
+  count), arms it and checks the dock summary ("Hits N units: …"; the turn-1
+  blast usually hits nobody), confirms, checks the "Your Goblin blew up"
+  announcement and the unit count, and resumes the save with its Goblin seat
+  on a fresh default-route load. It uses no fixture, so it runs unchanged
+  with `--deployed`. It does not play the Goblin match to an outcome:
+  complete Goblin matches (every pairing with Humans, Undead, and Goblins,
+  and three-faction four-seat mixes) were played headlessly by the
+  [Goblin balance matrix](RULESET_7_GOBLIN_BALANCE.md), and `npm run check`
+  runs bounded headless Goblin matches and replays.
+- `npm run art:chibi-goblin-review` (`scripts/art/chibi-goblin-review.ts`,
+  `pulp_wars-0ao.8`) rechecks the eight PixelLab Goblin unit sprites and
+  portraits and rewrites the review evidence under
+  `art/pixellab/reviews/chibi-batch-goblin/`; inspect it with the other art
+  reviews.
+- **Gate order.** Run `npm run check` **before** the art review commands,
+  then restore the checked-in review evidence with `git checkout -- art/`
+  after them: on macOS Chrome the reviews rewrite tracked review evidence,
+  which breaks the deterministic-evidence test (`board-renderer-v6`) if
+  `npm run check` runs afterwards. Never commit the rewritten evidence as
+  part of a release.
 - The revision-2 sections below, `RULESET_7_RELEASE_CORPUS.json`, and the
   archived browser evidence in `art/integration/reviews/ruleset7-preview/`
   (whose `evidence.json` records `pulp-wars-poc-7r2` and a runtime
   fingerprint bound into that corpus) are frozen history. They are not
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
-  because it would overwrite that revision-2 evidence with revision-16
-  captures. The revision-2 validator described below as
+  because it would overwrite that revision-2 evidence with current
+  (revision-17) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
+
+The revision-17 release gates, in the order they are run from the reviewed
+release revision (the `cross-cutting/release` profile plus the Ruleset 7 and
+Goblin additions):
+
+```bash
+npm run validate:ruleset7-release
+npm run validate:ruleset6-release
+npm run check
+npm run art:validate
+npm run art:ruleset6-terrain-review
+npm run art:ruleset6-building-road-review
+npm run art:ruleset6-original-unit-review
+npm run art:ruleset6-candy-unit-review
+npm run art:ruleset6-tech-economy-ui-review
+npm run art:ruleset6-renderer-review
+npm run art:ruleset6-host-review
+npm run art:ruleset6-combat-review
+npm run art:ruleset6-shell-review
+npm run art:ruleset7-original-unit-review
+npm run art:ruleset7-catapult-review
+npm run art:ruleset7-building-economy-review
+npm run art:ruleset7-tactical-ui-review
+npm run art:ruleset7-farm-review
+npm run art:chibi-goblin-review
+git checkout -- art/
+npm run smoke:browser
+npm run smoke:browser:legacy-v5
+npm audit --audit-level=high
+git diff --check
+```
+
+The results of a release run are recorded on its bead
+(`pulp_wars-0ao.9` for revision 17), not in this document; the
+[final release gates](#final-release-gates) and
+[root verification status](#root-verification-status) below are the frozen
+revision-2 record.
+
+The revision-16 contract (`pulp-wars-poc-7r16`, Human and Undead) is
+superseded by this one; its validator and smoke were extended in place, not
+kept as a separate command.
 
 For that revision-2 release, Ruleset 7 was the normal browser default and the
 supported Original-faction game. Exact `?ruleset=7` selected the same contract.

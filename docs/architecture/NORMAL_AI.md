@@ -15,7 +15,7 @@ turn) and Raider Escape handling (an escape Move is used only toward a
 strictly safer visible tile while visible enemies threaten the Raider); see
 [current rules §16](../product/RULESET_7_CURRENT.md#16-normal-ai-summary).
 Revision 16 ([section 3.6](../product/RULESET_7_REVISION_16.md#36-normal-ai-opening),
-`pulp_wars-wwc`, both factions) puts growth first: when offered Gathering,
+`pulp_wars-wwc`, every faction) puts growth first: when offered Gathering,
 Hunting, or Shorecraft unlocks at least two visible growth resources (Fruit,
 Game, Fish) in the original capital's own territory, the free opener is the
 one with the most (ties by technology order; reported score 1000 + count),
@@ -158,7 +158,7 @@ As Undead:
 - **Training**: Banshee +8 while a living hostile seat is active, −30
   otherwise (and no research toward it); Necromancer +4 per visible Grave (at
   most 3); Lich +4. The opening research keeps the revision-12 scorer and the
-  revision-16 growth-first rules for both factions.
+  revision-16 growth-first rules for every faction.
 
 Against Undead (any seat in such a match):
 
@@ -370,7 +370,7 @@ elapsed-time input, or work units, and are bounded scans of the view
 ([balance report §14](../validation/RULESET_7_UNDEAD_BALANCE.md#14-lich-safety-vampire-survival-and-lich-hunts-pulp_wars-vkq21)).
 
 - **Splash threat from Battleships.** Threat evaluation adds the splash of
-  every visible hostile splash unit (a Battleship of either faction, as well
+  every visible hostile splash unit (a Battleship of any faction, as well
   as the Lich): a unit next to a friendly unit the splash unit can hit from
   where it stands takes `max(1, ceil(damage / 2))`. This reaches every
   safety test built on visible damage (Lich movement, fresh-unit training,
@@ -416,7 +416,9 @@ Every Goblin heuristic lives behind one gate: the match has a Goblin seat
 never evaluates any of it (no Goblin unit can Kaboom, explode, Gang Up, or
 friendly-splash there), so Human and Undead decisions and pinned hashes are
 unchanged; a fresh 16-match Human/Undead parity run is byte-identical to the
-`0ao.3` policy. The helpers read only the public view, public commands, and
+`0ao.3` policy. (`pulp_wars-0ao.15` later re-pinned some Human/Undead
+digests through its all-faction landing rule, not through any Goblin
+heuristic: restoring the old landing line restores 16/16 parity.) The helpers read only the public view, public commands, and
 the public previews (`previewKaboomV7`, `previewAttackExplosionsV7`,
 `queryCombatPreviewV7` with its `gangUp` field). They add no PRNG use, no
 elapsed-time input, and no work units: each is a bounded scan of the view
@@ -459,8 +461,10 @@ As Goblins:
   minus friendly) and its Plunder Coins.
 - **Careful bombs** (`pulp_wars-0ao.13`; friendly fire stays a rule): a bomb
   whose splash kills an own or allied unit is never thrown for a chip (the
-  target survives) or when it kills more own and allied units than hostile
-  ones, whatever the trade value, with the same city and endgame exceptions.
+  target survives) or when it kills at least as many own and allied units as
+  hostile ones (a one-for-one trade is careless too), whatever the trade
+  value and even when it clears a hostile city center; only a city save or
+  the endgame combined kill excuses it.
   A bomb that splashes any own or allied unit ranks 3 below its tier (1180
   becomes 1177), so the Bomb Chucker's clean bomb of the same tier and other
   units' attacks, which may kill the target first, go before it. A Bomb
@@ -496,14 +500,18 @@ Against Goblins (every seat in such a match):
 
 - threat evaluation adds a hostile Goblin attacker's Gang Up from its
   owner's units around the tile, Bomb Chucker splash (as Battleship and
-  Lich splash), and the Kaboom of an embarked goblin-crewed unit that can
-  land (after at most one sailing step) next to the tile; its threatened
-  tiles include that landing reach;
+  Lich splash), and the fixed Kaboom damage of a goblin-crewed land unit
+  within Chebyshev 1 of every tile it can reach (it may Kaboom after any
+  Move, even a Rocket Cart). An embarked goblin-crewed unit is modelled like
+  any embarked unit: landing ends its activation (`pulp_wars-0ao.15`), so it
+  cannot land and Kaboom in the same turn, and the landing reach that
+  `pulp_wars-0ao.6` and `0ao.11` had added is gone;
 - a routine Move does not end in a clump (two or more own or allied units)
-  that a visible goblin-crewed unit could Kaboom at a profit next turn (its
-  best Kaboom from an empty land cell within its Move, valued as above from
-  its side), unless it sets up a kill or the unit is already that exposed;
-  the exposure also reduces the Move's strategic value;
+  that a visible goblin-crewed land unit could Kaboom at a profit next turn
+  (its best Kaboom from an empty land cell within its Move, or where it
+  stands, valued as above from its side), unless it sets up a kill or the
+  unit is already that exposed; the exposure also reduces the Move's
+  strategic value;
 - killing an exploding unit uses `previewAttackExplosionsV7`: the chain is
   valued in the attack score, and a kill whose blast kills own units must
   be worth it (for a hostile unit that could Kaboom the same units on its own

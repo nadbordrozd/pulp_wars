@@ -60,10 +60,12 @@ the Undead rules are part of
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). A match without
 an Undead seat looks and behaves exactly as in revision 12.
 
-- Setup always shows a labelled **Factions** group with one Human/Undead
-  select per seat ("Your faction", "Player N faction"), all Human by default
-  and resized with the opponent count; the launched setup carries each seat's
-  choice. There is no URL parameter or development flag for it
+- Setup always shows a labelled **Factions** group with one faction select
+  per seat ("Your faction", "Player N faction"), offering Human and Undead
+  (and, since revision 17, Goblin; see the
+  [Goblin overlay](#current-ruleset-7-revision-17-goblin-overlay)), all Human
+  by default and resized with the opponent count; the launched setup carries
+  each seat's choice. There is no URL parameter or development flag for it
   (`pulp_wars-vkq.16` removed the former `?undead=1` flag). Saves with Undead
   seats resume and play like any other save.
 - Every unit is named by its owner's registration (Skeleton, Ghoul, Banshee,
@@ -130,7 +132,9 @@ the two economy texts below.
   details repeat each sentence. Undead Lich, Zombie and Vampire details list
   Plague, Bite and Unanswered; in an Undead match a Captain's Tend reads
   "Heals nearby wounded troops by 2 and cures their Plague and bites." Help
-  adds the Plague, bite and Vampire tips for both factions.
+  adds the Plague, bite and Vampire tips for every non-Undead viewer (Human
+  or Goblin) in a match with an Undead seat; Undead viewers get the Undead
+  tips instead.
 - **Disband.** An own plagued or bitten unit that would otherwise be offered
   Disband shows an `aria-disabled` Disband action whose name explains
   "Plagued units can't Disband." or "Bitten units can't Disband." (Plague
@@ -180,11 +184,17 @@ looks as in revision 16 apart from the extra faction option.
   (default Human); the launched setup, saves and resume keep Goblin seats.
 - **Labels.** Units are named by their owner's registration (Goblin, Wolf
   Rider, Bomb Chucker, Orc Brute, Orc Warboss, Rocket Cart, Scrap Buggy,
-  Troll). The dock shows a "Goblin" faction chip; CHIBI paints the Goblin
-  placeholder sprites and LEGACY (or a CHIBI Goblin subject without a raster)
-  draws the Human art with an olive goblin-head badge on charcoal. Training,
-  recruit help and CHIBI technology cards use the Goblin map sprites (there
-  are no Goblin portraits yet). Rally reads "WAAAGH!", Inspired Goblins show
+  Troll). The dock shows a "Goblin" faction chip; CHIBI paints the reviewed
+  PixelLab Goblin sprites (`pulp_wars-0ao.8`, which replaced the
+  `pulp_wars-0ao.4` placeholders) and LEGACY (or a CHIBI Goblin subject
+  without a raster) draws the Human art with an olive goblin-head badge on
+  charcoal. Training, recruit help, rewards and CHIBI technology cards use
+  the Goblin PixelLab portraits (`PORTRAIT:GOBLIN:<ROLE>`) wherever a Human
+  card shows a portrait, and the Goblin map sprite where it shows a sprite;
+  boats keep the Human ship portraits. Goblin cities use the shared
+  settlement art (no Goblin city tint). Rally reads "WAAAGH!" (its button
+  shows the PixelLab `ICON:ACTION:GOBLIN:RALLY` grey tin megaphone in CHIBI,
+  `pulp_wars-0ao.14`, and the Rally art in LEGACY), Inspired Goblins show
   "WAAAGH!", Overrun reads "Ram", and Commerce is "Plunder" in the technology
   tree, its detail and research actions. Goblin Commerce lists no trade, and
   Chivalry reads "Ram: Scrap Buggies advance after a kill and may attack
@@ -197,10 +207,16 @@ looks as in revision 16 apart from the extra faction option.
   `aria-disabled` Fortify action explaining "Goblins cannot build Field
   Defense; use an Orc Brute". The city dock's unit capacity adds a "+1
   Warrens" chip.
-- **Kaboom!** Goblin-crewed land units get a Kaboom! button (a cartoon bomb
-  icon: a filled charcoal body with a light rim, a curved fuse and a pale
-  spark) whose tooltip is the section 11.2 sentence and whose chips give the
-  hit and kill count plus a yellow "N yours hit" warning chip. Hovering or
+- **Kaboom!** Goblin-crewed land units get a Kaboom! button whose icon is a
+  bomb: in CHIBI the PixelLab `ICON:ACTION:KABOOM` raster (a round black
+  bomb with a lit cream fuse and a pale spark, `pulp_wars-0ao.14`); in
+  LEGACY, or in CHIBI without the raster, the code-drawn glyph of
+  `ui-icons-v7.ts`, a solid black ball with a hairline edge, a fuse rising
+  from the top and a pale spark (`pulp_wars-0ao.17`). Its tooltip is the
+  section 11.2 sentence, and its chips give the hit and kill count plus a
+  yellow "N yours hit" warning chip. The button appears only while the
+  public command query offers Kaboom (not after a primary action, and not
+  in the turn the unit landed). Hovering or
   focusing it previews the blast on the board: every blast area of the chain
   in pale cream with a dashed edge, one label per hit cell (`−N`, red when
   lethal; `Yours −N`/`Ally −N` with a yellow-and-charcoal hazard outline for
@@ -219,8 +235,8 @@ looks as in revision 16 apart from the extra faction option.
   pan stays.
 - **Attacks.** In a match with a Goblin seat an attack preview's second line
   adds "Gang Up +N", and one warning box per line adds the death-blast lines
-  ("Enemy Bomb Chucker explodes on death: 3 damage around it", chain
-  reactions),
+  ("Enemy Bomb Chucker explodes on death: 2 damage around it", with the
+  tuned death-blast damage, and chain reactions),
   "Bomb splash hits your Goblin", "Friendly fire: …" (own blasts) or "Blasts
   hit N of your units, K killed" (enemy blasts), Plunder and the fog note. The
   focused (or only) such target shows the chain's blast areas and hit labels
@@ -260,6 +276,9 @@ Wave 2` → `Yours −3` → `−3`), keeping its lethal red or hazard styling;
   it." and "; Goblins can't cure bites.". An Undead viewer's tips say "a Human
   Captain" when a Goblin seat is also present, and drop the Captain clause when
   no seat is Human. Human viewers and Human/Undead matches read as before.
+  One sentence is not yet match-aware (open, `pulp_wars-0ao.18`): the Lich's
+  Plague ability text still ends "or a Captain tends them" in every match,
+  including one without a Human seat.
 - **Review.** `npm run review:ruleset7-goblin-ui` captures these surfaces in
   both art sets at desktop and phone widths (dev server only).
 
