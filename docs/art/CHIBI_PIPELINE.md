@@ -104,7 +104,9 @@ Portraits are owned (`PORTRAIT:*` subjects need a mask); icons are not.
 A batch is one faction, so batch 5 is split: `batch-5.json` (ORIGINAL:
 Human portraits, ship portraits and every Human or shared icon),
 `batch-5-undead.json` (UNDEAD: Undead portraits and the Undead command
-icons) and `batch-5-goblin.json` (GOBLIN portraits, bead `pulp_wars-0ao.8`).
+icons) and `batch-5-goblin.json` (GOBLIN: Goblin portraits, bead
+`pulp_wars-0ao.8`, and the Goblin Kaboom! and WAAAGH! command icons, bead
+`pulp_wars-0ao.14`).
 The review of batch 5 shows all three.
 
 ### Building on earlier batches

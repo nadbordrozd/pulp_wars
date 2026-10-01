@@ -117,13 +117,27 @@ describe("Revision 17 Goblin DOM", () => {
       ),
     ).toEqual(["5 hit · 2 ✕", "2 yours hit"]);
     expect(host.lastModel?.interaction.kaboomPreviewUnitId).toBeUndefined();
-    // The icon is a cartoon bomb: a filled charcoal body, a fuse and a spark.
+    // The icon is a cartoon bomb (pulp_wars-0ao.17): a fuse cap and a solid
+    // black ball with only a hairline grey edge (never a ring in the button's
+    // colour), a glint, a fuse rising straight up from the top (cream over a
+    // dark under-stroke) and a pale spark at its tip.
     const bomb = required(kaboom.querySelector('svg[data-icon="bomb"]'));
     expect(
-      [...bomb.querySelectorAll("path")].map((path) =>
+      [...bomb.querySelectorAll("path")].map((path) => [
         path.getAttribute("fill"),
-      ),
-    ).toEqual(["#2b2d33", "none", "#2b2d33", "none", "#fff8d0"]);
+        path.getAttribute("stroke"),
+      ]),
+    ).toEqual([
+      ["#18191d", "#5d616c"],
+      ["#18191d", "#5d616c"],
+      ["#8d929e", "none"],
+      ["none", "#18191d"],
+      ["none", "currentColor"],
+      ["#fff8d0", "#18191d"],
+    ]);
+    // The fuse leaves the top of the ball vertically: no diagonal stroke.
+    const fuse = [...bomb.querySelectorAll("path")][4];
+    expect(fuse?.getAttribute("d")).toMatch(/^M12 6\.8c0-/);
 
     // Hover and focus preview the blast on the board without arming it.
     kaboom.dispatchEvent(new Event("pointerenter"));
