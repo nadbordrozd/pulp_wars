@@ -993,6 +993,22 @@ autosave and returns to Hub. Delete Save is destructive, requires the exact
 confirmation “Delete current saved match?”, and returns to Hub after success.
 There is no Resign rule in the POC; Exit is not elimination.
 
+Settings ends with a collapsed **Developer tools** section. Besides the log and
+debug exports it holds an experiment for map clutter, **Board saturation**: a
+“Building saturation” and a “City saturation” slider (0–100% in steps of 5,
+default 100%, each with a live percentage readout) and a “Reset saturation”
+button that returns both to 100%. Building saturation fades improvement
+sprites, the Mine drawn as part of its Mined Mountain, and the Field Defense
+badge; City saturation fades city and neutral Village sprites. Units, other
+terrain, resources, Roads, overlays, markers, borders, previews and the DOM
+docks and portraits are never affected. The board redraws while a slider is
+dragged, in both art sets. The values are presentation only: they are stored
+in the browser under `pulpWars.ruleset7.boardSaturation.v1` (outside the shared
+settings envelope, like the art set), are restored on load with missing or
+invalid values clamped to 0–100 and defaulting to 100%, and never enter a save,
+a replay or the engine. At 100% the board is drawn exactly as without the
+setting.
+
 Opening Settings pauses human interaction and AI presentation. If the AI engine
 has already computed a command, its accepted state is saved before the modal;
 presentation resumes from queued events. No wall clock enters simulation.

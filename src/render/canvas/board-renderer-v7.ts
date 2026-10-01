@@ -95,6 +95,12 @@ import {
   type ChibiResolutionV7,
 } from "./chibi-art-resolver-v7";
 import {
+  clampSaturationPercentV7,
+  desaturateHexColourV7,
+  type BoardSaturationV7,
+  type SpriteSaturationCacheV7,
+} from "./sprite-saturation-v7";
+import {
   CHIBI_GARRISON_SCALE,
   chibiDestinationRect,
   chibiTerrainPartRect,
@@ -740,6 +746,8 @@ export function drawChibiFieldDefenseV7(
   zoom: number,
   level: number,
   highContrast: boolean,
+  /** Building saturation in percent (pulp_wars-x6c); 100 is unchanged. */
+  saturation = 100,
 ): void {
   const { fieldDefense } = CHIBI_OVERLAY_FRAME_V7;
   const unit = (fieldDefense.size / 28) * zoom;
@@ -748,9 +756,18 @@ export function drawChibiFieldDefenseV7(
   const px = (value: number): number => left + value * unit;
   const py = (value: number): number => top + value * unit;
   const ink = "#2a2426";
-  const birch = highContrast ? "#ffffff" : "#f1dc8f";
-  const birchShade = highContrast ? "#c8c8c8" : "#c9ad62";
-  const steel = highContrast ? "#ffffff" : "#b9c3cf";
+  const birch = desaturateHexColourV7(
+    highContrast ? "#ffffff" : "#f1dc8f",
+    saturation,
+  );
+  const birchShade = desaturateHexColourV7(
+    highContrast ? "#c8c8c8" : "#c9ad62",
+    saturation,
+  );
+  const steel = desaturateHexColourV7(
+    highContrast ? "#ffffff" : "#b9c3cf",
+    saturation,
+  );
   context.save();
   context.strokeStyle = ink;
   context.lineWidth = 2 * unit;
@@ -835,6 +852,28 @@ function drawPopulationPipV7(
   context.strokeRect(left, top, size, size);
 }
 
+/** Which saturation slider (bead pulp_wars-x6c) an entry's art follows. */
+export type BoardSaturationGroupV7 = "BUILDING" | "CITY";
+
+/**
+ * Buildings are improvement art, the Mine drawn as part of its Mined
+ * Mountain, and the Field Defense badge. Cities are city sprites and
+ * neutral Village sprites. Everything else (units, other terrain,
+ * resources, roads, overlays, markers) follows no slider.
+ */
+export function boardSaturationGroupV7(
+  entry: BoardRenderPlanEntryV7,
+): BoardSaturationGroupV7 | null {
+  if (entry.kind === "CITY") return "CITY";
+  if (entry.kind === "SITE")
+    return entry.artSubject === "SITE:VILLAGE" ? "CITY" : null;
+  if (entry.kind === "IMPROVEMENT" || entry.kind === "FIELD_DEFENSE")
+    return "BUILDING";
+  if (entry.kind === "TERRAIN")
+    return entry.artSubject === "TERRAIN:MINED_MOUNTAIN" ? "BUILDING" : null;
+  return null;
+}
+
 export interface BoardImageResolverV7 {
   resolve(assetId: string): CanvasImageSource | null;
   /** Registered square ground used beneath a tall terrain body. */
@@ -893,8 +932,38 @@ export function drawBoardV7(input: {
    * inside it; omitted, they are clamped inside the whole viewport.
    */
   readonly labelSafeArea?: LabelSafeAreaV7 | null;
+  /**
+   * Developer experiment (bead pulp_wars-x6c): building and city sprites
+   * are drawn from cached desaturated copies. Omitted, or at 100 percent,
+   * no copy is requested and the frame is drawn exactly as before.
+   */
+  readonly saturation?: {
+    readonly levels: BoardSaturationV7;
+    readonly cache: SpriteSaturationCacheV7;
+  };
 }): void {
   const { context, viewport, devicePixelRatio } = input;
+  const saturationOf = (entry: BoardRenderPlanEntryV7): number => {
+    if (input.saturation === undefined) return 100;
+    const group = boardSaturationGroupV7(entry);
+    return group === null
+      ? 100
+      : clampSaturationPercentV7(
+          group === "CITY"
+            ? input.saturation.levels.city
+            : input.saturation.levels.building,
+        );
+  };
+  const atSaturation = <Image extends CanvasImageSource | null | undefined>(
+    entry: BoardRenderPlanEntryV7,
+    image: Image,
+  ): Image | CanvasImageSource => {
+    if (image === null || image === undefined) return image;
+    const percent = saturationOf(entry);
+    return percent === 100 || input.saturation === undefined
+      ? image
+      : input.saturation.cache.resolve(image, percent);
+  };
   const chibiArt = input.artSet === "CHIBI" ? input.chibiArt : undefined;
   // CHIBI cells land on whole device pixels; LEGACY keeps its exact camera.
   const camera =
@@ -1042,7 +1111,11 @@ export function drawBoardV7(input: {
         continue;
       }
       if (entry.kind === "TERRAIN") {
-        const chibi = resolveChibi(entry);
+        const chibi = chibiTerrainAtSaturationV7(
+          resolveChibi(entry),
+          saturationOf(entry),
+          input.saturation?.cache,
+        );
         // Tall terrain under a Road: ground now, the body after Roads.
         const layers =
           chibi?.kind === "READY" && roadCells.has(coordKey(entry.at))
@@ -1155,8 +1228,9 @@ export function drawBoardV7(input: {
               sceneAlpha,
             });
         } else {
-          const raised = input.images.resolveRaisedTerrain?.(
-            entry.assetId ?? "",
+          const raised = atSaturation(
+            entry,
+            input.images.resolveRaisedTerrain?.(entry.assetId ?? ""),
           );
           if (raised !== null && raised !== undefined)
             drawEntryImage(context, raised, {
@@ -1169,7 +1243,7 @@ export function drawBoardV7(input: {
           else
             drawTallTerrainOverflowFallback(
               context,
-              input.images.resolve(entry.assetId ?? ""),
+              atSaturation(entry, input.images.resolve(entry.assetId ?? "")),
               { x, y, zoom: camera.zoom, sceneAlpha },
             );
         }
@@ -1237,6 +1311,7 @@ export function drawBoardV7(input: {
         // Deferred with the piece overlays so a tall piece in the row below
         // never hides it.
         const highContrast = input.highContrast ?? false;
+        const saturation = saturationOf(entry);
         deferredChibiOverlays.push(() =>
           drawChibiFieldDefenseV7(
             context,
@@ -1245,6 +1320,7 @@ export function drawBoardV7(input: {
             camera.zoom,
             entry.value ?? 0,
             highContrast,
+            saturation,
           ),
         );
         continue;
@@ -1258,6 +1334,7 @@ export function drawBoardV7(input: {
           y - 54 * camera.zoom,
           symbolSize,
           input.highContrast ?? false,
+          saturationOf(entry),
         );
         if ((entry.value ?? 0) > 0) {
           context.fillStyle = input.highContrast ? "#ffffff" : "#fff8df";
@@ -1290,12 +1367,16 @@ export function drawBoardV7(input: {
         factionArt = resolved?.factionArt ?? false;
         const chibiReady = chibi?.kind === "READY" ? chibi : null;
         chibiPiece = chibi !== null && chibi.kind !== "MISSING";
-        const image =
+        // Buildings and cities take their desaturated copy (pulp_wars-x6c);
+        // every other piece, and 100 percent, keeps its own raster.
+        const image = atSaturation(
+          entry,
           chibi === null || chibi.kind === "MISSING"
             ? input.images.resolve(entry.assetId)
             : chibiReady === null
               ? null
-              : chibiReady.image;
+              : chibiReady.image,
+        );
         const garrisoned =
           chibiReady !== null &&
           entry.kind === "UNIT" &&
@@ -2827,6 +2908,8 @@ function drawTacticalSymbolOnCanvas(
   top: number,
   size: number,
   highContrast: boolean,
+  /** Percent; only the Field Defense symbol passes less than 100. */
+  saturation = 100,
 ): void {
   if (
     statusId === undefined ||
@@ -2835,7 +2918,7 @@ function drawTacticalSymbolOnCanvas(
     return;
   const id = statusId as keyof typeof RULESET7_TACTICAL_UI_SYMBOL_BY_ID;
   const definition = RULESET7_TACTICAL_UI_SYMBOL_BY_ID[id];
-  const tones = highContrast
+  const baseTones = highContrast
     ? {
         ink: "#ffffff",
         paper: "#000000",
@@ -2850,6 +2933,16 @@ function drawTacticalSymbolOnCanvas(
         bronze: "#755020",
         coral: "#7b3836",
       };
+  const tones =
+    saturation === 100
+      ? baseTones
+      : {
+          ink: desaturateHexColourV7(baseTones.ink, saturation),
+          paper: desaturateHexColourV7(baseTones.paper, saturation),
+          slate: desaturateHexColourV7(baseTones.slate, saturation),
+          bronze: desaturateHexColourV7(baseTones.bronze, saturation),
+          coral: desaturateHexColourV7(baseTones.coral, saturation),
+        };
   const scale = size / 24;
   const point = (value: number): number => value * scale;
   context.save();
@@ -2907,6 +3000,47 @@ function drawTacticalSymbolOnCanvas(
     }
   }
   context.restore();
+}
+
+/**
+ * A Mined Mountain below 100 percent building saturation: the master, the
+ * body layer and their row slices become desaturated copies. The ground
+ * tile layer is left alone, so the fringed ground and the ground under a
+ * Road keep their colour. At 100 percent the resolution passes through.
+ */
+function chibiTerrainAtSaturationV7(
+  chibi: ChibiResolutionV7 | null,
+  percent: number,
+  cache: SpriteSaturationCacheV7 | undefined,
+): ChibiResolutionV7 | null {
+  if (
+    chibi === null ||
+    chibi.kind !== "READY" ||
+    percent === 100 ||
+    cache === undefined
+  )
+    return chibi;
+  const copy = (image: CanvasImageSource): CanvasImageSource =>
+    cache.resolve(image, percent);
+  const { layers, parts } = chibi;
+  return {
+    ...chibi,
+    image: copy(chibi.image),
+    ...(layers === undefined
+      ? {}
+      : { layers: { ground: layers.ground, body: copy(layers.body) } }),
+    ...(parts === undefined
+      ? {}
+      : {
+          parts: {
+            cell: copy(parts.cell),
+            overflow: copy(parts.overflow),
+            ...(parts.bodyCell === undefined
+              ? {}
+              : { bodyCell: copy(parts.bodyCell) }),
+          },
+        }),
+  };
 }
 
 function isTallTerrainEntry(entry: BoardRenderPlanEntryV7): boolean {

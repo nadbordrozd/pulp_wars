@@ -76,6 +76,11 @@ import {
   type SupportFeedbackV7,
   type WindmillHealingFeedbackV7,
 } from "./support-presentation-v7";
+import {
+  createSpriteSaturationCacheV7,
+  type BoardSaturationV7,
+  type SpriteSaturationCacheV7,
+} from "./sprite-saturation-v7";
 
 export interface BoardHostModelV7 {
   readonly matchInstanceId: string | number;
@@ -89,6 +94,11 @@ export interface BoardHostModelV7 {
   readonly highContrast: boolean;
   /** Presentation-only art set; omitted means LEGACY. */
   readonly artSet?: ArtSetV7;
+  /**
+   * Developer experiment (pulp_wars-x6c): building and city saturation in
+   * percent. Omitted, or 100, draws exactly as without it.
+   */
+  readonly saturation?: BoardSaturationV7;
 }
 
 export interface BoardHostCallbacksV7 {
@@ -117,6 +127,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #images: BoardImageResolverV7;
   readonly #chibiArt: ChibiBoardArtV7;
   readonly #glowCache: BoardGlowCacheV7;
+  readonly #saturationCache: SpriteSaturationCacheV7;
   readonly #planCache: {
     view: PlayerViewV7;
     commands: BoardHostModelV7["offeredCommands"];
@@ -214,6 +225,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#glowCache.clear();
       this.#draw();
     });
+    this.#saturationCache = createSpriteSaturationCacheV7(
+      browserChibiRasterEnvironmentV7(documentRoot),
+    );
     this.#chibiArt = createChibiArtResolverV7({
       environment: browserChibiRasterEnvironmentV7(documentRoot),
       redraw: () => {
@@ -884,6 +898,14 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         statusPulse: this.#statusPulse,
         artSet: this.#artSet(),
         chibiArt: this.#chibiArt,
+        ...(model.saturation === undefined
+          ? {}
+          : {
+              saturation: {
+                levels: model.saturation,
+                cache: this.#saturationCache,
+              },
+            }),
         previewFocus: this.#hovered ?? this.#focused,
         labelSafeArea,
         selectionJump:

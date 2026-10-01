@@ -974,6 +974,127 @@ describe("Ruleset 7 DOM shell", () => {
     second.destroy();
   });
 
+  it("offers developer saturation sliders that update the board live, persist and reset (pulp_wars-x6c)", async () => {
+    const key = "pulpWars.ruleset7.boardSaturation.v1";
+    const host = new CapturingBoardHost();
+    const first = bootstrapRuleset7App(document, {
+      storage: null,
+      boardHost: host,
+    });
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => first.controller.snapshot().phase === "ACTIVE");
+    // The default is 100 percent for both groups: nothing is desaturated.
+    expect(host.model?.saturation).toEqual({ building: 100, city: 100 });
+    const savesBefore = first.controller.snapshot().view?.commandIndex;
+    openMenuItem("settings");
+    const tools = document.querySelector<HTMLDetailsElement>(
+      ".v7-developer-tools",
+    );
+    if (tools === null) throw new Error("Developer tools missing");
+    tools.open = true;
+    const building = requiredInput("v7-building-saturation");
+    const city = requiredInput("v7-city-saturation");
+    for (const input of [building, city]) {
+      expect(input.type).toBe("range");
+      expect([input.min, input.max, input.step, input.value]).toEqual([
+        "0",
+        "100",
+        "5",
+        "100",
+      ]);
+      expect(input.getAttribute("aria-valuetext")).toBe("100%");
+    }
+    // Each slider is named by its label and paired with a live readout.
+    expect(
+      document.querySelector('label[for="v7-building-saturation"]')
+        ?.textContent,
+    ).toBe("Building saturation");
+    expect(
+      document.querySelector('label[for="v7-city-saturation"]')?.textContent,
+    ).toBe("City saturation");
+    const readout = (id: string): HTMLOutputElement => {
+      const node = document.querySelector<HTMLOutputElement>(`#${id}-value`);
+      if (node === null) throw new Error(`Missing readout for ${id}`);
+      return node;
+    };
+    expect(readout("v7-building-saturation").tagName).toBe("OUTPUT");
+    expect(readout("v7-building-saturation").htmlFor.value).toBe(
+      "v7-building-saturation",
+    );
+    expect(readout("v7-building-saturation").textContent).toBe("100%");
+
+    const drag = (input: HTMLInputElement, value: string): void => {
+      input.value = value;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    };
+    drag(building, "30");
+    // The board model changes at once and the dialog is not rebuilt.
+    expect(host.model?.saturation).toEqual({ building: 30, city: 100 });
+    expect(requiredInput("v7-building-saturation")).toBe(building);
+    expect(readout("v7-building-saturation").textContent).toBe("30%");
+    expect(building.getAttribute("aria-valuetext")).toBe("30%");
+    drag(city, "60");
+    expect(host.model?.saturation).toEqual({ building: 30, city: 60 });
+    expect(readout("v7-city-saturation").textContent).toBe("60%");
+    expect(JSON.parse(window.localStorage.getItem(key) ?? "null")).toEqual({
+      building: 30,
+      city: 60,
+    });
+    // Presentation only: the shared settings envelope and the match are
+    // untouched.
+    expect(window.localStorage.getItem("pulpWars.settings.v1")).toBeNull();
+    expect(first.controller.snapshot().view?.commandIndex).toBe(savesBefore);
+    // Another setting re-renders the dialog; the section stays open.
+    tools.dispatchEvent(new Event("toggle"));
+    requiredButton('[data-action="high-contrast"]').click();
+    expect(
+      document.querySelector<HTMLDetailsElement>(".v7-developer-tools")?.open,
+    ).toBe(true);
+    expect(requiredInput("v7-building-saturation").value).toBe("30");
+    first.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    const restoredHost = new CapturingBoardHost();
+    const second = bootstrapRuleset7App(document, {
+      storage: null,
+      boardHost: restoredHost,
+    });
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => second.controller.snapshot().phase === "ACTIVE");
+    expect(restoredHost.model?.saturation).toEqual({ building: 30, city: 60 });
+    openMenuItem("settings");
+    expect(requiredInput("v7-building-saturation").value).toBe("30");
+    expect(requiredInput("v7-city-saturation").value).toBe("60");
+    requiredButton('[data-action="reset-board-saturation"]').click();
+    expect(restoredHost.model?.saturation).toEqual({
+      building: 100,
+      city: 100,
+    });
+    expect(requiredInput("v7-building-saturation").value).toBe("100");
+    expect(readout("v7-city-saturation").textContent).toBe("100%");
+    expect(JSON.parse(window.localStorage.getItem(key) ?? "null")).toEqual({
+      building: 100,
+      city: 100,
+    });
+    second.destroy();
+
+    // An invalid stored value is clamped; a malformed one falls back to 100.
+    window.localStorage.setItem(key, '{"building":-40,"city":"grey"}');
+    document.body.innerHTML = '<div id="app"></div>';
+    const clampedHost = new CapturingBoardHost();
+    const third = bootstrapRuleset7App(document, {
+      storage: null,
+      boardHost: clampedHost,
+    });
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => third.controller.snapshot().phase === "ACTIVE");
+    expect(clampedHost.model?.saturation).toEqual({ building: 0, city: 100 });
+    third.destroy();
+  });
+
   it("starts with defaults when the supplied settings adapter cannot be read", async () => {
     const app = bootstrapRuleset7App(document, {
       storage: null,

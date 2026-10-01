@@ -48,12 +48,22 @@ import {
 } from "../../engine/index";
 import { downloadJsonFile } from "../../app/browser-download";
 import {
+  loadBoardSaturationV7,
+  storeBoardSaturationV7,
+} from "../../app/board-saturation-v7";
+import {
   SETTINGS_STORAGE_KEY,
   parseSettings,
   type StorageAdapter,
 } from "../../persistence/index";
 import { CanvasBoardHostV7, type BoardHostV7 } from "../canvas/board-host-v7";
 import type { BoardSelectionV7 } from "../canvas/board-renderer-v7";
+import {
+  DEFAULT_BOARD_SATURATION_V7,
+  SATURATION_STEP_V7,
+  clampSaturationPercentV7,
+  type BoardSaturationV7,
+} from "../canvas/sprite-saturation-v7";
 import {
   LANDING_AFTER_MOVE_LABEL_V7,
   LANDING_NOW_LABEL_V7,
@@ -313,6 +323,9 @@ export class Ruleset7DomAppView {
   #animationSpeed: "NORMAL" | "FAST" = "NORMAL";
   #highContrast = false;
   #uiScale: 1 | 1.25 | 1.5 | 2 = 1;
+  /** Developer experiment (pulp_wars-x6c); presentation only. */
+  #boardSaturation: BoardSaturationV7 = DEFAULT_BOARD_SATURATION_V7;
+  #developerToolsOpen = false;
   #pendingFocusAction: string | null = null;
   #matchShell: HTMLElement | null = null;
   #matchRoot: HTMLElement | null = null;
@@ -372,6 +385,7 @@ export class Ruleset7DomAppView {
     } catch {
       // Restricted storage must not prevent the public UI from mounting.
     }
+    this.#boardSaturation = loadBoardSaturationV7(this.#settingsStorage);
     this.#snapshot = controller.snapshot();
     this.#document.addEventListener("keydown", this.#onKeyDown);
     this.#root.addEventListener("dragstart", this.#onDragStart);
@@ -1223,6 +1237,7 @@ export class Ruleset7DomAppView {
       presentationPaused: this.#screen === "SETTINGS",
       highContrast: this.#highContrast,
       artSet: this.#artSet,
+      saturation: this.#boardSaturation,
       interaction: {
         selection: this.#selection,
         selectedUnitId,
@@ -2968,6 +2983,11 @@ export class Ruleset7DomAppView {
     seed.title = "Choose “Use seed” in a new game to replay this map.";
     const developer = this.#document.createElement("details");
     developer.className = "v7-developer-tools";
+    // Stays open across the re-render another setting triggers.
+    developer.open = this.#developerToolsOpen;
+    developer.addEventListener("toggle", () => {
+      this.#developerToolsOpen = developer.open;
+    });
     const safe = button(this.#document, "Export game log", "export-safe-log");
     safe.onclick = () => this.#exportSafeLog();
     const debug = button(
@@ -2985,10 +3005,85 @@ export class Ruleset7DomAppView {
     developerActions.append(safe, debug);
     developer.append(
       text(this.#document, "summary", "Developer tools"),
+      this.#saturationControls(),
       developerActions,
     );
     section.append(display, game, seed, developer);
     return section;
+  }
+
+  /**
+   * Developer experiment (bead pulp_wars-x6c): two sliders that fade the
+   * board's building and city sprites. Dragging updates the board, the
+   * readout and local storage in place; the dialog is not re-rendered, so
+   * the slider keeps its pointer and keyboard focus.
+   */
+  #saturationControls(): HTMLElement {
+    const group = el(this.#document, "fieldset", "v7-saturation-tools");
+    group.append(text(this.#document, "legend", "Board saturation"));
+    const sliders: { readonly sync: () => void }[] = [];
+    const slider = (
+      key: keyof BoardSaturationV7,
+      labelText: string,
+      id: string,
+    ): HTMLElement => {
+      const row = el(this.#document, "div", "v7-saturation-row");
+      const label = this.#document.createElement("label");
+      label.htmlFor = id;
+      label.textContent = labelText;
+      const input = this.#document.createElement("input");
+      input.type = "range";
+      input.id = id;
+      input.min = "0";
+      input.max = "100";
+      input.step = String(SATURATION_STEP_V7);
+      const readout = this.#document.createElement("output");
+      readout.id = `${id}-value`;
+      readout.htmlFor.add(id);
+      readout.className = "v7-saturation-value";
+      const sync = (): void => {
+        const percent = this.#boardSaturation[key];
+        input.value = String(percent);
+        // Screen readers announce the percentage, not a bare number.
+        input.setAttribute("aria-valuetext", `${percent}%`);
+        readout.textContent = `${percent}%`;
+      };
+      sync();
+      sliders.push({ sync });
+      input.addEventListener("input", () => {
+        this.#setBoardSaturation({
+          ...this.#boardSaturation,
+          [key]: clampSaturationPercentV7(Number(input.value)),
+        });
+        sync();
+      });
+      row.append(label, input, readout);
+      return row;
+    };
+    const reset = button(
+      this.#document,
+      "Reset saturation",
+      "reset-board-saturation",
+    );
+    reset.onclick = () => {
+      this.#setBoardSaturation(DEFAULT_BOARD_SATURATION_V7);
+      for (const entry of sliders) entry.sync();
+    };
+    group.append(
+      slider("building", "Building saturation", "v7-building-saturation"),
+      slider("city", "City saturation", "v7-city-saturation"),
+      reset,
+    );
+    return group;
+  }
+
+  #setBoardSaturation(saturation: BoardSaturationV7): void {
+    this.#boardSaturation = saturation;
+    if (!storeBoardSaturationV7(this.#settingsStorage, saturation))
+      this.#error = "Settings could not be saved.";
+    const view = this.#snapshot.view;
+    if (view !== null && view !== undefined)
+      this.#boardHost.update(this.#boardModel(view));
   }
 
   #reward(view: PlayerViewV7): HTMLElement {
