@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-e-edit",
+  "jobId": "b84f731b-1582-47e4-a398-91a318e23594",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17624,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make every brown wooden part of the cart charcoal grey scrap iron, and replace the orange flame at the tail with a tiny pale yellow-white spark on the cream fuse. Keep the big red paper rocket with its cream stars, cream cone cap and rope, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make every brown wooden part of the cart charcoal grey scrap iron, and replace the orange flame at the tail with a tiny pale yellow-white spark on the cream fuse. Keep the big red paper rocket with its cream stars, cream cone cap and rope, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make every brown wooden part of the cart charcoal grey scrap iron, and replace the orange flame at the tail with a tiny pale yellow-white spark on the cream fuse. Keep the big red paper rocket with its cream stars, cream cone cap and rope, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make every brown wooden part of the cart charcoal grey scrap iron, and replace the orange flame at the tail with a tiny pale yellow-white spark on the cream fuse. Keep the big red paper rocket with its cream stars, cream cone cap and rope, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-e",
+      "candidate": 0,
+      "sha256": "241251edc0a3ac8969e2b9d196767900d23783941b45b8550b0e344221b1db03"
+    }
+  }
+}

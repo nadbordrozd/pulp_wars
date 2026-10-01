@@ -1,0 +1,36 @@
+{
+  "id": "farm-l-edit-2",
+  "jobId": "845d2111-771c-479a-a6d9-56fa58bd5aa8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-farm",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "ORIGINAL",
+    "recipeClass": "crop-field",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69831,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint over the dark brown soil strip along the two bottom edges with more golden wheat stalks, so the whole patch is golden wheat down to its bottom and no brown soil or earth is visible anywhere. Keep the wheat, the size of the patch, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Paint over the dark brown soil strip along the two bottom edges with more golden wheat stalks, so the whole patch is golden wheat down to its bottom and no brown soil or earth is visible anywhere. Keep the wheat, the size of the patch, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Paint over the dark brown soil strip along the two bottom edges with more golden wheat stalks, so the whole patch is golden wheat down to its bottom and no brown soil or earth is visible anywhere. Keep the wheat, the size of the patch, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Paint over the dark brown soil strip along the two bottom edges with more golden wheat stalks, so the whole patch is golden wheat down to its bottom and no brown soil or earth is visible anywhere. Keep the wheat, the size of the patch, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "farm-l",
+      "candidate": 0,
+      "sha256": "b759cb00d59726b1377111858a59b92f76f0efbd244a9865bfb1bcb6c9cf1515"
+    }
+  }
+}

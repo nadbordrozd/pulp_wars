@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-f-edit",
+  "jobId": "4749a86b-c53c-4ad9-b9b9-40f05cf05fe6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17625,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Paint the dark grey lower half of the rocket's tube bright red, the same red paper as its upper half, so the whole rocket tube is bright red with cream stars and one cream band. Keep the cream cone cap, the pale stick, the charcoal grey cart, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Paint the dark grey lower half of the rocket's tube bright red, the same red paper as its upper half, so the whole rocket tube is bright red with cream stars and one cream band. Keep the cream cone cap, the pale stick, the charcoal grey cart, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Paint the dark grey lower half of the rocket's tube bright red, the same red paper as its upper half, so the whole rocket tube is bright red with cream stars and one cream band. Keep the cream cone cap, the pale stick, the charcoal grey cart, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Paint the dark grey lower half of the rocket's tube bright red, the same red paper as its upper half, so the whole rocket tube is bright red with cream stars and one cream band. Keep the cream cone cap, the pale stick, the charcoal grey cart, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-f",
+      "candidate": 0,
+      "sha256": "6418e7f19ab42190c7a954a289a1a16f53f626a04eb55e9d248e93fb2a918917"
+    }
+  }
+}

@@ -58,6 +58,8 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
       groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
     },
   },
+  // Bead pulp_wars-6gd.5: Mountains and Mined Mountains stand on the rocky
+  // ground tile chibi-mountain-ground-1 (pipeline-only, not a variant).
   {
     id: "chibi-mountain-1",
     subject: "TERRAIN:MOUNTAIN",
@@ -67,7 +69,9 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     url: chibiArtUrl("assets/chibi/terrain/chibi-mountain-1.png"),
     layers: {
       bodyUrl: chibiArtUrl("assets/chibi/terrain/chibi-mountain-1.body.png"),
-      groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
+      groundUrl: chibiArtUrl(
+        "assets/chibi/terrain/chibi-mountain-ground-1.png",
+      ),
     },
   },
   {
@@ -79,7 +83,9 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     url: chibiArtUrl("assets/chibi/terrain/chibi-mountain-3.png"),
     layers: {
       bodyUrl: chibiArtUrl("assets/chibi/terrain/chibi-mountain-3.body.png"),
-      groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
+      groundUrl: chibiArtUrl(
+        "assets/chibi/terrain/chibi-mountain-ground-1.png",
+      ),
     },
   },
   {
@@ -354,13 +360,14 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     url: chibiArtUrl("assets/chibi/resources/chibi-treasure.png"),
   },
   {
+    // Bead pulp_wars-6gd.5: a field of grain with no building and no owner
+    // mask, so it is never recoloured (the same wheat for every owner).
     id: "chibi-farm",
     subject: "IMPROVEMENT:FARM",
     assetClass: "BUILDING",
     width: 80,
     height: 88,
     url: chibiArtUrl("assets/chibi/buildings/chibi-farm.png"),
-    ownerMaskUrl: chibiArtUrl("assets/chibi/buildings/chibi-farm.mask.png"),
   },
   {
     id: "chibi-lumber-camp",
@@ -402,7 +409,9 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
       bodyUrl: chibiArtUrl(
         "assets/chibi/terrain/chibi-mined-mountain-1.body.png",
       ),
-      groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
+      groundUrl: chibiArtUrl(
+        "assets/chibi/terrain/chibi-mountain-ground-1.png",
+      ),
     },
   },
   {
@@ -416,7 +425,9 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
       bodyUrl: chibiArtUrl(
         "assets/chibi/terrain/chibi-mined-mountain-2.body.png",
       ),
-      groundUrl: chibiArtUrl("assets/chibi/terrain/chibi-grass-1.png"),
+      groundUrl: chibiArtUrl(
+        "assets/chibi/terrain/chibi-mountain-ground-1.png",
+      ),
     },
   },
   // Batch 4 (pulp_wars-67q.9): the six processors with a masked red-roof or
@@ -1173,6 +1184,9 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     width: 72,
     height: 88,
     url: chibiArtUrl("assets/chibi/units/chibi-goblin-rocket-cart.png"),
+    // 2 px right of the class placement: the rear wheel and the tail fin
+    // clear the seat badge and the HP bar strip (pulp_wars-6gd.5).
+    anchor: { x: 34, y: 48 },
     ownerMaskUrl: chibiArtUrl(
       "assets/chibi/units/chibi-goblin-rocket-cart.mask.png",
     ),

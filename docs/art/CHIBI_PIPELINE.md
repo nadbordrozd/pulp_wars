@@ -69,6 +69,7 @@ the Human-era owner text they were generated with.
 | `ship`         | as `unit`, then optional edit                  | as `unit`; a boat class text (no water, waves or plate under the hull) for ships and the embarked form |
 | `settlement`   | Pixen, then optional `edit-image-pixen`        | the candidate; the edit removes a plate ("Remove all ground …")                                        |
 | `building`     | Pixen, then optional edit                      | as settlement                                                                                          |
+| `crop-field`   | Pixen, then optional edit, no faction layer    | as settlement: an unowned field of crops registered as a building (the Farm, bead `pulp_wars-6gd.5`)   |
 | `resource`     | Pixen, then optional edit                      | as settlement                                                                                          |
 | `terrain`      | `create-image-pixflux` (flat shading) or Pixen | a field at least 2x the tile; the seamless 80 x 80 window is cropped, optionally inside a `cropRegion` |
 | `tall-terrain` | Pixen, then optional edit                      | the transparent body drawn over an accepted ground tile's bottom cell                                  |
@@ -120,6 +121,35 @@ The review of batch 5 shows all three.
 - **Cross-batch ground:** a tall-terrain `groundAsset` accepted in an
   earlier production batch is found there when the current batch has no
   such asset; the record's `derivation.ground.batch` names it.
+
+- **Re-grounding tall terrain:** to move an accepted body to another
+  ground, change the asset's `groundAsset` and run `accept` again for the
+  same recipe and candidate. The master and its record are re-derived from
+  the unchanged body; no PixelLab call is made. Bead `pulp_wars-6gd.5` moved
+  the Mountains and Mined Mountains from `chibi-grass-1` to the rocky
+  `chibi-mountain-ground-1` this way.
+- **Pipeline-only ground tiles:** `chibi-mountain-ground-1` is a `TERRAIN`
+  asset of batch 1 with subject `TERRAIN:MOUNTAIN` and the subject text
+  `TERRAIN:MOUNTAIN/GROUND` (`subjectKey`). It is accepted and validated
+  like any tile but never added to `src/assets/chibi-art-manifest.ts`,
+  where it would become a flat Mountain variant; the runtime reaches it
+  only as the `groundUrl` of the Mountain layers.
+
+### Crop fields
+
+The Farm is a field of grain with no building and no owner colour (bead
+`pulp_wars-6gd.5`, the user's playtest note). Under the `building` class
+every sample drew a farmer or a barn on a soil slab: the class text says
+"one single building" and the Human faction layer names cloth, steel and
+plaster. The `crop-field` class has its own text (a patch of plants in
+rows, nothing under it), skips the faction layer like resources, and makes
+a `BUILDING` asset with `ownerColour: false`, so no mask is extracted and
+the runtime never recolours it. Pixen's south-east direction turns a field
+into a small isometric diamond; the accepted recipe drops the direction
+option (`"options": { "direction": null }`) and asks for a front-on
+rectangle almost as wide and as tall as the image, so neighbouring Farms
+read as one field. The soil slab under the wheat could not be erased by an
+edit; an edit that painted it as wheat stubble worked.
 
 ### Status markers and effects
 
@@ -324,6 +354,19 @@ training docks, the technology tree with a card's detail, and the
 mandatory rewards (Survey and City Wall, Stockpile and Boom, and the
 Undead unit rewards). A review of batch `N` also includes its faction
 companions `N-<name>` (batch 5 includes `5-undead`).
+
+`npm run art:chibi-playtest3-review` (bead `pulp_wars-6gd.5`) writes
+`art/pixellab/reviews/chibi-playtest-3-art/`: `sheet-{1x,x4}.png` (the
+fireworks Rocket Cart beside the Goblin units and the Human Catapult, in
+the key and player colours with its mask and portrait; the grain-field
+Farm alone, in a 3 x 3 block and beside Windmills; the rocky ground tile,
+the Mountain and Mined Mountain masters and a range with Ore and Mines
+beside Grass, Forest and water) and
+`ingame-{rocket,farms,mountains}-{desktop,phone}-zoom-{1,0.75}.png`, the
+scenes of
+[`review-playtest3-scene-v7.ts`](../../scripts/art/chibi/review-playtest3-scene-v7.ts)
+drawn by the real board host. Its captures start Vite on port 6351 unless
+`--port` says otherwise.
 
 ## Dry run
 

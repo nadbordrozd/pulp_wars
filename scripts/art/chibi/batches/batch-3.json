@@ -80,17 +80,12 @@
       "id": "chibi-farm",
       "subject": "IMPROVEMENT:FARM",
       "assetClass": "BUILDING",
-      "recipeClass": "building",
+      "recipeClass": "crop-field",
       "canvas": {
         "width": 80,
         "height": 88
       },
-      "ownerColour": true,
-      "maskOverride": {
-        "path": "scripts/art/chibi/overrides/chibi-farm.mask-override.png",
-        "masterPixelSha256": "5f68d0a8b24ecccfd0efd9bf31af48b7bfd30c2c579e67e6ba75756ef1d2ef2f",
-        "reason": "The automatic mask misses the roof's darkest tile-shadow lines and dormer edge (deep crimson below the extraction band), which would stay red on a Teal roof. The override selects every opaque pixel in the keyLike band (the widest band an override may use): the whole roof and nothing else. No QA code is waived."
-      }
+      "ownerColour": false
     },
     {
       "id": "chibi-lumber-camp",
@@ -144,7 +139,7 @@
         "width": 80,
         "height": 104
       },
-      "groundAsset": "chibi-grass-1"
+      "groundAsset": "chibi-mountain-ground-1"
     },
     {
       "id": "chibi-mined-mountain-2",
@@ -155,7 +150,7 @@
         "width": 80,
         "height": 104
       },
-      "groundAsset": "chibi-grass-1"
+      "groundAsset": "chibi-mountain-ground-1"
     }
   ],
   "recipes": [
@@ -601,6 +596,158 @@
       },
       "editInstruction": "Add three big upright golden wheat sheaves standing at the left of the barn and one big round golden haystack at its right, all standing directly on the transparent background with nothing under them. Make the barn timber pale straw yellow, not orange or brown. Keep the barn, red roof, cream walls, outline and art style exactly the same.",
       "notes": "farm-c-edit is a clean barn on nothing but lost its farm cues; add wheat sheaves and a haystack back without ground."
+    },
+    {
+      "id": "farm-d",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69821,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, soil, dirt, furrows, brown earth",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). The user asked for 'a field of grain ... without the house' with no faction colours: the Farm subject is rewritten as a wheat patch, unowned (no mask). Sample seed 1 of 3."
+    },
+    {
+      "id": "farm-e",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69822,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, soil, dirt, furrows, brown earth",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). The user asked for 'a field of grain ... without the house' with no faction colours: the Farm subject is rewritten as a wheat patch, unowned (no mask). Sample seed 2 of 3."
+    },
+    {
+      "id": "farm-f",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69823,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, soil, dirt, furrows, brown earth",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). The user asked for 'a field of grain ... without the house' with no faction colours: the Farm subject is rewritten as a wheat patch, unowned (no mask). Sample seed 3 of 3."
+    },
+    {
+      "id": "farm-g",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69824,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings",
+      "notes": "Bead pulp_wars-6gd.5. farm-d, -e and -f (building class with the Human faction layer) each drew a soil slab with a farmer or a barn on it. The Farm moves to the new crop-field recipe class: no faction layer, a class text for a patch of plants. Seed 1 of 3."
+    },
+    {
+      "id": "farm-h",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69825,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings",
+      "notes": "Bead pulp_wars-6gd.5. farm-d, -e and -f (building class with the Human faction layer) each drew a soil slab with a farmer or a barn on it. The Farm moves to the new crop-field recipe class: no faction layer, a class text for a patch of plants. Seed 2 of 3."
+    },
+    {
+      "id": "farm-i",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69826,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "negativeAddendum": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings",
+      "notes": "Bead pulp_wars-6gd.5. farm-d, -e and -f (building class with the Human faction layer) each drew a soil slab with a farmer or a barn on it. The Farm moves to the new crop-field recipe class: no faction layer, a class text for a patch of plants. Seed 3 of 3."
+    },
+    {
+      "id": "farm-j",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69827,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "options": {
+        "direction": null
+      },
+      "promptAddendum": "The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image.",
+      "negativeAddendum": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric",
+      "notes": "Bead pulp_wars-6gd.5. farm-g, -h and -i are the right wheat (dense golden rows, no house, no figure) but small isometric diamonds on a thin soil slab, which leave the tile's corners empty and cannot join a neighbouring Farm. This drops the south-east direction option and asks for a front-on rectangle. Seed 1 of 3."
+    },
+    {
+      "id": "farm-k",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69828,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "options": {
+        "direction": null
+      },
+      "promptAddendum": "The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image.",
+      "negativeAddendum": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric",
+      "notes": "Bead pulp_wars-6gd.5. farm-g, -h and -i are the right wheat (dense golden rows, no house, no figure) but small isometric diamonds on a thin soil slab, which leave the tile's corners empty and cannot join a neighbouring Farm. This drops the south-east direction option and asks for a front-on rectangle. Seed 2 of 3."
+    },
+    {
+      "id": "farm-l",
+      "asset": "chibi-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 69829,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "options": {
+        "direction": null
+      },
+      "promptAddendum": "The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image.",
+      "negativeAddendum": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric",
+      "notes": "Bead pulp_wars-6gd.5. farm-g, -h and -i are the right wheat (dense golden rows, no house, no figure) but small isometric diamonds on a thin soil slab, which leave the tile's corners empty and cannot join a neighbouring Farm. This drops the south-east direction option and asks for a front-on rectangle. Seed 3 of 3."
+    },
+    {
+      "id": "farm-l-edit",
+      "asset": "chibi-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 69830,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "farm-l",
+        "candidate": 0
+      },
+      "editInstruction": "Erase only the thin dark brown soil slab along the bottom edges under the wheat, so the golden wheat stalks stand directly on a transparent background with nothing under them. Keep every wheat stalk and grain head, the size of the patch, outline and art style exactly the same.",
+      "notes": "Bead pulp_wars-6gd.5. farm-l is the right field: tall golden wheat in dense rows, almost as wide and as tall as the tile, no house, no figure. It stands on a thin dark soil slab; farm-j and farm-k are lower, darker patches on a thicker slab."
+    },
+    {
+      "id": "farm-l-edit-2",
+      "asset": "chibi-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 69831,
+      "requestSize": {
+        "width": 80,
+        "height": 88
+      },
+      "source": {
+        "recipe": "farm-l",
+        "candidate": 0
+      },
+      "editInstruction": "Paint over the dark brown soil strip along the two bottom edges with more golden wheat stalks, so the whole patch is golden wheat down to its bottom and no brown soil or earth is visible anywhere. Keep the wheat, the size of the patch, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-6gd.5. farm-l-edit (both candidates) kept the soil slab under the wheat; this asks for the strip to be painted as wheat instead of erased."
     }
   ]
 }

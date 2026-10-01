@@ -1,0 +1,57 @@
+{
+  "id": "mountain-ground-1-c",
+  "jobId": "sync-6dc28ac3-e590-4738-8793-4e04ebcaf7a0",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "1",
+    "asset": "chibi-mountain-ground-1",
+    "subject": "TERRAIN:MOUNTAIN",
+    "faction": "ORIGINAL",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 67393,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-terrain.txt + scripts/art/chibi/fragments/class-terrain.negative.txt",
+        "text": "Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image.",
+        "negative": "border, frame, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: flat bare rocky mountain ground seen from directly above: one even calm mid-grey stone base colour everywhere, with small darker grey cracks, a few pebbles and small flat lighter grey stones scattered evenly and sparsely all over, nothing else; bare rock, gravel and scree only, with no grass, no plants, no moss, no snow and no big boulders."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, brown soil, sand"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: flat bare rocky mountain ground seen from directly above: one even calm mid-grey stone base colour everywhere, with small darker grey cracks, a few pebbles and small flat lighter grey stones scattered evenly and sparsely all over, nothing else; bare rock, gravel and scree only, with no grass, no plants, no moss, no snow and no big boulders.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated, grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, brown soil, sand",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: flat bare rocky mountain ground seen from directly above: one even calm mid-grey stone base colour everywhere, with small darker grey cracks, a few pebbles and small flat lighter grey stones scattered evenly and sparsely all over, nothing else; bare rock, gravel and scree only, with no grass, no plants, no moss, no snow and no big boulders. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated, grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, brown soil, sand."
+  }
+}

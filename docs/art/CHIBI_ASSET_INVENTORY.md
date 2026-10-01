@@ -39,7 +39,7 @@ row is one art subject in `chibi-art-v7.ts`.
 | ----------------------------- | ----------------------------------------------------------------------- | ----- | ------------- | ------------- | ------- | ------------------ | -------- | ---------------------------------------------------------------------------------------------------------- |
 | `TERRAIN:GRASS`               | `terrain-ruleset7-original-grass-1..3` (3)                              | 1     | TERRAIN       | 80 x 80       | default | 0 / 0              | no       | Also drawn under Forest tiles whose canopy an improvement suppresses. 3 variants; field 160 x 160 + crop.  |
 | `TERRAIN:FOREST`              | `terrain-ruleset7-original-forest-1..4` (4)                             | 1     | TALL_TERRAIN  | 80 x 104      | default | 0 / 24             | no       | Ground composite over an accepted Grass variant. See flag 3.                                               |
-| `TERRAIN:MOUNTAIN`            | `terrain-ruleset7-revision3-mountain-1..3` (3)                          | 1     | TALL_TERRAIN  | 80 x 104      | default | 0 / 24             | no       | Legacy mountains sit on a gravel ground; chibi has no gravel subject. See flag 3.                          |
+| `TERRAIN:MOUNTAIN`            | `terrain-ruleset7-revision3-mountain-1..3` (3)                          | 1     | TALL_TERRAIN  | 80 x 104      | default | 0 / 24             | no       | Stands on the rocky ground tile `chibi-mountain-ground-1` (`pulp_wars-6gd.5`). See flag 3.                 |
 | `TERRAIN:MINED_MOUNTAIN`      | `terrain-ruleset7-revision3-mined-mountain-1..3` (3)                    | 3     | TALL_TERRAIN  | 80 x 104      | default | 0 / 24             | no       | This is the Mine: its art includes the mountain and covers its Road. See flag 4.                           |
 | `TERRAIN:SHALLOW_WATER`       | `terrain-ruleset7-water-shallow` (1)                                    | 1     | TERRAIN       | 80 x 80       | default | 0 / 0              | no       | 2–3 variants recommended. Shorelines are procedural (flag 7).                                              |
 | `TERRAIN:DEEP_WATER`          | `terrain-ruleset7-water-deep` (1)                                       | 1     | TERRAIN       | 80 x 80       | default | 0 / 0              | no       | 2–3 variants recommended.                                                                                  |
@@ -65,7 +65,7 @@ row is one art subject in `chibi-art-v7.ts`.
 | `RESOURCE:FISH`               | `terrain-ruleset7-resource-fish-v7r11`                                  | 3     | RESOURCE      | 40 x 40       | default | 0 / 0              | no       | On water; drawn above a Port.                                                                              |
 | `RESOURCE:PEARLS`             | `terrain-ruleset7-resource-pearls`                                      | 3     | RESOURCE      | 40 x 40       | default | 0 / 0              | no       | On water.                                                                                                  |
 | `TREASURE`                    | `building-treasure-chest`                                               | 3     | RESOURCE      | 40 x 40       | default | 0 / 0              | no       | The subject also allows BUILDING; a chest should stay below unit size.                                     |
-| `IMPROVEMENT:FARM`            | `building-ruleset7-farm-single`, `…-farm-pair-horizontal`, `…-vertical` | 3     | BUILDING      | 80 x 88       | default | 0 / 8              | optional | Legacy pairs join two tiles; chibi has one subject. See flag 2.                                            |
+| `IMPROVEMENT:FARM`            | `building-ruleset7-farm-single`, `…-farm-pair-horizontal`, `…-vertical` | 3     | BUILDING      | 80 x 88       | default | 0 / 8              | no       | A field of grain, no building, no mask (`pulp_wars-6gd.5`). See flag 2.                                    |
 | `IMPROVEMENT:LUMBER_CAMP`     | `building-ruleset7-resource-lumber-camp`                                | 3     | BUILDING      | 80 x 88       | default | 0 / 8              | optional | Suppresses the Forest canopy under it.                                                                     |
 | `IMPROVEMENT:PORT`            | `building-ruleset7-port-v7r11`                                          | 3     | BUILDING      | 80 x 88       | default | 0 / 8              | optional | Drawn below a Fish resource on the same tile.                                                              |
 | `IMPROVEMENT:MONUMENT`        | `building-square-monument`                                              | 3     | BUILDING      | 80 x 88       | default | 0 / 8              | optional |                                                                                                            |
@@ -96,9 +96,11 @@ raster (and in LEGACY) the code-drawn marker stays. Prompts and recipes:
 unit asks for `UNIT:GOBLIN:<ROLE>` (Goblin `FIGHTER`, Wolf Rider `RAIDER`,
 Bomb Chucker `MARKSMAN`, Orc Brute `GUARD`, Orc Warboss `CAPTAIN`, Rocket
 Cart `CATAPULT`, Scrap Buggy `KNIGHT`, Troll `JUGGERNAUT`) with the canvas,
-class and mask of the Human role above. Two anchors move right of the
+class and mask of the Human role above. Three anchors move right of the
 default so the art clears the HP bar and seat badge: the Orc Warboss's cape
-by 1 px (`27, 40`) and the Scrap Buggy's rear wheel by 4 px (`32, 48`). The
+by 1 px (`27, 40`), the Scrap Buggy's rear wheel by 4 px (`32, 48`) and the
+fireworks Rocket Cart's rear wheel and tail fin by 2 px (`34, 48`, bead
+`pulp_wars-6gd.5`). The
 rasters are PixelLab art from batch `goblin`
 (`scripts/art/chibi/batches/batch-goblin.json`), and the dock, training
 buttons and technology cards use the `PORTRAIT:GOBLIN:<ROLE>` busts of batch
@@ -301,7 +303,11 @@ keeps `building-city-<level>` for every faction. Review evidence:
    subjects. **Batch 3 decision:** one single-cell Farm (a barn with a
    haystack and wheat) is drawn for every Farm cell, paired or not; the
    CHIBI path ignores the legacy pair crop, so a pair reads as two
-   neighbouring farmsteads.
+   neighbouring farmsteads. **Bead `pulp_wars-6gd.5`:** the user asked for
+   "a field of grain ... without the house" and without faction colours.
+   The Farm is now one wheat patch per cell, almost as wide and as tall as
+   the tile, with no owner mask; it is still drawn once per Farm cell with
+   no pair logic, and neighbouring Farms read as one field.
 3. **Tall-terrain ground.** Chibi Forest and Mountain masters contain their
    own 80 x 80 ground cell (the runtime draws the cell during the ground
    pass). The pipeline composes them over an accepted ground tile. Legacy
@@ -310,7 +316,15 @@ keeps `building-city-<level>` for every faction. Review evidence:
    that is never registered as a subject). **Batch 1 decision:** grass.
    Every Forest and Mountain composites over `chibi-grass-1`, so tall
    terrain joins the surrounding meadow without a seam; the Mined Mountain
-   (batch 3) should do the same.
+   (batch 3) should do the same. **Bead `pulp_wars-6gd.5`:** the user found
+   that mountains "look a bit too much like just a single rock formation
+   sticking out the grass" and asked for a rocky background. Mountains and
+   Mined Mountains now composite over `chibi-mountain-ground-1`, the
+   pipeline-only rocky tile this flag foresaw (light slate rock with small
+   boulders, pebbles and cracks, a forced three-colour palette); Forests
+   keep the grass. The same accepted bodies were re-composited, so the
+   peaks, Ore and Mine entrances are unchanged. A Mountain tile is now a
+   grey square beside grass, with a straight edge like water.
 4. **Mine is a terrain subject.** A Mine draws `TERRAIN:MINED_MOUNTAIN` (the
    art includes the mountain); `IMPROVEMENT:MINE` is never emitted. Batch 3
    lists "Mine" as an improvement; it is really a tall-terrain variant of
@@ -348,7 +362,8 @@ keeps `building-city-<level>` for every faction. Review evidence:
    **Batch 3 decision:** buildings carry owner colour where it is natural
    in the ORIGINAL vocabulary, always with a checked-in mask: the Farm and
    Lumber Camp roofs, the Port roof and flag, the Monument banners (16–29%
-   of opaque pixels). Resources, Treasure and the Mine are unowned map
+   of opaque pixels). (Since bead `pulp_wars-6gd.5` the Farm is a field of
+   grain with no building and no mask.) Resources, Treasure and the Mine are unowned map
    features with no owner colour. Deep crimson roof shading falls just
    outside the automatic extraction band, so the Farm, Port and Monument
    use keyLike-band overrides (no QA waiver).

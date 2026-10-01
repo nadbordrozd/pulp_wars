@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-e-edit-2",
+  "jobId": "706d2d3e-4f6b-4a00-a504-fa4c344d1231",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17626,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour the brown wooden planks and beams of the cart charcoal grey with dark blue-grey shading, so nothing in the image is brown. Change nothing else: keep the red rocket, its cream stars and cone cap, the rope, the wheels, the little goblin, every other pixel, pose, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour the brown wooden planks and beams of the cart charcoal grey with dark blue-grey shading, so nothing in the image is brown. Change nothing else: keep the red rocket, its cream stars and cone cap, the rope, the wheels, the little goblin, every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour the brown wooden planks and beams of the cart charcoal grey with dark blue-grey shading, so nothing in the image is brown. Change nothing else: keep the red rocket, its cream stars and cone cap, the rope, the wheels, the little goblin, every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour the brown wooden planks and beams of the cart charcoal grey with dark blue-grey shading, so nothing in the image is brown. Change nothing else: keep the red rocket, its cream stars and cone cap, the rope, the wheels, the little goblin, every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-e-edit",
+      "candidate": 0,
+      "sha256": "5b90a6037509a4e0c7d111b7cd6cfb99f2536d606c30a95ba69b5a634c16eb03"
+    }
+  }
+}

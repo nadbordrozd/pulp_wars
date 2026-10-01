@@ -68,6 +68,10 @@
       "canvas": {
         "width": 72,
         "height": 88
+      },
+      "anchor": {
+        "x": 34,
+        "y": 48
       }
     },
     {
@@ -778,6 +782,109 @@
       },
       "editInstruction": "Paint over the dark bands and the brown square patches on the rocket's body with the same bright red, so the rocket body is one big plain bright red shape with a darker red shadow. The light grey nose cone, the grey fins, the charcoal grey cart, the black wheels and the tiny goblin stay exactly as they are, with the same pose, outline and art style, on a transparent background.",
       "notes": "rocket-cart-c-edit-3 fixed the crimson shading (1 pixel left), but dark bands and brown patches split the rocket (15.7% owner area, 54 brown pixels)."
+    },
+    {
+      "id": "rocket-cart-e",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 17621,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame.",
+      "negativeAddendum": "missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). The user asked for a low-tech goblin invention, 'more like fireworks rocket less like a modern missile': the subject line is rewritten as a paper fireworks rocket (cone cap, launch stick, curly fuse) roped onto a scrap cart. Sample seed 1 of 3."
+    },
+    {
+      "id": "rocket-cart-f",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 17622,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame.",
+      "negativeAddendum": "missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). The user asked for a low-tech goblin invention, 'more like fireworks rocket less like a modern missile': the subject line is rewritten as a paper fireworks rocket (cone cap, launch stick, curly fuse) roped onto a scrap cart. Sample seed 2 of 3."
+    },
+    {
+      "id": "rocket-cart-g",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 17623,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame.",
+      "negativeAddendum": "missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). The user asked for a low-tech goblin invention, 'more like fireworks rocket less like a modern missile': the subject line is rewritten as a paper fireworks rocket (cone cap, launch stick, curly fuse) roped onto a scrap cart. Sample seed 3 of 3."
+    },
+    {
+      "id": "rocket-cart-e-edit",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 17624,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-e",
+        "candidate": 0
+      },
+      "editInstruction": "Make every brown wooden part of the cart charcoal grey scrap iron, and replace the orange flame at the tail with a tiny pale yellow-white spark on the cream fuse. Keep the big red paper rocket with its cream stars, cream cone cap and rope, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-6gd.5. rocket-cart-e is the right fireworks rocket (red paper tube with cream stars, cream cone cap, rope lashings, tilted forward on a two-wheeled cart, one small crew apart from it) but its cart frame is brown wood and the tail has an orange flame."
+    },
+    {
+      "id": "rocket-cart-f-edit",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 17625,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-f",
+        "candidate": 0
+      },
+      "editInstruction": "Paint the dark grey lower half of the rocket's tube bright red, the same red paper as its upper half, so the whole rocket tube is bright red with cream stars and one cream band. Keep the cream cone cap, the pale stick, the charcoal grey cart, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-6gd.5. rocket-cart-f has a clean charcoal cart, a cream cone cap, cream stars and a pale launch stick, but the lower half of the rocket is dark gunmetal plate, so the owner area is small and it still reads half as a metal shell. rocket-cart-g drew a second red figure in front of the cart."
+    },
+    {
+      "id": "rocket-cart-e-edit-2",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 17626,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-e-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour the brown wooden planks and beams of the cart charcoal grey with dark blue-grey shading, so nothing in the image is brown. Change nothing else: keep the red rocket, its cream stars and cone cap, the rope, the wheels, the little goblin, every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-6gd.5. rocket-cart-e-edit (both candidates) replaced the orange flame with a small pale spark but left the cart's planks and beams brown; a single-focus recolour, as the Goblin sprite findings recommend."
+    },
+    {
+      "id": "rocket-cart-f-edit-2",
+      "asset": "chibi-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 17627,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-f",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the dark grey lower part of the rocket's tube, between the cream band and the cart, to bright red paper with a darker red shadow. The cart, its wheels and its plates stay charcoal grey, the cone cap stays cream, and the pale stick, the little goblin, every other pixel, pose, outline and art style stay exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-6gd.5. rocket-cart-f-edit (both candidates) painted the whole cart and the cone cap red as well as the tube, so the piece is one red blob; this asks for the tube's lower part only."
     }
   ]
 }

@@ -279,10 +279,13 @@ describe("CHIBI art resolver", () => {
         asset.subject.startsWith("IMPROVEMENT:") &&
         asset.ownerMaskUrl !== undefined,
     );
-    // Batch 3 (reviewed mask overrides) and batch 4 (auto masks).
+    // Batch 3 (reviewed mask overrides) and batch 4 (auto masks). The Farm
+    // is a field of grain without an owner mask (pulp_wars-6gd.5).
+    expect(buildings.map((asset) => asset.subject)).not.toContain(
+      "IMPROVEMENT:FARM",
+    );
     expect(buildings.map((asset) => asset.subject)).toEqual(
       expect.arrayContaining([
-        "IMPROVEMENT:FARM",
         "IMPROVEMENT:PORT",
         "IMPROVEMENT:MONUMENT",
         "IMPROVEMENT:WINDMILL",
@@ -313,5 +316,47 @@ describe("CHIBI art resolver", () => {
         `chibi:${asset.id}@1#${CHIBI_UNOWNED_OWNER_COLOUR_V7}`,
       );
     }
+  });
+
+  it("draws the Farm field as its master for every owner, never recoloured (pulp_wars-6gd.5)", () => {
+    const farms = CHIBI_ART_ASSETS_V7.filter(
+      (asset) => asset.subject === "IMPROVEMENT:FARM",
+    );
+    expect(farms.map((asset) => asset.id)).toEqual(["chibi-farm"]);
+    expect(farms[0]?.ownerMaskUrl).toBeUndefined();
+    const master = { master: true } as unknown as CanvasImageSource;
+    const loaded: string[] = [];
+    const createSurface = vi.fn(() => ({}) as CanvasImageSource);
+    const resolver = createChibiArtResolverV7({
+      environment: {
+        loadImage: (url, settle) => {
+          loaded.push(url);
+          settle(true);
+          return master;
+        },
+        readPixels: (_image, width, height) =>
+          new Uint8ClampedArray(width * height * 4),
+        createSurface,
+      },
+      redraw: vi.fn(),
+      registry: buildChibiArtRegistryV7(farms).registry,
+    });
+    for (const ownerColor of [
+      undefined,
+      ...Object.values(RULESET7_PLAYER_COLORS),
+    ]) {
+      const farm = resolver.resolve({
+        subject: "IMPROVEMENT:FARM",
+        at: { x: 3, y: 2 },
+        ownerColor,
+        deviceScale: 1,
+      });
+      if (farm.kind !== "READY") throw new Error("the Farm did not resolve");
+      expect(farm.image).toBe(master);
+      expect(farm.cacheKey).toBe("chibi:chibi-farm@1");
+    }
+    // Only the master is requested: no mask raster, no recolour surface.
+    expect(loaded).toEqual([farms[0]?.url]);
+    expect(createSurface).not.toHaveBeenCalled();
   });
 });

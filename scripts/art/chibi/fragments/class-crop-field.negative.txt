@@ -1,0 +1,1 @@
+pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit

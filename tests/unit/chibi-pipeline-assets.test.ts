@@ -386,6 +386,53 @@ describe("chibi prompt layering and manifests", async () => {
     expect(prompt.layers[1]?.source).toContain("camera-top-down");
   });
 
+  it("prompts the Farm as an unowned crop field without the faction layer (pulp_wars-6gd.5)", async () => {
+    const batch3 = await loadBatchManifest(ROOT, "3");
+    const farm = batch3.assets.find((asset) => asset.id === "chibi-farm");
+    if (farm === undefined) throw new Error("batch 3 Farm lost");
+    expect(farm).toMatchObject({
+      subject: "IMPROVEMENT:FARM",
+      assetClass: "BUILDING",
+      recipeClass: "crop-field",
+      ownerColour: false,
+    });
+    expect(farm.maskOverride).toBeUndefined();
+    const prompt = layeredPrompt(fragments, batch3, farm, {});
+    // No faction layer (it drew farmers and barns) and no owner text.
+    expect(prompt.layers.map((layer) => layer.layer)).toEqual([
+      "style",
+      "camera",
+      "class",
+      "subject",
+    ]);
+    expect(prompt.layers[2]?.source).toContain("class-crop-field");
+    expect(prompt.prompt).toContain("field of ripe grain");
+    expect(prompt.prompt).not.toContain("#d8262c");
+    expect(prompt.negativePrompt.split(", ")).toEqual(
+      expect.arrayContaining(["building", "house", "farmer"]),
+    );
+    const record = (await loadRecords(productionLayout(ROOT, "3"), "3")).assets[
+      "chibi-farm"
+    ];
+    expect(record?.status).toBe("ACCEPTED");
+    expect(record?.mask).toBeUndefined();
+    // An owned crop field is still possible to declare, never a unit.
+    expect(
+      batchManifestProblems(
+        {
+          ...batch3,
+          assets: batch3.assets.map((asset) =>
+            asset.id === "chibi-farm"
+              ? { ...asset, assetClass: "STANDARD_UNIT" as const }
+              : asset,
+          ),
+        },
+        fragments,
+        "3",
+      ).join("\n"),
+    ).toContain("recipe class crop-field cannot make STANDARD_UNIT");
+  });
+
   it("swapping the faction fragment changes only layer 3", () => {
     const fighter = manifest.assets.find(
       (asset) => asset.subject === "UNIT:FIGHTER",
@@ -575,7 +622,7 @@ describe("chibi prompt layering and manifests", async () => {
       expect(problems).toContain(expected);
   });
 
-  it("derives the batch-3 Mines from batch-1 Mountains on batch-1 grass", async () => {
+  it("derives the batch-3 Mines from batch-1 Mountains on the batch-1 rocky ground", async () => {
     const batch3 = await loadBatchManifest(ROOT, "3");
     expect(batchManifestProblems(batch3, fragments, "3")).toEqual([]);
     const mine = batch3.recipes.find(
@@ -589,10 +636,32 @@ describe("chibi prompt layering and manifests", async () => {
       recipe: "mountain-1-b-edit",
     });
     const records = await loadRecords(productionLayout(ROOT, "3"), "3");
+    // Bead pulp_wars-6gd.5: Mountains and Mines stand on the rocky ground
+    // tile, a pipeline-only TERRAIN asset of batch 1 (never registered as a
+    // Mountain variant); Forests keep the grass.
     expect(records.assets["chibi-mined-mountain-1"]?.derivation).toMatchObject({
       kind: "ground-composite",
-      ground: { asset: "chibi-grass-1", batch: "1" },
+      ground: { asset: "chibi-mountain-ground-1", batch: "1" },
     });
+    const batch1 = await loadRecords(productionLayout(ROOT, "1"), "1");
+    for (const id of ["chibi-mountain-1", "chibi-mountain-3"])
+      expect(batch1.assets[id]?.derivation.ground?.asset, id).toBe(
+        "chibi-mountain-ground-1",
+      );
+    for (const id of ["chibi-forest-1", "chibi-forest-2"])
+      expect(batch1.assets[id]?.derivation.ground?.asset, id).toBe(
+        "chibi-grass-1",
+      );
+    expect(batch1.assets["chibi-mountain-ground-1"]).toMatchObject({
+      status: "ACCEPTED",
+      subject: "TERRAIN:MOUNTAIN",
+      assetClass: "TERRAIN",
+    });
+    expect(
+      CHIBI_ART_ASSETS_V7.some(
+        (asset) => asset.id === "chibi-mountain-ground-1",
+      ),
+    ).toBe(false);
     const problems = (source: { batch: string }, dryRun: boolean) =>
       batchManifestProblems(
         {

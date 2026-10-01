@@ -65,7 +65,7 @@
       "id": "chibi-portrait-goblin-rocket-cart",
       "subject": "PORTRAIT:GOBLIN:CATAPULT",
       "assetClass": "PORTRAIT",
-      "recipeClass": "portrait",
+      "recipeClass": "icon",
       "canvas": {
         "width": 48,
         "height": 48
@@ -701,6 +701,149 @@
       },
       "editInstruction": "Replace the three small dark marks at the right of the megaphone's mouth with three short thick pale cream-white shout lines with a black outline, fanning outward to the right. Change nothing else: the grey tin megaphone, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
       "notes": "goblin-rally-b-edit-b is the clean grey megaphone, but its shout lines became three small dark marks; goblin-rally-e and -f are smaller, -f with a red-brown rim."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-c",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5791,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket's tube is plain flat bright red with a slightly darker red shadow; its cone cap, band, stick, rope and fuse are cream or pale grey, never brown; the cart is charcoal grey.",
+      "negativeAddendum": "missile, metal rocket, tail fins, warhead, bomb, flames, explosion, brown stick, brown rope, wooden cart, red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). Portrait of the fireworks-style Rocket Cart, shown whole. Sample seed 1 of 3."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-d",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5792,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket's tube is plain flat bright red with a slightly darker red shadow; its cone cap, band, stick, rope and fuse are cream or pale grey, never brown; the cart is charcoal grey.",
+      "negativeAddendum": "missile, metal rocket, tail fins, warhead, bomb, flames, explosion, brown stick, brown rope, wooden cart, red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). Portrait of the fireworks-style Rocket Cart, shown whole. Sample seed 2 of 3."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-e",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5793,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket's tube is plain flat bright red with a slightly darker red shadow; its cone cap, band, stick, rope and fuse are cream or pale grey, never brown; the cart is charcoal grey.",
+      "negativeAddendum": "missile, metal rocket, tail fins, warhead, bomb, flames, explosion, brown stick, brown rope, wooden cart, red mouth, pink mouth, red eyes, brown straps, brown leather, brown skin, armour, pauldrons",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). Portrait of the fireworks-style Rocket Cart, shown whole. Sample seed 3 of 3."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-f",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5794,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket is the biggest thing in the image and fills most of it; its tube is plain flat bright red with a slightly darker red shadow; the cone cap, band, stick, rope and fuse are cream or pale grey, never brown; the cart is charcoal grey.",
+      "negativeAddendum": "missile, metal rocket, tail fins, warhead, spikes, bomb, face, eyes, flames, explosion, brown stick, brown rope, wooden cart, person, goblin, character",
+      "notes": "Bead pulp_wars-6gd.5. The portrait class asks for a character with a head and eyes, which put a face on the rocket (portrait-goblin-rocket-cart-e) and a busy crew on the others; like the Human Catapult the Rocket Cart now uses the icon class (a whole item sprite, still owned and masked) and a subject without crew. Seed 1 of 3."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-g",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5795,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket is the biggest thing in the image and fills most of it; its tube is plain flat bright red with a slightly darker red shadow; the cone cap, band, stick, rope and fuse are cream or pale grey, never brown; the cart is charcoal grey.",
+      "negativeAddendum": "missile, metal rocket, tail fins, warhead, spikes, bomb, face, eyes, flames, explosion, brown stick, brown rope, wooden cart, person, goblin, character",
+      "notes": "Bead pulp_wars-6gd.5. The portrait class asks for a character with a head and eyes, which put a face on the rocket (portrait-goblin-rocket-cart-e) and a busy crew on the others; like the Human Catapult the Rocket Cart now uses the icon class (a whole item sprite, still owned and masked) and a subject without crew. Seed 2 of 3."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-h",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5796,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket is the biggest thing in the image and fills most of it; its tube is plain flat bright red with a slightly darker red shadow; the cone cap, band, stick, rope and fuse are cream or pale grey, never brown; the cart is charcoal grey.",
+      "negativeAddendum": "missile, metal rocket, tail fins, warhead, spikes, bomb, face, eyes, flames, explosion, brown stick, brown rope, wooden cart, person, goblin, character",
+      "notes": "Bead pulp_wars-6gd.5. The portrait class asks for a character with a head and eyes, which put a face on the rocket (portrait-goblin-rocket-cart-e) and a busy crew on the others; like the Human Catapult the Rocket Cart now uses the icon class (a whole item sprite, still owned and masked) and a subject without crew. Seed 3 of 3."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-i",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5797,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket looks like a toy party firework: a smooth plain bright red paper tube with two or three cream stars on it and a big smooth cream cone on its front end, lying diagonally across the whole image from the lower left to the upper right, with loops of cream rope around it. It has no metal, no plates, no rivets and no spikes. The cart under it is small, low and charcoal grey.",
+      "negativeAddendum": "missile, metal rocket, iron plates, rivets, tail fins, warhead, spikes, drill, bomb, face, eyes, flames, explosion, brown stick, brown rope, wooden cart, person, goblin, character",
+      "notes": "Bead pulp_wars-6gd.5. portrait-goblin-rocket-cart-f, -g and -h (icon class, no crew) drew a spiked iron shell or a blob: the faction layer's riveted scrap iron wins at 48 px. This addendum describes the accepted unit's rocket (smooth red paper tube, cream stars, cream cone, rope) and forbids metal on it. Seed 1 of 3."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-j",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5798,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket looks like a toy party firework: a smooth plain bright red paper tube with two or three cream stars on it and a big smooth cream cone on its front end, lying diagonally across the whole image from the lower left to the upper right, with loops of cream rope around it. It has no metal, no plates, no rivets and no spikes. The cart under it is small, low and charcoal grey.",
+      "negativeAddendum": "missile, metal rocket, iron plates, rivets, tail fins, warhead, spikes, drill, bomb, face, eyes, flames, explosion, brown stick, brown rope, wooden cart, person, goblin, character",
+      "notes": "Bead pulp_wars-6gd.5. portrait-goblin-rocket-cart-f, -g and -h (icon class, no crew) drew a spiked iron shell or a blob: the faction layer's riveted scrap iron wins at 48 px. This addendum describes the accepted unit's rocket (smooth red paper tube, cream stars, cream cone, rope) and forbids metal on it. Seed 2 of 3."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-k",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5799,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket looks like a toy party firework: a smooth plain bright red paper tube with two or three cream stars on it and a big smooth cream cone on its front end, lying diagonally across the whole image from the lower left to the upper right, with loops of cream rope around it. It has no metal, no plates, no rivets and no spikes. The cart under it is small, low and charcoal grey.",
+      "negativeAddendum": "missile, metal rocket, iron plates, rivets, tail fins, warhead, spikes, drill, bomb, face, eyes, flames, explosion, brown stick, brown rope, wooden cart, person, goblin, character",
+      "notes": "Bead pulp_wars-6gd.5. portrait-goblin-rocket-cart-f, -g and -h (icon class, no crew) drew a spiked iron shell or a blob: the faction layer's riveted scrap iron wins at 48 px. This addendum describes the accepted unit's rocket (smooth red paper tube, cream stars, cream cone, rope) and forbids metal on it. Seed 3 of 3."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-l",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5800,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket looks like a toy party firework: a smooth plain bright red paper tube with two or three cream stars on it and a big smooth cream cone on its front end, lying diagonally across the whole image from the lower left to the upper right, with loops of cream rope around it. It has no metal, no plates, no rivets and no spikes. The cart under it is small, low and charcoal grey. The cream cone is at the upper right corner of the image and the fuse at the lower left.",
+      "negativeAddendum": "missile, metal rocket, iron plates, rivets, tail fins, warhead, spikes, drill, bomb, face, eyes, flames, explosion, brown stick, brown rope, wooden cart, person, goblin, character",
+      "notes": "Bead pulp_wars-6gd.5. portrait-goblin-rocket-cart-k is a clean fireworks rocket on a small cart but points to the lower left, away from the map piece's upper right; two more seeds that name the cone's corner."
+    },
+    {
+      "id": "portrait-goblin-rocket-cart-m",
+      "asset": "chibi-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 5801,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The rocket looks like a toy party firework: a smooth plain bright red paper tube with two or three cream stars on it and a big smooth cream cone on its front end, lying diagonally across the whole image from the lower left to the upper right, with loops of cream rope around it. It has no metal, no plates, no rivets and no spikes. The cart under it is small, low and charcoal grey. The cream cone is at the upper right corner of the image and the fuse at the lower left.",
+      "negativeAddendum": "missile, metal rocket, iron plates, rivets, tail fins, warhead, spikes, drill, bomb, face, eyes, flames, explosion, brown stick, brown rope, wooden cart, person, goblin, character",
+      "notes": "Bead pulp_wars-6gd.5. portrait-goblin-rocket-cart-k is a clean fireworks rocket on a small cart but points to the lower left, away from the map piece's upper right; two more seeds that name the cone's corner."
     }
   ]
 }

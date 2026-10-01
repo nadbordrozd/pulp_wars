@@ -1,0 +1,250 @@
+{
+  "bead": "pulp_wars-6gd.5",
+  "command": "npm run art:chibi-playtest3-review",
+  "assets": [
+    {
+      "id": "chibi-goblin-rocket-cart",
+      "recipe": "rocket-cart-e-edit-2",
+      "candidate": 0,
+      "master": "public/assets/chibi/units/chibi-goblin-rocket-cart.png",
+      "masterSha256": "caf961f1106daacb5c49d05d7bdb8d80811a17681f02923a202abda9f518592b",
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "ownerMask": "public/assets/chibi/units/chibi-goblin-rocket-cart.mask.png",
+      "ownerCoverage": 0.185,
+      "maskQa": "PASS"
+    },
+    {
+      "id": "chibi-portrait-goblin-rocket-cart",
+      "recipe": "portrait-goblin-rocket-cart-k",
+      "candidate": 0,
+      "master": "public/assets/chibi/portraits/chibi-portrait-goblin-rocket-cart.png",
+      "masterSha256": "2c73b4dd5c038c7b6f88fb671e2d36924aa4d5716b1db0811184e8562576c814",
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "ownerMask": "public/assets/chibi/portraits/chibi-portrait-goblin-rocket-cart.mask.png",
+      "ownerCoverage": 0.2214,
+      "maskQa": "PASS"
+    },
+    {
+      "id": "chibi-farm",
+      "recipe": "farm-l-edit-2",
+      "candidate": 0,
+      "master": "public/assets/chibi/buildings/chibi-farm.png",
+      "masterSha256": "a5104418f8cdd8b68754f29e5606884f3caa0af42a1d5e68ddc15282ddec0f20",
+      "anchor": {
+        "x": 40,
+        "y": 48
+      },
+      "ownerMask": null
+    },
+    {
+      "id": "chibi-mountain-ground-1",
+      "recipe": "mountain-ground-1-i",
+      "candidate": 0,
+      "master": "public/assets/chibi/terrain/chibi-mountain-ground-1.png",
+      "masterSha256": "c1c2f2df6900948ff445bb65c8919f537f9f8d10fe909d30dc369494d31e2802",
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "ownerMask": null
+    },
+    {
+      "id": "chibi-mountain-1",
+      "recipe": "mountain-1-b-edit",
+      "candidate": 0,
+      "master": "public/assets/chibi/terrain/chibi-mountain-1.png",
+      "masterSha256": "045a5904c6881d0fe4afdc9c815f76104a8e8064f48b10333e4b277d53902009",
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "ownerMask": null,
+      "ground": "chibi-mountain-ground-1"
+    },
+    {
+      "id": "chibi-mountain-3",
+      "recipe": "mountain-3-a-edit",
+      "candidate": 0,
+      "master": "public/assets/chibi/terrain/chibi-mountain-3.png",
+      "masterSha256": "b0f6c29e0bfbc722a499516bf40850cb769efff1563efc3401cadd958d5b0c7f",
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "ownerMask": null,
+      "ground": "chibi-mountain-ground-1"
+    },
+    {
+      "id": "chibi-mined-mountain-1",
+      "recipe": "mined-mountain-1-a",
+      "candidate": 0,
+      "master": "public/assets/chibi/terrain/chibi-mined-mountain-1.png",
+      "masterSha256": "672b039ef423850748d8eb5547704a533322a7ac207f33238a513ad284c683cb",
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "ownerMask": null,
+      "ground": "chibi-mountain-ground-1"
+    },
+    {
+      "id": "chibi-mined-mountain-2",
+      "recipe": "mined-mountain-2-a",
+      "candidate": 0,
+      "master": "public/assets/chibi/terrain/chibi-mined-mountain-2.png",
+      "masterSha256": "d93aecd01ccd517bd56aea9d657e094f0815b6b307838ba53d4e6fe5125d2018",
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "ownerMask": null,
+      "ground": "chibi-mountain-ground-1"
+    }
+  ],
+  "sheets": [
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/sheet-1x.png",
+      "width": 984,
+      "height": 1062,
+      "sha256": "bd7a076cd1f285948834bda4b74aea961214619d77bf01ee0e95509afb2b0f94"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/sheet-x4.png",
+      "width": 3936,
+      "height": 4248,
+      "sha256": "bccdae52f727a48f4af272909f829e1c264d2e2bc2c47ad82888d1aa765866da"
+    }
+  ],
+  "captures": [
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-rocket-desktop-zoom-1.png",
+      "scene": "ROCKET",
+      "viewport": "1440x900 CSS at DPR 1",
+      "zoomStep": "1",
+      "tileCssPx": "80",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7b9a0da898b3c3bd4ea6460d338286de129b847ca29a816bf33a93318b13f0b5"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-rocket-desktop-zoom-0.75.png",
+      "scene": "ROCKET",
+      "viewport": "1440x900 CSS at DPR 1",
+      "zoomStep": "0.75",
+      "tileCssPx": "60",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7f1be9eab1c8e748914c6c062757151b30daf024705dad8e2eea9f858209fb7f"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-farms-desktop-zoom-1.png",
+      "scene": "FARMS",
+      "viewport": "1440x900 CSS at DPR 1",
+      "zoomStep": "1",
+      "tileCssPx": "80",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3c7ff3eaa99af16732d5a2c0ed7c7563f77e8cd8eafd3652e2f967547b0f655c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-farms-desktop-zoom-0.75.png",
+      "scene": "FARMS",
+      "viewport": "1440x900 CSS at DPR 1",
+      "zoomStep": "0.75",
+      "tileCssPx": "60",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2007236f761ffa61141e9a97feb17bbb897c7764c2dd3b79a86a555186687089"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-mountains-desktop-zoom-1.png",
+      "scene": "MOUNTAINS",
+      "viewport": "1440x900 CSS at DPR 1",
+      "zoomStep": "1",
+      "tileCssPx": "80",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d87787c285e1ce0549adeaaf4ea8ff315e385e0ff3f1c4145bde4502182c3933"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-mountains-desktop-zoom-0.75.png",
+      "scene": "MOUNTAINS",
+      "viewport": "1440x900 CSS at DPR 1",
+      "zoomStep": "0.75",
+      "tileCssPx": "60",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f4a3b730ef24d36d85652bf702436cea1309af14342999b130131606aca7bb57"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-rocket-phone-zoom-1.png",
+      "scene": "ROCKET",
+      "viewport": "390x844 CSS at DPR 3",
+      "zoomStep": "1",
+      "tileCssPx": "80",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "6f0bc4845ae209292d1f4ad0f6a0f8799f14fda39c44a5bc1477148d6d32c22a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-rocket-phone-zoom-0.75.png",
+      "scene": "ROCKET",
+      "viewport": "390x844 CSS at DPR 3",
+      "zoomStep": "0.75",
+      "tileCssPx": "60",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "1dc0c2da317753ab068311eb6727c06612302366201a464583913095d8748837"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-farms-phone-zoom-1.png",
+      "scene": "FARMS",
+      "viewport": "390x844 CSS at DPR 3",
+      "zoomStep": "1",
+      "tileCssPx": "80",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "8d603d37d9b99fdec2dbe8ec65cda30fbfcce307485bd845d85d4f0450af0126"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-farms-phone-zoom-0.75.png",
+      "scene": "FARMS",
+      "viewport": "390x844 CSS at DPR 3",
+      "zoomStep": "0.75",
+      "tileCssPx": "60",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "5b41ee71f36c4a3e121dc204282886c20f62e03cbe463da8a0e7345cbb3975a1"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-mountains-phone-zoom-1.png",
+      "scene": "MOUNTAINS",
+      "viewport": "390x844 CSS at DPR 3",
+      "zoomStep": "1",
+      "tileCssPx": "80",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "81f1fc5fc2018db25cc6626d0ed5c5c0b9a2319c2a90d84094bcb85439add47a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-playtest-3-art/ingame-mountains-phone-zoom-0.75.png",
+      "scene": "MOUNTAINS",
+      "viewport": "390x844 CSS at DPR 3",
+      "zoomStep": "0.75",
+      "tileCssPx": "60",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "e54c13d13df68610dd0604d031c0b587924c2b17868619d83e6d0d55d49f148d"
+    }
+  ],
+  "notes": [
+    "Sheets use the runtime mask recolour (recolourOwnerPixelsV7) and the accepted masters, masks, anchors and body layers from the pipeline records.",
+    "In-game captures are the synthetic scenes of scripts/art/chibi/review-playtest3-scene-v7.ts drawn by CanvasBoardHostV7 with ?art=chibi over a fresh match; each scene rewrites a 7 x 7 patch around the viewer's capital."
+  ]
+}

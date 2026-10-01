@@ -13,7 +13,9 @@ fragment** and **Negative fragment** here and nowhere else. The sprite bead
 (`pulp_wars-0ao.8`) copied the subject lines below into
 `scripts/art/chibi/subjects/GOBLIN.json` unchanged; what the sample taught
 went into recipe addenda and edits instead (see
-[Sprite findings](#sprite-findings-bead-pulp_wars-0ao8)).
+[Sprite findings](#sprite-findings-bead-pulp_wars-0ao8)). The Rocket Cart
+lines were rewritten in bead `pulp_wars-6gd.5` (see
+[Rocket Cart findings](#rocket-cart-findings-bead-pulp_wars-6gd5)).
 
 The roster and rules come from the
 [revision-17 Goblin spec](../../product/RULESET_7_REVISION_17_GOBLINS.md)
@@ -69,7 +71,8 @@ shading, red-brown, maroon
 - **Owner colour:** only the shared key colour `#d8262c`, on a patched
   garment that covers the torso and legs (tunic, smock, saddle blanket) plus
   a bandana, cap or cape, and on the two vehicles' big painted parts (the
-  rocket and the buggy's body panels, like the Human Knight's barding).
+  rocket's paper tube and the buggy's body panels, like the Human Knight's
+  barding).
   Never on skin: a red-skinned orc would stay under the 15% mask minimum.
   Every owner garment carries a few square patches with black cross
   stitches; the patches are the same red, so the owner area stays big and
@@ -232,23 +235,48 @@ clearly a yelling war chief, not a standard bearer.
 
 `negativeAddendum`: `banner, flag, pole, feather, shield, bow, quiver, bomb`.
 
-**Rocket Cart** (`CATAPULT`, large unit 72 x 88):
+**Rocket Cart** (`CATAPULT`, large unit 72 x 88). Rewritten in bead
+`pulp_wars-6gd.5` after the user's playtest note ("more low tech like a
+goblin invention. more like fireworks rocket less like a modern missile"):
+a paper fireworks rocket roped onto a scrap cart. The stick, rope and fuse
+are cream or pale grey and the line never says wood, so the
+[palette](#palette) and the negative fragment stand unchanged.
 
 ```text
-Subject: Rocket Cart, a chunky cute rickety two-wheeled iron cart, clearly
-bigger than a soldier, filling the whole width of the image: a crooked frame
-of dented dark gunmetal plates and bolts on two big spiked dark iron wheels,
-carrying one huge fat bright red rocket tilted up at forty-five degrees and
-pointing forward, with a light grey pointed nose cone, light grey tail fins
-and a short cream fuse with a small pale yellow-white spark at its tail; a
-tiny goblin with yellow-olive green skin, long pointed ears and a bright red
-bandana crouches behind the cart covering its ears; simple shapes and very
-few details; the wheels are the lowest thing in the image; clearly a rocket
-launcher, not a catapult.
+Subject: Rocket Cart, a chunky cute rickety home-made goblin fireworks cart,
+clearly bigger than a soldier, filling the whole width of the image: one
+huge fat fireworks rocket made of paper and cardboard, never metal, a stubby
+round cardboard tube painted bright red with one cream band and one cream
+star, a pointed cream paper cone cap, a long thin pale grey launch stick
+sticking out behind its tail and a long curly cream fuse with a small pale
+yellow-white spark at its end; the rocket is tilted up at forty-five
+degrees, points forward and is tied down with loops of pale cream rope onto
+a small crooked cart of patched dark gunmetal scrap plates on two mismatched
+dark iron wheels, one big and one small; a tiny goblin with yellow-olive
+green skin, long pointed ears, a charcoal grey tunic and a bright red
+bandana crouches on the ground behind the cart covering its ears; simple
+shapes and very few details; the wheels are the lowest thing in the image;
+clearly a home-made fireworks rocket on a junk cart, not a missile and not a
+catapult.
 ```
 
-`negativeAddendum`: `catapult arm, bucket, rope, horse, flames, smoke
-trail, explosion`.
+`negativeAddendum`: `missile, metal rocket, steel rocket, tail fins,
+warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail,
+explosion, wooden cart, brown cart, brown stick, brown rope`.
+
+Its portrait (`PORTRAIT:GOBLIN:CATAPULT`, 48 x 48, the icon recipe class
+like the Human Catapult, owned and masked, no crew):
+
+```text
+Subject: Rocket Cart, a chunky cute home-made goblin fireworks rocket on a
+junk cart, shown whole: one huge fat fireworks rocket made of paper, a
+stubby round tube painted plain bright red with one cream band, a big
+pointed cream paper cone cap, a thin pale grey launch stick sticking out
+behind its tail and a short curly cream fuse, tilted up at forty-five
+degrees and pointing to the right, tied with pale cream rope onto a tiny
+dark gunmetal scrap cart with two dark iron wheels; no crew; simple shapes
+and very few details; clearly a fireworks rocket, not a missile.
+```
 
 **Scrap Buggy** (`KNIGHT`, large unit 72 x 88):
 
@@ -429,7 +457,7 @@ the same role's unit that the silhouette must read apart from.
 | Bomb Chucker (`MARKSMAN`) | 56 x 80   | patched tunic, flying cap                | one black bomb raised overhead with a spark, bomb satchel, goggles (Human: tall hood and longbow; Undead: floating Banshee)                            |
 | Orc Brute (`GUARD`)       | 56 x 80   | sleeveless tunic to the knees            | broad orc, round spiked shield, big cleaver raised, spiked pot helmet (Human: tower shield and spear; Undead: Zombie with arms forward)                |
 | Orc Warboss (`CAPTAIN`)   | 56 x 80   | big cape and tunic                       | horned helm, megaphone at the mouth, shoulder spikes, no banner (Human: feathered cap and square banner; Undead: robed Necromancer with a skull staff) |
-| Rocket Cart (`CATAPULT`)  | 72 x 88   | the rocket's body, crew bandana          | two-wheeled cart with one fat rocket at 45°, tiny crew (Human: wooden catapult arm; Undead: robed Lich with an orb)                                    |
+| Rocket Cart (`CATAPULT`)  | 72 x 88   | the rocket's paper tube, crew bandana    | scrap cart with one fat fireworks rocket at 45° (cream cone cap, stars, rope, fuse spark), tiny crew (Human: wooden catapult arm; Undead: robed Lich)  |
 | Scrap Buggy (`KNIGHT`)    | 72 x 88   | painted body panels, driver's cap        | low wide four-wheeled jalopy, front ram, exhaust pipe with a soot cloud (Human: knight on a horse; Undead: Vampire with a bat-wing cape)               |
 | Troll (`JUGGERNAUT`)      | 88 x 104  | smock over belly and knees               | giant hunched grey-green lump, long arms, drooping nose, moss, stone club on the shoulder (Human: armoured hammer brute; Undead: stitched Abomination) |
 | Patrol Boat, Battleship   | Human art | Human art                                | reused unchanged (spec section 3)                                                                                                                      |
@@ -465,18 +493,63 @@ approved lines above:
   the deeper key shades.
 - **The Rocket Cart's crew** (0ao.4 review): the accepted cart has one tiny
   crew in charcoal with only a red bandana, outlined apart from a plain red
-  rocket, so the crew no longer merges with it.
+  rocket, so the crew no longer merges with it. (That missile-like cart was
+  replaced in bead `pulp_wars-6gd.5`; see
+  [Rocket Cart findings](#rocket-cart-findings-bead-pulp_wars-6gd5).)
 - **The Orc Brute** stayed under the owner minimum with only its tunic, so
   it took this document's fallback: the round shield's face is red.
 - **Anchors:** the Warboss's cape and the Scrap Buggy's rear wheel reached
   the HP bar and seat-badge strips; their anchors move 1 px and 4 px right.
 
 Accepted owner areas: Goblin 36.1%, Wolf Rider 20.0%, Bomb Chucker 35.4%,
-Orc Brute 18.4%, Orc Warboss 17.8%, Rocket Cart 19.2%, Scrap Buggy 20.3%,
+Orc Brute 18.4%, Orc Warboss 17.8%, Rocket Cart 18.5% (the fireworks cart
+of bead `pulp_wars-6gd.5`; the first cart had 19.2%), Scrap Buggy 20.3%,
 Troll 32.0%; every mask passes QA. Review evidence: `npm run
 art:chibi-goblin-review` writes `art/pixellab/reviews/chibi-batch-goblin/`
 (the batch review, the faction comparison sheets for units and portraits,
 and a Goblin match in CHIBI).
+
+## Rocket Cart findings (bead `pulp_wars-6gd.5`)
+
+The user played the three-faction game and asked for a Rocket Cart that
+looks "more low tech like a goblin invention. more like fireworks rocket
+less like a modern missile". The unit (batch `goblin`, recipes
+`rocket-cart-e` to `-g` and their edits) and the portrait (batch `5-goblin`,
+recipes `portrait-goblin-rocket-cart-c` to `-m`) were regenerated in place;
+every request, seed, addendum, edit and verdict is in those manifests and
+records (7 and 11 PixelLab calls).
+
+- **The subject line names paper.** "A stubby round cardboard tube painted
+  bright red", "a pointed cream paper cone cap", cream stars, rope loops and
+  a curly fuse read as a party firework; "made of paper and cardboard, never
+  metal" is needed because the faction fragment's riveted scrap iron
+  otherwise plates the rocket (`rocket-cart-f`, half gunmetal).
+- **No wood, by wording.** The launch stick is "pale grey", the rope and
+  fuse cream. Pixen still drew a brown plank cart (`rocket-cart-e`) and an
+  orange tail flame; a first edit fixed the flame and a single-focus
+  recolour (`rocket-cart-e-edit-2`: "recolour the brown wooden planks and
+  beams of the cart charcoal grey ... change nothing else") fixed the cart.
+  Edits that named the rocket's red (`rocket-cart-f-edit`, `-f-edit-2`)
+  painted the whole cart red.
+- **Accepted unit:** `rocket-cart-e-edit-2`, candidate 0: a fat red paper
+  rocket with cream stars and a cream cone cap at about 45°, rope lashings,
+  a stick with a small pale spark at its tail, a rickety charcoal scrap cart
+  with mismatched wheels and one small crew in charcoal with a red bandana.
+  Owner area 18.5%, automatic mask, QA pass. The anchor moves 2 px right
+  (`34, 48`) so the rear wheel and tail fin clear the seat badge and HP bar.
+- **The portrait uses the icon class.** The portrait class asks for a
+  character with a head and eyes and put a face on the rocket; like the
+  Human Catapult, the Rocket Cart is an item sprite shown whole, still owned
+  and masked, with no crew. At 48 px the faction's scrap iron wins unless
+  the addendum describes the accepted unit's rocket and forbids metal,
+  plates, rivets and spikes on it. Accepted: `portrait-goblin-rocket-cart-k`
+  (owner area 22.1%, automatic mask). Every icon-camera sample points to the
+  lower left, while the map piece points to the upper right; naming the
+  cone's corner did not turn it.
+
+Review evidence: `npm run art:chibi-playtest3-review` writes
+`art/pixellab/reviews/chibi-playtest-3-art/` (sheets at 1:1 and x4 and
+in-game scenes on desktop and phone at zoom 1 and 0.75).
 
 ## Command icon findings (bead `pulp_wars-0ao.14`)
 

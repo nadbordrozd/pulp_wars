@@ -28,6 +28,11 @@ export type ChibiRecipeClass =
   | "ship"
   | "settlement"
   | "building"
+  /**
+   * An unowned field of crops (the Farm, bead pulp_wars-6gd.5): a BUILDING
+   * asset with no house, no faction layer and no owner colour.
+   */
+  | "crop-field"
   | "resource"
   | "terrain"
   | "tall-terrain"
@@ -149,6 +154,21 @@ export const CHIBI_CLASS_RECIPES: Readonly<
   building: {
     camera: "three-quarter",
     factionLayer: true,
+    assetClasses: ["BUILDING"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: { "create-image-pixen": PIECE_OPTIONS },
+  },
+  // Bead pulp_wars-6gd.5: the Farm is a field of grain with no building.
+  // The building class text ("one single building") and the faction layer
+  // ("woven cloth, light steel, plaster") drew a farmer and a barn on a soil
+  // slab in every sample, so a field has its own class text and, like
+  // resources, no faction layer: grain is the same for every faction.
+  "crop-field": {
+    camera: "three-quarter",
+    factionLayer: false,
     assetClasses: ["BUILDING"],
     generators: ["create-image-pixen"],
     editPass: true,

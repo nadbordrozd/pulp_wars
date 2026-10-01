@@ -2486,9 +2486,9 @@
       ],
       "completedAt": "2026-10-01T06:10:30.872Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "Two-wheeled dark iron cart carrying one fat plain red rocket tilted forward at about 45 degrees with a light grey nose cone and fins; the tiny crew (yellow-olive goblin in charcoal with a small red bandana) crouches beside the cart, outlined apart from the rocket, so the crew no longer merges with it (0ao.4 review comment). 19.2% owner area. Reads apart from the Human catapult arm and the Lich in all four owner colours.",
+        "notes": "Two-wheeled dark iron cart carrying one fat plain red rocket tilted forward at about 45 degrees with a light grey nose cone and fins; the tiny crew (yellow-olive goblin in charcoal with a small red bandana) crouches beside the cart, outlined apart from the rocket, so the crew no longer merges with it (0ao.4 review comment). 19.2% owner area. Reads apart from the Human catapult arm and the Lich in all four owner colours. Superseded by rocket-cart-e-edit-2.",
         "reviewedAt": "2026-10-01T06:11:54.001Z"
       }
     },
@@ -2583,6 +2583,549 @@
         "candidate": null,
         "notes": "Rocket almost vertical with the crew overlapping it, brown frame (240 brown pixels).",
         "reviewedAt": "2026-10-01T06:12:18.132Z"
+      }
+    },
+    "rocket-cart-e": {
+      "id": "rocket-cart-e",
+      "asset": "chibi-goblin-rocket-cart",
+      "jobId": "sync-009a59d2-8755-4b15-b9dd-9ed9d8813736",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "goblin",
+        "asset": "chibi-goblin-rocket-cart",
+        "subject": "UNIT:GOBLIN:CATAPULT",
+        "faction": "GOBLIN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 17621,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: Rocket Cart, a chunky cute rickety home-made goblin fireworks cart, clearly bigger than a soldier, filling the whole width of the image: one huge fat fireworks rocket made of paper and cardboard, never metal, a stubby round cardboard tube painted bright red with one cream band and one cream star, a pointed cream paper cone cap, a long thin pale grey launch stick sticking out behind its tail and a long curly cream fuse with a small pale yellow-white spark at its end; the rocket is tilted up at forty-five degrees, points forward and is tied down with loops of pale cream rope onto a small crooked cart of patched dark gunmetal scrap plates on two mismatched dark iron wheels, one big and one small; a tiny goblin with yellow-olive green skin, long pointed ears, a charcoal grey tunic and a bright red bandana crouches on the ground behind the cart covering its ears; simple shapes and very few details; the wheels are the lowest thing in the image; clearly a home-made fireworks rocket on a junk cart, not a missile and not a catapult."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame.",
+            "negative": "missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Rocket Cart, a chunky cute rickety home-made goblin fireworks cart, clearly bigger than a soldier, filling the whole width of the image: one huge fat fireworks rocket made of paper and cardboard, never metal, a stubby round cardboard tube painted bright red with one cream band and one cream star, a pointed cream paper cone cap, a long thin pale grey launch stick sticking out behind its tail and a long curly cream fuse with a small pale yellow-white spark at its end; the rocket is tilted up at forty-five degrees, points forward and is tied down with loops of pale cream rope onto a small crooked cart of patched dark gunmetal scrap plates on two mismatched dark iron wheels, one big and one small; a tiny goblin with yellow-olive green skin, long pointed ears, a charcoal grey tunic and a bright red bandana crouches on the ground behind the cart covering its ears; simple shapes and very few details; the wheels are the lowest thing in the image; clearly a home-made fireworks rocket on a junk cart, not a missile and not a catapult. The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Rocket Cart, a chunky cute rickety home-made goblin fireworks cart, clearly bigger than a soldier, filling the whole width of the image: one huge fat fireworks rocket made of paper and cardboard, never metal, a stubby round cardboard tube painted bright red with one cream band and one cream star, a pointed cream paper cone cap, a long thin pale grey launch stick sticking out behind its tail and a long curly cream fuse with a small pale yellow-white spark at its end; the rocket is tilted up at forty-five degrees, points forward and is tied down with loops of pale cream rope onto a small crooked cart of patched dark gunmetal scrap plates on two mismatched dark iron wheels, one big and one small; a tiny goblin with yellow-olive green skin, long pointed ears, a charcoal grey tunic and a bright red bandana crouches on the ground behind the cart covering its ears; simple shapes and very few details; the wheels are the lowest thing in the image; clearly a home-made fireworks rocket on a junk cart, not a missile and not a catapult. The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human."
+      },
+      "submittedAt": "2026-10-01T10:02:12.937Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-goblin/rocket-cart-e.png",
+      "rawSheetSha256": "241251edc0a3ac8969e2b9d196767900d23783941b45b8550b0e344221b1db03",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.0943,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T10:03:14.838Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Source only: the right fireworks rocket (red paper tube with cream stars, cream cone cap, rope lashings, tilted forward on a two-wheeled cart, one small crew apart from it), but the cart frame is brown wood and the tail has an orange flame.",
+        "reviewedAt": "2026-10-01T10:39:34.316Z"
+      }
+    },
+    "rocket-cart-e-edit": {
+      "id": "rocket-cart-e-edit",
+      "asset": "chibi-goblin-rocket-cart",
+      "jobId": "b84f731b-1582-47e4-a398-91a318e23594",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "goblin",
+        "asset": "chibi-goblin-rocket-cart",
+        "subject": "UNIT:GOBLIN:CATAPULT",
+        "faction": "GOBLIN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 17624,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make every brown wooden part of the cart charcoal grey scrap iron, and replace the orange flame at the tail with a tiny pale yellow-white spark on the cream fuse. Keep the big red paper rocket with its cream stars, cream cone cap and rope, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make every brown wooden part of the cart charcoal grey scrap iron, and replace the orange flame at the tail with a tiny pale yellow-white spark on the cream fuse. Keep the big red paper rocket with its cream stars, cream cone cap and rope, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make every brown wooden part of the cart charcoal grey scrap iron, and replace the orange flame at the tail with a tiny pale yellow-white spark on the cream fuse. Keep the big red paper rocket with its cream stars, cream cone cap and rope, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make every brown wooden part of the cart charcoal grey scrap iron, and replace the orange flame at the tail with a tiny pale yellow-white spark on the cream fuse. Keep the big red paper rocket with its cream stars, cream cone cap and rope, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "rocket-cart-e",
+          "candidate": 0,
+          "sha256": "241251edc0a3ac8969e2b9d196767900d23783941b45b8550b0e344221b1db03"
+        }
+      },
+      "submittedAt": "2026-10-01T10:12:47.608Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-goblin/rocket-cart-e-edit.png",
+      "rawSheetSha256": "1bccc48cbf4f2a4050918a13d1fc85f45915cb0e371d53e74900037dee3b71a9",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.1062,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.1062,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T10:13:50.722Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Source only: the orange flame became a small pale spark, but both candidates kept the cart's brown wooden planks and beams.",
+        "reviewedAt": "2026-10-01T10:39:35.620Z"
+      }
+    },
+    "rocket-cart-e-edit-2": {
+      "id": "rocket-cart-e-edit-2",
+      "asset": "chibi-goblin-rocket-cart",
+      "jobId": "706d2d3e-4f6b-4a00-a504-fa4c344d1231",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "goblin",
+        "asset": "chibi-goblin-rocket-cart",
+        "subject": "UNIT:GOBLIN:CATAPULT",
+        "faction": "GOBLIN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 17626,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour the brown wooden planks and beams of the cart charcoal grey with dark blue-grey shading, so nothing in the image is brown. Change nothing else: keep the red rocket, its cream stars and cone cap, the rope, the wheels, the little goblin, every other pixel, pose, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour the brown wooden planks and beams of the cart charcoal grey with dark blue-grey shading, so nothing in the image is brown. Change nothing else: keep the red rocket, its cream stars and cone cap, the rope, the wheels, the little goblin, every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour the brown wooden planks and beams of the cart charcoal grey with dark blue-grey shading, so nothing in the image is brown. Change nothing else: keep the red rocket, its cream stars and cone cap, the rope, the wheels, the little goblin, every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour the brown wooden planks and beams of the cart charcoal grey with dark blue-grey shading, so nothing in the image is brown. Change nothing else: keep the red rocket, its cream stars and cone cap, the rope, the wheels, the little goblin, every other pixel, pose, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "rocket-cart-e-edit",
+          "candidate": 0,
+          "sha256": "5b90a6037509a4e0c7d111b7cd6cfb99f2536d606c30a95ba69b5a634c16eb03"
+        }
+      },
+      "submittedAt": "2026-10-01T10:21:49.307Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-goblin/rocket-cart-e-edit-2.png",
+      "rawSheetSha256": "0ad4fe305a5b6935604d78cf336ae2b97257614a478b4d44b99bb01be73c1c05",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0133,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0133,
+          "footprintWidthShare": 0.8462,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T10:22:58.621Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-6gd.5: the user asked for a low-tech goblin invention, a fireworks rocket rather than a modern missile. A fat red paper rocket with cream stars and a cream paper cone cap, lashed with rope loops onto a rickety charcoal scrap cart with mismatched wheels, a launch stick with a small pale spark at its tail, and one small goblin crew in charcoal with a red bandana crouching apart from the rocket. The two edits removed the orange flame and the brown wooden planks. Reads as a firework at zoom 0.75 and beside the Human Catapult. The anchor moves 2 px right so the rear wheel and tail fin clear the seat badge and HP bar strips.",
+        "reviewedAt": "2026-10-01T10:41:20.094Z"
+      }
+    },
+    "rocket-cart-f": {
+      "id": "rocket-cart-f",
+      "asset": "chibi-goblin-rocket-cart",
+      "jobId": "sync-d9354e40-f6b9-4ce9-9a07-f7d2b7b80bc1",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "goblin",
+        "asset": "chibi-goblin-rocket-cart",
+        "subject": "UNIT:GOBLIN:CATAPULT",
+        "faction": "GOBLIN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 17622,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: Rocket Cart, a chunky cute rickety home-made goblin fireworks cart, clearly bigger than a soldier, filling the whole width of the image: one huge fat fireworks rocket made of paper and cardboard, never metal, a stubby round cardboard tube painted bright red with one cream band and one cream star, a pointed cream paper cone cap, a long thin pale grey launch stick sticking out behind its tail and a long curly cream fuse with a small pale yellow-white spark at its end; the rocket is tilted up at forty-five degrees, points forward and is tied down with loops of pale cream rope onto a small crooked cart of patched dark gunmetal scrap plates on two mismatched dark iron wheels, one big and one small; a tiny goblin with yellow-olive green skin, long pointed ears, a charcoal grey tunic and a bright red bandana crouches on the ground behind the cart covering its ears; simple shapes and very few details; the wheels are the lowest thing in the image; clearly a home-made fireworks rocket on a junk cart, not a missile and not a catapult."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame.",
+            "negative": "missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Rocket Cart, a chunky cute rickety home-made goblin fireworks cart, clearly bigger than a soldier, filling the whole width of the image: one huge fat fireworks rocket made of paper and cardboard, never metal, a stubby round cardboard tube painted bright red with one cream band and one cream star, a pointed cream paper cone cap, a long thin pale grey launch stick sticking out behind its tail and a long curly cream fuse with a small pale yellow-white spark at its end; the rocket is tilted up at forty-five degrees, points forward and is tied down with loops of pale cream rope onto a small crooked cart of patched dark gunmetal scrap plates on two mismatched dark iron wheels, one big and one small; a tiny goblin with yellow-olive green skin, long pointed ears, a charcoal grey tunic and a bright red bandana crouches on the ground behind the cart covering its ears; simple shapes and very few details; the wheels are the lowest thing in the image; clearly a home-made fireworks rocket on a junk cart, not a missile and not a catapult. The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Rocket Cart, a chunky cute rickety home-made goblin fireworks cart, clearly bigger than a soldier, filling the whole width of the image: one huge fat fireworks rocket made of paper and cardboard, never metal, a stubby round cardboard tube painted bright red with one cream band and one cream star, a pointed cream paper cone cap, a long thin pale grey launch stick sticking out behind its tail and a long curly cream fuse with a small pale yellow-white spark at its end; the rocket is tilted up at forty-five degrees, points forward and is tied down with loops of pale cream rope onto a small crooked cart of patched dark gunmetal scrap plates on two mismatched dark iron wheels, one big and one small; a tiny goblin with yellow-olive green skin, long pointed ears, a charcoal grey tunic and a bright red bandana crouches on the ground behind the cart covering its ears; simple shapes and very few details; the wheels are the lowest thing in the image; clearly a home-made fireworks rocket on a junk cart, not a missile and not a catapult. The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human."
+      },
+      "submittedAt": "2026-10-01T10:03:14.843Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-goblin/rocket-cart-f.png",
+      "rawSheetSha256": "6418e7f19ab42190c7a954a289a1a16f53f626a04eb55e9d248e93fb2a918917",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0596,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T10:03:59.803Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: A clean charcoal cart, a cream cone cap and a pale launch stick, but the lower half of the rocket is dark gunmetal plate (a metal shell, small owner area) and the rocket stands almost upright.",
+        "reviewedAt": "2026-10-01T10:39:34.748Z"
+      }
+    },
+    "rocket-cart-f-edit": {
+      "id": "rocket-cart-f-edit",
+      "asset": "chibi-goblin-rocket-cart",
+      "jobId": "4749a86b-c53c-4ad9-b9b9-40f05cf05fe6",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "goblin",
+        "asset": "chibi-goblin-rocket-cart",
+        "subject": "UNIT:GOBLIN:CATAPULT",
+        "faction": "GOBLIN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 17625,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Paint the dark grey lower half of the rocket's tube bright red, the same red paper as its upper half, so the whole rocket tube is bright red with cream stars and one cream band. Keep the cream cone cap, the pale stick, the charcoal grey cart, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Paint the dark grey lower half of the rocket's tube bright red, the same red paper as its upper half, so the whole rocket tube is bright red with cream stars and one cream band. Keep the cream cone cap, the pale stick, the charcoal grey cart, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Paint the dark grey lower half of the rocket's tube bright red, the same red paper as its upper half, so the whole rocket tube is bright red with cream stars and one cream band. Keep the cream cone cap, the pale stick, the charcoal grey cart, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Paint the dark grey lower half of the rocket's tube bright red, the same red paper as its upper half, so the whole rocket tube is bright red with cream stars and one cream band. Keep the cream cone cap, the pale stick, the charcoal grey cart, the wheels, the little goblin, pose, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "rocket-cart-f",
+          "candidate": 0,
+          "sha256": "6418e7f19ab42190c7a954a289a1a16f53f626a04eb55e9d248e93fb2a918917"
+        }
+      },
+      "submittedAt": "2026-10-01T10:13:50.733Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-goblin/rocket-cart-f-edit.png",
+      "rawSheetSha256": "735b069f855b6601762431e056bb3026b40afa889cb839bf3a530a1bbe375cd2",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0596,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0596,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T10:14:45.156Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Both candidates painted the whole cart and the cone cap red as well as the tube: one red blob, owner colour on the cart.",
+        "reviewedAt": "2026-10-01T10:39:36.028Z"
+      }
+    },
+    "rocket-cart-f-edit-2": {
+      "id": "rocket-cart-f-edit-2",
+      "asset": "chibi-goblin-rocket-cart",
+      "jobId": "a071053d-c8af-4a87-a99c-e26f725e9beb",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "goblin",
+        "asset": "chibi-goblin-rocket-cart",
+        "subject": "UNIT:GOBLIN:CATAPULT",
+        "faction": "GOBLIN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 17627,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the dark grey lower part of the rocket's tube, between the cream band and the cart, to bright red paper with a darker red shadow. The cart, its wheels and its plates stay charcoal grey, the cone cap stays cream, and the pale stick, the little goblin, every other pixel, pose, outline and art style stay exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the dark grey lower part of the rocket's tube, between the cream band and the cart, to bright red paper with a darker red shadow. The cart, its wheels and its plates stay charcoal grey, the cone cap stays cream, and the pale stick, the little goblin, every other pixel, pose, outline and art style stay exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the dark grey lower part of the rocket's tube, between the cream band and the cart, to bright red paper with a darker red shadow. The cart, its wheels and its plates stay charcoal grey, the cone cap stays cream, and the pale stick, the little goblin, every other pixel, pose, outline and art style stay exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only the dark grey lower part of the rocket's tube, between the cream band and the cart, to bright red paper with a darker red shadow. The cart, its wheels and its plates stay charcoal grey, the cone cap stays cream, and the pale stick, the little goblin, every other pixel, pose, outline and art style stay exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "rocket-cart-f",
+          "candidate": 0,
+          "sha256": "6418e7f19ab42190c7a954a289a1a16f53f626a04eb55e9d248e93fb2a918917"
+        }
+      },
+      "submittedAt": "2026-10-01T10:22:58.629Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-goblin/rocket-cart-f-edit-2.png",
+      "rawSheetSha256": "3cc4b583c6f83acb30d75297f4d2bfc833d5ed2d062cf6eb4b4201a72fe8e719",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0578,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0578,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T10:24:29.409Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Both candidates painted the cart red again and left the rocket's lower half dark gunmetal.",
+        "reviewedAt": "2026-10-01T10:39:36.430Z"
+      }
+    },
+    "rocket-cart-g": {
+      "id": "rocket-cart-g",
+      "asset": "chibi-goblin-rocket-cart",
+      "jobId": "sync-cf67ff60-bf89-437c-99de-9622bb27b8c2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "goblin",
+        "asset": "chibi-goblin-rocket-cart",
+        "subject": "UNIT:GOBLIN:CATAPULT",
+        "faction": "GOBLIN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 17623,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "owner",
+            "source": "scripts/art/chibi/fragments/owner.txt",
+            "text": "Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown."
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: Rocket Cart, a chunky cute rickety home-made goblin fireworks cart, clearly bigger than a soldier, filling the whole width of the image: one huge fat fireworks rocket made of paper and cardboard, never metal, a stubby round cardboard tube painted bright red with one cream band and one cream star, a pointed cream paper cone cap, a long thin pale grey launch stick sticking out behind its tail and a long curly cream fuse with a small pale yellow-white spark at its end; the rocket is tilted up at forty-five degrees, points forward and is tied down with loops of pale cream rope onto a small crooked cart of patched dark gunmetal scrap plates on two mismatched dark iron wheels, one big and one small; a tiny goblin with yellow-olive green skin, long pointed ears, a charcoal grey tunic and a bright red bandana crouches on the ground behind the cart covering its ears; simple shapes and very few details; the wheels are the lowest thing in the image; clearly a home-made fireworks rocket on a junk cart, not a missile and not a catapult."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame.",
+            "negative": "missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Rocket Cart, a chunky cute rickety home-made goblin fireworks cart, clearly bigger than a soldier, filling the whole width of the image: one huge fat fireworks rocket made of paper and cardboard, never metal, a stubby round cardboard tube painted bright red with one cream band and one cream star, a pointed cream paper cone cap, a long thin pale grey launch stick sticking out behind its tail and a long curly cream fuse with a small pale yellow-white spark at its end; the rocket is tilted up at forty-five degrees, points forward and is tied down with loops of pale cream rope onto a small crooked cart of patched dark gunmetal scrap plates on two mismatched dark iron wheels, one big and one small; a tiny goblin with yellow-olive green skin, long pointed ears, a charcoal grey tunic and a bright red bandana crouches on the ground behind the cart covering its ears; simple shapes and very few details; the wheels are the lowest thing in the image; clearly a home-made fireworks rocket on a junk cart, not a missile and not a catapult. The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Team colour: large solid bright red (#d8262c) areas are the maskable owner colour and must be clearly visible from a distance, about a quarter to a third of the subject. No other red or red-brown anywhere: every other material, and its shading, uses colours that are clearly not red or red-brown. Subject: Rocket Cart, a chunky cute rickety home-made goblin fireworks cart, clearly bigger than a soldier, filling the whole width of the image: one huge fat fireworks rocket made of paper and cardboard, never metal, a stubby round cardboard tube painted bright red with one cream band and one cream star, a pointed cream paper cone cap, a long thin pale grey launch stick sticking out behind its tail and a long curly cream fuse with a small pale yellow-white spark at its end; the rocket is tilted up at forty-five degrees, points forward and is tied down with loops of pale cream rope onto a small crooked cart of patched dark gunmetal scrap plates on two mismatched dark iron wheels, one big and one small; a tiny goblin with yellow-olive green skin, long pointed ears, a charcoal grey tunic and a bright red bandana crouches on the ground behind the cart covering its ears; simple shapes and very few details; the wheels are the lowest thing in the image; clearly a home-made fireworks rocket on a junk cart, not a missile and not a catapult. The rocket is a toy-like fireworks rocket of painted paper, the biggest thing in the image; its tube is plain flat bright red with a slightly darker red shadow and its cone cap, band, star, stick, rope and fuse are cream or pale grey, never brown. Only one tiny goblin crew, on the ground behind the rear wheel, apart from the rocket. The spark is tiny and pale yellow-white, never orange flame. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, missile, metal rocket, steel rocket, tail fins, warhead, jet engine, bomb, catapult arm, bucket, horse, flames, smoke trail, explosion, wooden cart, brown cart, brown stick, brown rope, orange spark, red tunic, armour, four wheels, two goblins, rider, crew on the rocket, pink skin, human."
+      },
+      "submittedAt": "2026-10-01T10:03:59.806Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-goblin/rocket-cart-g.png",
+      "rawSheetSha256": "2c728065a7407b96d2e28a2cff5d5f0630afe9d107dbcd4afcbbcd2f4410992c",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.1091,
+          "footprintWidthShare": 0.8983,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T10:04:48.284Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: A second red figure stands in front of the cart and merges with the rocket; brown belts.",
+        "reviewedAt": "2026-10-01T10:39:35.178Z"
       }
     },
     "scrap-buggy-a": {
@@ -4105,13 +4648,13 @@
       "subject": "UNIT:GOBLIN:CATAPULT",
       "assetClass": "LARGE_UNIT",
       "status": "ACCEPTED",
-      "recipe": "rocket-cart-c-edit-4",
+      "recipe": "rocket-cart-e-edit-2",
       "candidate": 0,
-      "candidateSha256": "a71455094329977b4a9798a8af4708305b22216c61d5e0d1be16a2987f0f5c2a",
+      "candidateSha256": "caf961f1106daacb5c49d05d7bdb8d80811a17681f02923a202abda9f518592b",
       "master": {
         "path": "public/assets/chibi/units/chibi-goblin-rocket-cart.png",
-        "sha256": "a71455094329977b4a9798a8af4708305b22216c61d5e0d1be16a2987f0f5c2a",
-        "pixelSha256": "0e524b81a802831d600d5b486f3e01c8cd81f3dd0ab7267a16c7c54c4aff9fae",
+        "sha256": "caf961f1106daacb5c49d05d7bdb8d80811a17681f02923a202abda9f518592b",
+        "pixelSha256": "b8942470d630f5edee9ac57080c4ab36fd26e84aff9cd834c1da7555fb0d032f",
         "width": 72,
         "height": 88
       },
@@ -4119,7 +4662,7 @@
         "kind": "as-is"
       },
       "anchor": {
-        "x": 36,
+        "x": 34,
         "y": 48
       },
       "overflow": {
@@ -4129,14 +4672,14 @@
         "down": 0
       },
       "plateCheck": {
-        "bandRows": 13,
-        "groundShare": 0,
-        "footprintWidthShare": 0.7213,
+        "bandRows": 14,
+        "groundShare": 0.0133,
+        "footprintWidthShare": 0.8462,
         "suspect": false
       },
       "mask": {
         "path": "public/assets/chibi/units/chibi-goblin-rocket-cart.mask.png",
-        "sha256": "12f687d20e5e323b4d4a4f29679e507432c425fc65e029fcf06724edca086117",
+        "sha256": "40eb7111baede5a3a2fdd5cd58944d571d63be0b5f43f83b4de3cccea89669a8",
         "source": "AUTO",
         "thresholds": {
           "alphaMin": 128,
@@ -4174,14 +4717,14 @@
             "max": 0.55
           }
         },
-        "speckleDropped": 5,
+        "speckleDropped": 3,
         "qa": {
           "status": "PASS",
-          "opaquePixels": 2589,
-          "ownerPixels": 496,
-          "coverage": 0.1916,
+          "opaquePixels": 3152,
+          "ownerPixels": 583,
+          "coverage": 0.185,
           "coverageOnTarget": false,
-          "redBrownPixels": 11,
+          "redBrownPixels": 4,
           "maskOnTransparent": 0,
           "maskOnRedBrown": 0,
           "maskOnNonKey": 0,
@@ -4197,8 +4740,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Two-wheeled dark iron cart carrying one fat plain red rocket tilted forward at about 45 degrees with a light grey nose cone and fins; the tiny crew (yellow-olive goblin in charcoal with a small red bandana) crouches beside the cart, outlined apart from the rocket, so the crew no longer merges with it (0ao.4 review comment). 19.2% owner area. Reads apart from the Human catapult arm and the Lich in all four owner colours.",
-      "acceptedAt": "2026-10-01T06:11:54.001Z"
+      "notes": "Bead pulp_wars-6gd.5: the user asked for a low-tech goblin invention, a fireworks rocket rather than a modern missile. A fat red paper rocket with cream stars and a cream paper cone cap, lashed with rope loops onto a rickety charcoal scrap cart with mismatched wheels, a launch stick with a small pale spark at its tail, and one small goblin crew in charcoal with a red bandana crouching apart from the rocket. The two edits removed the orange flame and the brown wooden planks. Reads as a firework at zoom 0.75 and beside the Human Catapult. The anchor moves 2 px right so the rear wheel and tail fin clear the seat badge and HP bar strips.",
+      "acceptedAt": "2026-10-01T10:41:20.094Z"
     },
     "chibi-goblin-scrap-buggy": {
       "id": "chibi-goblin-scrap-buggy",

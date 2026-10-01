@@ -1,0 +1,36 @@
+{
+  "id": "farm-l-edit",
+  "jobId": "e51c1a03-68e9-40b2-8c46-512bdfb2294a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "3",
+    "asset": "chibi-farm",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "ORIGINAL",
+    "recipeClass": "crop-field",
+    "requestSize": {
+      "width": 80,
+      "height": 88
+    },
+    "seed": 69830,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase only the thin dark brown soil slab along the bottom edges under the wheat, so the golden wheat stalks stand directly on a transparent background with nothing under them. Keep every wheat stalk and grain head, the size of the patch, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Erase only the thin dark brown soil slab along the bottom edges under the wheat, so the golden wheat stalks stand directly on a transparent background with nothing under them. Keep every wheat stalk and grain head, the size of the patch, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase only the thin dark brown soil slab along the bottom edges under the wheat, so the golden wheat stalks stand directly on a transparent background with nothing under them. Keep every wheat stalk and grain head, the size of the patch, outline and art style exactly the same.",
+    "editInstruction": "Erase only the thin dark brown soil slab along the bottom edges under the wheat, so the golden wheat stalks stand directly on a transparent background with nothing under them. Keep every wheat stalk and grain head, the size of the patch, outline and art style exactly the same.",
+    "source": {
+      "recipe": "farm-l",
+      "candidate": 0,
+      "sha256": "b759cb00d59726b1377111858a59b92f76f0efbd244a9865bfb1bcb6c9cf1515"
+    }
+  }
+}

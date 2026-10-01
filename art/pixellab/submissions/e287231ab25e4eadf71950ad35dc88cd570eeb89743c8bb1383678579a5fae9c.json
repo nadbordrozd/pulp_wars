@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-f-edit-2",
+  "jobId": "a071053d-c8af-4a87-a99c-e26f725e9beb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin",
+    "asset": "chibi-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 17627,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the dark grey lower part of the rocket's tube, between the cream band and the cart, to bright red paper with a darker red shadow. The cart, its wheels and its plates stay charcoal grey, the cone cap stays cream, and the pale stick, the little goblin, every other pixel, pose, outline and art style stay exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the dark grey lower part of the rocket's tube, between the cream band and the cart, to bright red paper with a darker red shadow. The cart, its wheels and its plates stay charcoal grey, the cone cap stays cream, and the pale stick, the little goblin, every other pixel, pose, outline and art style stay exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the dark grey lower part of the rocket's tube, between the cream band and the cart, to bright red paper with a darker red shadow. The cart, its wheels and its plates stay charcoal grey, the cone cap stays cream, and the pale stick, the little goblin, every other pixel, pose, outline and art style stay exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the dark grey lower part of the rocket's tube, between the cream band and the cart, to bright red paper with a darker red shadow. The cart, its wheels and its plates stay charcoal grey, the cone cap stays cream, and the pale stick, the little goblin, every other pixel, pose, outline and art style stay exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-f",
+      "candidate": 0,
+      "sha256": "6418e7f19ab42190c7a954a289a1a16f53f626a04eb55e9d248e93fb2a918917"
+    }
+  }
+}

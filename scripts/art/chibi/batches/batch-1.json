@@ -80,7 +80,7 @@
         "width": 80,
         "height": 104
       },
-      "groundAsset": "chibi-grass-1"
+      "groundAsset": "chibi-mountain-ground-1"
     },
     {
       "id": "chibi-mountain-2",
@@ -91,7 +91,7 @@
         "width": 80,
         "height": 104
       },
-      "groundAsset": "chibi-grass-1"
+      "groundAsset": "chibi-mountain-ground-1"
     },
     {
       "id": "chibi-mountain-3",
@@ -102,7 +102,7 @@
         "width": 80,
         "height": 104
       },
-      "groundAsset": "chibi-grass-1"
+      "groundAsset": "chibi-mountain-ground-1"
     },
     {
       "id": "chibi-shallow-water-1",
@@ -227,6 +227,23 @@
         "path": "scripts/art/chibi/overrides/chibi-marksman.mask-override.png",
         "masterPixelSha256": "cf49fd2f27c56002b1f19d952476997cb46f2151b76a2a46580fce608b740ba4",
         "reason": "The automatic mask minus one 4-pixel component at (27..30, 37): the red mouth, which is a shade of the key but not owner cloth, and would turn teal or coral on the face. Nothing else changes and no QA code is waived."
+      }
+    },
+    {
+      "id": "chibi-mountain-ground-1",
+      "subject": "TERRAIN:MOUNTAIN",
+      "subjectKey": "TERRAIN:MOUNTAIN/GROUND",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "cropRegion": {
+        "left": 40,
+        "top": 10,
+        "width": 86,
+        "height": 150
       }
     }
   ],
@@ -1019,6 +1036,129 @@
       },
       "editInstruction": "Make his bright red tunic longer, down to the knees, with bright red sleeves. Draw the mouth as a tiny dark line. Keep the helmet, red crest, sword, round grey steel shield, face, pose, outline and art style exactly the same, on a transparent background with nothing under his feet.",
       "notes": "fighter-h is the right design (huge head, round grey steel shield) but 14.5% owner area and a red mouth."
+    },
+    {
+      "id": "mountain-ground-1-a",
+      "asset": "chibi-mountain-ground-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67391,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "negativeAddendum": "grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, brown soil, sand",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). The user asked for a rocky background under the mountains. A pipeline-only ground tile (inventory flag 3): flat grey rock and scree, never registered as a Mountain variant, used only as the groundAsset of the Mountain and Mined Mountain bodies. Sample seed 1 of 3."
+    },
+    {
+      "id": "mountain-ground-1-b",
+      "asset": "chibi-mountain-ground-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67392,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "negativeAddendum": "grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, brown soil, sand",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). The user asked for a rocky background under the mountains. A pipeline-only ground tile (inventory flag 3): flat grey rock and scree, never registered as a Mountain variant, used only as the groundAsset of the Mountain and Mined Mountain bodies. Sample seed 2 of 3."
+    },
+    {
+      "id": "mountain-ground-1-c",
+      "asset": "chibi-mountain-ground-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67393,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "negativeAddendum": "grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, brown soil, sand",
+      "notes": "Bead pulp_wars-6gd.5 (playtest round 3). The user asked for a rocky background under the mountains. A pipeline-only ground tile (inventory flag 3): flat grey rock and scree, never registered as a Mountain variant, used only as the groundAsset of the Mountain and Mined Mountain bodies. Sample seed 3 of 3."
+    },
+    {
+      "id": "mountain-ground-1-d",
+      "asset": "chibi-mountain-ground-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67394,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "promptAddendum": "A flat seamless texture, the same everywhere: small flat grey stone chips and pebbles packed evenly from edge to edge on mid-grey rock, like a gravel floor; nothing stands up from the ground, no cliffs, no rock walls and no path.",
+      "negativeAddendum": "grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, rock walls, canyon, path, corridor, pillars, stumps, brown soil, sand, yellow, beige",
+      "notes": "Bead pulp_wars-6gd.5. mountain-ground-1-a..c drew a corridor between rock walls (moss in a, sand in c); this addendum asks for a flat gravel floor texture (create-image-pixen)."
+    },
+    {
+      "id": "mountain-ground-1-e",
+      "asset": "chibi-mountain-ground-1",
+      "endpoint": "create-image-pixen",
+      "seed": 67395,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "promptAddendum": "A flat seamless texture, the same everywhere: small flat grey stone chips and pebbles packed evenly from edge to edge on mid-grey rock, like a gravel floor; nothing stands up from the ground, no cliffs, no rock walls and no path.",
+      "negativeAddendum": "grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, rock walls, canyon, path, corridor, pillars, stumps, brown soil, sand, yellow, beige",
+      "notes": "Bead pulp_wars-6gd.5. mountain-ground-1-a..c drew a corridor between rock walls (moss in a, sand in c); this addendum asks for a flat gravel floor texture (create-image-pixen)."
+    },
+    {
+      "id": "mountain-ground-1-f",
+      "asset": "chibi-mountain-ground-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67396,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "promptAddendum": "A flat seamless texture, the same everywhere: small flat grey stone chips and pebbles packed evenly from edge to edge on mid-grey rock, like a gravel floor; nothing stands up from the ground, no cliffs, no rock walls and no path.",
+      "negativeAddendum": "grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, rock walls, canyon, path, corridor, pillars, stumps, brown soil, sand, yellow, beige",
+      "notes": "Bead pulp_wars-6gd.5. mountain-ground-1-a..c drew a corridor between rock walls (moss in a, sand in c); this addendum asks for a flat gravel floor texture (create-image-pixflux)."
+    },
+    {
+      "id": "mountain-ground-1-g",
+      "asset": "chibi-mountain-ground-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67397,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/mountain-ground.png",
+        "sha256": "3dd9c3b505a05df71248f9c369ac3d92703aadbe9b846ad3c9e00e2cf94c6606"
+      },
+      "negativeAddendum": "grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, rock walls, canyon, path, corridor, pillars, stumps, brown soil, sand, yellow, beige",
+      "notes": "Bead pulp_wars-6gd.5. mountain-ground-1-f's clear part is a plain grey floor with one pebble: tiled under a mountain range it reads as pavement and the pebble repeats in every tile. The subject is rewritten as a flat seamless texture of scattered stone slabs (the wording that fixed the water tiles) and forced to a three-colour slate palette (#8891a0 base, #a7afbb stones, #6a7384 cracks), cooler and darker than the snowy peaks. Seed 1 of 3."
+    },
+    {
+      "id": "mountain-ground-1-h",
+      "asset": "chibi-mountain-ground-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67398,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/mountain-ground.png",
+        "sha256": "3dd9c3b505a05df71248f9c369ac3d92703aadbe9b846ad3c9e00e2cf94c6606"
+      },
+      "negativeAddendum": "grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, rock walls, canyon, path, corridor, pillars, stumps, brown soil, sand, yellow, beige",
+      "notes": "Bead pulp_wars-6gd.5. mountain-ground-1-f's clear part is a plain grey floor with one pebble: tiled under a mountain range it reads as pavement and the pebble repeats in every tile. The subject is rewritten as a flat seamless texture of scattered stone slabs (the wording that fixed the water tiles) and forced to a three-colour slate palette (#8891a0 base, #a7afbb stones, #6a7384 cracks), cooler and darker than the snowy peaks. Seed 2 of 3."
+    },
+    {
+      "id": "mountain-ground-1-i",
+      "asset": "chibi-mountain-ground-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 67399,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/mountain-ground.png",
+        "sha256": "3dd9c3b505a05df71248f9c369ac3d92703aadbe9b846ad3c9e00e2cf94c6606"
+      },
+      "negativeAddendum": "grass, green, plants, moss, trees, bushes, snow, water, boulders, mountain peaks, cliffs, rock walls, canyon, path, corridor, pillars, stumps, brown soil, sand, yellow, beige",
+      "notes": "Bead pulp_wars-6gd.5. mountain-ground-1-f's clear part is a plain grey floor with one pebble: tiled under a mountain range it reads as pavement and the pebble repeats in every tile. The subject is rewritten as a flat seamless texture of scattered stone slabs (the wording that fixed the water tiles) and forced to a three-colour slate palette (#8891a0 base, #a7afbb stones, #6a7384 cracks), cooler and darker than the snowy peaks. Seed 3 of 3."
     }
   ]
 }

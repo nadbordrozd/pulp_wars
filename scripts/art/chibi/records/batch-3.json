@@ -613,10 +613,895 @@
       "completedAt": "2026-09-29T18:10:22.160Z",
       "usageUsd": 0.009288510508007473,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 1,
-        "notes": "Barn with a key-red roof, cream walls, pale timber, a haystack and upright wheat stalks on nothing (farm-c slab removed, cues re-added); keyLike override mask covers the whole roof. One single-cell Farm is drawn for every Farm cell, pairs included.",
+        "notes": "Barn with a key-red roof, cream walls, pale timber, a haystack and upright wheat stalks on nothing (farm-c slab removed, cues re-added); keyLike override mask covers the whole roof. One single-cell Farm is drawn for every Farm cell, pairs included. Superseded by farm-l-edit-2.",
         "reviewedAt": "2026-09-29T18:13:18.924Z"
+      }
+    },
+    "farm-d": {
+      "id": "farm-d",
+      "asset": "chibi-farm",
+      "jobId": "sync-89401691-75e1-4fa1-95b7-841daf75dbf0",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "building",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69821,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-building.txt + scripts/art/chibi/fragments/class-building.negative.txt",
+            "text": "Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, soil, dirt, furrows, brown earth"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, dirt, furrows, brown earth",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, dirt, furrows, brown earth."
+      },
+      "submittedAt": "2026-10-01T10:06:35.514Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-d.png",
+      "rawSheetSha256": "e5ef6786d22ad300c553f06fcd708a5f96278e60b3d540f676373c2d0b5d301a",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.6649,
+          "footprintWidthShare": 0.7222,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T10:07:23.349Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Building class with the Human faction layer: a winged farmer in a hat stands in the wheat on a soil slab.",
+        "reviewedAt": "2026-10-01T10:39:40.800Z"
+      }
+    },
+    "farm-e": {
+      "id": "farm-e",
+      "asset": "chibi-farm",
+      "jobId": "sync-6da3e488-cdbf-43f7-981e-4c642e38fcf7",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "building",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69822,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-building.txt + scripts/art/chibi/fragments/class-building.negative.txt",
+            "text": "Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, soil, dirt, furrows, brown earth"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, dirt, furrows, brown earth",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, dirt, furrows, brown earth."
+      },
+      "submittedAt": "2026-10-01T10:07:23.352Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-e.png",
+      "rawSheetSha256": "1cb96fea44a26870740268105f16c41531e011d9809db1dda6581ce65ad8a48c",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.645,
+          "footprintWidthShare": 0.873,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T10:08:09.054Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Building class with the Human faction layer: an armoured figure in a hat stands in the wheat on a grass slab.",
+        "reviewedAt": "2026-10-01T10:39:41.197Z"
+      }
+    },
+    "farm-f": {
+      "id": "farm-f",
+      "asset": "chibi-farm",
+      "jobId": "sync-8a0f0f4d-42e3-4b12-85d7-fc46b3f75b73",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "building",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69823,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-building.txt + scripts/art/chibi/fragments/class-building.negative.txt",
+            "text": "Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, soil, dirt, furrows, brown earth"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, dirt, furrows, brown earth",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one single building or improvement map piece with a unique chunky silhouette, thick single-colour black outline, big simple shapes. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, house, barn, cottage, shed, building, roof, red, fence, haystack, scarecrow, farmer, person, character, animal, windmill, cart, dirt, furrows, brown earth."
+      },
+      "submittedAt": "2026-10-01T10:08:09.058Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-f.png",
+      "rawSheetSha256": "3376884148d172794490a8d3611211e9eb68dbd48ebaaf8f0589b7efa2254d2b",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.827,
+          "footprintWidthShare": 0.9048,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T10:08:58.166Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Building class with the Human faction layer: a timber house behind the wheat (the user asked for no house) on a grass slab.",
+        "reviewedAt": "2026-10-01T10:39:41.597Z"
+      }
+    },
+    "farm-g": {
+      "id": "farm-g",
+      "asset": "chibi-farm",
+      "jobId": "sync-a508daa0-f1af-487b-b12f-52c6ac80c0fe",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69824,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-crop-field.txt + scripts/art/chibi/fragments/class-crop-field.negative.txt",
+            "text": "Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings."
+      },
+      "submittedAt": "2026-10-01T10:16:13.747Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-g.png",
+      "rawSheetSha256": "b892d5afd3e2dca8229c5eaed3db3275a26d0253523057f668b3041198a0599f",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.6475,
+          "footprintWidthShare": 0.5641,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T10:16:54.992Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Right wheat, no house and no figure, but a small isometric diamond (about 75 x 45 px) on a soil slab: it leaves the tile's corners empty and cannot join a neighbouring Farm.",
+        "reviewedAt": "2026-10-01T10:39:41.985Z"
+      }
+    },
+    "farm-h": {
+      "id": "farm-h",
+      "asset": "chibi-farm",
+      "jobId": "sync-543d49bc-8584-491a-bb34-8952f7534a08",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69825,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-crop-field.txt + scripts/art/chibi/fragments/class-crop-field.negative.txt",
+            "text": "Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings."
+      },
+      "submittedAt": "2026-10-01T10:16:54.998Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-h.png",
+      "rawSheetSha256": "945d98220f0e5049a8a490d72d0904b7c0e29263c12e1020d50b412b1acdb26a",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.5719,
+          "footprintWidthShare": 0.6197,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T10:17:39.991Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: As farm-g: a small pale diamond patch on a soil and grass slab.",
+        "reviewedAt": "2026-10-01T10:39:42.388Z"
+      }
+    },
+    "farm-i": {
+      "id": "farm-i",
+      "asset": "chibi-farm",
+      "jobId": "sync-7e3cae1c-8b07-4933-8648-2ab54e7ea24c",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69826,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-crop-field.txt + scripts/art/chibi/fragments/class-crop-field.negative.txt",
+            "text": "Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings."
+      },
+      "submittedAt": "2026-10-01T10:17:39.995Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-i.png",
+      "rawSheetSha256": "67748138bb72487ad98c0d4ae1572091d84042ca08fdac97a6d0f7252ecaf1e1",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.3333,
+          "footprintWidthShare": 0.5625,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T10:18:49.552Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: As farm-g: a small diamond patch, darker orange-brown wheat on a soil slab.",
+        "reviewedAt": "2026-10-01T10:39:42.795Z"
+      }
+    },
+    "farm-j": {
+      "id": "farm-j",
+      "asset": "chibi-farm",
+      "jobId": "sync-d4bdbb53-7b59-4758-ae4d-622f59b59011",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69827,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-crop-field.txt + scripts/art/chibi/fragments/class-crop-field.negative.txt",
+            "text": "Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image.",
+            "negative": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric."
+      },
+      "submittedAt": "2026-10-01T10:24:29.877Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-j.png",
+      "rawSheetSha256": "ab0a8389184bceb87461d18837b6adb52dafcda7660cdb8f40d668ef7b71c970",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.6077,
+          "footprintWidthShare": 0.6795,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T10:25:19.930Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Wider than farm-g but low and dark, on a thick brown soil slab.",
+        "reviewedAt": "2026-10-01T10:39:43.193Z"
+      }
+    },
+    "farm-k": {
+      "id": "farm-k",
+      "asset": "chibi-farm",
+      "jobId": "sync-8d8a08cb-53af-4673-9201-87daf40ff70b",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69828,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-crop-field.txt + scripts/art/chibi/fragments/class-crop-field.negative.txt",
+            "text": "Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image.",
+            "negative": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric."
+      },
+      "submittedAt": "2026-10-01T10:25:19.934Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-k.png",
+      "rawSheetSha256": "81ba9246b968118acb80029a485e480612b56238e9a89b29907c12d7b39e0888",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.7466,
+          "footprintWidthShare": 0.575,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T10:26:31.500Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Small sparse stalks on a thick dark soil slab; the patch does not fill the tile.",
+        "reviewedAt": "2026-10-01T10:39:43.582Z"
+      }
+    },
+    "farm-l": {
+      "id": "farm-l",
+      "asset": "chibi-farm",
+      "jobId": "sync-3a3711da-0b30-4249-86fe-1535e4e588a4",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69829,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-crop-field.txt + scripts/art/chibi/fragments/class-crop-field.negative.txt",
+            "text": "Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image.",
+            "negative": "barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one field of crops as a map improvement piece, just plants: a wide low patch of crop plants standing in neat rows, as wide as the image, thick single-colour black outline, big simple shapes, calmer than a unit. The plants stand directly on the empty transparent background with no ground, soil, slab or platform under them; the bottom of the front row of plants is the lowest thing in the image. Subject: Farm, a field of ripe grain and nothing else: one wide square patch of tall golden wheat standing in four neat dense rows one behind the other, big simple soft golden grain heads on pale straw-yellow stalks shaded with darker straw yellow, the rows packed tightly and reaching from the left edge to the right edge of the image, a few heads leaning; only wheat, with no building at all; the bottom of the front row of stalks is the lowest thing in the image. Crops only. The patch is a wide rectangle seen from the front and slightly above, not a diamond: its rows run straight from the left edge of the image to the right edge, and the patch is almost as wide and as tall as the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, disc, rim, ground plate, platform, terrain slab, dirt slab, soil block, grass square, isometric block, ground tile, grass, soil, scenery, background, building, house, people, character, farmer, animal, unit, barn, cottage, shed, roof, red, fence, haystack, scarecrow, windmill, cart, furrows, brown earth, hat, wings, diamond shape, isometric."
+      },
+      "submittedAt": "2026-10-01T10:26:31.505Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-l.png",
+      "rawSheetSha256": "b759cb00d59726b1377111858a59b92f76f0efbd244a9865bfb1bcb6c9cf1515",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.7357,
+          "footprintWidthShare": 0.725,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T10:27:59.354Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Source only: the right field (tall golden wheat in dense rows, almost as wide and as tall as the tile), standing on a thin dark soil slab.",
+        "reviewedAt": "2026-10-01T10:39:43.970Z"
+      }
+    },
+    "farm-l-edit": {
+      "id": "farm-l-edit",
+      "asset": "chibi-farm",
+      "jobId": "e51c1a03-68e9-40b2-8c46-512bdfb2294a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69830,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Erase only the thin dark brown soil slab along the bottom edges under the wheat, so the golden wheat stalks stand directly on a transparent background with nothing under them. Keep every wheat stalk and grain head, the size of the patch, outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Erase only the thin dark brown soil slab along the bottom edges under the wheat, so the golden wheat stalks stand directly on a transparent background with nothing under them. Keep every wheat stalk and grain head, the size of the patch, outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Erase only the thin dark brown soil slab along the bottom edges under the wheat, so the golden wheat stalks stand directly on a transparent background with nothing under them. Keep every wheat stalk and grain head, the size of the patch, outline and art style exactly the same.",
+        "editInstruction": "Erase only the thin dark brown soil slab along the bottom edges under the wheat, so the golden wheat stalks stand directly on a transparent background with nothing under them. Keep every wheat stalk and grain head, the size of the patch, outline and art style exactly the same.",
+        "source": {
+          "recipe": "farm-l",
+          "candidate": 0,
+          "sha256": "b759cb00d59726b1377111858a59b92f76f0efbd244a9865bfb1bcb6c9cf1515"
+        }
+      },
+      "submittedAt": "2026-10-01T10:29:17.292Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-l-edit.png",
+      "rawSheetSha256": "9069493bb7a8e938b85dcd85fba670d6da165b80653bac5cd7672008c0095aad",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.8703,
+          "footprintWidthShare": 0.7375,
+          "suspect": true
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.8703,
+          "footprintWidthShare": 0.7375,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T10:30:10.820Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Bead pulp_wars-6gd.5: Both candidates kept the brown soil slab under the wheat.",
+        "reviewedAt": "2026-10-01T10:39:44.366Z"
+      }
+    },
+    "farm-l-edit-2": {
+      "id": "farm-l-edit-2",
+      "asset": "chibi-farm",
+      "jobId": "845d2111-771c-479a-a6d9-56fa58bd5aa8",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "3",
+        "asset": "chibi-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "ORIGINAL",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 88
+        },
+        "seed": 69831,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Paint over the dark brown soil strip along the two bottom edges with more golden wheat stalks, so the whole patch is golden wheat down to its bottom and no brown soil or earth is visible anywhere. Keep the wheat, the size of the patch, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Paint over the dark brown soil strip along the two bottom edges with more golden wheat stalks, so the whole patch is golden wheat down to its bottom and no brown soil or earth is visible anywhere. Keep the wheat, the size of the patch, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Paint over the dark brown soil strip along the two bottom edges with more golden wheat stalks, so the whole patch is golden wheat down to its bottom and no brown soil or earth is visible anywhere. Keep the wheat, the size of the patch, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Paint over the dark brown soil strip along the two bottom edges with more golden wheat stalks, so the whole patch is golden wheat down to its bottom and no brown soil or earth is visible anywhere. Keep the wheat, the size of the patch, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "farm-l",
+          "candidate": 0,
+          "sha256": "b759cb00d59726b1377111858a59b92f76f0efbd244a9865bfb1bcb6c9cf1515"
+        }
+      },
+      "submittedAt": "2026-10-01T10:32:15.755Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-3/farm-l-edit-2.png",
+      "rawSheetSha256": "a49ad9915d5c5593e362462d8b5802c2a6ceca54de8f492dd75b85ba738097f1",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.5793,
+          "footprintWidthShare": 0.725,
+          "suspect": true
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.5793,
+          "footprintWidthShare": 0.725,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-01T10:33:18.905Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-6gd.5: the user asked for a field of grain without the house and without faction colours. A dense patch of tall golden wheat in rows, almost as wide and as tall as the tile, no building, no figure, no owner mask. The edit painted the soil slab of farm-l as wheat stubble, so no ground plate remains. A 3 x 3 block reads as one field and it sits well beside a Windmill.",
+        "reviewedAt": "2026-10-01T10:35:05.693Z"
       }
     },
     "fertile-ground-a": {
@@ -1460,8 +2345,8 @@
       "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Mine: batch-1 Mountain 1 body with a timber mine entrance and an ore cart, composited on chibi-grass-1; same silhouette as its mountain.",
-        "reviewedAt": "2026-09-29T18:11:24.196Z"
+        "notes": "Mine: batch-1 Mountain 1 body with a timber mine entrance and an ore cart, composited on chibi-grass-1; same silhouette as its mountain. Bead pulp_wars-6gd.5: the same accepted body, re-composited over the rocky ground tile chibi-mountain-ground-1 instead of chibi-grass-1, so a Mountain tile reads as rocky terrain rather than one rock on the meadow (the user's playtest note).",
+        "reviewedAt": "2026-10-01T10:38:52.357Z"
       }
     },
     "mined-mountain-2-a": {
@@ -1528,8 +2413,8 @@
       "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Mine: batch-1 Mountain 3 body with a timber mine entrance and an ore cart, composited on chibi-grass-1; same silhouette as its mountain.",
-        "reviewedAt": "2026-09-29T18:11:24.734Z"
+        "notes": "Mine: batch-1 Mountain 3 body with a timber mine entrance and an ore cart, composited on chibi-grass-1; same silhouette as its mountain. Bead pulp_wars-6gd.5: the same accepted body, re-composited over the rocky ground tile chibi-mountain-ground-1 instead of chibi-grass-1, so a Mountain tile reads as rocky terrain rather than one rock on the meadow (the user's playtest note).",
+        "reviewedAt": "2026-10-01T10:38:52.826Z"
       }
     },
     "monument-a": {
@@ -2472,13 +3357,13 @@
       "subject": "IMPROVEMENT:FARM",
       "assetClass": "BUILDING",
       "status": "ACCEPTED",
-      "recipe": "farm-c-edit-3",
-      "candidate": 1,
-      "candidateSha256": "3acfaf0305108245fb2bc377f6b8e99eeb5bcbd5d1728699225b8e4b6436d31d",
+      "recipe": "farm-l-edit-2",
+      "candidate": 0,
+      "candidateSha256": "a5104418f8cdd8b68754f29e5606884f3caa0af42a1d5e68ddc15282ddec0f20",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-farm.png",
-        "sha256": "3acfaf0305108245fb2bc377f6b8e99eeb5bcbd5d1728699225b8e4b6436d31d",
-        "pixelSha256": "5f68d0a8b24ecccfd0efd9bf31af48b7bfd30c2c579e67e6ba75756ef1d2ef2f",
+        "sha256": "a5104418f8cdd8b68754f29e5606884f3caa0af42a1d5e68ddc15282ddec0f20",
+        "pixelSha256": "a58e1c1000f923018e1874424c417d21fa299f3c8f04a54ddd2098a24ec63349",
         "width": 80,
         "height": 88
       },
@@ -2496,71 +3381,10 @@
         "down": 0
       },
       "plateCheck": {
-        "bandRows": 14,
-        "groundShare": 0.5556,
-        "footprintWidthShare": 0.5694,
-        "suspect": false
-      },
-      "mask": {
-        "path": "public/assets/chibi/buildings/chibi-farm.mask.png",
-        "sha256": "5b3ec51e67c2ceb2f777ffc158c3a664bb3a35422c147a20227bab4112b5d849",
-        "source": "OVERRIDE",
-        "thresholds": {
-          "alphaMin": 128,
-          "owner": {
-            "hue": {
-              "from": 340,
-              "to": 5
-            },
-            "saturationMin": 0.65,
-            "valueMin": 0.3
-          },
-          "redBrown": {
-            "hue": {
-              "from": 5.0001,
-              "to": 15
-            },
-            "saturationMin": 0.45,
-            "valueMin": 0.3
-          },
-          "keyLike": {
-            "hue": {
-              "from": 335,
-              "to": 5
-            },
-            "saturationMin": 0.5,
-            "valueMin": 0.2
-          },
-          "minComponentPixels": 3,
-          "embeddedNeighbourMin": 5,
-          "redBrownMaterialMaxShare": 0.03,
-          "coverage": {
-            "min": 0.15,
-            "targetMin": 0.2,
-            "targetMax": 0.4,
-            "max": 0.55
-          }
-        },
-        "override": {
-          "path": "scripts/art/chibi/overrides/chibi-farm.mask-override.png",
-          "sha256": "5b3ec51e67c2ceb2f777ffc158c3a664bb3a35422c147a20227bab4112b5d849",
-          "reason": "The automatic mask misses the roof's darkest tile-shadow lines and dormer edge (deep crimson below the extraction band), which would stay red on a Teal roof. The override selects every opaque pixel in the keyLike band (the widest band an override may use): the whole roof and nothing else. No QA code is waived.",
-          "waive": []
-        },
-        "qa": {
-          "status": "PASS",
-          "opaquePixels": 2816,
-          "ownerPixels": 805,
-          "coverage": 0.2859,
-          "coverageOnTarget": true,
-          "redBrownPixels": 0,
-          "maskOnTransparent": 0,
-          "maskOnRedBrown": 0,
-          "maskOnNonKey": 0,
-          "maskEmbeddedInRedBrown": 0,
-          "failures": [],
-          "warnings": []
-        }
+        "bandRows": 15,
+        "groundShare": 0.5793,
+        "footprintWidthShare": 0.725,
+        "suspect": true
       },
       "reviewChecks": {
         "native": true,
@@ -2569,8 +3393,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Barn with a key-red roof, cream walls, pale timber, a haystack and upright wheat stalks on nothing (farm-c slab removed, cues re-added); keyLike override mask covers the whole roof. One single-cell Farm is drawn for every Farm cell, pairs included.",
-      "acceptedAt": "2026-09-29T18:13:18.923Z"
+      "notes": "Bead pulp_wars-6gd.5: the user asked for a field of grain without the house and without faction colours. A dense patch of tall golden wheat in rows, almost as wide and as tall as the tile, no building, no figure, no owner mask. The edit painted the soil slab of farm-l as wheat stubble, so no ground plate remains. A 3 x 3 block reads as one field and it sits well beside a Windmill.",
+      "acceptedAt": "2026-10-01T10:35:05.693Z"
     },
     "chibi-fertile-ground": {
       "id": "chibi-fertile-ground",
@@ -2858,16 +3682,16 @@
       "candidateSha256": "517ab2b5fe17a86589eed5b2e9a667751ed2fd225b111a61cab9f37e11869c5d",
       "master": {
         "path": "public/assets/chibi/terrain/chibi-mined-mountain-1.png",
-        "sha256": "6a4ae8114244caaffc0c4f6c3df580af62ece7f60c9b3a2cbc534a572723764f",
-        "pixelSha256": "47dfc9843ce59e62e2e6f7e76fa0998c8ead97541a3edf0dee7e5f727913b738",
+        "sha256": "672b039ef423850748d8eb5547704a533322a7ac207f33238a513ad284c683cb",
+        "pixelSha256": "1564474f9426b4c45d057f3366b959671803e259570866314f9ff0668b56168f",
         "width": 80,
         "height": 104
       },
       "derivation": {
         "kind": "ground-composite",
         "ground": {
-          "asset": "chibi-grass-1",
-          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "asset": "chibi-mountain-ground-1",
+          "sha256": "c1c2f2df6900948ff445bb65c8919f537f9f8d10fe909d30dc369494d31e2802",
           "batch": "1"
         }
       },
@@ -2888,8 +3712,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Mine: batch-1 Mountain 1 body with a timber mine entrance and an ore cart, composited on chibi-grass-1; same silhouette as its mountain.",
-      "acceptedAt": "2026-09-29T18:11:24.194Z"
+      "notes": "Mine: batch-1 Mountain 1 body with a timber mine entrance and an ore cart, composited on chibi-grass-1; same silhouette as its mountain. Bead pulp_wars-6gd.5: the same accepted body, re-composited over the rocky ground tile chibi-mountain-ground-1 instead of chibi-grass-1, so a Mountain tile reads as rocky terrain rather than one rock on the meadow (the user's playtest note).",
+      "acceptedAt": "2026-10-01T10:38:52.357Z"
     },
     "chibi-mined-mountain-2": {
       "id": "chibi-mined-mountain-2",
@@ -2901,16 +3725,16 @@
       "candidateSha256": "d777a385edc7d796aa19495e6e67bad59f8641012bec600aec0566b3f924471d",
       "master": {
         "path": "public/assets/chibi/terrain/chibi-mined-mountain-2.png",
-        "sha256": "81f7888fc78176bcbc4a9fece9642b550605527250340573e7c74c88d07bfd1c",
-        "pixelSha256": "af97123017fb735b2cf734efa51231a1ca514a478b0247a93b7fc7f7e5372059",
+        "sha256": "d93aecd01ccd517bd56aea9d657e094f0815b6b307838ba53d4e6fe5125d2018",
+        "pixelSha256": "dc0af40bf31b55117f05e818f37852029e05623fdf7cb979e890dc8b086cff4c",
         "width": 80,
         "height": 104
       },
       "derivation": {
         "kind": "ground-composite",
         "ground": {
-          "asset": "chibi-grass-1",
-          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "asset": "chibi-mountain-ground-1",
+          "sha256": "c1c2f2df6900948ff445bb65c8919f537f9f8d10fe909d30dc369494d31e2802",
           "batch": "1"
         }
       },
@@ -2931,8 +3755,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Mine: batch-1 Mountain 3 body with a timber mine entrance and an ore cart, composited on chibi-grass-1; same silhouette as its mountain.",
-      "acceptedAt": "2026-09-29T18:11:24.732Z"
+      "notes": "Mine: batch-1 Mountain 3 body with a timber mine entrance and an ore cart, composited on chibi-grass-1; same silhouette as its mountain. Bead pulp_wars-6gd.5: the same accepted body, re-composited over the rocky ground tile chibi-mountain-ground-1 instead of chibi-grass-1, so a Mountain tile reads as rocky terrain rather than one rock on the meadow (the user's playtest note).",
+      "acceptedAt": "2026-10-01T10:38:52.826Z"
     },
     "chibi-monument": {
       "id": "chibi-monument",
