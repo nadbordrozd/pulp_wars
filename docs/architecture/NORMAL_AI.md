@@ -3,12 +3,15 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r18`. Role facts resolve through the owner's
+previews under `pulp-wars-poc-7r19`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
 duration valuation, the endgame siege mode (`pulp_wars-1mc`), the
 revision-17 Goblin play (`pulp_wars-0ao.6`), and the revision-18 movement
-estimates (`pulp_wars-6gd.2`) are summarized below.
+estimates (`pulp_wars-6gd.2`) are summarized below. A revision-19 Dinosaur
+seat (`pulp_wars-c87.2`) plays with this ordinary policy on the Dinosaur
+registration until `pulp_wars-c87.5` adds its own heuristics; matches without
+a Dinosaur seat decide exactly as under revision 18.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening

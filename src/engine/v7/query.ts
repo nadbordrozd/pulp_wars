@@ -9,6 +9,9 @@ import {
   factionRulesV7,
   factionTreeV7,
   technologyCapabilitiesV7,
+  armouredDamageV7,
+  unitCapacitySlotsV7,
+  unitGrowsV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   cityUnitCapacityForV7,
@@ -45,10 +48,12 @@ import {
 } from "./explosions";
 import { INFECT_RISING_HP_V7 } from "./infect";
 import {
+  attackHasAcidV7,
   calculateCombatPreviewV7,
   gangUpBonusV7,
   undeadCombatEffectsV7,
 } from "./combat";
+import { growthHpGainV7 } from "./growth";
 import type { CombatPreviewV7, DomainEventV7 } from "./events";
 import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
@@ -378,9 +383,14 @@ function appendPublicCityCommandsV7(
     player.researchedTechs,
     player.faction,
   );
-  const assigned = view.units.filter(
-    (unit) => unit.ownerId === player.id && unit.homeCityId === city.id,
-  ).length;
+  // Revision 19 section 5.1: used slots are a sum (own units are always
+  // visible to their owner, with their home city).
+  const assigned = view.units
+    .filter((unit) => unit.ownerId === player.id && unit.homeCityId === city.id)
+    .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
+  const fits = (role: UnitRoleIdV7): boolean =>
+    assigned + unitCapacitySlotsV7(view, { ownerId: player.id, role }) <=
+    capacity;
   if (
     player.researchedTechs.includes("PLANNING") &&
     city.level >= 3 &&
@@ -400,7 +410,6 @@ function appendPublicCityCommandsV7(
     )
   )
     candidates.push({ kind: "LAND_GRANT", cityId: city.id });
-  if (assigned >= capacity) return;
   const forgeDiscount = view.improvementValues.some(
     (value) =>
       value.improvement === "FORGE" &&
@@ -414,6 +423,7 @@ function appendPublicCityCommandsV7(
     const rule = effectiveRoleRuleV7(role, player.faction);
     if (
       !centerBlocked &&
+      fits(role) &&
       role !== "PATROL_BOAT" &&
       role !== "BATTLESHIP" &&
       rule.cost !== null &&
@@ -428,6 +438,7 @@ function appendPublicCityCommandsV7(
   for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const) {
     const rule = effectiveRoleRuleV7(role, player.faction);
     if (
+      fits(role) &&
       rule.cost !== null &&
       (rule.technology === null ||
         player.researchedTechs.includes(rule.technology))
@@ -676,7 +687,13 @@ function appendPublicUnitCommandsV7(
     publicCaptureTarget(view, unit.at)
   )
     candidates.push({ kind: "CAPTURE", unitId: unit.id });
-  if (unit.form !== "EMBARKED" && unit.kills >= 3 && !unit.veteran)
+  // Revision 19: a Dinosaur unit grows instead and is never promoted.
+  if (
+    unit.form !== "EMBARKED" &&
+    unit.kills >= 3 &&
+    !unit.veteran &&
+    !unitGrowsV7(view, unit)
+  )
     candidates.push({ kind: "PROMOTE", unitId: unit.id });
   const tile = tileAtView(view, unit.at);
   if (
@@ -4042,10 +4059,19 @@ export function previewCityCapacityV7(
   readonly assigned: number;
   readonly available: number;
   readonly overCapacity: number;
+  /**
+   * Revision 19: the capacity slots of each role the city's owner can
+   * produce (a role with a cost in its registration), in role order.
+   */
+  readonly roleSlots: readonly {
+    readonly role: UnitRoleIdV7;
+    readonly slots: number;
+  }[];
 } | null {
   const city = state.cities.find((item) => item.id === cityId);
   if (city === undefined) return null;
   const capacity = cityUnitCapacityV7(state, city);
+  // Revision 19 section 5.1: `assigned` is the used-slot sum.
   const assigned = assignedUnitCountV7(state, cityId);
   return {
     cityId,
@@ -4053,6 +4079,13 @@ export function previewCityCapacityV7(
     assigned,
     available: Math.max(0, capacity - assigned),
     overCapacity: Math.max(0, assigned - capacity),
+    roleSlots: UNIT_ROLE_IDS_V7.filter(
+      (role) =>
+        unitRoleRuleV7(state, { ownerId: city.ownerId, role }).cost !== null,
+    ).map((role) => ({
+      role,
+      slots: unitCapacitySlotsV7(state, { ownerId: city.ownerId, role }),
+    })),
   };
 }
 
@@ -4574,8 +4607,13 @@ function publicCombatPreviewCore(
   const attack2 = rationalToHalfUnits(attack.total) + gangUp * 2;
   const targetTile = tileAtView(view, target.at);
   if (targetTile?.explored !== true) return null;
+  // Revision 19 Acid: a land-form Spitter's attack ignores the defender's
+  // cover and fortification.
+  const acid = attackHasAcidV7(attackerRule, attacker);
   const fortificationLevel =
-    target.form === "LAND" && targetTile.territoryOwnerId === target.ownerId
+    !acid &&
+    target.form === "LAND" &&
+    targetTile.territoryOwnerId === target.ownerId
       ? (targetTile.fortificationLevel ?? 0)
       : 0;
   const defense2 =
@@ -4583,6 +4621,7 @@ function publicCombatPreviewCore(
       ? 2
       : defenderRule.defense2 + fortificationLevel * 2;
   const bonus =
+    !acid &&
     target.form === "LAND" &&
     (targetTile.terrain === "FOREST" || targetTile.terrain === "MOUNTAIN")
       ? { numerator: 3, denominator: 2 }
@@ -4599,10 +4638,17 @@ function publicCombatPreviewCore(
   const defenseOnCommon = defenseForceNumerator * attackForceDenominator;
   const total = attackOnCommon + defenseOnCommon;
   if (total <= 0n) return null;
+  // Revision 19 Armoured: the reduction applies before the cap at HP.
+  const rawDefenderDamage = roundHalfUpPublic(
+    attackOnCommon * BigInt(attack2) * 9n,
+    total * 4n,
+  );
   const damageToDefender = Math.min(
     target.hp,
-    roundHalfUpPublic(attackOnCommon * BigInt(attack2) * 9n, total * 4n),
+    armouredDamageV7(view, target, rawDefenderDamage),
   );
+  const defenderArmoured =
+    damageToDefender < Math.min(target.hp, rawDefenderDamage);
   const defenderDies = damageToDefender >= target.hp;
   // Revision 14 (V1): an UNANSWERED attacker draws no retaliation.
   const unanswered = attackerRule.abilities.includes("UNANSWERED");
@@ -4616,12 +4662,15 @@ function publicCombatPreviewCore(
     distance <= defenderRule.range;
   // Section 13.2: retaliation uses the same fortified Defense as the
   // defender's force, exactly as canonical resolution does.
-  const damageToAttacker = retaliation
-    ? Math.min(
-        attacker.hp,
-        roundHalfUpPublic(defenseOnCommon * BigInt(defense2) * 9n, total * 4n),
-      )
+  const rawAttackerDamage = retaliation
+    ? roundHalfUpPublic(defenseOnCommon * BigInt(defense2) * 9n, total * 4n)
     : 0;
+  const damageToAttacker = Math.min(
+    attacker.hp,
+    armouredDamageV7(view, attacker, rawAttackerDamage),
+  );
+  const attackerArmoured =
+    damageToAttacker < Math.min(attacker.hp, rawAttackerDamage);
   const attackerDies = damageToAttacker >= attacker.hp;
   // Revision 17: the Bomb Chucker's bomb (splash target mode `ALL`) lists
   // visible own and allied units too.
@@ -4645,7 +4694,11 @@ function publicCombatPreviewCore(
         .map((unit) => {
           const damage = Math.min(
             unit.hp,
-            Math.max(1, Math.ceil(damageToDefender / 2)),
+            armouredDamageV7(
+              view,
+              unit,
+              Math.max(1, Math.ceil(damageToDefender / 2)),
+            ),
           );
           return {
             unitId: unit.id,
@@ -4754,6 +4807,10 @@ function publicCombatPreviewCore(
       defenderDies,
     }),
     ...afflictions,
+    stampede: 0,
+    acid,
+    defenderArmoured,
+    attackerArmoured,
   };
 }
 
@@ -5013,10 +5070,32 @@ function publicAttackChainV7(
     if (isExplodingUnitV7(view, attacker))
       initial.push({ unit: attacker, cause: "DEATH" });
   } else
+    // Revision 19 Grow: a surviving Dinosaur attacker gains its growth HP
+    // before the chain (the defender and every hostile splash death count).
     units.push({
       ...attacker,
       at: preview.advances ? target.at : attacker.at,
-      hp: attacker.hp - preview.damageToAttacker + preview.attackerHeal,
+      hp:
+        attacker.hp -
+        preview.damageToAttacker +
+        preview.attackerHeal +
+        growthHpGainV7(
+          view,
+          attackerUnit,
+          attackerUnit.kills,
+          attackerUnit.kills +
+            (preview.defenderDies ? 1 : 0) +
+            preview.splash.filter((entry) => {
+              const victim = view.units.find(
+                (unit) => unit.id === entry.unitId,
+              );
+              return (
+                entry.dies &&
+                victim !== undefined &&
+                publicHostile(view, attackerUnit.ownerId, victim.ownerId)
+              );
+            }).length,
+        ),
     });
   if (!preview.defenderDies)
     units.push({
@@ -5028,7 +5107,16 @@ function publicAttackChainV7(
               y: target.at.y * 2 - attacker.at.y,
             }
           : target.at,
-      hp: target.hp - preview.damageToDefender + preview.defenderHeal,
+      hp:
+        target.hp -
+        preview.damageToDefender +
+        preview.defenderHeal +
+        growthHpGainV7(
+          view,
+          targetUnit,
+          targetUnit.kills,
+          targetUnit.kills + (preview.attackerDies ? 1 : 0),
+        ),
     });
   units.push(...risings);
   const splashRingUnexplored =

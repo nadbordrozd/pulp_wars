@@ -195,6 +195,26 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "dock",
     "discountSource",
   ],
+  EGG_LAID: [
+    "kind",
+    "playerId",
+    "cityId",
+    "unitId",
+    "role",
+    "cost",
+    "at",
+    "hp",
+    "turnsRemaining",
+  ],
+  EGG_HATCHED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "role",
+    "at",
+    "cause",
+    "sourceUnitId",
+  ],
   UNIT_EMBARKED: ["kind", "playerId", "unitId", "passengerRole", "from", "to"],
   UNIT_DISEMBARKED: [
     "kind",
@@ -258,6 +278,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNIT_RECOVERED: ["kind", "unitId", "amount", "automatic"],
   UNIT_WAITED: ["kind", "playerId", "unitId"],
   UNIT_PROMOTED: ["kind", "unitId", "maxHp"],
+  UNIT_GREW: ["kind", "unitId", "stage", "maxHp", "hp"],
   UNIT_DIED: ["kind", "unitId", "cause"],
   UNIT_INFECTED: [
     "kind",
@@ -408,6 +429,11 @@ export function parsePlayerEventEnvelopeV7(
       events.push(projectedRestoration);
       continue;
     }
+    const projectedEgg = parseProjectedEggLaid(candidate);
+    if (projectedEgg !== null) {
+      events.push(projectedEgg);
+      continue;
+    }
     const projectedRaise = parseProjectedDeadRaised(candidate);
     if (projectedRaise !== null) {
       events.push(projectedRaise);
@@ -475,6 +501,22 @@ function parseProjectedRestorationEvent(input: unknown): PlayerEventV7 | null {
       "improvement" in input ? (input.improvement as ImprovementIdV7) : null,
     ),
   });
+  return canonical.ok ? (input as PlayerEventV7) : null;
+}
+
+/** Revision 19: a viewer other than the owner sees `EGG_LAID` without cost. */
+function parseProjectedEggLaid(input: unknown): PlayerEventV7 | null {
+  if (
+    typeof input !== "object" ||
+    input === null ||
+    Array.isArray(input) ||
+    !("kind" in input) ||
+    input.kind !== "EGG_LAID" ||
+    !("cost" in input) ||
+    input.cost !== null
+  )
+    return null;
+  const canonical = parseEventV7({ ...input, cost: 1 });
   return canonical.ok ? (input as PlayerEventV7) : null;
 }
 
@@ -791,6 +833,31 @@ function validPayload(
           Math.max(1, trainingCost(e.role) - (e.dock === "SHIPYARD" ? 2 : 0)) &&
         parseCoordV7(e.at) !== null
       );
+    case "EGG_LAID":
+      // Revision 19: an Egg has 6 or 10 HP and at most three turns to hatch.
+      return (
+        id(e.playerId) &&
+        id(e.cityId) &&
+        id(e.unitId) &&
+        UNIT_ROLE_IDS_V7.includes(e.role as never) &&
+        pos(e.cost) &&
+        parseCoordV7(e.at) !== null &&
+        (e.hp === 6 || e.hp === 10) &&
+        (e.turnsRemaining === 1 ||
+          e.turnsRemaining === 2 ||
+          e.turnsRemaining === 3)
+      );
+    case "EGG_HATCHED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        UNIT_ROLE_IDS_V7.includes(e.role as never) &&
+        parseCoordV7(e.at) !== null &&
+        ((e.cause === "TIME" && e.sourceUnitId === null) ||
+          (e.cause === "SHAMAN" &&
+            id(e.sourceUnitId) &&
+            e.sourceUnitId !== e.unitId))
+      );
     case "UNIT_EMBARKED":
     case "UNIT_DISEMBARKED":
       return (
@@ -927,6 +994,14 @@ function validPayload(
       return id(e.playerId) && id(e.unitId);
     case "UNIT_PROMOTED":
       return id(e.unitId) && pos(e.maxHp);
+    case "UNIT_GREW":
+      return (
+        id(e.unitId) &&
+        (e.stage === 1 || e.stage === 2) &&
+        pos(e.maxHp) &&
+        pos(e.hp) &&
+        Number(e.hp) <= Number(e.maxHp)
+      );
     case "UNIT_DIED":
       return (
         id(e.unitId) &&
@@ -939,6 +1014,7 @@ function validPayload(
           "PLAGUE",
           "KABOOM",
           "EXPLOSION",
+          "CITY_CAPTURED",
         ].includes(e.cause as string)
       );
     case "UNIT_INFECTED":
@@ -1013,6 +1089,10 @@ function combat(input: unknown): boolean {
       "retaliation",
       "splash",
       "targetUnitId",
+      "stampede",
+      "acid",
+      "defenderArmoured",
+      "attackerArmoured",
     ])
   )
     return false;
@@ -1029,6 +1109,17 @@ function combat(input: unknown): boolean {
     ].every(pos) &&
     isPositiveSafeIntegerV7(input.attacksUsed) &&
     (input.gangUp === 0 || input.gangUp === 1 || input.gangUp === 2) &&
+    // Revision 19: the Stampede run bonus and the Acid and Armoured flags.
+    (input.stampede === 0 || input.stampede === 1 || input.stampede === 2) &&
+    [input.acid, input.defenderArmoured, input.attackerArmoured].every(
+      (item) => typeof item === "boolean",
+    ) &&
+    (input.acid !== true ||
+      (input.fortificationLevel === 0 &&
+        input.defenseBonusNumerator === 1 &&
+        input.defenseBonusDenominator === 1)) &&
+    (input.defenderArmoured !== true || Number(input.damageToDefender) >= 1) &&
+    (input.attackerArmoured !== true || Number(input.damageToAttacker) >= 1) &&
     (input.attacksRemaining === 0 || input.attacksRemaining === 1) &&
     input.overrunContinues === (input.attacksRemaining === 1) &&
     (!input.overrunContinues ||
@@ -1087,7 +1178,7 @@ function combat(input: unknown): boolean {
       input.push as string,
     ) &&
     (input.noRetaliationReason === null ||
-      ["DEFENDER_DIED", "OUT_OF_RANGE", "UNANSWERED"].includes(
+      ["DEFENDER_DIED", "OUT_OF_RANGE", "UNANSWERED", "STAMPEDE"].includes(
         input.noRetaliationReason as string,
       ))
   );

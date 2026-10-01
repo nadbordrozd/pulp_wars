@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r18" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r19" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -29,17 +29,20 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r15",
   "pulp-wars-poc-7r16",
   "pulp-wars-poc-7r17",
+  "pulp-wars-poc-7r18",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r18.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r19.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
   "GOBLIN",
+  "DINOSAUR",
 ] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
   "UNDEAD_BASELINE_V1",
   "GOBLIN_BASELINE_V1",
+  "DINOSAUR_BASELINE_V1",
 ] as const);
 export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
@@ -125,6 +128,8 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "DEVOUR",
   "WAIL",
   "KABOOM",
+  "STAMPEDE",
+  "HATCH",
   "RECOVER",
   "CAPTURE",
   "PROMOTE",
@@ -156,6 +161,7 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "LAND_GRANT",
   "TRAIN",
   "TRAIN_NAVAL",
+  "LAY_EGG",
   "BUILD_FIELD_DEFENSE",
   "DISEMBARK",
   "CHOOSE_CITY_REWARD",
@@ -216,6 +222,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "MONUMENT_BUILT",
   "UNIT_TRAINED",
   "NAVAL_UNIT_TRAINED",
+  "EGG_LAID",
+  "EGG_HATCHED",
   "UNIT_EMBARKED",
   "UNIT_DISEMBARKED",
   "UNIT_REWARD_GRANTED",
@@ -238,6 +246,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_RECOVERED",
   "UNIT_WAITED",
   "UNIT_PROMOTED",
+  "UNIT_GREW",
   "UNIT_DIED",
   "UNIT_INFECTED",
   "GRAVE_CREATED",
@@ -359,12 +368,19 @@ export interface UnitActivationV7 {
   readonly specialActed: boolean;
 }
 
+export type UnitFormV7 = "LAND" | "EMBARKED" | "NAVAL" | "EGG";
+
 export interface UnitStateV7 {
   readonly id: UnitId;
   readonly ownerId: PlayerId;
   readonly homeCityId: CityId | null;
   readonly role: UnitRoleIdV7;
-  readonly form: "LAND" | "EMBARKED" | "NAVAL";
+  /**
+   * Revision 19: `EGG` is a Dinosaur Egg (an immobile unit with a countdown
+   * in `GameStateV7.eggs`). Eggs are laid from `pulp_wars-c87.3`; until then
+   * no state holds one.
+   */
+  readonly form: UnitFormV7;
   readonly at: CoordV7;
   readonly hp: number;
   readonly maxHp: number;
@@ -478,6 +494,11 @@ export interface GameStateV7 {
    * empty in a match whose setup has no UNDEAD seat.
    */
   readonly bitten: readonly BittenStatusV7[];
+  /**
+   * Revision 19 Eggs: one entry per unit of form `EGG`, sorted by `unitId`.
+   * Always empty in a match whose setup has no DINOSAUR seat.
+   */
+  readonly eggs: readonly EggStatusV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -502,4 +523,15 @@ export interface BittenStatusV7 {
   readonly unitId: UnitId;
   readonly biterPlayerId: PlayerId;
   readonly biterUnitId: UnitId;
+}
+
+/**
+ * Revision 19: the countdown of the Egg `unitId`. `turnsRemaining` is the
+ * number of its owner's Start Turns still to come before it hatches (at least
+ * 1); `laidThisTurn` is true from `LAY_EGG` until its owner's next Start Turn.
+ */
+export interface EggStatusV7 {
+  readonly unitId: UnitId;
+  readonly turnsRemaining: number;
+  readonly laidThisTurn: boolean;
 }

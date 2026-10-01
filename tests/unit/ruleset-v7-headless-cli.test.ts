@@ -47,7 +47,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     const result = runCli(
       "match",
       "--ruleset",
-      "pulp-wars-poc-7r18",
+      "pulp-wars-poc-7r19",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -56,7 +56,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     expect(result).toMatchObject({
       acceptedCommands: 1,
       termination: "COMMAND_CAP",
-      metrics: { rulesetId: "pulp-wars-poc-7r18" },
+      metrics: { rulesetId: "pulp-wars-poc-7r19" },
     });
   });
 
@@ -65,20 +65,20 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       runCli(
         "match",
         "--ruleset",
-        "pulp-wars-poc-7r18",
+        "pulp-wars-poc-7r19",
         "--factions",
         "original,candy",
         "--max-commands",
         "1",
       ),
     ).toThrow(
-      /ruleset 7 --factions values must be original \(human\), undead, or goblin/,
+      /ruleset 7 --factions values must be original \(human\), undead, goblin, or dinosaur/,
     );
     expect(() =>
       runCli(
         "match",
         "--ruleset",
-        "pulp-wars-poc-7r18",
+        "pulp-wars-poc-7r19",
         "--factions",
         "undead",
         "--max-commands",
@@ -87,13 +87,13 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     ).toThrow(/ruleset 7 --factions must contain exactly 2 seat values/);
     expect(() =>
       runCli("match", "--ruleset", "pulp-wars-poc-7", "--max-commands", "1"),
-    ).toThrow(/pulp-wars-poc-7r18/);
+    ).toThrow(/pulp-wars-poc-7r19/);
   }, 15_000);
 
   it("accepts seat-ordered Human, Undead, and Goblin factions in match and batch modes", () => {
     const common = [
       "--ruleset",
-      "pulp-wars-poc-7r18",
+      "pulp-wars-poc-7r19",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -119,6 +119,11 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       readonly metrics: { readonly factionsBySeat: readonly string[] };
     }>("match", ...common, "--factions", "Goblin,original");
     expect(goblin.metrics.factionsBySeat).toEqual(["GOBLIN", "ORIGINAL"]);
+    // Revision 19: `dinosaur` is accepted the same way, in any seat.
+    const dinosaur = runCli<{
+      readonly metrics: { readonly factionsBySeat: readonly string[] };
+    }>("match", ...common, "--factions", "human,Dinosaur");
+    expect(dinosaur.metrics.factionsBySeat).toEqual(["ORIGINAL", "DINOSAUR"]);
 
     const batch = runCli<{
       readonly entries: readonly {
@@ -162,7 +167,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
   it("defaults to Continents and accepts all map types in match and batch modes", () => {
     const common = [
       "--ruleset",
-      "pulp-wars-poc-7r18",
+      "pulp-wars-poc-7r19",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -202,7 +207,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
   it("accepts the showcase map type at size 16 only", () => {
     const common = [
       "--ruleset",
-      "pulp-wars-poc-7r18",
+      "pulp-wars-poc-7r19",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -220,7 +225,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     expect(match).toMatchObject({
       acceptedCommands: 1,
       termination: "COMMAND_CAP",
-      metrics: { rulesetId: "pulp-wars-poc-7r18" },
+      metrics: { rulesetId: "pulp-wars-poc-7r19" },
     });
     const explicit = runCli(
       "match",

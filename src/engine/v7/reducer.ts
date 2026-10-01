@@ -13,6 +13,8 @@ import {
   isRallyTargetV7,
   playerFactionV7,
   technologyCapabilitiesV7,
+  unitCapacitySlotsV7,
+  unitGrowsV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   isResourceRevealedV7,
@@ -53,6 +55,7 @@ import {
   recordCombatDeathV7,
   withoutGravesV7,
 } from "./graves";
+import { grownUnitV7 } from "./growth";
 import { recordInfectionV7 } from "./infect";
 import {
   biteOfV7,
@@ -149,7 +152,13 @@ export type RuleErrorCodeV7 =
   | "PILLAGE_INVALID_TARGET"
   | "WAIL_NOT_LEGAL"
   | "KABOOM_NOT_LEGAL"
-  | "DISBAND_NOT_LEGAL";
+  | "DISBAND_NOT_LEGAL"
+  // Revision 19 (returned from `pulp_wars-c87.3`): an illegal Stampede
+  // (`MOVED`, `EMBARKED`, `NOT_IN_LANE`, `LANE_BLOCKED`), an illegal Hatch
+  // (`EMBARKED`, `NO_EGG`, `LAID_THIS_TURN`), and a unit command naming an Egg.
+  | "STAMPEDE_NOT_LEGAL"
+  | "HATCH_NOT_LEGAL"
+  | "UNIT_IS_EGG";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -397,6 +406,9 @@ function applyCommandCoreV7(
     return applyLandGrant(stateInput, state, actor, command.cityId);
   if (command.kind === "END_TURN")
     return applyEndTurn(stateInput, state, actor);
+  // Revision 19: `LAY_EGG`, `HATCH`, and `STAMPEDE` are declared and parsed
+  // with the identity, but their rules land with `pulp_wars-c87.3`. Until
+  // then no Egg exists, they are never offered, and they are rejected here.
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -1364,7 +1376,12 @@ function applyTrainNaval(
     !player.researchedTechs.includes(rule.technology)
   )
     return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
-  if (assignedUnitCountV7(state, city.id) >= cityUnitCapacityV7(state, city))
+  // Revision 19 section 5.1: used slots plus the role's slots must fit.
+  if (
+    assignedUnitCountV7(state, city.id) +
+      unitCapacitySlotsV7(state, { ownerId: actor, role: command.role }) >
+    cityUnitCapacityV7(state, city)
+  )
     return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
   const cost =
     rule.cost === null
@@ -1593,7 +1610,13 @@ function applyTrain(
     return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
   if (state.units.some((unit) => unit.hp > 0 && same(unit.at, city.at)))
     return rejected(original, "CITY_SPAWN_OCCUPIED", { cityId: city.id });
-  if (assignedUnitCountV7(state, city.id) >= cityUnitCapacityV7(state, city))
+  // Revision 19 section 5.1: used slots plus the role's slots must fit (a
+  // 2-slot Dinosaur role needs two free slots).
+  if (
+    assignedUnitCountV7(state, city.id) +
+      unitCapacitySlotsV7(state, { ownerId: actor, role: command.role }) >
+    cityUnitCapacityV7(state, city)
+  )
     return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
   const forgeActive = state.board.tiles.some(
     (tile) =>
@@ -2174,22 +2197,28 @@ function resolveTreasure(
   if (!state.treasureChests.some((chest) => same(chest, at))) return null;
   const draw = nextBounded(state.random, 2);
   const requestedReward = draw.value === 0 ? "COINS" : "KNIGHT";
+  // Revision 19 section 9.8: the treasure unit's role is a faction rule
+  // (`KNIGHT`; `RAIDER`, the Raptor, for a Dinosaur seat). The serialized
+  // reward literal stays `KNIGHT` for every faction.
+  const treasureRole = factionRulesV7(
+    requirePlayer(state, actor).faction,
+  ).treasureUnitRole;
   const placement =
     requestedReward === "KNIGHT"
-      ? treasureKnightPlacement(state, actor, mover, at)
+      ? treasureKnightPlacement(state, actor, mover, at, treasureRole)
       : null;
   if (placement !== null) {
     const allocation = allocateUnitId(state.nextEntityId);
-    // Revision 13: the treasure KNIGHT is the actor's faction unit.
+    // Revision 13: the treasure unit is the actor's faction unit.
     const rule = effectiveRoleRuleV7(
-      "KNIGHT",
+      treasureRole,
       requirePlayer(state, actor).faction,
     );
     const spawnedUnit: UnitStateV7 = {
       id: allocation.id,
       ownerId: actor,
       homeCityId: placement.homeCityId,
-      role: "KNIGHT",
+      role: treasureRole,
       form: "LAND",
       at: placement.at,
       hp: rule.maxHp,
@@ -2254,12 +2283,16 @@ function treasureKnightPlacement(
   actor: PlayerId,
   mover: UnitStateV7,
   at: CoordV7,
+  role: UnitStateV7["role"],
 ): { readonly at: CoordV7; readonly homeCityId: CityStateV7["id"] } | null {
+  // Revision 19 section 5.1: the home city needs the treasure unit's slots.
+  const slots = unitCapacitySlotsV7(state, { ownerId: actor, role });
   const cities = state.cities
     .filter(
       (city) =>
         city.ownerId === actor &&
-        assignedUnitCountV7(state, city.id) < cityUnitCapacityV7(state, city),
+        assignedUnitCountV7(state, city.id) + slots <=
+          cityUnitCapacityV7(state, city),
     )
     .sort(
       (a, b) =>
@@ -2397,7 +2430,7 @@ function applyAttack(
         handled: !preview.escapeAvailable,
       },
     };
-    const defenderAfter: UnitStateV7 = {
+    let defenderAfter: UnitStateV7 = {
       ...defender,
       at: pushDestination ?? defender.at,
       hp: defender.hp - preview.damageToDefender + preview.defenderHeal,
@@ -2405,6 +2438,24 @@ function applyAttack(
       captureEligible:
         pushDestination === null ? defender.captureEligible : false,
     };
+    // Revision 19 Grow (section 5.2): a surviving Dinosaur unit grows at the
+    // moment its kill is credited, after the exchange's damage and Lifesteal
+    // and before the advance, the Push, and any chain reaction.
+    const growthEvents: DomainEventV7[] = [];
+    if (!preview.attackerDies)
+      attackerAfter = grownUnitV7(
+        state,
+        attacker.kills,
+        attackerAfter,
+        growthEvents,
+      );
+    if (!preview.defenderDies)
+      defenderAfter = grownUnitV7(
+        state,
+        defender.kills,
+        defenderAfter,
+        growthEvents,
+      );
     const splashDamage = new Map(
       preview.splash.map((entry) => [entry.unitId, entry.damage] as const),
     );
@@ -2549,6 +2600,7 @@ function applyAttack(
         biterPlayerId: defender.ownerId,
         biterUnitId: defender.id,
       });
+    events.push(...growthEvents);
     if (preview.advances)
       events.push({
         kind: "UNIT_MOVED",
@@ -3152,7 +3204,13 @@ function applyPromote(
   const unit = actorCheck.unit;
   if (unit.activation.overrunActive)
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
-  if (unit.form === "EMBARKED" || unit.veteran || unit.kills < 3)
+  // Revision 19: a Dinosaur unit grows instead and is never promoted.
+  if (
+    unit.form === "EMBARKED" ||
+    unit.veteran ||
+    unit.kills < 3 ||
+    unitGrowsV7(state, unit)
+  )
     return rejected(original, "PROMOTION_NOT_ELIGIBLE", { unitId });
   const maxHp = unit.maxHp + 5;
   if (

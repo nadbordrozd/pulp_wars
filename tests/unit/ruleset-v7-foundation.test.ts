@@ -37,12 +37,18 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r18");
-    expect(FACTION_IDS_V7).toEqual(["ORIGINAL", "UNDEAD", "GOBLIN"]);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r19");
+    expect(FACTION_IDS_V7).toEqual([
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+    ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
       "UNDEAD_BASELINE_V1",
       "GOBLIN_BASELINE_V1",
+      "DINOSAUR_BASELINE_V1",
     ]);
     expect(RESOURCE_IDS_V7).toEqual([
       "FRUIT",
@@ -79,8 +85,40 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "BATTLESHIP",
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(43);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(69);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(46);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(72);
+    // Revision 19 inserts STAMPEDE and HATCH after KABOOM, LAY_EGG after
+    // TRAIN_NAVAL, EGG_LAID and EGG_HATCHED after NAVAL_UNIT_TRAINED, and
+    // UNIT_GREW after UNIT_PROMOTED (Dinosaur spec section 10).
+    expect(
+      COMMAND_KIND_ORDER_V7.slice(
+        COMMAND_KIND_ORDER_V7.indexOf("KABOOM"),
+        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 4,
+      ),
+    ).toEqual(["KABOOM", "STAMPEDE", "HATCH", "RECOVER"]);
+    expect(
+      COMMAND_KIND_ORDER_V7.slice(
+        COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL"),
+        COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL") + 3,
+      ),
+    ).toEqual(["TRAIN_NAVAL", "LAY_EGG", "BUILD_FIELD_DEFENSE"]);
+    expect(
+      DOMAIN_EVENT_KIND_ORDER_V7.slice(
+        DOMAIN_EVENT_KIND_ORDER_V7.indexOf("NAVAL_UNIT_TRAINED"),
+        DOMAIN_EVENT_KIND_ORDER_V7.indexOf("NAVAL_UNIT_TRAINED") + 4,
+      ),
+    ).toEqual([
+      "NAVAL_UNIT_TRAINED",
+      "EGG_LAID",
+      "EGG_HATCHED",
+      "UNIT_EMBARKED",
+    ]);
+    expect(
+      DOMAIN_EVENT_KIND_ORDER_V7.slice(
+        DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_PROMOTED"),
+        DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_PROMOTED") + 3,
+      ),
+    ).toEqual(["UNIT_PROMOTED", "UNIT_GREW", "UNIT_DIED"]);
     // Revision 17 inserts KABOOM after WAIL and EXPLOSION_RESOLVED after
     // WAIL_RESOLVED (Goblin spec section 9).
     expect(
@@ -88,7 +126,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
         COMMAND_KIND_ORDER_V7.indexOf("WAIL"),
         COMMAND_KIND_ORDER_V7.indexOf("WAIL") + 3,
       ),
-    ).toEqual(["WAIL", "KABOOM", "RECOVER"]);
+    ).toEqual(["WAIL", "KABOOM", "STAMPEDE"]);
     expect(
       DOMAIN_EVENT_KIND_ORDER_V7.slice(
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED"),

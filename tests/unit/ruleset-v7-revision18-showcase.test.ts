@@ -114,7 +114,8 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         expect(created.ok).toBe(true);
         accepted += 1;
       }
-    expect(accepted).toBe(9 + 27 + 81);
+    // Revision 19: four factions (16, 64, and 256 mixes).
+    expect(accepted).toBe(16 + 64 + 256);
     for (const aiMode of ["RIVAL", "COOPERATIVE"] as const)
       expect(createPlayableGameV7(showcaseSetup(THREE, { aiMode })).ok).toBe(
         true,
@@ -147,7 +148,10 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
   });
 
   it("keeps the five generated map types byte-identical", () => {
-    // First-turn state hashes recorded at bf18c3f, before SHOWCASE existed.
+    // First-turn state hashes recorded at bf18c3f (identity
+    // `pulp-wars-poc-7r18`), before SHOWCASE existed. Revision 19
+    // (`pulp_wars-c87.2`) changes these states only through the identity and
+    // the empty `eggs` list, so the same hashes return once both are undone.
     const pinned = {
       DRY_LAND:
         "82f66f98a5ee995551537573fd5644730860105cd5da95ce14774e1abd2659af",
@@ -164,7 +168,19 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         showcaseSetup(THREE, { mapType: mapType as MatchSetupV7["mapType"] }),
       );
       if (!created.ok) throw new Error(`${mapType} rejected`);
-      expect(canonicalHash(created.state), mapType).toBe(hash);
+      const { eggs, ...revision18State } = created.state;
+      expect(eggs).toEqual([]);
+      expect(
+        canonicalHash(
+          JSON.parse(
+            JSON.stringify(revision18State).replaceAll(
+              RULESET_7_ID,
+              "pulp-wars-poc-7r18",
+            ),
+          ),
+        ),
+        mapType,
+      ).toBe(hash);
     }
   });
 
@@ -700,10 +716,13 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
         });
       });
       // Within capacity: Capital 5 of 7, North 3 of 6, Coast 2 of 5, each
-      // capacity one higher for a Goblin seat.
+      // capacity one higher for a Goblin seat. Revision 19 (root decision):
+      // a Dinosaur capital starts at 8 of 7 slots, because the Triceratops,
+      // T-Rex, and Brontosaurus homed to it use two slots each
+      // (tests/unit/ruleset-v7-dinosaur-faction.test.ts).
       const bonus = player.faction === "GOBLIN" ? 1 : 0;
       for (const [home, assigned, capacity] of [
-        ["CAPITAL", 5, 7],
+        ["CAPITAL", player.faction === "DINOSAUR" ? 8 : 5, 7],
         ["NORTH", 3, 6],
         ["COAST", 2, 5],
       ] as const) {
@@ -724,7 +743,7 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       FACTION_IDS_V7.map(
         (faction) => effectiveRoleRuleV7("JUGGERNAUT", faction).label,
       ),
-    ).toEqual(["Juggernaut", "Abomination", "Troll"]);
+    ).toEqual(["Juggernaut", "Abomination", "Troll", "Brontosaurus"]);
   });
 });
 

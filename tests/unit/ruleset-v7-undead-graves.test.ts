@@ -783,7 +783,12 @@ describe("ruleset-7 revision-13 Restless recovery", () => {
           rules.restless,
         ]),
       ),
-    ).toEqual({ ORIGINAL: false, UNDEAD: true, GOBLIN: false });
+    ).toEqual({
+      ORIGINAL: false,
+      UNDEAD: true,
+      GOBLIN: false,
+      DINOSAUR: false,
+    });
   });
 
   it("allows explicit Recover only in own territory and offers nothing elsewhere", () => {

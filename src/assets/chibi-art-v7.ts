@@ -5,6 +5,7 @@ import type {
   ResourceIdV7,
   TechnologyIdV7,
   TerrainIdV7,
+  UnitFormV7,
   UnitRoleIdV7,
 } from "../engine/index";
 
@@ -27,6 +28,11 @@ export type ArtSubjectV7 =
   | `UNIT:UNDEAD:${UndeadArtRoleV7}`
   /** Revision 17: the Goblin units (bead pulp_wars-0ao.8, GOBLIN.md). */
   | `UNIT:GOBLIN:${GoblinArtRoleV7}`
+  /**
+   * Revision 19: the Dinosaur units and the one Egg sprite shared by every
+   * role (rasters land with bead pulp_wars-c87.7, DINOSAUR.md).
+   */
+  | `UNIT:DINOSAUR:${DinosaurArtRoleV7 | "EGG"}`
   | `CITY:${1 | 2 | 3}`
   /**
    * Faction city sets (bead pulp_wars-6gd.6): the Undead necropolis and the
@@ -94,6 +100,12 @@ export type UndeadArtRoleV7 = Exclude<
  */
 export type GoblinArtRoleV7 = UndeadArtRoleV7;
 
+/**
+ * Roles with their own Dinosaur art (docs/art/factions/DINOSAUR.md): the same
+ * land roles; Dinosaur ships reuse the Human ship art.
+ */
+export type DinosaurArtRoleV7 = UndeadArtRoleV7;
+
 /** Factions with their own city art; every other faction uses `CITY:<level>`. */
 export type CityArtFactionV7 = "UNDEAD" | "GOBLIN";
 
@@ -123,15 +135,19 @@ const SHARED_ART_ROLES_V7: readonly UnitRoleIdV7[] = [
  */
 export function unitArtSubjectV7(unit: {
   readonly role: UnitRoleIdV7;
-  readonly form: "LAND" | "EMBARKED" | "NAVAL";
+  readonly form: UnitFormV7;
   readonly faction: FactionIdV7;
 }): ArtSubjectV7 {
   if (unit.form === "EMBARKED") return "UNIT:EMBARKED_TRANSPORT";
+  // Revision 19: one Egg sprite for every role inside.
+  if (unit.form === "EGG") return "UNIT:DINOSAUR:EGG";
   if (SHARED_ART_ROLES_V7.includes(unit.role)) return `UNIT:${unit.role}`;
   if (unit.faction === "UNDEAD")
     return `UNIT:UNDEAD:${unit.role as UndeadArtRoleV7}`;
   if (unit.faction === "GOBLIN")
     return `UNIT:GOBLIN:${unit.role as GoblinArtRoleV7}`;
+  if (unit.faction === "DINOSAUR")
+    return `UNIT:DINOSAUR:${unit.role as DinosaurArtRoleV7}`;
   return `UNIT:${unit.role}`;
 }
 
@@ -143,12 +159,15 @@ export function unitArtSubjectV7(unit: {
  * fall back to the Human art with the Goblin badge, and
  * `ICON:ACTION:GOBLIN:RALLY` (WAAAGH!) to the Human Rally horn. A faction
  * city (`CITY:UNDEAD:<level>`, `CITY:GOBLIN:<level>`) falls back to the Human
- * `CITY:<level>`. Every other subject has no fallback.
+ * `CITY:<level>`. Revision 19: `UNIT:DINOSAUR:<ROLE>` falls back to the
+ * Human `UNIT:<ROLE>` until its raster lands; the Egg (`UNIT:DINOSAUR:EGG`)
+ * has no Human counterpart. Every other subject has no fallback.
  */
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
 ): ArtSubjectV7 | null {
-  for (const faction of [":UNDEAD:", ":GOBLIN:"])
+  if (subject === "UNIT:DINOSAUR:EGG") return null;
+  for (const faction of [":UNDEAD:", ":GOBLIN:", ":DINOSAUR:"])
     if (subject.includes(faction))
       return subject.replace(faction, ":") as ArtSubjectV7;
   return null;

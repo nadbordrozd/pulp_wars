@@ -16,6 +16,7 @@ import {
   type ResourceIdV7,
   type TechnologyIdV7,
   type TerrainIdV7,
+  type UnitFormV7,
   type UnitRoleIdV7,
 } from "../v7/types";
 
@@ -102,6 +103,11 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "NECROMANCER_SUPPORT" }
   /** Revision 17 Goblins: the Orc Warboss's WAAAGH! (Rally, radius 2). */
   | { readonly kind: "WAAAGH_SUPPORT" }
+  /**
+   * Revision 19 Dinosaurs: Nesting (the Dinosaur `FORTIFICATION`): Eggs laid
+   * by the owner have `eggHp` more HP and hatch `hatchTurns` sooner.
+   */
+  | { readonly kind: "NESTING"; readonly eggHp: 4; readonly hatchTurns: 1 }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -144,7 +150,15 @@ export type UnitRoleAbilityV7 =
   // Revision 17 Goblins: goblin-crewed units may blow themselves up (the
   // KABOOM command); the Troll regenerates.
   | "KABOOM"
-  | "REGENERATE";
+  | "REGENERATE"
+  // Revision 19 Dinosaurs: the Triceratops Stampede and the Shaman Hatch
+  // (commands from `pulp_wars-c87.3`), the Spitter's Acid, the Ankylosaurus's
+  // Armoured, and growth from kills instead of Promotion.
+  | "STAMPEDE"
+  | "HATCH"
+  | "ACID"
+  | "ARMOURED"
+  | "GROW";
 
 export interface EffectiveRoleRuleV7 {
   readonly role: UnitRoleIdV7;
@@ -204,6 +218,20 @@ export interface RoleMechanicsV7 {
   readonly deathBlastDamage: number | null;
   /** Revision 17: HP regenerated at its owner's Start Turn (the Troll). */
   readonly regeneration: number;
+  /**
+   * Revision 19: the city capacity the unit (or its Egg) uses: 2 for the
+   * Triceratops, T-Rex, and Brontosaurus, 1 for every other role.
+   */
+  readonly capacitySlots: 1 | 2;
+  /**
+   * Revision 19: the Egg's hatch time in owner Start Turns, or null for a
+   * role that is not egg-laid.
+   */
+  readonly hatchTurns: 1 | 2 | 3 | null;
+  /** Revision 19: Stampede `attack2` per lane tile run (0 without Stampede). */
+  readonly stampedeRunBonus2: 0 | 2;
+  /** Revision 19 Armoured: damage removed from every hit of 2 or more. */
+  readonly armourReduction: 0 | 1;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -821,6 +849,10 @@ const mechanics = (
           kaboomDamage: null,
           deathBlastDamage: null,
           regeneration: 0,
+          capacitySlots: 1,
+          hatchTurns: null,
+          stampedeRunBonus2: 0,
+          armourReduction: 0,
           ...overrides[roleId],
         },
       ]),
@@ -1194,6 +1226,181 @@ export const GOBLIN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
   roleMechanics: GOBLIN_ROLE_MECHANICS_V7,
 });
 
+/**
+ * Revision 19 Dinosaur technology graph: identical to ORIGINAL_BASELINE_V5
+ * except that Fortification (displayed as Nesting) grants `NESTING` instead
+ * of `BUILD_FIELD_DEFENSE`. Chivalry keeps Overrun (displayed as Rampage) and
+ * Raiding keeps the Charge bonus (displayed as Pounce).
+ */
+export const DINOSAUR_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
+  deepFreeze(
+    ORIGINAL_BASELINE_V5_NODES.map((original) =>
+      node(
+        original.id,
+        original.branch,
+        original.tier,
+        original.prerequisites,
+        original.unlocks.map((unlock): TechnologyUnlockV7 =>
+          unlock.kind === "COMMAND" && unlock.command === "BUILD_FIELD_DEFENSE"
+            ? { kind: "NESTING", eggHp: 4, hatchTurns: 1 }
+            : unlock,
+        ),
+      ),
+    ),
+  );
+
+/** Revision 19 section 3: the Dinosaur roster. */
+export const DINOSAUR_ROLE_RULES_V7: Readonly<
+  Record<UnitRoleIdV7, EffectiveRoleRuleV7>
+> = deepFreeze({
+  FIGHTER: role({
+    ...ORIGINAL_ROLE_RULES_V7.FIGHTER,
+    label: "Caveman",
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+  RAIDER: role({
+    role: "RAIDER",
+    label: "Raptor",
+    tacticalRole: "SKIRMISHER",
+    cost: 4,
+    maxHp: 12,
+    attack2: 5,
+    defense2: 2,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "SCOUTING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "CHARGE", "GROW"],
+  }),
+  MARKSMAN: role({
+    role: "MARKSMAN",
+    label: "Spitter",
+    tacticalRole: "RANGED",
+    cost: 4,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 2,
+    move: 1,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "MARKSMANSHIP",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "ACID", "GROW"],
+  }),
+  GUARD: role({
+    role: "GUARD",
+    label: "Ankylosaurus",
+    tacticalRole: "DEFENDER",
+    cost: 5,
+    maxHp: 20,
+    attack2: 4,
+    defense2: 6,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "DRILL",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "CAPTURE", "ARMOURED", "GROW"],
+  }),
+  CAPTAIN: role({
+    role: "CAPTAIN",
+    label: "Shaman",
+    tacticalRole: "SUPPORT",
+    cost: 5,
+    maxHp: 10,
+    attack2: 2,
+    defense2: 2,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "ADMINISTRATION",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "RALLY", "TEND_WOUNDED", "HATCH"],
+  }),
+  CATAPULT: role({
+    role: "CATAPULT",
+    label: "Triceratops",
+    tacticalRole: "SIEGE",
+    cost: 8,
+    maxHp: 18,
+    attack2: 6,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "SAWMILLING",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "STAMPEDE", "GROW"],
+  }),
+  KNIGHT: role({
+    role: "KNIGHT",
+    label: "T-Rex",
+    tacticalRole: "BREAKTHROUGH",
+    cost: 10,
+    maxHp: 28,
+    attack2: 8,
+    defense2: 4,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "CHIVALRY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "OVERRUN", "GROW"],
+  }),
+  JUGGERNAUT: role({
+    role: "JUGGERNAUT",
+    label: "Brontosaurus",
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: 45,
+    attack2: 7,
+    defense2: 8,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "PUSH", "GROW"],
+  }),
+  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
+  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+});
+
+/**
+ * Revision 19 Dinosaur engine mechanics: no role builds Field Defense
+ * (Wild); the Triceratops, T-Rex, and Brontosaurus use two capacity slots;
+ * the five egg-laid roles carry their hatch time; the Triceratops is a melee
+ * body that advances after a kill and carries the Stampede run bonus; the
+ * Ankylosaurus is Armoured. Boats are Human boats.
+ */
+export const DINOSAUR_ROLE_MECHANICS_V7 = mechanics({
+  FIGHTER: { buildsFieldDefense: false },
+  RAIDER: { hatchTurns: 1 },
+  MARKSMAN: { hatchTurns: 1 },
+  GUARD: { buildsFieldDefense: false, hatchTurns: 2, armourReduction: 1 },
+  CATAPULT: { capacitySlots: 2, hatchTurns: 2, stampedeRunBonus2: 2 },
+  KNIGHT: { capacitySlots: 2, hatchTurns: 3 },
+  JUGGERNAUT: { capacitySlots: 2 },
+  BATTLESHIP: { splash: true },
+});
+
+export const DINOSAUR_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "DINOSAUR_BASELINE_V1",
+  faction: "DINOSAUR",
+  startingTechIds: [],
+  nodes: DINOSAUR_BASELINE_V1_NODES,
+  roleRules: DINOSAUR_ROLE_RULES_V7,
+  roleMechanics: DINOSAUR_ROLE_MECHANICS_V7,
+});
+
 /** Frozen faction registrations; there is no cross-faction fallback. */
 export const FACTION_TREES_V7: Readonly<
   Record<FactionIdV7, FactionTechnologyTreeV7>
@@ -1201,14 +1408,21 @@ export const FACTION_TREES_V7: Readonly<
   ORIGINAL: ORIGINAL_BASELINE_V5_TREE,
   UNDEAD: UNDEAD_BASELINE_V1_TREE,
   GOBLIN: GOBLIN_BASELINE_V1_TREE,
+  DINOSAUR: DINOSAUR_BASELINE_V1_TREE,
 });
 
 export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
-  deepFreeze({ ORIGINAL: "Human", UNDEAD: "Undead", GOBLIN: "Goblin" });
+  deepFreeze({
+    ORIGINAL: "Human",
+    UNDEAD: "Undead",
+    GOBLIN: "Goblin",
+    DINOSAUR: "Dinosaur",
+  });
 
 /**
  * Revision 17: per-faction technology display names. Serialized technology
- * IDs never change; only Goblin Commerce is renamed (Plunder). The single
+ * IDs never change; Goblin Commerce is renamed (Plunder) and, in revision
+ * 19, Dinosaur Fortification (Nesting). The single
  * name helper, `technologyNameV7` in src/render/goblin-presentation-v7.ts,
  * applies these overrides and otherwise keeps the sentence-case name.
  */
@@ -1218,6 +1432,7 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   ORIGINAL: {},
   UNDEAD: {},
   GOBLIN: { COMMERCE: "Plunder" },
+  DINOSAUR: { FORTIFICATION: "Nesting" },
 });
 
 export function factionTreeV7(faction: FactionIdV7): FactionTechnologyTreeV7 {
@@ -1247,13 +1462,40 @@ export interface FactionRulesV7 {
    * own unit adjacent to its target, up to this maximum (0 disables it).
    */
   readonly gangUpMaximum: 0 | 2;
+  /**
+   * Revision 19: the mechanical role of the treasure chest unit (`KNIGHT`
+   * for Human, Undead, and Goblin; `RAIDER`, the Raptor, for Dinosaur). The
+   * serialized `TREASURE_CAPTURED` reward literal stays `KNIGHT`.
+   */
+  readonly treasureUnitRole: UnitRoleIdV7;
 }
 
 export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
   deepFreeze({
-    ORIGINAL: { restless: false, cityCapacityBonus: 0, gangUpMaximum: 0 },
-    UNDEAD: { restless: true, cityCapacityBonus: 0, gangUpMaximum: 0 },
-    GOBLIN: { restless: false, cityCapacityBonus: 1, gangUpMaximum: 2 },
+    ORIGINAL: {
+      restless: false,
+      cityCapacityBonus: 0,
+      gangUpMaximum: 0,
+      treasureUnitRole: "KNIGHT",
+    },
+    UNDEAD: {
+      restless: true,
+      cityCapacityBonus: 0,
+      gangUpMaximum: 0,
+      treasureUnitRole: "KNIGHT",
+    },
+    GOBLIN: {
+      restless: false,
+      cityCapacityBonus: 1,
+      gangUpMaximum: 2,
+      treasureUnitRole: "KNIGHT",
+    },
+    DINOSAUR: {
+      restless: false,
+      cityCapacityBonus: 0,
+      gangUpMaximum: 0,
+      treasureUnitRole: "RAIDER",
+    },
   });
 
 export function factionRulesV7(faction: FactionIdV7): FactionRulesV7 {
@@ -1414,12 +1656,93 @@ export function unitRoleMechanicsV7(
   return roleMechanicsV7(unit.role, playerFactionV7(roster, unit.ownerId));
 }
 
+/** Revision 19 section 6.2: an Egg has 6 HP (10 when laid with Nesting). */
+export const EGG_HP_V7 = 6;
+/** Revision 19 section 6.2: an Egg's fixed Defense 1 in half-units. */
+export const EGG_DEFENSE2_V7 = 2;
+/** Revision 19 section 5.2: kills needed for Big (stage 1) and Alpha (2). */
+export const GROWTH_KILLS_V7: readonly [number, number] = deepFreeze([1, 3]);
+/** Revision 19 section 5.2: maximum and current HP added by each stage. */
+export const GROWTH_HP_V7 = 4;
+/** Revision 19 section 5.2: an Alpha's extra Attack in half-units. */
+export const ALPHA_ATTACK2_V7 = 2;
+
+/** The growth stage a growing unit with `kills` has: 0, 1 (Big), 2 (Alpha). */
+export function growthStageForKillsV7(kills: number): 0 | 1 | 2 {
+  return kills >= GROWTH_KILLS_V7[1] ? 2 : kills >= GROWTH_KILLS_V7[0] ? 1 : 0;
+}
+
+/** The unit facts the revision-19 Dinosaur helpers read. */
+export interface DinosaurUnitFactsV7 {
+  readonly ownerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  readonly form: UnitFormV7;
+  readonly kills: number;
+}
+
+/**
+ * Revision 19: whether the unit grows from kills instead of Promotion (its
+ * role has `GROW` under its owner's registration and it is not an Egg).
+ */
+export function unitGrowsV7(
+  roster: FactionRosterV7,
+  unit: Pick<DinosaurUnitFactsV7, "ownerId" | "role" | "form">,
+): boolean {
+  return (
+    unit.form !== "EGG" &&
+    unitRoleRuleV7(roster, unit).abilities.includes("GROW")
+  );
+}
+
+/** The growth stage of a growing unit, or null for a unit that never grows. */
+export function unitGrowthStageV7(
+  roster: FactionRosterV7,
+  unit: DinosaurUnitFactsV7,
+): 0 | 1 | 2 | null {
+  return unitGrowsV7(roster, unit) ? growthStageForKillsV7(unit.kills) : null;
+}
+
+/** Alpha's `attack2` bonus on every attack the unit makes (0 otherwise). */
+export function unitAlphaAttack2V7(
+  roster: FactionRosterV7,
+  unit: DinosaurUnitFactsV7,
+): number {
+  return unitGrowthStageV7(roster, unit) === 2 ? ALPHA_ATTACK2_V7 : 0;
+}
+
+/** The capacity slots a unit (or the unit inside an Egg) uses in its city. */
+export function unitCapacitySlotsV7(
+  roster: FactionRosterV7,
+  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+): number {
+  return unitRoleMechanicsV7(roster, unit).capacitySlots;
+}
+
+/**
+ * Revision 19 Armoured (section 8.2): one instance of `damage` before the cap
+ * at current HP, reduced by the unit's armour to a minimum of 1 (0 and 1 are
+ * unchanged). It applies in land form and while embarked, never to an Egg.
+ */
+export function armouredDamageV7(
+  roster: FactionRosterV7,
+  unit: {
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly form: UnitFormV7;
+  },
+  damage: number,
+): number {
+  if (unit.form === "EGG" || damage < 2) return damage;
+  const reduction = unitRoleMechanicsV7(roster, unit).armourReduction;
+  return reduction === 0 ? damage : Math.max(1, damage - reduction);
+}
+
 /** The unit facts Rally eligibility reads (state units and public units). */
 export interface RallyUnitV7 {
   readonly id: number;
   readonly ownerId: PlayerId;
   readonly role: UnitRoleIdV7;
-  readonly form: "LAND" | "EMBARKED" | "NAVAL";
+  readonly form: UnitFormV7;
   readonly at: { readonly x: number; readonly y: number };
   readonly hp: number;
   readonly activation: { readonly inspired: boolean };
@@ -1498,6 +1821,10 @@ export interface TechnologyCapabilitiesV7 {
   readonly hostileCaptureSpoilsCoins: 0 | 2;
   /** Revision 17 Goblin Plunder: Coins per credited hostile kill. */
   readonly plunderCoins: 0 | 1;
+  /** Revision 19 Nesting: extra HP of every Egg the player lays. */
+  readonly eggHpBonus: 0 | 4;
+  /** Revision 19 Nesting: turns removed from a laid Egg's hatch time. */
+  readonly eggHatchTurnReduction: 0 | 1;
 }
 
 export function technologyCapabilitiesV7(
@@ -1536,6 +1863,8 @@ export function technologyCapabilitiesV7(
   let seaTradeIncomeCoins: 0 | 1 = 0;
   let hostileCaptureSpoilsCoins: 0 | 2 = 0;
   let plunderCoins: 0 | 1 = 0;
+  let eggHpBonus: 0 | 4 = 0;
+  let eggHatchTurnReduction: 0 | 1 = 0;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -1598,6 +1927,10 @@ export function technologyCapabilitiesV7(
       case "PLUNDER":
         plunderCoins = 1;
         break;
+      case "NESTING":
+        eggHpBonus = unlock.eggHp;
+        eggHatchTurnReduction = unlock.hatchTurns;
+        break;
       case "CAPTAIN_SUPPORT":
       case "NECROMANCER_SUPPORT":
       case "WAAAGH_SUPPORT":
@@ -1637,6 +1970,8 @@ export function technologyCapabilitiesV7(
     seaTradeIncomeCoins,
     hostileCaptureSpoilsCoins,
     plunderCoins,
+    eggHpBonus,
+    eggHatchTurnReduction,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

@@ -1,6 +1,7 @@
 import type { CityId, PlayerId } from "../model/ids";
 import {
   cityUnitCapacityForV7,
+  unitCapacitySlotsV7,
   technologyCapabilitiesV7,
   unitRoleMechanicsV7,
 } from "../rules/ruleset-v7";
@@ -86,12 +87,21 @@ export function cityUnitCapacityV7(
   return result;
 }
 
+/**
+ * Revision 19 section 5.1: the used capacity slots of a city: the sum of the
+ * slots of every unit on the board homed to it, Eggs included, each resolved
+ * through its owner's registration. Every role of a Human, Undead, or Goblin
+ * seat uses one slot, so there the sum equals the unit count.
+ */
 export function assignedUnitCountV7(
-  state: Pick<GameStateV7, "units">,
+  state: Pick<GameStateV7, "units" | "players">,
   cityId: CityId,
 ): number {
-  return state.units.filter((unit) => unit.hp > 0 && unit.homeCityId === cityId)
-    .length;
+  let used = 0;
+  for (const unit of state.units)
+    if (unit.hp > 0 && unit.homeCityId === cityId)
+      used += unitCapacitySlotsV7(state, unit);
+  return used;
 }
 
 export function rewardCandidatesForLevelV7(

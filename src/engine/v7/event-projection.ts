@@ -28,6 +28,8 @@ export function projectEventsV7(
       (event.kind === "UNIT_TRAINED" ||
         event.kind === "NAVAL_UNIT_TRAINED" ||
         event.kind === "UNIT_REWARD_GRANTED" ||
+        // Revision 19: the Egg unit of a projected EGG_LAID.
+        event.kind === "EGG_LAID" ||
         // Revision 13: a Zombie rising in a projected UNIT_INFECTED.
         event.kind === "UNIT_INFECTED" ||
         // Revision 14: a Zombie rising in a projected BITTEN_UNIT_RISEN.
@@ -276,6 +278,14 @@ function eventVisible(
     case "UNIT_TRAINED":
     case "UNIT_REWARD_GRANTED":
       return event.playerId === viewerId;
+    // Revision 19 section 9.6: the owner and every viewer that explored the
+    // Egg's tile.
+    case "EGG_LAID":
+    case "EGG_HATCHED":
+      return (
+        event.playerId === viewerId ||
+        coordVisible(before, after, viewerId, event.at)
+      );
     case "UNIT_SPAWN_DISPLACED":
       return (
         event.playerId === viewerId ||
@@ -371,6 +381,9 @@ function projectEventPayload(
   )
     // A unit's home city is owner-private, exactly as in the public view.
     return { ...event, homeCityId: null };
+  // Revision 19: Coins are owner-private, so other viewers see no cost.
+  if (event.kind === "EGG_LAID")
+    return event.playerId === viewerId ? event : { ...event, cost: null };
   if (event.kind === "FOREST_CULTIVATED") {
     const viewer = after.players.find((player) => player.id === viewerId);
     return viewer !== undefined &&

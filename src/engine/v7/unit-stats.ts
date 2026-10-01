@@ -1,6 +1,10 @@
 import {
+  ALPHA_ATTACK2_V7,
   EMBARKED_MOVE_V7,
+  GROWTH_KILLS_V7,
   technologyCapabilitiesV7,
+  unitAlphaAttack2V7,
+  unitGrowthStageV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../rules/ruleset-v7";
@@ -19,6 +23,9 @@ export const UNIT_STAT_IDS_V7 = Object.freeze([
 export type UnitStatIdV7 = (typeof UNIT_STAT_IDS_V7)[number];
 export type UnitStatModifierSourceV7 =
   | "PROMOTION"
+  // Revision 19: growth HP of a Big or Alpha unit, and Alpha's +1 Attack.
+  | "GROWTH"
+  | "ALPHA"
   | "CHARGE"
   | "INSPIRED"
   | "CITY_WALLS"
@@ -60,6 +67,26 @@ export interface PublicGoblinMechanicsV7 {
   readonly regeneration: number;
   readonly buildsFieldDefense: boolean;
 }
+/**
+ * Revision 19 Dinosaur role mechanics and growth from the owner's
+ * registration: capacity slots, the growth stage (null for a role that does
+ * not grow) and the kills still needed for the next stage (null at Alpha or
+ * for a role that does not grow), the Armoured reduction, Acid, the Stampede
+ * run bonus in whole Attack per lane tile, and the Egg countdown (null for a
+ * unit that is not an Egg).
+ */
+export interface PublicDinosaurMechanicsV7 {
+  readonly capacitySlots: number;
+  readonly growthStage: 0 | 1 | 2 | null;
+  readonly killsToNextStage: number | null;
+  readonly armourReduction: number;
+  readonly acid: boolean;
+  readonly stampedeRunBonus: number;
+  readonly egg: {
+    readonly turnsRemaining: number;
+    readonly hatchesAs: UnitStateV7["role"];
+  } | null;
+}
 export interface PublicUnitStatsV7 {
   readonly unitId: UnitStateV7["id"];
   readonly minimumRange: number;
@@ -69,6 +96,8 @@ export interface PublicUnitStatsV7 {
   readonly statuses: readonly string[];
   /** Revision 17: present exactly for units owned by a Goblin seat. */
   readonly goblin?: PublicGoblinMechanicsV7;
+  /** Revision 19: present exactly for units owned by a Dinosaur seat. */
+  readonly dinosaur?: PublicDinosaurMechanicsV7;
 }
 
 export function publicUnitStatsV7(
@@ -87,7 +116,12 @@ export function publicUnitStatsV7(
   const frenzied = owner.faction === "UNDEAD";
   // Revision 17: Goblins label Rally as WAAAGH! and Overrun as Ram.
   const goblin = owner.faction === "GOBLIN";
+  // Revision 19: Dinosaurs label Rally as War Drums, Overrun as Rampage, and
+  // Charge as Pounce.
+  const dinosaur = owner.faction === "DINOSAUR";
   const mechanics = unitRoleMechanicsV7(state, unit);
+  const growthStage = unitGrowthStageV7(state, unit);
+  const alpha = embarked ? 0 : unitAlphaAttack2V7(state, unit);
   const promotion = unit.maxHp - role.maxHp;
   const charge =
     !embarked &&
@@ -134,12 +168,19 @@ export function publicUnitStatsV7(
         base(labelText, "maximum HP", role.maxHp),
         promotion > 0
           ? [
-              modifier(
-                promotion,
-                "PROMOTION",
-                "Promotion",
-                "Promotion adds 5 maximum and current HP.",
-              ),
+              growthStage === null
+                ? modifier(
+                    promotion,
+                    "PROMOTION",
+                    "Promotion",
+                    "Promotion adds 5 maximum and current HP.",
+                  )
+                : modifier(
+                    promotion,
+                    "GROWTH",
+                    "Growth",
+                    "Each growth stage adds 4 maximum and current HP.",
+                  ),
             ]
           : [],
       ),
@@ -149,13 +190,26 @@ export function publicUnitStatsV7(
         null,
         base(labelText, "Attack", embarked ? 0 : role.attack2, 2),
         [
+          ...(alpha > 0
+            ? [
+                modifier(
+                  ALPHA_ATTACK2_V7,
+                  "ALPHA",
+                  "Alpha",
+                  "An Alpha adds 1 Attack to every attack it makes.",
+                  2,
+                ),
+              ]
+            : []),
           ...(charge > 0
             ? [
                 modifier(
                   charge,
                   "CHARGE",
-                  "Charge",
-                  "Charge adds 1 Attack after an ordinary move of at least two cells.",
+                  dinosaur ? "Pounce" : "Charge",
+                  dinosaur
+                    ? "Pounce adds 1 Attack after an ordinary move of at least two cells."
+                    : "Charge adds 1 Attack after an ordinary move of at least two cells.",
                   2,
                 ),
               ]
@@ -165,12 +219,20 @@ export function publicUnitStatsV7(
                 modifier(
                   inspired,
                   "INSPIRED",
-                  frenzied ? "Frenzied" : goblin ? "WAAAGH!" : "Inspired",
+                  frenzied
+                    ? "Frenzied"
+                    : goblin
+                      ? "WAAAGH!"
+                      : dinosaur
+                        ? "War Drums"
+                        : "Inspired",
                   frenzied
                     ? "Necromancer Frenzy adds 1 Attack to the next attack this turn."
                     : goblin
                       ? "Orc Warboss WAAAGH! adds 1 Attack to the next attack this turn."
-                      : "Captain Rally adds 1 Attack to the next attack this turn.",
+                      : dinosaur
+                        ? "Shaman War Drums add 1 Attack to the next attack this turn."
+                        : "Captain Rally adds 1 Attack to the next attack this turn.",
                   2,
                 ),
               ]
@@ -236,12 +298,20 @@ export function publicUnitStatsV7(
               ? "Frenzied: +1 next Attack"
               : goblin
                 ? "WAAAGH!: +1 Attack on the next attack"
-                : "Inspired: +1 next Attack",
+                : dinosaur
+                  ? "War Drums: +1 Attack on the next attack"
+                  : "Inspired: +1 next Attack",
           ]
         : []),
       ...(unit.activation.tendedThisTurn ? ["Tended this turn"] : []),
       ...(unit.activation.overrunActive
-        ? [goblin ? "Ram: attack again" : "Overrun: attack again"]
+        ? [
+            goblin
+              ? "Ram: attack again"
+              : dinosaur
+                ? "Rampage: attack again"
+                : "Overrun: attack again",
+          ]
         : []),
       ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
     ],
@@ -258,7 +328,35 @@ export function publicUnitStatsV7(
           },
         }
       : {}),
+    ...(dinosaur
+      ? {
+          dinosaur: {
+            capacitySlots: mechanics.capacitySlots,
+            growthStage,
+            killsToNextStage:
+              growthStage === null || growthStage === 2
+                ? null
+                : GROWTH_KILLS_V7[growthStage] - unit.kills,
+            armourReduction: mechanics.armourReduction,
+            acid: role.abilities.includes("ACID"),
+            stampedeRunBonus: mechanics.stampedeRunBonus2 / 2,
+            egg: eggStatus(state, unit),
+          },
+        }
+      : {}),
   };
+}
+
+/** Revision 19: the public countdown of an Egg, or null for any other unit. */
+function eggStatus(
+  state: GameStateV7,
+  unit: UnitStateV7,
+): PublicDinosaurMechanicsV7["egg"] {
+  if (unit.form !== "EGG") return null;
+  const entry = state.eggs.find((candidate) => candidate.unitId === unit.id);
+  return entry === undefined
+    ? null
+    : { turnsRemaining: entry.turnsRemaining, hatchesAs: unit.role };
 }
 
 function defenseSourceAt(

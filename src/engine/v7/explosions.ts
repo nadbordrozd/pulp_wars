@@ -1,5 +1,9 @@
 import { allocateUnitId, type PlayerId, type UnitId } from "../model/ids";
-import { unitRoleMechanicsV7, type FactionRosterV7 } from "../rules/ruleset-v7";
+import {
+  armouredDamageV7,
+  unitRoleMechanicsV7,
+  type FactionRosterV7,
+} from "../rules/ruleset-v7";
 import { biteOfV7, recordBittenRisingV7 } from "./afflictions";
 import type { CombatSplashEntryV7, DomainEventV7 } from "./events";
 import { recordCombatDeathV7 } from "./graves";
@@ -184,7 +188,11 @@ export function resolveExplosionChainV7<U extends BlastUnitV7>(
         )
         .sort(compareUnitsByTile);
       const results: CombatSplashEntryV7[] = hits.map((unit) => {
-        const applied = Math.min(damage, unit.hp);
+        // Revision 19: an Armoured unit takes 1 less from the fixed damage.
+        const applied = Math.min(
+          armouredDamageV7(input.roster, unit, damage),
+          unit.hp,
+        );
         return {
           unitId: unit.id,
           at: { x: unit.at.x, y: unit.at.y },

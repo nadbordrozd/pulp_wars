@@ -12,6 +12,7 @@ import {
   growthEventsV7,
   recomputeLiveEconomyV7,
 } from "./economy";
+import { armouredDamageV7 } from "../rules/ruleset-v7";
 import type { CombatSplashEntryV7, DomainEventV7 } from "./events";
 import { recordCombatDeathV7 } from "./graves";
 import { unitSightRadiusAtV7 } from "./movement";
@@ -55,7 +56,11 @@ export function resolveStartTurnPlagueV7(
   if (sufferers.length === 0) return { state, events: [] };
   const events: DomainEventV7[] = [];
   const results: CombatSplashEntryV7[] = sufferers.map((unit) => {
-    const damage = Math.min(PLAGUE_DAMAGE_V7, unit.hp);
+    // Revision 19: an Armoured unit takes 1 instead of 2.
+    const damage = Math.min(
+      armouredDamageV7(state, unit, PLAGUE_DAMAGE_V7),
+      unit.hp,
+    );
     return {
       unitId: unit.id,
       at: { x: unit.at.x, y: unit.at.y },

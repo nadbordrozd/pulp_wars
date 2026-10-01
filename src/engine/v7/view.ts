@@ -17,6 +17,7 @@ import type {
   BiomeIdV7,
   AchievementIdV7,
   CoordV7,
+  EggStatusV7,
   FactionIdV7,
   FactionTreeIdV7,
   GameStateV7,
@@ -32,6 +33,7 @@ import type {
   RulesetIdV7,
   TerrainIdV7,
   UnitActivationV7,
+  UnitFormV7,
   UnitRoleIdV7,
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
@@ -114,7 +116,8 @@ export interface PublicUnitV7 {
   readonly ownerId: PlayerId;
   readonly homeCityId: CityId | null;
   readonly role: UnitRoleIdV7;
-  readonly form: "LAND" | "EMBARKED" | "NAVAL";
+  /** Revision 19: `EGG` for a Dinosaur Egg (see `PlayerViewV7.eggs`). */
+  readonly form: UnitFormV7;
   readonly at: CoordV7;
   readonly hp: number;
   readonly maxHp: number;
@@ -222,6 +225,11 @@ export interface PlayerViewV7 {
   readonly plagued: readonly PublicPlagueStatusV7[];
   /** Revision 14: the Bitten status of every unit in `units`, by unit ID. */
   readonly bitten: readonly PublicBittenStatusV7[];
+  /**
+   * Revision 19: the countdown of every Egg in `units`, sorted by unit ID
+   * (an Egg's role, HP, and countdown are public on a visible Egg).
+   */
+  readonly eggs: readonly EggStatusV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -634,6 +642,13 @@ export function viewForV7(
       .map((entry) => ({
         unitId: entry.unitId,
         biterPlayerId: entry.biterPlayerId,
+      })),
+    eggs: state.eggs
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({
+        unitId: entry.unitId,
+        turnsRemaining: entry.turnsRemaining,
+        laidThisTurn: entry.laidThisTurn,
       })),
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(

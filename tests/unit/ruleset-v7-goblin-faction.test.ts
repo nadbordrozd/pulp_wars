@@ -81,17 +81,17 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r18 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r18");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r18.current");
-    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(17);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
+  it("keeps r16 among the prior identities after the r19 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r19");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r19.current");
+    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(18);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-3)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r16.current", "r16"],
-      [SAVE_STORAGE_KEY_V7, "r18"],
+      [SAVE_STORAGE_KEY_V7, "r19"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
       ["pulpWars.unrelated", "unrelated"],
@@ -151,11 +151,17 @@ describe("ruleset-7 revision-17 identity", () => {
 
 describe("ruleset-7 Goblin faction registration", () => {
   it("freezes the faction and tree orders, binding, and display name", () => {
-    expect(FACTION_IDS_V7).toEqual(["ORIGINAL", "UNDEAD", "GOBLIN"]);
+    expect(FACTION_IDS_V7).toEqual([
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+    ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
       "UNDEAD_BASELINE_V1",
       "GOBLIN_BASELINE_V1",
+      "DINOSAUR_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("GOBLIN")).toBe("GOBLIN_BASELINE_V1");
     expect(FACTION_TREES_V7.GOBLIN.faction).toBe("GOBLIN");
@@ -173,6 +179,7 @@ describe("ruleset-7 Goblin faction registration", () => {
       ["ORIGINAL", 0, 0, false],
       ["UNDEAD", 0, 0, true],
       ["GOBLIN", 1, 2, false],
+      ["DINOSAUR", 0, 0, false],
     ]);
   });
 
@@ -682,6 +689,7 @@ describe("ruleset-7 Goblin technology", () => {
       ["ORIGINAL", 1, 0],
       ["UNDEAD", 1, 0],
       ["GOBLIN", 0, 1],
+      ["DINOSAUR", 1, 0],
     ]);
     const goblin = technologyCapabilitiesV7(all, "GOBLIN");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
@@ -692,12 +700,14 @@ describe("ruleset-7 Goblin technology", () => {
   });
 
   it("names and describes technologies from the viewer's faction", () => {
-    // Only Goblin Commerce is renamed; the UI's `technologyNameV7` applies
-    // these overrides (tests/unit/ruleset7-goblin-presentation.test.ts).
+    // Goblin Commerce is renamed (and, in revision 19, Dinosaur
+    // Fortification); the UI's `technologyNameV7` applies these overrides
+    // (tests/unit/ruleset7-goblin-presentation.test.ts).
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7).toEqual({
       ORIGINAL: {},
       UNDEAD: {},
       GOBLIN: { COMMERCE: "Plunder" },
+      DINOSAUR: { FORTIFICATION: "Nesting" },
     });
     const state = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],
@@ -742,6 +752,7 @@ describe("ruleset-7 Goblin starting units", () => {
       ORIGINAL: 1,
       UNDEAD: 1,
       GOBLIN: 1,
+      DINOSAUR: 1,
     });
     let checkedSeats = 0;
     for (const [seed, mapType, factions] of [

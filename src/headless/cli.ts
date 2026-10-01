@@ -41,12 +41,12 @@ if (mode === "replay") {
         : await headless.run(replay as ReplayFile);
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else if (mode === "match") {
-  if (ruleset === "pulp-wars-poc-7r18") await runV7Match();
+  if (ruleset === "pulp-wars-poc-7r19") await runV7Match();
   else if (ruleset === "pulp-wars-poc-6") await runV6Match();
   else if (ruleset === "pulp-wars-poc-5") await runV5Match();
   else invalidRuleset();
 } else if (mode === "batch") {
-  if (ruleset === "pulp-wars-poc-7r18") await runV7Batch();
+  if (ruleset === "pulp-wars-poc-7r19") await runV7Batch();
   else if (ruleset === "pulp-wars-poc-6") await runV6Batch();
   else if (ruleset === "pulp-wars-poc-5") await runV5Batch();
   else invalidRuleset();
@@ -61,7 +61,7 @@ async function runV7Match(): Promise<void> {
   const mapType = mapTypeArg();
   const size = boardSizeArgV7(aiCount, mapType);
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r18",
+    rulesetId: "pulp-wars-poc-7r19",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: numberArg("--seed", 0),
     width: size,
@@ -339,8 +339,9 @@ function factionsArgV6(aiCount: 1 | 2 | 3): readonly FactionIdV6[] {
 }
 
 /**
- * Ruleset 7 seat-ordered factions: `original` (alias `human`), `undead`, or
- * `goblin`, case-insensitive, exactly one value per seat (seat 0 first).
+ * Ruleset 7 seat-ordered factions: `original` (alias `human`), `undead`,
+ * `goblin`, or `dinosaur`, case-insensitive, exactly one value per seat (seat
+ * 0 first).
  */
 function factionsArgV7(aiCount: 1 | 2 | 3): readonly FactionIdV7[] {
   if (!args.includes("--factions"))
@@ -355,8 +356,9 @@ function factionsArgV7(aiCount: 1 | 2 | 3): readonly FactionIdV7[] {
     if (normalized === "original" || normalized === "human") return "ORIGINAL";
     if (normalized === "undead") return "UNDEAD";
     if (normalized === "goblin") return "GOBLIN";
+    if (normalized === "dinosaur") return "DINOSAUR";
     throw new Error(
-      "ruleset 7 --factions values must be original (human), undead, or goblin",
+      "ruleset 7 --factions values must be original (human), undead, goblin, or dinosaur",
     );
   });
 }
@@ -417,6 +419,6 @@ function parseFactionValues(
 
 function invalidRuleset(): never {
   throw new Error(
-    "--ruleset must be pulp-wars-poc-7r18, pulp-wars-poc-6, or pulp-wars-poc-5",
+    "--ruleset must be pulp-wars-poc-7r19, pulp-wars-poc-6, or pulp-wars-poc-5",
   );
 }

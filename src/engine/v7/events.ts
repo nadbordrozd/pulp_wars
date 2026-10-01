@@ -43,7 +43,12 @@ export interface CombatPreviewV7 {
    * retaliation (the Vampire) and the defender survives.
    */
   readonly noRetaliationReason:
-    "DEFENDER_DIED" | "OUT_OF_RANGE" | "UNANSWERED" | null;
+    | "DEFENDER_DIED"
+    | "OUT_OF_RANGE"
+    | "UNANSWERED"
+    /** Revision 19: the target of a Stampede never retaliates. */
+    | "STAMPEDE"
+    | null;
   readonly advances: boolean;
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
   readonly attacksUsed: number;
@@ -83,6 +88,20 @@ export interface CombatPreviewV7 {
    */
   readonly attackerBittenRises: boolean;
   readonly defenderBittenRises: boolean;
+  /**
+   * Revision 19 Stampede: whole Attack from the run (0, 1, or 2); included
+   * in `attack2`. Always 0 for an ordinary attack.
+   */
+  readonly stampede: 0 | 1 | 2;
+  /**
+   * Revision 19 Acid: the attacker (a Spitter) removed the defender's cover
+   * and fortification (`fortificationLevel` 0 and a defense bonus of 1/1).
+   */
+  readonly acid: boolean;
+  /** Revision 19 Armoured: the reduction lowered `damageToDefender`. */
+  readonly defenderArmoured: boolean;
+  /** Revision 19 Armoured: the reduction lowered `damageToAttacker`. */
+  readonly attackerArmoured: boolean;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
@@ -371,6 +390,35 @@ export type DomainEventV7 =
       readonly discountSource: "SHIPYARD" | null;
     }
   | {
+      /**
+       * Revision 19: `cityId` laid an Egg of `role` on `at` (the Egg is the
+       * unit `unitId`). Emitted from `pulp_wars-c87.3`.
+       */
+      readonly kind: "EGG_LAID";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly unitId: UnitId;
+      readonly role: UnitRoleIdV7;
+      readonly cost: number;
+      readonly at: CoordV7;
+      readonly hp: number;
+      readonly turnsRemaining: number;
+    }
+  | {
+      /**
+       * Revision 19: the Egg `unitId` hatched in place, by its countdown
+       * (`TIME`) or by the Shaman `sourceUnitId` (`SHAMAN`). Emitted from
+       * `pulp_wars-c87.3`.
+       */
+      readonly kind: "EGG_HATCHED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly role: UnitRoleIdV7;
+      readonly at: CoordV7;
+      readonly cause: "TIME" | "SHAMAN";
+      readonly sourceUnitId: UnitId | null;
+    }
+  | {
       readonly kind: "UNIT_EMBARKED";
       readonly playerId: PlayerId;
       readonly unitId: UnitId;
@@ -548,6 +596,18 @@ export type DomainEventV7 =
       readonly maxHp: number;
     }
   | {
+      /**
+       * Revision 19 Grow: a Dinosaur unit reached `stage` (1 Big, 2 Alpha)
+       * from a credited kill; `maxHp` and `hp` are its values afterwards. One
+       * event per stage reached.
+       */
+      readonly kind: "UNIT_GREW";
+      readonly unitId: UnitId;
+      readonly stage: 1 | 2;
+      readonly maxHp: number;
+      readonly hp: number;
+    }
+  | {
       readonly kind: "UNIT_DIED";
       readonly unitId: UnitId;
       readonly cause:
@@ -560,7 +620,9 @@ export type DomainEventV7 =
         /** Revision 17: the Kaboom unit itself. */
         | "KABOOM"
         /** Revision 17: killed by an explosion. */
-        | "EXPLOSION";
+        | "EXPLOSION"
+        /** Revision 19: an Egg destroyed because its home city was captured. */
+        | "CITY_CAPTURED";
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */
@@ -669,6 +731,15 @@ export type ProjectedMonumentBuiltV7 =
       readonly populationAdded: 3;
     };
 
+/**
+ * Revision 19: `EGG_LAID` as seen by a viewer other than the Egg's owner;
+ * Coins are owner-private, so the cost is hidden.
+ */
+export type ProjectedEggLaidV7 = Omit<
+  Extract<DomainEventV7, { kind: "EGG_LAID" }>,
+  "cost"
+> & { readonly cost: null };
+
 export interface ProjectedCombatSplashDamageV7 {
   readonly kind: "COMBAT_SPLASH_DAMAGE";
   readonly splash: readonly CombatSplashEntryV7[];
@@ -686,6 +757,7 @@ export type PlayerEventV7 =
     >
   | ProjectedResourceRestorationEventV7
   | ProjectedMonumentBuiltV7
+  | ProjectedEggLaidV7
   | ProjectedCombatSplashDamageV7
   | PlayerPresentationEventV7;
 

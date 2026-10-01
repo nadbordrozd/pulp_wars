@@ -1,8 +1,10 @@
 import type { UnitId } from "../model/ids";
 import {
+  armouredDamageV7,
   gravesEnabledV7,
   playerFactionV7,
   unitRoleRuleV7,
+  type FactionRosterV7,
 } from "../rules/ruleset-v7";
 import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
 import { arePlayersHostileV7 } from "./economy";
@@ -68,6 +70,7 @@ export function wailTargetsV7(
         const bonus = defenseBonusForUnitV7(state, unit);
         const fortificationLevel = fortificationLevelForUnitV7(state, unit);
         return target(
+          state,
           banshee,
           attack2,
           unit,
@@ -115,6 +118,7 @@ export function publicWailTargetsV7(
       (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
     targets.push(
       target(
+        view,
         banshee,
         attack2,
         unit,
@@ -164,6 +168,8 @@ export function wailResultEntriesV7(
  * The ordinary damage formula (current rules section 13.2) for one Wail
  * target: the attacker's `attack2` at its current HP against the target's
  * defense, cover, and fortification; `min(target.hp, roundHalfUp(...))`.
+ * Revision 19: `armour`, when given, reduces the rounded damage before the
+ * cap at the target's HP (an Armoured target).
  */
 export function wailDamageV7(input: {
   readonly attack2: number;
@@ -174,6 +180,7 @@ export function wailDamageV7(input: {
   readonly defenderMaxHp: number;
   readonly defenseBonusNumerator: number;
   readonly defenseBonusDenominator: number;
+  readonly armour?: (damage: number) => number;
 }): number {
   const attackOnCommon =
     BigInt(input.attack2) *
@@ -191,10 +198,15 @@ export function wailDamageV7(input: {
   const rounded = (2n * numerator + denominator) / (2n * denominator);
   if (rounded > BigInt(Number.MAX_SAFE_INTEGER))
     throw new RangeError("INTEGER_OVERFLOW");
-  return Math.min(input.defenderHp, Number(rounded));
+  const damage = Number(rounded);
+  return Math.min(
+    input.defenderHp,
+    input.armour === undefined ? damage : input.armour(damage),
+  );
 }
 
 function target(
+  roster: FactionRosterV7,
   banshee: WailUnitV7,
   attack2: number,
   unit: WailUnitV7,
@@ -212,6 +224,7 @@ function target(
     defenderMaxHp: unit.maxHp,
     defenseBonusNumerator,
     defenseBonusDenominator,
+    armour: (value) => armouredDamageV7(roster, unit, value),
   });
   return {
     unitId: unit.id,

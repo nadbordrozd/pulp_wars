@@ -77,6 +77,28 @@ export type CommandV7 =
         | "KABOOM";
       readonly unitId: UnitId;
     }
+  | {
+      /**
+       * Revision 19: a Triceratops runs one or two tiles in a straight line
+       * and hits `targetUnitId` (resolved from `pulp_wars-c87.3`).
+       */
+      readonly kind: "STAMPEDE";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
+      /** Revision 19: a Shaman hatches the adjacent own Egg `eggUnitId`. */
+      readonly kind: "HATCH";
+      readonly unitId: UnitId;
+      readonly eggUnitId: UnitId;
+    }
+  | {
+      /** Revision 19: a Dinosaur city lays an Egg of `role` on `at`. */
+      readonly kind: "LAY_EGG";
+      readonly cityId: CityId;
+      readonly role: UnitRoleIdV7;
+      readonly at: CoordV7;
+    }
   | { readonly kind: "LAND_GRANT"; readonly cityId: CityId }
   | { readonly kind: "RESEARCH"; readonly tech: TechnologyIdV7 }
   | { readonly kind: TileCommandKindV7; readonly at: CoordV7 }
@@ -242,6 +264,43 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target } };
   }
+  if (kind === "STAMPEDE") {
+    if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const target = parseUnitIdV7(candidate.targetUnitId);
+    return unit === null || target === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, targetUnitId: target } };
+  }
+  if (kind === "HATCH") {
+    if (!hasExactKeysV7(input, ["kind", "unitId", "eggUnitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const egg = parseUnitIdV7(candidate.eggUnitId);
+    return unit === null || egg === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, eggUnitId: egg } };
+  }
+  if (kind === "LAY_EGG") {
+    const city = hasExactKeysV7(input, ["at", "cityId", "kind", "role"])
+      ? parseCityIdV7(candidate.cityId)
+      : null;
+    const at = city === null ? null : parseCoordV7(candidate.at);
+    return city === null ||
+      at === null ||
+      !UNIT_ROLE_IDS_V7.includes(candidate.role as UnitRoleIdV7)
+      ? invalid(kind)
+      : {
+          ok: true,
+          value: {
+            kind,
+            cityId: city,
+            role: candidate.role as UnitRoleIdV7,
+            at,
+          },
+        };
+  }
   if (kind === "RALLY" || kind === "TEND_WOUNDED") {
     const unit = hasExactKeysV7(input, ["kind", "unitId"])
       ? parseUnitIdV7(candidate.unitId)
@@ -378,13 +437,19 @@ function actorId(command: CommandV7): number {
 function referencedOrdinal(command: CommandV7): number {
   if (command.kind === "RESEARCH")
     return TECHNOLOGY_IDS_V7.indexOf(command.tech);
-  if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL")
+  if (
+    command.kind === "TRAIN" ||
+    command.kind === "TRAIN_NAVAL" ||
+    command.kind === "LAY_EGG"
+  )
     return UNIT_ROLE_IDS_V7.indexOf(command.role);
   if (command.kind === "CHOOSE_CITY_REWARD")
     return REWARD_IDS_V7.indexOf(command.reward);
   if (command.kind === "BUILD_MONUMENT")
     return ACHIEVEMENT_IDS_V7.indexOf(command.achievement);
-  if (command.kind === "ATTACK") return command.targetUnitId;
+  if (command.kind === "ATTACK" || command.kind === "STAMPEDE")
+    return command.targetUnitId;
+  if (command.kind === "HATCH") return command.eggUnitId;
   return 0;
 }
 

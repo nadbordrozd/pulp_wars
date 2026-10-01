@@ -1,7 +1,9 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
+  armouredDamageV7,
   factionRulesV7,
   playerFactionV7,
+  unitAlphaAttack2V7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type EffectiveRoleRuleV7,
@@ -111,20 +113,27 @@ export function calculateCombatPreviewV7(
     attacker.activation.inspired && attacker.activation.attacksUsed === 0;
   const inspiredConsumed = attacker.activation.inspired;
   const gangUp = gangUpBonusV7(state, state.units, attacker, defender);
+  // Revision 19: an Alpha adds 1 Attack to every attack it makes.
   const attack2 =
     attacker.form === "EMBARKED"
       ? 0
       : attackerRule.attack2 +
         (chargeApplied ? 2 : 0) +
         (inspiredApplied ? 2 : 0) +
-        gangUp * 2;
-  const fortificationLevel = fortificationLevelForUnitV7(state, defender);
+        gangUp * 2 +
+        unitAlphaAttack2V7(state, attacker);
+  // Revision 19 Acid (section 8.1): a land-form Spitter's attack removes the
+  // defender's cover and fortification from the whole exchange.
+  const acid = attackHasAcidV7(attackerRule, attacker);
+  const fortificationLevel = acid
+    ? 0
+    : fortificationLevelForUnitV7(state, defender);
   const defense2 =
     defender.form === "EMBARKED"
       ? 2
       : defenderRule.defense2 + fortificationLevel * 2;
   const breachApplied = false;
-  const bonus = defenseBonusForUnitV7(state, defender);
+  const bonus = acid ? NO_BONUS : defenseBonusForUnitV7(state, defender);
 
   const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
   const attackForceDenominator = 2n * BigInt(attacker.maxHp);
@@ -144,7 +153,14 @@ export function calculateCombatPreviewV7(
     defenseOnCommon * BigInt(defense2) * 9n,
     total * 4n,
   );
-  const damageToDefender = Math.min(defender.hp, rawDefenderDamage);
+  // Revision 19 Armoured (section 8.2): the reduction applies before the cap
+  // at current HP, and everything derived from damage uses the reduced value.
+  const damageToDefender = Math.min(
+    defender.hp,
+    armouredDamageV7(state, defender, rawDefenderDamage),
+  );
+  const defenderArmoured =
+    damageToDefender < Math.min(defender.hp, rawDefenderDamage);
   const defenderDies = damageToDefender >= defender.hp;
   // Revision 14 (V1): an UNANSWERED attacker (the Vampire) draws no
   // retaliation.
@@ -158,8 +174,13 @@ export function calculateCombatPreviewV7(
     distance >= defenderRule.minimumRange &&
     distance <= defenderRule.range;
   const damageToAttacker = retaliates
-    ? Math.min(attacker.hp, rawAttackerDamage)
+    ? Math.min(
+        attacker.hp,
+        armouredDamageV7(state, attacker, rawAttackerDamage),
+      )
     : 0;
+  const attackerArmoured =
+    retaliates && damageToAttacker < Math.min(attacker.hp, rawAttackerDamage);
   const attackerDies = damageToAttacker >= attacker.hp;
   // Revision 17: splash target mode `ALL` (the Goblin Bomb Chucker's bomb)
   // also hits own and allied units; Battleship and Lich splash stay hostile.
@@ -183,7 +204,11 @@ export function calculateCombatPreviewV7(
         .map((unit) => {
           const damage = Math.min(
             unit.hp,
-            Math.max(1, Math.ceil(damageToDefender / 2)),
+            armouredDamageV7(
+              state,
+              unit,
+              Math.max(1, Math.ceil(damageToDefender / 2)),
+            ),
           );
           return {
             unitId: unit.id,
@@ -275,7 +300,22 @@ export function calculateCombatPreviewV7(
     splash,
     ...undead,
     ...afflictions,
+    stampede: 0,
+    acid,
+    defenderArmoured,
+    attackerArmoured,
   };
+}
+
+/**
+ * Revision 19 Acid: whether an `ATTACK` by this attacker ignores the
+ * defender's cover and fortification (a land-form unit with `ACID`).
+ */
+export function attackHasAcidV7(
+  attackerRule: EffectiveRoleRuleV7,
+  attacker: Pick<UnitStateV7, "form">,
+): boolean {
+  return attacker.form === "LAND" && attackerRule.abilities.includes("ACID");
 }
 
 /** The unit facts the revision-13 Lifesteal and Infect effects read. */

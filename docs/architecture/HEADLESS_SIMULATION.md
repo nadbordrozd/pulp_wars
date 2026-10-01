@@ -5,7 +5,7 @@ Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The headless CLI
-accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r18`
+accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r19`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). The
 [Ruleset-7 revision-4 biome-economy specification](../product/RULESET_7_REVISION_4_BIOME_ECONOMY.md)
 is historical: it introduced the simulation matrix, telemetry, and revision-4
@@ -17,16 +17,23 @@ revision-3 references remain historical.
 
 Revision 13 match and batch commands accept a seat-ordered `--factions` list
 with exactly `aiCount + 1` values, seat 0 first. Values are `original` (alias
-`human`), `undead`, or (revision 17) `goblin`, case-insensitive; omission
-means all Human. A batch
+`human`), `undead`, (revision 17) `goblin`, or (revision 19) `dinosaur`,
+case-insensitive; omission means all Human. A batch
 with `--factions` needs exactly one `--ai-counts` value, and each batch entry
 records its `factions`.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r18 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
-npm run headless -- batch --ruleset pulp-wars-poc-7r18 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
-npm run headless -- match --ruleset pulp-wars-poc-7r18 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r19 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
+npm run headless -- batch --ruleset pulp-wars-poc-7r19 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
+npm run headless -- match --ruleset pulp-wars-poc-7r19 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r19 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
 ```
+
+A Dinosaur seat (`pulp_wars-c87.2`,
+[revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)) plays
+with the ordinary Normal policy on the Dinosaur registration and trains every
+land role with `TRAIN` until Eggs and Stampede land (`pulp_wars-c87.3`) and
+the Dinosaur policy follows (`pulp_wars-c87.5`).
 
 Every v7 result adds, beside the mechanical-role inventories:
 
@@ -123,7 +130,7 @@ change the board): its size defaults to 16 for every seat count, any other
 types at 16. No validation or balance matrix includes it by default.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r18 --map-type showcase --ai-count 3 --factions human,undead,goblin,human --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r19 --map-type showcase --ai-count 3 --factions human,undead,goblin,human --max-rounds 50
 ```
 
 The naval

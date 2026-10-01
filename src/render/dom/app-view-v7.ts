@@ -178,9 +178,18 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
   ORIGINAL: "Human",
   UNDEAD: "Undead",
   GOBLIN: "Goblin",
+  DINOSAUR: "Dinosaur",
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
 type FactionBadgeV7 = "UNDEAD" | "GOBLIN" | null;
+/**
+ * The placeholder badge of a faction. Revision 19: the Dinosaur badge lands
+ * with the Dinosaur UI (`pulp_wars-c87.4`); until then Dinosaur units are
+ * drawn as the Human art without a badge.
+ */
+function factionBadgeV7(faction: FactionIdV7): FactionBadgeV7 {
+  return faction === "UNDEAD" || faction === "GOBLIN" ? faction : null;
+}
 const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "MOVE",
   "ATTACK",
@@ -1274,8 +1283,7 @@ export class Ruleset7DomAppView {
       const undeadUnit = unitIsUndeadV7(view, unit);
       // Revision 17: every unit resolves through its owner's faction.
       const unitFaction = playerFactionV7(view, unit.ownerId);
-      const unitBadge: FactionBadgeV7 =
-        unitFaction === "ORIGINAL" ? null : unitFaction;
+      const unitBadge: FactionBadgeV7 = factionBadgeV7(unitFaction);
       const unitSubject = unitArtSubjectV7({ ...unit, faction: unitFaction });
       const unitColour = this.#playerColour(view, unit.ownerId);
       const dockArt = this.#chibiArt(
@@ -2692,9 +2700,7 @@ export class Ruleset7DomAppView {
         this.#document,
         recruitArt?.element ??
           art(this.#document, RULESET7_UNIT_ART_IDS[role], ""),
-        recruitArt?.factionArt === true || faction === "ORIGINAL"
-          ? null
-          : faction,
+        recruitArt?.factionArt === true ? null : factionBadgeV7(faction),
       ),
       text(this.#document, "h2", presentation.label),
       economyChips(this.#document, { cost: rule.cost ?? 0 }),
@@ -3128,10 +3134,9 @@ export class Ruleset7DomAppView {
         factionBadgeArt(
           this.#document,
           rewardArt?.element ?? art(this.#document, rewardArtIdV7(reward), ""),
-          view.viewer.faction !== "ORIGINAL" &&
-            (reward === "MILITIA" || reward === "JUGGERNAUT") &&
+          (reward === "MILITIA" || reward === "JUGGERNAUT") &&
             rewardArt?.factionArt !== true
-            ? view.viewer.faction
+            ? factionBadgeV7(view.viewer.faction)
             : null,
         ),
         text(this.#document, "strong", name),
@@ -4207,7 +4212,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r18",
+    rulesetId: "pulp-wars-poc-7r19",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -4338,20 +4343,28 @@ function effectDescription(
     case "SEA_TRADE_INCOME":
       return `Sea-linked cities: +${effect.coins} Coin`;
     case "CAPTAIN_SUPPORT":
-      return "Captains Rally or Tend nearby troops";
+      // Revision 19: the Dinosaur Rally is War Drums.
+      return faction === "DINOSAUR"
+        ? "Shamans beat War Drums or Tend nearby troops, and Hatch Eggs"
+        : "Captains Rally or Tend nearby troops";
     case "NECROMANCER_SUPPORT":
       return "Necromancers Frenzy nearby troops or Raise Dead";
     case "WAAAGH_SUPPORT":
       return "Orc Warbosses WAAAGH! troops within 2 tiles";
     case "PLUNDER":
       return `+${effect.coins} Coin for each enemy unit your units or blasts kill`;
+    case "NESTING":
+      return `Eggs have +${effect.eggHp} HP and hatch one turn sooner`;
     case "OVERRUN":
-      // Revision 17: the Goblin Overrun is Ram.
+      // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
+      // Overrun is Rampage.
       return faction === "GOBLIN"
         ? "Ram: Scrap Buggies advance after a kill and may attack again"
-        : "Knights advance after a kill and may attack again";
+        : faction === "DINOSAUR"
+          ? "Rampage: T-Rexes advance after a kill and may attack again"
+          : "Knights advance after a kill and may attack again";
     case "CHARGE_BONUS":
-      return `${label("RAIDER")}s gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
+      return `${faction === "DINOSAUR" ? "Pounce: " : ""}${label("RAIDER")}s gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
     case "MELEE_FIELD_DEMOLITION":
       return "Surviving melee attacks destroy Field Defense";
     case "NAVAL_TRAINING_DISCOUNT":
@@ -4471,6 +4484,7 @@ function technologyEffectGroupIdV7(
     case "NECROMANCER_SUPPORT":
     case "WAAAGH_SUPPORT":
     case "PLUNDER":
+    case "NESTING":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":

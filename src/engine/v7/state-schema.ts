@@ -1,9 +1,11 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
 import type { PlayerId } from "../model/ids";
 import {
+  GROWTH_HP_V7,
   effectiveRoleRuleV7,
   factionTreeIdV7,
   gravesEnabledV7,
+  growthStageForKillsV7,
 } from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
@@ -23,6 +25,7 @@ import {
   type CityRewardRecordV7,
   type CityStateV7,
   type CoordV7,
+  type EggStatusV7,
   type FactionIdV7,
   type GameStateV7,
   type ImprovementIdV7,
@@ -69,6 +72,7 @@ const STATE_KEYS = [
   "board",
   "cities",
   "commandIndex",
+  "eggs",
   "graves",
   "humanPlayerId",
   "nextEntityId",
@@ -129,6 +133,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const graves = parseSortedCoords(input.graves);
   const plagued = parsePlagued(input.plagued);
   const bitten = parseBitten(input.bitten);
+  const eggs = parseEggs(input.eggs);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -145,6 +150,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     graves === null ||
     plagued === null ||
     bitten === null ||
+    eggs === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -175,6 +181,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       graves,
       plagued,
       bitten,
+      eggs,
       choices,
       outcome,
       humanPlayerId,
@@ -205,6 +212,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     graves,
     plagued,
     bitten,
+    eggs,
     pendingChoices: choices,
     outcome,
   };
@@ -692,6 +700,9 @@ function parseUnit(
     !isNonNegativeSafeIntegerV7(input.kills) ||
     typeof input.veteran !== "boolean" ||
     typeof input.captureEligible !== "boolean" ||
+    // Revision 19: the `EGG` form is part of the schema, but no Egg is
+    // accepted until `LAY_EGG` lands (`pulp_wars-c87.3`), so a state holding
+    // one is rejected here.
     (input.form !== "LAND" &&
       input.form !== "EMBARKED" &&
       input.form !== "NAVAL")
@@ -715,7 +726,13 @@ function parseUnit(
     (input.homeCityId !== null && home === null) ||
     at === null ||
     activation === null ||
-    input.maxHp !== rule.maxHp + (input.veteran ? 5 : 0) ||
+    // Revision 19 Grow: a growing role is never veteran and its maximum HP
+    // follows its kills; every other unit keeps the Promotion rule.
+    (rule.abilities.includes("GROW")
+      ? input.veteran ||
+        input.maxHp !==
+          rule.maxHp + GROWTH_HP_V7 * growthStageForKillsV7(input.kills)
+      : input.maxHp !== rule.maxHp + (input.veteran ? 5 : 0)) ||
     (input.veteran && input.kills < 3) ||
     (input.captureEligible && !rule.abilities.includes("CAPTURE")) ||
     (!overrun && activation.attacksUsed > 1) ||
@@ -906,6 +923,36 @@ function parseBitten(input: unknown): readonly BittenStatusV7[] | null {
   return values;
 }
 
+/**
+ * Revision 19 `eggs` entries: `{ unitId, turnsRemaining, laidThisTurn }`
+ * sorted by unit ID, with a countdown of 1 to 3 Start Turns.
+ */
+function parseEggs(input: unknown): readonly EggStatusV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: EggStatusV7[] = [];
+  for (const candidate of input) {
+    if (
+      !hasExactKeysV7(candidate, ["laidThisTurn", "turnsRemaining", "unitId"])
+    )
+      return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    if (
+      unitId === null ||
+      !isPositiveSafeIntegerV7(candidate.turnsRemaining) ||
+      candidate.turnsRemaining > 3 ||
+      typeof candidate.laidThisTurn !== "boolean" ||
+      (values.length > 0 && (values.at(-1) as EggStatusV7).unitId >= unitId)
+    )
+      return null;
+    values.push({
+      unitId,
+      turnsRemaining: candidate.turnsRemaining,
+      laidThisTurn: candidate.laidThisTurn,
+    });
+  }
+  return values;
+}
+
 function parseSortedCoords(input: unknown): readonly CoordV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: CoordV7[] = [];
@@ -944,6 +991,7 @@ interface CrossInput {
   graves: readonly CoordV7[];
   plagued: readonly PlagueStatusV7[];
   bitten: readonly BittenStatusV7[];
+  eggs: readonly EggStatusV7[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
@@ -964,6 +1012,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     graves,
     plagued,
     bitten,
+    eggs,
     choices,
     outcome,
   } = value;
@@ -1193,6 +1242,15 @@ function validateCrossReferences(value: CrossInput): boolean {
     )
       return false;
   }
+  // Revision 19 Eggs: one entry per unit of form `EGG` and none otherwise,
+  // and only in a match with a Dinosaur seat. Unit parsing accepts no Egg
+  // before `pulp_wars-c87.3`, so the list is always empty until then.
+  if (
+    eggs.length !== units.filter((unit) => unit.form === "EGG").length ||
+    eggs.some((entry) => unitById.get(entry.unitId)?.form !== "EGG") ||
+    (eggs.length > 0 && !value.setup.factions.includes("DINOSAUR"))
+  )
+    return false;
   if (outcome !== null) {
     if (outcome.kind === "DEFEAT") {
       if (

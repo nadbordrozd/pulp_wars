@@ -18,8 +18,12 @@ This frozen revision-2 record and corpus remain unchanged.
 
 ## Current release contract (revision 18, Human, Undead and Goblin)
 
-The current runtime is `pulp-wars-poc-7r18` (autosave
-`pulpWars.save.v7r18.current`) with three playable factions, described by
+The current runtime is `pulp-wars-poc-7r19` (autosave
+`pulpWars.save.v7r19.current`; `pulp_wars-c87.2` bumped the identity for the
+[revision-19 Dinosaur overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md),
+whose engine core is registered and covered by
+`npm run validate:ruleset7-release` while the faction stays out of the setup
+screen until `pulp_wars-c87.4`) with three playable factions, described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md), into which
 `pulp_wars-0ao.9` folded the
 [revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md)

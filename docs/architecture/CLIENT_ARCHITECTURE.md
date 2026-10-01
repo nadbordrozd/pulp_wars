@@ -2,11 +2,16 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r18` (autosave
-`pulpWars.save.v7r18.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r17.current`), whose rules for all three factions,
-Human, Undead, and Goblin, are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). That document
+The current client runs `pulp-wars-poc-7r19` (autosave
+`pulpWars.save.v7r19.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r18.current`), whose rules for the three factions
+the setup screen offers, Human, Undead, and Goblin, are described by
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The engine also
+registers the Dinosaur faction of the
+[revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
+(`pulp_wars-c87.2`: identity, roster, capacity slots, Grow, Acid, Armoured);
+the client draws its units as the Human art and offers the faction from
+`pulp_wars-c87.4`. That document
 folds in the
 [revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md)
 (`pulp_wars-0ao.9`), the
