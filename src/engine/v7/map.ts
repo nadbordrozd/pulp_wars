@@ -1952,9 +1952,18 @@ function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
 }
 /**
  * Revision 17 section 2.2: the number of starting `FIGHTER` units of a seat.
- * A Goblin seat starts with two Goblins; every other faction with one.
+ * Every faction starts with one (`pulp_wars-0ao.7` tuned the Goblin seat's
+ * two Goblins to one, within the section 14.1 bounds of 1–2). With 2, the
+ * second Goblin is placed by `startingCompanionCellV7`.
  */
 export const STARTING_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
+  deepFreeze({ ORIGINAL: 1, UNDEAD: 1, GOBLIN: 1 });
+
+/**
+ * Revision 17 section 8.9: the `FIGHTER` units of a level-3 Militia reward.
+ * A Goblin Militia is two Goblins; every other faction's is one unit.
+ */
+export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
   deepFreeze({ ORIGINAL: 1, UNDEAD: 1, GOBLIN: 2 });
 
 /**

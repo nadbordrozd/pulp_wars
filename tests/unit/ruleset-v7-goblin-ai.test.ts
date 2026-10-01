@@ -239,13 +239,16 @@ describe("ruleset-7 revision-17 Normal AI: Bomb Chucker friendly fire", () => {
 });
 
 describe("ruleset-7 revision-17 Normal AI: Gang Up", () => {
+  // `pulp_wars-0ao.7` lowered the Goblin's Attack to 1.5: a Goblin no longer
+  // attacks a full-HP Guard even with Gang Up (it chips it with a Kaboom),
+  // so the targets are Fighters.
   it("moves a helper next to the target before the attack", () => {
     const { state } = arena(
       ["GOBLIN", "ORIGINAL"],
       [
         { seat: 0, role: "FIGHTER", at: at(4, 3) },
         { seat: 0, role: "FIGHTER", at: at(3, 1) },
-        { seat: 1, role: "GUARD", at: at(5, 2) },
+        { seat: 1, role: "FIGHTER", at: at(5, 2), hp: 6 },
       ],
       { coins: 0 },
     );
@@ -287,8 +290,8 @@ describe("ruleset-7 revision-17 Normal AI: Gang Up", () => {
       [
         { seat: 0, role: "FIGHTER", at: at(4, 3) },
         { seat: 0, role: "GUARD", at: at(3, 1) },
-        { seat: 1, role: "GUARD", at: at(3, 2) },
-        { seat: 1, role: "GUARD", at: at(5, 4) },
+        { seat: 1, role: "FIGHTER", at: at(3, 2) },
+        { seat: 1, role: "FIGHTER", at: at(5, 4) },
       ],
     );
     const goblin = unitAtV7(state, at(4, 3)).id;
@@ -421,7 +424,8 @@ describe("ruleset-7 revision-17 Normal AI: against Goblins", () => {
           { seat: 1, role: "MARKSMAN", at: at(4, 2), hp: 1 },
         ],
       );
-    const weak = blast(3);
+    // The Bomb Chucker's death blast is 2 (`pulp_wars-0ao.7`; was 3).
+    const weak = blast(2);
     const attacker = unitAtV7(weak.state, at(4, 3)).id;
     const chucker = unitAtV7(weak.state, at(4, 2)).id;
     const kill: CommandV7 = {
@@ -575,4 +579,88 @@ describe("ruleset-7 revision-17 Normal AI: the turn command cap", () => {
     expect(kinds).toHaveLength(40);
     expect(kinds.at(-1)).toBe("END_TURN");
   }, 120_000);
+});
+
+// pulp_wars-0ao.7 balance pass: the matrix showed the policy never trained a
+// Bomb Chucker, took Kabooms that killed more own Goblins than enemies, and
+// left most death blasts among its own units.
+describe("ruleset-7 revision-17 Normal AI: balance-pass tuning", () => {
+  it("trains a Bomb Chucker, which the HP-led training value never picked", () => {
+    // Before the Bomb Chucker bias this city trained a Rocket Cart; across
+    // 200 matrix games the policy never trained a Bomb Chucker.
+    const { state, view } = arena(
+      ["GOBLIN", "ORIGINAL"],
+      [
+        { seat: 0, role: "GUARD", at: at(8, 7) },
+        { seat: 0, role: "FIGHTER", at: at(7, 7) },
+        { seat: 1, role: "FIGHTER", at: at(2, 2) },
+      ],
+    );
+    const capital = state.cities.find(
+      (city) => city.ownerId === view.viewer.id,
+    );
+    expect(
+      chooseNormalCommandV7(view)
+        .candidates.map((candidate) => candidate.command)
+        .filter((command) => command.kind === "TRAIN"),
+    ).toEqual([{ kind: "TRAIN", cityId: capital?.id, role: "MARKSMAN" }]);
+  });
+
+  it("weighs a Kaboom's friendly losses at the friendly-fire trade factor", () => {
+    // Two wounded enemies die, but so do three wounded own Goblins: at face
+    // value the Kaboom scored +8 and was taken.
+    const { state, view } = arena(
+      ["GOBLIN", "ORIGINAL"],
+      [
+        { seat: 0, role: "FIGHTER", at: at(4, 2) },
+        { seat: 0, role: "FIGHTER", at: at(3, 2), hp: 3 },
+        { seat: 0, role: "FIGHTER", at: at(5, 2), hp: 3 },
+        { seat: 0, role: "FIGHTER", at: at(4, 1), hp: 3 },
+        { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 4 },
+        { seat: 1, role: "FIGHTER", at: at(5, 3), hp: 4 },
+      ],
+    );
+    expect(
+      scoreCommandV7(view, {
+        kind: "KABOOM",
+        unitId: unitAtV7(state, at(4, 2)).id,
+      }).priority,
+    ).toBe(-1);
+    // With one own Goblin in the blast the double kill is still taken.
+    const fewer = arena(
+      ["GOBLIN", "ORIGINAL"],
+      [
+        { seat: 0, role: "FIGHTER", at: at(4, 2) },
+        { seat: 0, role: "FIGHTER", at: at(3, 2), hp: 3 },
+        { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 4 },
+        { seat: 1, role: "FIGHTER", at: at(5, 3), hp: 4 },
+      ],
+    );
+    expect(
+      scoreCommandV7(fewer.view, {
+        kind: "KABOOM",
+        unitId: unitAtV7(fewer.state, at(4, 2)).id,
+      }).priority,
+    ).toBe(1181);
+  });
+
+  it("keeps units off a Rocket Cart that any visible enemy can damage", () => {
+    // A full-HP Rocket Cart a Fighter can reach is not killed this turn, but
+    // splash, Wail, Plague, and follow-up attacks finish such carts later.
+    const pieces = (enemy: "FIGHTER" | "GUARD"): GoblinPieceV7[] => [
+      { seat: 0, role: "CATAPULT", at: at(2, 3) },
+      { seat: 0, role: "RAIDER", at: at(4, 2) },
+      { seat: 1, role: enemy, at: at(2, 5) },
+    ];
+    const exposed = arena(["GOBLIN", "ORIGINAL"], pieces("FIGHTER"));
+    const rider = unitAtV7(exposed.state, at(4, 2)).id;
+    expect(scoreCommandV7(exposed.view, move(rider, at(3, 3))).priority).toBe(
+      -1,
+    );
+    // A Guard cannot attack after moving, so the cart is not exposed.
+    const safe = arena(["GOBLIN", "ORIGINAL"], pieces("GUARD"));
+    expect(
+      scoreCommandV7(safe.view, move(rider, at(3, 3))).priority,
+    ).toBeGreaterThanOrEqual(0);
+  });
 });

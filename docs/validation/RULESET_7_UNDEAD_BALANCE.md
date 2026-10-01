@@ -1213,3 +1213,12 @@ towards less deflation would only spend the T4–T6 margins.
   20 × 20 (80-round cap) 13 of 15 games cap instead of 11, and the
   four-seat extra caps 20 of 40 instead of 16; both are small samples with
   long games and are not targets.
+
+## 16. Revision 17: Goblins (`pulp_wars-0ao.7`)
+
+The matrix script now also runs the Goblin pairings and the three-faction
+four-seat mixes; the Goblin measurements, tuning, and targets are in the
+[Goblin balance report](RULESET_7_GOBLIN_BALANCE.md). The Human/Undead
+pairings of that run (`HU`, `UH`, `UU`, `HH`) have byte-identical final
+hashes to the untuned tree: Undead win 57.1% (`HU`) and 62.2% (`UH`), cap
+rates 2.0–6.3%.

@@ -61,6 +61,7 @@ import {
   GANG_UP_STRIKE_PRIORITY_V7,
   GOBLIN_HORDE_TRAINING_BIAS_V7,
   GOBLIN_HORDE_TRAINING_MAXIMUM_V7,
+  GOBLIN_BOMB_CHUCKER_TRAINING_BIAS_V7,
   GOBLIN_TRAINING_BIAS_V7,
   KABOOM_CAPTURE_PRIORITY_V7,
   KABOOM_CAPTURE_VALUE_V7,
@@ -5474,9 +5475,10 @@ function kaboomScoreV7(
   )
     return none;
   const coins = preview.totals.plunderCoins;
+  // pulp_wars-0ao.7: friendly fire costs the bomb trade factor here too.
   const net =
     chain.hostileValue -
-    chain.friendlyValue -
+    FRIENDLY_FIRE_TRADE_FACTOR_V7 * chain.friendlyValue -
     exploder +
     COIN_STRATEGIC_VALUE_V7 * coins +
     siege +
@@ -5674,8 +5676,8 @@ function kaboomSetupValueV7(
 /**
  * Exploder spacing: the value own and allied units would lose to death
  * blasts if `unit` stood at `at` — its own blast when it is an exploding
- * unit visible enemies can kill there, plus the blasts of adjacent own
- * exploding units that visible enemies can kill where they stand.
+ * unit visible enemies can badly hurt there, plus the blasts of adjacent own
+ * exploding units that visible enemies can badly hurt where they stand.
  */
 function exploderSpacingLossV7(
   context: PolicyContextV7,
@@ -5686,7 +5688,7 @@ function exploderSpacingLossV7(
   let loss = 0;
   const blast = deathBlastDamageV7(view, unit);
   const own = (owner: PlayerId) => friendlyOwnerV7(view, owner);
-  if (blast > 0 && own(unit.ownerId) && goblinDoomedAtV7(context, unit, at))
+  if (blast > 0 && own(unit.ownerId) && goblinExposedAtV7(context, unit, at))
     for (const other of view.units) {
       if (other.id === unit.id || !own(other.ownerId)) continue;
       if (distance(other.at, at) !== 1) continue;
@@ -5697,12 +5699,26 @@ function exploderSpacingLossV7(
     if (other.id === unit.id || other.ownerId !== view.viewer.id) continue;
     if (distance(other.at, at) !== 1) continue;
     const otherBlast = deathBlastDamageV7(view, other);
-    if (otherBlast <= 0 || !goblinDoomedAtV7(context, other, other.at))
+    if (otherBlast <= 0 || !goblinExposedAtV7(context, other, other.at))
       continue;
     const hit = Math.min(otherBlast, unit.hp);
     loss += friendlyLossValueV7(view, unit, hit, hit >= unit.hp);
   }
   return loss;
+}
+
+/**
+ * An exploding unit is exposed at `at` when any visible enemy can damage it
+ * there this turn (`pulp_wars-0ao.7`). Spacing only from units visible
+ * enemies can kill left most death blasts among own units: splash, Wail,
+ * Plague, and follow-up attacks finish exploders over several turns.
+ */
+function goblinExposedAtV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+): boolean {
+  return visibleImmediateDamage(context.view, unit, at, context) > 0;
 }
 
 /** The best Kaboom visible hostile goblin-crewed units have against `at`. */
@@ -5867,11 +5883,15 @@ function waaaghValueV7(
  * gains a small bias in both the preferred-role value and the city-action
  * utility; the horde adjustment (in `sharedCityContextWorkV7`) also waives
  * the repetition cost of the first four Goblins in the preferred-role
- * choice. The Orc Warboss cannot tend, so the living-seat cure bias never
- * applies.
+ * choice. The Bomb Chucker gains a bias for its bomb splash
+ * (`pulp_wars-0ao.7`). The Orc Warboss cannot tend, so the living-seat cure
+ * bias never applies.
  */
 function goblinTrainingAdjustmentsV7(): ReadonlyMap<UnitRoleIdV7, number> {
-  return new Map<UnitRoleIdV7, number>([["FIGHTER", GOBLIN_TRAINING_BIAS_V7]]);
+  return new Map<UnitRoleIdV7, number>([
+    ["FIGHTER", GOBLIN_TRAINING_BIAS_V7],
+    ["MARKSMAN", GOBLIN_BOMB_CHUCKER_TRAINING_BIAS_V7],
+  ]);
 }
 
 /**

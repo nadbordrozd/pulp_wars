@@ -430,7 +430,8 @@ As Goblins:
   and kills, plus 4 per Plunder Coin, 6 per hostile unit killed on a hostile
   city center, 40 when that clears the center for an own capturer that can
   still step in, and 20 when it kills a unit threatening an own city; minus
-  own and allied damage and kills and the exploder's value (a third of it
+  own and allied damage and kills at the friendly-fire trade factor (2, as
+  for bombs; `pulp_wars-0ao.7`) and the exploder's value (a third of it
   when visible enemies can kill it anyway; plus a 22-point Zombie when it is
   Bitten by a hostile biter). A net value of 0 or less is never a candidate,
   nor a Kaboom that leaves a threatened own center without killing a
@@ -457,8 +458,9 @@ As Goblins:
   Goblin match adds the value of the death-blast chain it sets off (hostile
   minus friendly) and its Plunder Coins.
 - **Spacing**: an own exploding unit (Bomb Chucker, Rocket Cart, Scrap
-  Buggy) that visible enemies can kill does not end a routine Move (below 1100) next to own or allied units, and no own unit ends one next to such an
-  exploder, unless the Move sets up a kill or the danger is no worse than
+  Buggy) that any visible enemy can damage (`pulp_wars-0ao.7`; was: that
+  visible enemies can kill) does not end a routine Move (below 1100) next to
+  own or allied units, and no own unit ends one next to such an exploder, unless the Move sets up a kill or the danger is no worse than
   where it stands; a unit standing in such danger moves out at 760. Both
   costs also reduce the Move's strategic value.
 - **Economy**: Plunder (the Goblin `COMMERCE`) is researched at 1070 while at
@@ -469,7 +471,9 @@ As Goblins:
   below a quarter of its HP; the Goblin (`FIGHTER`) gains a horde training
   bias of 8 × (1 + min(4, owned Goblins)), so Warrens capacity fills with
   cheap Goblins while the per-role repetition cost still brings in other
-  roles; the living-seat Captain cure bias does not apply (the Warboss
+  roles; the Bomb Chucker gains a training bias of 6 for its bomb
+  (`pulp_wars-0ao.7`: with the HP-led training value the 8-HP Bomb Chucker
+  never beat the Orc Brute and was never trained); the living-seat Captain cure bias does not apply (the Warboss
   cannot tend).
 - **Turn cap**: the shared scheduler (`chooseNormalTurnCommandV7`) still
   reserves the End Turn slot, so a large horde's turn always closes within

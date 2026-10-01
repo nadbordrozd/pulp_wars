@@ -9,10 +9,15 @@
  * independent and seeded, so results do not depend on `--jobs`; wall-clock
  * time is printed to stderr and never written to the JSON output.
  *
+ * Revision 17 (`pulp_wars-0ao.7`) adds the Goblin pairings `GH`, `HG`, `GU`,
+ * `UG`, and `GG`, the four-seat mixes with all three factions (`GHUG`,
+ * `HUGH`, `UGHU`), and the section 14.2 Goblin telemetry (`summary.goblin`).
+ *
  * Usage:
  *   npm run balance:ruleset7-undead -- [--seeds 30] [--multi-seeds 4]
  *     [--sizes 11,14] [--maps dry-land,pangea,continents,archipelago,lakes]
- *     [--pairings HU,UH,UU,HH,HUHU,UHUH] [--max-rounds 150]
+ *     [--pairings HU,UH,UU,HH,GH,HG,GU,UG,GG,HUHU,UHUH,GHUG,HUGH,UGHU]
+ *     [--max-rounds 150]
  *     [--multi-max-rounds 120] [--jobs N] [--output file.json]
  *     [--detail-output file.json] [--markdown] [--strict]
  *
@@ -43,6 +48,9 @@ import {
   type UnitRoleIdV7,
 } from "../src/engine/v7/types";
 import { factionTreeV7 } from "../src/engine/rules/ruleset-v7";
+import type { PlayerId } from "../src/engine/model/ids";
+import { arePlayersAlliedV7 } from "../src/engine/v7/economy";
+import { applyCommandV7, createPlayableGameV7 } from "../src/engine/v7/reducer";
 
 const MAP_TYPES: readonly MapTypeV7[] = [
   "DRY_LAND",
@@ -51,17 +59,42 @@ const MAP_TYPES: readonly MapTypeV7[] = [
   "ARCHIPELAGO",
   "LAKES",
 ];
+/**
+ * Seat-ordered pairings: `H` Human (`ORIGINAL`), `U` Undead, `G` Goblin
+ * (`pulp_wars-0ao.7` adds the Goblin 1v1 pairings and the four-seat mixes
+ * with all three factions).
+ */
 const PAIRINGS = {
   HU: ["ORIGINAL", "UNDEAD"],
   UH: ["UNDEAD", "ORIGINAL"],
   UU: ["UNDEAD", "UNDEAD"],
   HH: ["ORIGINAL", "ORIGINAL"],
+  GH: ["GOBLIN", "ORIGINAL"],
+  HG: ["ORIGINAL", "GOBLIN"],
+  GU: ["GOBLIN", "UNDEAD"],
+  UG: ["UNDEAD", "GOBLIN"],
+  GG: ["GOBLIN", "GOBLIN"],
   HUHU: ["ORIGINAL", "UNDEAD", "ORIGINAL", "UNDEAD"],
   UHUH: ["UNDEAD", "ORIGINAL", "UNDEAD", "ORIGINAL"],
+  GHUG: ["GOBLIN", "ORIGINAL", "UNDEAD", "GOBLIN"],
+  HUGH: ["ORIGINAL", "UNDEAD", "GOBLIN", "ORIGINAL"],
+  UGHU: ["UNDEAD", "GOBLIN", "ORIGINAL", "UNDEAD"],
 } as const satisfies Record<string, readonly FactionIdV7[]>;
 type PairingId = keyof typeof PAIRINGS;
-const ONE_VS_ONE: readonly PairingId[] = ["HU", "UH", "UU", "HH"];
-const MULTI: readonly PairingId[] = ["HUHU", "UHUH"];
+const ONE_VS_ONE: readonly PairingId[] = [
+  "HU",
+  "UH",
+  "UU",
+  "HH",
+  "GH",
+  "HG",
+  "GU",
+  "UG",
+  "GG",
+];
+const MULTI: readonly PairingId[] = ["HUHU", "UHUH", "GHUG", "HUGH", "UGHU"];
+/** 1v1 pairings without a Goblin seat (the cap-rate reference). */
+const NON_GOBLIN_ONE_VS_ONE: readonly PairingId[] = ["HU", "UH", "UU", "HH"];
 
 export interface MatrixCell {
   readonly pairing: PairingId;
@@ -123,6 +156,360 @@ export interface MatrixEntry extends MatrixCell {
   readonly plague: PlagueDuration;
   /** `pulp_wars-vkq.21` Lich lifecycles (Undead seats' `CATAPULT` role). */
   readonly liches: LichStats;
+  /** `pulp_wars-0ao.7` Goblin telemetry; null in a match without Goblins. */
+  readonly goblin: GoblinMatchStats | null;
+}
+
+/**
+ * Revision 17 section 14.2 Goblin telemetry for one Goblin seat of one match
+ * (`pulp_wars-0ao.7`). "Friendly" is the seat's own or allied units; the
+ * exploding unit itself is never a victim of its own blast.
+ */
+interface GoblinSeatStats {
+  seat: number;
+  kabooms: number;
+  kaboomsByRole: Partial<Record<UnitRoleIdV7, number>>;
+  deathBlasts: number;
+  deathBlastsByRole: Partial<Record<UnitRoleIdV7, number>>;
+  /** This seat's explosions by chain wave (index 0 is wave 1). */
+  explosionsByWave: number[];
+  /** Hits of this seat's explosions (credited to it), by victim side. */
+  blastHostileDamage: number;
+  blastHostileKills: number;
+  blastOwnDamage: number;
+  blastOwnKills: number;
+  blastAlliedDamage: number;
+  blastAlliedKills: number;
+  /** Death blasts only (a subset of the blast totals). */
+  deathBlastHostileDamage: number;
+  deathBlastHostileKills: number;
+  deathBlastFriendlyDamage: number;
+  deathBlastFriendlyKills: number;
+  /**
+   * Every explosion of chains this seat's Kaboom started, by side relative
+   * to this seat (whoever owns the exploding units of later waves).
+   */
+  kaboomChainHostileDamage: number;
+  kaboomChainHostileKills: number;
+  kaboomChainFriendlyDamage: number;
+  kaboomChainFriendlyKills: number;
+  /** Kabooms whose chain did more hostile than friendly damage. */
+  kaboomsNetPositive: number;
+  /** Bomb splash of this seat's attacks, by victim side. */
+  bombHostileDamage: number;
+  bombHostileKills: number;
+  bombFriendlyDamage: number;
+  bombFriendlyKills: number;
+  plunderCoins: number;
+  /** Attacks by this seat's units by Gang Up bonus 0, +1, +2. */
+  gangUp: [number, number, number];
+  /** Attacks with a Gang Up bonus that killed their target. */
+  gangUpKills: number;
+  waaaghs: number;
+  waaaghUnits: number;
+  trolls: number;
+  trollRegeneration: number;
+  /** Own turns, and those that reached 128 accepted commands. */
+  turns: number;
+  capTurns: number;
+  /** Most units the seat owned at one End Turn. */
+  maxUnits: number;
+  /**
+   * Hostile kills and damage by the role of the unit credited with them:
+   * attacks, retaliation, hostile splash, and explosions of that role.
+   */
+  killsByRole: Partial<Record<UnitRoleIdV7, number>>;
+  damageByRole: Partial<Record<UnitRoleIdV7, number>>;
+  /** This seat's unit deaths by role and by cause (`EXPLOSION_OWN` etc.). */
+  lossesByRole: Partial<Record<UnitRoleIdV7, number>>;
+  lossesByCause: Record<string, number>;
+  /** Own and allied units killed by this seat's explosions, by role. */
+  friendlyBlastKillsByRole: Partial<Record<UnitRoleIdV7, number>>;
+  /**
+   * Explosions that killed an own or allied unit, by exploding role and
+   * how it died (`KABOOM` for its own Kaboom).
+   */
+  friendlyKillingBlastsByRole: Partial<Record<string, number>>;
+}
+
+/** Goblin telemetry for one match: per Goblin seat plus chain shape. */
+interface GoblinMatchStats {
+  readonly seats: GoblinSeatStats[];
+  /** Commands (or Start Turns) with at least one explosion. */
+  chains: number;
+  /** Most explosions in one chain, and the deepest wave. */
+  longestChain: number;
+  deepestWave: number;
+  /** Chains by explosion count: 1, 2, 3, 4, 5 or more. */
+  chainSizes: [number, number, number, number, number];
+}
+
+function emptyGoblinSeat(seat: number): GoblinSeatStats {
+  return {
+    seat,
+    kabooms: 0,
+    kaboomsByRole: {},
+    deathBlasts: 0,
+    deathBlastsByRole: {},
+    explosionsByWave: [],
+    blastHostileDamage: 0,
+    blastHostileKills: 0,
+    blastOwnDamage: 0,
+    blastOwnKills: 0,
+    blastAlliedDamage: 0,
+    blastAlliedKills: 0,
+    deathBlastHostileDamage: 0,
+    deathBlastHostileKills: 0,
+    deathBlastFriendlyDamage: 0,
+    deathBlastFriendlyKills: 0,
+    kaboomChainHostileDamage: 0,
+    kaboomChainHostileKills: 0,
+    kaboomChainFriendlyDamage: 0,
+    kaboomChainFriendlyKills: 0,
+    kaboomsNetPositive: 0,
+    bombHostileDamage: 0,
+    bombHostileKills: 0,
+    bombFriendlyDamage: 0,
+    bombFriendlyKills: 0,
+    plunderCoins: 0,
+    gangUp: [0, 0, 0],
+    gangUpKills: 0,
+    waaaghs: 0,
+    waaaghUnits: 0,
+    trolls: 0,
+    trollRegeneration: 0,
+    turns: 0,
+    capTurns: 0,
+    maxUnits: 0,
+    killsByRole: {},
+    damageByRole: {},
+    lossesByRole: {},
+    lossesByCause: {},
+    friendlyBlastKillsByRole: {},
+    friendlyKillingBlastsByRole: {},
+  };
+}
+
+const bump = <K extends string>(
+  record: Partial<Record<K, number>>,
+  key: K,
+  amount = 1,
+) => {
+  record[key] = (record[key] ?? 0) + amount;
+};
+
+/**
+ * Replays the accepted command log from the setup (the reducer is
+ * deterministic) so every event can be attributed with the owners and roles
+ * of the units just before it. Only called for matches with a Goblin seat.
+ */
+function goblinTelemetry(
+  setup: MatchSetupV7,
+  log: ReturnType<typeof runAiMatchV7>["commandLog"],
+): GoblinMatchStats {
+  const created = createPlayableGameV7(setup);
+  if (!created.ok) throw new Error(`CREATE_REJECTED:${created.error.code}`);
+  let state = created.state;
+  const seats = new Map<number, GoblinSeatStats>();
+  for (const player of state.players)
+    if (player.faction === "GOBLIN")
+      seats.set(player.id, emptyGoblinSeat(player.seat));
+  const match: GoblinMatchStats = {
+    seats: [...seats.values()],
+    chains: 0,
+    longestChain: 0,
+    deepestWave: 0,
+    chainSizes: [0, 0, 0, 0, 0],
+  };
+  const friendly = (credited: PlayerId, owner: PlayerId | undefined) =>
+    owner === credited ||
+    (owner !== undefined && arePlayersAlliedV7(state, credited, owner));
+  let turnCommands = 0;
+  for (const record of log) {
+    const before = state;
+    const units = new Map(
+      before.units.map((unit) => [unit.id as number, unit]),
+    );
+    const result = applyCommandV7(state, record.playerId, record.command);
+    if (!result.accepted) throw new Error("Goblin telemetry replay rejected");
+    state = result.state;
+    const after = new Map(state.units.map((unit) => [unit.id as number, unit]));
+    const unitOf = (unitId: number) => units.get(unitId) ?? after.get(unitId);
+    const ownerOf = (unitId: number) => unitOf(unitId)?.ownerId;
+    turnCommands += 1;
+    const actor = seats.get(record.playerId);
+    if (record.command.kind === "END_TURN") {
+      if (actor !== undefined) {
+        actor.turns += 1;
+        actor.capTurns += Number(turnCommands >= 128);
+        actor.maxUnits = Math.max(
+          actor.maxUnits,
+          before.units.filter((unit) => unit.ownerId === record.playerId)
+            .length,
+        );
+      }
+      turnCommands = 0;
+    }
+    if (actor !== undefined && record.command.kind === "RALLY")
+      actor.waaaghs += 1;
+    const kaboomSeat =
+      record.command.kind === "KABOOM" ? seats.get(record.playerId) : undefined;
+    let chainExplosions = 0;
+    let kaboomHostile = 0;
+    let kaboomFriendly = 0;
+    // How each unit died in this command (an exploder's blast follows).
+    const deathCause = new Map<number, string>();
+    for (const event of record.events) {
+      if (event.kind === "UNITS_RALLIED" && actor !== undefined)
+        actor.waaaghUnits += event.unitIds.length;
+      if (event.kind === "PLUNDER_AWARDED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) seat.plunderCoins += event.coins;
+      }
+      if (event.kind === "UNIT_REWARD_GRANTED" && event.role === "JUGGERNAUT") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) seat.trolls += 1;
+      }
+      if (event.kind === "UNITS_REGENERATED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined)
+          seat.trollRegeneration += sum(
+            event.results.map((entry) => entry.amount),
+          );
+      }
+      if (event.kind === "UNIT_DIED") deathCause.set(event.unitId, event.cause);
+      if (event.kind === "UNIT_DIED" && event.cause !== "ELIMINATION") {
+        const unit = unitOf(event.unitId);
+        const seat = unit === undefined ? undefined : seats.get(unit.ownerId);
+        if (unit !== undefined && seat !== undefined) {
+          bump(seat.lossesByRole, unit.role);
+          seat.lossesByCause[event.cause] =
+            (seat.lossesByCause[event.cause] ?? 0) + 1;
+        }
+      }
+      if (event.kind === "COMBAT_RESOLVED") {
+        const preview = event.preview;
+        const attacker = unitOf(preview.attackerId);
+        const defender = unitOf(preview.targetUnitId);
+        const attackerSeat =
+          attacker === undefined ? undefined : seats.get(attacker.ownerId);
+        const defenderSeat =
+          defender === undefined ? undefined : seats.get(defender.ownerId);
+        if (attacker !== undefined && attackerSeat !== undefined) {
+          attackerSeat.gangUp[preview.gangUp] += 1;
+          if (preview.gangUp > 0 && preview.defenderDies)
+            attackerSeat.gangUpKills += 1;
+          bump(
+            attackerSeat.damageByRole,
+            attacker.role,
+            preview.damageToDefender,
+          );
+          if (preview.defenderDies)
+            bump(attackerSeat.killsByRole, attacker.role);
+          // Bomb Chucker bombs; a Battleship's (hostile-only) splash counts
+          // only towards its role's damage and kills.
+          const bomb = attacker.role === "MARKSMAN";
+          for (const entry of preview.splash) {
+            if (friendly(attacker.ownerId, ownerOf(entry.unitId))) {
+              attackerSeat.bombFriendlyDamage += entry.damage;
+              attackerSeat.bombFriendlyKills += Number(entry.dies);
+            } else {
+              if (bomb) {
+                attackerSeat.bombHostileDamage += entry.damage;
+                attackerSeat.bombHostileKills += Number(entry.dies);
+              }
+              bump(attackerSeat.damageByRole, attacker.role, entry.damage);
+              if (entry.dies) bump(attackerSeat.killsByRole, attacker.role);
+            }
+          }
+        }
+        if (defender !== undefined && defenderSeat !== undefined) {
+          bump(
+            defenderSeat.damageByRole,
+            defender.role,
+            preview.damageToAttacker,
+          );
+          if (preview.attackerDies)
+            bump(defenderSeat.killsByRole, defender.role);
+        }
+      }
+      if (event.kind === "EXPLOSION_RESOLVED") {
+        chainExplosions += 1;
+        match.deepestWave = Math.max(match.deepestWave, event.wave);
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) {
+          if (event.cause === "KABOOM") {
+            seat.kabooms += 1;
+            bump(seat.kaboomsByRole, event.role);
+          } else {
+            seat.deathBlasts += 1;
+            bump(seat.deathBlastsByRole, event.role);
+          }
+          seat.explosionsByWave[event.wave - 1] =
+            (seat.explosionsByWave[event.wave - 1] ?? 0) + 1;
+        }
+        let killedFriendly = false;
+        for (const hit of event.results) {
+          const owner = ownerOf(hit.unitId);
+          if (seat !== undefined) {
+            const own = owner === event.playerId;
+            const allied = !own && friendly(event.playerId, owner);
+            const victim = unitOf(hit.unitId);
+            if ((own || allied) && hit.dies && victim !== undefined) {
+              bump(seat.friendlyBlastKillsByRole, victim.role);
+              killedFriendly = true;
+            }
+            if (own) {
+              seat.blastOwnDamage += hit.damage;
+              seat.blastOwnKills += Number(hit.dies);
+            } else if (allied) {
+              seat.blastAlliedDamage += hit.damage;
+              seat.blastAlliedKills += Number(hit.dies);
+            } else {
+              seat.blastHostileDamage += hit.damage;
+              seat.blastHostileKills += Number(hit.dies);
+              bump(seat.damageByRole, event.role, hit.damage);
+              if (hit.dies) bump(seat.killsByRole, event.role);
+            }
+            if (event.cause === "DEATH") {
+              if (own || allied) {
+                seat.deathBlastFriendlyDamage += hit.damage;
+                seat.deathBlastFriendlyKills += Number(hit.dies);
+              } else {
+                seat.deathBlastHostileDamage += hit.damage;
+                seat.deathBlastHostileKills += Number(hit.dies);
+              }
+            }
+          }
+          if (kaboomSeat !== undefined) {
+            if (friendly(record.playerId, owner)) {
+              kaboomSeat.kaboomChainFriendlyDamage += hit.damage;
+              kaboomSeat.kaboomChainFriendlyKills += Number(hit.dies);
+              kaboomFriendly += hit.damage;
+            } else {
+              kaboomSeat.kaboomChainHostileDamage += hit.damage;
+              kaboomSeat.kaboomChainHostileKills += Number(hit.dies);
+              kaboomHostile += hit.damage;
+            }
+          }
+        }
+        if (killedFriendly && seat !== undefined)
+          bump(
+            seat.friendlyKillingBlastsByRole,
+            `${event.role}:${event.cause === "KABOOM" ? "KABOOM" : (deathCause.get(event.unitId) ?? "?")}`,
+          );
+      }
+    }
+    if (kaboomSeat !== undefined && kaboomHostile > kaboomFriendly)
+      kaboomSeat.kaboomsNetPositive += 1;
+    if (chainExplosions > 0) {
+      match.chains += 1;
+      match.longestChain = Math.max(match.longestChain, chainExplosions);
+      const size = Math.min(5, chainExplosions) - 1;
+      match.chainSizes[size] = (match.chainSizes[size] ?? 0) + 1;
+    }
+  }
+  return match;
 }
 
 /**
@@ -377,6 +764,9 @@ export function runCell(cell: MatrixCell): MatrixEntry {
     lastCaptureRound: analysis.lastCaptureRound,
     plague: analysis.plague,
     liches: analysis.liches,
+    goblin: (factions as readonly FactionIdV7[]).includes("GOBLIN")
+      ? goblinTelemetry(setup, result.commandLog)
+      : null,
   };
 }
 
@@ -1230,7 +1620,11 @@ export function summarize(entries: readonly MatrixEntry[]) {
       ).length,
     };
   };
-  const undeadGames = duel.filter((entry) => entry.pairing !== "HH");
+  // The pre-Goblin pairings with an Undead seat (`HU`, `UH`, `UU`).
+  const undeadGames = duel.filter(
+    (entry) =>
+      NON_GOBLIN_ONE_VS_ONE.includes(entry.pairing) && entry.pairing !== "HH",
+  );
   /** Seat means for one faction's seats, or every seat when `null`. */
   const seatMeans = (
     group: readonly MatrixEntry[],
@@ -1399,6 +1793,7 @@ export function summarize(entries: readonly MatrixEntry[]) {
     matches: entries.length,
     errors: sum(entries.map((entry) => entry.errors)),
     stalls: sum(entries.map((entry) => entry.stalls)),
+    goblin: goblinSummary(entries),
     duel: {
       perPairing,
       undeadWinMixed: rateFor(mixed, undeadWon),
@@ -1464,8 +1859,11 @@ export function summarize(entries: readonly MatrixEntry[]) {
         mixedUndead: seatMeans(mixed, "UNDEAD"),
         humanMirror: seatMeans(byPairing.HH ?? [], "ORIGINAL"),
         undeadMirror: seatMeans(byPairing.UU ?? [], "UNDEAD"),
-        // `pulp_wars-4gc`: every 1v1 seat of every pairing.
-        all: seatMeans(duel, null),
+        // `pulp_wars-4gc`: every 1v1 seat of every pre-Goblin pairing.
+        all: seatMeans(
+          duel.filter((entry) => NON_GOBLIN_ONE_VS_ONE.includes(entry.pairing)),
+          null,
+        ),
       },
       knights: {
         mixedHuman: knightTotals(mixed, "ORIGINAL"),
@@ -1517,6 +1915,285 @@ export function summarize(entries: readonly MatrixEntry[]) {
   };
 }
 
+const goblinWon = (entry: MatrixEntry) => entry.winnerFaction === "GOBLIN";
+
+/** Goblin seats of a group with their matches (for per-seat economy). */
+function goblinSeatsOf(group: readonly MatrixEntry[]) {
+  return group.flatMap((entry) =>
+    (entry.goblin?.seats ?? []).map((seatStats) => ({
+      entry,
+      seatStats,
+      economy: entry.seats.find((seat) => seat.seat === seatStats.seat),
+    })),
+  );
+}
+
+const share = (part: number, whole: number) =>
+  whole === 0 ? null : Math.round((1000 * part) / whole) / 1000;
+
+/**
+ * Section 14.2 Goblin telemetry summed over every Goblin seat of `group`,
+ * with the section 14.3 ratios.
+ */
+function goblinAggregate(group: readonly MatrixEntry[]) {
+  const seats = goblinSeatsOf(group);
+  const games = group.filter((entry) => entry.goblin !== null);
+  const total = (key: keyof GoblinSeatStats) =>
+    sum(
+      seats.map(({ seatStats }) => {
+        const value = seatStats[key];
+        return typeof value === "number" ? value : 0;
+      }),
+    );
+  const roles = (
+    pick: (seat: GoblinSeatStats) => Partial<Record<string, number>>,
+  ) => {
+    const totals: Record<string, number> = {};
+    for (const { seatStats } of seats)
+      for (const [key, value] of Object.entries(pick(seatStats) ?? {}))
+        totals[key] = (totals[key] ?? 0) + (value ?? 0);
+    return totals;
+  };
+  const friendlyBlastKills = total("blastOwnKills") + total("blastAlliedKills");
+  const blastKills = friendlyBlastKills + total("blastHostileKills");
+  const bombKills = total("bombFriendlyKills") + total("bombHostileKills");
+  const kaboomSeats = seats.filter(
+    ({ seatStats }) => seatStats.kabooms > 0,
+  ).length;
+  const income = sum(seats.map(({ economy }) => economy?.income ?? 0));
+  const waves: number[] = [];
+  for (const { seatStats } of seats)
+    seatStats.explosionsByWave.forEach((count, index) => {
+      waves[index] = (waves[index] ?? 0) + count;
+    });
+  const chainSizes = [0, 0, 0, 0, 0];
+  for (const entry of games)
+    entry.goblin?.chainSizes.forEach((count, index) => {
+      chainSizes[index] = (chainSizes[index] ?? 0) + count;
+    });
+  const trained: Record<string, number> = {};
+  let overcapacityStates = 0;
+  let gamesWithOvercapacity = 0;
+  for (const entry of group) {
+    const goblins = entry.byFaction.GOBLIN;
+    if (goblins === undefined) continue;
+    for (const [role, count] of Object.entries(goblins.trained))
+      trained[role] = (trained[role] ?? 0) + (count ?? 0);
+    overcapacityStates += goblins.overcapacityStates;
+    gamesWithOvercapacity += Number(goblins.overcapacityStates > 0);
+  }
+  const perSeat = (value: number) =>
+    seats.length === 0 ? null : Math.round((100 * value) / seats.length) / 100;
+  return {
+    games: games.length,
+    seatGames: seats.length,
+    kabooms: total("kabooms"),
+    kaboomsPerSeatGame: perSeat(total("kabooms")),
+    seatGamesWithKaboom: kaboomSeats,
+    seatGamesWithKaboomShare: share(kaboomSeats, seats.length),
+    kaboomsByRole: roles((seat) => seat.kaboomsByRole),
+    kaboomsNetPositive: total("kaboomsNetPositive"),
+    kaboomChain: {
+      hostileDamage: total("kaboomChainHostileDamage"),
+      hostileKills: total("kaboomChainHostileKills"),
+      friendlyDamage: total("kaboomChainFriendlyDamage"),
+      friendlyKills: total("kaboomChainFriendlyKills"),
+      netDamage:
+        total("kaboomChainHostileDamage") - total("kaboomChainFriendlyDamage"),
+    },
+    deathBlasts: total("deathBlasts"),
+    deathBlastsByRole: roles((seat) => seat.deathBlastsByRole),
+    deathBlast: {
+      hostileDamage: total("deathBlastHostileDamage"),
+      hostileKills: total("deathBlastHostileKills"),
+      friendlyDamage: total("deathBlastFriendlyDamage"),
+      friendlyKills: total("deathBlastFriendlyKills"),
+    },
+    explosionsByWave: waves,
+    blast: {
+      hostileDamage: total("blastHostileDamage"),
+      hostileKills: total("blastHostileKills"),
+      ownDamage: total("blastOwnDamage"),
+      ownKills: total("blastOwnKills"),
+      alliedDamage: total("blastAlliedDamage"),
+      alliedKills: total("blastAlliedKills"),
+      friendlyDeathShare: share(friendlyBlastKills, blastKills),
+    },
+    bomb: {
+      hostileDamage: total("bombHostileDamage"),
+      hostileKills: total("bombHostileKills"),
+      friendlyDamage: total("bombFriendlyDamage"),
+      friendlyKills: total("bombFriendlyKills"),
+      friendlyDeathShare: share(total("bombFriendlyKills"), bombKills),
+    },
+    chains: {
+      count: sum(games.map((entry) => entry.goblin?.chains ?? 0)),
+      sizes: chainSizes,
+      longest: Math.max(
+        0,
+        ...games.map((entry) => entry.goblin?.longestChain ?? 0),
+      ),
+      deepestWave: Math.max(
+        0,
+        ...games.map((entry) => entry.goblin?.deepestWave ?? 0),
+      ),
+      gamesWithChainOfThreePlus: games.filter(
+        (entry) => (entry.goblin?.longestChain ?? 0) >= 3,
+      ).length,
+    },
+    plunderCoins: total("plunderCoins"),
+    plunderPerSeatGame: perSeat(total("plunderCoins")),
+    plunderShareOfIncome: share(total("plunderCoins"), income),
+    gangUp: [0, 1, 2].map((bonus) =>
+      sum(seats.map(({ seatStats }) => seatStats.gangUp[bonus] ?? 0)),
+    ),
+    gangUpKills: total("gangUpKills"),
+    waaaghs: total("waaaghs"),
+    waaaghUnits: total("waaaghUnits"),
+    seatGamesWithWaaagh: seats.filter(({ seatStats }) => seatStats.waaaghs > 0)
+      .length,
+    trolls: total("trolls"),
+    seatGamesWithTroll: seats.filter(({ seatStats }) => seatStats.trolls > 0)
+      .length,
+    trollRegeneration: total("trollRegeneration"),
+    turns: total("turns"),
+    capTurns: total("capTurns"),
+    maxUnits: stats(seats.map(({ seatStats }) => seatStats.maxUnits)),
+    trained,
+    /** Goblin-faction over-capacity snapshots, and games with any. */
+    overcapacityStates,
+    gamesWithOvercapacity,
+    killsByRole: roles((seat) => seat.killsByRole),
+    damageByRole: roles((seat) => seat.damageByRole),
+    lossesByRole: roles((seat) => seat.lossesByRole),
+    lossesByCause: roles((seat) => seat.lossesByCause),
+    friendlyBlastKillsByRole: roles((seat) => seat.friendlyBlastKillsByRole),
+    friendlyKillingBlastsByRole: roles(
+      (seat) => seat.friendlyKillingBlastsByRole,
+    ),
+  };
+}
+
+function capRateOf(group: readonly MatrixEntry[]): number | null {
+  return share(
+    group.filter((entry) => entry.termination !== "OUTCOME").length,
+    group.length,
+  );
+}
+
+/** Section 14.3 Goblin acceptance measures and section 14.2 telemetry. */
+function goblinSummary(entries: readonly MatrixEntry[]) {
+  const duel = entries.filter((entry) => entry.aiCount === 1);
+  const versus = (opponent: FactionIdV7) =>
+    duel.filter(
+      (entry) =>
+        entry.factions.includes("GOBLIN") && entry.factions.includes(opponent),
+    );
+  const byKey = (
+    group: readonly MatrixEntry[],
+    key: (entry: MatrixEntry) => string,
+  ) =>
+    Object.fromEntries(
+      Object.entries(groupBy(group, key)).map(([name, items]) => [
+        name,
+        rateFor(items, goblinWon),
+      ]),
+    );
+  const nonGoblin = duel.filter((entry) =>
+    NON_GOBLIN_ONE_VS_ONE.includes(entry.pairing),
+  );
+  const goblinPairings = ONE_VS_ONE.filter(
+    (pairing) => !NON_GOBLIN_ONE_VS_ONE.includes(pairing),
+  );
+  const pairingCaps: Record<string, number | null> = Object.fromEntries(
+    goblinPairings.flatMap((pairing) => {
+      const group = duel.filter((entry) => entry.pairing === pairing);
+      return group.length === 0 ? [] : [[pairing, capRateOf(group)]];
+    }),
+  );
+  const reference = capRateOf(nonGoblin);
+  const excesses = Object.values(pairingCaps).map(
+    (rate) => (rate ?? 0) - (reference ?? 0),
+  );
+  const multi = entries.filter(
+    (entry) => entry.aiCount === 3 && entry.factions.includes("GOBLIN"),
+  );
+  return {
+    versusHuman: rateFor(versus("ORIGINAL"), goblinWon),
+    versusUndead: rateFor(versus("UNDEAD"), goblinWon),
+    versusHumanBySeat: byKey(versus("ORIGINAL"), (entry) => entry.pairing),
+    versusUndeadBySeat: byKey(versus("UNDEAD"), (entry) => entry.pairing),
+    versusHumanBySize: byKey(versus("ORIGINAL"), (entry) => String(entry.size)),
+    versusUndeadBySize: byKey(versus("UNDEAD"), (entry) => String(entry.size)),
+    versusHumanByMapSize: byKey(
+      versus("ORIGINAL"),
+      (entry) => `${entry.mapType}/${entry.size}`,
+    ),
+    versusUndeadByMapSize: byKey(
+      versus("UNDEAD"),
+      (entry) => `${entry.mapType}/${entry.size}`,
+    ),
+    mirrorSeatZeroWin: rateFor(
+      duel.filter((entry) => entry.pairing === "GG"),
+      seatZeroWon,
+    ),
+    capRates: {
+      nonGoblinReference: reference,
+      byPairing: pairingCaps,
+      /** Percentage points above the reference (worst Goblin pairing). */
+      worstExcessPoints:
+        reference === null || excesses.length === 0
+          ? null
+          : Math.round(1000 * Math.max(...excesses)) / 10,
+    },
+    telemetry: {
+      ...Object.fromEntries(
+        goblinPairings.flatMap((pairing) => {
+          const group = duel.filter((entry) => entry.pairing === pairing);
+          return group.length === 0 ? [] : [[pairing, goblinAggregate(group)]];
+        }),
+      ),
+      mixedVersusHuman: goblinAggregate(versus("ORIGINAL")),
+      mixedVersusUndead: goblinAggregate(versus("UNDEAD")),
+      allOneVsOne: goblinAggregate(duel),
+      multi: goblinAggregate(multi),
+    },
+    multi: Object.fromEntries(
+      Object.entries(groupBy(multi, (entry) => entry.pairing)).map(
+        ([pairing, group]) => [
+          pairing,
+          {
+            games: group.length,
+            capRate: capRateOf(group),
+            winnerFaction: groupCount(
+              group,
+              (entry) => entry.winnerFaction ?? entry.termination,
+            ),
+            aliveSeatsByFaction: groupCount(
+              group.flatMap((entry) =>
+                entry.seats.filter((seat) => seat.alive),
+              ),
+              (seat) => seat.faction,
+            ),
+            citiesByFaction: Object.fromEntries(
+              FACTION_IDS_V7.map((faction) => [
+                faction,
+                sum(
+                  group.flatMap((entry) =>
+                    entry.seats
+                      .filter((seat) => seat.faction === faction)
+                      .map((seat) => seat.cities),
+                  ),
+                ),
+              ]),
+            ),
+          },
+        ],
+      ),
+    ),
+  };
+}
+
 function groupCount<T>(
   items: readonly T[],
   key: (item: T) => string,
@@ -1542,6 +2219,7 @@ function markdown(summary: ReturnType<typeof summarize>): string {
     `Bitten (mixed): ${summary.duel.abilities.mixed.bites ?? 0} bites, ${summary.duel.abilities.mixed.bittenRisings ?? 0} risings, ${summary.duel.abilities.mixed.bittenCures ?? 0} cured; games with a Bitten rising ${summary.duel.abilities.gamesWithBittenRising}/${summary.duel.abilities.undeadGames}; unanswered attacks ${summary.duel.abilities.mixed.unansweredAttacks ?? 0}`,
     `Plague duration (mixed games with Plague ${summary.duel.plague.gamesWithPlague}/${summary.duel.plague.games}): most plagued at once mean ${summary.duel.plague.plaguedMaximum.mean} p90 ${summary.duel.plague.plaguedMaximum.p90}; rounds with Plague mean ${summary.duel.plague.plagueRounds.mean} p90 ${summary.duel.plague.plagueRounds.p90}; longest streak mean ${summary.duel.plague.longestStreak.mean}; longest single-unit Plague mean ${summary.duel.plague.longestUnitTurns.mean} turns; plagued unit-turns per game ${summary.duel.plague.plaguedUnitTurnsPerGame}; turns per plagued unit ${summary.duel.plague.turnsPerPlaguedUnit}`,
     "",
+    ...goblinMarkdown(summary.goblin, pct),
     "| Pairing | Games | Undead win | Seat-0 win | First mover win | Rounds mean/median/p90 | Cap rate |",
     "| --- | ---: | --- | --- | --- | --- | ---: |",
     ...Object.entries(summary.duel.perPairing).map(
@@ -1569,6 +2247,29 @@ function markdown(summary: ReturnType<typeof summarize>): string {
     "",
   ];
   return `${lines.join("\n")}\n`;
+}
+
+/** Section 14.3 Goblin acceptance lines (empty without Goblin games). */
+function goblinMarkdown(
+  goblin: ReturnType<typeof goblinSummary>,
+  pct: (rate: Rate) => string,
+): string[] {
+  const all = goblin.telemetry.allOneVsOne;
+  if (all.seatGames === 0) return [];
+  const caps = goblin.capRates;
+  return [
+    `Goblin win vs Human (GH+HG): ${pct(goblin.versusHuman)}`,
+    `Goblin win vs Undead (GU+UG): ${pct(goblin.versusUndead)}`,
+    `Cap rates: non-Goblin reference ${caps.nonGoblinReference}; ${Object.entries(
+      caps.byPairing,
+    )
+      .map(([pairing, rate]) => `${pairing} ${rate}`)
+      .join(", ")}; worst excess ${caps.worstExcessPoints} points`,
+    `Kaboom (1v1): ${all.kabooms} in ${all.seatGamesWithKaboom}/${all.seatGames} seat-games; chain damage hostile ${all.kaboomChain.hostileDamage} vs friendly ${all.kaboomChain.friendlyDamage}`,
+    `Goblin explosion deaths (1v1): hostile ${all.blast.hostileKills}, own ${all.blast.ownKills}, allied ${all.blast.alliedKills}; friendly share ${all.blast.friendlyDeathShare}; bomb friendly share ${all.bomb.friendlyDeathShare}`,
+    `Chains (1v1): ${all.chains.count}, sizes 1/2/3/4/5+ ${all.chains.sizes.join("/")}, longest ${all.chains.longest}; Plunder ${all.plunderCoins} (${all.plunderShareOfIncome} of income); Gang Up 0/1/2 ${all.gangUp.join("/")}; WAAAGH! ${all.waaaghs}; Trolls ${all.trolls}`,
+    "",
+  ];
 }
 
 // Dispatch last so every module-level constant above is initialized.

@@ -1034,8 +1034,8 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
     tacticalRole: "LINE",
     cost: 1,
     maxHp: 6,
-    attack2: 4,
-    defense2: 2,
+    attack2: 3,
+    defense2: 1,
     move: 1,
     range: 1,
     minimumRange: 1,
@@ -1170,17 +1170,17 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
  * regenerates 4 HP. Boats are Human boats.
  */
 export const GOBLIN_ROLE_MECHANICS_V7 = mechanics({
-  FIGHTER: { buildsFieldDefense: false, kaboomDamage: 4 },
+  FIGHTER: { buildsFieldDefense: false, kaboomDamage: 5 },
   RAIDER: { kaboomDamage: 4 },
   MARKSMAN: {
     splash: true,
     splashTargets: "ALL",
     kaboomDamage: 4,
-    deathBlastDamage: 3,
+    deathBlastDamage: 2,
   },
   CAPTAIN: { rallyRadius: 2, rallyReachesSupportAndSiege: true },
-  CATAPULT: { advancesAfterKill: false, kaboomDamage: 5, deathBlastDamage: 5 },
-  KNIGHT: { kaboomDamage: 5, deathBlastDamage: 5 },
+  CATAPULT: { advancesAfterKill: false, kaboomDamage: 5, deathBlastDamage: 4 },
+  KNIGHT: { kaboomDamage: 5, deathBlastDamage: 4 },
   JUGGERNAUT: { regeneration: 4 },
   BATTLESHIP: { splash: true },
 });

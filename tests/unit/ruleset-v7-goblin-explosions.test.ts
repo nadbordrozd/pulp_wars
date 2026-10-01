@@ -59,6 +59,12 @@ import {
 // (docs/product/RULESET_7_REVISION_17_GOBLINS.md sections 6, 7.4, 8, 9, 12,
 // and the 0ao.3 row of section 13).
 //
+// `pulp_wars-0ao.7` tuned the Goblin's Kaboom (4 -> 5), the death blasts
+// (Bomb Chucker 3 -> 2, Rocket Cart and Scrap Buggy 5 -> 4), and the Goblin
+// seat's starting Goblins (two -> one); the scenarios below use victim HP
+// that keeps each scenario's outcome (who dies, who survives) under the
+// tuned damages.
+//
 // Two-seat arena: seat 0 capital (8, 8), seat 1 capital (2, 8), villages
 // (5, 5), (8, 5), (5, 8). Three-seat arena: capitals (2, 2), (11, 11),
 // (11, 2); villages (8, 2), (8, 5), (11, 5), (5, 8).
@@ -115,7 +121,7 @@ describe("ruleset-7 Goblin Kaboom legality", () => {
         at: at(4, 2),
         cause: "KABOOM",
         wave: 1,
-        damage: 4,
+        damage: 5,
         results: [],
       },
     ]);
@@ -300,7 +306,7 @@ describe("ruleset-7 Goblin blast resolution", () => {
       [at(1, 0), at(0, 1), at(1, 1)].map((where) => ({
         unitId: unitAtV7(state, where).id,
         at: where,
-        damage: 4,
+        damage: 5,
         dies: false,
       })),
     );
@@ -376,7 +382,7 @@ describe("ruleset-7 Goblin blast resolution", () => {
     expect(explosion?.results.map((entry) => entry.unitId)).toEqual(
       victims.map((unit) => unit.id),
     );
-    expect(explosion?.results.every((entry) => entry.damage === 4)).toBe(true);
+    expect(explosion?.results.every((entry) => entry.damage === 5)).toBe(true);
     expect(explosion?.results.map((entry) => entry.unitId)).not.toContain(
       exploder.id,
     );
@@ -385,9 +391,9 @@ describe("ruleset-7 Goblin blast resolution", () => {
       preview?.explosions[0]?.results.map((entry) => entry.friendly),
     ).toEqual([true, true, false, false, false, true]);
     expect(preview?.totals).toEqual({
-      hostileDamage: 12,
+      hostileDamage: 15,
       hostileKills: 0,
-      friendlyDamage: 12,
+      friendlyDamage: 15,
       friendlyKills: 0,
       plunderCoins: 0,
     });
@@ -455,7 +461,7 @@ describe("ruleset-7 Goblin death blasts", () => {
       [
         { seat: 0, role: "MARKSMAN", at: at(5, 2), hp: 1 },
         { seat: 0, role: "FIGHTER", at: at(6, 2) },
-        { seat: 1, role: "FIGHTER", at: at(4, 2), hp: 3 },
+        { seat: 1, role: "FIGHTER", at: at(4, 2), hp: 2 },
       ],
       { activeSeat: 1 },
     );
@@ -483,13 +489,13 @@ describe("ruleset-7 Goblin death blasts", () => {
         at: at(5, 2),
         cause: "DEATH",
         wave: 1,
-        damage: 3,
+        damage: 2,
         results: [
-          { unitId: fighter.id, at: at(5, 2), damage: 3, dies: true },
+          { unitId: fighter.id, at: at(5, 2), damage: 2, dies: true },
           {
             unitId: unitAtV7(state, at(6, 2)).id,
             at: at(6, 2),
-            damage: 3,
+            damage: 2,
             dies: false,
           },
         ],
@@ -523,8 +529,8 @@ describe("ruleset-7 Goblin death blasts", () => {
         unitId: buggy.id,
         at: at(4, 2),
         cause: "DEATH",
-        damage: 5,
-        results: [{ unitId: unitAtV7(state, at(5, 2)).id, damage: 5 }],
+        damage: 4,
+        results: [{ unitId: unitAtV7(state, at(5, 2)).id, damage: 4 }],
       },
     ]);
   });
@@ -574,7 +580,7 @@ describe("ruleset-7 Goblin death blasts", () => {
         cause: "SPLASH",
       });
       expect(explosionsOf(result.events)).toMatchObject([
-        { unitId: cart.id, cause: "DEATH", damage: 5, wave: 1 },
+        { unitId: cart.id, cause: "DEATH", damage: 4, wave: 1 },
       ]);
     }
   });
@@ -604,8 +610,8 @@ describe("ruleset-7 Goblin death blasts", () => {
       {
         unitId: chucker.id,
         cause: "DEATH",
-        damage: 3,
-        results: [{ unitId: banshee.id, damage: 3, dies: false }],
+        damage: 2,
+        results: [{ unitId: banshee.id, damage: 2, dies: false }],
       },
     ]);
   });
@@ -669,7 +675,7 @@ describe("ruleset-7 Goblin chain reactions", () => {
     const row = Array.from({ length: 10 }, (_, x) => at(x, 1));
     const state = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],
-      row.map((where) => ({ seat: 0, role: "CATAPULT", at: where, hp: 5 })),
+      row.map((where) => ({ seat: 0, role: "CATAPULT", at: where, hp: 4 })),
     );
     const ids = row.map((where) => unitAtV7(state, where).id);
     const result = kaboom(state, at(0, 1));
@@ -691,7 +697,7 @@ describe("ruleset-7 Goblin chain reactions", () => {
               {
                 unitId: ids[index + 1],
                 at: row[index + 1],
-                damage: 5,
+                damage: 4,
                 dies: true,
               },
             ],
@@ -713,7 +719,7 @@ describe("ruleset-7 Goblin chain reactions", () => {
         { seat: 1, role: "MARKSMAN", at: at(6, 4), hp: 4 },
         { seat: 1, role: "MARKSMAN", at: at(4, 4), hp: 4 },
         { seat: 1, role: "GUARD", at: at(5, 4), hp: 9 },
-        { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 3 },
+        { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 2 },
       ],
     );
     const [exploder, chuckerB, chuckerA, brute, goblin] = [
@@ -740,7 +746,7 @@ describe("ruleset-7 Goblin chain reactions", () => {
         wave: 1,
         results: [
           [chuckerA, 4, true],
-          [brute, 4, false],
+          [brute, 5, false],
           [chuckerB, 4, true],
         ],
       },
@@ -750,8 +756,8 @@ describe("ruleset-7 Goblin chain reactions", () => {
         unitId: chuckerB,
         wave: 2,
         results: [
-          [brute, 3, false],
-          [goblin, 3, true],
+          [brute, 2, false],
+          [goblin, 2, true],
         ],
       },
       { unitId: chuckerA, wave: 2, results: [[brute, 2, true]] },
@@ -789,7 +795,7 @@ describe("ruleset-7 Goblin chain reactions", () => {
       role: "CATAPULT",
       form: "LAND",
       at: at(x, 0),
-      hp: 5,
+      hp: 4,
     });
     const input = {
       roster,
@@ -813,7 +819,7 @@ describe("ruleset-7 Goblin chain reactions", () => {
 describe("ruleset-7 Goblin chains and attacks", () => {
   it("evaluates Overrun after the chain, in resolution and the public preview", () => {
     for (const [goblinHp, continues] of [
-      [3, false],
+      [2, false],
       [6, true],
     ] as const) {
       const state = goblinArenaV7(
@@ -839,7 +845,7 @@ describe("ruleset-7 Goblin chains and attacks", () => {
       const after = result.state.units.find((unit) => unit.id === knight.id);
       expect(after).toMatchObject({
         at: at(4, 2),
-        hp: knight.hp - 3,
+        hp: knight.hp - 2,
         activation: { overrunActive: continues },
       });
     }
@@ -849,7 +855,7 @@ describe("ruleset-7 Goblin chains and attacks", () => {
     const state = goblinArenaV7(
       ["GOBLIN", "GOBLIN"],
       [
-        { seat: 0, role: "KNIGHT", at: at(3, 2), hp: 3 },
+        { seat: 0, role: "KNIGHT", at: at(3, 2), hp: 2 },
         { seat: 1, role: "MARKSMAN", at: at(4, 2), hp: 1 },
         { seat: 1, role: "GUARD", at: at(6, 2) },
       ],
@@ -872,8 +878,8 @@ describe("ruleset-7 Goblin chains and attacks", () => {
         event.damage,
       ]),
     ).toEqual([
-      [chucker.id, 1, at(4, 2), 3],
-      [buggy.id, 2, at(4, 2), 5],
+      [chucker.id, 1, at(4, 2), 2],
+      [buggy.id, 2, at(4, 2), 4],
     ]);
   });
 
@@ -896,14 +902,14 @@ describe("ruleset-7 Goblin chains and attacks", () => {
     expect(explosionsOf(result.events)).toMatchObject([
       {
         results: [
-          { unitId: zombie.id, at: at(3, 2), damage: 3 },
-          { unitId: rising.unitId, at: at(4, 2), damage: 3 },
+          { unitId: zombie.id, at: at(3, 2), damage: 2 },
+          { unitId: rising.unitId, at: at(4, 2), damage: 2 },
         ],
       },
     ]);
     expect(
       result.state.units.find((unit) => unit.id === rising.unitId)?.hp,
-    ).toBe(7);
+    ).toBe(8);
   });
 });
 
@@ -1134,9 +1140,9 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         at: at(4, 2),
         cause: "KABOOM",
         wave: 1,
-        damage: 4,
+        damage: 5,
         results: [
-          { unitId: firstRising, at: at(4, 2), damage: 4, dies: false },
+          { unitId: firstRising, at: at(4, 2), damage: 5, dies: false },
           { unitId: victim.id, at: at(5, 2), damage: 4, dies: true },
         ],
       },
@@ -1156,7 +1162,7 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         unitId: null,
         ownerId: undeadId,
         at: at(4, 2),
-        damage: 4,
+        damage: 5,
         dies: false,
         friendly: false,
       },
@@ -1229,7 +1235,7 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
       [
         { seat: 0, role: "MARKSMAN", at: at(4, 2), hp: 2 },
         { seat: 0, role: "JUGGERNAUT", at: at(3, 2), hp: 30 },
-        { seat: 1, role: "FIGHTER", at: at(5, 2), hp: 3 },
+        { seat: 1, role: "FIGHTER", at: at(5, 2), hp: 2 },
         { seat: 1, role: "CATAPULT", at: at(9, 2) },
       ],
       { activeSeat: 1 },
@@ -1265,17 +1271,17 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         at: at(4, 2),
         cause: "DEATH",
         wave: 1,
-        damage: 3,
+        damage: 2,
         results: [
-          { unitId: troll.id, at: at(3, 2), damage: 3, dies: false },
-          { unitId: skeleton.id, at: at(5, 2), damage: 3, dies: true },
+          { unitId: troll.id, at: at(3, 2), damage: 2, dies: false },
+          { unitId: skeleton.id, at: at(5, 2), damage: 2, dies: true },
         ],
       },
     ]);
     expect(result.events).toContainEqual({
       kind: "UNITS_REGENERATED",
       playerId: goblinId,
-      results: [{ unitId: troll.id, amount: 4, hpAfter: 31 }],
+      results: [{ unitId: troll.id, amount: 4, hpAfter: 32 }],
     });
     const income = result.events.find(
       (event) => event.kind === "INCOME_AWARDED",
@@ -1368,7 +1374,7 @@ describe("ruleset-7 Goblin explosion events and projection", () => {
     const result = kaboom(state, at(3, 2));
     const canonical = explosionsOf(result.events);
     expect(canonical[1]?.results).toEqual([
-      { unitId: fighter.id, at: at(5, 2), damage: 5, dies: false },
+      { unitId: fighter.id, at: at(5, 2), damage: 4, dies: false },
     ]);
     const projectedFor = (viewer: PlayerId) => {
       const envelope = projectEventsV7(
@@ -1399,7 +1405,7 @@ describe("ruleset-7 Goblin explosion events and projection", () => {
     ).toEqual([
       {
         kind: "COMBAT_SPLASH_DAMAGE",
-        splash: [{ unitId: fighter.id, at: at(5, 2), damage: 5, dies: false }],
+        splash: [{ unitId: fighter.id, at: at(5, 2), damage: 4, dies: false }],
       },
     ]);
     expect(cart.id).toBe(canonical[1]?.unitId);
@@ -1430,7 +1436,7 @@ describe("ruleset-7 Goblin explosion events and projection", () => {
     });
     // Plague kills a Bomb Chucker whose blast kills the (unplagued) blockader.
     const chain = blockadeFixture(["UNDEAD", "GOBLIN"], {
-      blockader: { role: "PATROL_BOAT", hp: 3, form: "NAVAL" },
+      blockader: { role: "PATROL_BOAT", hp: 2, form: "NAVAL" },
       plagued: "EXTRA",
       extra: [
         { seat: 0, role: "CATAPULT", at: at(4, 2) },
@@ -1720,7 +1726,7 @@ describe("ruleset-7 Goblin explosion determinism", () => {
     const goblins = created.state.units.filter(
       (unit) => unit.ownerId === actor,
     );
-    expect(goblins).toHaveLength(2);
+    expect(goblins).toHaveLength(1);
     const command: CommandV7 = {
       kind: "KABOOM",
       unitId: (goblins[0] as UnitStateV7).id,

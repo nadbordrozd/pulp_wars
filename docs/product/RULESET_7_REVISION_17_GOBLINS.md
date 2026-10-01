@@ -103,16 +103,19 @@ a choice this document decides it; every such decision is listed in
 - Faction choice still never affects map generation, capital placement, turn
   order, treasure placement, or any PRNG draw: setups that differ only in
   `factions` generate byte-identical boards, turn orders, and treasures.
-- **Starting units.** A Goblin seat starts with **two** Goblins (the `FIGHTER`
-  role), 5 Coins, and no technology. The first Goblin stands on the capital
-  exactly like every faction's start unit. The second is created after every
-  seat's first start unit has been created (in seat order), so the capital,
-  city, and first-unit IDs of every seat are those of an all-Human setup; it
-  stands on the first cell of the capital's eight-cell ring in `(y, x)` order
-  that is land, not Mountain, and has no unit and no treasure chest. If no such
-  cell exists, the seat simply starts with one Goblin, with no compensation
-  (deterministic, no PRNG). Both Goblins are full-HP, homed to the capital,
-  and have fresh activations.
+- **Starting units.** A Goblin seat starts with **one** Goblin (the `FIGHTER`
+  role), 5 Coins, and no technology; the Goblin stands on the capital exactly
+  like every faction's start unit, full-HP, homed to the capital, with a fresh
+  activation. (`pulp_wars-0ao.7` tuned the contract's two starting Goblins to
+  one, within the [section 14.1](#141-tuning-bounds) bounds of 1–2; see
+  [section 14.4](#144-tuning-record-pulp_wars-0ao7).) At the bound's upper
+  value of two, the second Goblin is created after every seat's first start
+  unit has been created (in seat order), so the capital, city, and first-unit
+  IDs of every seat are those of an all-Human setup; it stands on the first
+  cell of the capital's eight-cell ring in `(y, x)` order that is land, not
+  Mountain, and has no unit and no treasure chest, and if no such cell exists
+  the seat starts with one Goblin, with no compensation (deterministic, no
+  PRNG).
 - The headless tools accept `goblin` in `--factions` (seat-ordered, as
   `original`/`human`/`undead` today).
 
@@ -153,18 +156,23 @@ Tactical-role metadata equals that of the same mechanical role. "Kaboom" and
 
 | Unit         | Role          | Tech              | Cost |  HP | Attack (`attack2`) | Defense (`defense2`) | Move | Range | Sight | Attack after Move | Capture | Kaboom | Death blast | Abilities                            |
 | ------------ | ------------- | ----------------- | ---: | --: | -----------------: | -------------------: | ---: | ----: | ----: | ----------------- | ------- | -----: | ----------: | ------------------------------------ |
-| Goblin       | `FIGHTER`     | start             |    1 |   6 |              2 (4) |                1 (2) |    1 |     1 |     1 | yes               | yes     |      4 |           — | Kaboom; no Field Defense             |
+| Goblin       | `FIGHTER`     | start             |    1 |   6 |            1.5 (3) |              0.5 (1) |    1 |     1 |     1 | yes               | yes     |      5 |           — | Kaboom; no Field Defense             |
 | Wolf Rider   | `RAIDER`      | Scouting          |    3 |  10 |              2 (4) |                1 (2) |    2 |     1 |     2 | yes               | yes     |      4 |           — | Charge (Raiding); Kaboom; no Escape  |
-| Bomb Chucker | `MARKSMAN`    | Marksmanship      |    3 |   8 |              2 (4) |                1 (2) |    1 |     2 |    1¹ | yes               | yes     |      4 |           3 | bombs (friendly-fire splash); Kaboom |
+| Bomb Chucker | `MARKSMAN`    | Marksmanship      |    3 |   8 |              2 (4) |                1 (2) |    1 |     2 |    1¹ | yes               | yes     |      4 |           2 | bombs (friendly-fire splash); Kaboom |
 | Orc Brute    | `GUARD`       | Drill             |    3 |  15 |              2 (4) |              2.5 (5) |    1 |     1 |     1 | no                | yes     |      — |           — | Field Defense                        |
 | Orc Warboss  | `CAPTAIN`     | Administration    |    5 |  12 |              2 (4) |                1 (2) |    1 |     1 |     1 | yes               | no      |      — |           — | WAAAGH!; no Tend Wounded             |
-| Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 |            3.5 (7) |              0.5 (1) |    1 |   2–3 |     1 | no                | no      |      5 |           5 | Kaboom; never advances               |
-| Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |              3 (6) |                1 (2) |    3 |     1 |     1 | yes               | no      |      5 |           5 | Ram; Kaboom                          |
+| Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 |            3.5 (7) |              0.5 (1) |    1 |   2–3 |     1 | no                | no      |      5 |           4 | Kaboom; never advances               |
+| Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |              3 (6) |                1 (2) |    3 |     1 |     1 | yes               | no      |      5 |           4 | Ram; Kaboom                          |
 | Troll        | `JUGGERNAUT`  | reward only       |    — |  40 |              4 (8) |                3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Push; Regenerate 4                   |
 | Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |              2 (4) |                2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval                                |
 | Battleship   | `BATTLESHIP`  | Naval Engineering |   16 |  25 |             6 (12) |                4 (8) |    2 |   1–3 |     3 | no                | no      |      — |           — | naval; splash                        |
 
 ¹ Bomb Chucker Sight becomes 2 with Fieldcraft.
+
+The Goblin's Attack, Defense, and Kaboom and the three death blasts are the
+`pulp_wars-0ao.7` tuned values (contract: Goblin Attack 2, Defense 1, Kaboom
+4; death blasts 3, 5, and 5;
+[section 14.4](#144-tuning-record-pulp_wars-0ao7)).
 
 - **Goblin** has Fighter parity (capture, Pillage with Raiding, Disband)
   except that it cannot build Field Defense
@@ -313,11 +321,11 @@ is the Troll's own regeneration.
 
 | Unit         | Kaboom (`cause: KABOOM`) | Death blast (`cause: DEATH`) |
 | ------------ | -----------------------: | ---------------------------: |
-| Goblin       |                        4 |                            — |
+| Goblin       |                        5 |                            — |
 | Wolf Rider   |                        4 |                            — |
-| Bomb Chucker |                        4 |                            3 |
-| Rocket Cart  |                        5 |                            5 |
-| Scrap Buggy  |                        5 |                            5 |
+| Bomb Chucker |                        4 |                            2 |
+| Rocket Cart  |                        5 |                            4 |
+| Scrap Buggy  |                        5 |                            4 |
 
 - Blast damage ignores Attack, Defense, HP ratio, cover, fortification, Walls,
   Field Defense, the embarked Defense, Charge, Gang Up, and Inspired. Each hit
@@ -674,12 +682,12 @@ own or allied units.
 
 ### 8.9 Starting units, rewards, and treasure
 
-| Source                             | Human      | Undead      | Goblin                                 |
-| ---------------------------------- | ---------- | ----------- | -------------------------------------- |
-| Starting units                     | Fighter    | Skeleton    | two Goblins ([section 2.2](#22-setup)) |
-| Level-3 Militia reward (`MILITIA`) | Fighter    | Skeleton    | two Goblins                            |
-| Level-5+ reward (`JUGGERNAUT`)     | Juggernaut | Abomination | Troll                                  |
-| Treasure chest unit (`KNIGHT`)     | Knight     | Vampire     | Scrap Buggy                            |
+| Source                             | Human      | Undead      | Goblin                                |
+| ---------------------------------- | ---------- | ----------- | ------------------------------------- |
+| Starting units                     | Fighter    | Skeleton    | one Goblin ([section 2.2](#22-setup)) |
+| Level-3 Militia reward (`MILITIA`) | Fighter    | Skeleton    | two Goblins                           |
+| Level-5+ reward (`JUGGERNAUT`)     | Juggernaut | Abomination | Troll                                 |
+| Treasure chest unit (`KNIGHT`)     | Knight     | Vampire     | Scrap Buggy                           |
 
 - **Militia for Goblins:** the first Goblin appears on the city center with
   the ordinary reward-unit displacement of an existing occupant. The second
@@ -1003,6 +1011,42 @@ over-capacity, and turns that hit the 128-command cap.
 
 If the gameplay fails these, `0ao.7` iterates within section 14.1 and asks the
 root before going outside it.
+
+### 14.4 Tuning record (`pulp_wars-0ao.7`)
+
+The contract values above failed section 14.3: Goblins won 72% of decided
+games against Humans and 66% against Undead. `0ao.7` moved these numbers,
+all inside the section 14.1 bounds, and changed the Goblin-only Normal AI
+(below); every other number keeps its contract value. Evidence, the
+iterations, and every target are in the
+[Goblin balance report](../validation/RULESET_7_GOBLIN_BALANCE.md).
+
+| Parameter                   | Contract |   Tuned | Why                                                                           |
+| --------------------------- | -------: | ------: | ----------------------------------------------------------------------------- |
+| Starting Goblins            |        2 |       1 | the largest single win-rate lever (about −10 points against each faction)     |
+| Militia Goblins             |        2 |       2 | kept: the horde reward (now a separate constant, `MILITIA_FIGHTERS_V7`)       |
+| Goblin Attack (`attack2`)   |    2 (4) | 1.5 (3) | weaker horde attacks; Gang Up still makes ganged attacks count                |
+| Goblin Defense (`defense2`) |    1 (2) | 0.5 (1) | offsets the Kaboom rise; the horde is fragile                                 |
+| Goblin Kaboom               |        4 |       5 | Kabooms kill: hostile blast kills more than double, friendly-fire share drops |
+| Bomb Chucker death blast    |        3 |       2 | fewer own units killed when enemies kill the exploder                         |
+| Rocket Cart death blast     |        5 |       4 | as above                                                                      |
+| Scrap Buggy death blast     |        5 |       4 | as above                                                                      |
+
+The Normal AI changes are Goblin-seat only and leave every match without a
+Goblin seat byte-identical: a Bomb Chucker training bias (the policy never
+trained one), Kabooms weigh own and allied losses at the bomb friendly-fire
+trade factor (2), and exploder spacing applies whenever a visible enemy can
+damage the exploding unit (it applied only when one could kill it); see
+[Normal AI](../architecture/NORMAL_AI.md#revision-17-goblin-play-pulp_wars-0ao6).
+
+Measured on the full section 14.2 matrix after tuning: Goblin win 56.9%
+against Humans and 49.7% against Undead; worst Goblin cap rate 0 points
+above the non-Goblin reference; Kaboom used in 67.7% of Goblin seat-games
+with hostile chain damage 12 times the friendly; 25.2% of Goblin explosion
+deaths were friendly fire; no errors, stalls, or exceptions; and the 1,200
+non-Goblin games have byte-identical final hashes to the untuned tree.
+Concerns 4–6 of [section 16](#16-concerns-and-root-decisions) are answered
+there.
 
 ## 15. Decisions made in this spec
 

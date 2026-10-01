@@ -67,6 +67,11 @@ Every v7 result adds, beside the mechanical-role inventories:
 The Human-vs-Undead balance matrix (`pulp_wars-vkq.10`) is
 `npm run balance:ruleset7-undead`; its parameters, output, and results are in
 [the Undead balance report](../validation/RULESET_7_UNDEAD_BALANCE.md).
+Revision 17 (`pulp_wars-0ao.7`) adds the Goblin pairings (`GH`, `HG`, `GU`,
+`UG`, `GG`), the three-faction four-seat mixes (`GHUG`, `HUGH`, `UGHU`), and
+the Goblin telemetry (`summary.goblin`, computed by replaying each Goblin
+match's command log); see
+[the Goblin balance report](../validation/RULESET_7_GOBLIN_BALANCE.md).
 
 ## Ruleset-7 revision-2 historical implementation contract
 

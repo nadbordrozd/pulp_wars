@@ -62,6 +62,14 @@ export const FRIENDLY_FIRE_TRADE_FACTOR_V7 = 2;
 /** The Goblin's training bias (preferred-role value and city utility). */
 export const GOBLIN_TRAINING_BIAS_V7 = 4;
 /**
+ * The Bomb Chucker's training bias (`pulp_wars-0ao.7`): its bomb splashes
+ * every unit around the target, which the HP-led training value ignores.
+ * Without it the 8-HP Bomb Chucker never beat the Orc Brute and was never
+ * trained (0 in 200 matrix games); with it the policy trains about one per
+ * game, like the Human Marksman.
+ */
+export const GOBLIN_BOMB_CHUCKER_TRAINING_BIAS_V7 = 6;
+/**
  * The first four owned Goblins do not count against the preferred-role
  * choice (it charges 8 per owned unit of the role): the horde.
  */

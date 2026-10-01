@@ -293,7 +293,10 @@ describe("ruleset-7 Goblin roster", () => {
   ];
   // Section 3: label, tactical role, technology, cost, HP, attack2,
   // defense2, Move, range, minimum range, Sight, attack after move,
-  // abilities, Kaboom damage, death-blast damage.
+  // abilities, Kaboom damage, death-blast damage. `pulp_wars-0ao.7` tuned
+  // the Goblin's attack2 (4 -> 3), defense2 (2 -> 1), and Kaboom (4 -> 5),
+  // and the death blasts (Bomb Chucker 3 -> 2, Rocket Cart and Scrap Buggy
+  // 5 -> 4).
   const ROSTER: Readonly<Record<UnitRoleIdV7, Row>> = {
     FIGHTER: [
       "Goblin",
@@ -301,15 +304,15 @@ describe("ruleset-7 Goblin roster", () => {
       null,
       1,
       6,
-      4,
-      2,
+      3,
+      1,
       1,
       1,
       1,
       1,
       true,
       ["ATTACK", "CAPTURE", "KABOOM"],
-      4,
+      5,
       null,
     ],
     RAIDER: [
@@ -344,7 +347,7 @@ describe("ruleset-7 Goblin roster", () => {
       true,
       ["ATTACK", "CAPTURE", "KABOOM"],
       4,
-      3,
+      2,
     ],
     GUARD: [
       "Orc Brute",
@@ -395,7 +398,7 @@ describe("ruleset-7 Goblin roster", () => {
       false,
       ["ATTACK", "KABOOM"],
       5,
-      5,
+      4,
     ],
     KNIGHT: [
       "Scrap Buggy",
@@ -412,7 +415,7 @@ describe("ruleset-7 Goblin roster", () => {
       true,
       ["ATTACK", "OVERRUN", "KABOOM"],
       5,
-      5,
+      4,
     ],
     JUGGERNAUT: [
       "Troll",
@@ -729,7 +732,16 @@ describe("ruleset-7 Goblin technology", () => {
 });
 
 describe("ruleset-7 Goblin starting units", () => {
-  it("starts a Goblin seat with two Goblins, the second on the first open ring cell after every first unit", () => {
+  // `pulp_wars-0ao.7` tuned the Goblin seat's starting Goblins from two to
+  // one (section 14.1 bounds 1-2), so no second starting Goblin is created;
+  // the ring-cell rule a second Goblin would use stays covered by the
+  // `startingCompanionCellV7` test below.
+  it("starts every seat, Goblin included, with one Fighter on its capital", () => {
+    expect(STARTING_FIGHTERS_V7).toEqual({
+      ORIGINAL: 1,
+      UNDEAD: 1,
+      GOBLIN: 1,
+    });
     let checkedSeats = 0;
     for (const [seed, mapType, factions] of [
       [3, "PANGEA", ["GOBLIN", "ORIGINAL"]],
@@ -745,12 +757,10 @@ describe("ruleset-7 Goblin starting units", () => {
       if (!created.ok) throw new Error(created.error.code);
       const { state } = created;
       const seats = factions.length;
-      const firsts = state.units.slice(0, seats);
-      expect(firsts.map((unit) => unit.id)).toEqual(
+      // Capital and first-unit IDs are those of an all-Human setup.
+      expect(state.units.map((unit) => unit.id)).toEqual(
         Array.from({ length: seats }, (_, seat) => seat * 2 + 2),
       );
-      let nextId = seats * 2 + 1;
-      const occupied = firsts.map((unit) => unit.at);
       factions.forEach((faction, seat) => {
         const player = state.players[seat];
         const capital = state.cities[seat];
@@ -763,48 +773,21 @@ describe("ruleset-7 Goblin starting units", () => {
           expect(unit).toMatchObject({
             role: "FIGHTER",
             form: "LAND",
+            at: capital.at,
             hp: rule.maxHp,
             maxHp: rule.maxHp,
             homeCityId: capital.id,
             kills: 0,
             veteran: false,
           });
-        if (faction !== "GOBLIN") return;
-        checkedSeats += 1;
-        const second = own[1];
-        if (second === undefined) throw new Error("second Goblin missing");
-        expect(second.id).toBe(nextId);
-        nextId += 1;
-        // The first ring cell in (y, x) order that is land, not Mountain,
-        // and free of units and treasure.
-        const ring: CoordV7[] = [];
-        for (let y = capital.at.y - 1; y <= capital.at.y + 1; y += 1)
-          for (let x = capital.at.x - 1; x <= capital.at.x + 1; x += 1)
-            if (
-              (x !== capital.at.x || y !== capital.at.y) &&
-              x >= 0 &&
-              y >= 0 &&
-              x < state.board.width &&
-              y < state.board.height
-            )
-              ring.push({ x, y });
-        const expected = ring.find((at) => {
-          const tile = state.board.tiles[at.y * state.board.width + at.x];
-          return (
-            (tile?.terrain === "GRASS" || tile?.terrain === "FOREST") &&
-            !occupied.some((other) => sameV7(other, at)) &&
-            !state.treasureChests.some((chest) => sameV7(chest, at))
-          );
-        });
-        expect(second.at).toEqual(expected);
-        occupied.push(second.at);
+        if (faction === "GOBLIN") checkedSeats += 1;
       });
-      expect(state.nextEntityId).toBe(nextId);
+      expect(state.nextEntityId).toBe(seats * 2 + 1);
     }
     expect(checkedSeats).toBe(6);
   });
 
-  it("gives both Goblins fresh activations, 5 Coins, and no technology", () => {
+  it("gives the starting Goblin a fresh activation, 5 Coins, and no technology", () => {
     const setup = goblinSetupV7(["GOBLIN", "ORIGINAL"], 3);
     const initial = createInitialMapStateV7(setup);
     if (!initial.ok) throw new Error(initial.error.code);
@@ -841,7 +824,7 @@ describe("ruleset-7 Goblin starting units", () => {
     const goblins = state.units.filter(
       (unit) => unit.ownerId === goblinSeat.id,
     );
-    expect(goblins).toHaveLength(2);
+    expect(goblins).toHaveLength(STARTING_FIGHTERS_V7.GOBLIN);
     if (active === goblinSeat.id)
       for (const goblin of goblins)
         expect(goblin.activation).toMatchObject({
@@ -861,7 +844,7 @@ describe("ruleset-7 Goblin starting units", () => {
         ).toBe(true);
   });
 
-  it("places no second Goblin when no ring cell is open (no compensation)", () => {
+  it("finds a second starting Goblin's ring cell, or none (no compensation)", () => {
     const board = syntheticBoard((at) =>
       at.x === 1 && at.y === 1
         ? "MOUNTAIN"

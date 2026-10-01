@@ -70,7 +70,7 @@ import {
   type ExplosionCauseV7,
 } from "./explosions";
 import {
-  STARTING_FIGHTERS_V7,
+  MILITIA_FIGHTERS_V7,
   createInitialMapStateV7,
   type CreateInitialMapStateResultV7,
 } from "./map";
@@ -1904,7 +1904,7 @@ function applyReward(
       // reward displacement rule allows, or is not created.
       const militiaSize =
         command.reward === "MILITIA"
-          ? STARTING_FIGHTERS_V7[requirePlayer(state, actor).faction]
+          ? MILITIA_FIGHTERS_V7[requirePlayer(state, actor).faction]
           : 1;
       const secondAt =
         militiaSize === 2

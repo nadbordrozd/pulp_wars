@@ -36,6 +36,8 @@ import {
 
 const TARGET = { x: 5, y: 2 };
 const ATTACKER = { x: 4, y: 2 };
+// The Goblin's base attack2 (3 since the `pulp_wars-0ao.7` tuning; was 4).
+const GOBLIN_ATTACK2 = 3;
 const HELPER_CELLS = [
   { x: 6, y: 2 },
   { x: 5, y: 1 },
@@ -65,7 +67,7 @@ describe("ruleset-7 Goblin Gang Up", () => {
       const preview = resolvedAttack(state, ATTACKER, TARGET);
       expect([preview.gangUp, preview.attack2]).toEqual([
         gangUp,
-        4 + 2 * gangUp,
+        GOBLIN_ATTACK2 + 2 * gangUp,
       ]);
       expect(publicPreview(state, ATTACKER, TARGET)).toEqual(preview);
     }
@@ -88,7 +90,7 @@ describe("ruleset-7 Goblin Gang Up", () => {
     );
     expect(resolvedAttack(state, ATTACKER, TARGET)).toMatchObject({
       gangUp: 2,
-      attack2: 8,
+      attack2: GOBLIN_ATTACK2 + 4,
     });
 
     // Cooperative AIs are allied: seat 2's unit next to the target is no
@@ -107,7 +109,7 @@ describe("ruleset-7 Goblin Gang Up", () => {
     );
     expect(resolvedAttack(allied, at(5, 6), at(6, 6))).toMatchObject({
       gangUp: 1,
-      attack2: 6,
+      attack2: GOBLIN_ATTACK2 + 2,
     });
   });
 
@@ -523,7 +525,8 @@ describe("ruleset-7 Goblin WAAAGH!", () => {
     );
     expect(stats.statuses).toContain("WAAAGH!: +1 Attack on the next attack");
     expect(stats.goblin).toEqual({
-      kaboomDamage: 4,
+      // The Goblin's Kaboom is 5 since `pulp_wars-0ao.7` (was 4).
+      kaboomDamage: 5,
       deathBlastDamage: null,
       rallyRadius: 0,
       regeneration: 0,
