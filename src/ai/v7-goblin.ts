@@ -59,6 +59,19 @@ export const KABOOM_CITY_SAVE_VALUE_V7 = 20;
 export const COIN_STRATEGIC_VALUE_V7 = 4;
 /** Friendly fire costs this much more than equal hostile damage gains. */
 export const FRIENDLY_FIRE_TRADE_FACTOR_V7 = 2;
+/**
+ * A bomb that splashes own or allied units ranks this far below the same
+ * attack without them (`pulp_wars-0ao.13`): the Bomb Chucker's clean bomb
+ * of the same kind, and other own units' attacks on the same tier (which may
+ * kill the target first), go before it.
+ */
+export const FRIENDLY_SPLASH_PRIORITY_DEMOTION_V7 = 3;
+/**
+ * A Bomb Chucker whose kills from where it stands all splash own or allied
+ * units moves where its bomb kills a target without them
+ * (`pulp_wars-0ao.13`): with Gang Up strikes, after direct kills (1180).
+ */
+export const CLEAN_BOMB_STRIKE_PRIORITY_V7 = 1179;
 /** The Goblin's training bias (preferred-role value and city utility). */
 export const GOBLIN_TRAINING_BIAS_V7 = 4;
 /**
@@ -93,6 +106,23 @@ export function deathBlastDamageV7(
   unit: PublicUnitV7,
 ): number {
   return unitRoleMechanicsV7(view, unit).deathBlastDamage ?? 0;
+}
+
+/**
+ * A unit whose attack splashes every unit around its target, own and allied
+ * ones included (the Goblin Bomb Chucker's bomb; an embarked unit has no
+ * splash).
+ */
+export function friendlyFireBomberV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  const mechanics = unitRoleMechanicsV7(view, unit);
+  return (
+    unit.form !== "EMBARKED" &&
+    mechanics.splash &&
+    mechanics.splashTargets === "ALL"
+  );
 }
 
 /** Troll regeneration per Start Turn (0 for every other role). */

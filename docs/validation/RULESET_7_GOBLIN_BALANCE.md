@@ -312,7 +312,8 @@ None of these is applied; each is outside section 14.1 or is a mechanic.
    keep friendly fire and make the bomb splash a flat 1 damage to own and
    allied units. Without approval, the AI could also require a hostile kill
    for any bomb that splashes own units (an AI change inside this bead's
-   remit, not yet measured).
+   remit, not yet measured). The user kept friendly fire; the AI change was
+   made in `pulp_wars-0ao.13` (section 9).
 2. **Plunder** (fixed at 1 Coin per kill): 2 Coins per kill would make it
    about 4% of income, or Plunder could pay the victim's training cost
    halved. Recommendation: leave it, since the win rates are now in the band
@@ -321,3 +322,63 @@ None of these is applied; each is outside section 14.1 or is a mechanic.
    the AI would have to cluster exploding units deliberately, against
    section 10's spacing rule and the friendly-fire target. Recommendation:
    accept chains as a human-player tactic.
+
+## 9. Careful Bomb Chuckers (`pulp_wars-0ao.13`)
+
+Friendly fire stays a rule (user decision U3); only the Goblin seats'
+Normal AI changed (the rules are in the
+[Normal AI notes](../architecture/NORMAL_AI.md#revision-17-goblin-play-pulp_wars-0ao6)):
+
+- a bomb whose splash kills an own or allied unit is thrown only when it
+  kills its target and kills more hostile units than own and allied ones,
+  at any trade value and even to clear a hostile city center (only a city
+  save or the endgame combined kill excuses it); a bomb that only chips
+  friends still needs twice their value from hostile units, as before;
+- a bomb that splashes any own or allied unit ranks 3 below its tier, so a
+  clean bomb of the same tier, or another unit's attack that may kill the
+  target first, goes before it;
+- a Bomb Chucker whose kills from where it stands all splash friends moves
+  first (1179) to a target it can kill cleanly;
+- an own unit does not end a routine Move where a bomb its Bomb Chucker can
+  throw now would kill it (a smaller splash costs strategic value).
+
+Unit tests: `tests/unit/ruleset-v7-goblin-ai.test.ts`, "careful Bomb
+Chuckers" (a chip bomb that kills a friend declined, a kill that chips a
+friend taken, a one-for-one kill declined and a two-for-one kill taken, a
+clean target preferred, a move to a clean target first, a wounded Goblin
+kept out of the splash).
+
+Measured on the section 6 screening subset (`GH`, `HG`, `GU`, `UG`, `GG`,
+seeds 0–9, sizes 11 and 14, all five maps, 500 games, 150 rounds).
+_Before_ is the same 500 games of the section 4 after run (identical to
+candidate `N`):
+
+```bash
+npm run balance:ruleset7-undead -- --pairings GH,HG,GU,UG,GG --seeds 10 --jobs 5 --output after-0ao13.json --detail-output after-0ao13-detail.json
+```
+
+| Measure (500 games)                        |                  Before |                   After |
+| ------------------------------------------ | ----------------------: | ----------------------: |
+| Bomb-splash deaths: own / hostile          |                 59 / 54 |                  5 / 34 |
+| **Bomb friendly share** (target under 35%) |          52.2% (59/113) |        **12.8%** (5/39) |
+| Bomb-splash damage: own / hostile          |           1,335 / 3,176 |             901 / 2,575 |
+| Goblin win against Humans (40–60%)         | 56.8% [50–63] (113/199) | 56.0% [49–63] (112/200) |
+| Goblin win against Undead (40–60%)         |  48.5% [42–55] (95/196) |  49.5% [43–56] (97/196) |
+| Kaboom seat-games                          |                 401/600 |                 402/600 |
+| Kaboom chain damage hostile / friendly     |             5,648 / 474 |             5,634 / 454 |
+| Kaboom chain kills hostile / friendly      |                255 / 14 |                256 / 14 |
+| Kabooms net positive                       |                 872/922 |                 872/923 |
+| Goblin explosion deaths friendly (T6)      |          23.2% (87/375) |         25.8% (100/388) |
+| Round caps `GH`/`HG`/`GU`/`UG`/`GG`        |               0/1/3/1/1 |               0/0/3/1/0 |
+| Rounds (mean)                              |                    31.3 |                    31.0 |
+| Errors / stalls / exceptions               |               0 / 0 / 0 |               0 / 0 / 0 |
+| Bomb Chuckers trained                      |                     521 |                     538 |
+
+Bombs now kill a seventh as many own units; the Bomb Chucker's own kills
+fell (419 to 321, credited kills including splash) because other units
+often kill the target first, and the win rates, Kaboom use, and caps did
+not move beyond noise. The explosion friendly share (T6) moved within the
+±5-point noise of section 6. A 16-match Human/Undead parity run (Human,
+Undead, three- and four-seat; normalised state and event-chain hashes) is
+identical to the `0ao.6` and `0ao.7` policies: the rules run only for a
+Goblin viewer's own Bomb Chuckers.

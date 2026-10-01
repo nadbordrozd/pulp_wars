@@ -54,8 +54,10 @@ import {
   type EndgamePlanV7,
 } from "./v7-endgame";
 import {
+  CLEAN_BOMB_STRIKE_PRIORITY_V7,
   COIN_STRATEGIC_VALUE_V7,
   FRIENDLY_FIRE_TRADE_FACTOR_V7,
+  FRIENDLY_SPLASH_PRIORITY_DEMOTION_V7,
   GANG_UP_KILL_SETUP_PRIORITY_V7,
   GANG_UP_SETUP_PRIORITY_V7,
   GANG_UP_STRIKE_PRIORITY_V7,
@@ -75,6 +77,7 @@ import {
   KABOOM_SETUP_PRIORITY_V7,
   deathBlastDamageV7,
   explosionChainValueV7,
+  friendlyFireBomberV7,
   gangUpForPolicyV7,
   goblinMatchForPolicyV7,
   hostileKaboomExposureV7,
@@ -3852,6 +3855,13 @@ function scoreCommandWithContext(
         const goblin = goblinAttackValueV7(context, command, preview);
         strategicValue += goblin.strategic;
         immediateValue += goblin.immediate;
+        // pulp_wars-0ao.13: a bomb that splashes own or allied units waits
+        // for the same tier's clean attacks (another target, or another
+        // unit that may kill this one first).
+        if (
+          goblinAttackFactsV7(context, command, preview).friendlySplashHits > 0
+        )
+          priority -= FRIENDLY_SPLASH_PRIORITY_DEMOTION_V7;
       }
     }
   }
@@ -5192,6 +5202,9 @@ interface GoblinAttackFactsV7 {
   readonly hostileSplashValue: number;
   readonly hostileSplashKills: number;
   readonly friendlySplashValue: number;
+  /** Own and allied units the bomb splash hits and kills (`0ao.13`). */
+  readonly friendlySplashHits: number;
+  readonly friendlySplashKills: number;
 }
 
 function friendlyOwnerV7(view: PlayerViewV7, ownerId: PlayerId): boolean {
@@ -5252,6 +5265,8 @@ function goblinAttackFactsV7(
   let hostileSplashValue = 0;
   let hostileSplashKills = 0;
   let friendlySplashValue = 0;
+  let friendlySplashHits = 0;
+  let friendlySplashKills = 0;
   let exploderDies =
     (preview.defenderDies && exploding(command.targetUnitId)) ||
     (preview.attackerDies && exploding(command.unitId));
@@ -5267,13 +5282,16 @@ function goblinAttackFactsV7(
         splash.dies,
       );
       if (splash.dies) hostileSplashKills += 1;
-    } else if (friendlyOwnerV7(view, unit.ownerId))
+    } else if (friendlyOwnerV7(view, unit.ownerId)) {
       friendlySplashValue += friendlyLossValueV7(
         view,
         unit,
         splash.damage,
         splash.dies,
       );
+      friendlySplashHits += 1;
+      if (splash.dies) friendlySplashKills += 1;
+    }
   }
   let chain: ExplosionChainValueV7 | null = null;
   let chainPlunder = 0;
@@ -5300,6 +5318,8 @@ function goblinAttackFactsV7(
     hostileSplashValue,
     hostileSplashKills,
     friendlySplashValue,
+    friendlySplashHits,
+    friendlySplashKills,
   };
   context.goblinAttackFacts.set(key, facts);
   return facts;
@@ -5348,7 +5368,10 @@ function goblinAttackValueV7(
  * units (for the blast of a hostile Kaboom unit, which could blow up there on
  * its own turn: nothing unless it kills own units, then once), unless it
  * saves a city, clears a hostile city center, or is part of the endgame
- * combined kill.
+ * combined kill. A bomb whose splash kills an own or allied unit
+ * (`pulp_wars-0ao.13`) must also kill its target and kill more hostile units
+ * than own and allied ones, at any value; only a city save or the endgame
+ * combined kill excuses it.
  */
 function goblinFriendlyFireRejectedV7(
   context: PolicyContextV7,
@@ -5360,6 +5383,21 @@ function goblinFriendlyFireRejectedV7(
   if (facts.friendlySplashValue + chainLoss <= 0) return false;
   const target = context.lookup.unitsById.get(command.targetUnitId);
   if (target === undefined) return false;
+  const savesCityOrEndgame = (): boolean =>
+    attackPurposeFactsV7(context, command, preview).savesCity ||
+    endgameCombinedKillV7(context, command, preview);
+  // pulp_wars-0ao.13: a bomb that kills own or allied units for a chip, or
+  // trades them one for one (or worse) with hostile units, is careless at
+  // any value, even when it clears a hostile city center.
+  const hostileKills =
+    Number(preview.defenderDies) +
+    facts.hostileSplashKills +
+    (facts.chain?.hostileKills ?? 0);
+  if (
+    facts.friendlySplashKills > 0 &&
+    (!preview.defenderDies || facts.friendlySplashKills >= hostileKills)
+  )
+    return !savesCityOrEndgame();
   // A hostile land-form unit with Kaboom can blow up next to the same units
   // on its own turn anyway: the blast its death sets off is no extra cost
   // unless it kills own units, and then counts once. Own bomb splash and any
@@ -5395,8 +5433,7 @@ function goblinFriendlyFireRejectedV7(
     isHostile(context.view, city.ownerId)
   )
     return false;
-  if (attackPurposeFactsV7(context, command, preview).savesCity) return false;
-  return !endgameCombinedKillV7(context, command, preview);
+  return !savesCityOrEndgame();
 }
 
 /** Visible enemies can kill `unit` at `at` next turn (public estimate). */
@@ -5759,6 +5796,105 @@ function kaboomExposureV7(
   );
 }
 
+/**
+ * Clean bomb strike (`pulp_wars-0ao.13`): a Bomb Chucker whose every kill
+ * from where it stands splashes own or allied units moves where its bomb
+ * kills a target it cannot reach now without splashing any (projected with
+ * the public combat preview). Returns the best such target's value.
+ */
+function cleanBombStrikeValueV7(
+  context: PolicyContextV7,
+  mover: PublicUnitV7,
+  to: CoordV7,
+  projected: () => PlayerViewV7,
+): number {
+  const view = context.view;
+  if (!friendlyFireBomberV7(view, mover)) return 0;
+  const rule = unitRoleRuleV7(view, mover);
+  if (!rule.mayUsePrimaryActionAfterMove || !primaryReadyForPolicyV7(mover))
+    return 0;
+  let fouledKill = false;
+  for (const command of context.commands) {
+    if (command.kind !== "ATTACK" || command.unitId !== mover.id) continue;
+    const preview = queryCombatPreviewV7(view, mover.id, command.targetUnitId);
+    if (preview === null || !preview.defenderDies) continue;
+    if (goblinAttackFactsV7(context, command, preview).friendlySplashHits === 0)
+      return 0;
+    fouledKill = true;
+  }
+  if (!fouledKill) return 0;
+  let best = 0;
+  for (const hostile of context.lookup.visibleHostiles) {
+    const range = distance(hostile.at, to);
+    if (range < rule.minimumRange || range > rule.range) continue;
+    const current = distance(hostile.at, mover.at);
+    if (current >= rule.minimumRange && current <= rule.range) continue;
+    const preview = queryCombatPreviewV7(projected(), mover.id, hostile.id);
+    if (preview === null || !preview.defenderDies || preview.attackerDies)
+      continue;
+    if (
+      preview.splash.some((splash) => {
+        const unit = context.lookup.unitsById.get(splash.unitId);
+        return unit !== undefined && friendlyOwnerV7(view, unit.ownerId);
+      })
+    )
+      continue;
+    best = Math.max(
+      best,
+      targetStrategicValue(view, hostile.id, context.lookup),
+    );
+  }
+  return best;
+}
+
+/** Splash damage of an own Bomb Chucker's offered bomb, once per decision. */
+const goblinBombSplashV7 = new WeakMap<PolicyContextV7, Map<string, number>>();
+
+/**
+ * Own bomb exposure (`pulp_wars-0ao.13`): the value `unit` would lose at
+ * `at` to the splash of an own Bomb Chucker's bomb it can throw now at a
+ * visible hostile next to `at` (the worst such bomb), and whether that
+ * splash would kill it.
+ */
+function ownBombExposureV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+): { readonly loss: number; readonly dies: boolean } {
+  const view = context.view;
+  let cache = goblinBombSplashV7.get(context);
+  if (cache === undefined) {
+    cache = new Map();
+    goblinBombSplashV7.set(context, cache);
+  }
+  let loss = 0;
+  let dies = false;
+  for (const hostile of context.lookup.visibleHostiles) {
+    if (distance(hostile.at, at) !== 1) continue;
+    for (const attack of goblinAttacksOnV7(context, hostile.id)) {
+      if (attack.unitId === unit.id) continue;
+      const bomber = context.lookup.unitsById.get(attack.unitId);
+      if (bomber === undefined || !friendlyFireBomberV7(view, bomber)) continue;
+      const key = `${attack.unitId}:${hostile.id}`;
+      let splash = cache.get(key);
+      if (splash === undefined) {
+        const preview = queryCombatPreviewV7(view, attack.unitId, hostile.id);
+        splash =
+          preview === null || preview.damageToDefender <= 0
+            ? 0
+            : Math.max(1, Math.ceil(preview.damageToDefender / 2));
+        cache.set(key, splash);
+      }
+      if (splash <= 0) continue;
+      const hit = Math.min(splash, unit.hp);
+      const lethal = hit >= unit.hp;
+      loss = Math.max(loss, friendlyLossValueV7(view, unit, hit, lethal));
+      dies ||= lethal;
+    }
+  }
+  return { loss, dies };
+}
+
 const GOBLIN_ROUTINE_MOVE_PRIORITY_V7 = 1100;
 const GOBLIN_SPACING_PRIORITY_V7 = 760;
 
@@ -5814,6 +5950,12 @@ function goblinMoveValueV7(
       raised = Math.max(raised, KABOOM_SETUP_PRIORITY_V7);
       strategic += kaboom;
     }
+    const bomb = cleanBombStrikeValueV7(context, actor, to, projected);
+    if (bomb > 0) {
+      setupKill = true;
+      raised = Math.max(raised, CLEAN_BOMB_STRIKE_PRIORITY_V7);
+      strategic += bomb;
+    }
   }
   // Only a kill setup revives a Move the other rules did not score.
   if (priority < 0 && !setupKill) return { priority, strategic: 0 };
@@ -5828,6 +5970,21 @@ function goblinMoveValueV7(
   if (spacingHere > spacingThere && !onOwnCenter) {
     raised = Math.max(raised, GOBLIN_SPACING_PRIORITY_V7);
     strategic += spacingHere - spacingThere;
+  }
+  // pulp_wars-0ao.13: a routine Move does not end next to a target an own
+  // Bomb Chucker can bomb now when the splash would kill the mover there
+  // (and not where it stands); a smaller splash only costs strategic value.
+  if (view.viewer.faction === "GOBLIN") {
+    const bombThere = ownBombExposureV7(context, actor, to);
+    if (bombThere.loss > 0) {
+      const bombHere = ownBombExposureV7(context, actor, actor.at);
+      if (bombThere.loss > bombHere.loss) {
+        strategic -=
+          FRIENDLY_FIRE_TRADE_FACTOR_V7 * (bombThere.loss - bombHere.loss);
+        if (routine && !setupKill && bombThere.dies && !bombHere.dies)
+          return { priority: -1, strategic };
+      }
+    }
   }
   const there = kaboomExposureV7(context, actor, to);
   if (there.enemyNet > 0 && there.ownHits >= 2) {

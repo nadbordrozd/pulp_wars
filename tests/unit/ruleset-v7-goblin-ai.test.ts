@@ -238,6 +238,244 @@ describe("ruleset-7 revision-17 Normal AI: Bomb Chucker friendly fire", () => {
   });
 });
 
+// `pulp_wars-0ao.13`: the 0ao.7 matrix found 46.4% of bomb-splash deaths
+// were the Bomb Chucker's own units. Friendly fire stays a rule; the Normal
+// AI throws such bombs only for a kill, prefers clean bombs, and keeps its
+// units out of the way.
+describe("ruleset-7 revision-17 Normal AI: careful Bomb Chuckers", () => {
+  const acted = {
+    moved: true,
+    movedPathLength: 1,
+    attacked: true,
+    attacksUsed: 1,
+    handled: true,
+  };
+
+  it("declines a chip bomb whose splash kills an own unit, whatever it hits", () => {
+    const { state, view } = arena(
+      ["GOBLIN", "ORIGINAL"],
+      [
+        { seat: 0, role: "MARKSMAN", at: at(4, 4) },
+        { seat: 0, role: "FIGHTER", at: at(3, 1), hp: 1, activation: acted },
+        { seat: 1, role: "GUARD", at: at(4, 2) },
+        { seat: 1, role: "FIGHTER", at: at(4, 1) },
+        { seat: 1, role: "FIGHTER", at: at(5, 1) },
+        { seat: 1, role: "FIGHTER", at: at(3, 2) },
+        { seat: 1, role: "FIGHTER", at: at(5, 2) },
+      ],
+    );
+    const chucker = unitAtV7(state, at(4, 4)).id;
+    const goblin = unitAtV7(state, at(3, 1)).id;
+    const guard = unitAtV7(state, at(4, 2)).id;
+    const clear = unitAtV7(state, at(5, 2)).id;
+    // The Guard survives; the bomb hits four enemies (worth more than twice
+    // the 1-HP Goblin, which the trade-factor rule alone accepted) and kills
+    // the Goblin.
+    const preview = queryCombatPreviewV7(view, chucker, guard);
+    expect(preview?.defenderDies).toBe(false);
+    expect(preview?.splash).toHaveLength(5);
+    expect(preview?.splash).toContainEqual(
+      expect.objectContaining({ unitId: goblin, dies: true }),
+    );
+    const candidates = unitCandidates(chooseNormalCommandV7(view), chucker);
+    expect(candidates).not.toContainEqual({
+      kind: "ATTACK",
+      unitId: chucker,
+      targetUnitId: guard,
+    });
+    expect(candidates).not.toContainEqual({
+      kind: "ATTACK",
+      unitId: chucker,
+      targetUnitId: unitAtV7(state, at(3, 2)).id,
+    });
+    // The bomb that splashes only enemies stays.
+    expect(candidates).toContainEqual({
+      kind: "ATTACK",
+      unitId: chucker,
+      targetUnitId: clear,
+    });
+  });
+
+  it("bombs a kill that splashes a friend, but kills one only to kill more enemies", () => {
+    const bombOf = (
+      pieces: readonly GoblinPieceV7[],
+      target: CoordV7,
+      from: CoordV7 = at(4, 4),
+    ) => {
+      const { state, view } = arena(
+        ["GOBLIN", "ORIGINAL"],
+        [{ seat: 0, role: "MARKSMAN", at: from }, ...pieces],
+      );
+      const chucker = unitAtV7(state, from).id;
+      const bomb: CommandV7 = {
+        kind: "ATTACK",
+        unitId: chucker,
+        targetUnitId: unitAtV7(state, target).id,
+      };
+      return {
+        bomb,
+        view,
+        preview: queryCombatPreviewV7(view, chucker, bomb.targetUnitId),
+        taken: unitCandidates(chooseNormalCommandV7(view), chucker).some(
+          (command) => JSON.stringify(command) === JSON.stringify(bomb),
+        ),
+      };
+    };
+    const knight: GoblinPieceV7 = {
+      seat: 1,
+      role: "KNIGHT",
+      at: at(4, 2),
+      hp: 2,
+    };
+    // The kill chips a full-HP Goblin: taken, below a clean kill (1180).
+    const chip = bombOf(
+      [{ seat: 0, role: "FIGHTER", at: at(3, 1), activation: acted }, knight],
+      at(4, 2),
+    );
+    expect(chip.preview).toMatchObject({
+      defenderDies: true,
+      splash: [expect.objectContaining({ dies: false })],
+    });
+    expect(chip.taken).toBe(true);
+    expect(scoreCommandV7(chip.view, chip.bomb).priority).toBe(1177);
+    // The kill would also kill a 1-HP Goblin: one for one is declined, even
+    // though the Knight is worth more than twice the Goblin.
+    const wounded: GoblinPieceV7 = {
+      seat: 0,
+      role: "FIGHTER",
+      at: at(3, 1),
+      hp: 1,
+      activation: acted,
+    };
+    const oneForOne = bombOf([wounded, knight], at(4, 2));
+    expect(oneForOne.preview).toMatchObject({
+      defenderDies: true,
+      splash: [expect.objectContaining({ dies: true })],
+    });
+    expect(oneForOne.taken).toBe(false);
+    // The same bomb also killing a second enemy is taken.
+    const twoForOne = bombOf(
+      [wounded, knight, { seat: 1, role: "FIGHTER", at: at(5, 1), hp: 1 }],
+      at(4, 2),
+    );
+    expect(
+      twoForOne.preview?.splash.filter((entry) => entry.dies),
+    ).toHaveLength(2);
+    expect(twoForOne.taken).toBe(true);
+    // Clearing a hostile city center (seat 1's capital) does not excuse
+    // killing the friend.
+    const center = bombOf(
+      [
+        { ...wounded, at: at(3, 7) },
+        { ...knight, at: at(2, 8) },
+      ],
+      at(2, 8),
+      at(2, 6),
+    );
+    expect(center.preview?.defenderDies).toBe(true);
+    expect(center.taken).toBe(false);
+  });
+
+  it("prefers another target whose bomb splashes no own unit", () => {
+    const { state, view } = arena(
+      ["GOBLIN", "ORIGINAL"],
+      [
+        { seat: 0, role: "MARKSMAN", at: at(4, 4) },
+        { seat: 0, role: "FIGHTER", at: at(3, 1), activation: acted },
+        { seat: 1, role: "KNIGHT", at: at(4, 2), hp: 2 },
+        { seat: 1, role: "FIGHTER", at: at(6, 4), hp: 1 },
+      ],
+      { coins: 0 },
+    );
+    const chucker = unitAtV7(state, at(4, 4)).id;
+    const knight = unitAtV7(state, at(4, 2)).id;
+    const clear = unitAtV7(state, at(6, 4)).id;
+    const fouled: CommandV7 = {
+      kind: "ATTACK",
+      unitId: chucker,
+      targetUnitId: knight,
+    };
+    const clean: CommandV7 = {
+      kind: "ATTACK",
+      unitId: chucker,
+      targetUnitId: clear,
+    };
+    // Both bombs kill; the Knight is worth more, but its bomb chips the
+    // Goblin next to it.
+    expect(queryCombatPreviewV7(view, chucker, knight)?.splash).toEqual([
+      expect.objectContaining({
+        unitId: unitAtV7(state, at(3, 1)).id,
+        dies: false,
+      }),
+    ]);
+    expect(scoreCommandV7(view, fouled).strategicValue).toBeGreaterThan(
+      scoreCommandV7(view, clean).strategicValue,
+    );
+    expect(chooseNormalCommandV7(view).command).toEqual(clean);
+  });
+
+  it("moves first to bomb a clean target when its only kill splashes a friend", () => {
+    const { state } = arena(
+      ["GOBLIN", "ORIGINAL"],
+      [
+        { seat: 0, role: "MARKSMAN", at: at(4, 4) },
+        { seat: 0, role: "FIGHTER", at: at(3, 1), activation: acted },
+        { seat: 1, role: "KNIGHT", at: at(4, 2), hp: 2 },
+        { seat: 1, role: "FIGHTER", at: at(7, 4), hp: 1 },
+      ],
+      { coins: 0 },
+    );
+    const chucker = unitAtV7(state, at(4, 4)).id;
+    const far = unitAtV7(state, at(7, 4)).id;
+    const actor = state.turnOrder[state.activeSeatIndex];
+    if (actor === undefined) throw new Error("active player missing");
+    const first = chooseNormalCommandV7(viewForV7(state, actor));
+    expect(first.command).toMatchObject({ kind: "MOVE", unitId: chucker });
+    expect(first.candidates[0]?.score.priority).toBe(1179);
+    if (first.command === null) throw new Error("no command chosen");
+    const moved = applyCommandV7(state, actor, first.command);
+    if (!moved.accepted) throw new Error(moved.error.code);
+    expect(
+      unitCandidates(
+        chooseNormalCommandV7(viewForV7(moved.state, actor)),
+        chucker,
+      )[0],
+    ).toEqual({ kind: "ATTACK", unitId: chucker, targetUnitId: far });
+  });
+
+  it("keeps a wounded Goblin from stepping next to its Bomb Chucker's target", () => {
+    const { state, view } = arena(
+      ["GOBLIN", "ORIGINAL"],
+      [
+        {
+          seat: 0,
+          role: "MARKSMAN",
+          at: at(4, 5),
+          activation: { attacked: true, attacksUsed: 1 },
+        },
+        { seat: 0, role: "MARKSMAN", at: at(4, 4) },
+        { seat: 0, role: "FIGHTER", at: at(2, 3), hp: 2 },
+        { seat: 1, role: "GUARD", at: at(4, 2) },
+      ],
+    );
+    const goblin = unitAtV7(state, at(2, 3)).id;
+    const chucker = unitAtV7(state, at(4, 4)).id;
+    const guard = unitAtV7(state, at(4, 2)).id;
+    // A Gang Up helper step next to the Guard (905 before `0ao.13`) would
+    // stand in the bomb's splash, which kills a 2-HP Goblin.
+    const splash = Math.ceil(
+      (queryCombatPreviewV7(view, chucker, guard)?.damageToDefender ?? 0) / 2,
+    );
+    expect(splash).toBeGreaterThanOrEqual(2);
+    expect(scoreCommandV7(view, move(goblin, at(3, 3))).priority).toBe(-1);
+    // Its other advance, out of the splash, is unchanged.
+    expect(scoreCommandV7(view, move(goblin, at(3, 4))).priority).toBe(700);
+    expect(unitCandidates(chooseNormalCommandV7(view), chucker)).toContainEqual(
+      { kind: "ATTACK", unitId: chucker, targetUnitId: guard },
+    );
+  });
+});
+
 describe("ruleset-7 revision-17 Normal AI: Gang Up", () => {
   // `pulp_wars-0ao.7` lowered the Goblin's Attack to 1.5: a Goblin no longer
   // attacks a full-HP Guard even with Gang Up (it chips it with a Kaboom),

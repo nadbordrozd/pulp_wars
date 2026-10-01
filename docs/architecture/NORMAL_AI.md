@@ -457,6 +457,19 @@ As Goblins:
   a hostile center, or is the endgame combined kill. Every attack in a
   Goblin match adds the value of the death-blast chain it sets off (hostile
   minus friendly) and its Plunder Coins.
+- **Careful bombs** (`pulp_wars-0ao.13`; friendly fire stays a rule): a bomb
+  whose splash kills an own or allied unit is never thrown for a chip (the
+  target survives) or when it kills more own and allied units than hostile
+  ones, whatever the trade value, with the same city and endgame exceptions.
+  A bomb that splashes any own or allied unit ranks 3 below its tier (1180
+  becomes 1177), so the Bomb Chucker's clean bomb of the same tier and other
+  units' attacks, which may kill the target first, go before it. A Bomb
+  Chucker whose kills from where it stands all splash own or allied units
+  moves (1179) where its bomb kills a target it cannot reach now without
+  splashing any. An own unit does not end a routine Move next to a visible
+  hostile that an own Bomb Chucker can bomb now when that splash would kill
+  it there but not where it stands; a smaller splash costs twice its value
+  in the Move's strategic value.
 - **Spacing**: an own exploding unit (Bomb Chucker, Rocket Cart, Scrap
   Buggy) that any visible enemy can damage (`pulp_wars-0ao.7`; was: that
   visible enemies can kill) does not end a routine Move (below 1100) next to
