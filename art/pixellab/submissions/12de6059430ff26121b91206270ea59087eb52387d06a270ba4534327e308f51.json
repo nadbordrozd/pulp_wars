@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-kaboom-a-edit",
+  "jobId": "bf3915d8-b1c5-4206-a1ce-ff210b5dd5c2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-icon-action-kaboom",
+    "subject": "ICON:ACTION:KABOOM",
+    "faction": "GOBLIN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5804,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the bomb ball jet black with dark charcoal grey shading instead of slate blue-grey, and make the spark at the fuse tip pale cream-white with no orange. Change nothing else: keep the round shape, the band, the fuse cap, the cream fuse, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the bomb ball jet black with dark charcoal grey shading instead of slate blue-grey, and make the spark at the fuse tip pale cream-white with no orange. Change nothing else: keep the round shape, the band, the fuse cap, the cream fuse, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the bomb ball jet black with dark charcoal grey shading instead of slate blue-grey, and make the spark at the fuse tip pale cream-white with no orange. Change nothing else: keep the round shape, the band, the fuse cap, the cream fuse, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the bomb ball jet black with dark charcoal grey shading instead of slate blue-grey, and make the spark at the fuse tip pale cream-white with no orange. Change nothing else: keep the round shape, the band, the fuse cap, the cream fuse, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-kaboom-a",
+      "candidate": 0,
+      "sha256": "9c559b09b9b09048c97e03a8b71b4c2456a66aa45ad4f6fadf2bd2481aaee0a7"
+    }
+  }
+}

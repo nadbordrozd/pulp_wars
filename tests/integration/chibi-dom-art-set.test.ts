@@ -24,6 +24,10 @@ import {
   undeadShowcaseFixtureV7,
   undeadUiArenaV7,
 } from "../fixtures/v7-undead-ui";
+import {
+  GOBLIN_SHOWCASE_V7,
+  goblinShowcaseFixtureV7,
+} from "../fixtures/v7-goblin-ui";
 
 /**
  * Rasters settle at once; every master reads back as an opaque 4 x 6 block
@@ -297,5 +301,61 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
       "chibi:ICON:ACTION:WAIT",
     );
     partial.app.destroy();
+  });
+  it("draws the Goblin Kaboom! and WAAAGH! command icons in CHIBI and keeps the code-drawn bomb in LEGACY", () => {
+    const bomb = () =>
+      document.querySelector(
+        '[data-action="command-kaboom"] svg[data-icon="bomb"]',
+      );
+    const legacy = mount(goblinShowcaseFixtureV7(), "LEGACY");
+    legacy.select(GOBLIN_SHOWCASE_V7.kaboom);
+    expect(bomb()).not.toBeNull();
+    expect(document.body.innerHTML).not.toContain("v7-chibi-art");
+    legacy.select(GOBLIN_SHOWCASE_V7.warboss);
+    expect(artList(".v7-context-action > .v7-art-frame")).not.toContain(
+      "chibi:ICON:ACTION:GOBLIN:RALLY",
+    );
+    legacy.app.destroy();
+
+    const chibi = mount(goblinShowcaseFixtureV7(), "CHIBI");
+    chibi.select(GOBLIN_SHOWCASE_V7.kaboom);
+    expect(artList(".v7-context-action > .v7-art-frame")).toContain(
+      "chibi:ICON:ACTION:KABOOM",
+    );
+    // The PixelLab bomb replaces the vector Kaboom! glyph.
+    expect(bomb()).toBeNull();
+    chibi.select(GOBLIN_SHOWCASE_V7.warboss);
+    expect(artList(".v7-context-action > .v7-art-frame")).toContain(
+      "chibi:ICON:ACTION:GOBLIN:RALLY",
+    );
+    expect(
+      document.querySelector<HTMLImageElement>(
+        '[data-action="command-rally"] img',
+      )?.dataset.chibiAssetId,
+    ).toBe("chibi-icon-action-goblin-rally");
+    chibi.app.destroy();
+
+    // Without its raster, Kaboom! keeps its vector bomb and WAAAGH! falls
+    // back to the Human Rally horn.
+    const failing = mount(
+      goblinShowcaseFixtureV7(),
+      "CHIBI",
+      environment("chibi-icon-action-goblin-rally."),
+    );
+    failing.select(GOBLIN_SHOWCASE_V7.warboss);
+    expect(
+      document.querySelector<HTMLImageElement>(
+        '[data-action="command-rally"] img',
+      )?.dataset.chibiAssetId,
+    ).toBe("chibi-icon-action-rally");
+    failing.app.destroy();
+    const noBomb = mount(
+      goblinShowcaseFixtureV7(),
+      "CHIBI",
+      environment("chibi-icon-action-kaboom."),
+    );
+    noBomb.select(GOBLIN_SHOWCASE_V7.kaboom);
+    expect(bomb()).not.toBeNull();
+    noBomb.app.destroy();
   });
 });

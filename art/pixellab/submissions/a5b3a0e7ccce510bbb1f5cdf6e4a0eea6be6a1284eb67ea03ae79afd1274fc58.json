@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-goblin-rally-b-edit-c",
+  "jobId": "4cf6d3ce-5ab6-4ec3-8d89-e5164d046d3f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-icon-action-goblin-rally",
+    "subject": "ICON:ACTION:GOBLIN:RALLY",
+    "faction": "GOBLIN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5819,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Replace the three small dark marks at the right of the megaphone's mouth with three short thick pale cream-white shout lines with a black outline, fanning outward to the right. Change nothing else: the grey tin megaphone, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Replace the three small dark marks at the right of the megaphone's mouth with three short thick pale cream-white shout lines with a black outline, fanning outward to the right. Change nothing else: the grey tin megaphone, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Replace the three small dark marks at the right of the megaphone's mouth with three short thick pale cream-white shout lines with a black outline, fanning outward to the right. Change nothing else: the grey tin megaphone, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+    "editInstruction": "Replace the three small dark marks at the right of the megaphone's mouth with three short thick pale cream-white shout lines with a black outline, fanning outward to the right. Change nothing else: the grey tin megaphone, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-goblin-rally-b-edit-b",
+      "candidate": 0,
+      "sha256": "1863fea809f0827f6a501b57a06a9a3ae74863b1de6af0299a7960cc004ec606"
+    }
+  }
+}

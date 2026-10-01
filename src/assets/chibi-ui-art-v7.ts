@@ -124,7 +124,10 @@ const RESOURCE_COMMANDS: Partial<Record<CommandV7["kind"], ArtSubjectV7>> = {
  * Art of a command button, or null for commands drawn without art (Move and
  * Attack are map-targeted; Field Defense keeps its vector tactical symbol).
  * Build commands show the chibi building, harvests the chibi resource,
- * training the faction's portrait, and the Undead Rally is Frenzy.
+ * training the faction's portrait, the Undead Rally is Frenzy and the Goblin
+ * Rally is WAAAGH! (the Warboss's tin megaphone, bead pulp_wars-0ao.14).
+ * Kaboom! is `ICON:ACTION:KABOOM`, the PixelLab bomb; without a raster (and
+ * always in LEGACY) it keeps its code-drawn bomb glyph.
  */
 export function commandSubjectV7(
   command: CommandV7,
@@ -143,9 +146,9 @@ export function commandSubjectV7(
     case "CHOOSE_CITY_REWARD":
       return rewardSubjectV7(command.reward, faction);
     case "RALLY":
-      return faction === "UNDEAD"
-        ? "ICON:ACTION:UNDEAD:RALLY"
-        : "ICON:ACTION:RALLY";
+      if (faction === "UNDEAD") return "ICON:ACTION:UNDEAD:RALLY";
+      if (faction === "GOBLIN") return "ICON:ACTION:GOBLIN:RALLY";
+      return "ICON:ACTION:RALLY";
     default:
       break;
   }

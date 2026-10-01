@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-goblin-rally-b-edit-b",
+  "jobId": "2a0f67d6-a06d-4fa3-995e-3eaa0fa8f700",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-icon-action-goblin-rally",
+    "subject": "ICON:ACTION:GOBLIN:RALLY",
+    "faction": "GOBLIN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5818,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the three short orange lines at the right of the megaphone's mouth plain white. Change nothing else: every other pixel, the grey tin, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the three short orange lines at the right of the megaphone's mouth plain white. Change nothing else: every other pixel, the grey tin, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the three short orange lines at the right of the megaphone's mouth plain white. Change nothing else: every other pixel, the grey tin, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the three short orange lines at the right of the megaphone's mouth plain white. Change nothing else: every other pixel, the grey tin, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-goblin-rally-b",
+      "candidate": 0,
+      "sha256": "1e68f5c6584bad5b4e7450448db3085dec1ac28037c6b72969de022fd9b0fdb7"
+    }
+  }
+}

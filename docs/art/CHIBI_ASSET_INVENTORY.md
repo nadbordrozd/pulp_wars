@@ -158,7 +158,8 @@ rewards and on technology cards.)
 
 Bead `pulp_wars-67q.11`. Records: `scripts/art/chibi/records/batch-5.json`
 (ORIGINAL), `batch-5-undead.json` (UNDEAD) and `batch-5-goblin.json`
-(GOBLIN portraits, bead `pulp_wars-0ao.8`); masters under
+(GOBLIN portraits, bead `pulp_wars-0ao.8`, and the Kaboom! and WAAAGH!
+command icons, bead `pulp_wars-0ao.14`); masters under
 `public/assets/chibi/portraits/` and `public/assets/chibi/icons/`.
 
 **The DOM hook.** [`chibi-dom-art-v7.ts`](../../src/render/dom/chibi-dom-art-v7.ts)
@@ -174,20 +175,22 @@ its box is fitted and smoothed. The coin and population icons that the text
 helpers inline everywhere come from a per-document provider the CHIBI view
 registers.
 
-| Interface use                       | CHIBI subject                                                                                                                 | Owner colour            |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| Selection dock and unit help (unit) | the unit's map subject (`UNIT:<ROLE>`, `UNIT:UNDEAD:<ROLE>`, `UNIT:GOBLIN:<ROLE>`, embarked transport)                        | the unit's owner        |
-| Selection dock (city, tile)         | `CITY:<level>`; the improvement, resource or terrain map subject (a Mine is its mined mountain)                               | city or territory owner |
-| Train buttons, recruit help         | `PORTRAIT:<ROLE>`; `PORTRAIT:UNDEAD:<ROLE>` or `PORTRAIT:GOBLIN:<ROLE>` for an Undead or Goblin viewer's land roles           | the viewer              |
-| Technology cards and detail         | `CHIBI_TECH_ART_SUBJECTS_V7` in [`chibi-ui-art-v7.ts`](../../src/assets/chibi-ui-art-v7.ts)                                   | the viewer              |
-| Command and action buttons          | `ICON:ACTION:<KIND>` (Frenzy: `ICON:ACTION:UNDEAD:RALLY`); build and harvest commands their map subject; Capture the Village  | the viewer              |
-| City rewards                        | `ICON:REWARD:*`, `ICON:HUD:COIN` (Stockpile, Treasury), `ICON:HUD:POPULATION` (Boom), faction portraits (Militia, Juggernaut) | the viewer              |
-| Leaderboard city count              | `CITY:1`                                                                                                                      | that player             |
-| Inline and HUD coin and population  | `ICON:HUD:COIN`, `ICON:HUD:POPULATION`                                                                                        | none                    |
+| Interface use                       | CHIBI subject                                                                                                                                                                                    | Owner colour            |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
+| Selection dock and unit help (unit) | the unit's map subject (`UNIT:<ROLE>`, `UNIT:UNDEAD:<ROLE>`, `UNIT:GOBLIN:<ROLE>`, embarked transport)                                                                                           | the unit's owner        |
+| Selection dock (city, tile)         | `CITY:<level>`; the improvement, resource or terrain map subject (a Mine is its mined mountain)                                                                                                  | city or territory owner |
+| Train buttons, recruit help         | `PORTRAIT:<ROLE>`; `PORTRAIT:UNDEAD:<ROLE>` or `PORTRAIT:GOBLIN:<ROLE>` for an Undead or Goblin viewer's land roles                                                                              | the viewer              |
+| Technology cards and detail         | `CHIBI_TECH_ART_SUBJECTS_V7` in [`chibi-ui-art-v7.ts`](../../src/assets/chibi-ui-art-v7.ts)                                                                                                      | the viewer              |
+| Command and action buttons          | `ICON:ACTION:<KIND>` (Frenzy: `ICON:ACTION:UNDEAD:RALLY`; WAAAGH!: `ICON:ACTION:GOBLIN:RALLY`; Kaboom!: `ICON:ACTION:KABOOM`); build and harvest commands their map subject; Capture the Village | the viewer              |
+| City rewards                        | `ICON:REWARD:*`, `ICON:HUD:COIN` (Stockpile, Treasury), `ICON:HUD:POPULATION` (Boom), faction portraits (Militia, Juggernaut)                                                                    | the viewer              |
+| Leaderboard city count              | `CITY:1`                                                                                                                                                                                         | that player             |
+| Inline and HUD coin and population  | `ICON:HUD:COIN`, `ICON:HUD:POPULATION`                                                                                                                                                           | none                    |
 
-Undead and Goblin portraits and Frenzy fall back to the Human art (with
-the faction badge on units, as on the map) while they have no raster; with
-their own art the badge is dropped.
+Undead and Goblin portraits, Frenzy and WAAAGH! fall back to the Human art
+(with the faction badge on units, as on the map) while they have no raster;
+with their own art the badge is dropped. Kaboom! has no Human counterpart:
+without its raster, and always in LEGACY, it keeps the code-drawn bomb glyph
+of `ui-icons-v7.ts`.
 
 **Technology cards.** Where LEGACY reuses a map sprite, CHIBI reuses the
 chibi map sprite (Gathering the Fruit bush, Farming the Farm, Chivalry the

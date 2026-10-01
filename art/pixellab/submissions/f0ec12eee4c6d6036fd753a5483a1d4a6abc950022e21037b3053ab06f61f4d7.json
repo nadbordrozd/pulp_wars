@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-goblin-rally-b-edit-2",
+  "jobId": "76ba7c79-a8a2-490e-b5e0-f74c0d2a1151",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-icon-action-goblin-rally",
+    "subject": "ICON:ACTION:GOBLIN:RALLY",
+    "faction": "GOBLIN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5815,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the tan and orange shape inside the megaphone's wide mouth darker blue-grey tin, like the rest of the inside of the cone. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, the pale cream shout lines, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the tan and orange shape inside the megaphone's wide mouth darker blue-grey tin, like the rest of the inside of the cone. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, the pale cream shout lines, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the tan and orange shape inside the megaphone's wide mouth darker blue-grey tin, like the rest of the inside of the cone. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, the pale cream shout lines, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the tan and orange shape inside the megaphone's wide mouth darker blue-grey tin, like the rest of the inside of the cone. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, the pale cream shout lines, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-goblin-rally-b-edit",
+      "candidate": 0,
+      "sha256": "3af70f348039c0d516a0710c0c770281ff86a6b4b1116be5357301f01039ccea"
+    }
+  }
+}

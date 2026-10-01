@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-goblin-rally-b-edit",
+  "jobId": "c8beec1a-11ca-48c8-9c13-6a32d7fd13d4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "5-goblin",
+    "asset": "chibi-icon-action-goblin-rally",
+    "subject": "ICON:ACTION:GOBLIN:RALLY",
+    "faction": "GOBLIN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 5813,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the three short shout lines at the megaphone's mouth pale cream-white instead of orange and gold. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the three short shout lines at the megaphone's mouth pale cream-white instead of orange and gold. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the three short shout lines at the megaphone's mouth pale cream-white instead of orange and gold. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make the three short shout lines at the megaphone's mouth pale cream-white instead of orange and gold. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-goblin-rally-b",
+      "candidate": 0,
+      "sha256": "1e68f5c6584bad5b4e7450448db3085dec1ac28037c6b72969de022fd9b0fdb7"
+    }
+  }
+}

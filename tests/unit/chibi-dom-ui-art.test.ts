@@ -188,6 +188,13 @@ describe("CHIBI interface subjects", () => {
     expect(commandSubjectV7(commands[0] as CommandV7, "UNDEAD")).toBe(
       "ICON:ACTION:UNDEAD:RALLY",
     );
+    // Revision 17 (pulp_wars-0ao.14): WAAAGH! and Kaboom! have their own icons.
+    expect(commandSubjectV7(commands[0] as CommandV7, "GOBLIN")).toBe(
+      "ICON:ACTION:GOBLIN:RALLY",
+    );
+    expect(
+      commandSubjectV7({ kind: "KABOOM", unitId: 1 as never }, "GOBLIN"),
+    ).toBe("ICON:ACTION:KABOOM");
     expect(commandSubjectV7(commands[13] as CommandV7, "UNDEAD")).toBe(
       "PORTRAIT:UNDEAD:GUARD",
     );
@@ -239,6 +246,9 @@ describe("CHIBI interface subjects", () => {
       "PORTRAIT:KNIGHT",
     );
     expect(chibiFallbackSubjectV7("ICON:ACTION:UNDEAD:RALLY")).toBe(
+      "ICON:ACTION:RALLY",
+    );
+    expect(chibiFallbackSubjectV7("ICON:ACTION:GOBLIN:RALLY")).toBe(
       "ICON:ACTION:RALLY",
     );
     expect(chibiFallbackSubjectV7("ICON:ACTION:RALLY")).toBeNull();

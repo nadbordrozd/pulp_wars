@@ -58,8 +58,9 @@ export type ChibiEffectSubjectV7 =
  * rewards, technology cards); `PORTRAIT:UNDEAD:<ROLE>` is the Undead one and
  * `PORTRAIT:GOBLIN:<ROLE>` the Goblin one (bead pulp_wars-0ao.8).
  * `ICON:*` are unowned icons: dedicated technology icons, command and action
- * icons (`ICON:ACTION:UNDEAD:RALLY` is the Undead Frenzy), city rewards and
- * the HUD economy icons.
+ * icons (`ICON:ACTION:UNDEAD:RALLY` is the Undead Frenzy and
+ * `ICON:ACTION:GOBLIN:RALLY` the Goblin WAAAGH!, bead pulp_wars-0ao.14), city
+ * rewards and the HUD economy icons.
  */
 export type UiArtSubjectV7 =
   | `PORTRAIT:${UnitRoleIdV7}`
@@ -68,6 +69,7 @@ export type UiArtSubjectV7 =
   | `ICON:TECH:${TechnologyIdV7}`
   | `ICON:ACTION:${CommandV7["kind"]}`
   | "ICON:ACTION:UNDEAD:RALLY"
+  | "ICON:ACTION:GOBLIN:RALLY"
   | `ICON:REWARD:${"SURVEY" | "WALLS" | "EXPAND"}`
   | `ICON:HUD:${"COIN" | "POPULATION"}`;
 
@@ -115,7 +117,8 @@ export function unitArtSubjectV7(unit: {
  * raster: `UNIT:UNDEAD:<ROLE>` falls back to the Human `UNIT:<ROLE>` (drawn
  * with the Undead badge), and likewise `PORTRAIT:UNDEAD:<ROLE>` and
  * `ICON:ACTION:UNDEAD:RALLY`; `UNIT:GOBLIN:<ROLE>` and `PORTRAIT:GOBLIN:<ROLE>`
- * fall back to the Human art with the Goblin badge. Every other subject has
+ * fall back to the Human art with the Goblin badge, and
+ * `ICON:ACTION:GOBLIN:RALLY` (WAAAGH!) to the Human Rally horn. Every other subject has
  * no fallback.
  */
 export function chibiFallbackSubjectV7(

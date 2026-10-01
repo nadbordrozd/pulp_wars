@@ -2,6 +2,1206 @@
   "schemaVersion": 1,
   "batch": "5-goblin",
   "recipes": {
+    "icon-action-goblin-rally-a": {
+      "id": "icon-action-goblin-rally-a",
+      "asset": "chibi-icon-action-goblin-rally",
+      "jobId": "sync-d2335165-9147-4aab-9f4a-affb0c69fc1e",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-goblin-rally",
+        "subject": "ICON:ACTION:GOBLIN:RALLY",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5810,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person."
+      },
+      "submittedAt": "2026-10-01T06:58:33.542Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-goblin-rally-a.png",
+      "rawSheetSha256": "2fffa7e9ebc23aea9e917945626e916e0a6da5a6a45d24b3bbc34e6e1a56350f",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.2841,
+          "footprintWidthShare": 0.2292,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T06:59:08.455Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Spiked megaphone with a brown wooden handle and rust-brown spots on the barrel (brown drift); busier than the other command icons.",
+        "reviewedAt": "2026-10-01T07:00:12.136Z"
+      }
+    },
+    "icon-action-goblin-rally-b": {
+      "id": "icon-action-goblin-rally-b",
+      "asset": "chibi-icon-action-goblin-rally",
+      "jobId": "sync-e1b878bf-037a-4898-a740-7f238f44e795",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-goblin-rally",
+        "subject": "ICON:ACTION:GOBLIN:RALLY",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5811,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person."
+      },
+      "submittedAt": "2026-10-01T06:59:08.459Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-goblin-rally-b.png",
+      "rawSheetSha256": "1e68f5c6584bad5b4e7450448db3085dec1ac28037c6b72969de022fd9b0fdb7",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3478,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T06:59:30.171Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right grey tin megaphone, but its three shout lines are orange-gold and sit inside the mouth; derived through goblin-rally-b-edit-b and -edit-c.",
+        "reviewedAt": "2026-10-01T07:10:29.366Z"
+      }
+    },
+    "icon-action-goblin-rally-b-edit": {
+      "id": "icon-action-goblin-rally-b-edit",
+      "asset": "chibi-icon-action-goblin-rally",
+      "jobId": "c8beec1a-11ca-48c8-9c13-6a32d7fd13d4",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-goblin-rally",
+        "subject": "ICON:ACTION:GOBLIN:RALLY",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5813,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the three short shout lines at the megaphone's mouth pale cream-white instead of orange and gold. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make the three short shout lines at the megaphone's mouth pale cream-white instead of orange and gold. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the three short shout lines at the megaphone's mouth pale cream-white instead of orange and gold. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make the three short shout lines at the megaphone's mouth pale cream-white instead of orange and gold. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-goblin-rally-b",
+          "candidate": 0,
+          "sha256": "1e68f5c6584bad5b4e7450448db3085dec1ac28037c6b72969de022fd9b0fdb7"
+        }
+      },
+      "submittedAt": "2026-10-01T07:02:57.239Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-goblin-rally-b-edit.png",
+      "rawSheetSha256": "d1de354b6f44964ea2d3cf53749da060a635da4c7d9f9a559c2687ab32cac914",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3556,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3556,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:03:36.514Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Shout lines turned cream, but the inside of the mouth turned a tan and orange blob.",
+        "reviewedAt": "2026-10-01T07:10:29.723Z"
+      }
+    },
+    "icon-action-goblin-rally-b-edit-2": {
+      "id": "icon-action-goblin-rally-b-edit-2",
+      "asset": "chibi-icon-action-goblin-rally",
+      "jobId": "76ba7c79-a8a2-490e-b5e0-f74c0d2a1151",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-goblin-rally",
+        "subject": "ICON:ACTION:GOBLIN:RALLY",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5815,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the tan and orange shape inside the megaphone's wide mouth darker blue-grey tin, like the rest of the inside of the cone. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, the pale cream shout lines, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make the tan and orange shape inside the megaphone's wide mouth darker blue-grey tin, like the rest of the inside of the cone. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, the pale cream shout lines, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the tan and orange shape inside the megaphone's wide mouth darker blue-grey tin, like the rest of the inside of the cone. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, the pale cream shout lines, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make the tan and orange shape inside the megaphone's wide mouth darker blue-grey tin, like the rest of the inside of the cone. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, the pale cream shout lines, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-goblin-rally-b-edit",
+          "candidate": 0,
+          "sha256": "3af70f348039c0d516a0710c0c770281ff86a6b4b1116be5357301f01039ccea"
+        }
+      },
+      "submittedAt": "2026-10-01T07:04:32.888Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-goblin-rally-b-edit-2.png",
+      "rawSheetSha256": "7f362ceed5e73328d300df9d85b3c44ee4ec2e7b8d02c72f5aa128da0acc6ba9",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3556,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3556,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:05:10.551Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The tan and orange blob inside the mouth stayed and the shout lines turned peach.",
+        "reviewedAt": "2026-10-01T07:10:29.902Z"
+      }
+    },
+    "icon-action-goblin-rally-b-edit-b": {
+      "id": "icon-action-goblin-rally-b-edit-b",
+      "asset": "chibi-icon-action-goblin-rally",
+      "jobId": "2a0f67d6-a06d-4fa3-995e-3eaa0fa8f700",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-goblin-rally",
+        "subject": "ICON:ACTION:GOBLIN:RALLY",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5818,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the three short orange lines at the right of the megaphone's mouth plain white. Change nothing else: every other pixel, the grey tin, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the three short orange lines at the right of the megaphone's mouth plain white. Change nothing else: every other pixel, the grey tin, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the three short orange lines at the right of the megaphone's mouth plain white. Change nothing else: every other pixel, the grey tin, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only the three short orange lines at the right of the megaphone's mouth plain white. Change nothing else: every other pixel, the grey tin, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-goblin-rally-b",
+          "candidate": 0,
+          "sha256": "1e68f5c6584bad5b4e7450448db3085dec1ac28037c6b72969de022fd9b0fdb7"
+        }
+      },
+      "submittedAt": "2026-10-01T07:07:38.828Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-goblin-rally-b-edit-b.png",
+      "rawSheetSha256": "270ff4f6293bb7f1bfc171859c7eb6c9be61945a28615811ec0e78fed3cf7789",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3556,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3556,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:08:37.242Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A clean grey megaphone with no orange, but the shout lines became three small dark marks; it is the source of goblin-rally-b-edit-c.",
+        "reviewedAt": "2026-10-01T07:10:30.629Z"
+      }
+    },
+    "icon-action-goblin-rally-b-edit-c": {
+      "id": "icon-action-goblin-rally-b-edit-c",
+      "asset": "chibi-icon-action-goblin-rally",
+      "jobId": "4cf6d3ce-5ab6-4ec3-8d89-e5164d046d3f",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-goblin-rally",
+        "subject": "ICON:ACTION:GOBLIN:RALLY",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5819,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Replace the three small dark marks at the right of the megaphone's mouth with three short thick pale cream-white shout lines with a black outline, fanning outward to the right. Change nothing else: the grey tin megaphone, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Replace the three small dark marks at the right of the megaphone's mouth with three short thick pale cream-white shout lines with a black outline, fanning outward to the right. Change nothing else: the grey tin megaphone, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Replace the three small dark marks at the right of the megaphone's mouth with three short thick pale cream-white shout lines with a black outline, fanning outward to the right. Change nothing else: the grey tin megaphone, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+        "editInstruction": "Replace the three small dark marks at the right of the megaphone's mouth with three short thick pale cream-white shout lines with a black outline, fanning outward to the right. Change nothing else: the grey tin megaphone, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-goblin-rally-b-edit-b",
+          "candidate": 0,
+          "sha256": "1863fea809f0827f6a501b57a06a9a3ae74863b1de6af0299a7960cc004ec606"
+        }
+      },
+      "submittedAt": "2026-10-01T07:09:24.196Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-goblin-rally-b-edit-c.png",
+      "rawSheetSha256": "6409ed14973901f57cff2a086622ffebc61582d153005ec89387069b3a5c53c9",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3556,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3556,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:10:02.508Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "WAAAGH!: the Warboss's dented grey tin megaphone with riveted seams, a soot-black handle and three pale cream shout lines, mouth to the right; no orange, tan or red. Reads at 48 px and apart from the Human Rally's brass horn with its red ribbon.",
+        "reviewedAt": "2026-10-01T07:10:43.042Z"
+      }
+    },
+    "icon-action-goblin-rally-c": {
+      "id": "icon-action-goblin-rally-c",
+      "asset": "chibi-icon-action-goblin-rally",
+      "jobId": "sync-4f30771c-2c67-4265-b10b-041e1ccd337f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-goblin-rally",
+        "subject": "ICON:ACTION:GOBLIN:RALLY",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5812,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The three shout lines are pale cream-white, never orange or gold, and burst outward to the right in front of the wide mouth, not inside it. The handle is soot-black, never brown.",
+            "negative": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, wood, spikes"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image. The three shout lines are pale cream-white, never orange or gold, and burst outward to the right in front of the wide mouth, not inside it. The handle is soot-black, never brown.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, spikes",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image. The three shout lines are pale cream-white, never orange or gold, and burst outward to the right in front of the wide mouth, not inside it. The handle is soot-black, never brown. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, spikes."
+      },
+      "submittedAt": "2026-10-01T07:02:30.410Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-goblin-rally-c.png",
+      "rawSheetSha256": "7bea472296e6cb779bea10ee63c04a61119bd94e3dfa95b99e0a6a0d0dfea7a1",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6098,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:02:57.233Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The shout lines are red-orange, close to the Coral owner colour.",
+        "reviewedAt": "2026-10-01T07:10:29.544Z"
+      }
+    },
+    "icon-action-goblin-rally-d": {
+      "id": "icon-action-goblin-rally-d",
+      "asset": "chibi-icon-action-goblin-rally",
+      "jobId": "sync-51867aaa-e4e8-4677-ad3c-b336c6c8246d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-goblin-rally",
+        "subject": "ICON:ACTION:GOBLIN:RALLY",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5814,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "No orange, tan or red anywhere: the inside of the wide mouth is darker blue-grey tin, and the three shout lines are pale cream-white and burst outward to the right in front of the mouth. The handle is soot-black, never brown.",
+            "negative": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, wood, spikes, tan, yellow"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image. No orange, tan or red anywhere: the inside of the wide mouth is darker blue-grey tin, and the three shout lines are pale cream-white and burst outward to the right in front of the mouth. The handle is soot-black, never brown.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, spikes, yellow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image. No orange, tan or red anywhere: the inside of the wide mouth is darker blue-grey tin, and the three shout lines are pale cream-white and burst outward to the right in front of the mouth. The handle is soot-black, never brown. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, spikes, yellow."
+      },
+      "submittedAt": "2026-10-01T07:05:10.556Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-goblin-rally-d.png",
+      "rawSheetSha256": "15d577c2412cf7e6869bf0939be9b37aac38998121eff5b9c4cd7fd874220215",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.2708,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:05:55.604Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Lavender tin with a cyan-blue glow inside the mouth and a broken outline; off the gunmetal palette.",
+        "reviewedAt": "2026-10-01T07:10:30.084Z"
+      }
+    },
+    "icon-action-goblin-rally-e": {
+      "id": "icon-action-goblin-rally-e",
+      "asset": "chibi-icon-action-goblin-rally",
+      "jobId": "sync-ad2abc33-c2c6-4ada-a6be-8015d3992851",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-goblin-rally",
+        "subject": "ICON:ACTION:GOBLIN:RALLY",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5816,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The tin is light grey with darker blue-grey shading and the inside of the wide mouth is darker blue-grey. The three shout lines are short thick plain white strokes outside the mouth, to its right. The handle is soot-black. No orange, tan, yellow or red anywhere.",
+            "negative": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, wood, spikes, tan, yellow, glow"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image. The tin is light grey with darker blue-grey shading and the inside of the wide mouth is darker blue-grey. The three shout lines are short thick plain white strokes outside the mouth, to its right. The handle is soot-black. No orange, tan, yellow or red anywhere.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, spikes, yellow, glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image. The tin is light grey with darker blue-grey shading and the inside of the wide mouth is darker blue-grey. The three shout lines are short thick plain white strokes outside the mouth, to its right. The handle is soot-black. No orange, tan, yellow or red anywhere. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, spikes, yellow, glow."
+      },
+      "submittedAt": "2026-10-01T07:06:23.921Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-goblin-rally-e.png",
+      "rawSheetSha256": "8e78e9cfb202875d96901c0c64f5d4b286eaebefe4af7c297974d50b4fec25e8",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3125,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:07:00.601Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Smaller than the other command icons, a thin outline in places and a tan patch on top; yellow shout lines.",
+        "reviewedAt": "2026-10-01T07:10:30.268Z"
+      }
+    },
+    "icon-action-goblin-rally-f": {
+      "id": "icon-action-goblin-rally-f",
+      "asset": "chibi-icon-action-goblin-rally",
+      "jobId": "sync-c914b889-c284-4caa-b59d-15897db02944",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-goblin-rally",
+        "subject": "ICON:ACTION:GOBLIN:RALLY",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5817,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The tin is light grey with darker blue-grey shading and the inside of the wide mouth is darker blue-grey. The three shout lines are short thick plain white strokes outside the mouth, to its right. The handle is soot-black. No orange, tan, yellow or red anywhere.",
+            "negative": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, wood, spikes, tan, yellow, glow"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image. The tin is light grey with darker blue-grey shading and the inside of the wide mouth is darker blue-grey. The three shout lines are short thick plain white strokes outside the mouth, to its right. The handle is soot-black. No orange, tan, yellow or red anywhere.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, spikes, yellow, glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big dented light grey tin megaphone cone lying sideways, the wide round mouth facing right and the narrow mouthpiece at the left, riveted seams, a dark gunmetal rim around the mouth and a soot-black leather handle strap underneath, with three short jagged cream shout lines bursting out of the wide mouth; nothing else in the image. The tin is light grey with darker blue-grey shading and the inside of the wide mouth is darker blue-grey. The three shout lines are short thick plain white strokes outside the mouth, to its right. The handle is soot-black. No orange, tan, yellow or red anywhere. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, spikes, yellow, glow."
+      },
+      "submittedAt": "2026-10-01T07:07:00.605Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-goblin-rally-f.png",
+      "rawSheetSha256": "dd0cd6c66b00314057043bca88dae998f044e3048afbcb7f614b347f83235cf5",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5106,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:07:38.821Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Clear white shout lines, but small and dark, with a thin red-brown rim around the mouth.",
+        "reviewedAt": "2026-10-01T07:10:30.449Z"
+      }
+    },
+    "icon-action-kaboom-a": {
+      "id": "icon-action-kaboom-a",
+      "asset": "chibi-icon-action-kaboom",
+      "jobId": "sync-74797fcc-77db-4b66-b900-7337318d0b30",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-kaboom",
+        "subject": "ICON:ACTION:KABOOM",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5800,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow."
+      },
+      "submittedAt": "2026-10-01T06:57:08.520Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-kaboom-a.png",
+      "rawSheetSha256": "9c559b09b9b09048c97e03a8b71b4c2456a66aa45ad4f6fadf2bd2481aaee0a7",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8824,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T06:57:52.938Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The best bomb shape (round ball, fuse cap, curled cream fuse), but a slate-violet ball and an orange-tinged spark; derived through kaboom-a-edit.",
+        "reviewedAt": "2026-10-01T07:10:42.678Z"
+      }
+    },
+    "icon-action-kaboom-a-edit": {
+      "id": "icon-action-kaboom-a-edit",
+      "asset": "chibi-icon-action-kaboom",
+      "jobId": "bf3915d8-b1c5-4206-a1ce-ff210b5dd5c2",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-kaboom",
+        "subject": "ICON:ACTION:KABOOM",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5804,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the bomb ball jet black with dark charcoal grey shading instead of slate blue-grey, and make the spark at the fuse tip pale cream-white with no orange. Change nothing else: keep the round shape, the band, the fuse cap, the cream fuse, outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make the bomb ball jet black with dark charcoal grey shading instead of slate blue-grey, and make the spark at the fuse tip pale cream-white with no orange. Change nothing else: keep the round shape, the band, the fuse cap, the cream fuse, outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the bomb ball jet black with dark charcoal grey shading instead of slate blue-grey, and make the spark at the fuse tip pale cream-white with no orange. Change nothing else: keep the round shape, the band, the fuse cap, the cream fuse, outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make the bomb ball jet black with dark charcoal grey shading instead of slate blue-grey, and make the spark at the fuse tip pale cream-white with no orange. Change nothing else: keep the round shape, the band, the fuse cap, the cream fuse, outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-action-kaboom-a",
+          "candidate": 0,
+          "sha256": "9c559b09b9b09048c97e03a8b71b4c2456a66aa45ad4f6fadf2bd2481aaee0a7"
+        }
+      },
+      "submittedAt": "2026-10-01T07:01:47.421Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-kaboom-a-edit.png",
+      "rawSheetSha256": "f936e84b0889953285e5e53578fbd11d4b626783fc2a7e5f174bbe66c31b2422",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8824,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8824,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:02:30.407Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Kaboom!: a round jet-black bomb with a charcoal band, a gunmetal fuse cap, a curled cream fuse and a pale cream-white spark (GOBLIN.md). A filled ball with the fuse rising from its top, so it cannot read as the male symbol's ring and arrow; reads at 48 px on the dock and the light page, distinct from Blast Mountain's burst.",
+        "reviewedAt": "2026-10-01T07:10:42.859Z"
+      }
+    },
+    "icon-action-kaboom-b": {
+      "id": "icon-action-kaboom-b",
+      "asset": "chibi-icon-action-kaboom",
+      "jobId": "sync-88032da5-a0ee-4a02-a6bf-b338d4c2fbf6",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-kaboom",
+        "subject": "ICON:ACTION:KABOOM",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5801,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow."
+      },
+      "submittedAt": "2026-10-01T06:57:52.942Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-kaboom-b.png",
+      "rawSheetSha256": "db0a99840024b25a640d273d5bc80bbb30f2429c2cab6a7b433d3d29225ce628",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7353,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T06:58:33.539Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Spiked ball reads as a naval mine rather than a round bomb; the fuse is a thin orange line and the spark is tiny.",
+        "reviewedAt": "2026-10-01T07:00:12.327Z"
+      }
+    },
+    "icon-action-kaboom-c": {
+      "id": "icon-action-kaboom-c",
+      "asset": "chibi-icon-action-kaboom",
+      "jobId": "sync-5e01240f-e47a-43c9-a3ba-39d23e52289d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-kaboom",
+        "subject": "ICON:ACTION:KABOOM",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5802,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The bomb ball is jet black with dark charcoal grey shading, never blue, purple or slate; a plain smooth round ball with no band, belt or spikes. The fuse is cream and the spark is pale cream-white, never orange or gold.",
+            "negative": "face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow, spikes, belt, band, strap, naval mine, gold, blue, purple"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image. The bomb ball is jet black with dark charcoal grey shading, never blue, purple or slate; a plain smooth round ball with no band, belt or spikes. The fuse is cream and the spark is pale cream-white, never orange or gold.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow, spikes, belt, band, strap, naval mine, gold, blue, purple",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image. The bomb ball is jet black with dark charcoal grey shading, never blue, purple or slate; a plain smooth round ball with no band, belt or spikes. The fuse is cream and the spark is pale cream-white, never orange or gold. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow, spikes, belt, band, strap, naval mine, gold, blue, purple."
+      },
+      "submittedAt": "2026-10-01T07:00:27.839Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-kaboom-c.png",
+      "rawSheetSha256": "d31e6a1b43e4cc40aa3ebc6314bf79ac581eb8a3c55ab79edf4689abf2b204e3",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:01:05.311Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A slate-grey ball with a brown buckled belt (brown drift) and small side spikes; not the plain black bomb.",
+        "reviewedAt": "2026-10-01T07:10:29.008Z"
+      }
+    },
+    "icon-action-kaboom-d": {
+      "id": "icon-action-kaboom-d",
+      "asset": "chibi-icon-action-kaboom",
+      "jobId": "sync-812bfcfe-8135-46eb-b0cb-3ceb7c37bb57",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "5-goblin",
+        "asset": "chibi-icon-action-kaboom",
+        "subject": "ICON:ACTION:KABOOM",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 5803,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The bomb ball is jet black with dark charcoal grey shading, never blue, purple or slate; a plain smooth round ball with no band, belt or spikes. The fuse is cream and the spark is pale cream-white, never orange or gold.",
+            "negative": "face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow, spikes, belt, band, strap, naval mine, gold, blue, purple"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image. The bomb ball is jet black with dark charcoal grey shading, never blue, purple or slate; a plain smooth round ball with no band, belt or spikes. The fuse is cream and the spark is pale cream-white, never orange or gold.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow, spikes, belt, band, strap, naval mine, gold, blue, purple",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim. Everything is made of dented riveted scrap iron plates, patched cloth and soot-black leather straps, with bolts, small spikes, square stitched patches and soot smudges as details; iron is shaded with darker blue-grey, leather with charcoal grey, cloth with a deeper tone of its own colour, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round glossy black iron bomb ball, black shaded with dark charcoal grey and one small light grey shine spot, a short squat dark gunmetal fuse cap with two rivets sitting straight up on top, a short cream fuse cord rising straight up out of the cap and curling over to one side, lit at its tip with a big pale yellow-white four-pointed spark star; nothing else in the image. The bomb ball is jet black with dark charcoal grey shading, never blue, purple or slate; a plain smooth round ball with no band, belt or spikes. The fuse is cream and the spark is pale cream-white, never orange or gold. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, wood, timber, planks, brown boots, brown leather, brown cloth, tan, bronze, copper, rust, orange rust, dark brown shading, red-brown, maroon, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow, spikes, belt, band, strap, naval mine, gold, blue, purple."
+      },
+      "submittedAt": "2026-10-01T07:01:05.314Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-5-goblin/icon-action-kaboom-d.png",
+      "rawSheetSha256": "675a9711213130ce6ffb1f1f0357832ce88504e855dc648be775edd87c3f8162",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-01T07:01:47.414Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Blue-grey spiked ball with riveted straps: reads as a naval mine, not a round black bomb.",
+        "reviewedAt": "2026-10-01T07:10:29.187Z"
+      }
+    },
     "portrait-goblin-bomb-chucker-a": {
       "id": "portrait-goblin-bomb-chucker-a",
       "asset": "chibi-portrait-goblin-bomb-chucker",
@@ -2338,6 +3538,94 @@
     }
   },
   "assets": {
+    "chibi-icon-action-goblin-rally": {
+      "id": "chibi-icon-action-goblin-rally",
+      "subject": "ICON:ACTION:GOBLIN:RALLY",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-goblin-rally-b-edit-c",
+      "candidate": 0,
+      "candidateSha256": "f32a59712d9ad9216bc33283e931aa0ff17f42eefee12f59ca2d96def348e22e",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-goblin-rally.png",
+        "sha256": "f32a59712d9ad9216bc33283e931aa0ff17f42eefee12f59ca2d96def348e22e",
+        "pixelSha256": "704c6094399bf020b9b65a959e999ab9d4cee8d4d1d0db374155d234ac18901e",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0,
+        "footprintWidthShare": 0.3556,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "WAAAGH!: the Warboss's dented grey tin megaphone with riveted seams, a soot-black handle and three pale cream shout lines, mouth to the right; no orange, tan or red. Reads at 48 px and apart from the Human Rally's brass horn with its red ribbon.",
+      "acceptedAt": "2026-10-01T07:10:43.042Z"
+    },
+    "chibi-icon-action-kaboom": {
+      "id": "chibi-icon-action-kaboom",
+      "subject": "ICON:ACTION:KABOOM",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-kaboom-a-edit",
+      "candidate": 0,
+      "candidateSha256": "7a9421b596c8899905424ccde14b38f00d52294c03621f21005ccacb7cf707bf",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-kaboom.png",
+        "sha256": "7a9421b596c8899905424ccde14b38f00d52294c03621f21005ccacb7cf707bf",
+        "pixelSha256": "401b2a6b3eadd21f3f1aef3cd38435be8058b8260f1fcde968cc83870169ecc2",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0,
+        "footprintWidthShare": 0.8824,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Kaboom!: a round jet-black bomb with a charcoal band, a gunmetal fuse cap, a curled cream fuse and a pale cream-white spark (GOBLIN.md). A filled ball with the fuse rising from its top, so it cannot read as the male symbol's ring and arrow; reads at 48 px on the dock and the light page, distinct from Blast Mountain's burst.",
+      "acceptedAt": "2026-10-01T07:10:42.859Z"
+    },
     "chibi-portrait-goblin-bomb-chucker": {
       "id": "chibi-portrait-goblin-bomb-chucker",
       "subject": "PORTRAIT:GOBLIN:MARKSMAN",

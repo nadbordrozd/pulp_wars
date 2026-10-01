@@ -1231,6 +1231,25 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
       "assets/chibi/portraits/chibi-portrait-goblin-troll.mask.png",
     ),
   },
+  // Goblin command icons (pulp_wars-0ao.14, batch 5-goblin): Kaboom! and
+  // WAAAGH! (ICON:ACTION:GOBLIN:RALLY, the Goblin Rally). LEGACY keeps the
+  // code-drawn Kaboom! bomb and the Rally art.
+  {
+    id: "chibi-icon-action-goblin-rally",
+    subject: "ICON:ACTION:GOBLIN:RALLY",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-goblin-rally.png"),
+  },
+  {
+    id: "chibi-icon-action-kaboom",
+    subject: "ICON:ACTION:KABOOM",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-kaboom.png"),
+  },
 ];
 
 export function chibiArtUrl(path: string): string {

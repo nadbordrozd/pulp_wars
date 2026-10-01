@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "batch": "5-goblin",
-  "title": "Chibi batch 5: Goblin interface portraits",
+  "title": "Chibi batch 5: Goblin interface portraits and command icons",
   "bead": "pulp_wars-0ao.8",
   "faction": "GOBLIN",
   "dryRun": false,
@@ -91,6 +91,26 @@
       "subject": "PORTRAIT:GOBLIN:JUGGERNAUT",
       "assetClass": "PORTRAIT",
       "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-kaboom",
+      "subject": "ICON:ACTION:KABOOM",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-goblin-rally",
+      "subject": "ICON:ACTION:GOBLIN:RALLY",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
       "canvas": {
         "width": 48,
         "height": 48
@@ -475,6 +495,212 @@
       },
       "editInstruction": "Paint the dark chest under his chin exactly the same bright red as his cape. Change nothing else: keep every other pixel, outline and art style exactly the same, on a transparent background.",
       "notes": "portrait-goblin-orc-warboss-a-edit-2 painted the chest a red-brown (210 pixels, RED_BROWN_MATERIAL) that would stay red for every owner; a single-focus instruction that names the cape's red."
+    },
+    {
+      "id": "icon-action-kaboom-a",
+      "asset": "chibi-icon-action-kaboom",
+      "endpoint": "create-image-pixen",
+      "seed": 5800,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow",
+      "notes": "Bead pulp_wars-0ao.14: the Kaboom! command icon sample (GOBLIN.md)."
+    },
+    {
+      "id": "icon-action-kaboom-b",
+      "asset": "chibi-icon-action-kaboom",
+      "endpoint": "create-image-pixen",
+      "seed": 5801,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow",
+      "notes": "Bead pulp_wars-0ao.14: a second seed of the Kaboom! sample."
+    },
+    {
+      "id": "icon-action-goblin-rally-a",
+      "asset": "chibi-icon-action-goblin-rally",
+      "endpoint": "create-image-pixen",
+      "seed": 5810,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person",
+      "notes": "Bead pulp_wars-0ao.14: the WAAAGH! command icon sample (GOBLIN.md), a tin megaphone unlike the Human Rally's brass horn."
+    },
+    {
+      "id": "icon-action-goblin-rally-b",
+      "asset": "chibi-icon-action-goblin-rally",
+      "endpoint": "create-image-pixen",
+      "seed": 5811,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person",
+      "notes": "Bead pulp_wars-0ao.14: a second seed of the WAAAGH! sample."
+    },
+    {
+      "id": "icon-action-kaboom-c",
+      "asset": "chibi-icon-action-kaboom",
+      "endpoint": "create-image-pixen",
+      "seed": 5802,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The bomb ball is jet black with dark charcoal grey shading, never blue, purple or slate; a plain smooth round ball with no band, belt or spikes. The fuse is cream and the spark is pale cream-white, never orange or gold.",
+      "negativeAddendum": "face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow, spikes, belt, band, strap, naval mine, gold, blue, purple",
+      "notes": "kaboom-a is a strapped slate-violet ball with an orange-tinged spark; kaboom-b a spiked naval mine. The addendum asks for a plain jet black ball and a pale spark."
+    },
+    {
+      "id": "icon-action-kaboom-d",
+      "asset": "chibi-icon-action-kaboom",
+      "endpoint": "create-image-pixen",
+      "seed": 5803,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The bomb ball is jet black with dark charcoal grey shading, never blue, purple or slate; a plain smooth round ball with no band, belt or spikes. The fuse is cream and the spark is pale cream-white, never orange or gold.",
+      "negativeAddendum": "face, eyes, mouth, feet, arms, cannonball pile, fire, flames, explosion, smoke cloud, orange, arrow, spikes, belt, band, strap, naval mine, gold, blue, purple",
+      "notes": "A second seed of kaboom-c."
+    },
+    {
+      "id": "icon-action-kaboom-a-edit",
+      "asset": "chibi-icon-action-kaboom",
+      "endpoint": "edit-image-pixen",
+      "seed": 5804,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-kaboom-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the bomb ball jet black with dark charcoal grey shading instead of slate blue-grey, and make the spark at the fuse tip pale cream-white with no orange. Change nothing else: keep the round shape, the band, the fuse cap, the cream fuse, outline and art style exactly the same, on a transparent background.",
+      "notes": "kaboom-a has the best shape, but a slate-violet ball and an orange-tinged spark."
+    },
+    {
+      "id": "icon-action-goblin-rally-c",
+      "asset": "chibi-icon-action-goblin-rally",
+      "endpoint": "create-image-pixen",
+      "seed": 5812,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The three shout lines are pale cream-white, never orange or gold, and burst outward to the right in front of the wide mouth, not inside it. The handle is soot-black, never brown.",
+      "negativeAddendum": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, wood, spikes",
+      "notes": "goblin-rally-a has a brown handle and rust spots; goblin-rally-b is clean but its shout lines are orange-gold and sit inside the mouth."
+    },
+    {
+      "id": "icon-action-goblin-rally-b-edit",
+      "asset": "chibi-icon-action-goblin-rally",
+      "endpoint": "edit-image-pixen",
+      "seed": 5813,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-goblin-rally-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make the three short shout lines at the megaphone's mouth pale cream-white instead of orange and gold. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, outline and art style exactly the same, on a transparent background.",
+      "notes": "goblin-rally-b is the right megaphone; only its shout lines are orange-gold."
+    },
+    {
+      "id": "icon-action-goblin-rally-b-edit-2",
+      "asset": "chibi-icon-action-goblin-rally",
+      "endpoint": "edit-image-pixen",
+      "seed": 5815,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-goblin-rally-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Make the tan and orange shape inside the megaphone's wide mouth darker blue-grey tin, like the rest of the inside of the cone. Change nothing else: keep the grey tin megaphone, its rivets, the dark handle, the pale cream shout lines, outline and art style exactly the same, on a transparent background.",
+      "notes": "goblin-rally-b-edit fixed the shout lines, but the inside of the mouth turned tan and orange."
+    },
+    {
+      "id": "icon-action-goblin-rally-d",
+      "asset": "chibi-icon-action-goblin-rally",
+      "endpoint": "create-image-pixen",
+      "seed": 5814,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "No orange, tan or red anywhere: the inside of the wide mouth is darker blue-grey tin, and the three shout lines are pale cream-white and burst outward to the right in front of the mouth. The handle is soot-black, never brown.",
+      "negativeAddendum": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, wood, spikes, tan, yellow",
+      "notes": "goblin-rally-c drew red-orange shout lines; the addendum names blue-grey for the inside of the mouth and bans orange, tan and red."
+    },
+    {
+      "id": "icon-action-goblin-rally-e",
+      "asset": "chibi-icon-action-goblin-rally",
+      "endpoint": "create-image-pixen",
+      "seed": 5816,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The tin is light grey with darker blue-grey shading and the inside of the wide mouth is darker blue-grey. The three shout lines are short thick plain white strokes outside the mouth, to its right. The handle is soot-black. No orange, tan, yellow or red anywhere.",
+      "negativeAddendum": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, wood, spikes, tan, yellow, glow",
+      "notes": "goblin-rally-d is lavender with a cyan-blue glow inside the mouth and a broken outline; the addendum names the grey tin and plain white shout lines."
+    },
+    {
+      "id": "icon-action-goblin-rally-f",
+      "asset": "chibi-icon-action-goblin-rally",
+      "endpoint": "create-image-pixen",
+      "seed": 5817,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The tin is light grey with darker blue-grey shading and the inside of the wide mouth is darker blue-grey. The three shout lines are short thick plain white strokes outside the mouth, to its right. The handle is soot-black. No orange, tan, yellow or red anywhere.",
+      "negativeAddendum": "horn, bugle, trumpet, brass, gold, ribbon, bow, red, hand, face, mouth, person, orange, wood, spikes, tan, yellow, glow",
+      "notes": "A second seed of goblin-rally-e."
+    },
+    {
+      "id": "icon-action-goblin-rally-b-edit-b",
+      "asset": "chibi-icon-action-goblin-rally",
+      "endpoint": "edit-image-pixen",
+      "seed": 5818,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-goblin-rally-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the three short orange lines at the right of the megaphone's mouth plain white. Change nothing else: every other pixel, the grey tin, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+      "notes": "goblin-rally-b-edit and -edit-2 turned the inside of the mouth tan and orange; a narrower instruction from goblin-rally-b."
+    },
+    {
+      "id": "icon-action-goblin-rally-b-edit-c",
+      "asset": "chibi-icon-action-goblin-rally",
+      "endpoint": "edit-image-pixen",
+      "seed": 5819,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-goblin-rally-b-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Replace the three small dark marks at the right of the megaphone's mouth with three short thick pale cream-white shout lines with a black outline, fanning outward to the right. Change nothing else: the grey tin megaphone, the blue-grey inside of the mouth, the dark handle, outline and art style stay exactly the same, on a transparent background.",
+      "notes": "goblin-rally-b-edit-b is the clean grey megaphone, but its shout lines became three small dark marks; goblin-rally-e and -f are smaller, -f with a red-brown rim."
     }
   ]
 }

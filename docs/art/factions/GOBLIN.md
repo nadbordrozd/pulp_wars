@@ -121,9 +121,11 @@ This guides the subject lines; it is not sent to PixelLab.
   repeats its unit's head, owner garment and signature item as a
   head-and-shoulders bust (the Rocket Cart and Scrap Buggy whole). The dock,
   training buttons and technology cards use them.
-- **Command icons (not drawn yet):** item sprites in the same vocabulary:
-  Kaboom a round black bomb with a lit cream fuse and a pale spark; WAAAGH!
-  the Warboss's tin megaphone.
+- **Command icons (bead `pulp_wars-0ao.14`, batch `5-goblin`):** item
+  sprites in the same vocabulary: Kaboom! (`ICON:ACTION:KABOOM`) a round
+  black bomb with a lit cream fuse and a pale spark; WAAAGH!
+  (`ICON:ACTION:GOBLIN:RALLY`, the Goblin Rally) the Warboss's grey tin
+  megaphone. LEGACY keeps the code-drawn Kaboom! bomb and the Rally art.
 
 ## Subject lines
 
@@ -282,6 +284,35 @@ very few details; clearly a giant, not a normal soldier.
 `negativeAddendum`: `armour, pauldrons, hammer, chains, manacles, bolts,
 stitched skin, bomb`.
 
+**Command icons** (`ICON`, 48 x 48, unowned; bead `pulp_wars-0ao.14`). The
+bomb is a filled black ball with its fuse rising from the top, never a ring
+with a diagonal stroke, so it cannot read as the ♂ symbol. The megaphone is
+grey tin with its mouth to the right, unlike the Human Rally's brass horn
+with a red ribbon.
+
+```text
+Subject: one big round glossy black iron bomb ball, black shaded with dark
+charcoal grey and one small light grey shine spot, a short squat dark
+gunmetal fuse cap with two rivets sitting straight up on top, a short cream
+fuse cord rising straight up out of the cap and curling over to one side,
+lit at its tip with a big pale yellow-white four-pointed spark star; nothing
+else in the image.
+```
+
+`negativeAddendum`: `face, eyes, mouth, feet, arms, cannonball pile, fire,
+flames, explosion, smoke cloud, orange, arrow`.
+
+```text
+Subject: one big dented light grey tin megaphone cone lying sideways, the
+wide round mouth facing right and the narrow mouthpiece at the left,
+riveted seams, a dark gunmetal rim around the mouth and a soot-black leather
+handle strap underneath, with three short jagged cream shout lines bursting
+out of the wide mouth; nothing else in the image.
+```
+
+`negativeAddendum`: `horn, bugle, trumpet, brass, gold, ribbon, bow, red,
+hand, face, mouth, person`.
+
 ### Cities and villages
 
 **Goblins share the Human settlement art**, as decided for the Undead: the
@@ -402,6 +433,34 @@ Troll 32.0%; every mask passes QA. Review evidence: `npm run
 art:chibi-goblin-review` writes `art/pixellab/reviews/chibi-batch-goblin/`
 (the batch review, the faction comparison sheets for units and portraits,
 and a Goblin match in CHIBI).
+
+## Command icon findings (bead `pulp_wars-0ao.14`)
+
+Batch `5-goblin` holds both icons; every request, seed, addendum, edit and
+verdict is in its manifest and records (15 PixelLab calls). Pixen drew the
+right objects at once but drifted off the palette:
+
+- **The bomb** came back slate-violet with a belt, or spiked like a naval
+  mine; an addendum asking for a plain jet-black ball still drew belts and
+  spikes. A single-focus edit of the best shape (`icon-action-kaboom-a`)
+  made the ball jet black and the spark pale cream-white:
+  `icon-action-kaboom-a-edit`, candidate 0.
+- **The megaphone's shout lines** came back orange-gold, red-orange (near
+  Coral) or yellow. Edits that recoloured them turned the inside of the
+  mouth tan and orange, or the lines into dark marks; a second edit of the
+  clean grey megaphone drew pale cream lines (`icon-action-goblin-rally-b-edit-c`,
+  candidate 0). New seeds with stronger addenda drew lavender or smaller
+  megaphones with a red-brown rim.
+
+Review evidence in `art/pixellab/reviews/chibi-goblin-command-icons/`:
+`command-icons-{1x,x4}.png` show both icons beside the Human and Undead
+command icons on the dock panel and a light page;
+`goblin-{kaboom,waaagh}-dock-chibi-{desktop,phone}.png` are a real
+Ruleset 7 DOM over the Goblin showcase fixture in CHIBI (the Kaboom! Goblin
+and the Orc Warboss selected, 1440 x 900 and 390 x 844 at DPR 3), and
+`docks-chibi-vs-legacy-desktop.png` compares the CHIBI docks with LEGACY.
+The batch-5 interface review (`npm run art:chibi-batch-review -- --batch 5`)
+also draws both icons in its sheets.
 
 ## Checks for the sprite bead
 
