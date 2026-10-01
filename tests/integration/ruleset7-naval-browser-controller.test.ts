@@ -36,7 +36,7 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 naval browser controller", () => {
-  it("offers all five real setup types with Continents selected by default", () => {
+  it("offers all five generated setup types, then Showcase, with Continents selected by default", () => {
     const controller = new Ruleset7BrowserController();
     const app = new Ruleset7DomAppView(document, requiredRoot(), controller, {
       boardHost: new EmptyBoardHost(),
@@ -46,7 +46,7 @@ describe("Ruleset 7 naval browser controller", () => {
     expect(mapType).not.toBeNull();
     expect(
       Array.from(mapType?.options ?? [], (option) => option.value),
-    ).toEqual(MAP_TYPES);
+    ).toEqual([...MAP_TYPES, "SHOWCASE"]);
     expect(mapType?.value).toBe("CONTINENTS");
     app.destroy();
     controller.destroy();

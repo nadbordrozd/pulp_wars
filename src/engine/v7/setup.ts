@@ -34,6 +34,8 @@ export function parseMatchSetupV7(input: unknown): MatchSetupV7 | null {
     input.height !== input.width ||
     !isAiCount(input.aiCount) ||
     input.width < minimumWidth(input.aiCount) ||
+    // Revision 18 section 5.1: the Showcase board is exactly 16 x 16.
+    (input.mapType === "SHOWCASE" && input.width !== 16) ||
     input.aiDifficulty !== "NORMAL" ||
     (input.aiMode !== "RIVAL" && input.aiMode !== "COOPERATIVE") ||
     !isColor(input.humanColor) ||
@@ -66,7 +68,8 @@ function isMapType(input: unknown): input is MatchSetupV7["mapType"] {
     input === "PANGEA" ||
     input === "CONTINENTS" ||
     input === "ARCHIPELAGO" ||
-    input === "LAKES"
+    input === "LAKES" ||
+    input === "SHOWCASE"
   );
 }
 

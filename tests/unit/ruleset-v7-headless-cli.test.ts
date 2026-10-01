@@ -199,6 +199,86 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     ]);
   }, 30_000);
 
+  it("accepts the showcase map type at size 16 only", () => {
+    const common = [
+      "--ruleset",
+      "pulp-wars-poc-7r18",
+      "--max-commands",
+      "1",
+      "--max-rounds",
+      "5",
+    ] as const;
+    // The size defaults to 16 for every seat count.
+    const match = runCli(
+      "match",
+      ...common,
+      "--map-type",
+      "showcase",
+      "--factions",
+      "goblin,undead",
+    );
+    expect(match).toMatchObject({
+      acceptedCommands: 1,
+      termination: "COMMAND_CAP",
+      metrics: { rulesetId: "pulp-wars-poc-7r18" },
+    });
+    const explicit = runCli(
+      "match",
+      ...common,
+      "--map-type",
+      "showcase",
+      "--size",
+      "16",
+      "--factions",
+      "goblin,undead",
+    );
+    expect(explicit.metrics.setupHash).toBe(match.metrics.setupHash);
+    expect(() =>
+      runCli("match", ...common, "--map-type", "showcase", "--size", "20"),
+    ).toThrow(/--size must be 16 for the showcase map type/);
+    expect(() => runCli("match", ...common, "--map-type", "plains")).toThrow(
+      /--map-type must be dry_land, pangea, continents, archipelago, lakes, or showcase/,
+    );
+
+    const batch = runCli<{
+      readonly matches: number;
+      readonly entries: readonly {
+        readonly mapType: string;
+        readonly aiCount: number;
+      }[];
+    }>(
+      "batch",
+      ...common,
+      "--seeds",
+      "0",
+      "--ai-counts",
+      "1,3",
+      "--modes",
+      "rival",
+      "--map-types",
+      "showcase",
+    );
+    expect(batch.matches).toBe(2);
+    expect(batch.entries.map((entry) => entry.mapType)).toEqual([
+      "SHOWCASE",
+      "SHOWCASE",
+    ]);
+    expect(() =>
+      runCli(
+        "batch",
+        ...common,
+        "--seeds",
+        "0",
+        "--ai-counts",
+        "1",
+        "--map-types",
+        "showcase",
+        "--size",
+        "11",
+      ),
+    ).toThrow(/--size must be 16 for the showcase map type/);
+  }, 60_000);
+
   it("dispatches a command-zero v7 replay through canonical playable creation", () => {
     const setup = setupV7(42);
     const created = createPlayableGameV7(setup);

@@ -67,6 +67,7 @@ export * from "./v7/replay";
 export * from "./v7/reducer";
 export * from "./v7/schema";
 export * from "./v7/setup";
+export * from "./v7/showcase";
 export * from "./v7/spatial-economy";
 export * from "./v7/state-schema";
 export * from "./v7/types";

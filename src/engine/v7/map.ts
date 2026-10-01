@@ -9,6 +9,11 @@ import {
 } from "../rules/ruleset-v7";
 import { placeTreasureChestsV6 } from "../v6/map";
 import { parseMatchSetupV7 } from "./setup";
+import {
+  createShowcaseEntitiesV7,
+  showcaseBoardV7,
+  showcaseCapitalsV7,
+} from "./showcase";
 import { parseGameStateV7 } from "./state-schema";
 import {
   BIOME_IDS_V7,
@@ -183,11 +188,37 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
   const setup = parseMatchSetupV7(input);
   if (setup === null)
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  if (setup.mapType === "SHOWCASE") return showcaseMapV7(setup);
   return generateMapWithVillageCountV7(
     setup,
     villageCount(setup),
     "REVISION_16",
   );
+}
+
+/**
+ * Revision 18 section 5: the fixed Showcase board as a "generated" map. No
+ * PRNG draw is consumed, no generation invariant applies, turn order is seat
+ * order, and the single attempt is reported as attempt 1. The board carries
+ * the developed tiles and settlement sites but no territory.
+ */
+function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
+  const capitals = showcaseCapitalsV7(setup);
+  return {
+    ok: true,
+    map: deepFreeze({
+      board: showcaseBoardV7(setup),
+      capitals,
+      villages: [],
+      capitalAssignments: capitals,
+      turnOrderSeats: capitals.map((_, seat) => seat),
+      treasureChests: [],
+      random: randomState(setup.seed),
+      attempt: 1,
+      attempts: [],
+      regionSizes: [],
+    }),
+  };
 }
 
 /**
@@ -213,6 +244,8 @@ export function generateInitialMapWithVillageCountV7(
   const setup = parseMatchSetupV7(input);
   if (
     setup === null ||
+    // The fixed Showcase board has no generator and no village count.
+    setup.mapType === "SHOWCASE" ||
     !Number.isSafeInteger(villages) ||
     villages < 0 ||
     (rules !== "REVISION_15" && rules !== "REVISION_16")
@@ -1877,6 +1910,7 @@ function initialMapStateFromV7(
   generated: GenerateMapResultV7,
 ): CreateInitialMapStateResultV7 {
   if (!generated.ok) return generated;
+  if (setup.mapType === "SHOWCASE") return showcaseInitialStateV7(setup);
   const players = createPlayers(setup);
   const entities = createEntities(
     players,
@@ -1922,6 +1956,46 @@ function initialMapStateFromV7(
   if (parseGameStateV7(state) === null)
     throw new Error("Internal v7 initial-state invariant failure");
   return { ok: true, state, mapAttempt: generated.map.attempt };
+}
+/**
+ * Revision 18 section 5: the Showcase initial state. It is an ordinary
+ * `GameStateV7` and must pass the full state schema, including the
+ * population-ledger cross-checks.
+ */
+function showcaseInitialStateV7(
+  setup: MatchSetupV7,
+): CreateInitialMapStateResultV7 {
+  const entities = createShowcaseEntitiesV7(
+    setup,
+    createPlayers(setup),
+    freshStartActivation,
+  );
+  const state = deepFreeze<GameStateV7>({
+    schemaVersion: 7,
+    rulesetId: RULESET_7_ID,
+    setup,
+    random: randomState(setup.seed),
+    humanPlayerId: entities.players[0]?.id ?? playerId(1),
+    nextEntityId: entities.nextEntityId,
+    commandIndex: 0,
+    round: 1,
+    activeSeatIndex: 0,
+    turnOrder: entities.players.map((player) => player.id),
+    board: entities.board,
+    players: entities.players,
+    cities: entities.cities,
+    populationContributions: entities.populationContributions,
+    units: entities.units,
+    treasureChests: [],
+    graves: [],
+    plagued: [],
+    bitten: [],
+    pendingChoices: [],
+    outcome: null,
+  });
+  if (parseGameStateV7(state) === null)
+    throw new Error("Internal v7 Showcase initial-state invariant failure");
+  return { ok: true, state, mapAttempt: 1 };
 }
 function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
   const colors = COLORS.filter((color) => color !== setup.humanColor);

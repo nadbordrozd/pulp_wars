@@ -1,10 +1,13 @@
 # Ruleset 7 revision 18: friendly pass-through, road bonus by origin, and the Showcase setup
 
-**Status:** contract (`pulp_wars-6gd.1`). Sections 2–4 (identity, movement,
-roads, queries, AI, UI previews) are implemented by `pulp_wars-6gd.2` and
-folded into the [current rules](RULESET_7_CURRENT.md); section 5 (Showcase
-setup) is not yet implemented and belongs to `pulp_wars-6gd.3`; see
-[section 8](#8-implementation-split-and-sequencing).
+**Status:** contract (`pulp_wars-6gd.1`), fully implemented. Sections 2–4
+(identity, movement, roads, queries, AI, UI previews) are implemented by
+`pulp_wars-6gd.2` and section 5 (Showcase setup) by `pulp_wars-6gd.3`; both
+are folded into the [current rules](RULESET_7_CURRENT.md) (the Showcase is
+its section 2.5). The section 5.3 ledger and income numbers were checked by
+running the engine's ledger rules and are all correct; `pulp_wars-6gd.3`
+only made the entity-ID order and the setup-screen seed explicit (sections
+5.4 and 5.6). See [section 8](#8-implementation-split-and-sequencing).
 
 **Ruleset ID:** `pulp-wars-poc-7r18`
 
@@ -391,10 +394,13 @@ or unit for them, and no reward choice is pending. Every city has Walls.
   is one higher for a Goblin seat), so training is possible from the first
   turn. Both docks start empty and active.
 - **Entity IDs.** As today, seat `s` has capital ID `2s + 1` and `FIGHTER` ID
-  `2s + 2`. Then, each in seat order: the North and Coast cities; then the
-  contribution records (per city in the order capital, North, Coast:
-  permanent records, then live records in `(y, x)` tile order); then the
-  remaining units in the role order of the table.
+  `2s + 2`. Then three passes, each over all seats in seat order: every
+  seat's North and Coast cities; then every seat's contribution records (per
+  city in the order capital, North, Coast: permanent records, then live
+  records, each in `(y, x)` tile order); then every seat's remaining units
+  in the role order of the table. With four seats the cities are IDs 1–16
+  (odd 1–7 capitals, 9–16 North and Coast), the records 17–80, and the
+  remaining units 81–116.
 
 ### 5.5 Play, AI, saves
 
@@ -406,17 +412,20 @@ or unit for them, and no reward choice is pending. Every city has Walls.
   ordinary valid `GameStateV7`, and a replay recreates the initial state from
   its setup.
 - The headless CLI accepts `showcase` for `--map-type` and `--map-types`
-  (size 16 only). No balance or validation matrix includes it by default.
+  (size 16 only: the size defaults to 16 for every seat count, another
+  `--size` is an error, and a batch that lists `showcase` runs all of its
+  map types at 16). No balance or validation matrix includes it by default.
 
 ### 5.6 Setup screen
 
 The "Map" select gains a last option **Showcase** with the description "A
 fixed demo map: three developed cities, every unit, all technology, map
 revealed." Continents stays the default. While Showcase is selected the Size
-select offers only 16 x 16 and the seed control is disabled or hidden (the
-submitted setup still carries a valid seed). Opponents, Mode, Color, and the
-per-seat faction selects work as usual. In a match the map label reads
-"Showcase".
+select offers only 16 x 16 (and is disabled) and the "Map seed" control is
+hidden; the submitted setup carries seed 0, whatever the hidden seed field
+holds. Choosing another map brings back the player's earlier size and seed
+choice. Opponents, Mode, Color, and the per-seat faction selects work as
+usual. In a match the map label reads "Showcase".
 
 ## 6. Commands, events, errors, views
 

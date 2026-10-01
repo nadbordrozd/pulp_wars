@@ -303,6 +303,18 @@ both art sets. Where an older section below disagrees, this overlay wins.
   typed there survives switching back and forth. The choice lasts for the
   page session and is not saved. The engine only ever receives the resulting
   number, so matches stay deterministic and saves hold nothing new.
+- **Setup: Showcase** (`pulp_wars-6gd.3`). The Map select ends with
+  **Showcase**, described as "A fixed demo map: three developed cities, every
+  unit, all technology, map revealed." Continents stays the default. While
+  Showcase is selected the Size select holds only 16 × 16 and is disabled,
+  and the whole "Map seed" group (New map / Use seed and the Seed field) is
+  hidden; the launch uses seed 0 and never shows a seed error. Choosing any
+  other map re-enables Size with the player's earlier size and shows the seed
+  group in its earlier state, typed seed included. The form is updated in
+  place (no control is replaced, focus stays). Opponents, Mode, Color, and
+  the faction selects work as usual. A Showcase match opens on the human's
+  turn with the camera on the capital in the middle of the player's strip;
+  the resume and results screens label the map "Showcase".
 - **Map seed.** Settings shows `Map seed: N` for the current match (selectable
   text), so a map can be replayed by choosing Use seed in a new game. Restart
   and Play again keep the current match's seed; a new game from the resume

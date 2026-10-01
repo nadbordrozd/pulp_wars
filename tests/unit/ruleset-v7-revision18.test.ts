@@ -351,7 +351,8 @@ describe("ruleset-7 revision-18 identity", () => {
         }),
       ),
     ).toMatchObject({ kind: "INCOMPATIBLE" });
-    // The Showcase map type belongs to `pulp_wars-6gd.3`.
+    // `pulp_wars-6gd.3` added the Showcase map type under the same identity
+    // (its rules are covered in ruleset-v7-revision18-showcase.test.ts).
     expect(
       parseMatchSetupV7({
         ...setup,
@@ -359,7 +360,8 @@ describe("ruleset-7 revision-18 identity", () => {
         width: 16,
         height: 16,
       }),
-    ).toBeNull();
+    ).toMatchObject({ mapType: "SHOWCASE", width: 16, height: 16 });
+    expect(parseMatchSetupV7({ ...setup, mapType: "SHOWCASE" })).toBeNull();
   });
 });
 

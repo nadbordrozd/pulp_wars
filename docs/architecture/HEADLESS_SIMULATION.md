@@ -115,7 +115,18 @@ command count, round, and active-player ID after each interval; it cannot alter
 policy inputs and is absent from canonical results and deterministic hashes.
 
 Revision 6 accepts one `--map-type` for a match and a comma-separated
-`--map-types` list for a batch. Continents is the match default. The naval
+`--map-types` list for a batch. Continents is the match default. Revision 18
+adds `showcase`, the fixed 16 x 16 Showcase setup (three developed cities,
+every technology, and one unit of every role per seat; the seed does not
+change the board): its size defaults to 16 for every seat count, any other
+`--size` is an error, and a batch that lists `showcase` runs all of its map
+types at 16. No validation or balance matrix includes it by default.
+
+```bash
+npm run headless -- match --ruleset pulp-wars-poc-7r18 --map-type showcase --ai-count 3 --factions human,undead,goblin,human --max-rounds 50
+```
+
+The naval
 playable validator runs the fixed five-map, four-shape, two-relation matrix
 twice through 20 rounds or 600 accepted commands, then exercises fixed targeted
 and natural invasion sequences. Optional `policySliceMilliseconds` uses the

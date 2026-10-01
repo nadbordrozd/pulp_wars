@@ -50,10 +50,18 @@ describe("Ruleset 7 browser smoke script", () => {
       'await typeSelectValue(connection, "#v7-board-size", "11")',
     );
     expect(source).toContain("!select.matches(':open')");
-    expect(
-      source.indexOf("await evaluate(connection, armFastForwardExpression())"),
-    ).toBeLessThan(
-      source.indexOf(
+    // The Fast Forward launch helper arms the control before its click. (The
+    // Showcase probe launches on the human's own turn without the helper.)
+    const helper = source.slice(
+      source.indexOf("async function launchWithFastForward("),
+      source.indexOf("async function touchClick("),
+    );
+    const armed = helper.indexOf(
+      "await evaluate(connection, armFastForwardExpression())",
+    );
+    expect(armed).toBeGreaterThan(-1);
+    expect(armed).toBeLessThan(
+      helper.indexOf(
         "await pointerClick(connection, '[data-action=\"launch\"]')",
       ),
     );
@@ -180,6 +188,54 @@ describe("Ruleset 7 browser smoke script", () => {
     // No fixture import: the probe also runs against a deployed bundle.
     expect(probe).not.toContain("/tests/fixtures/");
   });
+  it("launches the Showcase from setup, checks its pieces, ends a turn and resumes", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = source.slice(
+      source.indexOf("async function probeShowcaseMatch("),
+      source.indexOf("async function fileSha256("),
+    );
+
+    expect(source).toContain("await probeShowcaseMatch(connection)");
+    expect(source).toContain("; Showcase ${showcase}.");
+    expect(probe).toContain('options.at(-1) !== "Showcase"');
+    // The setup forces 16 x 16 and hides the seed control.
+    expect(probe).toContain(
+      "document.querySelector('#v7-map-type')?.value === 'SHOWCASE'",
+    );
+    expect(probe).toContain("size?.disabled === true && size.value === '16'");
+    expect(probe).toContain(
+      "document.querySelector('.v7-seed-choice')?.hidden === true",
+    );
+    // The human moves first at command index 0, so the probe launches with
+    // a plain trusted click, not the AI-first Fast Forward launch helper.
+    expect(probe).not.toContain("launchWithFastForward");
+    expect(probe).not.toContain("replaceSeedInput");
+    expect(probe).toContain(
+      `await pointerClick(connection, '[data-action="launch"]')`,
+    );
+    expect(probe).toContain("started.units !== 10");
+    expect(probe).toContain("started.roles !== 10");
+    expect(probe).toContain("started.cities !== 3");
+    expect(probe).toContain("started.technologies !== 23");
+    expect(probe).toContain("started.unexplored !== 0");
+    expect(probe).toContain(
+      'await capture(connection, "showcase-launch-desktop.png")',
+    );
+    const endTurn = probe.indexOf(
+      `await pointerClick(connection, '[data-action="end-turn"]')`,
+    );
+    expect(endTurn).toBeGreaterThan(probe.indexOf("started.units !== 10"));
+    expect(
+      probe.indexOf("await evaluate(connection, armFastForwardExpression())"),
+    ).toBeLessThan(endTurn);
+    expect(probe).toContain("returned.round !== 2");
+    expect(endTurn).toBeLessThan(
+      probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
+    );
+    expect(probe).toContain("s.view?.setup.mapType === 'SHOWCASE'");
+    // No fixture import: the probe also runs against a deployed bundle.
+    expect(probe).not.toContain("/tests/fixtures/");
+  });
   it("waits for a fresh complete document and installed controller after reload", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
 
@@ -232,8 +288,9 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     // Two release captures, four Undead setup probe captures, one
     // revision-14 Plague/Bitten fixture capture per art set (in a loop), and
-    // three revision-17 Goblin probe captures.
-    expect(source.match(/await capture\(/g)).toHaveLength(10);
+    // three revision-17 Goblin probe captures, and one revision-18 Showcase
+    // capture.
+    expect(source.match(/await capture\(/g)).toHaveLength(11);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");

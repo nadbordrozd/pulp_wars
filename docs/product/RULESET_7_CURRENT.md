@@ -14,9 +14,8 @@ Vampire, villages, and income caps),
 growth guarantee; 16b: 2-tile boats and landing; 16c: economy deflation),
 [17](RULESET_7_REVISION_17_GOBLINS.md) (the Goblin faction, with the
 `pulp_wars-0ao.7` tuned numbers), and [18](RULESET_7_REVISION_18.md)
-(friendly pass-through and the Road half cost by origin; its Showcase setup,
-section 5 of that overlay, is not implemented yet and is folded by
-`pulp_wars-6gd.3`). The Undead and the Goblins are part of the
+(friendly pass-through, the Road half cost by origin, and the fixed
+Showcase setup). The Undead and the Goblins are part of the
 ordinary game: faction choice is offered in every match setup, with no
 development flag. Every number below was checked against the engine code at
 the time of writing.
@@ -34,8 +33,8 @@ overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
 [14](RULESET_7_REVISION_14_BALANCE.md),
 [15](RULESET_7_REVISION_15_BALANCE.md),
 [16](RULESET_7_REVISION_16.md),
-[17](RULESET_7_REVISION_17_GOBLINS.md), and the movement and identity
-sections of [18](RULESET_7_REVISION_18.md). Those documents remain as design
+[17](RULESET_7_REVISION_17_GOBLINS.md), and
+[18](RULESET_7_REVISION_18.md). Those documents remain as design
 history, exact schema/ordering detail, measurements, and acceptance
 provenance. When one of them disagrees with this document, this document
 describes the current rules. In particular, the [baseline](RULESET_7.md)
@@ -98,7 +97,9 @@ separate [Ruleset 6](RULESET_6.md) route.
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
   `pulp-wars-poc-7r17`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
-  so a revision-17 command stream is not replayable.
+  so a revision-17 command stream is not replayable. It also added the
+  `SHOWCASE` map type ([section 2.5](#25-showcase-setup)) under the same
+  identity; no existing match changed.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
   keys (through `pulpWars.save.v7r17.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
@@ -140,15 +141,15 @@ separate [Ruleset 6](RULESET_6.md) route.
 A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 `COOPERATIVE` mode, on a square board.
 
-| Setup field | Legal values                                                                               |
-| ----------- | ------------------------------------------------------------------------------------------ |
-| Board width | 11, 14, 16, 20, or 25 (height equals width); minimum 11/14/16 for 1/2/3 AI                 |
-| Auto size   | 11, 14, or 16 for 1, 2, or 3 AI                                                            |
-| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`                       |
-| AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                          |
-| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                          |
-| Factions    | one entry per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, or `GOBLIN` |
-| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures     |
+| Setup field | Legal values                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------------ |
+| Board width | 11, 14, 16, 20, or 25 (height equals width); minimum 11/14/16 for 1/2/3 AI                       |
+| Auto size   | 11, 14, or 16 for 1, 2, or 3 AI                                                                  |
+| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only) |
+| AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                |
+| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                                |
+| Factions    | one entry per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, or `GOBLIN`       |
+| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures           |
 
 - **Faction choice.** `factions` is a dense array; index `i` is seat `i`'s
   faction, and every combination is legal (single-faction or any mix of the
@@ -159,6 +160,10 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   affects map generation, capital placement, turn order, treasure placement,
   or any PRNG draw: setups that differ only in `factions` generate
   byte-identical boards, turn orders, and treasures.
+- **Showcase.** `SHOWCASE` is a fixed demonstration board, not a generated
+  map: sections 2.2–2.4 and the opening of [section 3](#3-players-turns-and-victory)
+  do not apply to it. [Section 2.5](#25-showcase-setup) is its complete
+  description.
 
 ### 2.2 Settlements and treasures
 
@@ -266,6 +271,139 @@ terrain and resource from these exact tables.
 - The complete draw order, cohesion pass, and floor algorithm are in
   [revision 4 §5](RULESET_7_REVISION_4_BIOME_ECONOMY.md#5-exact-map-algorithm).
 
+### 2.5 Showcase setup
+
+`SHOWCASE` (revision 18) is a sixth map type for looking at every unit and
+building: each seat starts with three developed cities, every technology,
+one unit of every role, and the whole board explored. It is an ordinary
+match from its first Start Turn on.
+
+| Setup field       | `SHOWCASE` rule                                                                     |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| `width`, `height` | exactly 16; any other size is `INVALID_SETUP`                                       |
+| `aiCount`         | 1–3, as in a normal setup                                                           |
+| `aiMode`          | `RIVAL` or `COOPERATIVE`, unchanged meaning                                         |
+| `factions`        | any faction per seat                                                                |
+| `seed`            | any uint32; it affects nothing but `setup.seed` and `random`                        |
+| Turn order        | seat order, seat 0 (the human) first                                                |
+| `random`          | the Mulberry32 initial state of the seed, no draw consumed; `mapAttempt` is 1       |
+| Invariants        | no generation invariant applies (spacing, fairness, growth, port reach, land share) |
+
+Setups that differ only in `seed` give the same state except `setup.seed`
+and `random`. Setups that differ only in `factions` give the same board,
+cities, ledger records, unit positions, and IDs.
+
+**Board.** Coordinates are `(x, y)`. Rows `y = 0–11` are land (192 tiles),
+all of biome `PLAINS`; rows `y = 12–15` are water (64 tiles): `y = 12` is
+Shallow Water and `y = 13–15` Deep Water. Land is Grass with no resource,
+except:
+
+- `y = 0`: even `x` is Mountain and odd `x` is Forest; Ore on the Mountains
+  with `x % 4 = 0`, Game on the Forests with `x % 4 = 1`;
+- `y = 1`: Fruit where `x % 4 = 2`, Fertile Ground where `x % 4 = 3`;
+- Fish on `(x, 12)` and Pearls on `(x, 14)` for `x` in 0, 4, 8, 12;
+- the city tiles below.
+
+There is no village, treasure chest, Grave, Field Defense, or Monument.
+
+**Strips.** Strip `k` (0–3) has center column `cx = 4k + 2` and holds one
+seat's cities in columns `cx − 1 … cx + 1`; columns 0, 4, 8, and 12 stay
+neutral. Seat 0 uses strip 0 and AI seat `i` uses strip `3 − aiCount + i`
+(the AI seats fill the strips farthest from the human). A strip without a
+seat keeps the plain land and water above.
+
+**Cities.** Each city owns exactly its centered 3 x 3 footprint; none has
+used its Land Grant; every city has Walls; no reward choice is pending.
+Reward records are history only: setup pays no Coins, exploration, or unit
+for them.
+
+| City    | Center     | Level | Rewards recorded                        | Permanent | Live | Population | First income |
+| ------- | ---------- | ----: | --------------------------------------- | --------: | ---: | ---------: | -----------: |
+| North   | `(cx, 3)`  |     4 | `SURVEY`, `WALLS`, `TREASURY_8`         |         0 |   11 |          2 |            5 |
+| Capital | `(cx, 7)`  |     5 | `SURVEY`, `WALLS`, `BOOM`, `JUGGERNAUT` |         4 |   10 |          0 |            7 |
+| Coast   | `(cx, 11)` |     3 | `SURVEY`, `WALLS`                       |         0 |    8 |          3 |            4 |
+
+| City    | Tile           | Content                               | Live population |
+| ------- | -------------- | ------------------------------------- | --------------: |
+| North   | `(cx − 1, 2)`  | Forest, Lumber Camp                   |               1 |
+| North   | `(cx + 1, 2)`  | Mountain, Ore, Mine                   |               2 |
+| North   | `(cx − 1, 3)`  | Sawmill (two adjacent Lumber Camps)   |               2 |
+| North   | `(cx + 1, 3)`  | Forge (two adjacent Mines)            |               2 |
+| North   | `(cx − 1, 4)`  | Forest, Lumber Camp                   |               1 |
+| North   | `(cx, 4)`      | Road                                  |               — |
+| North   | `(cx + 1, 4)`  | Mountain, Ore, Mine                   |               2 |
+| Capital | `(cx − 1, 6)`  | Fertile Ground, Farm                  |               2 |
+| Capital | `(cx, 6)`      | Road                                  |               — |
+| Capital | `(cx + 1, 6)`  | Fertile Ground, Farm                  |               2 |
+| Capital | `(cx − 1, 7)`  | Windmill (two adjacent Farms)         |               2 |
+| Capital | `(cx + 1, 7)`  | Market (one adjacent family: 2 Coins) |               — |
+| Capital | `(cx − 1, 8)`  | Fertile Ground, Farm                  |               2 |
+| Capital | `(cx, 8)`      | Road                                  |               — |
+| Coast   | `(cx − 1, 10)` | Fertile Ground, Farm                  |               2 |
+| Coast   | `(cx, 10)`     | Road                                  |               — |
+| Coast   | `(cx + 1, 10)` | Forest, Game                          |               — |
+| Coast   | `(cx − 1, 11)` | Workshop (one adjacent basic type)    |               2 |
+| Coast   | `(cx + 1, 11)` | Fruit                                 |               — |
+| Coast   | `(cx − 1, 12)` | Port                                  |               1 |
+| Coast   | `(cx + 1, 12)` | Shipyard                              |               2 |
+
+- Roads also lie on the neutral tiles `(cx, 5)` and `(cx, 9)`, so the Road
+  line `(cx, 4) … (cx, 10)` joins the three centers: Road population is +2
+  for the capital and +1 for each other city, included in the Live column
+  (North 10 + 1, Capital 8 + 2, Coast 7 + 1).
+- The capital's permanent population is its `BOOM` record (3, at the center)
+  plus one `HARVEST_FRUIT` record (1) at `(cx + 1, 8)`, a Grass tile whose
+  Fruit is gone.
+- The ledger is the ordinary one ([section 4.2](#42-population-growth-and-levels)):
+  every improvement except the Market has its live record with the value the
+  spatial rules compute, and
+  `population = permanent + live − growthSpent(level)`.
+- First income ([section 4.3](#43-income)): the capital pays 4 + 1 + 2
+  (Market); North 4 + 1 land trade; Coast 3 + 1 land trade: 16 Coins for a
+  Human or Undead seat and 14 for a Goblin seat (Plunder replaces land
+  trade). No city has sea trade: the Port and Shipyard belong to one city.
+
+**Players.** Every seat has all 23 technologies (nothing is left to
+research and the free opening technology does not apply), 5 Coins before its
+first Start Turn (so the first seat shows 21 Coins, or 19 for a Goblin seat),
+all 256 cells explored, and three locked achievement entitlements. Explorer
+and Muster unlock at each seat's first evaluation; Engineer does not.
+
+**Units.** One unit of each of the ten roles, in the seat's faction, at full
+HP with zero kills and a fresh activation.
+
+| Role          | Tile          | Form  | Home city |
+| ------------- | ------------- | ----- | --------- |
+| `FIGHTER`     | `(cx, 7)`     | land  | Capital   |
+| `RAIDER`      | `(cx − 1, 5)` | land  | North     |
+| `MARKSMAN`    | `(cx, 5)`     | land  | North     |
+| `GUARD`       | `(cx + 1, 5)` | land  | North     |
+| `CAPTAIN`     | `(cx − 1, 9)` | land  | Capital   |
+| `CATAPULT`    | `(cx, 9)`     | land  | Capital   |
+| `KNIGHT`      | `(cx + 1, 9)` | land  | Capital   |
+| `JUGGERNAUT`  | `(cx + 1, 8)` | land  | Capital   |
+| `PATROL_BOAT` | `(cx, 12)`    | naval | Coast     |
+| `BATTLESHIP`  | `(cx, 13)`    | naval | Coast     |
+
+- Creation performs no capacity check, but the homes fit: Capital 5 of 7,
+  North 3 of 6, Coast 2 of 5 (each capacity one higher for a Goblin seat), so
+  every trainable role is offered from the first turn. Both docks start
+  empty.
+- **Entity IDs.** Seat `s` has capital ID `2s + 1` and `FIGHTER` ID `2s + 2`.
+  Then, each pass in seat order: every seat's North and Coast cities; then
+  every seat's ledger records (per city in the order capital, North, Coast:
+  permanent records, then live records, each in `(y, x)` tile order); then
+  every seat's nine remaining units in the role order of the table.
+- The Normal AI plays its ordinary policy with no Showcase logic. Seats in
+  neighbouring strips start one neutral column apart with every unit ready,
+  so a four-seat Showcase is a fight from the first turn.
+- **Setup screen.** "Showcase" is the last Map option, described as "A fixed
+  demo map: three developed cities, every unit, all technology, map
+  revealed." While it is selected the Size select shows only 16 × 16 and is
+  disabled and the "Map seed" control is hidden; the launched setup carries
+  seed 0. The headless tools accept `showcase` for `--map-type` and
+  `--map-types`.
+
 ## 3. Players, turns, and victory
 
 - Every seat starts with 5 Coins, no technology, a level-1 capital, one
@@ -280,6 +418,10 @@ terrain and resource from these exact tables.
   of the capital ring in `(y, x)` order, or not at all), but it is unused.
 - Turn order is a seeded shuffle; `round` starts at 1 and increments after the
   last seat in turn order.
+- A `SHOWCASE` match starts differently: three developed cities, every
+  technology, ten units, the whole board explored, and seat-order turns
+  ([section 2.5](#25-showcase-setup)). Everything after its first Start Turn
+  is the ordinary rules.
 - **Relationships:** in Rival mode every pair of players is hostile. In
   Cooperative mode all AI seats are formal allies of each other and hostile to
   the human. Allies cannot attack each other, capture each other's cities, or
@@ -1946,6 +2088,7 @@ Every death is credited to at most one player:
 | 17       | `pulp-wars-poc-7r17` | `pulp_wars-0ao.7` tuning: one starting Goblin; Goblin Attack 1.5, Defense 0.5, Kaboom 5; death blasts 2/4/4; Goblin-only Normal AI changes                         | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)               |
 | 17 (fix) | `pulp-wars-poc-7r17` | `pulp_wars-0ao.15`: landing ends the activation for every faction (no Attack, Kaboom, Move, or Disband after landing)                                              | [revision 16](RULESET_7_REVISION_16.md)                       |
 | 18       | `pulp-wars-poc-7r18` | Movement (`pulp_wars-6gd.2`): a Move passes through the mover's own units and never ends on one; the Road half cost depends only on the tile being left            | [revision 18](RULESET_7_REVISION_18.md)                       |
+| 18       | `pulp-wars-poc-7r18` | Showcase (`pulp_wars-6gd.3`): the fixed 16 x 16 `SHOWCASE` map type with three developed cities, every technology, and one unit of every role per seat             | [revision 18](RULESET_7_REVISION_18.md)                       |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -2023,10 +2166,9 @@ no cure for Plague or Bitten, and their Help and status sentences say so.
 ## 20. Known discrepancies
 
 No discrepancy is open: as of revision 18 (`pulp-wars-poc-7r18`) the rules in
-this document match the code. The Showcase setup of the
-[revision-18 overlay](RULESET_7_REVISION_18.md) (its section 5) is specified
-but not implemented or folded yet (`pulp_wars-6gd.3`); until then a
-`SHOWCASE` setup is `INVALID_SETUP`.
+this document match the code, including the Showcase setup of the
+[revision-18 overlay](RULESET_7_REVISION_18.md) (its section 5,
+[section 2.5](#25-showcase-setup) here).
 
 The revision 13–17 overlays keep superseded values (for example the
 Lich's Attack 2.5 and 20-HP Zombie in revision 13, unlimited Plague in

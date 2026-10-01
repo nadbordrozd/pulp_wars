@@ -271,8 +271,12 @@ export type DomainEventKindV7 = (typeof DOMAIN_EVENT_KIND_ORDER_V7)[number];
 export type BoardSizeV7 = 11 | 14 | 16 | 20 | 25;
 export type AiCountV7 = 1 | 2 | 3;
 export type PlayerColorV7 = "CORAL" | "TEAL" | "GOLD" | "VIOLET";
+/**
+ * The five generated map types, plus the revision-18 fixed `SHOWCASE` board
+ * (16 x 16, three developed cities and one unit of every role per seat).
+ */
 export type MapTypeV7 =
-  "DRY_LAND" | "PANGEA" | "CONTINENTS" | "ARCHIPELAGO" | "LAKES";
+  "DRY_LAND" | "PANGEA" | "CONTINENTS" | "ARCHIPELAGO" | "LAKES" | "SHOWCASE";
 
 export interface CoordV7 {
   readonly x: number;

@@ -70,6 +70,7 @@ const result = spawnSync(
     "tests/unit/ruleset-v7-goblin-faction.test.ts",
     "tests/unit/ruleset-v7-goblin-rules.test.ts",
     "tests/unit/ruleset-v7-revision18.test.ts",
+    "tests/unit/ruleset-v7-revision18-showcase.test.ts",
     "tests/unit/ruleset-v7-save.test.ts",
     "tests/unit/persistence-v7.test.ts",
     "tests/integration/ruleset7-biome-browser.test.ts",

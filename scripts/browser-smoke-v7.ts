@@ -568,6 +568,7 @@ try {
   const chibi = await probeChibiArtSet(connection);
   const undead = await probeUndeadSetup(connection);
   const goblin = await probeGoblinMatch(connection);
+  const showcase = await probeShowcaseMatch(connection);
   await evaluate(
     connection,
     `localStorage.removeItem('pulpWars.save.current')`,
@@ -650,7 +651,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Showcase ${showcase}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -1263,6 +1264,137 @@ async function driveDefaultMatchToOutcome(
     }
   }
   throw new Error("Default v7 browser match exceeded 1,500 human boundaries");
+}
+
+/**
+ * Revision 18 Showcase (section 5): the last Map option forces 16 x 16 and
+ * hides the seed control; the launched match starts on the human's turn with
+ * ten own units, three own cities, every technology and the whole board
+ * explored; one End Turn hands the board to the Normal AI and back; and the
+ * save resumes on a fresh default-route load.
+ */
+async function probeShowcaseMatch(connection: Connection): Promise<string> {
+  const defaultUrl = (): string => {
+    const url = new URL(baseUrl);
+    url.searchParams.delete("art");
+    return url.href;
+  };
+  const navigateFresh = async (readiness: string): Promise<void> => {
+    await evaluate(
+      connection,
+      `globalThis.__V7_SHOWCASE_PRIOR_DOCUMENT__ = true`,
+    );
+    await connection.send("Page.navigate", { url: defaultUrl() });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_SHOWCASE_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
+    );
+  };
+  const saveKey = "pulpWars.save.v7r18.current";
+  const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(freshSetup);
+  const options = await evaluate<readonly string[]>(
+    connection,
+    `Array.from(document.querySelectorAll('#v7-map-type option')).map((option) => option.textContent ?? '')`,
+  );
+  if (options.at(-1) !== "Showcase" || options.length !== 6)
+    throw new Error(`Showcase map option missing: ${JSON.stringify(options)}`);
+  await evaluate(connection, `document.querySelector('#v7-map-type').focus()`);
+  // Typeahead on the focused, closed select: "S" selects Showcase.
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "keyDown",
+    key: "S",
+    code: "KeyS",
+    text: "S",
+    windowsVirtualKeyCode: 83,
+  });
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "keyUp",
+    key: "S",
+    code: "KeyS",
+    windowsVirtualKeyCode: 83,
+  });
+  await waitForExpression(
+    connection,
+    `(() => { const size = document.querySelector('#v7-board-size'); return document.querySelector('#v7-map-type')?.value === 'SHOWCASE' && size?.disabled === true && size.value === '16' && size.options.length === 1 && document.querySelector('.v7-seed-choice')?.hidden === true && (document.querySelector('.v7-map-type-description')?.textContent ?? '').startsWith('A fixed demo map'); })()`,
+  );
+  await pointerClick(connection, '[data-action="launch"]');
+  const humanTurn = `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId && v.pendingChoices.length === 0; })()`;
+  await waitForExpression(connection, humanTurn, 900);
+  const counts = `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; return { mapType: view.setup.mapType, size: view.setup.width, commandIndex: view.commandIndex, round: view.round, units: view.units.filter((unit) => unit.ownerId === view.viewer.id).length, roles: new Set(view.units.filter((unit) => unit.ownerId === view.viewer.id).map((unit) => unit.role)).size, cities: view.cities.filter((city) => city.ownerId === view.viewer.id).length, technologies: view.viewer.researchedTechs.length, unexplored: view.board.tiles.filter((tile) => !tile.explored).length }; })()`;
+  interface ShowcaseCountsV7 {
+    readonly mapType: string;
+    readonly size: number;
+    readonly commandIndex: number;
+    readonly round: number;
+    readonly units: number;
+    readonly roles: number;
+    readonly cities: number;
+    readonly technologies: number;
+    readonly unexplored: number;
+  }
+  const started = await evaluate<ShowcaseCountsV7>(connection, counts);
+  if (
+    started.mapType !== "SHOWCASE" ||
+    started.size !== 16 ||
+    started.commandIndex !== 0 ||
+    started.units !== 10 ||
+    started.roles !== 10 ||
+    started.cities !== 3 ||
+    started.technologies !== 23 ||
+    started.unexplored !== 0
+  )
+    throw new Error(`Showcase launch failed: ${JSON.stringify(started)}`);
+  await capture(connection, "showcase-launch-desktop.png");
+  // One End Turn: the Normal AI plays its developed seat and returns.
+  await evaluate(connection, armFastForwardExpression());
+  try {
+    await pointerClick(connection, '[data-action="end-turn"]');
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_FAST_FORWARD_CONTROL__?.status === 'ERROR' || (${humanTurn} && globalThis.__PULP_WARS_APP__.controller.snapshot().view.round === 2)`,
+      1800,
+    );
+    const control = await evaluate<{ status: string; detail: string | null }>(
+      connection,
+      `globalThis.__V7_FAST_FORWARD_CONTROL__`,
+    );
+    if (control.status === "ERROR")
+      throw new Error(`Showcase End Turn failed: ${control.detail}`);
+  } finally {
+    await evaluate(
+      connection,
+      `globalThis.__V7_FAST_FORWARD_CONTROL_CANCEL__?.()`,
+    );
+  }
+  const returned = await evaluate<ShowcaseCountsV7>(connection, counts);
+  if (
+    returned.round !== 2 ||
+    returned.commandIndex < 2 ||
+    returned.cities < 1 ||
+    returned.technologies !== 23
+  )
+    throw new Error(`Showcase End Turn failed: ${JSON.stringify(returned)}`);
+  // The save resumes on a fresh default-route load as a Showcase match.
+  await navigateFresh(
+    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE' && (document.querySelector('.v7-resume-summary')?.textContent ?? '').endsWith('Showcase')`,
+  );
+  await touchClick(connection, '[data-action="resume"]');
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && s.view?.setup.mapType === 'SHOWCASE' && s.view.commandIndex === ${returned.commandIndex}; })()`,
+    900,
+  );
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(freshSetup);
+  return `launch with ${started.units} own units/${started.cities} cities/${started.technologies} technologies, End Turn to round ${returned.round} (${returned.commandIndex} commands) and resume`;
 }
 
 async function fileSha256(filename: string): Promise<string> {

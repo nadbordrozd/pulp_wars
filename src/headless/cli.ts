@@ -58,7 +58,8 @@ async function runV7Match(): Promise<void> {
   if (args.includes("--demo"))
     throw new Error("ruleset 7 does not support --demo");
   const aiCount = aiCountArg("--ai-count", 1);
-  const size = boardSizeArg(aiCount);
+  const mapType = mapTypeArg();
+  const size = boardSizeArgV7(aiCount, mapType);
   const setup: MatchSetupV7 = {
     rulesetId: "pulp-wars-poc-7r18",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
@@ -70,7 +71,7 @@ async function runV7Match(): Promise<void> {
     aiMode: args.includes("--cooperative") ? "COOPERATIVE" : "RIVAL",
     humanColor: "CORAL",
     factions: factionsArgV7(aiCount),
-    mapType: mapTypeArg(),
+    mapType,
   };
   const result = await headlessV7.runAiMatch(setup, {
     maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
@@ -83,16 +84,15 @@ async function runV7Batch(): Promise<void> {
   const factions = args.includes("--factions")
     ? factionsArgV7(uniqueBatchAiCount())
     : null;
+  const mapTypes = mapTypesArg();
   const result = await headlessV7.runAiBatch({
     seeds: commaNumbers("--seeds", "0,1,2,3,4,5,6,7"),
     aiCounts: batchAiCounts(),
     modes: modesArg(),
     maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
     maxRounds: numberArg("--max-rounds", V7_MATCH_MAX_ROUNDS_DEFAULT),
-    ...(optionalNumberArg("--size") === null
-      ? {}
-      : { boardSize: boardSizeArg(1) }),
-    mapTypes: mapTypesArg(),
+    ...v7BatchBoardSize(mapTypes),
+    mapTypes,
     ...(factions === null ? {} : { factions }),
   });
   process.stdout.write(`${canonicalJson(result)}\n`);
@@ -257,6 +257,32 @@ function boardSizeArg(aiCount: 1 | 2 | 3): 11 | 14 | 16 | 20 | 25 {
   return size;
 }
 
+/**
+ * Revision 18 section 5.5: the fixed Showcase board is 16 x 16. Its size
+ * defaults to 16 for every seat count, and any other `--size` is an error.
+ */
+function boardSizeArgV7(
+  aiCount: 1 | 2 | 3,
+  mapType: MapTypeV7,
+): 11 | 14 | 16 | 20 | 25 {
+  if (mapType !== "SHOWCASE") return boardSizeArg(aiCount);
+  if (numberArg("--size", 16) !== 16)
+    throw new Error("--size must be 16 for the showcase map type");
+  return 16;
+}
+
+function v7BatchBoardSize(mapTypes: readonly MapTypeV7[]): {
+  readonly boardSize?: 11 | 14 | 16 | 20 | 25;
+} {
+  if (!mapTypes.includes("SHOWCASE"))
+    return optionalNumberArg("--size") === null
+      ? {}
+      : { boardSize: boardSizeArg(1) };
+  if (numberArg("--size", 16) !== 16)
+    throw new Error("--size must be 16 for the showcase map type");
+  return { boardSize: 16 };
+}
+
 function modesArg(): readonly AiModeV6[] {
   if (args.includes("--cooperative")) return ["COOPERATIVE"];
   return stringArg("--modes", "rival")
@@ -277,11 +303,12 @@ function mapTypeArg(): MapTypeV7 {
     value === "PANGEA" ||
     value === "CONTINENTS" ||
     value === "ARCHIPELAGO" ||
-    value === "LAKES"
+    value === "LAKES" ||
+    value === "SHOWCASE"
   )
     return value;
   throw new Error(
-    "--map-type must be dry_land, pangea, continents, archipelago, or lakes",
+    "--map-type must be dry_land, pangea, continents, archipelago, lakes, or showcase",
   );
 }
 
@@ -295,11 +322,12 @@ function mapTypesArg(): readonly MapTypeV7[] {
         normalized === "PANGEA" ||
         normalized === "CONTINENTS" ||
         normalized === "ARCHIPELAGO" ||
-        normalized === "LAKES"
+        normalized === "LAKES" ||
+        normalized === "SHOWCASE"
       )
         return normalized;
       throw new Error(
-        "--map-types values must be dry_land, pangea, continents, archipelago, or lakes",
+        "--map-types values must be dry_land, pangea, continents, archipelago, lakes, or showcase",
       );
     });
 }

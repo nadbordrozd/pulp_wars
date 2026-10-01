@@ -136,7 +136,12 @@ const MAP_TYPES: readonly MapTypeV7[] = [
   "CONTINENTS",
   "ARCHIPELAGO",
   "LAKES",
+  "SHOWCASE",
 ];
+/** Revision 18 section 5: the fixed Showcase board is always 16 x 16. */
+const SHOWCASE_BOARD_SIZE = 16;
+/** The Showcase board ignores the seed; its setup carries this valid one. */
+const SHOWCASE_SEED = 0;
 const AI_MODE_LABELS: Readonly<Record<string, string>> = {
   RIVAL: "Free-for-all",
   COOPERATIVE: "AIs allied",
@@ -147,6 +152,7 @@ const MAP_TYPE_LABELS: Readonly<Record<string, string>> = {
   CONTINENTS: "Continents",
   ARCHIPELAGO: "Archipelago",
   LAKES: "Lakes",
+  SHOWCASE: "Showcase",
 };
 const BOARD_SIZE_LABELS: Readonly<Record<string, string>> = Object.fromEntries(
   BOARD_SIZES.map((size) => [String(size), `${size} × ${size}`]),
@@ -635,8 +641,8 @@ export class Ruleset7DomAppView {
         this.#document,
         "Size",
         "v7-board-size",
-        compatibleSizes(this.#draft.aiCount).map(String),
-        String(this.#draft.boardSize),
+        offeredSizes(this.#draft).map(String),
+        String(effectiveBoardSize(this.#draft)),
         BOARD_SIZE_LABELS,
       ),
       select(
@@ -672,17 +678,30 @@ export class Ruleset7DomAppView {
     );
     launch.type = "submit";
     form.append(launch);
-    form.addEventListener("change", () => {
-      this.#readDraft(form);
+    // The Showcase forces 16 x 16 and ignores the seed: its Size select is
+    // disabled and the seed group is hidden. Both come back, with the
+    // player's earlier size and seed choice, when another map is chosen.
+    const syncShowcase = (): void => {
+      const showcase = this.#draft.mapType === "SHOWCASE";
+      form.dataset.v7Showcase = String(showcase);
       const size = form.querySelector<HTMLSelectElement>("#v7-board-size");
-      if (size !== null)
+      if (size !== null) {
         replaceOptions(
           this.#document,
           size,
-          compatibleSizes(this.#draft.aiCount).map(String),
-          String(this.#draft.boardSize),
+          offeredSizes(this.#draft).map(String),
+          String(effectiveBoardSize(this.#draft)),
           BOARD_SIZE_LABELS,
         );
+        size.disabled = showcase;
+      }
+      const seed = form.querySelector<HTMLElement>(".v7-seed-choice");
+      if (seed !== null) seed.hidden = showcase;
+    };
+    syncShowcase();
+    form.addEventListener("change", () => {
+      this.#readDraft(form);
+      syncShowcase();
       const description = form.querySelector<HTMLElement>(
         ".v7-map-type-description",
       );
@@ -703,9 +722,11 @@ export class Ruleset7DomAppView {
       // "New map" draws its seed here, once per launch; the engine only
       // ever sees the resulting number.
       const setup = setupFrom(
-        this.#draft.seedMode === "NEW"
-          ? { ...this.#draft, seedText: String(this.#randomSeed() >>> 0) }
-          : this.#draft,
+        this.#draft.mapType === "SHOWCASE"
+          ? { ...this.#draft, seedText: String(SHOWCASE_SEED) }
+          : this.#draft.seedMode === "NEW"
+            ? { ...this.#draft, seedText: String(this.#randomSeed() >>> 0) }
+            : this.#draft,
       );
       if (setup === null) {
         this.#error = "Seed must be a whole number (0–4294967295).";
@@ -3170,7 +3191,12 @@ export class Ruleset7DomAppView {
     const count = Number(value(form, "v7-ai-count"));
     const aiCount = count === 2 || count === 3 ? count : 1;
     const sizes = compatibleSizes(aiCount);
-    const requested = Number(value(form, "v7-board-size"));
+    // While the Showcase was selected the Size select only held the forced
+    // 16 x 16, so the player's own size is kept from the draft.
+    const requested =
+      this.#draft.mapType === "SHOWCASE"
+        ? this.#draft.boardSize
+        : Number(value(form, "v7-board-size"));
     this.#draft = {
       seedMode: this.#draft.seedMode,
       aiCount,
@@ -4061,11 +4087,23 @@ function compatibleSizes(aiCount: 1 | 2 | 3): readonly DraftV7["boardSize"][] {
   const minimum = aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16;
   return BOARD_SIZES.filter((size) => size >= minimum);
 }
+/** The sizes the Size select offers: only 16 x 16 for the Showcase. */
+function offeredSizes(draft: DraftV7): readonly DraftV7["boardSize"][] {
+  return draft.mapType === "SHOWCASE"
+    ? [SHOWCASE_BOARD_SIZE]
+    : compatibleSizes(draft.aiCount);
+}
+/** The size a launch uses; the draft keeps the player's own choice. */
+function effectiveBoardSize(draft: DraftV7): DraftV7["boardSize"] {
+  return draft.mapType === "SHOWCASE" ? SHOWCASE_BOARD_SIZE : draft.boardSize;
+}
 function mapTypeDescriptionV7(mapType: MapTypeV7): string {
   if (mapType === "DRY_LAND") return "All land, no sea.";
   if (mapType === "PANGEA") return "One big continent ringed by sea.";
   if (mapType === "CONTINENTS") return "Two or three large landmasses.";
   if (mapType === "ARCHIPELAGO") return "Everyone starts on their own island.";
+  if (mapType === "SHOWCASE")
+    return "A fixed demo map: three developed cities, every unit, all technology, map revealed.";
   return "Mostly land, broken up by lakes.";
 }
 function setupFrom(draft: DraftV7): MatchSetupV7 | null {
@@ -4076,8 +4114,8 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   return {
     rulesetId: "pulp-wars-poc-7r18",
     seed,
-    width: draft.boardSize,
-    height: draft.boardSize,
+    width: effectiveBoardSize(draft),
+    height: effectiveBoardSize(draft),
     aiCount: draft.aiCount,
     aiDifficulty: "NORMAL",
     aiMode: draft.aiMode,
