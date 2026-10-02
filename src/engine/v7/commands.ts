@@ -78,15 +78,6 @@ export type CommandV7 =
       readonly unitId: UnitId;
     }
   | {
-      /**
-       * Revision 19: a Triceratops runs one or two tiles in a straight line
-       * and hits `targetUnitId` (resolved from `pulp_wars-c87.3`).
-       */
-      readonly kind: "STAMPEDE";
-      readonly unitId: UnitId;
-      readonly targetUnitId: UnitId;
-    }
-  | {
       /** Revision 19: a Shaman hatches the adjacent own Egg `eggUnitId`. */
       readonly kind: "HATCH";
       readonly unitId: UnitId;
@@ -256,15 +247,6 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       : { ok: true, value: { kind, unitId: id, path } };
   }
   if (kind === "ATTACK") {
-    if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
-      return invalid(kind);
-    const unit = parseUnitIdV7(candidate.unitId);
-    const target = parseUnitIdV7(candidate.targetUnitId);
-    return unit === null || target === null
-      ? invalid(kind)
-      : { ok: true, value: { kind, unitId: unit, targetUnitId: target } };
-  }
-  if (kind === "STAMPEDE") {
     if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
       return invalid(kind);
     const unit = parseUnitIdV7(candidate.unitId);
@@ -456,8 +438,7 @@ function referencedOrdinal(command: CommandV7): number {
     return REWARD_IDS_V7.indexOf(command.reward);
   if (command.kind === "BUILD_MONUMENT")
     return ACHIEVEMENT_IDS_V7.indexOf(command.achievement);
-  if (command.kind === "ATTACK" || command.kind === "STAMPEDE")
-    return command.targetUnitId;
+  if (command.kind === "ATTACK") return command.targetUnitId;
   if (command.kind === "HATCH") return command.eggUnitId;
   return 0;
 }

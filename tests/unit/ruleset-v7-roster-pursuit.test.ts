@@ -1172,7 +1172,8 @@ describe("ruleset-7 Knight Overrun activation", () => {
     expect(
       promoted.accepted &&
         promoted.state.units.find((unit) => unit.id === target.id),
-    ).toMatchObject({ veteran: true, hp: 8, maxHp: 15 });
+      // Revision 20 section 5: a Promotion fully heals (was 3 + 5 = 8 HP).
+    ).toMatchObject({ veteran: true, hp: 15, maxHp: 15 });
     if (promoted.accepted)
       expect(
         queryUnitStatsV7(promoted.state, target.id)?.stats[0]?.modifiers[0]

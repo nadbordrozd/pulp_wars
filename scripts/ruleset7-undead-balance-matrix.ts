@@ -59,9 +59,9 @@ import {
   type UnitRoleIdV7,
 } from "../src/engine/v7/types";
 import {
+  attackIsChargeV7,
   factionTreeV7,
   unitGrowthStageV7,
-  unitRoleRuleV7,
 } from "../src/engine/rules/ruleset-v7";
 import type { PlayerId } from "../src/engine/model/ids";
 import {
@@ -74,9 +74,7 @@ import {
   fortificationLevelForUnitV7,
 } from "../src/engine/v7/combat";
 import { nestTilesV7 } from "../src/engine/v7/eggs";
-import { queryStampedeLanesV7 } from "../src/engine/v7/query";
 import { applyCommandV7, createPlayableGameV7 } from "../src/engine/v7/reducer";
-import { viewForV7 } from "../src/engine/v7/view";
 
 const MAP_TYPES: readonly MapTypeV7[] = [
   "DRY_LAND",
@@ -626,30 +624,34 @@ interface DinosaurSeatStats {
   alpha: RoleCounts;
   grownLost: RoleCounts;
   alphaLost: RoleCounts;
-  stampedes: number;
-  /** Stampedes from distance 2 and distance 3. */
-  stampedesByDistance: [number, number];
-  stampedeKills: number;
-  stampedeEggKills: number;
-  stampedePushes: number;
+  /** Revision 20 Charge!: attacks by a land-form Triceratops. */
+  charges: number;
+  /** Charges by run-up: 0, 1, and 2 tiles moved before the attack. */
+  chargesByRunUp: [number, number, number];
+  chargeKills: number;
+  chargeEggKills: number;
+  chargePushes: number;
   /** The target survived and was not pushed (never counted for an Egg). */
-  stampedeBlockedPushes: number;
-  stampedeDamage: number;
-  /** Field Defense destroyed by Stampede commands (target and stand tile). */
-  stampedeFieldDefense: number;
-  /** Stampedes at a unit on a city center, and those that pushed it off. */
-  stampedeCenterTargets: number;
-  stampedeCenterPushes: number;
-  /** Triceratops killed before their owner's next turn after a Stampede. */
-  triceratopsLostAfterStampede: number;
-  /** Ordinary `ATTACK` commands of a Triceratops. */
-  triceratopsAttacks: number;
-  /** Own turns that began with a land-form Triceratops, and with a lane. */
+  chargeBlockedPushes: number;
+  /** Charges after which the Triceratops followed the pushed target. */
+  chargeFollows: number;
+  chargeDamage: number;
+  /** Field Defense destroyed on the target tile by a Charge. */
+  chargeFieldDefense: number;
+  /** Charges that ignored fortification, and the levels they ignored. */
+  chargeFortifiedTargets: number;
+  chargeFortificationIgnored: number;
+  /** Charges at a unit on a city center, and those that pushed it off. */
+  chargeCenterTargets: number;
+  chargeCenterPushes: number;
+  /** Triceratops killed before their owner's next turn after a Charge. */
+  triceratopsLostAfterCharge: number;
+  /** Attacks of other dinosaurs that ignored City Walls (Wallbreaker). */
+  wallbreakerAttacks: number;
+  /** Own turns that began with a land-form Triceratops. */
   turnsWithTriceratops: number;
-  turnsWithLane: number;
-  /** Land-form Triceratops at the start of own turns, and those with a lane. */
+  /** Land-form Triceratops at the start of own turns. */
   triceratopsTurns: number;
-  triceratopsTurnsWithLane: number;
   /** Spitter attacks, and those that ignored cover or fortification. */
   acidAttacks: number;
   acidIgnored: number;
@@ -711,22 +713,23 @@ function emptyDinosaurSeat(seat: number): DinosaurSeatStats {
     alpha: {},
     grownLost: {},
     alphaLost: {},
-    stampedes: 0,
-    stampedesByDistance: [0, 0],
-    stampedeKills: 0,
-    stampedeEggKills: 0,
-    stampedePushes: 0,
-    stampedeBlockedPushes: 0,
-    stampedeDamage: 0,
-    stampedeFieldDefense: 0,
-    stampedeCenterTargets: 0,
-    stampedeCenterPushes: 0,
-    triceratopsLostAfterStampede: 0,
-    triceratopsAttacks: 0,
+    charges: 0,
+    chargesByRunUp: [0, 0, 0],
+    chargeKills: 0,
+    chargeEggKills: 0,
+    chargePushes: 0,
+    chargeBlockedPushes: 0,
+    chargeFollows: 0,
+    chargeDamage: 0,
+    chargeFieldDefense: 0,
+    chargeFortifiedTargets: 0,
+    chargeFortificationIgnored: 0,
+    chargeCenterTargets: 0,
+    chargeCenterPushes: 0,
+    triceratopsLostAfterCharge: 0,
+    wallbreakerAttacks: 0,
     turnsWithTriceratops: 0,
-    turnsWithLane: 0,
     triceratopsTurns: 0,
-    triceratopsTurnsWithLane: 0,
     acidAttacks: 0,
     acidIgnored: 0,
     armouredPrevented: 0,
@@ -754,7 +757,9 @@ function emptyDinosaurSeat(seat: number): DinosaurSeatStats {
 /**
  * Replays the accepted command log (as {@link goblinTelemetry} does) and
  * attributes every Dinosaur event. Only called for matches with a Dinosaur
- * seat. Lanes are read from the seat's public view at the start of its turn.
+ * seat. Revision 20: the Stampede counters are Charge! counters (attacks by
+ * a land-form Triceratops, by run-up, with pushes, follows, and the
+ * fortification they ignored).
  */
 function dinosaurTelemetry(
   setup: MatchSetupV7,
@@ -780,8 +785,8 @@ function dinosaurTelemetry(
     number,
     { owner: number; role: UnitRoleIdV7; cost: number; round: number }
   >();
-  // Triceratops that stampeded since their owner's last Start Turn.
-  const stampeded = new Map<number, number>();
+  // Triceratops that charged since their owner's last Start Turn.
+  const charged = new Map<number, number>();
   for (const record of log) {
     const before = state;
     const units = new Map(
@@ -796,18 +801,11 @@ function dinosaurTelemetry(
         (unit) =>
           unit.ownerId === record.playerId &&
           unit.hp > 0 &&
-          unit.form === "LAND" &&
-          unitRoleRuleV7(before, unit).abilities.includes("STAMPEDE"),
+          attackIsChargeV7(before, unit),
       );
       if (triceratops.length > 0) {
-        const view = viewForV7(before, record.playerId);
-        const withLane = triceratops.filter(
-          (unit) => queryStampedeLanesV7(view, unit.id).length > 0,
-        ).length;
         actor.turnsWithTriceratops += 1;
         actor.triceratopsTurns += triceratops.length;
-        actor.triceratopsTurnsWithLane += withLane;
-        actor.turnsWithLane += Number(withLane > 0);
       }
     }
     newTurn = command.kind === "END_TURN" || settling;
@@ -864,11 +862,6 @@ function dinosaurTelemetry(
       if (command.kind === "HATCH") actor.hatches += 1;
       if (command.kind === "RALLY") actor.warDrums += 1;
       if (command.kind === "TEND_WOUNDED") actor.tends += 1;
-      if (
-        command.kind === "ATTACK" &&
-        units.get(command.unitId)?.role === "CATAPULT"
-      )
-        actor.triceratopsAttacks += 1;
     }
     // Who destroyed each unit in this command (events may come in any order).
     const killedBy = new Map<number, string>();
@@ -895,14 +888,21 @@ function dinosaurTelemetry(
               `${(factionOf.get(event.playerId) ?? "?").slice(0, 1)}:${event.role}:BLAST`,
             );
     }
-    const stampedeActor = command.kind === "STAMPEDE" ? actor : undefined;
-    let stampedePushed = false;
-    let stampedeSurvivor: number | null = null;
+    // Revision 20: an `ATTACK` by a land-form Triceratops is a Charge!.
+    const charger =
+      command.kind === "ATTACK" ? units.get(command.unitId) : undefined;
+    const chargeActor =
+      charger !== undefined && attackIsChargeV7(before, charger)
+        ? actor
+        : undefined;
+    let chargePushed = false;
+    let chargeFollowed = false;
+    let chargeSurvivor: number | null = null;
     for (const event of record.events) {
       if (event.kind === "TURN_STARTED") {
         if (event.playerId === first) round += 1;
-        for (const [unitId, owner] of stampeded)
-          if (owner === event.playerId) stampeded.delete(unitId);
+        for (const [unitId, owner] of charged)
+          if (owner === event.playerId) charged.delete(unitId);
       }
       if (event.kind === "TECH_RESEARCHED") {
         const seat = seats.get(event.playerId);
@@ -990,18 +990,25 @@ function dinosaurTelemetry(
             const stage = unitGrowthStageV7(before, unit) ?? 0;
             if (stage >= 1) bump(seat.grownLost, unit.role);
             if (stage >= 2) bump(seat.alphaLost, unit.role);
-            if (stampeded.delete(event.unitId))
-              seat.triceratopsLostAfterStampede += 1;
+            if (charged.delete(event.unitId))
+              seat.triceratopsLostAfterCharge += 1;
           }
         }
       }
-      if (event.kind === "UNIT_PUSHED" && stampedeActor !== undefined)
-        stampedePushed = true;
+      if (event.kind === "UNIT_PUSHED" && chargeActor !== undefined)
+        chargePushed = true;
+      if (
+        event.kind === "UNIT_MOVED" &&
+        chargeActor !== undefined &&
+        chargePushed
+      )
+        chargeFollowed = true;
       if (
         event.kind === "FIELD_DEFENSE_DESTROYED" &&
-        stampedeActor !== undefined
+        chargeActor !== undefined &&
+        event.reason === "CATAPULT"
       )
-        stampedeActor.stampedeFieldDefense += 1;
+        chargeActor.chargeFieldDefense += 1;
       if (event.kind === "COMBAT_RESOLVED") {
         const preview = event.preview;
         const attacker = unitOf(preview.attackerId);
@@ -1027,23 +1034,30 @@ function dinosaurTelemetry(
             );
           }
           attackerSeat.armouredPrevented += Number(preview.attackerArmoured);
-          if (stampedeActor !== undefined && preview.stampede > 0) {
-            attackerSeat.stampedes += 1;
-            attackerSeat.stampedesByDistance[preview.stampede === 1 ? 0 : 1] +=
-              1;
-            attackerSeat.stampedeDamage += preview.damageToDefender;
+          if (chargeActor !== undefined) {
+            attackerSeat.charges += 1;
+            const runUp = Math.max(0, Math.min(2, preview.runUp));
+            attackerSeat.chargesByRunUp[runUp] =
+              (attackerSeat.chargesByRunUp[runUp] ?? 0) + 1;
+            attackerSeat.chargeDamage += preview.damageToDefender;
+            attackerSeat.chargeFortifiedTargets += Number(
+              preview.fortificationIgnored > 0,
+            );
+            attackerSeat.chargeFortificationIgnored +=
+              preview.fortificationIgnored;
             const egg = defender?.form === "EGG";
             if (preview.defenderDies) {
-              attackerSeat.stampedeKills += 1;
-              attackerSeat.stampedeEggKills += Number(egg);
-            } else if (!egg) stampedeSurvivor = preview.targetUnitId;
+              attackerSeat.chargeKills += 1;
+              attackerSeat.chargeEggKills += Number(egg);
+            } else if (!egg) chargeSurvivor = preview.targetUnitId;
             if (
               defender !== undefined &&
               cityCenters.has(coordKey(defender.at))
             )
-              attackerSeat.stampedeCenterTargets += 1;
-            stampeded.set(preview.attackerId, attacker.ownerId);
-          }
+              attackerSeat.chargeCenterTargets += 1;
+            charged.set(preview.attackerId, attacker.ownerId);
+          } else if (preview.fortificationIgnored > 0)
+            attackerSeat.wallbreakerAttacks += 1;
         }
         if (defender !== undefined && defenderSeat !== undefined) {
           if (preview.attackerDies)
@@ -1052,13 +1066,14 @@ function dinosaurTelemetry(
         }
       }
     }
-    if (stampedeActor !== undefined && stampedeSurvivor !== null) {
-      if (stampedePushed) {
-        stampedeActor.stampedePushes += 1;
-        const target = units.get(stampedeSurvivor);
+    if (chargeActor !== undefined && chargeSurvivor !== null) {
+      if (chargePushed) {
+        chargeActor.chargePushes += 1;
+        chargeActor.chargeFollows += Number(chargeFollowed);
+        const target = units.get(chargeSurvivor);
         if (target !== undefined && cityCenters.has(coordKey(target.at)))
-          stampedeActor.stampedeCenterPushes += 1;
-      } else stampedeActor.stampedeBlockedPushes += 1;
+          chargeActor.chargeCenterPushes += 1;
+      } else chargeActor.chargeBlockedPushes += 1;
     }
   }
   return { seats: [...seats.values()] };
@@ -1249,7 +1264,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r19",
+    rulesetId: "pulp-wars-poc-7r20",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: cell.seed,
     width: cell.size,
@@ -1906,7 +1921,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r19",
+          rulesetId: "pulp-wars-poc-7r20",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -2844,8 +2859,14 @@ function dinosaurAggregate(group: readonly MatrixEntry[]) {
     sum(seats.map(({ seatStats }) => seatStats.hatchDelays[index] ?? 0)),
   );
   const sawmillingSeats = count(sawmilling);
-  const sawmillingStampedeSeats = count(
-    (seat) => sawmilling(seat) && seat.stampedes > 0,
+  const sawmillingChargeSeats = count(
+    (seat) => sawmilling(seat) && seat.charges > 0,
+  );
+  const hatchedTriceratopsSeats = count(hatched("CATAPULT"));
+  const runUpChargeSeats = count(
+    (seat) =>
+      hatched("CATAPULT")(seat) &&
+      (seat.chargesByRunUp[1] ?? 0) + (seat.chargesByRunUp[2] ?? 0) > 0,
   );
   const longSeats = count((_, entry) => entry.rounds >= 35);
   const research = (tech: string) => ({
@@ -2926,52 +2947,54 @@ function dinosaurAggregate(group: readonly MatrixEntry[]) {
       /** Grown units killed, as a share of the units that reached Big. */
       grownLostShare: share(totalOf(grownLost), totalOf(big)),
     },
-    stampede: {
-      stampedes: total("stampedes"),
-      perSeatGame: perSeat(total("stampedes")),
-      byDistance: [0, 1].map((index) =>
-        sum(
-          seats.map(
-            ({ seatStats }) => seatStats.stampedesByDistance[index] ?? 0,
-          ),
-        ),
+    /** Revision 20 Charge! (the former Stampede block). */
+    charge: {
+      charges: total("charges"),
+      perSeatGame: perSeat(total("charges")),
+      /** Charges after 0, 1, and 2 tiles moved. */
+      byRunUp: [0, 1, 2].map((index) =>
+        sum(seats.map(({ seatStats }) => seatStats.chargesByRunUp[index] ?? 0)),
       ),
-      kills: total("stampedeKills"),
-      eggKills: total("stampedeEggKills"),
-      pushes: total("stampedePushes"),
-      blockedPushes: total("stampedeBlockedPushes"),
-      damage: total("stampedeDamage"),
-      fieldDefenseDestroyed: total("stampedeFieldDefense"),
-      centerTargets: total("stampedeCenterTargets"),
-      centerPushes: total("stampedeCenterPushes"),
-      triceratopsLostAfterStampede: total("triceratopsLostAfterStampede"),
-      ordinaryTriceratopsAttacks: total("triceratopsAttacks"),
-      seatGamesWithStampede: count((seat) => seat.stampedes > 0),
-      /** Section 15.3: Stampede among the seat-games with Sawmilling. */
+      kills: total("chargeKills"),
+      eggKills: total("chargeEggKills"),
+      pushes: total("chargePushes"),
+      blockedPushes: total("chargeBlockedPushes"),
+      follows: total("chargeFollows"),
+      damage: total("chargeDamage"),
+      fieldDefenseDestroyed: total("chargeFieldDefense"),
+      fortifiedTargets: total("chargeFortifiedTargets"),
+      fortificationLevelsIgnored: total("chargeFortificationIgnored"),
+      centerTargets: total("chargeCenterTargets"),
+      centerPushes: total("chargeCenterPushes"),
+      triceratopsLostAfterCharge: total("triceratopsLostAfterCharge"),
+      wallbreakerAttacks: total("wallbreakerAttacks"),
+      seatGamesWithCharge: count((seat) => seat.charges > 0),
+      /** Charge among the seat-games with Sawmilling. */
       seatGamesWithSawmilling: sawmillingSeats,
-      seatGamesWithSawmillingAndStampede: sawmillingStampedeSeats,
-      stampedeShareOfSawmillingSeatGames: share(
-        sawmillingStampedeSeats,
+      seatGamesWithSawmillingAndCharge: sawmillingChargeSeats,
+      chargeShareOfSawmillingSeatGames: share(
+        sawmillingChargeSeats,
         sawmillingSeats,
       ),
-      /** The funnel from Sawmilling to a Stampede. */
+      /** The funnel from Sawmilling to a Charge. */
       sawmillingSeatGamesWithTriceratopsEgg: count(
         (seat) => sawmilling(seat) && laid("CATAPULT")(seat),
       ),
       sawmillingSeatGamesWithTriceratops: count(
         (seat) => sawmilling(seat) && hatched("CATAPULT")(seat),
       ),
-      sawmillingSeatGamesWithLane: count(
-        (seat) => sawmilling(seat) && seat.turnsWithLane > 0,
+      /**
+       * Revision 20 section 8.2 usefulness: seat-games with a hatched
+       * Triceratops, and those in which one attacked with a run-up.
+       */
+      seatGamesWithTriceratops: hatchedTriceratopsSeats,
+      seatGamesWithRunUpCharge: runUpChargeSeats,
+      runUpChargeShareOfTriceratopsSeatGames: share(
+        runUpChargeSeats,
+        hatchedTriceratopsSeats,
       ),
       turnsWithTriceratops: total("turnsWithTriceratops"),
-      turnsWithLane: total("turnsWithLane"),
       triceratopsTurns: total("triceratopsTurns"),
-      triceratopsTurnsWithLane: total("triceratopsTurnsWithLane"),
-      laneShareOfTriceratopsTurns: share(
-        total("triceratopsTurnsWithLane"),
-        total("triceratopsTurns"),
-      ),
     },
     tRex: {
       seatGamesWithChivalry: count(chivalry),
@@ -3256,7 +3279,7 @@ function dinosaurMarkdown(
     )
       .map(([pairing, rate]) => `${pairing} ${rate}`)
       .join(", ")}; worst excess ${caps.worstExcessPoints} points`,
-    `Stampede (1v1): ${all.stampede.stampedes} (d2/d3 ${all.stampede.byDistance.join("/")}; kills ${all.stampede.kills}, pushes ${all.stampede.pushes}, blocked ${all.stampede.blockedPushes}, Field Defense ${all.stampede.fieldDefenseDestroyed}) in ${all.stampede.seatGamesWithSawmillingAndStampede}/${all.stampede.seatGamesWithSawmilling} Sawmilling seat-games (${all.stampede.stampedeShareOfSawmillingSeatGames}); funnel egg ${all.stampede.sawmillingSeatGamesWithTriceratopsEgg}, hatched ${all.stampede.sawmillingSeatGamesWithTriceratops}, lane ${all.stampede.sawmillingSeatGamesWithLane}; lane share of Triceratops-turns ${all.stampede.laneShareOfTriceratopsTurns}`,
+    `Charge (1v1): ${all.charge.charges} (run-up 0/1/2 ${all.charge.byRunUp.join("/")}; kills ${all.charge.kills}, pushes ${all.charge.pushes}, follows ${all.charge.follows}, blocked ${all.charge.blockedPushes}, Field Defense ${all.charge.fieldDefenseDestroyed}, fortification levels ignored ${all.charge.fortificationLevelsIgnored}) in ${all.charge.seatGamesWithSawmillingAndCharge}/${all.charge.seatGamesWithSawmilling} Sawmilling seat-games (${all.charge.chargeShareOfSawmillingSeatGames}); funnel egg ${all.charge.sawmillingSeatGamesWithTriceratopsEgg}, hatched ${all.charge.sawmillingSeatGamesWithTriceratops}; run-up charge in ${all.charge.seatGamesWithRunUpCharge}/${all.charge.seatGamesWithTriceratops} Triceratops seat-games (${all.charge.runUpChargeShareOfTriceratopsSeatGames}); Wallbreaker attacks ${all.charge.wallbreakerAttacks}`,
     `Eggs (1v1): laid ${flat(all.eggs.laid)} (${all.eggs.laidPerSeatGame} per seat-game); hatched by time ${totalOf(all.eggs.hatchedByTime)}, by Shaman ${totalOf(all.eggs.hatchedByShaman)}; destroyed ${totalOf(all.eggs.destroyed)} (${all.eggs.destroyedShare} of laid) in ${all.eggs.seatGamesWithDestroyed}/${all.seatGames} seat-games (${all.eggs.seatGamesWithDestroyedShare}); lost with city ${totalOf(all.eggs.lostWithCity)}, abandoned ${totalOf(all.eggs.abandoned)}`,
     `Growth (1v1): Big ${all.growth.bigPerSeatGame} and Alpha ${all.growth.alphaPerSeatGame} per seat-game; Big in ${all.growth.seatGamesWithBig}/${all.seatGames} seat-games (${all.growth.seatGamesWithBigShare}); grown lost ${all.growth.grownLostShare}`,
     `T-Rex (1v1): Chivalry ${all.tRex.seatGamesWithChivalry}, Egg ${all.tRex.seatGamesWithEgg} of ${all.seatGames} seat-games; in 35+ round games ${all.tRex.longSeatGamesWithEgg}/${all.tRex.longSeatGames} (${all.tRex.longSeatGamesWithEggShare})`,

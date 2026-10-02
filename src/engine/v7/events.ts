@@ -43,12 +43,7 @@ export interface CombatPreviewV7 {
    * retaliation (the Vampire) and the defender survives.
    */
   readonly noRetaliationReason:
-    | "DEFENDER_DIED"
-    | "OUT_OF_RANGE"
-    | "UNANSWERED"
-    /** Revision 19: the target of a Stampede never retaliates. */
-    | "STAMPEDE"
-    | null;
+    "DEFENDER_DIED" | "OUT_OF_RANGE" | "UNANSWERED" | null;
   readonly advances: boolean;
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
   readonly attacksUsed: number;
@@ -89,10 +84,16 @@ export interface CombatPreviewV7 {
   readonly attackerBittenRises: boolean;
   readonly defenderBittenRises: boolean;
   /**
-   * Revision 19 Stampede: whole Attack from the run (0, 1, or 2); included
-   * in `attack2`. Always 0 for an ordinary attack.
+   * Revision 20 Charge!: whole Attack from the run-up (0, 1, or 2); included
+   * in `attack2`. Always 0 for an attacker without `LINEBREAKER`.
    */
-  readonly stampede: 0 | 1 | 2;
+  readonly runUp: number;
+  /**
+   * Revision 20: fortification levels removed from the defender by Charge!
+   * (0-3) or Wallbreaker (0 or 2). 0 for Acid, which keeps `acid`.
+   * `fortificationLevel` is the level that was applied.
+   */
+  readonly fortificationIgnored: number;
   /**
    * Revision 19 Acid: the attacker (a Spitter) removed the defender's cover
    * and fortification (`fortificationLevel` 0 and a defense bonus of 1/1).

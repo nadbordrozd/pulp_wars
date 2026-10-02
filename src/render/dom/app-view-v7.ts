@@ -30,7 +30,6 @@ import {
   isEggLaidRoleV7,
   previewHatchV7,
   previewLayEggV7,
-  previewStampedeV7,
   queryLandingPreviewV7,
   unitCapacitySlotsV7,
   UNIT_ROLE_IDS_V7,
@@ -154,14 +153,17 @@ import {
 } from "../goblin-presentation-v7";
 import {
   ABANDON_EGG_LABEL_V7,
+  CHARGE_LABEL_V7,
   DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7,
   DINOSAUR_HELP_RULES_V7,
   HATCH_LABEL_V7,
   HATCH_NEW_EGG_V7,
   HATCH_TOOLTIP_V7,
   LAY_EGG_PROMPT_V7,
-  STAMPEDE_LABEL_V7,
-  STAMPEDE_TOOLTIP_V7,
+  PROMOTE_TOOLTIP_V7,
+  PROMOTION_HELP_TIP_V7,
+  WALLBREAKER_UNLOCK_TEXT_V7,
+  nestingUnlockTextV7,
   abandonEggTooltipV7,
   cityCapacityTextV7,
   dinosaurAbilityDescriptionV7,
@@ -185,8 +187,6 @@ import {
   matchHasDinosaurV7,
   slotCapacityTooltipV7,
   slotsTextV7,
-  stampedePreviewTextV7,
-  stampedeUnavailableTextV7,
   turnsTextV7,
 } from "../dinosaur-presentation-v7";
 
@@ -375,14 +375,6 @@ export class Ruleset7DomAppView {
   #layEggPick: {
     readonly cityId: CityId;
     readonly role: UnitRoleIdV7;
-  } | null = null;
-  /**
-   * Revision 19: the armed Stampede. One that sets off a death blast asks
-   * for confirmation in the dock, like Kaboom!.
-   */
-  #stampedeArmed: {
-    readonly unitId: UnitId;
-    readonly targetUnitId: UnitId;
   } | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
@@ -596,13 +588,6 @@ export class Ruleset7DomAppView {
       } else if (this.#layEggPick !== null) {
         // Revision 19: Escape first leaves the nest-tile picking.
         this.#cancelLayEggPick();
-        return;
-      } else if (this.#stampedeArmed !== null) {
-        // Revision 19: Escape first disarms an armed Stampede.
-        const armed = this.#stampedeArmed;
-        this.#stampedeArmed = null;
-        this.#pendingFocusAction = `command-stampede-${armed.targetUnitId}`;
-        this.#render();
         return;
       } else this.#selection = null;
       this.#render();
@@ -1072,7 +1057,6 @@ export class Ruleset7DomAppView {
           this.#kaboomArmedUnitId = null;
           this.#kaboomHoverUnitId = null;
           this.#layEggPick = null;
-          this.#stampedeArmed = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
           this.#selectedModifier = null;
@@ -1383,16 +1367,11 @@ export class Ruleset7DomAppView {
         ...(kaboomUnitId !== null && kaboomUnitId === selectedUnitId
           ? { kaboomPreviewUnitId: kaboomUnitId }
           : {}),
-        // Revision 19: the nest tiles of the Egg being laid, and the armed
-        // Stampede of the selected Triceratops.
+        // Revision 19: the nest tiles of the Egg being laid.
         ...(this.#layEggPick !== null &&
         this.#selection?.kind === "CITY" &&
         this.#selection.cityId === this.#layEggPick.cityId
           ? { layEgg: this.#layEggPick }
-          : {}),
-        ...(this.#stampedeArmed !== null &&
-        this.#stampedeArmed.unitId === selectedUnitId
-          ? { stampedeTargetUnitId: this.#stampedeArmed.targetUnitId }
           : {}),
       },
     };
@@ -1409,7 +1388,6 @@ export class Ruleset7DomAppView {
     close.onclick = () => {
       this.#selection = null;
       this.#layEggPick = null;
-      this.#stampedeArmed = null;
       this.#render();
       this.#queueBoardFocus();
     };
@@ -1728,6 +1706,19 @@ export class Ruleset7DomAppView {
                 );
           if (description === null) continue;
           const entry = el(this.#document, "p", "v7-unit-ability");
+          // Revision 20: the Charge! line carries the former Stampede icon.
+          if (ability === "LINEBREAKER") {
+            entry.dataset.ability = "charge";
+            entry.append(
+              this.#chibiArt("ICON:ACTION:STAMPEDE", CHIBI_DOM_BOXES_V7.action)
+                ?.element ??
+                uiIconV7(
+                  this.#document,
+                  "stampede",
+                  "v7-ui-icon v7-command-icon",
+                ),
+            );
+          }
           entry.append(
             text(this.#document, "strong", abilityName(ability, unitFaction)),
             text(this.#document, "span", description),
@@ -1801,40 +1792,22 @@ export class Ruleset7DomAppView {
         info.dataset.v7Egg = "info";
         dock.append(info);
       }
-      const stampedeLegend = this.#stampedeLegend(unit.id);
-      if (stampedeLegend !== null) dock.append(stampedeLegend);
       const actions = this.#commandButtons(
         (command) =>
           "unitId" in command &&
           command.unitId === unit.id &&
           !NON_BUTTON_COMMANDS.has(command.kind),
       );
-      // Revision 19: why this Triceratops has no Stampede, why an adjacent
-      // Egg cannot be hatched yet, and the Field Defense restriction.
-      // aria-disabled keeps each explanation reachable by keyboard.
+      // Revision 19: why an adjacent Egg cannot be hatched yet, and the
+      // Field Defense restriction. aria-disabled keeps each explanation
+      // reachable by keyboard.
       const dinosaurBlocked: {
         readonly action: string;
         readonly label: string;
         readonly reason: string;
         readonly explanation: string;
-        readonly icon: "stampede" | "hatch" | null;
+        readonly icon: "hatch" | null;
       }[] = [];
-      const stampedeBlocked = stampedeUnavailableTextV7(
-        view,
-        unit.id,
-        this.#snapshot.offeredCommands.some(
-          (command) =>
-            command.kind === "STAMPEDE" && command.unitId === unit.id,
-        ),
-      );
-      if (stampedeBlocked !== null)
-        dinosaurBlocked.push({
-          action: "stampede-unavailable",
-          label: STAMPEDE_LABEL_V7,
-          reason: unit.activation.moved ? "stampede-moved" : "stampede-lane",
-          explanation: stampedeBlocked,
-          icon: "stampede",
-        });
       if (hatchBlockedEggsV7(view, unit.id).length > 0)
         dinosaurBlocked.push({
           action: "hatch-unavailable",
@@ -1865,12 +1838,8 @@ export class Ruleset7DomAppView {
                 "ui-action-field-defense",
                 this.#tacticalTheme(),
               )
-            : (this.#chibiArt(
-                entry.icon === "stampede"
-                  ? "ICON:ACTION:STAMPEDE"
-                  : "ICON:ACTION:HATCH",
-                CHIBI_DOM_BOXES_V7.action,
-              )?.element ??
+            : (this.#chibiArt("ICON:ACTION:HATCH", CHIBI_DOM_BOXES_V7.action)
+                ?.element ??
                 uiIconV7(
                   this.#document,
                   entry.icon,
@@ -1972,8 +1941,6 @@ export class Ruleset7DomAppView {
       }
       const kaboomPanel = this.#kaboomPanel(view, unit.id);
       if (kaboomPanel !== null) dock.append(kaboomPanel);
-      const stampedePanel = this.#stampedePanel(view, unit.id);
-      if (stampedePanel !== null) dock.append(stampedePanel);
       if (this.#selectedUnitHelpId === unit.id) {
         const modal = el(this.#document, "section", "v7-unit-help-dialog");
         modal.setAttribute("role", "dialog");
@@ -2428,12 +2395,10 @@ export class Ruleset7DomAppView {
         "",
         command.kind === "BUILD_MONUMENT"
           ? `command-build_monument-${command.achievement.toLowerCase()}`
-          : // Revision 19: one button per Stampede target or hatchable Egg.
-            command.kind === "STAMPEDE"
-            ? `command-stampede-${command.targetUnitId}`
-            : command.kind === "HATCH"
-              ? `command-hatch-${command.eggUnitId}`
-              : `command-${command.kind.toLowerCase()}`,
+          : // Revision 19: one button per hatchable Egg.
+            command.kind === "HATCH"
+            ? `command-hatch-${command.eggUnitId}`
+            : `command-${command.kind.toLowerCase()}`,
         command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL"
           ? "v7-train-action"
           : "v7-context-action",
@@ -2568,10 +2533,10 @@ export class Ruleset7DomAppView {
         // Revision 17: the blast preview is shown on hover or focus and while
         // armed; activating the button arms it and asks for confirmation.
         this.#decorateKaboomButton(action, command.unitId);
-      } else if (command.kind === "STAMPEDE") {
-        // Revision 19: the same Stampede as the board target, with its
-        // preview in the accessible name.
-        this.#decorateStampedeButton(action, command);
+      } else if (command.kind === "PROMOTE") {
+        // Revision 20: a Promotion adds maximum HP and fully heals.
+        action.title = PROMOTE_TOOLTIP_V7;
+        action.setAttribute("aria-label", PROMOTE_TOOLTIP_V7);
       } else if (command.kind === "HATCH") {
         this.#decorateHatchButton(action, command);
       } else if (abandonedEgg !== undefined) {
@@ -2638,9 +2603,7 @@ export class Ruleset7DomAppView {
       action.onclick =
         command.kind === "KABOOM"
           ? () => this.#toggleKaboom(command.unitId)
-          : command.kind === "STAMPEDE"
-            ? () => this.#activateStampede(command, "button")
-            : () => void this.#dispatch(command);
+          : () => void this.#dispatch(command);
       if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL") {
         const card = el(this.#document, "div", "v7-train-card");
         const help = button(
@@ -2683,14 +2646,6 @@ export class Ruleset7DomAppView {
     const view = this.#snapshot.view;
     if (view === null) return;
     const command = target.command;
-    // Revision 19: a Stampede that sets off a death blast is armed first
-    // (the dock asks for confirmation); activating its target again, or
-    // Confirm, performs it. Every other Stampede is one click, like an
-    // attack.
-    if (command.kind === "STAMPEDE") {
-      this.#activateStampede(command, "board");
-      return;
-    }
     const moved = await this.#dispatch(command);
     // Revision 16 two-step landing: land only when the one-cell Move reached
     // its water cell and the landing is still offered there.
@@ -2844,6 +2799,8 @@ export class Ruleset7DomAppView {
                 ]
               : []),
           ]),
+      // Revision 20: a Promotion fully heals (every faction).
+      PROMOTION_HELP_TIP_V7,
       "Capture every enemy city to win.",
       "Move a land unit onto your port to put it to sea.",
       ...(view !== null && view.setup.mapType !== "DRY_LAND"
@@ -3866,7 +3823,6 @@ export class Ruleset7DomAppView {
     this.#kaboomArmedUnitId = null;
     this.#kaboomHoverUnitId = null;
     this.#layEggPick = null;
-    this.#stampedeArmed = null;
     const restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
@@ -4558,82 +4514,6 @@ export class Ruleset7DomAppView {
     return panel;
   }
 
-  /** Revision 19 legend for the Stampede lane markers of the selected unit. */
-  #stampedeLegend(unitId: UnitId): HTMLElement | null {
-    if (
-      !this.#snapshot.offeredCommands.some(
-        (command) => command.kind === "STAMPEDE" && command.unitId === unitId,
-      )
-    )
-      return null;
-    const legend = el(
-      this.#document,
-      "ul",
-      "v7-landing-legend v7-stampede-legend",
-    );
-    legend.setAttribute("aria-label", "Stampede lane markers");
-    for (const [marker, label] of [
-      ["run", "Run tile"],
-      ["stand", "Stops here"],
-      ["target", "Stampede target"],
-    ] as const) {
-      const item = el(this.#document, "li", "v7-landing-legend-item");
-      item.dataset.stampedeMarker = marker;
-      const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
-      swatch.setAttribute("aria-hidden", "true");
-      item.append(swatch, text(this.#document, "span", label));
-      legend.append(item);
-    }
-    return legend;
-  }
-
-  /**
-   * Revision 19: a Stampede button names its target and damage and carries
-   * the whole preview in its accessible name. One that sets off a death
-   * blast is armed (pressed) before it is confirmed.
-   */
-  #decorateStampedeButton(
-    action: HTMLButtonElement,
-    command: Extract<CommandV7, { kind: "STAMPEDE" }>,
-  ): void {
-    const view = this.#snapshot.view;
-    const preview =
-      view === null
-        ? null
-        : previewStampedeV7(view, command.unitId, command.targetUnitId);
-    action.title = STAMPEDE_TOOLTIP_V7;
-    if (view === null || preview === null) return;
-    const summary = stampedePreviewTextV7(view, preview);
-    action.setAttribute(
-      "aria-label",
-      `${STAMPEDE_LABEL_V7} · ${summary.description}`,
-    );
-    const armed =
-      this.#stampedeArmed?.unitId === command.unitId &&
-      this.#stampedeArmed.targetUnitId === command.targetUnitId;
-    action.dataset.stampede = armed ? "armed" : "ready";
-    if (summary.needsConfirmation)
-      action.setAttribute("aria-pressed", String(armed));
-    action.append(
-      text(
-        this.#document,
-        "span",
-        summary.chip,
-        "v7-undead-preview-chip v7-stampede-chip",
-      ),
-    );
-    if (summary.warnings.length > 0) {
-      const warning = text(
-        this.#document,
-        "span",
-        summary.needsConfirmation ? "Blast" : "Warning",
-        "v7-undead-preview-chip v7-kaboom-chip",
-      );
-      warning.dataset.friendlyFire = "true";
-      action.append(warning);
-    }
-  }
-
   /** Revision 19: a Hatch button names the unit that appears at once. */
   #decorateHatchButton(
     action: HTMLButtonElement,
@@ -4660,127 +4540,6 @@ export class Ruleset7DomAppView {
         "v7-undead-preview-chip v7-hatch-chip",
       ),
     );
-  }
-
-  /**
-   * Revision 19: performs a Stampede, or arms one that sets off a death
-   * blast. Activating the armed target on the board again (or Confirm)
-   * performs it; the armed button disarms it.
-   */
-  #activateStampede(
-    command: Extract<CommandV7, { kind: "STAMPEDE" }>,
-    source: "button" | "board",
-  ): void {
-    if (this.#localBusy()) return;
-    const view = this.#snapshot.view;
-    const preview =
-      view === null
-        ? null
-        : previewStampedeV7(view, command.unitId, command.targetUnitId);
-    const needsConfirmation =
-      view !== null &&
-      preview !== null &&
-      stampedePreviewTextV7(view, preview).needsConfirmation;
-    const armed =
-      this.#stampedeArmed?.unitId === command.unitId &&
-      this.#stampedeArmed.targetUnitId === command.targetUnitId;
-    if (!needsConfirmation || (armed && source === "board")) {
-      void this.#dispatch(command);
-      return;
-    }
-    this.#stampedeArmed = armed
-      ? null
-      : { unitId: command.unitId, targetUnitId: command.targetUnitId };
-    this.#pendingFocusAction = armed
-      ? `command-stampede-${command.targetUnitId}`
-      : "confirm-stampede";
-    this.#render();
-  }
-
-  /**
-   * The armed Stampede confirmation: the run, the damage, the outcome, the
-   * Field Defense lost, the death-blast and chain warnings, and Confirm and
-   * Cancel. Null unless this unit's Stampede is armed and still offered.
-   */
-  #stampedePanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
-    const armed = this.#stampedeArmed;
-    if (armed === null || armed.unitId !== unitId) return null;
-    const command = this.#snapshot.offeredCommands.find(
-      (candidate): candidate is Extract<CommandV7, { kind: "STAMPEDE" }> =>
-        candidate.kind === "STAMPEDE" &&
-        candidate.unitId === unitId &&
-        candidate.targetUnitId === armed.targetUnitId,
-    );
-    const preview =
-      command === undefined
-        ? null
-        : previewStampedeV7(view, unitId, armed.targetUnitId);
-    if (command === undefined || preview === null) {
-      this.#stampedeArmed = null;
-      return null;
-    }
-    const summary = stampedePreviewTextV7(view, preview);
-    const panel = el(
-      this.#document,
-      "section",
-      "v7-kaboom-preview v7-stampede-preview",
-    );
-    panel.dataset.v7Stampede = "armed";
-    panel.setAttribute("aria-label", "Stampede preview");
-    panel.append(
-      text(
-        this.#document,
-        "p",
-        `${summary.run}. ${summary.damage}.`,
-        "v7-kaboom-summary",
-      ),
-    );
-    const lines = this.#document.createElement("ul");
-    lines.className = "v7-kaboom-lines";
-    const line = (
-      content: string | null,
-      id: string,
-      warning = false,
-    ): void => {
-      if (content === null) return;
-      const item = text(
-        this.#document,
-        "li",
-        content,
-        warning ? "v7-kaboom-line is-warning" : "v7-kaboom-line",
-      );
-      item.dataset.stampedeLine = id;
-      lines.append(item);
-    };
-    line(summary.outcome, "outcome");
-    line(summary.noRetaliation, "no-retaliation");
-    line(summary.fieldDefense, "field-defense");
-    line(summary.armoured, "armoured");
-    for (const warning of summary.warnings) line(warning, "warning", true);
-    panel.append(lines);
-    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
-    const confirm = button(
-      this.#document,
-      "Confirm Stampede",
-      "confirm-stampede",
-      "destructive v7-kaboom-confirm",
-    );
-    confirm.setAttribute(
-      "aria-label",
-      `Confirm Stampede. ${summary.description}`,
-    );
-    confirm.disabled = this.#localBusy();
-    confirm.onclick = () => void this.#dispatch(command);
-    const cancel = button(
-      this.#document,
-      "Cancel",
-      "cancel-stampede",
-      "v7-kaboom-cancel",
-    );
-    cancel.onclick = () => this.#activateStampede(command, "button");
-    buttons.append(confirm, cancel);
-    panel.append(buttons);
-    return panel;
   }
 
   /** Redraws the board (for example a Kaboom! preview) without the DOM. */
@@ -5199,7 +4958,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r19",
+    rulesetId: "pulp-wars-poc-7r20",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -5344,7 +5103,10 @@ function effectDescription(
     case "PLUNDER":
       return `+${effect.coins} Coin for each enemy unit your units or blasts kill`;
     case "NESTING":
-      return `Eggs have +${effect.eggHp} HP and hatch one turn sooner`;
+      // Revision 20: Nesting also adds a unit slot to every city.
+      return nestingUnlockTextV7();
+    case "WALLBREAKER":
+      return WALLBREAKER_UNLOCK_TEXT_V7;
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -5440,12 +5202,12 @@ function technologyRoleDescriptionsV7(
 ): readonly string[] {
   const label = effectiveRoleRuleV7(roleId, faction).label;
   // Revision 19 (section 4): a Dinosaur egg-laid role is laid, not trained:
-  // "Raptor Egg", "Triceratops Egg (Stampede)".
+  // "Raptor Egg", "Triceratops Egg (Charge!)" (revision 20).
   if (isEggLaidRoleV7(roleId, faction))
     return [
       `${label} Egg${
-        effectiveRoleRuleV7(roleId, faction).abilities.includes("STAMPEDE")
-          ? " (Stampede)"
+        effectiveRoleRuleV7(roleId, faction).abilities.includes("LINEBREAKER")
+          ? ` (${CHARGE_LABEL_V7})`
           : ""
       }`,
     ];
@@ -5486,6 +5248,7 @@ function technologyEffectGroupIdV7(
     case "WAAAGH_SUPPORT":
     case "PLUNDER":
     case "NESTING":
+    case "WALLBREAKER":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":
@@ -5689,7 +5452,7 @@ function boundaryNoticeV7(
   const undead = undeadBoundaryNoticeV7(events, before, after);
   // Revision 17: explosions, Plunder, Troll regeneration and WAAAGH!
   const goblin = goblinBoundaryNoticeV7(events, before, after);
-  // Revision 19: Eggs laid, hatched and lost, growth, and Stampedes.
+  // Revision 19: Eggs laid, hatched and lost, and growth.
   const dinosaur = dinosaurBoundaryNoticeV7(events, before, after);
   const parts = [
     undead?.text ?? null,
@@ -6164,7 +5927,6 @@ const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   // Revision 17: a round bomb with a lit fuse (GOBLIN.md Kaboom icon).
   KABOOM: "bomb",
   // Revision 19: LEGACY glyphs (CHIBI draws the PixelLab action icons).
-  STAMPEDE: "stampede",
   HATCH: "hatch",
 };
 

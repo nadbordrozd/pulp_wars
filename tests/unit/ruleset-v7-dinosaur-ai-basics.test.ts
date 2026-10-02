@@ -21,13 +21,15 @@ import {
   goblinSetupV7,
   unitAtV7,
 } from "../fixtures/v7-goblin-arena";
+import { fieldV7 } from "../fixtures/v7-revision20";
 
 // Revision 19 (`pulp_wars-c87.3`): the Normal AI support that lets a
-// Dinosaur seat play legally with Eggs and Stampede. The full Dinosaur policy
+// Dinosaur seat play legally with Eggs, and (revision 20) the two Charge!
+// benchmark scenarios that replace the Stampede ones. The full Dinosaur policy
 // (`pulp_wars-c87.5`) is covered by ruleset-v7-dinosaur-ai.test.ts and
 // ruleset-v7-dinosaur-ai-against.test.ts.
 
-/** No treasure chest anywhere, so open rows stay open lanes. */
+/** No treasure chest anywhere. */
 function arena(
   pieces: Parameters<typeof goblinArenaV7>[1],
   options: Parameters<typeof goblinArenaV7>[2] = {},
@@ -47,13 +49,11 @@ describe("ruleset-7 revision-19 Normal AI: public boundary", () => {
       "../engine/rules/ruleset-v7",
       "../engine/v7/commands",
       "../engine/v7/query",
-      // The public lane geometry, applied to the view (`viewStampedeFactsV7`).
-      "../engine/v7/stampede",
       "../engine/v7/types",
       "../engine/v7/view",
     ]);
     expect(source).not.toMatch(
-      /GameStateV7|stateStampedeFactsV7|random|Math\.random|Date\.now/,
+      /GameStateV7|STAMPEDE|stampede|random|Math\.random|Date\.now/,
     );
   });
 });
@@ -125,8 +125,8 @@ describe("ruleset-7 revision-19 Normal AI: Eggs", () => {
     };
     expect(layEggAdjustmentV7(view, lay, false)).toBe(0);
     // With Nesting (the arena has every technology) a T-Rex Egg hatches in
-    // two turns.
-    expect(layEggAdjustmentV7(view, lay, true)).toBe(-24);
+    // three turns (revision 20: 4, one sooner with Nesting).
+    expect(layEggAdjustmentV7(view, lay, true)).toBe(-36);
     expect(
       layEggAdjustmentV7(
         view,
@@ -150,10 +150,11 @@ describe("ruleset-7 revision-19 Normal AI: Eggs", () => {
       unitId: unitAtV7(state, { x: 6, y: 6 }).id,
       eggUnitId: unitAtV7(state, { x: 7, y: 7 }).id,
     };
-    // The T-Rex inside (10 * 4 + 28) and 10 per turn saved.
+    // The T-Rex inside (revision 20: 14 * 4 + 28) and 10 per turn saved
+    // (hatch time 4).
     expect(hatchScoreV7(view, hatch, false)).toEqual({
       priority: 1085,
-      strategic: 68 + 30,
+      strategic: 84 + 40,
       immediate: 0,
     });
     const candidates = chooseNormalCommandV7(view).candidates.map(
@@ -163,76 +164,101 @@ describe("ruleset-7 revision-19 Normal AI: Eggs", () => {
   });
 });
 
-describe("ruleset-7 revision-19 Normal AI: Stampede", () => {
-  it("takes a killing Stampede and does not move the Triceratops first", () => {
+describe("ruleset-7 revision-20 Normal AI: Charge! benchmark", () => {
+  it("takes a Charge after a run-up: it moves next to the target, then kills it", () => {
+    // A Fighter two tiles away: unmoved the Triceratops cannot reach it, and
+    // after a one-tile Move its Charge (Attack 4) kills it.
     const state = arena([
       { seat: 0, role: "CATAPULT", at: { x: 3, y: 3 } },
-      { seat: 1, role: "FIGHTER", at: { x: 5, y: 3 }, hp: 1 },
+      { seat: 1, role: "FIGHTER", at: { x: 5, y: 3 } },
     ]);
     const view = viewForV7(state, state.humanPlayerId);
     const triceratops = unitAtV7(state, { x: 3, y: 3 });
-    const stampede: CommandV7 = {
-      kind: "STAMPEDE",
+    const ofUnit = (candidate: GameStateV7) =>
+      chooseNormalCommandV7(
+        viewForV7(candidate, candidate.humanPlayerId),
+      ).candidates.filter(
+        (item) =>
+          "unitId" in item.command && item.command.unitId === triceratops.id,
+      );
+    // No attack is offered yet; the best command of the unit is a Move that
+    // ends next to the Fighter.
+    expect(
+      queryPlayerCommandsV7(view).some(
+        (command) =>
+          command.kind === "ATTACK" && command.unitId === triceratops.id,
+      ),
+    ).toBe(false);
+    const move = ofUnit(state)[0];
+    expect(move?.score.priority).toBe(860);
+    if (move?.command.kind !== "MOVE") throw new Error("no approach Move");
+    const end = move.command.path.at(-1);
+    expect(
+      end !== undefined && Math.max(Math.abs(end.x - 5), Math.abs(end.y - 3)),
+    ).toBe(1);
+    const moved = applyCommandV7(state, state.humanPlayerId, move.command);
+    if (!moved.accepted) throw new Error("Move rejected");
+    // Now the Charge is the best command of the unit, and it kills.
+    const charge: CommandV7 = {
+      kind: "ATTACK",
       unitId: triceratops.id,
       targetUnitId: unitAtV7(state, { x: 5, y: 3 }).id,
     };
-    expect(scoreCommandV7(view, stampede)).toMatchObject({
-      priority: 1180,
-      immediateValue: 10 * 1 + 20,
-    });
-    const decision = chooseNormalCommandV7(view);
-    // Economy comes first; the Stampede is the best command of the unit.
-    expect(
-      decision.candidates.find(
-        (candidate) =>
-          "unitId" in candidate.command &&
-          candidate.command.unitId === triceratops.id,
-      )?.command,
-    ).toEqual(stampede);
-    expect(
-      decision.candidates.some(
-        (candidate) =>
-          candidate.command.kind === "MOVE" &&
-          candidate.command.unitId === triceratops.id,
-      ),
-    ).toBe(false);
-    expect(applyCommandV7(state, state.humanPlayerId, stampede).accepted).toBe(
-      true,
+    const best = ofUnit(moved.state)[0];
+    expect(best?.command).toEqual(charge);
+    expect(best?.score.priority).toBe(1180);
+    // The public preview holds the run-up: 10 damage and a kill.
+    expect(best?.score.immediateValue).toBe(
+      scoreCommandV7(viewForV7(moved.state, moved.state.humanPlayerId), charge)
+        .immediateValue,
     );
+    const result = applyCommandV7(moved.state, state.humanPlayerId, charge);
+    expect(result.accepted).toBe(true);
+    if (!result.accepted) return;
+    const combat = result.events.find(
+      (event) => event.kind === "COMBAT_RESOLVED",
+    );
+    expect(combat).toMatchObject({
+      preview: { runUp: 1, attack2: 8, defenderDies: true, advances: true },
+    });
   });
 
-  it("declines a Stampede whose death blast would kill an own unit", () => {
-    const state = checkedV7({
-      ...goblinArenaV7(
-        ["DINOSAUR", "GOBLIN"],
-        [
-          { seat: 0, role: "CATAPULT", at: { x: 3, y: 3 }, hp: 3 },
-          { seat: 1, role: "KNIGHT", at: { x: 5, y: 3 }, hp: 1 },
-        ],
-      ),
-      treasureChests: [],
-    });
+  it("declines a Charge when the Triceratops would die for no gain", () => {
+    // The Guard is pushed and the Triceratops follows into the reach of
+    // three Marksmen that cannot hit it where it stands: its 52 points for
+    // 7 damage to a Guard.
+    const state = fieldV7([
+      { seat: 0, role: "CATAPULT", at: { x: 3, y: 3 } },
+      { seat: 1, role: "GUARD", at: { x: 4, y: 3 } },
+      { seat: 1, role: "MARKSMAN", at: { x: 7, y: 2 } },
+      { seat: 1, role: "MARKSMAN", at: { x: 7, y: 3 } },
+      { seat: 1, role: "MARKSMAN", at: { x: 7, y: 4 } },
+    ]);
     const view = viewForV7(state, state.humanPlayerId);
-    const stampede: CommandV7 = {
-      kind: "STAMPEDE",
+    const charge: CommandV7 = {
+      kind: "ATTACK",
       unitId: unitAtV7(state, { x: 3, y: 3 }).id,
-      targetUnitId: unitAtV7(state, { x: 5, y: 3 }).id,
+      targetUnitId: unitAtV7(state, { x: 4, y: 3 }).id,
     };
-    expect(queryPlayerCommandsV7(view)).toContainEqual(stampede);
-    // Big (+4 HP, to 7) and then the Scrap Buggy's blast of 4: it survives.
-    expect(scoreCommandV7(view, stampede).priority).toBe(1180);
-    const doomed = checkedV7({
-      ...state,
-      units: state.units.map((unit) =>
-        unit.role === "CATAPULT"
-          ? { ...unit, kills: 1, maxHp: 22, hp: 3 }
-          : unit,
-      ),
-    });
+    expect(queryPlayerCommandsV7(view)).toContainEqual(charge);
+    const decision = chooseNormalCommandV7(view);
     expect(
-      scoreCommandV7(viewForV7(doomed, doomed.humanPlayerId), stampede)
-        .priority,
-    ).toBe(-1);
+      decision.candidates.map((candidate) => candidate.command),
+    ).not.toContainEqual(charge);
+    // Without the Marksmen the same Charge is a candidate.
+    const safe = fieldV7([
+      { seat: 0, role: "CATAPULT", at: { x: 3, y: 3 } },
+      { seat: 1, role: "GUARD", at: { x: 4, y: 3 } },
+    ]);
+    expect(
+      chooseNormalCommandV7(viewForV7(safe, safe.humanPlayerId)).candidates.map(
+        (candidate) => candidate.command,
+      ),
+    ).toContainEqual({
+      kind: "ATTACK",
+      unitId: unitAtV7(safe, { x: 3, y: 3 }).id,
+      targetUnitId: unitAtV7(safe, { x: 4, y: 3 }).id,
+    });
   });
 });
 

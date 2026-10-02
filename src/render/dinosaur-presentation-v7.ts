@@ -4,8 +4,11 @@ import {
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
   MILITIA_FIGHTERS_V7,
+  PROMOTION_HP_V7,
+  PROMOTION_KILLS_V7,
+  RUN_UP_MAXIMUM_TILES_V7,
   UNIT_ROLE_IDS_V7,
-  arePlayersHostileV7,
+  attackIsChargeV7,
   effectiveRoleRuleV7,
   factionTreeV7,
   isEggLaidRoleV7,
@@ -18,19 +21,17 @@ import {
   type PlayerEventV7,
   type PlayerViewV7,
   type PublicDinosaurMechanicsV7,
-  type StampedePreviewV7,
   type UnitRoleIdV7,
 } from "../engine/index";
-import {
-  goblinAttackPreviewTextV7,
-  technologyNameV7,
-} from "./goblin-presentation-v7";
+import { technologyNameV7 } from "./goblin-presentation-v7";
 
 /**
- * Presentation helpers for revision 19 Dinosaurs (spec section 12). Every
- * helper reads only public views, public previews, and projected player
- * events. A match without a Dinosaur seat never reaches a code path that
- * changes its revision-18 presentation.
+ * Presentation helpers for revision 19 Dinosaurs (spec section 12) as
+ * amended by revision 20 (docs/product/RULESET_7_REVISION_20.md section
+ * 7.2: Charge!, Nesting, Wallbreaker, full-heal growth). Every helper reads
+ * only public views, public previews, and projected player events. A match
+ * without a Dinosaur seat never reaches a code path that changes its
+ * revision-18 presentation, except the Promote text (`PROMOTE_TOOLTIP_V7`).
  */
 
 type PublicUnitV7 = PlayerViewV7["units"][number];
@@ -59,11 +60,11 @@ export const HATCH_TOOLTIP_V7 =
 export const HATCH_NEW_EGG_V7 =
   "This Egg was laid this turn; it can be hatched from your next turn";
 export const ABANDON_EGG_LABEL_V7 = "Abandon Egg";
-export const STAMPEDE_LABEL_V7 = "Stampede";
-export const STAMPEDE_MOVED_V7 = "A Triceratops cannot Stampede after moving";
-export const STAMPEDE_NO_LANE_V7 =
-  "No clear lane: needs open ground in a straight line";
-export const STAMPEDE_NO_RETALIATION_V7 = "No retaliation";
+/** Revision 20: the Triceratops's passive ability (`LINEBREAKER`). */
+export const CHARGE_LABEL_V7 = "Charge!";
+export const CHARGE_IGNORES_FORTIFICATION_V7 = "Ignores fortification";
+export const WALLBREAKER_PREVIEW_V7 = "Wallbreaker: ignores City Walls";
+export const CHARGE_DESTROYS_FIELD_DEFENSE_V7 = "Destroys Field Defense";
 export const ACID_PREVIEW_V7 = "Acid: ignores cover and fortification";
 export const DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7 =
   "Dinosaurs cannot build Field Defense";
@@ -83,8 +84,8 @@ function plural(count: number, singular: string): string {
 
 /**
  * Every number in the Dinosaur texts comes from the registry (the balance
- * bead `pulp_wars-c87.8` may tune hatch times, slots, costs, HP, Attack, the
- * Egg, growth, Nesting and the Stampede bonus), so no sentence goes stale.
+ * beads may tune hatch times, slots, costs, HP, Attack, the Egg, growth,
+ * Nesting and the Charge! run-up), so no sentence goes stale.
  */
 const dinosaurLabel = (role: UnitRoleIdV7): string =>
   effectiveRoleRuleV7(role, "DINOSAUR").label;
@@ -116,24 +117,64 @@ function bigBodySlots(): number {
   );
 }
 
-/** Whole Attack a Stampede gains per lane tile run (the Triceratops's). */
-export function stampedeRunBonusV7(): number {
+/** Whole Attack a Charge! gains per tile moved (the Triceratops's). */
+export function chargeRunUpBonusV7(): number {
   return (
     Math.max(
       ...UNIT_ROLE_IDS_V7.map(
-        (role) => roleMechanicsV7(role, "DINOSAUR").stampedeRunBonus2,
+        (role) => roleMechanicsV7(role, "DINOSAUR").runUpBonus2,
       ),
     ) / 2
   );
 }
 
-/** HP an Egg gains from Nesting, from the Dinosaur tree's unlock. */
-export function nestingEggHpBonusV7(): number {
+/** The most whole Attack a Charge! run-up can add ("up to +2"). */
+export function chargeRunUpMaximumV7(): number {
+  return chargeRunUpBonusV7() * RUN_UP_MAXIMUM_TILES_V7;
+}
+
+/** The Dinosaur tree's Nesting unlock (Egg HP, hatch turns, city slots). */
+function nestingUnlock(): {
+  readonly eggHp: number;
+  readonly hatchTurns: number;
+  readonly citySlots: number;
+} {
   for (const node of factionTreeV7("DINOSAUR").nodes)
     for (const unlock of node.unlocks)
-      if (unlock.kind === "NESTING") return unlock.eggHp;
-  return 0;
+      if (unlock.kind === "NESTING") return unlock;
+  return { eggHp: 0, hatchTurns: 0, citySlots: 0 };
 }
+
+/** HP an Egg gains from Nesting, from the Dinosaur tree's unlock. */
+export function nestingEggHpBonusV7(): number {
+  return nestingUnlock().eggHp;
+}
+
+/** Unit slots every city gains from Nesting (revision 20). */
+export function nestingCitySlotsV7(): number {
+  return nestingUnlock().citySlots;
+}
+
+/** Section 4.3 unlock text of Nesting, from the registry. */
+export function nestingUnlockTextV7(): string {
+  const unlock = nestingUnlock();
+  return `Eggs have +${unlock.eggHp} HP and hatch ${numberWord(unlock.hatchTurns)} turn sooner; +${unlock.citySlots} unit slot in every city`;
+}
+
+/** Section 4.3 unlock text of Wallbreaker. */
+export const WALLBREAKER_UNLOCK_TEXT_V7 = "Dinosaurs ignore City Walls";
+
+/**
+ * Section 7.2 "Promote command": the Promotion's maximum HP and full heal
+ * (every faction).
+ */
+export const PROMOTE_TOOLTIP_V7 = `Promote: +${PROMOTION_HP_V7} maximum HP and a full heal`;
+
+/**
+ * Section 7.2 Help line "Promotion", shown in "How to play" in every match
+ * (Promotion is a rule of every faction).
+ */
+export const PROMOTION_HELP_TIP_V7 = `Promotion: a unit with ${PROMOTION_KILLS_V7} kills can be promoted once: +${PROMOTION_HP_V7} maximum HP and a full heal.`;
 
 /** HP of each growth stage, and an Alpha's extra whole Attack. */
 const GROWTH_HP = GROWTH_HP_V7;
@@ -147,8 +188,11 @@ function alphaRuleText(): string {
   return `Alpha after ${plural(GROWTH_KILLS_V7[1], "kill")} (+${GROWTH_HP} more HP and +${ALPHA_ATTACK} Attack)`;
 }
 
-/** Section 12.2 "Stampede tooltip". */
-export const STAMPEDE_TOOLTIP_V7 = `Charge a unit 2 or 3 tiles away in a straight line: +${stampedeRunBonusV7()} Attack per tile run.`;
+/**
+ * Section 7.2 "Unit info (Triceratops)": the Charge! rule in one line, with
+ * the run-up numbers from the registry.
+ */
+export const CHARGE_DESCRIPTION_V7 = `+${chargeRunUpBonusV7()} Attack per tile moved this turn (up to +${chargeRunUpMaximumV7()}). Ignores Walls and Field Defense, destroys Field Defense, and pushes back.`;
 
 /** The Armoured reduction of the Dinosaur registration (1). */
 const ARMOUR_REDUCTION = Math.max(
@@ -239,11 +283,11 @@ export function dinosaurHelpRulesV7(): readonly (readonly [string, string])[] {
         ] as const)),
     [
       "Grow",
-      `a Dinosaur grows when it kills: ${growthRuleText()} and ${alphaRuleText()}, for good.`,
+      `a Dinosaur grows when it kills: ${growthRuleText()} and ${alphaRuleText()}, for good; each growth fully heals it.`,
     ],
     [
-      "Stampede",
-      `a ${dinosaurLabel("CATAPULT")} that has not moved charges a unit 2 or 3 tiles away in a straight line over open ground, with +${stampedeRunBonusV7()} Attack per tile run and no retaliation, and pushes the survivor back.`,
+      CHARGE_LABEL_V7,
+      `a ${dinosaurLabel("CATAPULT")} hits harder the farther it moved this turn (+${chargeRunUpBonusV7()} Attack per tile, up to +${chargeRunUpMaximumV7()}); its attack ignores Walls and Field Defense, destroys Field Defense, and pushes a surviving defender back, taking its place.`,
     ],
     [
       "Acid",
@@ -263,7 +307,11 @@ export function dinosaurHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       "Nesting",
-      `with Nesting, Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner.`,
+      `with Nesting, Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner, and every city has ${numberWord(nestingCitySlotsV7())} more unit slot.`,
+    ],
+    [
+      "Wallbreaker",
+      "with Wallbreaker, dinosaurs ignore City Walls when they attack.",
     ],
     ["Wild", "Dinosaurs cannot build Field Defense."],
     [
@@ -391,8 +439,8 @@ export function dinosaurAbilityNameV7(
       return RAMPAGE_LABEL_V7;
     case "CHARGE":
       return POUNCE_LABEL_V7;
-    case "STAMPEDE":
-      return STAMPEDE_LABEL_V7;
+    case "LINEBREAKER":
+      return CHARGE_LABEL_V7;
     case "HATCH":
       return HATCH_LABEL_V7;
     case "ACID":
@@ -418,8 +466,8 @@ export function dinosaurAbilityDescriptionV7(
       return "After a kill, advances and can attack another adjacent enemy.";
     case "CHARGE":
       return "With Raiding, +1 Attack on the first Attack after moving 2+ cells.";
-    case "STAMPEDE":
-      return `${STAMPEDE_TOOLTIP_V7} No retaliation; a survivor is pushed back.`;
+    case "LINEBREAKER":
+      return CHARGE_DESCRIPTION_V7;
     case "HATCH":
       return HATCH_TOOLTIP_V7;
     case "ACID":
@@ -427,15 +475,15 @@ export function dinosaurAbilityDescriptionV7(
     case "ARMOURED":
       return `Takes ${ARMOUR_REDUCTION} less damage from every hit, to a minimum of 1.`;
     case "GROW":
-      return `${growthRuleText()}; ${alphaRuleText()}, for good.`;
+      return `${growthRuleText()}; ${alphaRuleText()}, for good. Growing fully heals.`;
     default:
       return null;
   }
 }
 
 /**
- * Dinosaur command labels: Lay Egg, Hatch and Stampede for every viewer, and
- * War Drums for a Dinosaur viewer's Rally.
+ * Dinosaur command labels: Lay Egg and Hatch for every viewer, and War Drums
+ * for a Dinosaur viewer's Rally.
  */
 export function dinosaurCommandLabelV7(
   kind: string,
@@ -443,14 +491,13 @@ export function dinosaurCommandLabelV7(
 ): string | null {
   if (kind === "LAY_EGG") return LAY_EGG_LABEL_V7;
   if (kind === "HATCH") return HATCH_LABEL_V7;
-  if (kind === "STAMPEDE") return STAMPEDE_LABEL_V7;
   if (kind === "RALLY" && faction === "DINOSAUR") return WAR_DRUMS_LABEL_V7;
   return null;
 }
 
 /** Section 12.2 "Growth unit info" for a growing unit's stage. */
 export function growthInfoTextV7(killsToNextStage: number | null): string {
-  return `Big: +${GROWTH_HP} HP. Alpha: +${GROWTH_HP * 2} HP, +${ALPHA_ATTACK} Attack. ${
+  return `Big: +${GROWTH_HP} HP. Alpha: +${GROWTH_HP * 2} HP, +${ALPHA_ATTACK} Attack. Growing fully heals. ${
     killsToNextStage === null
       ? "Fully grown."
       : `Next stage in ${plural(killsToNextStage, "kill")}.`
@@ -582,35 +629,6 @@ export function dinosaurFieldDefenseBlockedV7(
 }
 
 /**
- * Why the viewer's own Triceratops is offered no Stampede this turn
- * (section 12.2), or null when it is offered one, has already used its
- * primary action, or is not such a unit.
- */
-export function stampedeUnavailableTextV7(
-  view: PlayerViewV7,
-  unitId: number,
-  stampedeOffered: boolean,
-): string | null {
-  const unit = view.units.find((candidate) => candidate.id === unitId);
-  if (
-    stampedeOffered ||
-    unit === undefined ||
-    unit.ownerId !== view.viewer.id ||
-    unit.form !== "LAND" ||
-    view.turnOrder[view.activeSeatIndex] !== view.viewer.id ||
-    !unitRoleRuleV7(view, unit).abilities.includes("STAMPEDE") ||
-    unit.activation.attacked ||
-    unit.activation.specialActed ||
-    unit.activation.recovered
-  )
-    return null;
-  // A Triceratops that moved is done for the turn (it cannot attack after
-  // moving), so the "moved" reason does not depend on `handled`.
-  if (unit.activation.moved) return STAMPEDE_MOVED_V7;
-  return unit.activation.handled ? null : STAMPEDE_NO_LANE_V7;
-}
-
-/**
  * The own Eggs next to the viewer's own Shaman `unitId` that were laid this
  * turn, so Hatch is not offered for them (section 6.5). Empty for any other
  * unit, or once the Shaman has used its primary action.
@@ -661,12 +679,65 @@ function capitalized(text: string): string {
 }
 
 /**
- * Short canvas note for the Acid and Armoured outcomes of an attack preview
- * (section 12.2). It is null for every exchange without them, so matches
- * without a Dinosaur seat are unchanged.
+ * Revision 20 section 7.2: the Charge! and Wallbreaker lines of an attack
+ * preview, in order: "Charge +{n}", "Ignores fortification" or
+ * "Wallbreaker: ignores City Walls", the Push ("Pushes back; {unit}
+ * follows", "Pushes back", "{unit} cannot be pushed", or "{unit} may be
+ * pushed back"), and "Destroys Field Defense". Empty for an attack without
+ * any of them.
  */
-export function dinosaurCombatNoteV7(preview: CombatPreviewV7): string | null {
+export function chargePreviewLinesV7(
+  view: PlayerViewV7,
+  preview: CombatPreviewV7,
+): readonly string[] {
+  const attacker = view.units.find((unit) => unit.id === preview.attackerId);
+  const target = view.units.find((unit) => unit.id === preview.targetUnitId);
+  if (attacker === undefined) return [];
+  const charge = attackIsChargeV7(view, attacker);
+  const lines: string[] = [];
+  if (preview.runUp > 0) lines.push(`Charge +${preview.runUp}`);
+  if (preview.fortificationIgnored > 0)
+    lines.push(
+      charge ? CHARGE_IGNORES_FORTIFICATION_V7 : WALLBREAKER_PREVIEW_V7,
+    );
+  if (!charge) return lines;
+  const actorName = unitDisplayNameV7(view, attacker);
+  const targetName =
+    target === undefined ? "The unit" : unitDisplayNameV7(view, target);
+  if (!preview.defenderDies && target?.form !== "EGG")
+    lines.push(
+      preview.push === "WILL_PUSH"
+        ? preview.advances
+          ? `Pushes back; ${actorName} follows`
+          : "Pushes back"
+        : preview.push === "UNKNOWN_BEHIND_FOG"
+          ? `${targetName} may be pushed back`
+          : `${targetName} cannot be pushed`,
+    );
+  const tile =
+    target === undefined
+      ? undefined
+      : view.board.tiles.find(
+          (candidate) =>
+            candidate.at.x === target.at.x && candidate.at.y === target.at.y,
+        );
+  if (tile?.explored === true && tile.fieldDefense)
+    lines.push(CHARGE_DESTROYS_FIELD_DEFENSE_V7);
+  return lines;
+}
+
+/**
+ * Short canvas note for the Charge!, Wallbreaker, Acid and Armoured outcomes
+ * of an attack preview (revision 19 section 12.2, revision 20 section 7.2).
+ * It is null for every exchange without them, so matches without a Dinosaur
+ * seat are unchanged.
+ */
+export function dinosaurCombatNoteV7(
+  preview: CombatPreviewV7,
+  view: PlayerViewV7,
+): string | null {
   const parts = [
+    ...chargePreviewLinesV7(view, preview),
     ...(preview.acid ? [ACID_PREVIEW_V7] : []),
     ...(preview.defenderArmoured ? [ARMOURED_PREVIEW_V7] : []),
     ...(preview.attackerArmoured ? ["Your armour −1"] : []),
@@ -674,11 +745,13 @@ export function dinosaurCombatNoteV7(preview: CombatPreviewV7): string | null {
   return parts.length === 0 ? null : parts.join(" · ");
 }
 
-/** Screen-reader sentences for the same Acid and Armoured outcomes. */
+/** Screen-reader sentences for the same outcomes. */
 export function dinosaurCombatSemanticNoteV7(
   preview: CombatPreviewV7,
+  view: PlayerViewV7,
 ): string | null {
   const parts = [
+    ...chargePreviewLinesV7(view, preview).map((line) => `${line}.`),
     ...(preview.acid
       ? ["Acid ignores the defender's cover and fortification."]
       : []),
@@ -692,121 +765,11 @@ export function dinosaurCombatSemanticNoteV7(
   return parts.length === 0 ? null : parts.join(" ");
 }
 
-/** The text of an offered Stampede's preview (sections 12.1 and 12.2). */
-export interface StampedePreviewTextV7 {
-  /** "Runs {n} tile(s): +{n} Attack". */
-  readonly run: string;
-  /** "Deals {d} damage". */
-  readonly damage: string;
-  /** Kill, Push, blocked or "may be pushed" outcome sentence. */
-  readonly outcome: string;
-  /** The same outcome in a few words, for the board. */
-  readonly outcomeShort: string;
-  readonly noRetaliation: string;
-  /** "Destroys Field Defense" (with the tile count), or null. */
-  readonly fieldDefense: string | null;
-  /** "Armoured −1", or null. */
-  readonly armoured: string | null;
-  /** Bitten rising, death-blast, chain and friendly-fire warnings. */
-  readonly warnings: readonly string[];
-  /** The warnings in a few words, or null without warnings. */
-  readonly warningSummary: string | null;
-  /** A death blast follows: the Stampede asks for confirmation. */
-  readonly needsConfirmation: boolean;
-  /** Board label: "Deal 10 · run +2". */
-  readonly boardLabel: string;
-  /** Board note: outcome, no retaliation, Field Defense, Armoured. */
-  readonly boardNote: string;
-  /** Short dock chip: "{Unit} · −10". */
-  readonly chip: string;
-  /** Full sentence for accessible names and the board cursor. */
-  readonly description: string;
-}
-
-export function stampedePreviewTextV7(
-  view: PlayerViewV7,
-  preview: StampedePreviewV7,
-): StampedePreviewTextV7 {
-  const target = view.units.find((unit) => unit.id === preview.targetUnitId);
-  const actor = view.units.find((unit) => unit.id === preview.unitId);
-  const name = target === undefined ? "unit" : unitDisplayNameV7(view, target);
-  const actorName =
-    actor === undefined ? "Triceratops" : unitDisplayNameV7(view, actor);
-  const combat = preview.combat;
-  const run = `Runs ${plural(preview.runTiles, "tile")}: +${combat.stampede} Attack`;
-  const damage = `Deals ${combat.damageToDefender} damage`;
-  const [outcome, outcomeShort] = combat.defenderDies
-    ? combat.advances
-      ? [`Kills ${name}; ${actorName} advances`, "Kills · advances"]
-      : [`Kills ${name}; ${actorName} stops next to it`, "Kills · stops"]
-    : combat.push === "WILL_PUSH"
-      ? combat.advances
-        ? [`Pushes ${name} back; ${actorName} follows`, "Pushes back · follows"]
-        : [
-            `Pushes ${name} back; ${actorName} stops next to it`,
-            "Pushes back · stops",
-          ]
-      : combat.push === "UNKNOWN_BEHIND_FOG"
-        ? [`${name} may be pushed back`, "May be pushed"]
-        : [
-            `${name} cannot be pushed; ${actorName} stops next to it`,
-            "Not pushed · stops",
-          ];
-  const lost = preview.fieldDefenseDestroyed.length;
-  const fieldDefense =
-    lost === 0
-      ? null
-      : lost === 1
-        ? "Destroys Field Defense"
-        : `Destroys Field Defense on ${lost} tiles`;
-  const armoured = combat.defenderArmoured ? ARMOURED_PREVIEW_V7 : null;
-  const goblin = goblinAttackPreviewTextV7(view, combat, preview.explosions);
-  const bitten = combat.defenderBittenRises
-    ? `Bitten: ${name} rises as an enemy Zombie`
-    : null;
-  const warnings = [...(bitten === null ? [] : [bitten]), ...goblin.warnings];
-  const summaryParts = [
-    ...(bitten === null ? [] : ["Rises as Zombie"]),
-    ...(goblin.summary === null ? [] : [goblin.summary]),
-  ];
-  const boardNote = [
-    outcomeShort,
-    STAMPEDE_NO_RETALIATION_V7,
-    ...(fieldDefense === null ? [] : ["Field Defense destroyed"]),
-    ...(armoured === null ? [] : [armoured]),
-  ].join(" · ");
-  const description = [
-    `${run}.`,
-    `${damage}.`,
-    `${outcome}.`,
-    `${STAMPEDE_NO_RETALIATION_V7}.`,
-    ...(fieldDefense === null ? [] : [`${fieldDefense}.`]),
-    ...(armoured === null ? [] : [`${armoured}.`]),
-    ...warnings.map((line) => `${line}.`),
-  ].join(" ");
-  return {
-    run,
-    damage,
-    outcome,
-    outcomeShort,
-    noRetaliation: STAMPEDE_NO_RETALIATION_V7,
-    fieldDefense,
-    armoured,
-    warnings,
-    warningSummary: summaryParts.length === 0 ? null : summaryParts.join(" · "),
-    needsConfirmation: preview.explosions.explosions.length > 0,
-    boardLabel: `Deal ${combat.damageToDefender} · run +${combat.stampede}`,
-    boardNote,
-    chip: `${name} −${combat.damageToDefender}`,
-    description,
-  };
-}
-
 /**
  * Log and toast text for revision-19 events of one projected boundary
- * (section 12.2): Eggs laid, hatched, destroyed and lost with a city, growth,
- * and Stampedes. A match without a Dinosaur seat never emits these events,
- * so its notices are unchanged.
+ * (section 12.2): Eggs laid, hatched, destroyed and lost with a city, and
+ * growth. A match without a Dinosaur seat never emits these events, so its
+ * notices are unchanged.
  */
 export function dinosaurBoundaryNoticeV7(
   events: readonly PlayerEventV7[],
@@ -867,26 +830,6 @@ export function dinosaurBoundaryNoticeV7(
       if (unit.ownerId === viewerId) toast = true;
       parts.push(
         `${owned(unit.ownerId, unitRoleRuleV7(after, unit).label)} grew: ${growthStageLabelV7(event.stage)}`,
-      );
-    } else if (event.kind === "COMBAT_RESOLVED" && event.preview.stampede > 0) {
-      const attacker =
-        before.units.find((unit) => unit.id === event.preview.attackerId) ??
-        unitById(event.preview.attackerId);
-      const target = before.units.find(
-        (unit) => unit.id === event.preview.targetUnitId,
-      );
-      if (attacker === undefined) continue;
-      toast = true;
-      const targetName =
-        target === undefined
-          ? "a unit"
-          : target.ownerId === viewerId
-            ? `your ${unitDisplayNameV7(before, target)}`
-            : arePlayersHostileV7(after, viewerId, target.ownerId)
-              ? `${possessive(after, target.ownerId)} ${unitDisplayNameV7(before, target)}`
-              : `allied ${unitDisplayNameV7(before, target)}`;
-      parts.push(
-        `${owned(attacker.ownerId, unitRoleRuleV7(after, attacker).label)} stampeded ${targetName}: ${event.preview.damageToDefender} damage`,
       );
     }
   }

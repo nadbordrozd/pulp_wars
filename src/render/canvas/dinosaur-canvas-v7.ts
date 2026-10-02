@@ -3,9 +3,8 @@
  * section 12.4, bead pulp_wars-c87.7) is drawn over a Dinosaur unit shown
  * with Human art (the LEGACY art set, or CHIBI while a Dinosaur raster is
  * missing), exactly where the Undead and Goblin badges go. Bead
- * pulp_wars-c87.4 adds the LEGACY Egg, the Egg countdown chip, the growth
- * chevrons and CHIBI growth scale, and the Stampede lane tiles
- * (docs/art/factions/DINOSAUR.md). Sizes are world units scaled by zoom.
+ * pulp_wars-c87.4 adds the LEGACY Egg, the Egg countdown chip, and the
+ * growth chevrons and CHIBI growth scale (docs/art/factions/DINOSAUR.md). Sizes are world units scaled by zoom.
  */
 
 import { UNDEAD_BADGE_FRAME_V7 } from "./undead-canvas-v7";
@@ -305,72 +304,5 @@ export function drawEggCountdownV7(
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillText(String(turns), cx, cy + radius * 0.06);
-  context.restore();
-}
-
-/**
- * One tile of a Stampede lane: a faint cream fill with a charcoal-edged
- * arrowhead pointing along the run (two on a run tile). The stand tile,
- * where the Triceratops stops next to its target, wears a solid inset
- * outline and one arrowhead.
- */
-export function drawStampedeLaneCellV7(
-  context: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  zoom: number,
-  lane: { readonly dx: number; readonly dy: number; readonly stand: boolean },
-  highContrast: boolean,
-): void {
-  const size = 128 * zoom;
-  const { cream, charcoal } = DINOSAUR_CUE_COLORS_V7;
-  const light = highContrast ? "#ffffff" : cream;
-  context.save();
-  context.fillStyle = highContrast
-    ? "rgba(255, 255, 255, 0.2)"
-    : "rgba(239, 230, 200, 0.22)";
-  context.fillRect(x - size / 2, y - size / 2, size, size);
-  if (lane.stand) {
-    const inset = 9 * zoom;
-    for (const [color, width] of [
-      [highContrast ? "#000000" : charcoal, 5 * zoom],
-      [light, 2.5 * zoom],
-    ] as const) {
-      context.strokeStyle = color;
-      context.lineWidth = Math.max(1, width);
-      context.strokeRect(
-        x - size / 2 + inset,
-        y - size / 2 + inset,
-        size - inset * 2,
-        size - inset * 2,
-      );
-    }
-  }
-  const length = Math.hypot(lane.dx, lane.dy) || 1;
-  const ux = lane.dx / length;
-  const uy = lane.dy / length;
-  const reach = 15 * zoom;
-  const wing = 13 * zoom;
-  context.lineJoin = "miter";
-  context.lineCap = "butt";
-  const offsets = lane.stand ? [0] : [-14 * zoom, 14 * zoom];
-  for (const [color, width] of [
-    [highContrast ? "#000000" : charcoal, 8 * zoom],
-    [light, 4 * zoom],
-  ] as const) {
-    context.strokeStyle = color;
-    context.lineWidth = Math.max(1.5, width);
-    for (const offset of offsets) {
-      const tipX = x + ux * (offset + reach / 2);
-      const tipY = y + uy * (offset + reach / 2);
-      const backX = tipX - ux * reach;
-      const backY = tipY - uy * reach;
-      context.beginPath();
-      context.moveTo(backX - uy * wing, backY + ux * wing);
-      context.lineTo(tipX, tipY);
-      context.lineTo(backX + uy * wing, backY - ux * wing);
-      context.stroke();
-    }
-  }
   context.restore();
 }

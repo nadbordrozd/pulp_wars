@@ -190,7 +190,7 @@ describe("Ruleset 7 browser smoke script", () => {
     // No fixture import: the probe also runs against a deployed bundle.
     expect(probe).not.toContain("/tests/fixtures/");
   });
-  it("stampedes, lays an Egg, sees it hatch and resumes as Dinosaurs", () => {
+  it("charges after a Move, lays an Egg, sees it hatch and resumes as Dinosaurs", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = source.slice(
       source.indexOf("async function probeDinosaurMatch("),
@@ -220,17 +220,25 @@ describe("Ruleset 7 browser smoke script", () => {
       `await pointerClick(connection, '[data-action="launch"]')`,
     );
     expect(launch).toBeGreaterThan(-1);
-    // Stampede from the board with the keyboard, then its log line.
-    const stampede = probe.indexOf(
-      `document.querySelector('[data-action^="command-stampede-"]:not(:disabled)') !== null`,
+    // Revision 20: the Triceratops moves, shows its Charge! run-up, and
+    // attacks from the board with the keyboard; no Stampede control exists.
+    const charge = probe.indexOf(
+      `document.querySelector('.v7-unit-help-dialog .v7-unit-ability[data-ability="charge"]') !== null`,
     );
-    expect(stampede).toBeGreaterThan(launch);
-    expect(probe).toContain("includes('Your Triceratops stampeded')");
+    expect(charge).toBeGreaterThan(launch);
+    expect(probe).toContain("unit.activation.movedPathLength === 2");
+    expect(probe).toContain(
+      String.raw`/Charge \+[\d.]+\./.exec(chargePreview)`,
+    );
+    expect(probe).toContain("view.commandIndex === 2");
+    expect(source).not.toMatch(
+      /command-stampede|stampeded|v7-stampede-legend'\)/,
+    );
     // Lay Egg through the card and a nest tile picked on the board.
     const card = probe.indexOf(
       `await pointerClick(connection, '[data-action="lay-egg-raider"]')`,
     );
-    expect(card).toBeGreaterThan(stampede);
+    expect(card).toBeGreaterThan(charge);
     expect(probe).toContain(
       `document.querySelector('[data-v7-lay-egg="picking"]')?.dataset.nestTiles !== undefined`,
     );
@@ -363,9 +371,10 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     // Two release captures, four Undead setup probe captures, one
     // revision-14 Plague/Bitten fixture capture per art set (in a loop), and
-    // three revision-17 Goblin probe captures, three revision-19 Dinosaur
-    // probe captures, and one revision-18 Showcase capture.
-    expect(source.match(/await capture\(/g)).toHaveLength(14);
+    // three revision-17 Goblin probe captures, four Dinosaur probe captures
+    // (revision 20 adds the Charge! attack preview), and one revision-18
+    // Showcase capture.
+    expect(source.match(/await capture\(/g)).toHaveLength(15);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");
@@ -418,7 +427,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r19", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r20", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

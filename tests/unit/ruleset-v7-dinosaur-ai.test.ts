@@ -1,19 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   EGG_GUARD_PRIORITY_V7,
-  FIRST_STAMPEDE_UNIT_BIAS_V7,
+  FIRST_LINEBREAKER_UNIT_BIAS_V7,
   GROWN_RETREAT_PRIORITY_V7,
   HATCH_APPROACH_PRIORITY_V7,
   HATCH_LAST_TURN_PRIORITY_V7,
   HATCH_PRIORITY_V7,
   HATCH_THREATENED_PRIORITY_V7,
   SIGNATURE_RESEARCH_PRIORITY_V7,
-  STAMPEDE_APPROACH_PRIORITY_V7,
-  STAMPEDE_BREAKER_PRIORITY_V7,
-  STAMPEDE_CHIP_PRIORITY_V7,
-  STAMPEDE_KILL_PRIORITY_V7,
-  STAMPEDE_LANE_MOVE_PRIORITY_V7,
-  STAMPEDE_PUSH_CENTER_PRIORITY_V7,
   dinosaurMatchForPolicyV7,
   dinosaurProductionAdjustmentV7,
   layEggAdjustmentV7,
@@ -34,14 +28,11 @@ import {
   dinosaurFieldV7,
   dinosaurTechsWithoutV7,
   forestTileV7,
-  mountainTileV7,
   isCandidateV7,
   moveCandidateV7,
-  patchTileV7,
   productionCandidatesV7,
   publicUnitAtV7,
   scoreV7,
-  stampedeV7,
   unitCandidatesV7,
   unitIdAtV7,
   viewerViewV7,
@@ -157,30 +148,34 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: production", () => {
       command.kind === "LAY_EGG" || command.kind === "TRAIN"
         ? dinosaurProductionAdjustmentV7(from, command, facts)
         : Number.NaN;
-    // Hatch 1, 2, and 3 turns: one point per turn beyond the first.
+    // Hatch 1, 2, and 4 turns (revision 20: the T-Rex hatches in 4): one
+    // point per turn beyond the first.
     expect(adjust(lay("RAIDER"))).toBe(0);
     expect(adjust(lay("GUARD"))).toBe(-1);
-    expect(adjust(lay("KNIGHT"))).toBe(-2);
+    expect(adjust(lay("KNIGHT"))).toBe(-3);
     // A two-slot Egg that takes the last slots of a small city.
-    expect(adjust(lay("KNIGHT"), { ...city, freeSlots: 2 })).toBe(-6);
+    expect(adjust(lay("KNIGHT"), { ...city, freeSlots: 2 })).toBe(-7);
     expect(adjust(lay("KNIGHT"), { ...city, freeSlots: 2, capacity: 5 })).toBe(
-      -2,
+      -3,
     );
     expect(adjust(lay("GUARD"), { ...city, freeSlots: 1 })).toBe(-1);
-    // The first Stampede unit. pulp_wars-c87.8: the bias is 20 (was 4), and
-    // a Triceratops Egg hatches in one turn (was two), so it has no delay
-    // cost (was -1).
-    expect(FIRST_STAMPEDE_UNIT_BIAS_V7).toBe(20);
-    expect(adjust(lay("CATAPULT"))).toBe(FIRST_STAMPEDE_UNIT_BIAS_V7);
+    // The first Charge! unit (revision 20: the former first Stampede unit).
+    // A Triceratops Egg hatches in two turns again, so it has a delay cost
+    // of 1, and it is a two-slot Egg.
+    expect(FIRST_LINEBREAKER_UNIT_BIAS_V7).toBe(20);
+    expect(adjust(lay("CATAPULT"))).toBe(FIRST_LINEBREAKER_UNIT_BIAS_V7 - 1);
+    expect(adjust(lay("CATAPULT"), { ...city, freeSlots: 2 })).toBe(
+      FIRST_LINEBREAKER_UNIT_BIAS_V7 - 1 - 4,
+    );
     const withTriceratops = viewerViewV7(
       dino([own("CATAPULT", 5, 1), foe("FIGHTER", 1, 1)], NO_NESTING),
     );
-    expect(adjust(lay("CATAPULT"), city, withTriceratops)).toBe(0);
+    expect(adjust(lay("CATAPULT"), city, withTriceratops)).toBe(-1);
     // Nesting shortens the delay.
     const nesting = viewerViewV7(dino([foe("FIGHTER", 1, 1)]));
-    expect(adjust(lay("KNIGHT"), city, nesting)).toBe(-1);
-    expect(layEggAdjustmentV7(nesting, lay("KNIGHT"), true)).toBe(-24);
-    expect(layEggAdjustmentV7(view, lay("KNIGHT"), true)).toBe(-36);
+    expect(adjust(lay("KNIGHT"), city, nesting)).toBe(-2);
+    expect(layEggAdjustmentV7(nesting, lay("KNIGHT"), true)).toBe(-36);
+    expect(layEggAdjustmentV7(view, lay("KNIGHT"), true)).toBe(-48);
     expect(layEggAdjustmentV7(view, lay("KNIGHT"), false)).toBe(0);
     // Shaman: by need, never as the defender of a threatened city.
     const shaman: CommandV7 = { kind: "TRAIN", cityId, role: "CAPTAIN" };
@@ -220,10 +215,12 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: production", () => {
   });
 
   it("abandons an Egg only to free the slot a threatened, empty city needs for a defender", () => {
-    // Caveman (1 slot) + T-Rex Egg (2 slots) fill the capacity of 3.
+    // Caveman (1 slot) + T-Rex Egg (2 slots) fill the capacity of 3 (a
+    // seat without Nesting, which adds a slot since revision 20).
     const egg = [{ seat: 0, role: "KNIGHT", at: { x: 9, y: 9 } }] as const;
     const emergency = dino([own("FIGHTER", 10, 10), foe("FIGHTER", 6, 8)], {
       eggs: egg,
+      ...NO_NESTING,
     });
     const abandon: CommandV7 = {
       kind: "DISBAND",
@@ -240,10 +237,12 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: production", () => {
     // A defended center, or no threat, is no emergency.
     const guarded = dino([own("FIGHTER", 8, 8), foe("FIGHTER", 6, 8)], {
       eggs: egg,
+      ...NO_NESTING,
     });
     expect(productionCandidatesV7(guarded)).toEqual([]);
     const calm = dino([own("FIGHTER", 10, 10), foe("FIGHTER", 1, 1)], {
       eggs: egg,
+      ...NO_NESTING,
     });
     expect(
       productionCandidatesV7(calm).some(
@@ -345,11 +344,12 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
     const nest = dino(pieces, { eggs: egg });
     const from = { x: 10, y: 8 };
     const to = { x: 10, y: 7 };
-    // T-Rex Egg: (10 * 4 + 28) * 2 / (1 + 3 turns) = 34.
+    // T-Rex Egg (revision 20: cost 14, hatch 4):
+    // floor((14 * 4 + 28) * 2 / (1 + 4 turns)) = 33.
     expect(
       scoreV7(nest, attackV7(nest, from, to)).strategicValue -
         scoreV7(bare, attackV7(bare, from, to)).strategicValue,
-    ).toBe(34);
+    ).toBe(33);
   });
 });
 
@@ -456,200 +456,8 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Grow", () => {
   });
 });
 
-describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Stampede", () => {
-  const tri = { x: 1, y: 3 };
-  const target = { x: 4, y: 3 };
-
-  it("takes a killing Stampede and holds the Triceratops for it", () => {
-    const state = dino([own("CATAPULT", 1, 3), foe("FIGHTER", 4, 3)]);
-    const stampede = stampedeV7(state, tri, target);
-    const score = scoreV7(state, stampede);
-    expect(score.priority).toBe(STAMPEDE_KILL_PRIORITY_V7);
-    // The Fighter (2 * 4 + 10) and the growth of the first kill.
-    expect(score.strategicValue).toBe(18 + 10);
-    expect(score.immediateValue).toBe(10 * 10 + 20);
-    const commands = unitCandidatesV7(state, tri).map(
-      (candidate) => candidate.command,
-    );
-    expect(commands[0]).toEqual(stampede);
-    expect(commands.some((command) => command.kind === "MOVE")).toBe(false);
-    expect(applyCommandV7(state, state.humanPlayerId, stampede).accepted).toBe(
-      true,
-    );
-  });
-
-  it("values damage, Field Defense broken, and a defender pushed off a center", () => {
-    const chip = dino([own("CATAPULT", 1, 3), foe("GUARD", 4, 3)]);
-    const plain = scoreV7(chip, stampedeV7(chip, tri, target));
-    expect(plain.priority).toBe(STAMPEDE_CHIP_PRIORITY_V7);
-    expect(plain.immediateValue).toBe(140);
-    const fortified = patchTileV7(chip, target, { fieldDefense: true });
-    const breaker = scoreV7(fortified, stampedeV7(fortified, tri, target));
-    expect(breaker.priority).toBe(STAMPEDE_BREAKER_PRIORITY_V7);
-    expect(breaker.strategicValue).toBe(plain.strategicValue + 8);
-    // The Guard on the hostile capital (2, 8) is pushed off; the Triceratops
-    // follows onto the center. With an own capturer within two tiles the
-    // Stampede ranks with a capture opening.
-    const center = { x: 2, y: 8 };
-    const from = { x: 5, y: 8 };
-    const siege = dino([own("CATAPULT", 5, 8), foe("GUARD", 2, 8)]);
-    const push = scoreV7(siege, stampedeV7(siege, from, center));
-    expect(push.priority).toBe(STAMPEDE_CHIP_PRIORITY_V7);
-    const supported = dino([
-      own("CATAPULT", 5, 8),
-      own("FIGHTER", 3, 6),
-      foe("GUARD", 2, 8),
-    ]);
-    const open = scoreV7(supported, stampedeV7(supported, from, center));
-    expect(open.priority).toBe(STAMPEDE_PUSH_CENTER_PRIORITY_V7);
-    expect(open.strategicValue).toBe(push.strategicValue + 15);
-    // Off a center the same hit is worth 20 less.
-    expect(push.strategicValue - plain.strategicValue).toBe(20);
-  });
-
-  it("declines a Stampede that leaves the Triceratops to die for no gain", () => {
-    const exposed = dino([
-      own("CATAPULT", 1, 3),
-      foe("GUARD", 4, 3),
-      foe("KNIGHT", 5, 2),
-      foe("KNIGHT", 5, 4),
-      foe("CATAPULT", 5, 1),
-    ]);
-    const stampede = stampedeV7(exposed, tri, target);
-    expect(scoreV7(exposed, stampede).priority).toBe(-1);
-    const commands = unitCandidatesV7(exposed, tri).map(
-      (candidate) => candidate.command,
-    );
-    expect(commands).not.toContainEqual(stampede);
-    // Not held: it is free to move.
-    expect(commands.some((command) => command.kind === "MOVE")).toBe(true);
-    // The same hit with no enemy behind the target is taken.
-    const alone = dino([own("CATAPULT", 1, 3), foe("GUARD", 4, 3)]);
-    expect(isCandidateV7(alone, stampedeV7(alone, tri, target))).toBe(true);
-  });
-
-  it("moves an unmoved Triceratops onto an open lane when no Stampede is offered", () => {
-    const state = dino([own("CATAPULT", 1, 2), foe("GUARD", 4, 3)]);
-    const from = { x: 1, y: 2 };
-    expect(unitCandidatesV7(state, from, "STAMPEDE")).toEqual([]);
-    // (1, 3) is three tiles from the Guard along the row, (2, 3) two.
-    const far = moveCandidateV7(state, from, { x: 1, y: 3 });
-    const near = moveCandidateV7(state, from, { x: 2, y: 3 });
-    expect(far?.score.priority).toBe(STAMPEDE_LANE_MOVE_PRIORITY_V7);
-    expect(near?.score.priority).toBe(STAMPEDE_LANE_MOVE_PRIORITY_V7);
-    expect(far?.score.strategicValue).toBeGreaterThan(
-      near?.score.strategicValue ?? 0,
-    );
-    // (0, 3) has no lane: a routine Move.
-    expect(moveCandidateV7(state, from, { x: 0, y: 3 })?.score.priority).toBe(
-      700,
-    );
-    expect(unitCandidatesV7(state, from)[0]).toEqual(far);
-    // A Mountain on (2, 3) closes the lane from (1, 3); a Forest there
-    // leaves it open (pulp_wars-c87.8).
-    const closed = mountainTileV7(state, { x: 2, y: 3 });
-    expect(moveCandidateV7(closed, from, { x: 1, y: 3 })?.score.priority).toBe(
-      700,
-    );
-    const wooded = forestTileV7(state, { x: 2, y: 3 });
-    expect(moveCandidateV7(wooded, from, { x: 1, y: 3 })?.score.priority).toBe(
-      STAMPEDE_LANE_MOVE_PRIORITY_V7,
-    );
-    // A Triceratops that has already acted gains nothing from a lane tile.
-    const spent = dino([
-      {
-        ...own("CATAPULT", 1, 2),
-        activation: { attacked: true, attacksUsed: 1 },
-      },
-      foe("GUARD", 4, 3),
-    ]);
-    expect(
-      unitCandidatesV7(spent, from, "MOVE").every(
-        (candidate) =>
-          candidate.score.priority < STAMPEDE_LANE_MOVE_PRIORITY_V7,
-      ),
-    ).toBe(true);
-  });
-
-  it("does not take a lane tile inside visible lethal reach", () => {
-    // (1, 3) is on a lane to the Guard but next to two Knights' reach.
-    const state = dino([
-      own("CATAPULT", 1, 2, 4),
-      foe("GUARD", 4, 3),
-      foe("KNIGHT", 3, 5),
-    ]);
-    expect(
-      unitCandidatesV7(state, { x: 1, y: 2 }, "MOVE").every(
-        (candidate) =>
-          candidate.score.priority < STAMPEDE_LANE_MOVE_PRIORITY_V7,
-      ),
-    ).toBe(true);
-  });
-
-  it("walks an unmoved Triceratops toward the nearest launch tile when no lane tile is in reach", () => {
-    // pulp_wars-c87.8. The Guard on (6, 3) can be hit from (3, 3) and (4, 3)
-    // on its row, from (3, 0) and (4, 1) on a diagonal, and so on. None is
-    // one Move from (1, 2); (2, 1), (2, 2), and (2, 3) are one tile nearer.
-    const state = dino([own("CATAPULT", 1, 2), foe("GUARD", 6, 3)]);
-    const from = { x: 1, y: 2 };
-    expect(unitCandidatesV7(state, from, "STAMPEDE")).toEqual([]);
-    for (const to of [
-      { x: 2, y: 1 },
-      { x: 2, y: 2 },
-      { x: 2, y: 3 },
-    ])
-      expect(moveCandidateV7(state, from, to)?.score.priority, `${to.y}`).toBe(
-        STAMPEDE_APPROACH_PRIORITY_V7,
-      );
-    // A Move away from them stays routine.
-    expect(moveCandidateV7(state, from, { x: 0, y: 3 })?.score.priority).toBe(
-      700,
-    );
-    expect(unitCandidatesV7(state, from)[0]?.score.priority).toBe(
-      STAMPEDE_APPROACH_PRIORITY_V7,
-    );
-    // A launch tile more than four tiles away is not approached.
-    const far = dino([own("CATAPULT", 1, 2), foe("GUARD", 10, 3)]);
-    expect(
-      unitCandidatesV7(far, from, "MOVE").every(
-        (candidate) => candidate.score.priority < STAMPEDE_APPROACH_PRIORITY_V7,
-      ),
-    ).toBe(true);
-    // Nor by a Triceratops that has already acted, nor by another role.
-    const spent = dino([
-      {
-        ...own("CATAPULT", 1, 2),
-        activation: { attacked: true, attacksUsed: 1 },
-      },
-      foe("GUARD", 6, 3),
-    ]);
-    const guard = dino([own("GUARD", 1, 2), foe("GUARD", 6, 3)]);
-    for (const other of [spent, guard])
-      expect(
-        unitCandidatesV7(other, from, "MOVE").every(
-          (candidate) =>
-            candidate.score.priority !== STAMPEDE_APPROACH_PRIORITY_V7,
-        ),
-      ).toBe(true);
-  });
-
-  it("declines a Stampede whose death blast kills an own unit, and prices its own blast once", () => {
-    const blast = dinosaurFieldV7(
-      ["DINOSAUR", "GOBLIN"],
-      [own("CATAPULT", 1, 3, 3), foe("KNIGHT", 3, 3, 1)],
-    );
-    const from = { x: 1, y: 3 };
-    const buggy = { x: 3, y: 3 };
-    // Big (+4 HP, to 7), then the Scrap Buggy's blast of 4: it survives.
-    expect(scoreV7(blast, stampedeV7(blast, from, buggy)).priority).toBe(
-      STAMPEDE_KILL_PRIORITY_V7,
-    );
-    // Already Big (no heal): the blast kills it.
-    const doomed = withKillsV7(blast, from, 1, 3);
-    expect(scoreV7(doomed, stampedeV7(doomed, from, buggy)).priority).toBe(-1);
-    expect(isCandidateV7(doomed, stampedeV7(doomed, from, buggy))).toBe(false);
-  });
-});
+// Revision 20 removed Stampede: the Triceratops's Charge! policy is covered
+// by tests/unit/ruleset-v7-revision20-ai.test.ts.
 
 describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () => {
   // pulp_wars-c87.8: with two cities, the next technology toward the
@@ -763,8 +571,9 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Hatch", () => {
         candidate.score.strategicValue,
       ]),
     ).toEqual([
-      // T-Rex: 10 * 4 + 28 + 10 * 3 turns; Ankylosaurus: 5 * 4 + 20 + 20.
-      ["KNIGHT", HATCH_PRIORITY_V7, 98],
+      // T-Rex (revision 20): 14 * 4 + 28 + 10 * 4 turns; Ankylosaurus:
+      // 5 * 4 + 20 + 20.
+      ["KNIGHT", HATCH_PRIORITY_V7, 124],
       ["GUARD", HATCH_PRIORITY_V7, 60],
       ["RAIDER", HATCH_LAST_TURN_PRIORITY_V7, 38],
     ]);
@@ -801,8 +610,8 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Hatch", () => {
     });
     const approach = moveCandidateV7(state, from, { x: 9, y: 9 });
     expect(approach?.score.priority).toBe(HATCH_APPROACH_PRIORITY_V7);
-    // A quarter of the T-Rex inside (68).
-    expect(approach?.score.strategicValue).toBe(17);
+    // A quarter of the T-Rex inside (revision 20: 14 * 4 + 28 = 84).
+    expect(approach?.score.strategicValue).toBe(21);
     expect(moveCandidateV7(state, from, { x: 9, y: 10 })?.score.priority).toBe(
       700,
     );

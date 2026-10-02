@@ -427,8 +427,9 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
       captureEligible: false,
       activation: eggActivationV7(),
     });
+    // Revision 20 section 3: a T-Rex Egg costs 14 and hatches in 4 turns.
     expect(result.state.eggs).toEqual([
-      { unitId: egg.id, turnsRemaining: 3, laidThisTurn: true },
+      { unitId: egg.id, turnsRemaining: 4, laidThisTurn: true },
     ]);
     expect(result.events).toEqual([
       {
@@ -437,10 +438,10 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
         cityId: city.id,
         unitId: egg.id,
         role: "KNIGHT",
-        cost: 10,
+        cost: 14,
         at: NEST,
         hp: 6,
-        turnsRemaining: 3,
+        turnsRemaining: 4,
       },
     ]);
     expect(parseEventV7(result.events[0]).ok).toBe(true);
@@ -448,7 +449,7 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
     expect(result.state.random).toEqual(state.random);
     expect(
       result.state.players.find((player) => player.id === actor)?.coins,
-    ).toBe(10);
+    ).toBe(6);
     expect(cityOfV7(result.state, 0).cityActionAvailable).toBe(false);
     // The city action is shared: a second Egg, or a trained unit, must wait.
     expect(
@@ -642,7 +643,7 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
       ["MARKSMAN", 3],
       ["GUARD", 4],
       ["CATAPULT", 7],
-      ["KNIGHT", 9],
+      ["KNIGHT", 13],
     ] as const) {
       const command = lay(forged, role, NEST);
       expect(
@@ -713,26 +714,25 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
     const base = dino([], [], { techs: { 0: without("FORTIFICATION") } });
     const actor = base.humanPlayerId;
     const city = cityOfV7(base, 0);
-    // The T-Rex, the two-slot egg-laid role (pulp_wars-c87.8 made the
-    // Triceratops this test used a one-slot unit that hatches in one turn).
+    // The T-Rex, a two-slot egg-laid role (revision 20: cost 14, hatch 4).
     const preview = (state: GameStateV7, role: UnitRoleIdV7 = "KNIGHT") =>
       previewLayEggV7(viewForV7(state, actor), city.id, role);
     expect(preview(base)).toEqual({
       cityId: city.id,
       role: "KNIGHT",
-      cost: 10,
+      cost: 14,
       slots: 2,
       usedSlots: 0,
       capacity: 3,
       hp: 6,
-      turnsToHatch: 3,
+      turnsToHatch: 4,
       nestTiles: nestTilesV7(base, city),
       unavailableReason: null,
     });
     expect(preview(base, "CATAPULT")).toMatchObject({
       cost: 8,
-      slots: 1,
-      turnsToHatch: 1,
+      slots: 2,
+      turnsToHatch: 2,
       unavailableReason: null,
     });
     // Not an egg-laid role, or not the viewer's city.
@@ -746,14 +746,17 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
       [
         { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
         { seat: 0, role: "FIGHTER", at: { x: 5, y: 3 } },
+        { seat: 0, role: "FIGHTER", at: { x: 6, y: 3 } },
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
       ],
       [],
       { coins: 0 },
     );
+    // Revision 20: with Nesting the level-1 capital holds four slots
+    // (level + 1, Planning, Nesting); three are used.
     expect(preview(full)).toMatchObject({
-      usedSlots: 2,
-      capacity: 3,
+      usedSlots: 3,
+      capacity: 4,
       unavailableReason: "CITY_CAPACITY_FULL",
     });
     expect(
@@ -769,8 +772,12 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
       preview(patchCity(besieged, 0, { cityActionAvailable: false }))
         ?.unavailableReason,
     ).toBe("CITY_ACTION_SPENT");
-    // Nesting: 10 HP and one turn sooner.
-    expect(preview(dino())).toMatchObject({ hp: 10, turnsToHatch: 2 });
+    // Nesting: 10 HP, one turn sooner, and (revision 20) one more slot.
+    expect(preview(dino())).toMatchObject({
+      hp: 10,
+      turnsToHatch: 3,
+      capacity: 4,
+    });
   });
 });
 
@@ -973,7 +980,6 @@ describe("ruleset-7 revision-19 Egg unit", () => {
       { kind: "RALLY", unitId: egg.id },
       { kind: "TEND_WOUNDED", unitId: egg.id },
       { kind: "HATCH", unitId: egg.id, eggUnitId: egg.id },
-      { kind: "STAMPEDE", unitId: egg.id, targetUnitId: target.id },
       { kind: "RECOVER", unitId: egg.id },
       { kind: "CAPTURE", unitId: egg.id },
       { kind: "PROMOTE", unitId: egg.id },
@@ -1346,8 +1352,7 @@ describe("ruleset-7 revision-19 Egg unit", () => {
     const state = dino([], [], { techs: { 0: without("FORTIFICATION") } });
     const actor = state.humanPlayerId;
     const city = cityOfV7(state, 0);
-    // A T-Rex Egg (two slots, hatch time 3): pulp_wars-c87.8 made the
-    // Triceratops this test used a one-slot unit that hatches in one turn.
+    // A T-Rex Egg (two slots; revision 20: hatch time 4).
     const laid = applyOkV7(state, actor, lay(state, "KNIGHT", NEST));
     expect(assignedUnitCountV7(laid.state, city.id)).toBe(2);
     expect(previewCityCapacityV7(laid.state, city.id)).toMatchObject({
@@ -1365,8 +1370,10 @@ describe("ruleset-7 revision-19 Egg unit", () => {
     const second = endTurnUntilV7(first, actor).state;
     expect(unitAtV7(second, NEST).form).toBe("EGG");
     const third = endTurnUntilV7(second, actor).state;
-    expect(unitAtV7(third, NEST)).toMatchObject({ form: "LAND", hp: 28 });
-    expect(assignedUnitCountV7(third, city.id)).toBe(2);
+    expect(unitAtV7(third, NEST).form).toBe("EGG");
+    const fourth = endTurnUntilV7(third, actor).state;
+    expect(unitAtV7(fourth, NEST)).toMatchObject({ form: "LAND", hp: 28 });
+    expect(assignedUnitCountV7(fourth, city.id)).toBe(2);
   });
 
   it("publishes an Egg's stats, countdown, and form to every viewer who sees it", () => {
@@ -1375,8 +1382,6 @@ describe("ruleset-7 revision-19 Egg unit", () => {
       [
         {
           seat: 0,
-          // A T-Rex Egg: pulp_wars-c87.8 made the Triceratops Egg this test
-          // used hatch in one turn, so it never has two turns left.
           role: "KNIGHT",
           at: NEST,
           maxHp: 10,
@@ -1414,7 +1419,8 @@ describe("ruleset-7 revision-19 Egg unit", () => {
           killsToNextStage: null,
           armourReduction: 0,
           acid: false,
-          stampedeRunBonus: 0,
+          runUpBonus: 0,
+          runUpMaximum: 0,
           egg: { turnsRemaining: 2, hatchesAs: "KNIGHT" },
         },
       });
@@ -1459,9 +1465,10 @@ describe("ruleset-7 revision-19 hatching", () => {
       ["RAIDER", 1, 12],
       ["MARKSMAN", 1, 10],
       ["GUARD", 2, 20],
-      // pulp_wars-c87.8: the Triceratops hatch time is 1 (was 2).
-      ["CATAPULT", 1, 18],
-      ["KNIGHT", 3, 28],
+      // Revision 20: the Triceratops hatches in 2 turns with 20 HP and the
+      // T-Rex in 4.
+      ["CATAPULT", 2, 20],
+      ["KNIGHT", 4, 28],
     ] as const) {
       const start = dino([], [], { techs: { 0: without("FORTIFICATION") } });
       const actor = start.humanPlayerId;
@@ -1759,7 +1766,7 @@ describe("ruleset-7 revision-19 Shaman Hatch", () => {
       role: "KNIGHT",
       at: NEST,
       hp: 28,
-      turnsSaved: 3,
+      turnsSaved: 4,
     });
     const result = applyOkV7(state, actor, command);
     expect(result.events[0]).toEqual({
@@ -1979,10 +1986,9 @@ describe("ruleset-7 revision-19 Nesting", () => {
       ["RAIDER", 1, 1],
       ["MARKSMAN", 1, 1],
       ["GUARD", 2, 1],
-      // pulp_wars-c87.8: the Triceratops hatch time is 1 (was 2), so Nesting
-      // no longer shortens it.
-      ["CATAPULT", 1, 1],
-      ["KNIGHT", 3, 2],
+      // Revision 20: Triceratops 2 (1 with Nesting), T-Rex 4 (3 with it).
+      ["CATAPULT", 2, 1],
+      ["KNIGHT", 4, 3],
     ] as const) {
       for (const [techs, hp, turns] of [
         [without("FORTIFICATION"), EGG_HP_V7, plain],
@@ -2603,7 +2609,7 @@ describe("ruleset-7 revision-19 Abandon Egg (Disband)", () => {
       ["MARKSMAN", 2],
       ["GUARD", 2],
       ["CATAPULT", 4],
-      ["KNIGHT", 5],
+      ["KNIGHT", 7],
     ] as const) {
       const start = dino([], [], { coins: 20 });
       const actor = start.humanPlayerId;

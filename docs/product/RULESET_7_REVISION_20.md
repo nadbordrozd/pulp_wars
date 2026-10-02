@@ -1,6 +1,11 @@
 # Ruleset 7 revision 20: Triceratops Charge, T-Rex cost, Nesting and Wallbreaker, full-heal promotion, sturdier Humans
 
-**Status:** contract (`pulp_wars-0hi.1`), not yet implemented. It amends
+**Status:** contract (`pulp_wars-0hi.1`), implemented in the engine, the
+Normal AI, and the UI by `pulp_wars-0hi.2`
+([section 11](#11-implementation-notes-pulp_wars-0hi2) lists where the
+implementation differs from or adds to this text). The Human sturdiness
+numbers of [section 6](#6-human-sturdiness) are not chosen yet
+(`pulp_wars-0hi.3`). It amends
 [revision 19](RULESET_7_REVISION_19_DINOSAURS.md) (`pulp-wars-poc-7r19`), which
 is itself an overlay over [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (`pulp-wars-poc-7r18`, three factions). `pulp_wars-c87.9` folds revision 19
@@ -729,3 +734,73 @@ engine; the root may change any of them.
 11. **Sequencing with `pulp_wars-c87.8`:** it is still tuning revision-19
     numbers, including the Stampede this document deletes. Its Triceratops,
     T-Rex, and Stampede tuning is superseded; its other numbers stand.
+
+## 11. Implementation notes (`pulp_wars-0hi.2`)
+
+Where the implementation differs from, or had to add to, the text above.
+None of them changes a rule the user asked for; each is the smallest
+behaviour consistent with the rest of the contract.
+
+1. **The Caveman keeps 12 HP, not 10.** [Section 6.1](#61-bounds) says the
+   Caveman "stays 10"; `pulp_wars-c87.8` had already tuned it to 12 (17
+   when promoted), and the root confirmed that the c87.8 numbers this
+   document does not name stand. The Caveman and the Skeleton now state
+   their own HP in the registry (12 and 10), so a Human Fighter change does
+   not move them. No Human, Undead, or Goblin number changed in this bead.
+2. **The [section 4.2](#42-wallbreaker) table's Ankylosaurus row** gives the
+   retaliation without the Ankylosaurus's own Armoured reduction. The
+   engine applies it as before: 3 / 11 without Wallbreaker and 5 / 4 with
+   it. The other rows match.
+3. **Push preview of a Charge!.** The public preview of a Charge! Push reads
+   the explored tile behind the target as resolution does and does not need
+   the viewer's detection of that tile (the Juggernaut-role Push keeps its
+   older rule), so `WILL_PUSH` and `BLOCKED` are exact. Two cases stay
+   `UNKNOWN_BEHIND_FOG` although the tile is explored, because they depend
+   on the target owner's research, which is not public: a Mountain
+   (Engineering) or Deep Water (Navigation) behind another player's unit.
+   The UI then says "{unit} may be pushed back", and the attack may push
+   and follow. An unexplored tile behind never pushes
+   ([section 2.4](#24-cases)).
+4. **Run-up in unit stats.** The `RUN_UP` Attack modifier and the status
+   "Charge! +{n} Attack" are published only during the owner's turn and
+   while the Triceratops can still attack, so a spent or waiting
+   Triceratops does not show a bonus it cannot use. `publicUnitStats`
+   always carries `dinosaur.runUpBonus` and `runUpMaximum`.
+5. **Hit cue.** A Charge! with a run-up above 0 keeps the Stampede hit flash
+   (now `CHARGE_HIT`); a Charge! without a run-up is presented as an
+   ordinary melee attack. The Push and the follow use the existing Push and
+   advance animation, and `UNIT_PUSHED` is emitted before the follower's
+   `UNIT_MOVED`.
+6. **Help.** The Promotion line is shown in "How to play" in every match
+   (a Promotion is a rule of every faction), not in the "Dinosaurs" list,
+   which is shown only in matches with a Dinosaur seat.
+7. **Unlock list of Wallbreaker.** The technology detail lists the existing
+   Explosives lines ("Blast mountain", "Surviving melee attacks destroy
+   Field Defense", and the Drill line) and adds "Dinosaurs ignore City
+   Walls".
+8. **Normal AI.**
+   - A wounded unit that can be promoted is promoted before any attack,
+     capture, or End Turn, in every match and for every faction. This is
+     the only decision change in matches without a Dinosaur seat: in a
+     28-match parity run against the revision-19 policy, 12 matches are
+     identical command for command and the other 16 first differ at such a
+     `PROMOTE`.
+   - A hostile dinosaur's projected hit assumes Wallbreaker, because other
+     players' research is not public. An own dinosaur's uses the seat's
+     research.
+   - A Triceratops that already stands next to its target steps around it
+     for the run-up when that makes the Charge better (a kill instead of a
+     hit, or more damage) and the destination is not lethal.
+   - Kills, hits, and captures by a Triceratops otherwise use the ordinary
+     attack priorities; the Stampede lane, launch-tile, and lane-blocking
+     heuristics are deleted, not adapted.
+9. **Telemetry.** The balance matrix reports a `charge` block in place of
+   the Stampede block: Triceratops attacks by run-up (0, 1, 2), kills,
+   Pushes, follows, blocked Pushes, Field Defense destroyed, attacks that
+   ignored fortification, and Wallbreaker attacks.
+10. **Observed, for `pulp_wars-0hi.3`.** Full-heal Promotion lengthens some
+    matches without a Dinosaur seat: Undead against Undead on Pangea, seed
+    0, now ends in round 142 instead of 47 (an outcome, no stall); eight
+    other seeds of that pairing moved by at most five rounds. The
+    [section 6.2](#62-targets-from-the-brief) round-cap target should be
+    measured against a pre-tuning run made with this implementation.

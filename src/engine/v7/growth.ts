@@ -11,25 +11,31 @@ import type { UnitStateV7 } from "./types";
 /**
  * Revision 19 Grow (docs/product/RULESET_7_REVISION_19_DINOSAURS.md section
  * 5.2). A Dinosaur unit's growth stage is derived from its `kills`; each
- * stage reached adds `GROWTH_HP_V7` maximum and current HP at the moment the
- * kill is credited, to a unit that survived the exchange.
+ * stage reached adds `GROWTH_HP_V7` maximum HP at the moment the kill is
+ * credited, to a unit that survived the exchange. Revision 20 (docs/product/
+ * RULESET_7_REVISION_20.md section 5): each stage also fully heals the unit
+ * (`hp` is the new maximum).
  */
 
 /**
- * The HP a growing unit gains when its kills go from `killsBefore` to
- * `killsAfter` (0 for a unit that does not grow or reaches no new stage).
+ * The HP of a surviving unit after the growth its kills earned: its new
+ * maximum when its kills going from `killsBefore` to `killsAfter` reach a
+ * new stage, otherwise `hp` (its HP after the exchange) unchanged. Public
+ * simulations use it so that they equal `grownUnitV7`.
  */
-export function growthHpGainV7(
+export function grownHpV7(
   roster: FactionRosterV7,
-  unit: Pick<DinosaurUnitFactsV7, "ownerId" | "role" | "form">,
+  unit: Pick<DinosaurUnitFactsV7, "ownerId" | "role" | "form"> & {
+    readonly maxHp: number;
+  },
   killsBefore: number,
   killsAfter: number,
+  hp: number,
 ): number {
-  if (!unitGrowsV7(roster, unit)) return 0;
-  return (
-    GROWTH_HP_V7 *
-    (growthStageForKillsV7(killsAfter) - growthStageForKillsV7(killsBefore))
-  );
+  if (hp <= 0 || !unitGrowsV7(roster, unit)) return hp;
+  const stages =
+    growthStageForKillsV7(killsAfter) - growthStageForKillsV7(killsBefore);
+  return stages > 0 ? unit.maxHp + GROWTH_HP_V7 * stages : hp;
 }
 
 /**
@@ -51,9 +57,9 @@ export function grownUnitV7(
   let unit = after;
   for (let stage = from + 1; stage <= to; stage += 1) {
     const maxHp = unit.maxHp + GROWTH_HP_V7;
-    const hp = unit.hp + GROWTH_HP_V7;
-    if (!Number.isSafeInteger(maxHp) || !Number.isSafeInteger(hp))
-      throw new RangeError("INTEGER_OVERFLOW");
+    // Revision 20 section 5: growing fully heals.
+    const hp = maxHp;
+    if (!Number.isSafeInteger(maxHp)) throw new RangeError("INTEGER_OVERFLOW");
     unit = { ...unit, maxHp, hp };
     events.push({
       kind: "UNIT_GREW",

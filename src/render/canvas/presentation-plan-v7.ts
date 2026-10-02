@@ -1,7 +1,8 @@
-import type {
-  CoordV7,
-  PlayerEventEnvelopeV7,
-  PlayerViewV7,
+import {
+  attackIsChargeV7,
+  type CoordV7,
+  type PlayerEventEnvelopeV7,
+  type PlayerViewV7,
 } from "../../engine/index";
 import type { Ruleset7TacticalUiSymbolId } from "../../assets/ruleset7-tactical-ui-symbols";
 import type { ExplosionBlastV7 } from "./goblin-explosion-v7";
@@ -15,21 +16,21 @@ export type CorePresentationStepV7 =
       readonly durationMs: number;
       readonly followCamera?: true;
       /**
-       * Revision 19: the run of a Stampede. The board keeps the state
-       * before the command (the target is still standing) and dust puffs
-       * rise behind the Triceratops.
+       * Revision 20: the one-tile slide of a unit pushed by a Charge!,
+       * before the Triceratops follows. Units with a later slide in such a
+       * boundary wait where that slide starts.
        */
-      readonly stampedeRun?: true;
+      readonly pushSlide?: true;
     }
   | {
       /**
-       * Revision 19 Dinosaur cues (DINOSAUR.md "Effects"): the Stampede
-       * hit, a Spitter's acid landing, an Egg laid, hatching (`unitIds` are
+       * Revision 19 Dinosaur cues (DINOSAUR.md "Effects"): the Charge!
+       * hit after a run-up, a Spitter's acid landing, an Egg laid, hatching (`unitIds` are
        * the Eggs, whose sprites wobble and whose hatchlings grow in), the
        * Shaman's Hatch call, an Egg destroyed, and a unit growing.
        */
       readonly kind: "DINOSAUR";
-      readonly effect: Exclude<DinosaurEffectV7, "STAMPEDE_RUN">;
+      readonly effect: DinosaurEffectV7;
       readonly cells: readonly CoordV7[];
       readonly unitIds: readonly number[];
       /** HATCH_CALL: the Shaman's cell. */
@@ -180,18 +181,22 @@ export function corePresentationPlanV7(
   let visibilityCrossfadeAdded = false;
   let gravesAdded = false;
   let lastExplosionIndex = -1;
-  // Revision 19: the Stampede of this boundary, if any. Its first
-  // `UNIT_MOVED` is the run; a later one is the advance or follow.
-  const stampede = envelope.events.find(
-    (event) => event.kind === "COMBAT_RESOLVED" && event.preview.stampede > 0,
-  );
-  const stampedeUnitId =
-    stampede?.kind === "COMBAT_RESOLVED" ? stampede.preview.attackerId : null;
-  let stampedeRunPending = stampedeUnitId !== null;
+  // Revision 20: the Charge! of this boundary, if any (an attack by a
+  // land-form Triceratops). The unit it pushes slides back before the
+  // Triceratops follows.
+  let chargeUnitId: number | null = null;
+  for (const event of envelope.events) {
+    if (event.kind !== "COMBAT_RESOLVED") continue;
+    const attacker = before.units.find(
+      (unit) => unit.id === event.preview.attackerId,
+    );
+    if (attacker !== undefined && attackIsChargeV7(before, attacker))
+      chargeUnitId = attacker.id;
+  }
   const isExplored = (at: CoordV7): boolean => explored.has(`${at.x},${at.y}`);
   /** Adds a Dinosaur cue; hatches and Egg losses of one boundary merge. */
   const pushDinosaur = (
-    effect: Exclude<DinosaurEffectV7, "STAMPEDE_RUN">,
+    effect: DinosaurEffectV7,
     at: CoordV7,
     unitId: number | null,
     durationMs: number,
@@ -244,11 +249,6 @@ export function corePresentationPlanV7(
       }
     } else if (event.kind === "UNIT_MOVED") {
       const origin = origins.get(event.unitId);
-      const stampedeRun =
-        stampedeRunPending && event.unitId === stampedeUnitId
-          ? { stampedeRun: true as const }
-          : {};
-      if (event.unitId === stampedeUnitId) stampedeRunPending = false;
       if (enemyTurn) {
         // Ordinary public moves may span fog; reveal/conceal events reset
         // their origins.
@@ -264,7 +264,6 @@ export function corePresentationPlanV7(
               path: segment,
               durationMs: Math.min(900, Math.max(1, segment.length - 1) * 90),
               followCamera: true,
-              ...stampedeRun,
             });
           segment = [];
         };
@@ -282,15 +281,14 @@ export function corePresentationPlanV7(
           unitId: event.unitId,
           path: [origin, ...event.path],
           durationMs: Math.min(900, event.path.length * 90),
-          ...stampedeRun,
         });
       const destination = event.path.at(-1);
       if (destination !== undefined) origins.set(event.unitId, destination);
     } else if (event.kind === "UNIT_PUSHED") {
-      // Revision 19: the survivor of a Stampede slides one tile back before
+      // Revision 20: the survivor of a Charge! slides one tile back before
       // the Triceratops follows. Other pushes keep their revision-18 cut.
       if (
-        event.sourceUnitId === stampedeUnitId &&
+        event.sourceUnitId === chargeUnitId &&
         isExplored(event.from) &&
         isExplored(event.to)
       )
@@ -299,8 +297,9 @@ export function corePresentationPlanV7(
           unitId: event.targetUnitId,
           path: [event.from, event.to],
           durationMs: 120,
+          pushSlide: true,
         });
-      if (event.sourceUnitId === stampedeUnitId)
+      if (event.sourceUnitId === chargeUnitId)
         origins.set(event.targetUnitId, event.to);
     } else if (event.kind === "EGG_LAID") {
       if (isExplored(event.at))
@@ -375,7 +374,8 @@ export function corePresentationPlanV7(
       // Revision 19: a Spitter's acid blob arcs the same way.
       const acid =
         attacker.role === "MARKSMAN" && attackerFaction === "DINOSAUR";
-      const stampedeHit = event.preview.stampede > 0;
+      // Revision 20: a Charge! after a run-up lands with a star flash.
+      const chargeHit = event.preview.runUp > 0;
       steps.push({
         kind:
           (attacker.role === "CATAPULT" && !triceratops) || bomb || acid
@@ -384,10 +384,7 @@ export function corePresentationPlanV7(
               ? "RANGED"
               : "MELEE",
         unitId: attacker.id,
-        // The Stampede hits from the stand tile, where the run ended.
-        from: stampedeHit
-          ? (origins.get(attacker.id) ?? attacker.at)
-          : attacker.at,
+        from: attacker.at,
         to: defender.at,
         durationMs: ranged ? 280 : 230,
         ...(bomb
@@ -396,8 +393,8 @@ export function corePresentationPlanV7(
             ? { projectile: "ACID" as const }
             : {}),
       });
-      if (stampedeHit && isExplored(defender.at))
-        pushDinosaur("STAMPEDE_HIT", defender.at, null, 250);
+      if (chargeHit && isExplored(defender.at))
+        pushDinosaur("CHARGE_HIT", defender.at, null, 250);
       if (acid && isExplored(defender.at))
         pushDinosaur("ACID_HIT", defender.at, null, 200);
       // The bomb bursts on its target and puffs on each splashed unit.

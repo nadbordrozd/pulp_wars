@@ -5,6 +5,15 @@ overlay over [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (`pulp-wars-poc-7r18`), which stays the description of the running game until
 `pulp_wars-c87.9` folds this document into it.
 
+> **Amended by revision 20.** The running game is `pulp-wars-poc-7r20`
+> ([Ruleset 7 revision 20](RULESET_7_REVISION_20.md), implemented by
+> `pulp_wars-0hi.2`). Revision 20 removes the Stampede command (the
+> Triceratops has a passive Charge! instead), changes the Triceratops and
+> T-Rex numbers, adds a city slot to Nesting and the Wallbreaker technology,
+> and makes a Promotion or a growth stage fully heal. The sections it
+> replaces are marked "Superseded by revision 20" below; their text is kept
+> as the record of revision 19. Everything unmarked stays in force.
+
 **Ruleset ID:** `pulp-wars-poc-7r19`
 
 **Map-generation revision:** `REGIONAL_BIOMES_NAVAL_V2` (unchanged; faction
@@ -174,6 +183,12 @@ ledger, unit tiles, forms, homes, and entity IDs as any other faction.
 
 ## 3. Dinosaur roster
 
+> **Superseded by revision 20.** The Triceratops and T-Rex rows, the Triceratops
+> bullet, and the ability list are replaced by
+> [revision 20 sections 2.1 and 3](RULESET_7_REVISION_20.md#21-stats): the
+> Triceratops moves 2, attacks after moving, and has `LINEBREAKER` (Charge!)
+> instead of `STAMPEDE`; the T-Rex costs 14 and hatches in 4 turns.
+
 Tactical-role metadata equals that of the same mechanical role. "Hatch" is
 the Egg's hatch time in owner Start Turns ([section 6.4](#64-hatching));
 "Slots" is the capacity the unit, or its Egg, uses
@@ -247,6 +262,10 @@ Caveman at 10 HP and the Triceratops at hatch time 2 and 2 slots.
   ([section 10](#10-commands-events-errors-and-queries)).
 
 ## 4. Technology
+
+> **Superseded by revision 20.** The Sawmilling, Fortification (Nesting), and
+> Explosives (Wallbreaker) rows and the display-name overrides are replaced
+> by [revision 20 section 4](RULESET_7_REVISION_20.md#4-dinosaur-industry-branch).
 
 The graph, tiers, prerequisites, costs, free opening technology, Dry Land
 Naval rule, and every other unlock of `DINOSAUR_BASELINE_V1` are identical to
@@ -331,6 +350,10 @@ every other role of every faction.
   `previewCityCapacityV7`, the city panel, the Normal AI) uses the same sum.
 
 ### 5.2 Grow
+
+> **Superseded by revision 20.** A growth stage and a Promotion fully heal the
+> unit ([revision 20 section 5](RULESET_7_REVISION_20.md#5-promotion-and-growth-fully-heal));
+> Stampede kills no longer exist.
 
 Dinosaur units grow from kills instead of the ordinary Promotion.
 
@@ -628,6 +651,10 @@ not an Attack, costs no Coins, and needs no technology.
 
 ### 6.6 Nesting
 
+> **Superseded by revision 20.** Nesting also gives every city of its owner one
+> more unit slot, and the T-Rex hatch time is 4 (3 with Nesting):
+> [revision 20 section 4.1](RULESET_7_REVISION_20.md#41-nesting).
+
 Nesting is the Dinosaur `FORTIFICATION` technology (Industry, tier 2,
 requires Drill, ordinary tier-2 cost). While its owner has it, every Egg that
 player **lays** has +4 HP (10 instead of 6) and hatches one turn sooner, with
@@ -674,6 +701,13 @@ on the board, so `RESEARCH` keeps having no effect on units.
   tile; the displaced occupant looks for another free tile as today.
 
 ## 7. Stampede
+
+> **Superseded by revision 20.** This whole section is removed. The `STAMPEDE`
+> command, its lanes, errors, preview, and events do not exist in
+> `pulp-wars-poc-7r20`; the Triceratops attacks with the ordinary `ATTACK`
+> and the passive Charge!
+> ([revision 20 section 2](RULESET_7_REVISION_20.md#2-triceratops-rework),
+> removal table in [section 2.7](RULESET_7_REVISION_20.md#27-removal-of-stampede)).
 
 `STAMPEDE { kind, unitId, targetUnitId }` is a primary action of the
 Triceratops: it runs one or two tiles in a straight line and hits the unit at
@@ -994,6 +1028,9 @@ See [section 6.5](#65-shaman-hatch).
 
 ### 9.7 Achievements, Monuments, and Promotion
 
+> **Superseded by revision 20.** A Promotion fully heals the unit, for every
+> faction ([revision 20 section 5](RULESET_7_REVISION_20.md#5-promotion-and-growth-fully-heal)).
+
 - **Muster** counts the Dinosaur trainable roles on the board: Caveman,
   Raptor, Spitter, Ankylosaurus, Shaman, Triceratops, T-Rex, Patrol Boat, and
   Battleship (the Brontosaurus is excluded like the Juggernaut). **An Egg
@@ -1026,6 +1063,11 @@ See [section 6.5](#65-shaman-hatch).
   needs a city with one free slot, otherwise the chest gives 5 Coins.
 
 ## 10. Commands, events, errors, and queries
+
+> **Superseded by revision 20.** Every `STAMPEDE` command, error, query,
+> preview field, and mechanic named below is removed, and the Charge! and
+> Wallbreaker shapes are added:
+> [revision 20 section 7.1](RULESET_7_REVISION_20.md#71-commands-events-errors-and-queries).
 
 **Commands.** `COMMAND_KIND_ORDER_V7` inserts `STAMPEDE` and `HATCH`
 immediately after `KABOOM` (in that order), and `LAY_EGG` immediately after
@@ -1138,6 +1180,9 @@ IDs, tiers, branches, and prerequisites).
   includes Eggs, which are units.
 
 ## 11. Normal AI requirements
+
+> **Superseded by revision 20.** The Stampede and lane requirements are
+> replaced by [revision 20 section 7.3](RULESET_7_REVISION_20.md#73-normal-ai).
 
 Normal AI plays as and against Dinosaurs (`pulp_wars-c87.5`) with every
 existing guarantee: deterministic and PRNG-free, only the public view, public
@@ -1259,6 +1304,10 @@ The browser UI (`pulp_wars-c87.4`) must, at requirement level:
 
 ### 12.2 Labels and text
 
+> **Superseded by revision 20.** Every Stampede row is removed; the Charge!,
+> Wallbreaker, Promote, and growth texts are in
+> [revision 20 section 7.2](RULESET_7_REVISION_20.md#72-ui-text-and-surfaces).
+
 | Surface                        | Text                                                                              |
 | ------------------------------ | --------------------------------------------------------------------------------- |
 | Faction option                 | Dinosaur                                                                          |
@@ -1301,6 +1350,10 @@ The browser UI (`pulp_wars-c87.4`) must, at requirement level:
 | Log (Stampede)                 | {owner} Triceratops stampeded {unit}: {damage} damage                             |
 
 ### 12.3 Help text
+
+> **Superseded by revision 20.** The Stampede, Nesting, and Grow lines are
+> replaced, and Charge!, Wallbreaker, and Promotion lines added, by
+> [revision 20 section 7.2](RULESET_7_REVISION_20.md#72-ui-text-and-surfaces).
 
 One sentence per rule, shown in Help for every viewer:
 
@@ -1392,6 +1445,10 @@ its ordinary Attack; no UI offers the faction until `c87.4`. `c87.3` makes
 ## 15. Tuning bounds, measurement, and balance acceptance
 
 ### 15.1 Tuning bounds
+
+> **Superseded by revision 20.** The Triceratops, T-Rex, and Stampede rows are
+> replaced by the fixed values and bounds of
+> [revision 20](RULESET_7_REVISION_20.md); the other tuned numbers stand.
 
 `pulp_wars-c87.8` may move these numbers within the listed bounds without
 root approval, changing this contract, the code, and the tests together and

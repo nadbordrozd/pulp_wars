@@ -2,7 +2,12 @@ import {
   ALPHA_ATTACK2_V7,
   EGG_DEFENSE2_V7,
   EMBARKED_MOVE_V7,
+  GROWTH_HP_V7,
   GROWTH_KILLS_V7,
+  PROMOTION_HP_V7,
+  RUN_UP_MAXIMUM_TILES_V7,
+  attackIsChargeV7,
+  chargeRunUpAttack2V7,
   technologyCapabilitiesV7,
   unitAlphaAttack2V7,
   unitGrowthStageV7,
@@ -28,6 +33,8 @@ export type UnitStatModifierSourceV7 =
   | "GROWTH"
   | "ALPHA"
   | "CHARGE"
+  // Revision 20: the Charge! run-up of a Triceratops that moved this turn.
+  | "RUN_UP"
   | "INSPIRED"
   | "CITY_WALLS"
   | "CITY_FORTIFICATION"
@@ -72,8 +79,9 @@ export interface PublicGoblinMechanicsV7 {
  * Revision 19 Dinosaur role mechanics and growth from the owner's
  * registration: capacity slots, the growth stage (null for a role that does
  * not grow) and the kills still needed for the next stage (null at Alpha or
- * for a role that does not grow), the Armoured reduction, Acid, the Stampede
- * run bonus in whole Attack per lane tile, and the Egg countdown (null for a
+ * for a role that does not grow), the Armoured reduction, Acid, the Charge!
+ * run-up bonus in whole Attack per tile moved and the most tiles that count
+ * (revision 20; both 0 without Charge!), and the Egg countdown (null for a
  * unit that is not an Egg).
  */
 export interface PublicDinosaurMechanicsV7 {
@@ -82,7 +90,8 @@ export interface PublicDinosaurMechanicsV7 {
   readonly killsToNextStage: number | null;
   readonly armourReduction: number;
   readonly acid: boolean;
-  readonly stampedeRunBonus: number;
+  readonly runUpBonus: number;
+  readonly runUpMaximum: number;
   readonly egg: {
     readonly turnsRemaining: number;
     readonly hatchesAs: UnitStateV7["role"];
@@ -138,6 +147,18 @@ export function publicUnitStatsV7(
     !embarked && unit.activation.inspired && unit.activation.attacksUsed === 0
       ? 2
       : 0;
+  // Revision 20 Charge!: +1 Attack per tile moved this turn, up to 2, while
+  // the unit can still attack (activations reset at the owner's Start Turn,
+  // so a run-up left over from the owner's last turn is never shown).
+  const runUp =
+    state.turnOrder[state.activeSeatIndex] === unit.ownerId &&
+    !unit.activation.attacked &&
+    !unit.activation.recovered &&
+    !unit.activation.captured &&
+    !unit.activation.specialActed
+      ? chargeRunUpAttack2V7(state, unit)
+      : 0;
+  const linebreaker = attackIsChargeV7(state, unit);
   const defense = defenseBonusForUnitV7(state, unit);
   const fortificationModifiers = fortificationTerms(state, unit);
   const fortifiedDefense2 =
@@ -175,13 +196,13 @@ export function publicUnitStatsV7(
                     promotion,
                     "PROMOTION",
                     "Promotion",
-                    "Promotion adds 5 maximum and current HP.",
+                    `Promotion adds ${PROMOTION_HP_V7} maximum HP and fully heals.`,
                   )
                 : modifier(
                     promotion,
                     "GROWTH",
                     "Growth",
-                    "Each growth stage adds 4 maximum and current HP.",
+                    `Each growth stage adds ${GROWTH_HP_V7} maximum HP and fully heals.`,
                   ),
             ]
           : [],
@@ -199,6 +220,17 @@ export function publicUnitStatsV7(
                   "ALPHA",
                   "Alpha",
                   "An Alpha adds 1 Attack to every attack it makes.",
+                  2,
+                ),
+              ]
+            : []),
+          ...(runUp > 0
+            ? [
+                modifier(
+                  runUp,
+                  "RUN_UP",
+                  "Charge!",
+                  `Charge! adds ${formatHalf(mechanics.runUpBonus2)} Attack per tile moved this turn (up to ${RUN_UP_MAXIMUM_TILES_V7} tiles).`,
                   2,
                 ),
               ]
@@ -305,6 +337,7 @@ export function publicUnitStatsV7(
                   : "Inspired: +1 next Attack",
           ]
         : []),
+      ...(runUp > 0 ? [`Charge! +${formatHalf(runUp)} Attack`] : []),
       ...(unit.activation.tendedThisTurn ? ["Tended this turn"] : []),
       ...(unit.activation.overrunActive
         ? [
@@ -341,7 +374,8 @@ export function publicUnitStatsV7(
                 : GROWTH_KILLS_V7[growthStage] - unit.kills,
             armourReduction: mechanics.armourReduction,
             acid: role.abilities.includes("ACID"),
-            stampedeRunBonus: mechanics.stampedeRunBonus2 / 2,
+            runUpBonus: linebreaker ? mechanics.runUpBonus2 / 2 : 0,
+            runUpMaximum: linebreaker ? RUN_UP_MAXIMUM_TILES_V7 : 0,
             egg: eggStatus(state, unit),
           },
         }
@@ -387,7 +421,8 @@ function eggStats(
       killsToNextStage: null,
       armourReduction: 0,
       acid: false,
-      stampedeRunBonus: 0,
+      runUpBonus: 0,
+      runUpMaximum: 0,
       egg: eggStatus(state, unit),
     },
   };
@@ -447,6 +482,10 @@ function fortificationTerms(
       ),
     );
   return terms;
+}
+/** A half-unit amount as whole units ("1", "0.5", "1.5"). */
+function formatHalf(value2: number): string {
+  return String(value2 / 2);
 }
 function stat(
   id: UnitStatIdV7,

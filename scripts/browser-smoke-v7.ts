@@ -133,7 +133,7 @@ try {
   await evaluate(
     connection,
     `(() => {
-      localStorage.removeItem('pulpWars.save.v7r19.current');
+      localStorage.removeItem('pulpWars.save.v7r20.current');
       localStorage.setItem('pulpWars.save.v7.current', 'old-v7-bytes');
       localStorage.setItem('pulpWars.save.v7r2.current', 'old-v7r2-bytes');
       localStorage.setItem('pulpWars.save.v7r3.current', 'old-v7r3-bytes');
@@ -152,6 +152,7 @@ try {
       localStorage.setItem('pulpWars.save.v7r16.current', 'old-v7r16-bytes');
       localStorage.setItem('pulpWars.save.v7r17.current', 'old-v7r17-bytes');
       localStorage.setItem('pulpWars.save.v7r18.current', 'old-v7r18-bytes');
+      localStorage.setItem('pulpWars.save.v7r19.current', 'old-v7r19-bytes');
       localStorage.setItem('pulpWars.save.current', 'v6-bytes');
       localStorage.setItem('pulpWars.settings.v1', JSON.stringify({ format: 'pulp-wars-settings', version: 1, settings: { uiScale: 1, motion: 'REDUCED', animationSpeed: 'NORMAL', highContrast: false } }));
       localStorage.setItem('pulpWars.unrelated', 'unrelated-bytes');
@@ -234,7 +235,7 @@ try {
       if (!initial) throw new Error('command-zero public trace missing');
       const view = snapshot.view;
       if (!view) throw new Error('returned public view missing');
-      const save = JSON.parse(localStorage.getItem('pulpWars.save.v7r19.current') ?? 'null');
+      const save = JSON.parse(localStorage.getItem('pulpWars.save.v7r20.current') ?? 'null');
       const safe = JSON.parse(controller.exportSafeLog()?.source ?? 'null');
       const debug = controller.exportDebugBundle({ acknowledgeHiddenInformation: true });
       if (!debug.ok) throw new Error('spoiler debug export missing');
@@ -476,12 +477,13 @@ try {
     readonly oldV7r16: string | null;
     readonly oldV7r17: string | null;
     readonly oldV7r18: string | null;
+    readonly oldV7r19: string | null;
     readonly v6: string | null;
     readonly settings: string | null;
     readonly unrelated: string | null;
   }>(
     connection,
-    `({ current: localStorage.getItem('pulpWars.save.v7r19.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7r8: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7r9: localStorage.getItem('pulpWars.save.v7r9.current'), oldV7r10: localStorage.getItem('pulpWars.save.v7r10.current'), oldV7r11: localStorage.getItem('pulpWars.save.v7r11.current'), oldV7r12: localStorage.getItem('pulpWars.save.v7r12.current'), oldV7r13: localStorage.getItem('pulpWars.save.v7r13.current'), oldV7r14: localStorage.getItem('pulpWars.save.v7r14.current'), oldV7r15: localStorage.getItem('pulpWars.save.v7r15.current'), oldV7r16: localStorage.getItem('pulpWars.save.v7r16.current'), oldV7r17: localStorage.getItem('pulpWars.save.v7r17.current'), oldV7r18: localStorage.getItem('pulpWars.save.v7r18.current'),v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
+    `({ current: localStorage.getItem('pulpWars.save.v7r20.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7r8: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7r9: localStorage.getItem('pulpWars.save.v7r9.current'), oldV7r10: localStorage.getItem('pulpWars.save.v7r10.current'), oldV7r11: localStorage.getItem('pulpWars.save.v7r11.current'), oldV7r12: localStorage.getItem('pulpWars.save.v7r12.current'), oldV7r13: localStorage.getItem('pulpWars.save.v7r13.current'), oldV7r14: localStorage.getItem('pulpWars.save.v7r14.current'), oldV7r15: localStorage.getItem('pulpWars.save.v7r15.current'), oldV7r16: localStorage.getItem('pulpWars.save.v7r16.current'), oldV7r17: localStorage.getItem('pulpWars.save.v7r17.current'), oldV7r18: localStorage.getItem('pulpWars.save.v7r18.current'), oldV7r19: localStorage.getItem('pulpWars.save.v7r19.current'), v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
   );
   if (
     keys.current !== null ||
@@ -503,6 +505,7 @@ try {
     keys.oldV7r16 !== null ||
     keys.oldV7r17 !== null ||
     keys.oldV7r18 !== null ||
+    keys.oldV7r19 !== null ||
     keys.v6 !== "v6-bytes" ||
     JSON.parse(keys.settings ?? "null")?.settings?.motion !== "REDUCED" ||
     keys.unrelated !== "unrelated-bytes"
@@ -535,7 +538,7 @@ try {
         acceptance:
           timingMode === "STRICT" ? "FUNCTIONAL_AND_TIMING" : "FUNCTIONAL",
         timing: { mode: timingMode, ...timing },
-        rulesetId: "pulp-wars-poc-7r19",
+        rulesetId: "pulp-wars-poc-7r20",
         runtimeFingerprint: browserReleaseRuntimeFingerprintV7(process.cwd()),
         productionEntry: "src/main.ts",
         route: "DEFAULT_NO_RULESET_PARAMETER",
@@ -682,7 +685,7 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
   const launchSelector = '[data-action="launch"]';
   const canvasSelector = "canvas.board-canvas-v7";
   const artKey = "pulpWars.ruleset7.artSet.v1";
-  const saveKey = "pulpWars.save.v7r19.current";
+  const saveKey = "pulpWars.save.v7r20.current";
   const artUrl = (value: string | null): string => {
     const url = new URL(baseUrl);
     if (value === null) url.searchParams.delete("art");
@@ -830,7 +833,7 @@ async function probeUndeadSetup(connection: Connection): Promise<string> {
       `globalThis.__V7_UNDEAD_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
     );
   };
-  const saveKey = "pulpWars.save.v7r19.current";
+  const saveKey = "pulpWars.save.v7r20.current";
   await evaluate(
     connection,
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
@@ -1094,7 +1097,7 @@ async function probeGoblinMatch(connection: Connection): Promise<string> {
       `globalThis.__V7_GOBLIN_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
     );
   };
-  const saveKey = "pulpWars.save.v7r19.current";
+  const saveKey = "pulpWars.save.v7r20.current";
   await evaluate(
     connection,
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
@@ -1277,10 +1280,12 @@ async function driveDefaultMatchToOutcome(
  * Revision 19 Dinosaurs in the default route (pulp_wars-c87.4): setup offers
  * Dinosaur for every seat; a Showcase with a Dinosaur seat and three Human
  * opponents launches from the production setup (the only setup whose first
- * turn has lay-able Eggs and a Triceratops with an open lane: the
- * neighbouring strip's Captain stands three tiles east of it); the
- * Triceratops performs that Stampede from its board target with the
- * keyboard; North lays a Raptor Egg through its Lay Egg card and a nest tile
+ * turn has lay-able Eggs and a Triceratops near an enemy: the neighbouring
+ * strip's Captain stands three tiles east of it); the Triceratops moves two
+ * tiles next to that Captain with the keyboard, shows its Charge! run-up in
+ * the dock and "Charge +2" in the attack preview, and attacks (revision 20:
+ * there is no Stampede command, lane or legend); North lays a Raptor Egg
+ * through its Lay Egg card and a nest tile
  * picked on the board; one End Turn later the Egg has hatched into a Raptor;
  * and the save resumes with its Dinosaur seat on a fresh default-route load.
  * It uses no fixture, so it also runs against a deployed bundle.
@@ -1335,7 +1340,7 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
     for (let step = 0; step < Math.abs(dy); step += 1)
       await pressKey(connection, vertical, vertical);
   };
-  const saveKey = "pulpWars.save.v7r19.current";
+  const saveKey = "pulpWars.save.v7r20.current";
   const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   await evaluate(
     connection,
@@ -1388,47 +1393,97 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
     started.eggs !== 0
   )
     throw new Error(`Dinosaur setup launch failed: ${JSON.stringify(started)}`);
-  // Stampede: the board cursor starts on the capital; the Triceratops is
-  // selected with Enter and its offered lane target with Enter again.
+  // Charge!: the board cursor starts on the capital; the Triceratops is
+  // selected with Enter, moved two tiles east (over the own T-Rex) with
+  // Enter on its Move target, and then attacks the Captain beside it.
+  const selectedTriceratops = `document.querySelector('.v7-selection-dock h2')?.textContent === 'Triceratops'`;
   await focusBoard();
   await arrows(
     started.triceratops.x - started.capital.x,
     started.triceratops.y - started.capital.y,
   );
   await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(connection, selectedTriceratops);
+  // Its unit info names Charge! (with the former Stampede icon).
+  await evaluate<boolean>(
+    connection,
+    `(document.querySelector('[data-action="unit-help"]')?.click(), true)`,
+  );
   await waitForExpression(
     connection,
-    `document.querySelector('.v7-selection-dock h2')?.textContent === 'Triceratops' && document.querySelector('[data-action^="command-stampede-"]:not(:disabled)') !== null && document.querySelector('.v7-stampede-legend') !== null`,
+    `document.querySelector('.v7-unit-help-dialog .v7-unit-ability[data-ability="charge"]') !== null`,
   );
-  const stampede = await evaluate<{
-    readonly label: string | null;
-    readonly target: { readonly x: number; readonly y: number } | null;
+  const chargeAbility = await evaluate<{
+    readonly text: string;
+    readonly stampedeControls: number;
   }>(
     connection,
-    `(() => { const button = document.querySelector('[data-action^="command-stampede-"]'); const id = Number(button.dataset.action.slice('command-stampede-'.length)); const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; return { label: button.getAttribute('aria-label'), target: view.units.find((unit) => unit.id === id)?.at ?? null }; })()`,
+    `({ text: document.querySelector('.v7-unit-ability[data-ability="charge"]')?.textContent ?? '', stampedeControls: document.querySelectorAll('[data-action*="stampede"], .v7-stampede-legend, [data-v7-stampede]').length })`,
   );
   if (
-    stampede.target === null ||
-    !/^Stampede · Runs [12] tiles?: \+[\d.]+ Attack\. Deals \d+ damage\. .+ No retaliation\./.test(
-      stampede.label ?? "",
-    )
+    !/^Charge!\+[\d.]+ Attack per tile moved this turn \(up to \+[\d.]+\)\. Ignores Walls and Field Defense, destroys Field Defense, and pushes back\.$/.test(
+      chargeAbility.text,
+    ) ||
+    chargeAbility.stampedeControls !== 0
   )
-    throw new Error(`Stampede preview missing: ${JSON.stringify(stampede)}`);
-  await focusBoard();
-  await arrows(
-    stampede.target.x - started.triceratops.x,
-    stampede.target.y - started.triceratops.y,
+    throw new Error(
+      `Charge! unit info missing: ${JSON.stringify(chargeAbility)}`,
+    );
+  await evaluate<boolean>(
+    connection,
+    `(document.querySelector('[data-action="close-unit-help"]')?.click(), true)`,
   );
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-unit-help-dialog') === null`,
+  );
+  const target = {
+    x: started.triceratops.x + 3,
+    y: started.triceratops.y,
+  };
+  await focusBoard();
+  await arrows(2, 0);
+  await pressKey(connection, "Enter", "Enter");
+  const movedExpression = `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const unit = view.units.find((candidate) => candidate.ownerId === view.viewer.id && candidate.role === 'CATAPULT'); return view.commandIndex === 1 && unit.at.x === ${target.x - 1} && unit.at.y === ${target.y} && unit.activation.movedPathLength === 2; })()`;
+  await waitForExpression(connection, `${movedExpression} && ${settled}`, 300);
+  // The moved Triceratops stays (or is again) selected: its dock shows the
+  // run-up status.
+  if (!(await evaluate<boolean>(connection, selectedTriceratops))) {
+    await focusBoard();
+    await pressKey(connection, "Enter", "Enter");
+  }
+  await waitForExpression(
+    connection,
+    `${selectedTriceratops} && Array.from(document.querySelectorAll('.v7-selection-dock .v7-unit-status-cues .v7-chip')).some((chip) => /^Charge! \\+[\\d.]+ Attack$/.test(chip.textContent ?? ''))`,
+  );
+  await focusBoard();
+  await arrows(1, 0);
+  const chargePreview = await evaluate<string>(
+    connection,
+    `document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? ''`,
+  );
+  const chargeLine = /Charge \+[\d.]+\./.exec(chargePreview)?.[0] ?? null;
+  if (
+    chargeLine === null ||
+    !/Attack preview\. .*Primary damage \d+\./.test(chargePreview)
+  )
+    throw new Error(`Charge preview missing: ${chargePreview}`);
+  await capture(connection, "dinosaur-charge-preview-desktop.png");
   await pressKey(connection, "Enter", "Enter");
   await waitForExpression(
     connection,
-    `(document.querySelector('#v7-live')?.textContent ?? '').includes('Your Triceratops stampeded') && globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 1 && ${settled}`,
+    `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 2 && ${settled}`,
     300,
   );
-  const stampedeNotice = await evaluate<string>(
+  const charged = await evaluate<{
+    readonly attacked: boolean;
+    readonly commands: readonly string[];
+  }>(
     connection,
-    `document.querySelector('#v7-live')?.textContent ?? ''`,
+    `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const unit = view.units.find((candidate) => candidate.ownerId === view.viewer.id && candidate.role === 'CATAPULT'); return { attacked: unit?.activation.attacked === true, commands: globalThis.__PULP_WARS_APP__.controller.snapshot().offeredCommands.filter((command) => command.unitId === unit?.id).map((command) => command.kind) }; })()`,
   );
+  if (!charged.attacked || charged.commands.includes("ATTACK"))
+    throw new Error(`Charge did not resolve: ${JSON.stringify(charged)}`);
   // Lay Egg: select North, choose the Raptor card, and pick the first legal
   // nest tile on the board with the keyboard.
   const cursor = await evaluate<{ readonly x: number; readonly y: number }>(
@@ -1436,8 +1491,8 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
     `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; return view.units.find((unit) => unit.ownerId === view.viewer.id && unit.role === 'CATAPULT').at; })()`,
   );
   await focusBoard();
-  await arrows(started.north.x - stampede.target.x, 0);
-  await arrows(0, started.north.y - stampede.target.y);
+  await arrows(started.north.x - target.x, 0);
+  await arrows(0, started.north.y - target.y);
   await pressKey(connection, "Enter", "Enter");
   await waitForExpression(
     connection,
@@ -1546,7 +1601,7 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(freshSetup);
-  return `Showcase launch as Dinosaur vs three Humans, Stampede (${stampedeNotice.split(" · ")[0]}; Triceratops on ${cursor.x},${cursor.y}), Raptor Egg laid on ${nest.x},${nest.y} (${slots} before), hatched in round ${hatched.round} with ${hatched.hp} HP, and resume`;
+  return `Showcase launch as Dinosaur vs three Humans, Charge after a two-tile Move (${chargeLine} Triceratops on ${cursor.x},${cursor.y}), Raptor Egg laid on ${nest.x},${nest.y} (${slots} before), hatched in round ${hatched.round} with ${hatched.hp} HP, and resume`;
 }
 
 /**
@@ -1573,7 +1628,7 @@ async function probeShowcaseMatch(connection: Connection): Promise<string> {
       `globalThis.__V7_SHOWCASE_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
     );
   };
-  const saveKey = "pulpWars.save.v7r19.current";
+  const saveKey = "pulpWars.save.v7r20.current";
   const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
   await evaluate(
     connection,

@@ -68,7 +68,7 @@ Roads, that text now describes the **Classic look** developer option
   art, drawn at lower contrast.
 - **Unchanged:** Field Defense, the faction badge of a stand-in sprite,
   Plague and Bitten markers, Grave markers, Egg countdown chips, growth
-  chevrons, landing markers, Stampede lanes, Kaboom! and other previews,
+  chevrons, landing markers, Kaboom! and other previews,
   selection and target outlines, and every dock, dialog and label.
 - **Loading.** The direction's art loads with the rest of the CHIBI set. A
   piece is not drawn until its raster is ready (never the previous art
@@ -344,10 +344,13 @@ Wave 2` → `Yours −3` → `−3`), keeping its lethal red or hazard styling;
 
 This overlay implements
 [Dinosaur spec section 12](../product/RULESET_7_REVISION_19_DINOSAURS.md#12-ui-requirements)
-(`pulp_wars-c87.4`) with the art of the
-[Dinosaur art fragment](../art/factions/DINOSAUR.md). Every cue reads only
-public views, public previews (`previewLayEggV7`, `previewHatchV7`,
-`previewStampedeV7`, `queryCombatPreviewV7`, `view.eggs`,
+(`pulp_wars-c87.4`) as amended by
+[revision 20 section 7.2](../product/RULESET_7_REVISION_20.md#72-ui-text-and-surfaces)
+(`pulp_wars-0hi.2`: the Stampede button, lanes, legend, and confirmation are
+removed; the Triceratops charges with the ordinary attack flow), with the
+art of the [Dinosaur art fragment](../art/factions/DINOSAUR.md). Every cue
+reads only public views, public previews (`previewLayEggV7`,
+`previewHatchV7`, `queryCombatPreviewV7`, `view.eggs`,
 `publicUnitStats.dinosaur`) and projected events. A match without a Dinosaur
 seat looks as in revision 18 apart from the extra faction option.
 
@@ -363,9 +366,10 @@ seat looks as in revision 18 apart from the extra faction option.
   Rally reads "War Drums" (the `ICON:ACTION:DINOSAUR:RALLY` drum in CHIBI),
   Inspired units show "War Drums", Overrun reads "Rampage" and Charge
   "Pounce". Fortification is "Nesting" in the technology tree, its detail and
-  research actions ("Eggs have +4 HP and hatch one turn sooner"); unit
-  unlocks of egg-laid roles read "Raptor Egg", "Triceratops Egg (Stampede)"
-  and so on, and Metallurgy reads "Forge discount: 1 Coin off
+  research actions ("Eggs have +4 HP and hatch one turn sooner; +1 unit slot
+  in every city"), and Explosives is "Wallbreaker" (it keeps the Explosives
+  unlock lines and adds "Dinosaurs ignore City Walls"); unit unlocks of
+  egg-laid roles read "Raptor Egg", "Triceratops Egg (Charge!)" and so on, and Metallurgy reads "Forge discount: 1 Coin off
   trained land units and Eggs". Rewards read "A free Caveman" and
   "Brontosaurus: A giant unit (2 slots)". In a match with a Dinosaur seat the
   leaderboard and turn status name each player's faction.
@@ -379,7 +383,7 @@ seat looks as in revision 18 apart from the extra faction option.
   the Lay Egg icon), "{Unit} Egg", the cost, the hatch time ("2 turns") and
   the slots ("2 slots" is highlighted for the two-slot Triceratops and
   T-Rex), with the usual `?` recruit help. The accessible name is the
-  section 12.2 row: "Lay T-Rex Egg: 10 Coins, 2 slots, hatches in 2 turns".
+  section 12.2 row: "Lay T-Rex Egg: 14 Coins, 2 slots, hatches in 4 turns".
   A card that cannot be used is `aria-disabled`, keeps its place, and shows
   why on the card itself (touch has no hover): "No free tile next to the
   city", "Needs 2 free slots", "Needs 5 Coins", "City action spent", "The
@@ -418,31 +422,29 @@ seat looks as in revision 18 apart from the extra faction option.
   marked "Next turn" on the board, and the dock adds an `aria-disabled` Hatch
   explaining "This Egg was laid this turn; it can be hatched from your next
   turn".
-- **Stampede.** A selected Triceratops that has not moved shows every
-  offered Stampede at once: each target is outlined like an attack target,
-  and its lane is drawn in unowned cream: run tiles with two arrowheads along
-  the run, and the **stand tile** (where the Triceratops stops) with an inset
-  outline and one arrowhead. The dock adds a legend (Run tile, Stops here,
-  Stampede target) and one "Stampede" button per target with the chip
-  "{Unit} −damage" and the whole preview in its accessible name. The target's
-  label stack uses the attack-preview system, so labels never overlap: "Deal
-  14 · run +2", then the note ("Kills · advances", "Pushes back · follows",
-  "Not pushed · stops", or **"May be pushed"** when the tile behind the
-  target is a Mountain and the Push depends on the target owner's
-  Engineering; then "No retaliation", "Field Defense destroyed" and
-  "Armoured −1"), then the Goblin warning boxes for a death-blast chain and a
-  Bitten rising, with the blast areas and hit labels of the chain. The camera
-  pans the least distance to show the lanes and targets above the dock, once
-  per selection. Clicking a target (or its button) performs the Stampede at
-  once, like an attack. **A Stampede that sets off a death blast is armed
-  instead**: the board keeps only that lane and preview, and the dock shows
-  the run and damage, the outcome, "No retaliation", the Field Defense lost
-  and the warnings with Confirm Stampede / Cancel (the Kaboom! pattern).
-  Confirm, or activating the armed target on the board again, performs it;
-  Escape, Cancel, the armed button or a new selection disarm it. A
-  Triceratops that cannot Stampede shows an `aria-disabled` Stampede button
-  explaining "A Triceratops cannot Stampede after moving" or "No clear lane:
-  needs open ground in a straight line"; a tap shows the reason as a toast.
+- **Charge!** (revision 20). The Triceratops has no command of its own: it
+  is selected, moved, and attacks like any melee unit, and no Stampede
+  button, lane, legend, or confirmation exists. After a Move of n tiles
+  this turn (while it can still attack) its dock shows the status chip
+  "Charge! +n Attack" and its Attack stat lists the "Charge!" modifier. The
+  attack preview on the board, for own and enemy attacks alike, adds the
+  note lines that apply, in this order: "Charge +n", "Ignores
+  fortification" (when Walls or Field Defense levels were removed), "Pushes
+  back; Triceratops follows" ("Pushes back" when it cannot follow, "{Unit}
+  cannot be pushed" for a blocked Push, "{Unit} may be pushed back" when
+  the tile behind the target is hidden or depends on the target owner's
+  Engineering), and "Destroys Field Defense"; a kill has no Push line. The
+  cursor's screen-reader text carries the same sentences. The retaliation
+  line, the death-blast warning boxes, the Bitten warning, and "Armoured
+  −1" are the ordinary attack preview's. An attack by a dinosaur whose
+  owner has Wallbreaker on a unit behind City Walls adds "Wallbreaker:
+  ignores City Walls". The `?` details show "Charge!" with the former
+  Stampede icon (`ICON:ACTION:STAMPEDE`; no new art) and the sentence "+1
+  Attack per tile moved this turn (up to +2). Ignores Walls and Field
+  Defense, destroys Field Defense, and pushes back." The Triceratops's
+  recruit help no longer says "Can't attack after moving." The Promote
+  button's tooltip and accessible name read "Promote: +5 maximum HP and a
+  full heal" for every faction.
 - **Growth.** A Big unit wears one upward rank chevron and an Alpha two,
   cream with a black outline, right of its HP bar in both art sets (in the
   default CHIBI look, which draws no side bar, at the left end of the plate;
@@ -451,24 +453,23 @@ seat looks as in revision 18 apart from the extra faction option.
   about its feet, capped at a drawn width of 96 CSS px, so the Brontosaurus
   stops at x1.09; overlays do not move. The dock shows "Grows · 1 kill to
   Big", "Big · 2 kills to Alpha" or "Alpha", and "2 slots" for a two-slot
-  body; the `?` details add "Big: +4 HP. Alpha: +8 HP, +1 Attack. Next stage
-  in N kills." and the stat rows list the engine's "+4"/"+8" Growth and "+1"
+  body; the `?` details add "Big: +4 HP. Alpha: +8 HP, +1 Attack. Growing
+  fully heals. Next stage in N kills." and the stat rows list the engine's "+4"/"+8" Growth and "+1"
   Alpha modifiers. `UNIT_GREW` pulses the sprite to x1.2 and back over
   300 ms and logs "Your T-Rex grew: Big".
 - **Acid and Armoured.** An attack preview's note adds "Acid: ignores cover
   and fortification" for a Spitter and "Armoured −1" for a hit on an
   Ankylosaurus ("Your armour −1" when the viewer's Ankylosaurus takes the
-  retaliation). The `?` details name Acid, Armoured, Stampede, Hatch, Grows,
+  retaliation). The `?` details name Acid, Armoured, Charge!, Hatch, Grows,
   Rampage, Pounce and War Drums, "Big body" for two slots, and "Wild" for the
   Caveman and Ankylosaurus. Where a Human Fighter or Guard would be offered
   Field Defense, they show an `aria-disabled` Fortify explaining "Dinosaurs
   cannot build Field Defense".
 - **Feedback.** Cues are code-native and unowned (white, cream, light grey,
-  basalt grey, charcoal). A Stampede keeps the board before the hit while
-  the Triceratops slides along the lane with a dust puff behind each tile it
-  leaves, lunges from the stand tile, and flashes a spiky star with two
-  puffs on the target; a survivor then slides one tile back and the
-  Triceratops follows. A Spitter lobs a pale cream blob that lands in three
+  basalt grey, charcoal). A Charge with a run-up lunges like any melee attack and
+  flashes a spiky star with two puffs on the target (`CHARGE_HIT`); a
+  pushed survivor then slides one tile back and the Triceratops follows,
+  and neither jumps ahead of its slide. A Spitter lobs a pale cream blob that lands in three
   puffs. A laid Egg pops in with one bounce. A hatching Egg wobbles twice
   and cracks, then its shell chips fly up while the unit grows in from
   x0.6; the Shaman's Hatch first spreads two rings from the Shaman to the
@@ -476,10 +477,12 @@ seat looks as in revision 18 apart from the extra faction option.
   the Rally cue. Reduced motion holds each drawn cue at its midpoint and
   shows growth and a laid Egg at once. The live region and a toast announce
   "You laid a Raptor Egg", "Your Raptor hatched", "Player 2's Raptor Egg was
-  destroyed", "2 Eggs were lost with your Capital", "Your T-Rex grew: Big"
-  and "Your Triceratops stampeded Player 2's Guard: 14 damage". Help adds a
-  "Dinosaurs" list with the eleven section 12.3 sentences in every match
-  with a Dinosaur seat; a Dinosaur viewer is told "Select your city to train
+  destroyed", "2 Eggs were lost with your Capital" and "Your T-Rex grew:
+  Big" (a Charge is announced like any attack). Help adds a "Dinosaurs"
+  list with the twelve sentences of section 12.3 as amended by revision 20
+  (Charge!, Nesting, Wallbreaker, and Grow) in every match with a Dinosaur
+  seat, and "How to play" tells every viewer of every match "Promotion: a
+  unit with 3 kills can be promoted once: +5 maximum HP and a full heal."; a Dinosaur viewer is told "Select your city to train
   units and lay Eggs." and gets no Raider Escape tip.
 - **Review.** `npm run review:ruleset7-dinosaur-ui` captures these surfaces
   (the setup, a Showcase with a Dinosaur seat, and the Dinosaur UI fixtures)

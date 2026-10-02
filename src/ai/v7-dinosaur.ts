@@ -1,75 +1,64 @@
 import {
+  GROWTH_HP_V7,
   GROWTH_KILLS_V7,
+  RUN_UP_MAXIMUM_TILES_V7,
   effectiveRoleRuleV7,
+  factionTreeV7,
   roleMechanicsV7,
   technologyCapabilitiesV7,
+  unitGrowsV7,
   unitGrowthStageV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
+  type EffectiveRoleRuleV7,
+  type TechnologyUnlockV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import { previewHatchV7 } from "../engine/v7/query";
-import {
-  STAMPEDE_DIRECTIONS_V7,
-  STAMPEDE_DISTANCES_V7,
-  isStampedeTargetFormV7,
-  stampedeLaneV7,
-  viewStampedeFactsV7,
-  type StampedeBoardFactsV7,
-} from "../engine/v7/stampede";
-import type { CoordV7 } from "../engine/v7/types";
+import type { CoordV7, TechnologyIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
 /**
  * Revision 19 Normal AI Dinosaur helpers (`pulp_wars-c87.5`).
  *
  * Every function reads only the viewer's public view, public commands, and
- * public previews (the Stampede lane geometry is the shared public lane rule
- * applied to the view). Nothing here draws from the PRNG, reads
- * authoritative state, or depends on elapsed time. The policy calls these
- * helpers only in a match with a Dinosaur seat (`dinosaurMatchForPolicyV7`),
- * or through facts that only a Dinosaur-faction unit has (an Egg, `GROW`,
- * `STAMPEDE`, `ACID`, an armour reduction), so Human, Undead, and Goblin
+ * public previews. Nothing here draws from the PRNG, reads authoritative
+ * state, or depends on elapsed time. The policy calls these helpers only in
+ * a match with a Dinosaur seat (`dinosaurMatchForPolicyV7`), or through
+ * facts that only a Dinosaur-faction unit has (an Egg, `GROW`,
+ * `LINEBREAKER`, `ACID`, an armour reduction), so Human, Undead, and Goblin
  * decisions in every other match stay byte-identical.
+ *
+ * Revision 20 (`pulp_wars-0hi.2`): the Triceratops is a front-line attacker
+ * with the passive Charge! (`LINEBREAKER`). Every Stampede lane heuristic is
+ * gone; it is judged by its abilities, never by its `SIEGE` label.
  */
 
-/** A Stampede that kills: an ordinary attack kill (1180). */
-export const STAMPEDE_KILL_PRIORITY_V7 = 1180;
-/** A Stampede that kills a unit threatening an own city (attack: 1280). */
-export const STAMPEDE_CITY_SAVE_PRIORITY_V7 = 1280;
-/** A Stampede that kills the unit on a hostile city center (attack: 1350). */
-export const STAMPEDE_CLEAR_CENTER_PRIORITY_V7 = 1350;
+/** Field Defense destroyed by a Charge! on the target tile, in strategic units. */
+export const CHARGE_FIELD_DEFENSE_VALUE_V7 = 8;
+/** A defender pushed off a hostile city center (the Triceratops besieges). */
+export const CHARGE_PUSH_CENTER_VALUE_V7 = 20;
+/** ...and an own capturer within two tiles can enter next. */
+export const CHARGE_CAPTURER_NEAR_VALUE_V7 = 15;
 /**
- * A Stampede that pushes the defender off a hostile city center while an own
+ * A Charge! that pushes the defender off a hostile city center while an own
  * capturer is near (an attack that opens a capture follow-up: 1345).
  */
-export const STAMPEDE_PUSH_CENTER_PRIORITY_V7 = 1345;
+export const CHARGE_PUSH_CENTER_PRIORITY_V7 = 1345;
+/** A non-lethal Charge! that destroys Field Defense goes before other chips. */
+export const CHARGE_BREAKER_PRIORITY_V7 = 910;
 /**
- * A Stampede that only damages: just above an ordinary chip attack (900), so
- * the hit (no retaliation) softens the target before the other attacks.
- */
-export const STAMPEDE_CHIP_PRIORITY_V7 = 905;
-/** A chip Stampede that also destroys Field Defense goes first. */
-export const STAMPEDE_BREAKER_PRIORITY_V7 = 910;
-/** Field Defense destroyed by a Stampede on a tile, in strategic units. */
-export const STAMPEDE_FIELD_DEFENSE_VALUE_V7 = 8;
-/** A defender pushed off a hostile city center (the Triceratops besieges). */
-export const STAMPEDE_PUSH_CENTER_VALUE_V7 = 20;
-/** ...and an own capturer within two tiles can enter next. */
-export const STAMPEDE_CAPTURER_NEAR_VALUE_V7 = 15;
-/**
- * A Move that puts an unmoved Triceratops on an open lane to a target: above
+ * A Move that ends a Triceratops next to a target it can then Charge: above
  * routine moves (700 to 850), below every attack.
  */
-export const STAMPEDE_LANE_MOVE_PRIORITY_V7 = 860;
+export const CHARGE_APPROACH_PRIORITY_V7 = 860;
 /**
- * A Move that brings an unmoved Triceratops nearer a launch tile (a free
- * tile with an open lane to a visible hostile unit): above routine Moves,
- * below a Move onto the launch tile itself (`pulp_wars-c87.8`).
+ * A Move of a Triceratops that already stands next to a target, when the
+ * run-up makes the Charge better than attacking from where it stands: just
+ * above the attack it replaces (a chip, 900; a kill, 1180).
  */
-export const STAMPEDE_APPROACH_PRIORITY_V7 = 855;
-/** Launch tiles farther than this many tiles are not approached. */
-export const STAMPEDE_APPROACH_RANGE_V7 = 4;
+export const CHARGE_RUN_UP_CHIP_PRIORITY_V7 = 912;
+export const CHARGE_RUN_UP_KILL_PRIORITY_V7 = 1181;
 /** A Hatch of an unthreatened Egg: just above ordinary land production. */
 export const HATCH_PRIORITY_V7 = 1085;
 /** A Hatch of an Egg that visible enemies can hit: above threatened training. */
@@ -82,8 +71,6 @@ export const HATCH_APPROACH_PRIORITY_V7 = 1084;
 export const EGG_GUARD_PRIORITY_V7 = 760;
 /** A Move after which the mover destroys a visible hostile Egg. */
 export const EGG_SMASH_SETUP_PRIORITY_V7 = 1179;
-/** A cheap unit steps into the lane of a Triceratops aimed at an own center. */
-export const LANE_BLOCK_PRIORITY_V7 = 1245;
 /** A grown unit leaves visible lethal reach (a kill, 1180, still goes first). */
 export const GROWN_RETREAT_PRIORITY_V7 = 1150;
 /** Each hatch turn of an Egg laid in a threatened city costs this much. */
@@ -94,8 +81,8 @@ export const EGG_DELAY_COST_V7 = 1;
 export const EGG_SLOT_FILL_COST_V7 = 4;
 /** A city with at most this capacity is small (level 2, or level 1 with Planning). */
 export const SMALL_CITY_CAPACITY_V7 = 3;
-/** The first Stampede unit (a siege unit the seat has none of). */
-export const FIRST_STAMPEDE_UNIT_BIAS_V7 = 20;
+/** The first Charge! unit (a line-breaker the seat has none of). */
+export const FIRST_LINEBREAKER_UNIT_BIAS_V7 = 20;
 /** The first Shaman, while a long Egg waits or an army can use War Drums. */
 export const SHAMAN_TRAINING_BIAS_V7 = 10;
 /** A Shaman (Attack 1, Defense 1) is no defender for a threatened city. */
@@ -113,8 +100,33 @@ export const SIGNATURE_RESEARCH_CITIES_V7 = 2;
  */
 export const SIGNATURE_ROLES_V7: readonly ["CATAPULT", "KNIGHT"] =
   Object.freeze(["CATAPULT", "KNIGHT"]);
-/** Reaching Big and Alpha, in strategic units (+4 HP; +4 HP and +1 Attack). */
-export const GROWTH_STAGE_VALUE_V7: readonly [number, number] = [10, 16];
+/**
+ * Revision 20: a growth stage fully heals, so a growth kill is worth the HP
+ * it restores (the unit's missing HP plus the stage's 4): this much per two
+ * HP (10 for a kill at full HP, as before).
+ */
+export const GROWTH_RESTORED_HP_VALUE2_V7 = 5;
+/** Reaching Alpha also adds 1 Attack to every attack. */
+export const ALPHA_STAGE_VALUE_V7 = 6;
+/** Killing a wounded hostile dinosaur before it can grow: this share (1/n). */
+export const WOUNDED_DINOSAUR_KILL_DIVISOR_V7 = 2;
+/**
+ * Nesting research (revision 20): each owned city gains a unit slot. Valued
+ * per owned city; researched ahead of the next role technology (1060),
+ * below land production (1080), while an own city has no room for a
+ * two-slot Egg.
+ */
+export const NESTING_SLOT_VALUE_V7 = 4;
+/** Nesting's Egg effects (+4 HP, one turn sooner), valued once. */
+export const NESTING_EGG_VALUE_V7 = 4;
+export const NESTING_RESEARCH_PRIORITY_V7 = 1062;
+/**
+ * Wallbreaker research (revision 20): worth this much per visible hostile
+ * city with Walls, researched like Nesting while one is visible and the
+ * seat owns a dinosaur to use it.
+ */
+export const WALLBREAKER_WALLED_CITY_VALUE_V7 = 8;
+export const WALLBREAKER_RESEARCH_PRIORITY_V7 = 1061;
 /** A grown unit's extra value per stage (its kills are not for sale). */
 export const GROWN_UNIT_PREMIUM_V7 = 10;
 /** A hostile Egg is worth this much more per turn it still needs. */
@@ -168,19 +180,25 @@ export function eggTargetBonusV7(
 
 /**
  * The growth value of the next kill credited to `unit`: positive only for a
- * growing unit that is one kill from Big or from Alpha.
+ * growing unit that is one kill from Big or from Alpha. Revision 20: growing
+ * fully heals, so the value is the HP restored (the missing HP plus the
+ * stage's 4), plus Alpha's Attack. `hp` is the unit's HP when the kill is
+ * credited (its current HP by default).
  */
 export function growthKillValueV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
+  hp: number = unit.hp,
 ): number {
   if (unitGrowthStageV7(view, unit) === null) return 0;
   const kills = unit.kills + 1;
-  return kills === GROWTH_KILLS_V7[0]
-    ? GROWTH_STAGE_VALUE_V7[0]
-    : kills === GROWTH_KILLS_V7[1]
-      ? GROWTH_STAGE_VALUE_V7[1]
-      : 0;
+  const alpha = kills === GROWTH_KILLS_V7[1];
+  if (kills !== GROWTH_KILLS_V7[0] && !alpha) return 0;
+  const restored = Math.max(0, unit.maxHp - hp) + GROWTH_HP_V7;
+  return (
+    Math.floor((GROWTH_RESTORED_HP_VALUE2_V7 * restored) / 2) +
+    (alpha ? ALPHA_STAGE_VALUE_V7 : 0)
+  );
 }
 
 /** The growth stage of a unit (0 for a unit that never grows). */
@@ -209,183 +227,73 @@ export function armouredForPolicyV7(
   );
 }
 
-/** Whether `unit` is a land-form unit that may Stampede (a Triceratops). */
-export function stampederV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
+/** Whether `unit` is a land-form unit with Charge! (a Triceratops). */
+export function linebreakerV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
   return (
     unit.form === "LAND" &&
     unit.hp > 0 &&
-    unitRoleRuleV7(view, unit).abilities.includes("STAMPEDE")
+    unitRoleRuleV7(view, unit).abilities.includes("LINEBREAKER")
   );
 }
 
-function laneFactsV7(
-  view: PlayerViewV7,
-  ignoredUnitId: number | undefined,
-): StampedeBoardFactsV7 {
-  const facts = viewStampedeFactsV7(view);
-  if (ignoredUnitId === undefined) return facts;
-  return {
-    ...facts,
-    unitAt: (at) => {
-      const unit = facts.unitAt(at);
-      return unit?.id === ignoredUnitId ? undefined : unit;
-    },
-  };
+/**
+ * The tactical role the policy plays a role rule as. Revision 20: a unit
+ * with Charge! is a front-line attacker (`LINE`) whatever its registered
+ * label (the Triceratops keeps `SIEGE`, which only excludes it from War
+ * Drums). Every other rule keeps its label.
+ */
+export function policyTacticalRoleV7(
+  rule: EffectiveRoleRuleV7,
+): EffectiveRoleRuleV7["tacticalRole"] {
+  return rule.abilities.includes("LINEBREAKER") ? "LINE" : rule.tacticalRole;
+}
+
+/** Whether the policy plays `rule` as a siege unit (never a Charge! unit). */
+export function policySiegeRuleV7(rule: EffectiveRoleRuleV7): boolean {
+  return policyTacticalRoleV7(rule) === "SIEGE";
 }
 
 /**
- * The lane tiles a Triceratops of `ownerId` standing on `from` would run to
- * hit a unit on `to` (1 or 2), or 0 when there is no open lane. A lane of a
- * hostile Triceratops is open as far as the viewer can see (an unexplored
- * lane tile counts as open); the viewer's own lane must be explored. The
- * unit `ignoredUnitId` is treated as absent (the unit being moved).
+ * The Charge! run-up `attack2` of a unit with `LINEBREAKER` after a Move of
+ * `pathLength` tiles (0 for any other unit).
  */
-export function stampedeLaneRunV7(
-  view: PlayerViewV7,
-  ownerId: PublicUnitV7["ownerId"],
-  from: CoordV7,
-  to: CoordV7,
-  ignoredUnitId?: number,
-): 0 | 1 | 2 {
-  if (
-    to.x < 0 ||
-    to.y < 0 ||
-    to.x >= view.board.width ||
-    to.y >= view.board.height
-  )
-    return 0;
-  const target = view.board.tiles[to.y * view.board.width + to.x];
-  // A Stampede target stands on land.
-  if (target === undefined || (target.explored && target.biome === null))
-    return 0;
-  const lane = stampedeLaneV7(
-    laneFactsV7(view, ignoredUnitId),
-    ownerId,
-    from,
-    to,
-    ownerId !== view.viewer.id,
-  );
-  return lane.ok ? lane.runTiles : 0;
-}
-
-/**
- * Every land tile a visible Triceratops threatens along an open lane from
- * where it stands (distance 2 or 3 in the eight directions).
- */
-export function stampedeLaneTilesV7(
+export function chargeRunUpForPolicyV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
-): readonly CoordV7[] {
-  if (!stampederV7(view, unit)) return [];
-  const facts = viewStampedeFactsV7(view);
-  const tiles: CoordV7[] = [];
-  for (const direction of STAMPEDE_DIRECTIONS_V7)
-    for (const distance of STAMPEDE_DISTANCES_V7) {
-      const at = {
-        x: unit.at.x + direction.x * distance,
-        y: unit.at.y + direction.y * distance,
-      };
-      if (
-        at.x < 0 ||
-        at.y < 0 ||
-        at.x >= view.board.width ||
-        at.y >= view.board.height
-      )
-        continue;
-      const tile = view.board.tiles[at.y * view.board.width + at.x];
-      if (tile === undefined || (tile.explored && tile.biome === null))
-        continue;
-      if (
-        stampedeLaneV7(
-          facts,
-          unit.ownerId,
-          unit.at,
-          at,
-          unit.ownerId !== view.viewer.id,
-        ).ok
-      )
-        tiles.push(at);
-    }
-  return tiles;
-}
-
-/**
- * The tiles strictly between a Triceratops on `from` and a unit on `to` when
- * that lane is open (a unit of another seat on one of them closes it).
- */
-export function stampedeLaneBetweenV7(
-  view: PlayerViewV7,
-  ownerId: PublicUnitV7["ownerId"],
-  from: CoordV7,
-  to: CoordV7,
-): readonly CoordV7[] {
-  const lane = stampedeLaneV7(
-    viewStampedeFactsV7(view),
-    ownerId,
-    from,
-    to,
-    ownerId !== view.viewer.id,
+  pathLength: number,
+): number {
+  if (!linebreakerV7(view, unit)) return 0;
+  return (
+    unitRoleMechanicsV7(view, unit).runUpBonus2 *
+    Math.max(0, Math.min(RUN_UP_MAXIMUM_TILES_V7, pathLength))
   );
-  return lane.ok ? lane.lane : [];
 }
 
 /**
- * The launch tiles of the viewer's own Triceratops `actor`: every explored,
- * enterable land tile holding no other unit, within
- * `STAMPEDE_APPROACH_RANGE_V7` of it, from which a lane to one of the visible
- * `hostiles` (land units and Eggs) is open, with `actor` itself treated as
- * absent. Bounded: sixteen tiles per hostile unit.
+ * Whether the policy treats an attack by `attacker` as ignoring City Walls.
+ * An own dinosaur does with the viewer's Wallbreaker. Another seat's
+ * research is not public, so a hostile dinosaur is assumed to have it: the
+ * policy never relies on Walls against a dinosaur.
  */
-export function stampedeLaunchTilesV7(
+export function ignoresWallsForPolicyV7(
   view: PlayerViewV7,
-  actor: PublicUnitV7,
-  hostiles: readonly PublicUnitV7[],
-): readonly CoordV7[] {
-  const engineering = technologyCapabilitiesV7(
-    view.viewer.researchedTechs,
-    view.viewer.faction,
-  ).mountainMovement;
-  const occupied = new Set<string>();
-  for (const unit of view.units)
-    if (unit.hp > 0 && unit.id !== actor.id)
-      occupied.add(`${unit.at.y},${unit.at.x}`);
-  const seen = new Set<string>();
-  const tiles: CoordV7[] = [];
-  for (const hostile of hostiles) {
-    if (hostile.hp <= 0 || !isStampedeTargetFormV7(hostile.form)) continue;
-    if (distanceV7(hostile.at, actor.at) > 3 + STAMPEDE_APPROACH_RANGE_V7)
-      continue;
-    for (const direction of STAMPEDE_DIRECTIONS_V7)
-      for (const run of STAMPEDE_DISTANCES_V7) {
-        const at = {
-          x: hostile.at.x - direction.x * run,
-          y: hostile.at.y - direction.y * run,
-        };
-        const key = `${at.y},${at.x}`;
-        if (
-          at.x < 0 ||
-          at.y < 0 ||
-          at.x >= view.board.width ||
-          at.y >= view.board.height ||
-          seen.has(key) ||
-          occupied.has(key) ||
-          distanceV7(at, actor.at) > STAMPEDE_APPROACH_RANGE_V7
-        )
-          continue;
-        const tile = view.board.tiles[at.y * view.board.width + at.x];
-        if (
-          tile === undefined ||
-          !tile.explored ||
-          tile.biome === null ||
-          (tile.terrain === "MOUNTAIN" && !engineering) ||
-          stampedeLaneRunV7(view, actor.ownerId, at, hostile.at, actor.id) === 0
-        )
-          continue;
-        seen.add(key);
-        tiles.push(at);
-      }
-  }
-  return tiles;
+  attacker: PublicUnitV7,
+): boolean {
+  if (attacker.form !== "LAND" || !unitGrowsV7(view, attacker)) return false;
+  return attacker.ownerId === view.viewer.id
+    ? technologyCapabilitiesV7(view.viewer.researchedTechs, view.viewer.faction)
+        .ignoresCityWalls
+    : true;
+}
+
+/** The viewer's technology that grants `kind` under its own tree, if any. */
+export function technologyWithUnlockV7(
+  view: PlayerViewV7,
+  kind: TechnologyUnlockV7["kind"],
+): TechnologyIdV7 | null {
+  for (const node of factionTreeV7(view.viewer.faction).nodes)
+    if (node.unlocks.some((unlock) => unlock.kind === kind)) return node.id;
+  return null;
 }
 
 type LayEggCommandV7 = Extract<CommandV7, { kind: "LAY_EGG" }>;
@@ -504,7 +412,7 @@ export interface DinosaurProductionCityV7 {
  * Dinosaur production by need (zero for every other seat): an Egg's hatch
  * delay beyond one turn counts against it, a two-slot Egg is not laid into
  * the last slots of a small city lightly (it clogs it for as long as the
- * unit lives), the first Stampede unit gains a bias, and the first Shaman
+ * unit lives), the first Charge! unit gains a bias, and the first Shaman
  * gains one while an Egg with two or more turns left waits or at least three
  * own units could use War Drums. A Shaman is not trained to defend a
  * threatened city.
@@ -521,19 +429,19 @@ export function dinosaurProductionAdjustmentV7(
     const clogs =
       city.capacity <= SMALL_CITY_CAPACITY_V7 &&
       city.freeSlots - extraSlots - 1 <= 0;
-    const firstStampeder =
+    const firstLinebreaker =
       effectiveRoleRuleV7(command.role, view.viewer.faction).abilities.includes(
-        "STAMPEDE",
+        "LINEBREAKER",
       ) &&
       !view.units.some(
         (unit) =>
           unit.ownerId === view.viewer.id &&
-          unitRoleRuleV7(view, unit).abilities.includes("STAMPEDE"),
+          unitRoleRuleV7(view, unit).abilities.includes("LINEBREAKER"),
       );
     return (
       -EGG_DELAY_COST_V7 * Math.max(0, layEggTurnsV7(view, command.role) - 1) -
       (clogs ? extraSlots * EGG_SLOT_FILL_COST_V7 : 0) +
-      (firstStampeder ? FIRST_STAMPEDE_UNIT_BIAS_V7 : 0)
+      (firstLinebreaker ? FIRST_LINEBREAKER_UNIT_BIAS_V7 : 0)
     );
   }
   if (

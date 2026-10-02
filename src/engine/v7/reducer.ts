@@ -16,6 +16,8 @@ import {
   technologyCapabilitiesV7,
   unitCapacitySlotsV7,
   unitGrowsV7,
+  PROMOTION_HP_V7,
+  PROMOTION_KILLS_V7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   isResourceRevealedV7,
@@ -60,11 +62,6 @@ import {
   resolveStartTurnHatchV7,
   withEggV7,
 } from "./eggs";
-import {
-  isStampedeTargetFormV7,
-  stampedeLaneV7,
-  stateStampedeFactsV7,
-} from "./stampede";
 import {
   RAISE_DEAD_SKELETON_HP_V7,
   raiseDeadGravesV7,
@@ -169,10 +166,8 @@ export type RuleErrorCodeV7 =
   | "WAIL_NOT_LEGAL"
   | "KABOOM_NOT_LEGAL"
   | "DISBAND_NOT_LEGAL"
-  // Revision 19: an illegal Stampede (`MOVED`, `EMBARKED`, `NOT_IN_LANE`,
-  // `LANE_BLOCKED`), an illegal Hatch (`EMBARKED`, `NO_EGG`,
-  // `LAID_THIS_TURN`), and a unit command other than Disband naming an Egg.
-  | "STAMPEDE_NOT_LEGAL"
+  // Revision 19: an illegal Hatch (`EMBARKED`, `NO_EGG`, `LAID_THIS_TURN`)
+  // and a unit command other than Disband naming an Egg.
   | "HATCH_NOT_LEGAL"
   | "UNIT_IS_EGG";
 export interface RuleErrorV7 {
@@ -311,9 +306,6 @@ function navalFactsMayChangeV7(command: CommandV7): boolean {
     // Revision 17 section 6.7: an exploding blockader lifts its blockade, and
     // END_TURN reports blockades lifted by Start Turn Plague and chains.
     "KABOOM",
-    // Revision 19 section 7.4: a death-blast chain a Stampede sets off can
-    // kill a blockader.
-    "STAMPEDE",
     "END_TURN",
   ].includes(command.kind);
 }
@@ -438,8 +430,6 @@ function applyCommandCoreV7(
     return applyLayEgg(stateInput, state, actor, command);
   if (command.kind === "HATCH")
     return applyHatch(stateInput, state, actor, command);
-  if (command.kind === "STAMPEDE")
-    return applyStampede(stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -1913,326 +1903,6 @@ function applyHatch(
   }
 }
 
-/**
- * Revision 19 `STAMPEDE` (section 7): a Triceratops that has not moved runs
- * one or two tiles along an open lane and hits the unit at its end, harder
- * the longer it ran, without retaliation. A survivor is pushed back and the
- * Triceratops follows; after a kill it advances. Every fact it reads is
- * explored by the actor, so it resolves completely or is rejected atomically.
- */
-function applyStampede(
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  command: Extract<CommandV7, { kind: "STAMPEDE" }>,
-): ApplyCommandResultV7 {
-  const actorCheck = validateUnitActor(state, actor, command.unitId);
-  if (!actorCheck.ok)
-    return rejected(original, actorCheck.code, actorCheck.params);
-  const attacker = actorCheck.unit;
-  const rule = unitRoleRuleV7(state, attacker);
-  if (!rule.abilities.includes("STAMPEDE"))
-    return rejected(original, "UNIT_ROLE_INVALID", { role: attacker.role });
-  // A unit that moved or landed this turn reports `MOVED` (landing ends the
-  // activation, so its primary action also reads as used).
-  if (attacker.activation.moved)
-    return rejected(original, "STAMPEDE_NOT_LEGAL", { reason: "MOVED" });
-  if (primaryUsed(attacker) || attacker.activation.overrunActive)
-    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: attacker.id });
-  if (attacker.form !== "LAND")
-    return rejected(original, "STAMPEDE_NOT_LEGAL", { reason: "EMBARKED" });
-  const target = state.units.find(
-    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
-  );
-  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
-    return rejected(original, "TARGET_NOT_FOUND", {
-      targetUnitId: command.targetUnitId,
-    });
-  if (
-    target.ownerId === actor ||
-    arePlayersAlliedV7(state, actor, target.ownerId)
-  )
-    return rejected(original, "TARGET_ALLIED");
-  if (!isStampedeTargetFormV7(target.form))
-    return rejected(original, "STAMPEDE_NOT_LEGAL", { reason: "NOT_IN_LANE" });
-  const lane = stampedeLaneV7(
-    stateStampedeFactsV7(state, actor),
-    actor,
-    attacker.at,
-    target.at,
-  );
-  if (!lane.ok)
-    return rejected(original, "STAMPEDE_NOT_LEGAL", { reason: lane.reason });
-  try {
-    const player = requirePlayer(state, actor);
-    // 1. Run: reveal sight from every lane tile, as a Move does.
-    let players = state.players;
-    const actorRevealed: CoordV7[] = [];
-    for (const step of lane.lane) {
-      const sight = revealRadius(
-        { ...state, players } as GameStateV7,
-        actor,
-        step,
-        unitSightRadiusAtV7(state, attacker, tileAtV7(state.board, step)),
-      );
-      players = setExplored(players, actor, sight.explored);
-      actorRevealed.push(...sight.revealed);
-    }
-    const standTile = tileAtV7(state.board, lane.standAt);
-    const targetTile = tileAtV7(state.board, target.at);
-    if (standTile === undefined || targetTile === undefined)
-      throw new RangeError("INVALID_STATE");
-    const standOwner = state.cities.find(
-      (city) => city.id === standTile.territoryCityId,
-    )?.ownerId;
-    const standDefenseLost =
-      standTile.fieldDefense &&
-      standOwner !== undefined &&
-      standOwner !== actor &&
-      arePlayersHostileV7(state, actor, standOwner);
-    // 2. Hit, from the stand tile. The Push is decided on the tiles the
-    // actor had explored before the run, so the public preview is exact.
-    const standing: UnitStateV7 = { ...attacker, at: lane.standAt };
-    const ranState: GameStateV7 = {
-      ...state,
-      units: state.units.map((unit) =>
-        unit.id === attacker.id ? standing : unit,
-      ),
-    };
-    const calculated = calculateCombatPreviewV7(
-      ranState,
-      attacker.id,
-      target.id,
-      { runTiles: lane.runTiles },
-    );
-    const canAdvance =
-      calculated.advances &&
-      (targetTile.terrain !== "MOUNTAIN" ||
-        player.researchedTechs.includes("ENGINEERING"));
-    const preview =
-      canAdvance === calculated.advances
-        ? calculated
-        : { ...calculated, advances: canAdvance };
-    const pushDestination =
-      preview.push === "WILL_PUSH"
-        ? pushedDestinationV7(ranState, standing, target)
-        : null;
-    const attackerKills = attacker.kills + (preview.defenderDies ? 1 : 0);
-    if (!Number.isSafeInteger(attackerKills))
-      throw new RangeError("INTEGER_OVERFLOW");
-    const endsAt = preview.advances ? target.at : lane.standAt;
-    let attackerAfter: UnitStateV7 = {
-      ...attacker,
-      at: endsAt,
-      hp: attacker.hp - preview.damageToAttacker + preview.attackerHeal,
-      kills: attackerKills,
-      captureEligible: false,
-      activation: {
-        ...attacker.activation,
-        moved: true,
-        movedPathLength: lane.lane.length,
-        attacked: true,
-        attacksUsed: 1,
-        inspired: false,
-        overrunActive: false,
-        escapeAvailable: false,
-        handled: true,
-      },
-    };
-    const defenderAfter: UnitStateV7 = {
-      ...target,
-      at: pushDestination ?? target.at,
-      hp: target.hp - preview.damageToDefender + preview.defenderHeal,
-      captureEligible:
-        pushDestination === null ? target.captureEligible : false,
-    };
-    const growthEvents: DomainEventV7[] = [];
-    attackerAfter = grownUnitV7(
-      state,
-      attacker.kills,
-      attackerAfter,
-      growthEvents,
-    );
-    let units = state.units
-      .map((unit) =>
-        unit.id === attacker.id
-          ? attackerAfter
-          : unit.id === target.id
-            ? defenderAfter
-            : unit,
-      )
-      .filter((unit) => unit.hp > 0);
-    // 4. Field Defense on the target tile falls, whoever owns the tile and
-    // whether or not the target survives.
-    let board = state.board;
-    if (standDefenseLost || targetTile.fieldDefense)
-      board = {
-        ...board,
-        tiles: board.tiles.map((tile) =>
-          (standDefenseLost && same(tile.at, lane.standAt)) ||
-          (targetTile.fieldDefense && same(tile.at, target.at))
-            ? { ...tile, fieldDefense: false }
-            : tile,
-        ),
-      };
-    const events: DomainEventV7[] = [
-      { kind: "UNIT_MOVED", unitId: attacker.id, path: lane.lane },
-    ];
-    if (standDefenseLost)
-      events.push({
-        kind: "FIELD_DEFENSE_DESTROYED",
-        at: lane.standAt,
-        reason: "OCCUPATION",
-      });
-    events.push({ kind: "COMBAT_RESOLVED", preview });
-    if (targetTile.fieldDefense)
-      events.push({
-        kind: "FIELD_DEFENSE_DESTROYED",
-        at: target.at,
-        reason: "CATAPULT",
-      });
-    // 5. Kill: the death, then its Grave or Bitten rising.
-    let graves = state.graves;
-    let nextEntityId = state.nextEntityId;
-    const risings: UnitStateV7[] = [];
-    if (preview.defenderDies) {
-      const bite = biteOfV7(state, target.id);
-      if (bite === undefined || target.form !== "LAND")
-        graves = recordCombatDeathV7(state, graves, target, "ATTACK", events);
-      else {
-        const allocation = allocateUnitId(nextEntityId);
-        nextEntityId = allocation.nextEntityId;
-        const rising = recordBittenRisingV7(
-          state,
-          bite,
-          target,
-          "ATTACK",
-          allocation.id,
-          exhaustedActivation(),
-          events,
-        );
-        risings.push(rising);
-        units = [...units, rising];
-      }
-    }
-    events.push(...growthEvents);
-    // 6 and 7. Push, then the one-tile advance or follow.
-    if (pushDestination !== null)
-      events.push({
-        kind: "UNIT_PUSHED",
-        sourceUnitId: attacker.id,
-        targetUnitId: target.id,
-        from: target.at,
-        to: pushDestination,
-      });
-    if (preview.advances)
-      events.push({
-        kind: "UNIT_MOVED",
-        unitId: attacker.id,
-        path: [target.at],
-      });
-    // 9. The death blast of a killed exploding target, after the advance.
-    const chain = resolveStateExplosionChainV7(
-      state,
-      { units, board, graves, nextEntityId, bitten: state.bitten },
-      preview.defenderDies && isExplodingUnitV7(state, target)
-        ? [{ unit: target, cause: "DEATH" as const }]
-        : [],
-      events,
-    );
-    units = [...chain.units];
-    board = chain.board;
-    graves = chain.graves;
-    nextEntityId = chain.nextEntityId;
-    risings.push(...chain.risings);
-    const plunder = plunderAwardsV7(state, players, [
-      ...(preview.defenderDies
-        ? [{ creditedId: actor, victimOwnerId: target.ownerId }]
-        : []),
-      ...chain.credits,
-    ]);
-    events.push(...plunder.events);
-    players = plunder.players;
-    // Reveals: the run and the Triceratops's final tile, then a pushed
-    // target's new tile, then every rising.
-    const finalReveal = revealRadius(
-      { ...state, board, players, units } as GameStateV7,
-      actor,
-      endsAt,
-      unitSightRadiusAtV7(
-        { ...state, board, players, units } as GameStateV7,
-        attackerAfter,
-      ),
-    );
-    players = setExplored(players, actor, finalReveal.explored);
-    actorRevealed.push(...finalReveal.revealed);
-    if (actorRevealed.length > 0)
-      events.push({
-        kind: "TILES_REVEALED",
-        playerId: actor,
-        tiles: uniqueCoords(actorRevealed),
-      });
-    if (pushDestination !== null) {
-      const pushedState = { ...state, board, players, units } as GameStateV7;
-      const reveal = revealRadius(
-        pushedState,
-        target.ownerId,
-        pushDestination,
-        unitSightRadiusAtV7(pushedState, defenderAfter),
-      );
-      players = setExplored(players, target.ownerId, reveal.explored);
-      if (reveal.revealed.length)
-        events.push({
-          kind: "TILES_REVEALED",
-          playerId: target.ownerId,
-          tiles: reveal.revealed,
-        });
-    }
-    for (const risen of risings) {
-      const risenState = { ...state, board, players, units } as GameStateV7;
-      const reveal = revealRadius(
-        risenState,
-        risen.ownerId,
-        risen.at,
-        unitSightRadiusAtV7(risenState, risen),
-      );
-      players = setExplored(players, risen.ownerId, reveal.explored);
-      if (reveal.revealed.length)
-        events.push({
-          kind: "TILES_REVEALED",
-          playerId: risen.ownerId,
-          tiles: reveal.revealed,
-        });
-    }
-    const economy = recomputeLiveEconomyV7(
-      state,
-      { board, cities: state.cities, units },
-      state.populationContributions,
-    );
-    events.push(...economyAndGrowth(economy.changes));
-    const settlement = settleCityRewardsV7(
-      {
-        ...state,
-        board,
-        commandIndex: nextSafe(state.commandIndex),
-        nextEntityId,
-        players,
-        cities: economy.cities,
-        units,
-        graves,
-        populationContributions: economy.populationContributions,
-      },
-      actor,
-    );
-    events.push(...settlement.events);
-    const achievements = evaluateAchievementsV7(settlement.state, actor);
-    events.push(...achievements.events);
-    return accepted(checked(achievements.state), events);
-  } catch (cause) {
-    return arithmeticFailure(original, cause);
-  }
-}
-
 function applyLandGrant(
   original: GameStateV7,
   state: GameStateV7,
@@ -3154,12 +2824,8 @@ function applyAttack(
         biterUnitId: defender.id,
       });
     events.push(...growthEvents);
-    if (preview.advances)
-      events.push({
-        kind: "UNIT_MOVED",
-        unitId: attacker.id,
-        path: [defender.at],
-      });
+    // Revision 20 section 2.3: the Push, then the advance (after a kill) or
+    // the follow (a Charge! after a Push). Only a Charge! emits both.
     if (pushDestination !== null)
       events.push({
         kind: "UNIT_PUSHED",
@@ -3167,6 +2833,12 @@ function applyAttack(
         targetUnitId: defender.id,
         from: defender.at,
         to: pushDestination,
+      });
+    if (preview.advances)
+      events.push({
+        kind: "UNIT_MOVED",
+        unitId: attacker.id,
+        path: [defender.at],
       });
     // Revision 17 section 6.7: the exploding units among the defender, the
     // splash victims, and the attacker explode after the attack's deaths,
@@ -3761,14 +3433,14 @@ function applyPromote(
   if (
     unit.form === "EMBARKED" ||
     unit.veteran ||
-    unit.kills < 3 ||
+    unit.kills < PROMOTION_KILLS_V7 ||
     unitGrowsV7(state, unit)
   )
     return rejected(original, "PROMOTION_NOT_ELIGIBLE", { unitId });
-  const maxHp = unit.maxHp + 5;
+  // Revision 20 section 5: a promotion fully heals (`hp` is the new maximum).
+  const maxHp = unit.maxHp + PROMOTION_HP_V7;
   if (
     !Number.isSafeInteger(maxHp) ||
-    !Number.isSafeInteger(unit.hp + 5) ||
     state.commandIndex >= Number.MAX_SAFE_INTEGER
   )
     return rejected(original, "INTEGER_OVERFLOW");
@@ -3778,7 +3450,7 @@ function applyPromote(
       commandIndex: nextSafe(state.commandIndex),
       units: state.units.map((candidate) =>
         candidate.id === unitId
-          ? { ...candidate, veteran: true, maxHp, hp: candidate.hp + 5 }
+          ? { ...candidate, veteran: true, maxHp, hp: maxHp }
           : candidate,
       ),
     }),

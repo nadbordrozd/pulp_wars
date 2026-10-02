@@ -73,8 +73,9 @@ export type ChibiEffectSubjectV7 =
  * `ICON:*` are unowned icons: dedicated technology icons, command and action
  * icons (`ICON:ACTION:UNDEAD:RALLY` is the Undead Frenzy,
  * `ICON:ACTION:GOBLIN:RALLY` the Goblin WAAAGH!, bead pulp_wars-0ao.14, and
- * `ICON:ACTION:DINOSAUR:RALLY` the Dinosaur War Drums; Lay Egg, Hatch and
- * Stampede are `ICON:ACTION:<KIND>` of their command kinds), city rewards
+ * `ICON:ACTION:DINOSAUR:RALLY` the Dinosaur War Drums; Lay Egg and Hatch
+ * are `ICON:ACTION:<KIND>` of their command kinds, and `ICON:ACTION:STAMPEDE`
+ * is the Triceratops's Charge! ability since revision 20), city rewards
  * and the HUD economy icons.
  */
 export type UiArtSubjectV7 =
@@ -84,6 +85,9 @@ export type UiArtSubjectV7 =
   | `PORTRAIT:DINOSAUR:${DinosaurArtRoleV7}`
   | `ICON:TECH:${TechnologyIdV7}`
   | `ICON:ACTION:${CommandV7["kind"]}`
+  // Revision 20: the Stampede command is gone; its icon is the Charge!
+  // ability's, under its existing subject key.
+  | "ICON:ACTION:STAMPEDE"
   | "ICON:ACTION:UNDEAD:RALLY"
   | "ICON:ACTION:GOBLIN:RALLY"
   | "ICON:ACTION:DINOSAUR:RALLY"

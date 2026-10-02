@@ -37,7 +37,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r19");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r20");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -85,17 +85,21 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "BATTLESHIP",
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(46);
+    // Revision 20 removes STAMPEDE (46 -> 45 command kinds); the event kinds
+    // are unchanged.
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(45);
+    expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(72);
-    // Revision 19 inserts STAMPEDE and HATCH after KABOOM, LAY_EGG after
-    // TRAIN_NAVAL, EGG_LAID and EGG_HATCHED after NAVAL_UNIT_TRAINED, and
-    // UNIT_GREW after UNIT_PROMOTED (Dinosaur spec section 10).
+    // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
+    // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
+    // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after
+    // UNIT_PROMOTED (Dinosaur spec section 10).
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("KABOOM"),
-        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 4,
+        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 3,
       ),
-    ).toEqual(["KABOOM", "STAMPEDE", "HATCH", "RECOVER"]);
+    ).toEqual(["KABOOM", "HATCH", "RECOVER"]);
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL"),
@@ -126,7 +130,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
         COMMAND_KIND_ORDER_V7.indexOf("WAIL"),
         COMMAND_KIND_ORDER_V7.indexOf("WAIL") + 3,
       ),
-    ).toEqual(["WAIL", "KABOOM", "STAMPEDE"]);
+    ).toEqual(["WAIL", "KABOOM", "HATCH"]);
     expect(
       DOMAIN_EVENT_KIND_ORDER_V7.slice(
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED"),

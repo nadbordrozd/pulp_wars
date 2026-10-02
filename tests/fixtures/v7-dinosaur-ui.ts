@@ -16,8 +16,7 @@ import { goblinArenaV7, sameV7, type GoblinPieceV7 } from "./v7-goblin-arena";
  * Revision 19 Dinosaur UI fixtures (pulp_wars-c87.4) on the seed-2 Dry Land
  * 11×11 arena (seat 0 is the human; capitals (8, 8) and (2, 8); villages
  * (5, 5), (8, 5), (5, 8)). Every land tile that is not a settlement is open
- * Grass, so Stampede lanes exist; `forests` restores cover where a fixture
- * wants it. Achievements are unlocked in advance so that command tails emit
+ * Grass; `forests` restores cover where a fixture wants it. Achievements are unlocked in advance so that command tails emit
  * no achievement notice over the board.
  */
 export interface DinosaurUiOptionsV7 {
@@ -106,18 +105,22 @@ export function dinosaurUiFieldV7(
 }
 
 export const DINOSAUR_SHOWCASE_V7 = {
-  /** Unmoved Triceratops with three open lanes. */
+  /** Unmoved Triceratops (revision 20: Move 2, Charge!). */
   triceratops: { x: 4, y: 2 },
-  /** Own Caveman on the first tile of the east lane (it is passed). */
+  /** Own Caveman east of it (a Move passes over it). */
   laneCaveman: { x: 5, y: 2 },
   /**
-   * Enemy Juggernaut 3 tiles east: it survives any tuned Stampede, is
-   * pushed, and the Triceratops follows.
+   * Enemy Juggernaut 3 tiles east: it survives any tuned Charge, is pushed,
+   * and the Triceratops follows. The tile next to it is `chargeFrom`.
    */
   pushTarget: { x: 7, y: 2 },
+  /** Two tiles east, next to the Juggernaut: a run-up of 2 over the Caveman. */
+  chargeFrom: { x: 6, y: 2 },
   /** Enemy Fighter at 1 HP, 2 tiles south: dies; the Triceratops advances. */
   killTarget: { x: 4, y: 4 },
-  /** Enemy Marksman at 1 HP, 2 tiles north-east (a diagonal lane). */
+  /** One tile south, next to that Fighter: a run-up of 1. */
+  killFrom: { x: 4, y: 3 },
+  /** Enemy Marksman at 1 HP, 2 tiles north-east. */
   diagonalTarget: { x: 6, y: 0 },
   /** Shaman next to both Eggs. */
   shaman: { x: 8, y: 7 },
@@ -144,8 +147,8 @@ export const DINOSAUR_SHOWCASE_V7 = {
 } as const satisfies Readonly<Record<string, CoordV7>>;
 
 /**
- * Dinosaur (human) vs Human: Stampede lanes, Eggs with countdowns, a Shaman
- * Hatch, growth stages, Acid and Armoured.
+ * Dinosaur (human) vs Human: a Triceratops with targets to Charge, Eggs with
+ * countdowns, a Shaman Hatch, growth stages, Acid and Armoured.
  */
 export function dinosaurShowcaseFixtureV7(): GameStateV7 {
   const at = DINOSAUR_SHOWCASE_V7;
@@ -192,7 +195,9 @@ export function dinosaurShowcaseFixtureV7(): GameStateV7 {
 
 export const DINOSAUR_BLAST_V7 = {
   triceratops: { x: 4, y: 4 },
-  /** Goblin Bomb Chucker at 1 HP: the Stampede kills it; it explodes. */
+  /** Next to the Bomb Chucker: where the Triceratops charges from. */
+  chargeFrom: { x: 6, y: 3 },
+  /** Goblin Bomb Chucker at 1 HP: the Charge kills it; it explodes. */
   bombChucker: { x: 7, y: 4 },
   /** Own Caveman next to the Bomb Chucker: the death blast hits it. */
   caveman: { x: 8, y: 3 },
@@ -201,9 +206,9 @@ export const DINOSAUR_BLAST_V7 = {
 } as const satisfies Readonly<Record<string, CoordV7>>;
 
 /**
- * Dinosaur (human) vs Goblin: a Stampede that kills an exploding Bomb
+ * Dinosaur (human) vs Goblin: a Charge that kills an exploding Bomb
  * Chucker, whose death blast hits the advanced Triceratops and an own
- * Caveman and sets off a Rocket Cart. It asks for confirmation.
+ * Caveman and sets off a Rocket Cart.
  */
 export function dinosaurBlastFixtureV7(): GameStateV7 {
   const at = DINOSAUR_BLAST_V7;
@@ -231,7 +236,7 @@ export const DINOSAUR_ENEMY_V7 = {
   /** Enemy grown units. */
   alphaTRex: { x: 8, y: 2 },
   bigRaptor: { x: 9, y: 3 },
-  /** Enemy Triceratops (its lanes threaten at distance 2 and 3). */
+  /** Enemy Triceratops (it threatens its Move-then-melee reach). */
   triceratops: { x: 6, y: 6 },
 } as const satisfies Readonly<Record<string, CoordV7>>;
 
@@ -318,8 +323,9 @@ export function dinosaurCityPoorFixtureV7(): GameStateV7 {
 }
 
 /**
- * The capital without Planning and with two homed Cavemen: its capacity (2
- * at level 1) is full, so every Lay Egg card says it needs its slots.
+ * The capital without Planning or Nesting and with two homed Cavemen: its
+ * capacity (2 at level 1) is full, so every Lay Egg card says it needs its
+ * slots.
  */
 export function dinosaurCityFullFixtureV7(): GameStateV7 {
   const at = DINOSAUR_CITY_V7;
@@ -330,7 +336,7 @@ export function dinosaurCityFullFixtureV7(): GameStateV7 {
       { seat: 1, role: "FIGHTER", at: { x: 2, y: 6 } },
     ],
     {
-      techs: { 0: dinosaurTechsWithoutV7("PLANNING") },
+      techs: { 0: dinosaurTechsWithoutV7("PLANNING", "FORTIFICATION") },
       homed: [at.caveman, { x: 7, y: 6 }],
     },
   );
@@ -338,12 +344,12 @@ export function dinosaurCityFullFixtureV7(): GameStateV7 {
 
 /**
  * Review only (its mix follows the tuned numbers): the capital without
- * Planning and with the cost of a Raptor Egg in Coins, so some cards can be
- * used, some need Coins, and the two-slot roles need slots.
+ * Planning or Nesting and with the cost of a Raptor Egg in Coins, so some
+ * cards can be used, some need Coins, and the two-slot roles need slots.
  */
 export function dinosaurCityTightFixtureV7(): GameStateV7 {
   return dinosaurCityFixtureV7({
     coins: effectiveRoleRuleV7("RAIDER", "DINOSAUR").cost ?? 0,
-    techs: { 0: dinosaurTechsWithoutV7("PLANNING") },
+    techs: { 0: dinosaurTechsWithoutV7("PLANNING", "FORTIFICATION") },
   });
 }

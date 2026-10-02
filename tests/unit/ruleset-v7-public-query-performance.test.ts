@@ -71,10 +71,11 @@ describe("ruleset-7 late public query performance", () => {
     const ready = queryAiReadyCommandsV7(view);
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
     // ordinals once more, and revision 19 inserts STAMPEDE and HATCH after
-    // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again; the
-    // revision-12-ordinal value below is unchanged.
+    // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision 20
+    // removes STAMPEDE, moving every kind after KABOOM back by one (was
+    // 879cad…92fc); the revision-12-ordinal value below is unchanged.
     expect(canonicalHash(ready)).toBe(
-      "879cad3a6e71cce07896cb690c467a88ca0e945f0ccfe466c27b4ebef29e92fc",
+      "5097a191b402f8288cd34600c09c5fd345de4986c3458c2a9a7b10860b31935b",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

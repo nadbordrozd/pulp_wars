@@ -10,7 +10,11 @@ import {
   factionTreeV7,
   technologyCapabilitiesV7,
   EGG_DEFENSE2_V7,
+  PROMOTION_KILLS_V7,
   armouredDamageV7,
+  attackIgnoresCityWallsV7,
+  attackIsChargeV7,
+  chargeRunUpAttack2V7,
   isEggLaidRoleV7,
   unitCapacitySlotsV7,
   unitGrowsV7,
@@ -50,21 +54,14 @@ import {
 } from "./explosions";
 import { INFECT_RISING_HP_V7 } from "./infect";
 import {
+  attackFortificationV7,
   attackHasAcidV7,
   calculateCombatPreviewV7,
   gangUpBonusV7,
   undeadCombatEffectsV7,
 } from "./combat";
-import { growthHpGainV7 } from "./growth";
+import { grownHpV7 } from "./growth";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
-import {
-  STAMPEDE_DIRECTIONS_V7,
-  STAMPEDE_DISTANCES_V7,
-  isStampedeTargetFormV7,
-  stampedeLaneV7,
-  viewStampedeFactsV7,
-  type StampedeLaneV7,
-} from "./stampede";
 import type { CombatPreviewV7, DomainEventV7 } from "./events";
 import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
@@ -652,15 +649,6 @@ function appendPublicUnitCommandsV7(
         targetUnitId: target.id,
       });
   }
-  // Revision 19 Stampede: one command per legal target (section 7.1).
-  if (rule.abilities.includes("STAMPEDE"))
-    for (const target of view.units)
-      if (publicStampedeLaneV7(view, unit, target) !== null)
-        candidates.push({
-          kind: "STAMPEDE",
-          unitId: unit.id,
-          targetUnitId: target.id,
-        });
   // Revision 19 Hatch: every adjacent own Egg laid on an earlier turn.
   if (
     !overrun &&
@@ -746,7 +734,7 @@ function appendPublicUnitCommandsV7(
   // Revision 19: a Dinosaur unit grows instead and is never promoted.
   if (
     unit.form !== "EMBARKED" &&
-    unit.kills >= 3 &&
+    unit.kills >= PROMOTION_KILLS_V7 &&
     !unit.veteran &&
     !unitGrowsV7(view, unit)
   )
@@ -814,43 +802,6 @@ function publicHatchTargetsV7(
     .sort((left, right) => left.id - right.id);
 }
 
-/**
- * Revision 19 section 7.1: the lane of a legal Stampede of the viewer's own
- * `unit` on `target`, or null. Every fact it reads is on tiles the viewer
- * has explored, so it equals the canonical legality.
- */
-function publicStampedeLaneV7(
-  view: PlayerViewV7,
-  unit: PlayerViewV7["units"][number],
-  target: PlayerViewV7["units"][number],
-): Extract<StampedeLaneV7, { ok: true }> | null {
-  if (
-    unit.ownerId !== view.viewer.id ||
-    unit.hp <= 0 ||
-    target.hp <= 0 ||
-    unit.form !== "LAND" ||
-    !unitRoleRuleV7(view, unit).abilities.includes("STAMPEDE") ||
-    unit.activation.moved ||
-    unit.activation.overrunActive ||
-    primaryUsedForQuery(unit) ||
-    !publicHostile(view, unit.ownerId, target.ownerId) ||
-    !isStampedeTargetFormV7(target.form)
-  )
-    return null;
-  const lane = stampedeLaneV7(
-    viewStampedeFactsV7(view),
-    unit.ownerId,
-    unit.at,
-    target.at,
-  );
-  return lane.ok ? lane : null;
-}
-
-/**
- * Revision 14 Tend Wounded targets of an own Captain, from the public view:
- * adjacent own land units, other than the Captain and not tended this turn,
- * that are damaged, plagued, or bitten. Own units are always visible.
- */
 function publicTendTargetsV7(
   view: PlayerViewV7,
   captain: PlayerViewV7["units"][number],
@@ -1507,122 +1458,16 @@ export function previewHatchV7(
   };
 }
 
-/** Revision 19 section 10: one lane of an offered Stampede. */
-export interface StampedeLanePreviewV7 {
-  readonly targetUnitId: UnitId;
-  /** The tiles strictly between the Triceratops and the target, in order. */
-  readonly lane: readonly CoordV7[];
-  readonly standAt: CoordV7;
-}
-
 /**
- * Revision 19: every lane of the viewer's own Triceratops `unitId` to a
- * legal target, in target unit-ID order: exactly the offered `STAMPEDE`
- * commands of that unit.
+ * Canonical combat estimate. Revision 20: `plannedPathLength` is the run-up
+ * of an attack after a planned Move of that many tiles (Charge!); without it
+ * the unit's current `movedPathLength` applies.
  */
-export function queryStampedeLanesV7(
-  view: PlayerViewV7,
-  unitId: UnitId,
-): readonly StampedeLanePreviewV7[] {
-  if (!publicCommandOfferingAllowedV7(view)) return [];
-  const unit = view.units.find((candidate) => candidate.id === unitId);
-  if (unit === undefined) return [];
-  return [...view.units]
-    .sort((left, right) => left.id - right.id)
-    .flatMap((target) => {
-      const lane = publicStampedeLaneV7(view, unit, target);
-      return lane === null
-        ? []
-        : [{ targetUnitId: target.id, lane: lane.lane, standAt: lane.standAt }];
-    });
-}
-
-/** Revision 19 section 10: the preview of an offered Stampede. */
-export interface StampedePreviewV7 {
-  readonly unitId: UnitId;
-  readonly targetUnitId: UnitId;
-  readonly from: CoordV7;
-  readonly lane: readonly CoordV7[];
-  readonly standAt: CoordV7;
-  readonly runTiles: 1 | 2;
-  /** The hit (`stampede` is the run's Attack; it never retaliates). */
-  readonly combat: CombatPreviewV7;
-  /** The survivor's destination, or null when it is not pushed. */
-  readonly pushTo: CoordV7 | null;
-  /** The Triceratops's tile after the advance or follow (or the stand tile). */
-  readonly endsAt: CoordV7;
-  /** The tiles (stand tile, target tile) that lose Field Defense. */
-  readonly fieldDefenseDestroyed: readonly CoordV7[];
-  /** The death-blast chain of a killed exploding target (possibly empty). */
-  readonly explosions: AttackExplosionsPreviewV7;
-}
-
-/**
- * Revision 19 Stampede preview: null unless that `STAMPEDE` is offered. The
- * run, the hit, the Push, and the advance equal the resolution; the chain is
- * exact unless it is flagged `touchesUnexplored`. The one fact the viewer
- * cannot know is another player's Engineering: when the tile behind the
- * target is a Mountain the Push is reported `UNKNOWN_BEHIND_FOG` (no
- * `pushTo`, the Triceratops shown on the stand tile).
- */
-export function previewStampedeV7(
-  view: PlayerViewV7,
-  unitId: UnitId,
-  targetUnitId: UnitId,
-): StampedePreviewV7 | null {
-  if (!publicCommandOfferingAllowedV7(view)) return null;
-  const unit = view.units.find((candidate) => candidate.id === unitId);
-  const target = view.units.find((candidate) => candidate.id === targetUnitId);
-  if (unit === undefined || target === undefined) return null;
-  const lane = publicStampedeLaneV7(view, unit, target);
-  if (lane === null) return null;
-  const combat = publicCombatPreviewCore(view, unitId, targetUnitId, {
-    standAt: lane.standAt,
-    runTiles: lane.runTiles,
-  });
-  if (combat === null) return null;
-  const pushTo =
-    combat.push === "WILL_PUSH"
-      ? publicStampedePushV7(view, lane.standAt, target, true).to
-      : null;
-  const endsAt = combat.advances ? target.at : lane.standAt;
-  const standTile = tileAtView(view, lane.standAt);
-  const targetTile = tileAtView(view, target.at);
-  const fieldDefenseDestroyed = [
-    ...(standTile?.explored === true &&
-    standTile.fieldDefense &&
-    standTile.territoryOwnerId !== null &&
-    publicHostile(view, unit.ownerId, standTile.territoryOwnerId)
-      ? [lane.standAt]
-      : []),
-    ...(targetTile?.explored === true && targetTile.fieldDefense
-      ? [target.at]
-      : []),
-  ];
-  const chain = publicAttackChainV7(view, combat, {
-    endsAt,
-    pushTo,
-    fieldDefenseDestroyed,
-  });
-  return {
-    unitId,
-    targetUnitId,
-    from: unit.at,
-    lane: lane.lane,
-    standAt: lane.standAt,
-    runTiles: lane.runTiles,
-    combat,
-    pushTo,
-    endsAt,
-    fieldDefenseDestroyed,
-    explosions: { attackerId: unitId, targetUnitId, ...chain.preview },
-  };
-}
-
 export function estimateCombatV7(
   state: GameStateV7,
   attackerId: UnitId,
   targetUnitId: UnitId,
+  plannedPathLength?: number,
 ): CombatPreviewV7 | null {
   const attacker = state.units.find(
     (unit) => unit.id === attackerId && unit.hp > 0,
@@ -1645,7 +1490,12 @@ export function estimateCombatV7(
     distance > rule.range
   )
     return null;
-  return calculateCombatPreviewV7(state, attackerId, targetUnitId);
+  return calculateCombatPreviewV7(
+    state,
+    attackerId,
+    targetUnitId,
+    plannedPathLength,
+  );
 }
 
 export function queryUnitStatsV7(
@@ -1800,33 +1650,6 @@ export function queryThreatenedTilesV7(
         return distance >= minimumRange && distance <= maximumRange;
       }),
     );
-  // Revision 19 section 10: a Triceratops that has not been seen to move
-  // this turn also threatens every land tile at distance 2 or 3 along an
-  // open lane (open as far as the viewer can see).
-  const usedThisTurn =
-    view.turnOrder[view.activeSeatIndex] === unit.ownerId &&
-    (unit.activation.moved || primaryUsedForQuery(unit));
-  if (
-    unit.form === "LAND" &&
-    rule.abilities.includes("STAMPEDE") &&
-    !usedThisTurn
-  ) {
-    const facts = viewStampedeFactsV7(view);
-    for (const direction of STAMPEDE_DIRECTIONS_V7)
-      for (const distance of STAMPEDE_DISTANCES_V7) {
-        const at = {
-          x: unit.at.x + direction.x * distance,
-          y: unit.at.y + direction.y * distance,
-        };
-        const tile = tileAtView(view, at);
-        if (
-          tile !== undefined &&
-          (!tile.explored || tile.biome !== null) &&
-          stampedeLaneV7(facts, unit.ownerId, unit.at, at, true).ok
-        )
-          direct.push(at);
-      }
-  }
   return [
     ...new Map(direct.map((at) => [`${at.y},${at.x}`, at])).values(),
   ].sort((a, b) => a.y - b.y || a.x - b.x);
@@ -4955,14 +4778,6 @@ function publicCombatPreviewCore(
   view: PlayerViewV7,
   attackerId: UnitId,
   targetUnitId: UnitId,
-  /**
-   * Revision 19: the hit of a legal Stampede from `standAt` after a run of
-   * `runTiles` lane tiles (the caller has validated the lane).
-   */
-  stampede: {
-    readonly standAt: CoordV7;
-    readonly runTiles: 1 | 2;
-  } | null = null,
 ): CombatPreviewV7 | null {
   const attacker = view.units.find(
     (unit) => unit.id === attackerId && unit.ownerId === view.viewer.id,
@@ -4977,7 +4792,7 @@ function publicCombatPreviewCore(
   const attackerRule = unitRoleRuleV7(view, attacker);
   const defenderRule = unitRoleRuleV7(view, target);
   const attackerMechanics = unitRoleMechanicsV7(view, attacker);
-  const distance = stampede === null ? chebyshev(attacker.at, target.at) : 1;
+  const distance = chebyshev(attacker.at, target.at);
   const attackReady =
     !primaryUsedForQuery(attacker) || attacker.activation.overrunActive;
   if (
@@ -5005,24 +4820,41 @@ function publicCombatPreviewCore(
   if (defense.visibility === "BASE_ONLY") return null;
   // Revision 17 Gang Up counts only the viewer's own (always visible) units.
   const gangUp = gangUpBonusV7(view, view.units, attacker, target);
-  // Revision 19 Stampede: +1 Attack per lane tile run.
-  const stampedeAttack2 =
-    stampede === null
-      ? 0
-      : stampede.runTiles * attackerMechanics.stampedeRunBonus2;
-  const attack2 =
-    rationalToHalfUnits(attack.total) + gangUp * 2 + stampedeAttack2;
+  // Revision 20 Charge!: the run-up is already in the public Attack total
+  // (the `RUN_UP` modifier); it is reported separately as `runUp`.
+  const charge = attackIsChargeV7(view, attacker);
+  const runUpAttack2 = chargeRunUpAttack2V7(view, attacker);
+  const attack2 = rationalToHalfUnits(attack.total) + gangUp * 2;
   const targetTile = tileAtView(view, target.at);
   if (targetTile?.explored !== true) return null;
   // Revision 19 Acid: a land-form Spitter's attack ignores the defender's
   // cover and fortification.
   const acid = attackHasAcidV7(attackerRule, attacker);
-  const fortificationLevel =
-    !acid &&
-    target.form === "LAND" &&
-    targetTile.territoryOwnerId === target.ownerId
+  // Revision 20: Charge! removes every fortification level and Wallbreaker
+  // the City Walls levels. The public tile level is Walls plus Field Defense.
+  const tileFortification =
+    target.form === "LAND" && targetTile.territoryOwnerId === target.ownerId
       ? (targetTile.fortificationLevel ?? 0)
       : 0;
+  const tileFieldDefense = Math.min(
+    tileFortification,
+    targetTile.fieldDefense ? 1 : 0,
+  );
+  const { fortificationLevel, fortificationIgnored } = attackFortificationV7(
+    {
+      walls: tileFortification - tileFieldDefense,
+      fieldDefense: tileFieldDefense,
+    },
+    {
+      acid,
+      charge,
+      ignoresCityWalls: attackIgnoresCityWallsV7(
+        view,
+        attacker,
+        view.viewer.researchedTechs,
+      ),
+    },
+  );
   // Revision 19 section 6.2: an Egg defends with a fixed 1.
   const defense2 =
     target.form === "EMBARKED"
@@ -5062,11 +4894,10 @@ function publicCombatPreviewCore(
   const defenderDies = damageToDefender >= target.hp;
   // Revision 14 (V1): an UNANSWERED attacker draws no retaliation.
   const unanswered = attackerRule.abilities.includes("UNANSWERED");
-  // Revision 19: an Egg never retaliates, nor does the target of a Stampede.
+  // Revision 19: an Egg never retaliates.
   const retaliation =
     !defenderDies &&
     !unanswered &&
-    stampede === null &&
     target.form !== "EMBARKED" &&
     target.form !== "EGG" &&
     defenderRule.abilities.includes("ATTACK") &&
@@ -5141,16 +4972,18 @@ function publicCombatPreviewCore(
       view.units.filter((unit) => unit.form === "EGG").map((unit) => unit.id),
     ),
   });
-  const push =
-    stampede === null
-      ? publicPushState(view, attacker, target, !defenderDies && distance === 1)
-      : publicStampedePushV7(view, stampede.standAt, target, !defenderDies)
-          .push;
+  const push = publicPushState(
+    view,
+    attacker,
+    target,
+    !defenderDies && distance === 1,
+  );
   // Revision 19 section 6.7: a melee attacker that destroys an Egg advances
-  // like after killing a land unit; a Stampede also follows a pushed target.
+  // like after killing a land unit. Revision 20: a Charge! also follows a
+  // pushed target into the tile it vacated.
   const advances =
     ((defenderDies && !afflictions.defenderBittenRises) ||
-      (stampede !== null && push === "WILL_PUSH")) &&
+      (charge && push === "WILL_PUSH")) &&
     !attackerDies &&
     distance === 1 &&
     attackerMechanics.advancesAfterKill &&
@@ -5177,7 +5010,6 @@ function publicCombatPreviewCore(
     minimumRange: attackerRule.minimumRange,
     maximumRange: attackerRule.range,
     chargeApplied:
-      stampede === null &&
       attackerRule.abilities.includes("CHARGE") &&
       view.viewer.researchedTechs.includes("RAIDING") &&
       attacker.activation.moved &&
@@ -5200,11 +5032,9 @@ function publicCombatPreviewCore(
       ? "DEFENDER_DIED"
       : retaliation
         ? null
-        : stampede !== null
-          ? "STAMPEDE"
-          : unanswered
-            ? "UNANSWERED"
-            : "OUT_OF_RANGE",
+        : unanswered
+          ? "UNANSWERED"
+          : "OUT_OF_RANGE",
     advances,
     push,
     attacksUsed: nextAttacks,
@@ -5228,51 +5058,12 @@ function publicCombatPreviewCore(
       defenderDies,
     }),
     ...afflictions,
-    stampede: (stampedeAttack2 / 2) as 0 | 1 | 2,
+    runUp: runUpAttack2 / 2,
+    fortificationIgnored,
     acid,
     defenderArmoured,
     attackerArmoured,
   };
-}
-
-/**
- * Revision 19 section 7.2 step 6: the Push of a Stampede survivor, one tile
- * directly away from the stand tile, under the existing Push conditions. An
- * Egg is never pushed. Every condition is public on an explored tile except
- * the target owner's Engineering, so a Mountain behind another player's unit
- * stays `UNKNOWN_BEHIND_FOG`, like the Juggernaut's Push preview.
- */
-function publicStampedePushV7(
-  view: PlayerViewV7,
-  standAt: CoordV7,
-  target: PlayerViewV7["units"][number],
-  survives: boolean,
-): { readonly push: CombatPreviewV7["push"]; readonly to: CoordV7 | null } {
-  if (!survives || target.form !== "LAND") return { push: "BLOCKED", to: null };
-  const behind = {
-    x: target.at.x * 2 - standAt.x,
-    y: target.at.y * 2 - standAt.y,
-  };
-  const tile = tileAtView(view, behind);
-  if (tile === undefined) return { push: "BLOCKED", to: null };
-  if (!tile.explored) return { push: "UNKNOWN_BEHIND_FOG", to: null };
-  if (
-    tile.biome === null ||
-    tile.site !== null ||
-    view.units.some(
-      (unit) => unit.id !== target.id && unit.hp > 0 && same(unit.at, behind),
-    ) ||
-    (tile.territoryOwnerId !== null &&
-      publicAllied(view, target.ownerId, tile.territoryOwnerId))
-  )
-    return { push: "BLOCKED", to: null };
-  if (tile.terrain === "MOUNTAIN") {
-    if (target.ownerId !== view.viewer.id)
-      return { push: "UNKNOWN_BEHIND_FOG", to: null };
-    if (!view.viewer.researchedTechs.includes("ENGINEERING"))
-      return { push: "BLOCKED", to: null };
-  }
-  return { push: "WILL_PUSH", to: behind };
 }
 
 /**
@@ -5474,15 +5265,6 @@ function createPublicChainSimulationV7(
 function publicAttackChainV7(
   view: PlayerViewV7,
   preview: CombatPreviewV7,
-  /**
-   * Revision 19: the positions after a Stampede (the Triceratops's final
-   * tile and the pushed target's tile) and the Field Defense it destroyed.
-   */
-  stampede: {
-    readonly endsAt: CoordV7;
-    readonly pushTo: CoordV7 | null;
-    readonly fieldDefenseDestroyed: readonly CoordV7[];
-  } | null = null,
 ): {
   readonly preview: ExplosionChainPreviewV7;
   readonly units: readonly BlastUnitV7[];
@@ -5540,60 +5322,47 @@ function publicAttackChainV7(
     if (isExplodingUnitV7(view, attacker))
       initial.push({ unit: attacker, cause: "DEATH" });
   } else
-    // Revision 19 Grow: a surviving Dinosaur attacker gains its growth HP
-    // before the chain (the defender and every hostile splash death count).
+    // Revision 19 Grow: a surviving Dinosaur attacker grows before the
+    // chain (the defender and every hostile splash death count). Revision
+    // 20: growing fully heals, and a Charge! follows a pushed target
+    // (`advances`).
     units.push({
       ...attacker,
-      at:
-        stampede !== null
-          ? stampede.endsAt
-          : preview.advances
-            ? target.at
-            : attacker.at,
-      hp:
-        attacker.hp -
-        preview.damageToAttacker +
-        preview.attackerHeal +
-        growthHpGainV7(
-          view,
-          attackerUnit,
-          attackerUnit.kills,
-          attackerUnit.kills +
-            (preview.defenderDies ? 1 : 0) +
-            preview.splash.filter((entry) => {
-              const victim = view.units.find(
-                (unit) => unit.id === entry.unitId,
-              );
-              return (
-                entry.dies &&
-                victim !== undefined &&
-                publicHostile(view, attackerUnit.ownerId, victim.ownerId)
-              );
-            }).length,
-        ),
+      at: preview.advances ? target.at : attacker.at,
+      hp: grownHpV7(
+        view,
+        attackerUnit,
+        attackerUnit.kills,
+        attackerUnit.kills +
+          (preview.defenderDies ? 1 : 0) +
+          preview.splash.filter((entry) => {
+            const victim = view.units.find((unit) => unit.id === entry.unitId);
+            return (
+              entry.dies &&
+              victim !== undefined &&
+              publicHostile(view, attackerUnit.ownerId, victim.ownerId)
+            );
+          }).length,
+        attacker.hp - preview.damageToAttacker + preview.attackerHeal,
+      ),
     });
   if (!preview.defenderDies)
     units.push({
       ...target,
       at:
-        stampede !== null
-          ? (stampede.pushTo ?? target.at)
-          : preview.push === "WILL_PUSH"
-            ? {
-                x: target.at.x * 2 - attacker.at.x,
-                y: target.at.y * 2 - attacker.at.y,
-              }
-            : target.at,
-      hp:
-        target.hp -
-        preview.damageToDefender +
-        preview.defenderHeal +
-        growthHpGainV7(
-          view,
-          targetUnit,
-          targetUnit.kills,
-          targetUnit.kills + (preview.attackerDies ? 1 : 0),
-        ),
+        preview.push === "WILL_PUSH"
+          ? {
+              x: target.at.x * 2 - attacker.at.x,
+              y: target.at.y * 2 - attacker.at.y,
+            }
+          : target.at,
+      hp: grownHpV7(
+        view,
+        targetUnit,
+        targetUnit.kills,
+        targetUnit.kills + (preview.attackerDies ? 1 : 0),
+        target.hp - preview.damageToDefender + preview.defenderHeal,
+      ),
     });
   units.push(...risings);
   const splashRingUnexplored =
@@ -5620,11 +5389,7 @@ function publicAttackChainV7(
     initial,
     splashRingUnexplored ||
       (initial.length > 0 && preview.push === "UNKNOWN_BEHIND_FOG"),
-    stampede !== null
-      ? stampede.fieldDefenseDestroyed
-      : primaryDefenseLost
-        ? [target.at]
-        : [],
+    primaryDefenseLost ? [target.at] : [],
   );
   const { units: after, ...chainPreview } = chain;
   return { preview: chainPreview, units: after };
@@ -5648,11 +5413,13 @@ function publicPushState(
   defender: PlayerViewV7["units"][number],
   survivesMelee: boolean,
 ): CombatPreviewV7["push"] {
-  // Revision 19 section 6.2: an Egg is never pushed.
+  // Revision 19 section 6.2: an Egg is never pushed. Revision 20: a Charge!
+  // pushes like a `PUSH` attacker.
   if (
     !survivesMelee ||
     defender.form === "EGG" ||
-    !unitRoleRuleV7(view, attacker).abilities.includes("PUSH")
+    (!unitRoleRuleV7(view, attacker).abilities.includes("PUSH") &&
+      !attackIsChargeV7(view, attacker))
   )
     return "BLOCKED";
   const behind = {
@@ -5662,7 +5429,11 @@ function publicPushState(
   const tile = tileAtView(view, behind);
   if (tile === undefined) return "BLOCKED";
   if (!tile.explored) return "UNKNOWN_BEHIND_FOG";
-  if (!publicDetectionCovers(view, behind)) return "UNKNOWN_BEHIND_FOG";
+  // Revision 20: a Charge! reads the explored tile as resolution does (every
+  // unit on an explored tile is visible), so its Push and follow preview is
+  // exact; the Juggernaut-role Push keeps its historical detection rule.
+  if (!attackIsChargeV7(view, attacker) && !publicDetectionCovers(view, behind))
+    return "UNKNOWN_BEHIND_FOG";
   const water = tile.biome === null;
   if (
     (defender.form === "LAND" && water) ||

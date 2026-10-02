@@ -278,10 +278,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // with E2 reverted the revision-13 values 580c9ac8… and 7b8d235c… return.
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
     // ordinals once more, and revision 19 inserts STAMPEDE and HATCH after
-    // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again; the
-    // revision-12-ordinal value below is unchanged.
+    // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision 20
+    // removes STAMPEDE, moving every kind after KABOOM back by one (was
+    // 965473…ff1f); the revision-12-ordinal value below is unchanged.
     expect(canonicalHash(basicChoice)).toBe(
-      "965473327ac85067fbf55a0ab1811f086a7359da2b567e5a01c1818863cdff1f",
+      "07dc975a0e03774f9ea67a36efc1b02d72efd250c9bab014d574ed8918f4d442",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals.
@@ -802,7 +803,8 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // command and every non-MOVE candidate below keep their pinned values.
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
     // ordinals once more, and revision 19 inserts STAMPEDE and HATCH after
-    // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again; the
+    // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision 20
+    // removes STAMPEDE, moving every kind after KABOOM back by one; the
     // revision-12-ordinal value below is unchanged.
     expect(canonicalHash(sliced)).toBe(
       RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION.policyDecisionHash,
@@ -836,10 +838,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     );
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
     // ordinals once more, and revision 19 inserts STAMPEDE and HATCH after
-    // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again; the
-    // revision-12-ordinal value below is unchanged.
+    // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision 20
+    // removes STAMPEDE, moving every kind after KABOOM back by one (was
+    // d30570…bcea); the revision-12-ordinal value below is unchanged.
     expect(canonicalHash(revision4Candidates)).toBe(
-      "d30570bf4b62f6464c7231d72ef57e8f50baa69341716ea55b35fd5245d3bcea",
+      "52d5d28bfeb83ef81195c497875379c35201270f10da2698922055785cc5aa31",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -856,7 +859,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r19");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r20");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

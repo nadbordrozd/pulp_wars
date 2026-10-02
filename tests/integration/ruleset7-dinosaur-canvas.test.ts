@@ -3,8 +3,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   applyCommandV7,
-  previewStampedeV7,
   projectEventsV7,
+  queryCombatPreviewV7,
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
@@ -19,10 +19,7 @@ import {
 } from "../../src/render/canvas/board-host-v7";
 import * as renderer from "../../src/render/canvas/board-renderer-v7";
 import type { CameraState } from "../../src/render/canvas/geometry";
-import {
-  eggCountdownTextV7,
-  stampedePreviewTextV7,
-} from "../../src/render/dinosaur-presentation-v7";
+import { eggCountdownTextV7 } from "../../src/render/dinosaur-presentation-v7";
 import {
   DINOSAUR_CITY_V7,
   DINOSAUR_SHOWCASE_V7,
@@ -34,9 +31,9 @@ const AT = DINOSAUR_SHOWCASE_V7;
 
 afterEach(() => vi.restoreAllMocks());
 
-describe("Revision 19 Stampede presentation on the board host", () => {
-  it("runs with dust, hits, slides the survivor back, then follows", async () => {
-    const stampede = stampedeBoundary();
+describe("Revision 20 Charge! presentation on the board host", () => {
+  it("hits after the run-up, slides the survivor back, then follows", async () => {
+    const stampede = chargeBoundary();
     const rig = hostRig(stampede.after, "FULL");
     const seen: string[] = [];
     const triceratopsAt: Record<string, CoordV7> = {};
@@ -61,13 +58,13 @@ describe("Revision 19 Stampede presentation on the board host", () => {
     }
     await rig.drain();
     await done;
-    expect(seen).toEqual(["STAMPEDE_RUN", "STAMPEDE_HIT"]);
-    // During the hit cue the Triceratops waits on the stand tile and the
-    // survivor is still on its own tile; neither has jumped ahead.
-    expect(triceratopsAt.STAMPEDE_HIT).toEqual({ x: 6, y: 2 });
-    expect(targetAt.STAMPEDE_HIT).toEqual(AT.pushTarget);
-    // The run keeps the target standing where it was.
-    expect(targetAt.STAMPEDE_RUN).toEqual(AT.pushTarget);
+    // Revision 20: no run cue (the Move was its own command); the hit flash
+    // follows the lunge.
+    expect(seen).toEqual(["CHARGE_HIT"]);
+    // During the hit cue the Triceratops waits on the tile it charged from
+    // and the survivor is still on its own tile; neither has jumped ahead.
+    expect(triceratopsAt.CHARGE_HIT).toEqual(AT.chargeFrom);
+    expect(targetAt.CHARGE_HIT).toEqual(AT.pushTarget);
     expect(rig.effects.dataset.dinosaurEffect).toBeUndefined();
     // Settled: the target one tile back, the Triceratops on its old tile.
     expect(rig.unitAt(stampede.triceratopsId)).toEqual(AT.pushTarget);
@@ -76,7 +73,7 @@ describe("Revision 19 Stampede presentation on the board host", () => {
   });
 
   it("holds the hit cue at its midpoint under reduced motion", async () => {
-    const stampede = stampedeBoundary();
+    const stampede = chargeBoundary();
     const rig = hostRig(stampede.after, "REDUCED");
     const progress = new Set<string>();
     const done = rig.host.presentBoundary(
@@ -92,7 +89,7 @@ describe("Revision 19 Stampede presentation on the board host", () => {
     }
     await rig.drain();
     await done;
-    expect([...progress]).toEqual(["STAMPEDE_HIT:0.500"]);
+    expect([...progress]).toEqual(["CHARGE_HIT:0.500"]);
     rig.host.destroy();
   });
 
@@ -138,7 +135,7 @@ describe("Revision 19 Stampede presentation on the board host", () => {
     const rig = hostRig(viewForV7(state, state.humanPlayerId), "FULL");
     rig.log.length = 0;
     rig.host.pinDinosaurFeedback([
-      { effect: "STAMPEDE_HIT", cells: [AT.pushTarget], progress: 0.3 },
+      { effect: "CHARGE_HIT", cells: [AT.pushTarget], progress: 0.3 },
       { effect: "HATCH", cells: [AT.tRexEgg], progress: 0.7 },
     ]);
     expect(rig.log.some((call) => call === "arc")).toBe(true);
@@ -150,34 +147,33 @@ describe("Revision 19 Stampede presentation on the board host", () => {
 });
 
 describe("Revision 19 board targets on the board host", () => {
-  it("sends the Stampede of an activated target and describes it at the cursor", () => {
-    const state = dinosaurShowcaseFixtureV7();
+  it("sends the Charge of an activated target and describes it at the cursor", () => {
+    const state = chargingShowcase();
     const view = viewForV7(state, state.humanPlayerId);
     const callbacks = { onSelection: vi.fn(), onCommand: vi.fn() };
     const rig = hostRig(view, "FULL", callbacks);
-    const triceratops = unitAt(view, AT.triceratops);
+    const triceratops = unitAt(view, AT.chargeFrom);
     rig.host.update(model(view, triceratops.id));
     rig.host.activate(AT.pushTarget);
     expect(callbacks.onCommand).toHaveBeenCalledTimes(1);
+    // Revision 20: an ordinary attack target (no Stampede family or lane).
     expect(callbacks.onCommand.mock.calls[0]?.[0]).toMatchObject({
-      family: "STAMPEDE",
+      family: "ATTACK",
       at: AT.pushTarget,
       command: {
-        kind: "STAMPEDE",
+        kind: "ATTACK",
         unitId: triceratops.id,
         targetUnitId: unitAt(view, AT.pushTarget).id,
       },
     });
-    // The numbers are the engine's: the target's HP and the Stampede preview.
+    // The numbers are the engine's: the target's HP and the attack preview.
     const target = unitAt(view, AT.pushTarget);
-    const preview = previewStampedeV7(view, triceratops.id, target.id);
-    if (preview === null) throw new Error("Stampede not offered");
+    const preview = queryCombatPreviewV7(view, triceratops.id, target.id);
+    if (preview === null) throw new Error("attack not offered");
     expect(rig.description()).toBe(
-      `Grass. Juggernaut, ${target.hp} of ${target.maxHp} HP. Available: Stampede preview. ${stampedePreviewTextV7(view, preview).description}`,
+      `Grass. Juggernaut, ${target.hp} of ${target.maxHp} HP. Available: Attack preview. Defender fortification level 0. Primary damage ${preview.damageToDefender}. Charge +${preview.runUp}. Pushes back; Triceratops follows.`,
     );
-    expect(rig.description()).toContain(
-      "Pushes Juggernaut back; Triceratops follows. No retaliation.",
-    );
+    expect(preview.runUp).toBe(2);
     // An Egg under the cursor reads its name and countdown.
     rig.host.update(model(view, null));
     rig.host.activate(AT.tRexEgg);
@@ -297,14 +293,28 @@ function boundary(state: GameStateV7, command: CommandV7) {
   };
 }
 
-function stampedeBoundary() {
+/** The showcase after its Triceratops moved two tiles next to the Juggernaut. */
+function chargingShowcase(): GameStateV7 {
   const state = dinosaurShowcaseFixtureV7();
   const view = viewForV7(state, state.humanPlayerId);
-  const triceratopsId = unitAt(view, AT.triceratops).id;
+  const result = applyCommandV7(state, state.humanPlayerId, {
+    kind: "MOVE",
+    unitId: unitAt(view, AT.triceratops).id,
+    path: [AT.laneCaveman, AT.chargeFrom],
+  });
+  if (!result.accepted) throw new Error(result.error.code);
+  return result.state;
+}
+
+/** The Charge! on the Juggernaut: it is pushed and the Triceratops follows. */
+function chargeBoundary() {
+  const state = chargingShowcase();
+  const view = viewForV7(state, state.humanPlayerId);
+  const triceratopsId = unitAt(view, AT.chargeFrom).id;
   const targetId = unitAt(view, AT.pushTarget).id;
   return {
     ...boundary(state, {
-      kind: "STAMPEDE",
+      kind: "ATTACK",
       unitId: triceratopsId,
       targetUnitId: targetId,
     }),

@@ -10,10 +10,11 @@ import { DINOSAUR_CUE_COLORS_V7 } from "./dinosaur-canvas-v7";
  * a cue at its midpoint (the host passes 0.5).
  */
 export type DinosaurEffectV7 =
-  /** Dust puffs behind the running Triceratops, one per tile it leaves. */
-  | "STAMPEDE_RUN"
-  /** A spiky star flash and two dust puffs on the Stampede's target. */
-  | "STAMPEDE_HIT"
+  /**
+   * A spiky star flash and two dust puffs on the target of a Charge! made
+   * after a run-up (revision 20; the former Stampede hit).
+   */
+  | "CHARGE_HIT"
   /** Three small pale puffs where a Spitter's acid lands. */
   | "ACID_HIT"
   /** The Egg pops in (the sprite bounces; nothing is drawn here). */
@@ -29,7 +30,7 @@ export type DinosaurEffectV7 =
 
 export interface DinosaurFeedbackV7 {
   readonly effect: DinosaurEffectV7;
-  /** The cue's cells: lane tiles, the target, or the Egg tiles. */
+  /** The cue's cells: the target, or the Egg tiles. */
   readonly cells: readonly CoordV7[];
   /** HATCH_CALL: the Shaman's cell. */
   readonly from?: CoordV7;
@@ -113,30 +114,7 @@ export function drawDinosaurFeedbackV7(
   const centre = (at: CoordV7): { readonly x: number; readonly y: number } =>
     worldToScreen(projectGrid(at), camera);
   context.save();
-  if (feedback.effect === "STAMPEDE_RUN") {
-    // A puff is born as the Triceratops leaves each tile; it swells and
-    // fades over about a tile and a half of the run.
-    const count = Math.max(1, feedback.cells.length);
-    for (const [index, at] of feedback.cells.entries()) {
-      const age = clamp01((progress - index / count) * count * 0.7);
-      if (age <= 0 || age >= 1) continue;
-      const point = centre(at);
-      drawPuff(
-        context,
-        point.x,
-        point.y + 26 * zoom,
-        (11 + 15 * age) * zoom,
-        (1 - age) * 0.85,
-      );
-      drawPuff(
-        context,
-        point.x - 20 * zoom,
-        point.y + 34 * zoom,
-        (7 + 9 * age) * zoom,
-        (1 - age) * 0.7,
-      );
-    }
-  } else if (feedback.effect === "STAMPEDE_HIT") {
+  if (feedback.effect === "CHARGE_HIT") {
     for (const at of feedback.cells) {
       const point = centre(at);
       const alpha = 1 - progress;

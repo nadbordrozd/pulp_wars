@@ -81,17 +81,17 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r19 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r19");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r19.current");
-    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(18);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-3)).toBe(
+  it("keeps r16 among the prior identities after the r20 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r20");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r20.current");
+    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(19);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-4)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r16.current", "r16"],
-      [SAVE_STORAGE_KEY_V7, "r19"],
+      [SAVE_STORAGE_KEY_V7, "r20"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
       ["pulpWars.unrelated", "unrelated"],
@@ -701,13 +701,14 @@ describe("ruleset-7 Goblin technology", () => {
 
   it("names and describes technologies from the viewer's faction", () => {
     // Goblin Commerce is renamed (and, in revision 19, Dinosaur
-    // Fortification); the UI's `technologyNameV7` applies these overrides
+    // Fortification; in revision 20, Dinosaur Explosives); the UI's
+    // `technologyNameV7` applies these overrides
     // (tests/unit/ruleset7-goblin-presentation.test.ts).
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7).toEqual({
       ORIGINAL: {},
       UNDEAD: {},
       GOBLIN: { COMMERCE: "Plunder" },
-      DINOSAUR: { FORTIFICATION: "Nesting" },
+      DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
     });
     const state = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],

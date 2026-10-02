@@ -2,6 +2,8 @@ import { canonicalHash, canonicalJson } from "../replay/canonical";
 import type { PlayerId } from "../model/ids";
 import {
   GROWTH_HP_V7,
+  PROMOTION_HP_V7,
+  PROMOTION_KILLS_V7,
   effectiveRoleRuleV7,
   eggMaxHpOptionsV7,
   factionTreeIdV7,
@@ -768,8 +770,8 @@ function parseUnit(
       ? input.veteran ||
         input.maxHp !==
           rule.maxHp + GROWTH_HP_V7 * growthStageForKillsV7(input.kills)
-      : input.maxHp !== rule.maxHp + (input.veteran ? 5 : 0)) ||
-    (input.veteran && input.kills < 3) ||
+      : input.maxHp !== rule.maxHp + (input.veteran ? PROMOTION_HP_V7 : 0)) ||
+    (input.veteran && input.kills < PROMOTION_KILLS_V7) ||
     (input.captureEligible && !rule.abilities.includes("CAPTURE")) ||
     (!overrun && activation.attacksUsed > 1) ||
     (activation.overrunActive &&
@@ -961,7 +963,8 @@ function parseBitten(input: unknown): readonly BittenStatusV7[] | null {
 
 /**
  * Revision 19 `eggs` entries: `{ unitId, turnsRemaining, laidThisTurn }`
- * sorted by unit ID, with a countdown of 1 to 3 Start Turns.
+ * sorted by unit ID, with a countdown of 1 to 4 Start Turns (revision 20:
+ * the T-Rex hatches in 4).
  */
 function parseEggs(input: unknown): readonly EggStatusV7[] | null {
   if (!isDenseArrayV7(input)) return null;
@@ -975,7 +978,7 @@ function parseEggs(input: unknown): readonly EggStatusV7[] | null {
     if (
       unitId === null ||
       !isPositiveSafeIntegerV7(candidate.turnsRemaining) ||
-      candidate.turnsRemaining > 3 ||
+      candidate.turnsRemaining > 4 ||
       typeof candidate.laidThisTurn !== "boolean" ||
       (values.length > 0 && (values.at(-1) as EggStatusV7).unitId >= unitId)
     )

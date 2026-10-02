@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r19`. Role facts resolve through the owner's
+previews under `pulp-wars-poc-7r20`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
 duration valuation, the endgame siege mode (`pulp_wars-1mc`), the
@@ -11,9 +11,12 @@ revision-17 Goblin play (`pulp_wars-0ao.6`), and the revision-18 movement
 estimates (`pulp_wars-6gd.2`) are summarized below. The revision-19
 Dinosaur play (`pulp_wars-c87.5`, `src/ai/v7-dinosaur.ts`) is
 [summarized below](#revision-19-dinosaur-play-pulp_wars-c875): Eggs, nest
-tiles, Egg protection, Hatch, Grow, Stampede and its lanes, and play against
-each of them. It is gated on a match with a Dinosaur seat, so matches without
-one decide exactly as under revision 18.
+tiles, Egg protection, Hatch, Grow, the Triceratops's Charge! (revision 20,
+`pulp_wars-0hi.2`; the revision-19 Stampede and its lanes are removed), and
+play against each of them. It is gated on a match with a Dinosaur seat, so
+matches without one decide as under revision 18, except that a wounded unit
+that can be promoted is promoted first (revision 20: a Promotion fully
+heals).
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
@@ -566,18 +569,24 @@ so the captured view's tile reads stay under the 6,000 bound.
 
 ## Revision-19 Dinosaur play (`pulp_wars-c87.5`)
 
+This section describes the policy as amended by revision 20
+(`pulp_wars-0hi.2`, [contract section 7.3](../product/RULESET_7_REVISION_20.md#73-normal-ai)):
+the `STAMPEDE` command and every lane heuristic are removed, and the
+Triceratops is played as a front-line attacker with Charge!.
+
 Every Dinosaur heuristic lives behind one gate: the match has a Dinosaur seat
 (`src/ai/v7-dinosaur.ts`, `dinosaurMatchForPolicyV7`), or reads a fact that
-only a Dinosaur-faction unit has (an Egg, `GROW`, `STAMPEDE`, `ACID`, an
+only a Dinosaur-faction unit has (an Egg, `GROW`, `LINEBREAKER`, `ACID`, an
 armour reduction, a slot value above 1). A match without one never evaluates
-any of it, so Human, Undead, and Goblin decisions are unchanged: a 24-match
-parity run (Human, Undead, and Goblin seats in two-, three-, and four-seat
-matches) is byte-identical to the `5b4790b` policy in every command, event,
-and state. The helpers read only the public view, public commands, and the
-public previews (`previewStampedeV7`, `previewHatchV7`, `queryCombatPreviewV7`
-with its `acid` and Armoured fields, `previewAttackExplosionsV7` through the
-Stampede preview) and the public lane rule applied to the view
-(`stampedeLaneV7` with `viewStampedeFactsV7`). They add no PRNG use, no
+any of it, so Human, Undead, and Goblin decisions change only through the
+revision-20 Promotion rule below: a 28-match parity run against the
+revision-19 policy (`f1c17bd`; Human, Undead, and Goblin seats in two-,
+three-, and four-seat matches, 60 rounds, compared command by command) has
+12 identical matches, and each of the other 16 first differs at a `PROMOTE`
+of a wounded unit. The helpers read only the public view, public commands,
+and the public previews (`previewHatchV7`, `queryCombatPreviewV7` with its
+`runUp`, `fortificationIgnored`, `push`, `advances`, `acid`, and Armoured
+fields, `previewAttackExplosionsV7`). They add no PRNG use, no
 elapsed-time input, and no work units: each is a bounded scan of the view
 inside an existing scoring step, cached per decision. Values are in the
 policy's usual units (a unit is worth cost x 4 + HP).
@@ -592,15 +601,17 @@ Shared estimates (every match; all neutral without a Dinosaur unit):
 - **Unit value**: a grown unit is worth 10 more per stage, as a target
   (`targetStrategicValue`) and as an own unit (`retainedUnitValue`); a visible
   Egg is worth the role inside x 4, its HP, and 2 per turn it still needs.
-- **Threat reach**: a visible hostile Triceratops in land form also threatens
-  every land tile at distance 2 or 3 along an open lane from where it stands
-  (open as far as the viewer can see), and the projected damage there adds
-  the run bonus (+1 Attack per lane tile). The unit under evaluation never
-  blocks its own lane. This reach feeds every safety test, the city threats,
-  and the Move safety value, so a unit steps out of a lane when an equally
-  good tile exists, prefers Forest and Mountain (cover; a Mountain lane tile
-  also closes the lane, a Forest one no longer does since `pulp_wars-c87.8`),
-  and a center a Triceratops can Stampede is a threatened city.
+- **Threat reach** (revision 20): a visible hostile Triceratops threatens
+  what any melee unit with its Move threatens: the tiles next to it and the
+  tiles it can attack after a Move. For a tile it reaches by a Move the
+  projected damage adds the run-up (`chargeRunUpForPolicyV7`: +1 Attack per
+  tile it must at least move, up to +2); a Triceratops that already moved
+  this turn publishes its run-up in its unit stats. Its projected hit
+  ignores the defender's City Walls and Field Defense (cover is kept), and
+  a hostile dinosaur unit's projected hit ignores City Walls: the owner's
+  research is not public, so the estimate assumes Wallbreaker
+  (`ignoresWallsForPolicyV7`). An own dinosaur ignores Walls in the
+  estimate only when the seat has Wallbreaker.
 
 As Dinosaurs:
 
@@ -609,7 +620,7 @@ As Dinosaurs:
   each hatch turn beyond the first costs 1 (12 per hatch turn in a threatened
   city, so short-hatch Eggs and trained units come first there); a two-slot
   Egg that takes the last slots of a city with capacity 3 or less costs 4; the
-  first Stampede unit gains 20 (4 before `pulp_wars-c87.8`: a third of the
+  first Charge! unit gains 20 (4 before `pulp_wars-c87.8`: a third of the
   seats that researched Sawmilling never laid a Triceratops Egg); the first
   Shaman gains 10 while an own Egg with
   two or more turns left waits or at least three own attackers could use War
@@ -644,8 +655,11 @@ As Dinosaurs:
   action steps next to an Egg it can hatch (1084, then it hatches), stands by
   an Egg laid this turn (760), and makes no routine Move away from a long
   Egg.
-- **Grow.** A kill by a unit one kill from Big gains 10 and from Alpha 16,
-  so on equal damage the growing unit takes the kill. A grown unit recovers
+- **Grow.** A growth stage fully heals (revision 20), so a kill that grows
+  the unit is valued by the HP it restores: 5 per two HP of the unit's
+  missing HP plus the stage's 4 (10 at full HP, as before), plus 6 for
+  reaching Alpha. On equal damage the growing, and the more wounded, unit
+  takes the kill. A grown unit recovers
   below two thirds of its HP (priority 930; an ungrown unit below half),
   steps out of visible reach when that wounded (935), leaves visible lethal
   reach at 1150, never makes a routine Move into it unless that is strictly
@@ -653,35 +667,43 @@ As Dinosaurs:
   visible enemies kill it when it is not already that exposed (a proven city
   save, a lethal follow-up this turn, or the endgame combined kill excuses
   it).
-- **Stampede.** Scored from `previewStampedeV7`: the target's loss (its value
-  for a kill, its share for a hit), the growth of a kill, the death-blast
-  chain (hostile value, minus twice the value lost by other own and allied
-  units, minus the Triceratops's own share once against its HP after
-  growth), 8 per tile of Field Defense destroyed, 50 for killing the unit on
-  a hostile city center, 20 for pushing it off (the Triceratops follows and
-  besieges) plus 15 with an own capturer within two tiles, and the own Egg
-  the target could reach; minus the exposure on the final tile, projected
-  with the target gone or wounded where the Push leaves it: the Triceratops's
-  whole value when the visible enemies kill it there (a third when it is
-  doomed where it stands), otherwise half the share it loses. A Stampede with
-  a net value of 0 or less, or whose chain kills an own or allied unit, is
-  never a candidate. Priorities: clearing a center 1350, pushing a defender
-  off a center next to a capturer 1345, a kill of a unit threatening an own
-  city 1280, another kill 1180, a hit on such a unit 1240, a hit that breaks
-  Field Defense 910, another hit 905 (above chip attacks, so the unanswered
-  hit goes first).
-- **Lanes.** A Triceratops with a candidate Stampede does not move. One that
-  has not moved or acted takes a Move (priority 860, above routine Moves)
-  onto a tile from which a lane to a visible hostile unit or Egg is open,
-  valued by the projected hit from there (a quarter, at most 24), when the
-  tile is outside visible lethal reach; such a tile needs no screen (the
-  siege-role screen rule is waived for it). With no such tile one Move away,
-  it walks toward the nearest **launch tile** (`pulp_wars-c87.8`): a free,
-  enterable land tile within four tiles of it from which a lane to a visible
-  hostile land unit or Egg is open. A routine Move that ends nearer to one,
-  outside visible lethal reach, takes priority 855 and gains 2 per tile of
-  progress, so the Triceratops closes in on a line instead of trailing its
-  army.
+- **Charge!** (revision 20). The Triceratops is judged by its abilities,
+  never by its `SIEGE` label (`policyTacticalRoleV7`, `policySiegeRuleV7`):
+  it is a front-line melee attacker, needs no screen, and is not kept behind
+  the army. Its attacks are ordinary `ATTACK` candidates scored from
+  `queryCombatPreviewV7`, with these additions (`chargeAttackScoreV7`): 8
+  for Field Defense destroyed on the target tile, 20 for pushing the
+  defender off a hostile city center (the Triceratops follows and besieges)
+  plus 15 with an own capturer within two tiles, and minus the exposure on
+  the tile it ends on after a Push and follow (its whole value when the
+  visible enemies kill it there, otherwise half the share it loses).
+  Priorities: pushing a defender off a center next to a capturer 1345; a
+  non-lethal hit that destroys Field Defense 910 (above chip attacks);
+  kills and other hits keep the ordinary attack priorities. Fortified
+  targets are preferred because the preview already ignores their Walls and
+  Field Defense.
+- **Run-up.** A Triceratops that has not moved takes a Move (priority 860,
+  above routine Moves) onto a tile next to a visible hostile unit or Egg
+  that it can attack afterwards, valued by the projected Charge from there
+  with the run-up of that path, when the tile is outside visible lethal
+  reach; among such tiles a two-tile path is preferred. One that already
+  stands next to its target steps around it first when the run-up makes the
+  Charge better than attacking from where it stands: priority 912 when the
+  attack it replaces is a chip, 1181 when the run-up turns it into a kill.
+  A Move never gives up an attack it has now for nothing: the approach is a
+  candidate only when the following attack is offered from the destination
+  (zone of control ends a Move, so the estimate uses the tiles actually
+  moved).
+- **Promotion** (revision 20, every faction and every match). A unit that
+  can be promoted and is wounded is promoted at priority 1410, before any
+  attack, capture, or End Turn; an unwounded one keeps the old priority.
+  The policy never holds a Promotion back as a later heal.
+- **Industry research** (revision 20). Nesting is researched at priority
+  1062 (above the ordinary role plan, 1060; below land production, 1080)
+  while an own city has fewer than two free slots, otherwise at 1040; its
+  value is 4 per owned city plus 4 for its Egg effects. Wallbreaker is
+  researched at 1061, valued at 8 per visible hostile city with Walls,
+  while one is visible and the seat owns a dinosaur unit that would use it.
 - **Signature research** (`pulp_wars-c87.8`). Once the seat owns two cities,
   the next technology toward the signature role whose technology it lacks
   (the Triceratops through Sawmilling or the T-Rex through Chivalry; the one
@@ -691,9 +713,8 @@ As Dinosaurs:
   role's HP plus its Attack and Defense in half-units. The ordinary role plan
   (1060) bought both tier-3 technologies only after most matches were
   decided; nothing is saved up for it (a one-turn Coin hold was measured and
-  dropped, as were a rule that kept two slots free for the first big body
-  and one that stepped an own unit off a lane's stand tile: none moved the
-  measurements).
+  dropped, as was a rule that kept two slots free for the first big body:
+  neither moved the measurements).
 - War Drums, Tend Wounded, Rampage, and Pounce use the Rally, Tend, Overrun,
   and Charge rules unchanged.
 

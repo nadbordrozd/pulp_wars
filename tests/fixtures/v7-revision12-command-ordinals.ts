@@ -14,14 +14,15 @@ import {
  * test can prove the rest of a hashed value is byte-identical. Revision 17
  * likewise inserts KABOOM after WAIL (Goblin spec section 9), and revision 19
  * STAMPEDE and HATCH after KABOOM and LAY_EGG after TRAIN_NAVAL (Dinosaur
- * spec section 10).
+ * spec section 10). Revision 20 removes STAMPEDE again (its section 2.7), so
+ * every kind after KABOOM moves back by one; kinds are mapped by name, so
+ * the revision-12-ordinal proofs are unaffected.
  */
 const LATER_COMMAND_KINDS: readonly string[] = [
   "RAISE_DEAD",
   "DEVOUR",
   "WAIL",
   "KABOOM",
-  "STAMPEDE",
   "HATCH",
   "LAY_EGG",
 ];

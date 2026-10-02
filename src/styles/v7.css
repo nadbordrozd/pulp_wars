@@ -2619,30 +2619,22 @@
 }
 
 /* Disabled Dinosaur actions keep their explanation reachable. */
-.v7-context-action[data-disabled-reason^="stampede-"],
 .v7-context-action[data-disabled-reason="hatch-new-egg"],
 .v7-context-action[data-disabled-reason="dinosaur-field-defense"] {
   cursor: not-allowed;
   opacity: 0.55;
 }
 
-.v7-context-action[data-stampede="armed"] {
-  outline: 3px solid #fff8d0;
-  outline-offset: 1px;
+/* Revision 20: the Charge! ability line carries the former Stampede icon. */
+.v7-unit-ability[data-ability="charge"] {
+  grid-template-columns: auto 1fr;
+  column-gap: 0.4rem;
+  align-items: start;
 }
 
-/* Stampede lane legend: run tile, stand tile and target swatches. */
-.v7-stampede-legend .v7-landing-legend-swatch {
-  border: 2px solid #33363d;
-  background: rgb(239 230 200 / 45%);
-}
-
-.v7-stampede-legend [data-stampede-marker="stand"] .v7-landing-legend-swatch {
-  border-color: #efe6c8;
-  box-shadow: 0 0 0 2px #33363d;
-}
-
-.v7-stampede-legend [data-stampede-marker="target"] .v7-landing-legend-swatch {
-  border: 2px dashed #ff655f;
-  background: transparent;
+.v7-unit-ability[data-ability="charge"] > img,
+.v7-unit-ability[data-ability="charge"] > svg {
+  grid-row: 1 / span 2;
+  width: 1.75rem;
+  height: 1.75rem;
 }

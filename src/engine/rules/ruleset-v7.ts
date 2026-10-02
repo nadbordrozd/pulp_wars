@@ -106,8 +106,19 @@ export type TechnologyUnlockV7 =
   /**
    * Revision 19 Dinosaurs: Nesting (the Dinosaur `FORTIFICATION`): Eggs laid
    * by the owner have `eggHp` more HP and hatch `hatchTurns` sooner.
+   * Revision 20: every city the owner owns has `citySlots` more unit slots.
    */
-  | { readonly kind: "NESTING"; readonly eggHp: 4; readonly hatchTurns: 1 }
+  | {
+      readonly kind: "NESTING";
+      readonly eggHp: 4;
+      readonly hatchTurns: 1;
+      readonly citySlots: 1;
+    }
+  /**
+   * Revision 20 Dinosaurs: Wallbreaker (the Dinosaur `EXPLOSIVES`): the
+   * attacks of the owner's growing land-form units ignore City Walls.
+   */
+  | { readonly kind: "WALLBREAKER" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -151,10 +162,11 @@ export type UnitRoleAbilityV7 =
   // KABOOM command); the Troll regenerates.
   | "KABOOM"
   | "REGENERATE"
-  // Revision 19 Dinosaurs: the Triceratops Stampede and the Shaman Hatch
-  // (commands from `pulp_wars-c87.3`), the Spitter's Acid, the Ankylosaurus's
-  // Armoured, and growth from kills instead of Promotion.
-  | "STAMPEDE"
+  // Revision 19 Dinosaurs: the Shaman Hatch (a command), the Spitter's
+  // Acid, the Ankylosaurus's Armoured, and growth from kills instead of
+  // Promotion. Revision 20: the Triceratops's passive Charge! (`LINEBREAKER`;
+  // `CHARGE` is the Raider's) replaces the Stampede command.
+  | "LINEBREAKER"
   | "HATCH"
   | "ACID"
   | "ARMOURED"
@@ -227,9 +239,12 @@ export interface RoleMechanicsV7 {
    * Revision 19: the Egg's hatch time in owner Start Turns, or null for a
    * role that is not egg-laid.
    */
-  readonly hatchTurns: 1 | 2 | 3 | null;
-  /** Revision 19: Stampede `attack2` per lane tile run (0 without Stampede). */
-  readonly stampedeRunBonus2: 0 | 2;
+  readonly hatchTurns: 1 | 2 | 3 | 4 | null;
+  /**
+   * Revision 20 Charge!: `attack2` per tile moved this turn before the
+   * attack, up to `RUN_UP_MAXIMUM_TILES_V7` tiles (0 without Charge!).
+   */
+  readonly runUpBonus2: 0 | 2;
   /** Revision 19 Armoured: damage removed from every hit of 2 or more. */
   readonly armourReduction: 0 | 1;
 }
@@ -851,7 +866,7 @@ const mechanics = (
           regeneration: 0,
           capacitySlots: 1,
           hatchTurns: null,
-          stampedeRunBonus2: 0,
+          runUpBonus2: 0,
           armourReduction: 0,
           ...overrides[roleId],
         },
@@ -899,9 +914,22 @@ export const UNDEAD_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
 export const UNDEAD_ROLE_RULES_V7: Readonly<
   Record<UnitRoleIdV7, EffectiveRoleRuleV7>
 > = deepFreeze({
+  // Revision 20 section 6.1: the Skeleton states its own rule (it used to
+  // copy the Human Fighter's), so a Human Fighter change does not move it.
   FIGHTER: role({
-    ...ORIGINAL_ROLE_RULES_V7.FIGHTER,
+    role: "FIGHTER",
     label: "Skeleton",
+    tacticalRole: "LINE",
+    cost: 2,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE"],
   }),
   RAIDER: role({
@@ -1230,7 +1258,9 @@ export const GOBLIN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * Revision 19 Dinosaur technology graph: identical to ORIGINAL_BASELINE_V5
  * except that Fortification (displayed as Nesting) grants `NESTING` instead
  * of `BUILD_FIELD_DEFENSE`. Chivalry keeps Overrun (displayed as Rampage) and
- * Raiding keeps the Charge bonus (displayed as Pounce).
+ * Raiding keeps the Charge bonus (displayed as Pounce). Revision 20: Nesting
+ * also grants a city slot, and Explosives (displayed as Wallbreaker) keeps
+ * both of its unlocks and adds `WALLBREAKER`.
  */
 export const DINOSAUR_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
   deepFreeze(
@@ -1240,11 +1270,17 @@ export const DINOSAUR_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
         original.branch,
         original.tier,
         original.prerequisites,
-        original.unlocks.map((unlock): TechnologyUnlockV7 =>
-          unlock.kind === "COMMAND" && unlock.command === "BUILD_FIELD_DEFENSE"
-            ? { kind: "NESTING", eggHp: 4, hatchTurns: 1 }
-            : unlock,
-        ),
+        [
+          ...original.unlocks.map((unlock): TechnologyUnlockV7 =>
+            unlock.kind === "COMMAND" &&
+            unlock.command === "BUILD_FIELD_DEFENSE"
+              ? { kind: "NESTING", eggHp: 4, hatchTurns: 1, citySlots: 1 }
+              : unlock,
+          ),
+          ...(original.id === "EXPLOSIVES"
+            ? [{ kind: "WALLBREAKER" } as const]
+            : []),
+        ],
       ),
     ),
   );
@@ -1254,10 +1290,22 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
   Record<UnitRoleIdV7, EffectiveRoleRuleV7>
 > = deepFreeze({
   // `pulp_wars-c87.8`: 12 HP (the contract value was the Fighter's 10).
+  // Revision 20 section 6.1: the Caveman states its own rule (it used to
+  // copy the Human Fighter's), so a Human Fighter change does not move it.
   FIGHTER: role({
-    ...ORIGINAL_ROLE_RULES_V7.FIGHTER,
+    role: "FIGHTER",
     label: "Caveman",
+    tacticalRole: "LINE",
+    cost: 2,
     maxHp: 12,
+    attack2: 4,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE"],
   }),
   RAIDER: role({
@@ -1329,22 +1377,25 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
     label: "Triceratops",
     tacticalRole: "SIEGE",
     cost: 8,
-    maxHp: 18,
+    // Revision 20 section 2.1: 20 HP (was 18), Move 2 (was 1), attacks
+    // after moving, and the passive Charge! (`LINEBREAKER`).
+    maxHp: 20,
     attack2: 6,
     defense2: 4,
-    move: 1,
+    move: 2,
     range: 1,
     minimumRange: 1,
     sightRadius: 1,
     technology: "SAWMILLING",
-    mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "STAMPEDE", "GROW"],
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "LINEBREAKER", "GROW"],
   }),
   KNIGHT: role({
     role: "KNIGHT",
     label: "T-Rex",
     tacticalRole: "BREAKTHROUGH",
-    cost: 10,
+    // Revision 20 section 3: cost 14 (was 10).
+    cost: 14,
     maxHp: 28,
     attack2: 8,
     defense2: 4,
@@ -1378,9 +1429,9 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
 
 /**
  * Revision 19 Dinosaur engine mechanics: no role builds Field Defense
- * (Wild); the T-Rex and Brontosaurus use two capacity slots;
+ * (Wild); the Triceratops, T-Rex, and Brontosaurus use two capacity slots;
  * the five egg-laid roles carry their hatch time; the Triceratops is a melee
- * body that advances after a kill and carries the Stampede run bonus; the
+ * body that advances after a kill and carries the Charge! run-up bonus; the
  * Ankylosaurus is Armoured. Boats are Human boats.
  */
 export const DINOSAUR_ROLE_MECHANICS_V7 = mechanics({
@@ -1388,10 +1439,11 @@ export const DINOSAUR_ROLE_MECHANICS_V7 = mechanics({
   RAIDER: { hatchTurns: 1 },
   MARKSMAN: { hatchTurns: 1 },
   GUARD: { buildsFieldDefense: false, hatchTurns: 2, armourReduction: 1 },
-  // `pulp_wars-c87.8`: the Triceratops uses 1 slot (was 2) and hatches in 1
-  // turn (was 2).
-  CATAPULT: { hatchTurns: 1, stampedeRunBonus2: 2 },
-  KNIGHT: { capacitySlots: 2, hatchTurns: 3 },
+  // Revision 20 section 2.1 names the Triceratops's 2 slots and hatch time 2
+  // (replacing the `pulp_wars-c87.8` interim 1 and 1) and its run-up bonus;
+  // section 3 names the T-Rex's hatch time 4 (was 3).
+  CATAPULT: { capacitySlots: 2, hatchTurns: 2, runUpBonus2: 2 },
+  KNIGHT: { capacitySlots: 2, hatchTurns: 4 },
   JUGGERNAUT: { capacitySlots: 2 },
   BATTLESHIP: { splash: true },
 });
@@ -1425,8 +1477,9 @@ export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
 
 /**
  * Revision 17: per-faction technology display names. Serialized technology
- * IDs never change; Goblin Commerce is renamed (Plunder) and, in revision
- * 19, Dinosaur Fortification (Nesting). The single
+ * IDs never change; Goblin Commerce is renamed (Plunder), in revision 19
+ * Dinosaur Fortification (Nesting), and in revision 20 Dinosaur Explosives
+ * (Wallbreaker). The single
  * name helper, `technologyNameV7` in src/render/goblin-presentation-v7.ts,
  * applies these overrides and otherwise keeps the sentence-case name.
  */
@@ -1436,7 +1489,7 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   ORIGINAL: {},
   UNDEAD: {},
   GOBLIN: { COMMERCE: "Plunder" },
-  DINOSAUR: { FORTIFICATION: "Nesting" },
+  DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
 });
 
 export function factionTreeV7(faction: FactionIdV7): FactionTechnologyTreeV7 {
@@ -1513,9 +1566,12 @@ export function factionRulesV7(faction: FactionIdV7): FactionRulesV7 {
 
 /**
  * City unit capacity (revision 17 section 5.1): `level + 1`, +1 with
- * Planning, +1 Warrens when the current owner's faction is Goblin. Every
- * capacity surface (training, treasure placement, previews, the city panel,
- * and the Normal AI) uses this formula.
+ * Planning, +1 Warrens when the current owner's faction is Goblin, and
+ * (revision 20 section 4.1) +1 with Nesting, the technology capability
+ * `nestingCityCapacityBonus` that only the Dinosaur tree grants. Every term
+ * is read live from the city's current owner. Every capacity surface
+ * (training, Egg laying, treasure placement, previews, the city panel, and
+ * the Normal AI) uses this formula.
  */
 export function cityUnitCapacityForV7(
   level: number,
@@ -1526,7 +1582,13 @@ export function cityUnitCapacityForV7(
     level +
     1 +
     (ownerResearchedTechs.includes("PLANNING") ? 1 : 0) +
-    factionRulesV7(ownerFaction).cityCapacityBonus
+    factionRulesV7(ownerFaction).cityCapacityBonus +
+    (ownerResearchedTechs.length === 0
+      ? 0
+      : technologyCapabilitiesV7(
+          ownerResearchedTechs as readonly TechnologyIdV7[],
+          ownerFaction,
+        ).nestingCityCapacityBonus)
   );
 }
 
@@ -1660,6 +1722,13 @@ export function unitRoleMechanicsV7(
   return roleMechanicsV7(unit.role, playerFactionV7(roster, unit.ownerId));
 }
 
+/** Kills a unit needs before it may be promoted (once). */
+export const PROMOTION_KILLS_V7 = 3;
+/**
+ * Maximum HP a Promotion adds. Revision 20 section 5: the promoted unit is
+ * also fully healed (its HP becomes the new maximum).
+ */
+export const PROMOTION_HP_V7 = 5;
 /** Revision 19 section 6.2: an Egg has 6 HP (10 when laid with Nesting). */
 export const EGG_HP_V7 = 6;
 /** Revision 19 section 6.2: an Egg's fixed Defense 1 in half-units. */
@@ -1670,6 +1739,86 @@ export const GROWTH_KILLS_V7: readonly [number, number] = deepFreeze([1, 3]);
 export const GROWTH_HP_V7 = 4;
 /** Revision 19 section 5.2: an Alpha's extra Attack in half-units. */
 export const ALPHA_ATTACK2_V7 = 2;
+/** Revision 20 Charge!: the most tiles of a Move that count as run-up. */
+export const RUN_UP_MAXIMUM_TILES_V7 = 2;
+
+/** The unit facts the revision-20 Charge! helpers read. */
+export interface LinebreakerUnitFactsV7 {
+  readonly ownerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  readonly form: UnitFormV7;
+  readonly activation: {
+    readonly moved: boolean;
+    readonly movedPathLength: number;
+    readonly attacksUsed: number;
+  };
+}
+
+/**
+ * Revision 20 Charge! (section 2.2): whether an `ATTACK` by this unit is a
+ * Charge (a land-form unit whose role has `LINEBREAKER`).
+ */
+export function attackIsChargeV7(
+  roster: FactionRosterV7,
+  unit: Pick<LinebreakerUnitFactsV7, "ownerId" | "role" | "form">,
+): boolean {
+  return (
+    unit.form === "LAND" &&
+    unitRoleRuleV7(roster, unit).abilities.includes("LINEBREAKER")
+  );
+}
+
+/**
+ * Revision 20 Charge! run-up: the tiles that count for the unit's next
+ * attack this turn: `min(RUN_UP_MAXIMUM_TILES_V7, movedPathLength)` when it
+ * moved and has not attacked, otherwise 0. `plannedPathLength` replaces the
+ * activation's own path length (an attack after a planned Move).
+ */
+export function chargeRunUpTilesV7(
+  roster: FactionRosterV7,
+  unit: LinebreakerUnitFactsV7,
+  plannedPathLength?: number,
+): number {
+  if (!attackIsChargeV7(roster, unit)) return 0;
+  const length =
+    plannedPathLength ??
+    (unit.activation.moved && unit.activation.attacksUsed === 0
+      ? unit.activation.movedPathLength
+      : 0);
+  return Math.max(0, Math.min(RUN_UP_MAXIMUM_TILES_V7, length));
+}
+
+/** The `attack2` a Charge! gains from its run-up (0 for any other attack). */
+export function chargeRunUpAttack2V7(
+  roster: FactionRosterV7,
+  unit: LinebreakerUnitFactsV7,
+  plannedPathLength?: number,
+): number {
+  return (
+    chargeRunUpTilesV7(roster, unit, plannedPathLength) *
+    unitRoleMechanicsV7(roster, unit).runUpBonus2
+  );
+}
+
+/**
+ * Revision 20 Wallbreaker (section 4.2): whether an `ATTACK` by this unit
+ * removes the defender's City Walls levels: a land-form growing unit whose
+ * owner's researched technology grants `ignoresCityWalls`.
+ */
+export function attackIgnoresCityWallsV7(
+  roster: FactionRosterV7,
+  unit: Pick<DinosaurUnitFactsV7, "ownerId" | "role" | "form">,
+  ownerResearchedTechs: readonly TechnologyIdV7[],
+): boolean {
+  return (
+    unit.form === "LAND" &&
+    unitGrowsV7(roster, unit) &&
+    technologyCapabilitiesV7(
+      ownerResearchedTechs,
+      playerFactionV7(roster, unit.ownerId),
+    ).ignoresCityWalls
+  );
+}
 
 /** The growth stage a growing unit with `kills` has: 0, 1 (Big), 2 (Alpha). */
 export function growthStageForKillsV7(kills: number): 0 | 1 | 2 {
@@ -1852,6 +2001,10 @@ export interface TechnologyCapabilitiesV7 {
   readonly eggHpBonus: 0 | 4;
   /** Revision 19 Nesting: turns removed from a laid Egg's hatch time. */
   readonly eggHatchTurnReduction: 0 | 1;
+  /** Revision 20 Nesting: extra unit slots of every city the player owns. */
+  readonly nestingCityCapacityBonus: 0 | 1;
+  /** Revision 20 Wallbreaker: the player's dinosaurs ignore City Walls. */
+  readonly ignoresCityWalls: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -1892,6 +2045,8 @@ export function technologyCapabilitiesV7(
   let plunderCoins: 0 | 1 = 0;
   let eggHpBonus: 0 | 4 = 0;
   let eggHatchTurnReduction: 0 | 1 = 0;
+  let nestingCityCapacityBonus: 0 | 1 = 0;
+  let ignoresCityWalls = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -1957,6 +2112,10 @@ export function technologyCapabilitiesV7(
       case "NESTING":
         eggHpBonus = unlock.eggHp;
         eggHatchTurnReduction = unlock.hatchTurns;
+        nestingCityCapacityBonus = unlock.citySlots;
+        break;
+      case "WALLBREAKER":
+        ignoresCityWalls = true;
         break;
       case "CAPTAIN_SUPPORT":
       case "NECROMANCER_SUPPORT":
@@ -1999,6 +2158,8 @@ export function technologyCapabilitiesV7(
     plunderCoins,
     eggHpBonus,
     eggHatchTurnReduction,
+    nestingCityCapacityBonus,
+    ignoresCityWalls,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

@@ -133,9 +133,10 @@ const RESOURCE_COMMANDS: Partial<Record<CommandV7["kind"], ArtSubjectV7>> = {
  * Rally is WAAAGH! (the Warboss's tin megaphone, bead pulp_wars-0ao.14).
  * Kaboom! is `ICON:ACTION:KABOOM`, the PixelLab bomb; without a raster (and
  * always in LEGACY) it keeps its code-drawn bomb glyph. The Dinosaur Rally
- * is War Drums (`ICON:ACTION:DINOSAUR:RALLY`), and Lay Egg, Hatch and
- * Stampede are `ICON:ACTION:LAY_EGG`, `ICON:ACTION:HATCH` and
- * `ICON:ACTION:STAMPEDE` (bead pulp_wars-c87.7).
+ * is War Drums (`ICON:ACTION:DINOSAUR:RALLY`), and Lay Egg and Hatch are
+ * `ICON:ACTION:LAY_EGG` and `ICON:ACTION:HATCH` (bead pulp_wars-c87.7).
+ * `ICON:ACTION:STAMPEDE` is not a command icon since revision 20: it marks
+ * the Triceratops's Charge! ability in the unit information.
  */
 export function commandSubjectV7(
   command: CommandV7,

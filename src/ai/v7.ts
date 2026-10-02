@@ -5,7 +5,9 @@ import {
   EMBARKED_LANDING_MAX_SPENT_V7,
   EMBARKED_MOVE_V7,
   GROWTH_HP_V7,
+  GROWTH_KILLS_V7,
   armouredDamageV7,
+  chargeRunUpAttack2V7,
   effectiveRoleRuleV7,
   cityUnitCapacityForV7,
   factionTreeV7,
@@ -28,7 +30,6 @@ import {
   previewEconomicV7,
   previewKaboomV7,
   previewMonumentV7,
-  previewStampedeV7,
   queryAiReadyCommandsV7,
   queryCombatPreviewV7,
   queryPublicEconomicPotentialsV7,
@@ -99,18 +100,20 @@ import {
   EGG_SMASH_SETUP_PRIORITY_V7,
   GROWN_RETREAT_PRIORITY_V7,
   HATCH_APPROACH_PRIORITY_V7,
-  LANE_BLOCK_PRIORITY_V7,
-  STAMPEDE_APPROACH_PRIORITY_V7,
-  STAMPEDE_BREAKER_PRIORITY_V7,
-  STAMPEDE_CAPTURER_NEAR_VALUE_V7,
-  STAMPEDE_CHIP_PRIORITY_V7,
-  STAMPEDE_CITY_SAVE_PRIORITY_V7,
-  STAMPEDE_CLEAR_CENTER_PRIORITY_V7,
-  STAMPEDE_FIELD_DEFENSE_VALUE_V7,
-  STAMPEDE_KILL_PRIORITY_V7,
-  STAMPEDE_LANE_MOVE_PRIORITY_V7,
-  STAMPEDE_PUSH_CENTER_PRIORITY_V7,
-  STAMPEDE_PUSH_CENTER_VALUE_V7,
+  CHARGE_APPROACH_PRIORITY_V7,
+  CHARGE_BREAKER_PRIORITY_V7,
+  CHARGE_CAPTURER_NEAR_VALUE_V7,
+  CHARGE_FIELD_DEFENSE_VALUE_V7,
+  CHARGE_PUSH_CENTER_PRIORITY_V7,
+  CHARGE_PUSH_CENTER_VALUE_V7,
+  CHARGE_RUN_UP_CHIP_PRIORITY_V7,
+  CHARGE_RUN_UP_KILL_PRIORITY_V7,
+  NESTING_EGG_VALUE_V7,
+  NESTING_RESEARCH_PRIORITY_V7,
+  NESTING_SLOT_VALUE_V7,
+  WALLBREAKER_RESEARCH_PRIORITY_V7,
+  WALLBREAKER_WALLED_CITY_VALUE_V7,
+  WOUNDED_DINOSAUR_KILL_DIVISOR_V7,
   SIGNATURE_RESEARCH_CITIES_V7,
   SIGNATURE_RESEARCH_PRIORITY_V7,
   SIGNATURE_ROLES_V7,
@@ -127,11 +130,12 @@ import {
   grownUnitPremiumV7,
   hatchScoreV7,
   layEggAdjustmentV7,
-  stampedeLaneBetweenV7,
-  stampedeLaunchTilesV7,
-  stampedeLaneRunV7,
-  stampedeLaneTilesV7,
-  stampederV7,
+  chargeRunUpForPolicyV7,
+  ignoresWallsForPolicyV7,
+  linebreakerV7,
+  policySiegeRuleV7,
+  policyTacticalRoleV7,
+  technologyWithUnlockV7,
 } from "./v7-dinosaur";
 import {
   normalOpeningResearchPendingV7,
@@ -266,7 +270,7 @@ interface PolicyContextV7 {
    * heuristics are gated on it.
    */
   readonly dinosaur: boolean;
-  /** Dinosaur matches: per-decision public Egg and Stampede facts. */
+  /** Dinosaur matches: per-decision public Egg facts. */
   dinosaurFacts: DinosaurFactsV7 | null;
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
@@ -2383,11 +2387,6 @@ function* publicThreatenedTilesWorkV7(
       }
     yield;
   }
-  // Revision 19 (`pulp_wars-c87.5`): a Triceratops also threatens every land
-  // tile at distance 2 or 3 along an open lane from where it stands (open as
-  // far as the viewer can see). Only a Dinosaur unit has Stampede.
-  if (unit.form === "LAND" && rule.abilities.includes("STAMPEDE"))
-    direct.push(...stampedeLaneTilesV7(view, unit));
   return [...new Map(direct.map((at) => [coordKey(at), at])).values()];
 }
 
@@ -2476,15 +2475,6 @@ function isPolicyCandidate(
       corridor !== null && corridor.missingRoadKeys[0] === coordKey(command.at)
     );
   }
-  // Revision 19: a Triceratops with a worthwhile Stampede on offer does not
-  // move first (it cannot Stampede after moving).
-  if (
-    command.kind === "MOVE" &&
-    context.dinosaur &&
-    context.view.viewer.faction === "DINOSAUR" &&
-    stampedeHoldUnitIdsV7(context).has(command.unitId)
-  )
-    return false;
   if (
     (command.kind === "MOVE" || command.kind === "ATTACK") &&
     leavesSoleThreatenedDefender(context, command) &&
@@ -2499,13 +2489,12 @@ function isPolicyCandidate(
       actor !== undefined &&
       objective !== undefined &&
       to !== undefined &&
-      unitRoleRuleV7(context.view, actor).tacticalRole === "SIEGE" &&
+      // Revision 20: a Triceratops is a line unit, not a siege unit.
+      policySiegeRuleV7(unitRoleRuleV7(context.view, actor)) &&
       distance(to, objective) >= 2 &&
       distance(to, objective) <= 3 &&
       !hasReachableScreenAtV7(context, actor, to) &&
-      !endgameSiegeTileV7(context, actor, to) &&
-      // Revision 19: a Triceratops takes a safe lane tile without a screen.
-      !(context.dinosaur && stampedeLaneMoveValueV7(context, actor, to) > 0)
+      !endgameSiegeTileV7(context, actor, to)
     )
       return false;
   }
@@ -2558,8 +2547,8 @@ function isPolicyCandidate(
     command.kind === "LAY_EGG"
   )
     return preferredSharedCityActionV7(context, command.cityId) === command;
-  // Revision 19: Hatch and Stampede are scored by their public previews.
-  if (command.kind === "HATCH" || command.kind === "STAMPEDE") return true;
+  // Revision 19: Hatch is scored by its public preview.
+  if (command.kind === "HATCH") return true;
   if (command.kind === "CHOOSE_CITY_REWARD")
     return preferredReward(context, command) === command.reward;
   if (command.kind === "REDEVELOP") {
@@ -3137,6 +3126,11 @@ function* sharedCityContextWorkV7(
       : null;
   const trainingAdjustment = (role: UnitRoleIdV7): number =>
     (undeadTraining?.get(role) ?? 0) + (goblinTraining?.get(role) ?? 0);
+  // Revision 20: the screened-siege bonus is for a Catapult-role unit the
+  // policy plays as siege (never the Triceratops, a line unit).
+  const siegeRole = (role: UnitRoleIdV7): boolean =>
+    role === "CATAPULT" &&
+    policySiegeRuleV7(effectiveRoleRuleV7(role, view.viewer.faction));
   // Revision 17: the first Goblins of the horde do not pay the per-role
   // repetition cost of the preferred-role choice.
   const hordeAdjustment = (role: UnitRoleIdV7, count: number): number =>
@@ -3154,8 +3148,7 @@ function* sharedCityContextWorkV7(
     endgameRoutedUnitsV7(
       context,
       (unit) =>
-        unit.form === "LAND" &&
-        unitRoleRuleV7(view, unit).tacticalRole === "SIEGE",
+        unit.form === "LAND" && policySiegeRuleV7(unitRoleRuleV7(view, unit)),
     ) < ENDGAME_SIEGE_TARGET_V7;
   const threatenedCityIds = new Set<CityId>();
   for (const threat of context.threats) {
@@ -3235,11 +3228,13 @@ function* sharedCityContextWorkV7(
     const cityAdjustment = (role: UnitRoleIdV7) => {
       const rule = effectiveRoleRuleV7(role, view.viewer.faction);
       return (
-        (siegeExposed && role === "CATAPULT" ? -40 : 0) +
+        (siegeExposed && role === "CATAPULT" && policySiegeRuleV7(rule)
+          ? -40
+          : 0) +
         (vampireExposed && role === "KNIGHT" ? -40 : 0) +
         (endgameCity &&
         ((endgameCaptureShortfall && rule.abilities.includes("CAPTURE")) ||
-          (endgameSiegeShortfall && rule.tacticalRole === "SIEGE"))
+          (endgameSiegeShortfall && policySiegeRuleV7(rule)))
           ? ENDGAME_TRAINING_BIAS_V7
           : 0)
       );
@@ -3274,7 +3269,7 @@ function* sharedCityContextWorkV7(
       const value =
         effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp +
         Number(command.role === "GUARD" && threatened) * 20 +
-        Number(command.role === "CATAPULT" && durableScreen) * 12 +
+        Number(siegeRole(command.role) && durableScreen) * 12 +
         20 * Number(count === 0) -
         2 * (effectiveRoleRuleV7(command.role, view.viewer.faction).cost ?? 0) -
         8 * count +
@@ -3369,7 +3364,7 @@ function* sharedCityContextWorkV7(
             : command.kind === "TRAIN" || command.kind === "LAY_EGG"
               ? (effectiveRoleRuleV7(command.role, view.viewer.faction).maxHp +
                   Number(command.role === "GUARD" && threatened) * 20 +
-                  Number(command.role === "CATAPULT" && durableScreen) * 12 +
+                  Number(siegeRole(command.role) && durableScreen) * 12 +
                   trainingAdjustment(command.role) +
                   cityAdjustment(command.role) +
                   layEggAdjustmentV7(view, command, threatened) +
@@ -3836,16 +3831,13 @@ function scoreCommandWithContext(
     strategicValue = trainingStrategicValue(context, command);
   }
 
-  if (command.kind === "STAMPEDE" || command.kind === "HATCH") {
+  if (command.kind === "HATCH") {
     // Revision 19: previewed value (`pulp_wars-c87.5`).
-    const dinosaur =
-      command.kind === "STAMPEDE"
-        ? stampedeScoreV7(context, command)
-        : hatchScoreV7(
-            view,
-            command,
-            ownEggDangerV7(context, command.eggUnitId) > 0,
-          );
+    const dinosaur = hatchScoreV7(
+      view,
+      command,
+      ownEggDangerV7(context, command.eggUnitId) > 0,
+    );
     priority = dinosaur.priority;
     strategicValue = dinosaur.strategic;
     immediateValue = dinosaur.immediate;
@@ -4017,13 +4009,24 @@ function scoreCommandWithContext(
           priority -= FRIENDLY_SPLASH_PRIORITY_DEMOTION_V7;
       }
       // Revision 19: Grow, kill feeding, Acid, and Egg defence.
-      if (context.dinosaur && actor !== undefined)
+      if (context.dinosaur && actor !== undefined) {
         strategicValue += dinosaurAttackValueV7(
           context,
           command,
           actor,
           preview,
         );
+        // Revision 20 Charge!: Field Defense destroyed, a defender pushed
+        // off a hostile center, and the exposure on the tile it ends on.
+        if (linebreakerV7(view, actor)) {
+          const charge = chargeAttackScoreV7(context, command, actor, preview);
+          strategicValue += charge.strategic;
+          if (charge.opensCapture)
+            priority = Math.max(priority, CHARGE_PUSH_CENTER_PRIORITY_V7);
+          else if (charge.breaksFieldDefense && priority === 900)
+            priority = CHARGE_BREAKER_PRIORITY_V7;
+        }
+      }
     }
   }
 
@@ -4147,7 +4150,12 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "PROMOTE") {
-    priority = 1320;
+    // Revision 20: a promotion fully heals, so a wounded eligible unit is
+    // promoted before any attack or capture (1400) and before the turn ends.
+    priority =
+      actor !== undefined && actor.hp < actor.maxHp
+        ? WOUNDED_PROMOTE_PRIORITY_V7
+        : 1320;
     immediateValue = 40;
   }
 
@@ -4238,7 +4246,7 @@ function scoreCommandWithContext(
       const assigned = context.tactical.objectiveByUnitId.get(actor.id);
       if (
         assigned !== undefined &&
-        unitRoleRuleV7(view, actor).tacticalRole === "SIEGE" &&
+        policySiegeRuleV7(unitRoleRuleV7(view, actor)) &&
         resultAt !== null &&
         distance(resultAt, assigned) >= 2 &&
         distance(resultAt, assigned) <= 3 &&
@@ -4319,8 +4327,15 @@ function scoreCommandWithContext(
       strategicValue += goblin.strategic;
     }
     if (context.dinosaur && resultAt !== null) {
-      // Revision 19: lanes, Eggs, growth (`pulp_wars-c87.5`).
-      const dinosaur = dinosaurMoveValueV7(context, actor, resultAt, priority);
+      // Revision 19: Eggs, growth (`pulp_wars-c87.5`); revision 20: the
+      // Charge! run-up.
+      const dinosaur = dinosaurMoveValueV7(
+        context,
+        actor,
+        resultAt,
+        priority,
+        command.path.length,
+      );
       priority = dinosaur.priority;
       strategicValue += dinosaur.strategic;
     }
@@ -4373,7 +4388,6 @@ function scoreCommandWithContext(
     resultAt === null ||
     command.kind === "ATTACK" ||
     command.kind === "KABOOM" ||
-    command.kind === "STAMPEDE" ||
     command.kind === "HATCH" ||
     (command.kind === "MOVE" &&
       actor.role === "KNIGHT" &&
@@ -5368,7 +5382,7 @@ function endgameMoveValueV7(
         strategic: -visibleImmediateDamage(view, actor, to, context),
       };
   }
-  const siege = unitRoleRuleV7(view, actor).tacticalRole === "SIEGE";
+  const siege = policySiegeRuleV7(unitRoleRuleV7(view, actor));
   if (!capture && !siege) return unchanged;
   const passes = passesOwnUnitsV7(view, actor);
   const next = (
@@ -6343,26 +6357,13 @@ interface OwnEggFactsV7 {
   readonly nearestThreatAt: CoordV7 | null;
 }
 
-interface DinosaurScoreV7 {
-  readonly priority: number;
-  readonly strategic: number;
-  readonly immediate: number;
-}
-
 interface DinosaurFactsV7 {
   readonly ownEggs: readonly OwnEggFactsV7[];
   readonly nestDanger: Map<string, number>;
-  readonly stampedeScores: Map<string, DinosaurScoreV7>;
-  stampedeHolds: ReadonlySet<UnitId> | null;
-  /** Launch tiles of each own unmoved Triceratops (`pulp_wars-c87.8`). */
-  readonly stampedeLaunchTiles: Map<UnitId, readonly CoordV7[]>;
 }
 
-const NO_DINOSAUR_SCORE_V7: DinosaurScoreV7 = Object.freeze({
-  priority: -1,
-  strategic: 0,
-  immediate: 0,
-});
+/** A wounded unit's Promotion (a full heal): before a final capture (1400). */
+const WOUNDED_PROMOTE_PRIORITY_V7 = 1410;
 /** Abandoning an Egg so a defender can be trained (threatened train: 1260). */
 const EGG_ABANDON_PRIORITY_V7 = 1261;
 /** A wounded grown unit steps out of visible reach (Recover: 930). */
@@ -6413,9 +6414,6 @@ function dinosaurFactsV7(context: PolicyContextV7): DinosaurFactsV7 {
   const facts: DinosaurFactsV7 = {
     ownEggs,
     nestDanger: new Map(),
-    stampedeScores: new Map(),
-    stampedeHolds: null,
-    stampedeLaunchTiles: new Map(),
   };
   context.dinosaurFacts = facts;
   return facts;
@@ -6432,7 +6430,7 @@ function laidEggHpForPolicyV7(view: PlayerViewV7): number {
 
 /**
  * The visible enemies' projected damage next turn to an Egg laid on `at`
- * (their reach now, Stampede lanes included).
+ * (their reach now).
  */
 function nestDangerV7(context: PolicyContextV7, at: CoordV7): number {
   const facts = dinosaurFactsV7(context);
@@ -6617,9 +6615,24 @@ function dinosaurAttackValueV7(
   const target = context.lookup.unitsById.get(command.targetUnitId);
   if (target === undefined) return 0;
   let value = 0;
+  // Revision 20: a growth kill is worth the HP it restores (the HP missing
+  // after the exchange plus the stage's 4).
   if (preview.defenderDies && !preview.attackerDies)
-    value += growthKillValueV7(view, actor);
+    value += growthKillValueV7(
+      view,
+      actor,
+      actor.hp - preview.damageToAttacker + preview.attackerHeal,
+    );
   const feed = hostileGrowthFeedV7(view, target);
+  // Revision 20: killing a wounded hostile dinosaur before its next kill
+  // fully heals it.
+  if (
+    feed > 0 &&
+    preview.defenderDies &&
+    target.hp < target.maxHp &&
+    isHostile(view, target.ownerId)
+  )
+    value += Math.floor(feed / WOUNDED_DINOSAUR_KILL_DIVISOR_V7);
   if (
     feed > 0 &&
     !preview.defenderDies &&
@@ -6726,36 +6739,66 @@ function dinosaurAttackRejectedV7(
     !vampireAttackAcceptableV7(context, view, command)
   )
     return !excused();
+  // Revision 20: a Charge! that ends where the visible enemies kill the
+  // Triceratops, for less than it is worth, is declined.
+  if (
+    linebreakerV7(view, actor) &&
+    chargeAttackScoreV7(context, command, actor, preview).diesForNoGain
+  )
+    return !excused();
   return false;
+}
+
+/** The Charge!-specific facts of an offered attack by an own Triceratops. */
+interface ChargeAttackScoreV7 {
+  /** Added to the attack's strategic value. */
+  readonly strategic: number;
+  /** A defender pushed off a hostile center with an own capturer near. */
+  readonly opensCapture: boolean;
+  readonly breaksFieldDefense: boolean;
+  /**
+   * The Charge ends where the visible enemies kill the Triceratops (and it
+   * is not already doomed where it stands) for a gain below its own value.
+   */
+  readonly diesForNoGain: boolean;
 }
 
 /**
  * The visible enemies' projected damage next turn to a Triceratops after the
- * previewed Stampede: on its final tile, with a killed target gone and a
- * surviving one wounded where the Push leaves it.
+ * previewed Charge!: on the tile it ends on (after an advance or a follow),
+ * with a killed target gone and a surviving one wounded where the Push
+ * leaves it.
  */
-function stampedeExposureV7(
+function chargeExposureV7(
   context: PolicyContextV7,
   actor: PublicUnitV7,
   target: PublicUnitV7,
-  preview: NonNullable<ReturnType<typeof previewStampedeV7>>,
+  preview: CombatPreviewV7,
   hp: number,
 ): number {
   const view = context.view;
+  const endsAt = preview.advances ? target.at : actor.at;
+  const pushTo =
+    preview.push === "WILL_PUSH"
+      ? {
+          x: target.at.x * 2 - actor.at.x,
+          y: target.at.y * 2 - actor.at.y,
+        }
+      : target.at;
   const after = projectPublicUnits(
     view,
     view.units.flatMap((unit) =>
       unit.id === actor.id
-        ? [{ ...unit, at: preview.endsAt, hp }]
+        ? [{ ...unit, at: endsAt, hp }]
         : unit.id !== target.id
           ? [unit]
-          : preview.combat.defenderDies
+          : preview.defenderDies
             ? []
             : [
                 {
                   ...unit,
-                  at: preview.pushTo ?? unit.at,
-                  hp: unit.hp - preview.combat.damageToDefender,
+                  at: pushTo,
+                  hp: unit.hp - preview.damageToDefender + preview.defenderHeal,
                 },
               ],
     ),
@@ -6768,85 +6811,43 @@ function stampedeExposureV7(
 }
 
 /**
- * An offered Stampede by its public preview: the target's loss, the growth
- * of a kill, the death-blast chain, Field Defense destroyed, a defender
- * killed on or pushed off a hostile city center (more with an own capturer
- * within two tiles), and the own Egg the target could reach; minus the
- * Triceratops's exposure on its final tile (all of its value when the
+ * Revision 20 Charge! (section 7.3): what the ordinary attack scoring does
+ * not see of an own Triceratops's attack. The public preview already has
+ * the run-up and the ignored fortification in its damage. This adds Field
+ * Defense destroyed on the target tile, a defender pushed off a hostile
+ * city center (more with an own capturer within two tiles), minus the
+ * Triceratops's exposure on the tile it ends on (all of its value when the
  * visible enemies kill it there, a third when it is doomed where it stands
- * anyway). A Stampede whose blast chain kills an own or allied unit, or
- * whose net value is not positive, is declined.
+ * anyway). A kill that makes it Big or Alpha fully heals it first.
  */
-function stampedeScoreV7(
+function chargeAttackScoreV7(
   context: PolicyContextV7,
-  command: Extract<CommandV7, { kind: "STAMPEDE" }>,
-): DinosaurScoreV7 {
-  const facts = dinosaurFactsV7(context);
-  const key = `${command.unitId}:${command.targetUnitId}`;
-  const cached = facts.stampedeScores.get(key);
-  if (cached !== undefined) return cached;
-  const score = stampedeScoreUncachedV7(context, command);
-  facts.stampedeScores.set(key, score);
-  return score;
-}
-
-function stampedeScoreUncachedV7(
-  context: PolicyContextV7,
-  command: Extract<CommandV7, { kind: "STAMPEDE" }>,
-): DinosaurScoreV7 {
+  command: AttackCommandV7,
+  actor: PublicUnitV7,
+  preview: CombatPreviewV7,
+): ChargeAttackScoreV7 {
   const view = context.view;
-  const preview = previewStampedeV7(view, command.unitId, command.targetUnitId);
-  const actor = context.lookup.unitsById.get(command.unitId);
   const target = context.lookup.unitsById.get(command.targetUnitId);
-  if (
-    preview === null ||
-    actor === undefined ||
-    target === undefined ||
-    preview.combat.damageToDefender <= 0 ||
-    preview.explosions.totals.friendlyKills > 0
-  )
-    return NO_DINOSAUR_SCORE_V7;
-  const dies = preview.combat.defenderDies;
-  const damage = preview.combat.damageToDefender;
-  let value = hostileLossValueV7(context, target, damage, dies);
-  const growth = dies ? growthKillValueV7(view, actor) : 0;
-  value += growth;
-  // The Triceratops's HP when the blasts and the enemies' replies arrive: a
-  // kill that makes it Big or Alpha heals it first (section 5.2).
-  const hp = actor.hp + (growth > 0 ? GROWTH_HP_V7 : 0);
-  const retained = retainedUnitValue(view, actor);
-  if (preview.explosions.explosions.length > 0) {
-    // The blast on the Triceratops itself is the price of its own attack
-    // (counted once, against its HP after growth); blasts on other own and
-    // allied units cost the friendly-fire trade factor.
-    let selfLoss = 0;
-    const chain = explosionChainValueV7(
-      view,
-      preview.explosions,
-      (owner) => isHostile(view, owner),
-      (unit, hit, killed) => hostileLossValueV7(context, unit, hit, killed),
-      (unit, hit, killed) => {
-        if (unit.id !== actor.id)
-          return friendlyLossValueV7(view, unit, hit, killed);
-        selfLoss += Math.floor((retained * Math.min(hit, hp)) / hp);
-        return 0;
-      },
-    );
-    value +=
-      chain.hostileValue -
-      FRIENDLY_FIRE_TRADE_FACTOR_V7 * chain.friendlyValue -
-      selfLoss;
-  }
-  value +=
-    STAMPEDE_FIELD_DEFENSE_VALUE_V7 * preview.fieldDefenseDestroyed.length;
+  if (target === undefined || preview.attackerDies)
+    return {
+      strategic: 0,
+      opensCapture: false,
+      breaksFieldDefense: false,
+      diesForNoGain: false,
+    };
+  const dies = preview.defenderDies;
+  const targetTile = findPublicTileV7(view, target.at);
+  const breaksFieldDefense =
+    targetTile?.explored === true && targetTile.fieldDefense;
+  let gain = breaksFieldDefense ? CHARGE_FIELD_DEFENSE_VALUE_V7 : 0;
   const center = context.lookup.citiesByKey.get(coordKey(target.at));
   const hostileCenter =
     target.form !== "EGG" &&
     center !== undefined &&
     isHostile(view, center.ownerId);
-  const clearsCenter = hostileCenter && dies;
-  const pushesOffCenter = hostileCenter && !dies && preview.pushTo !== null;
-  const capturerNear =
+  const pushesOffCenter =
+    hostileCenter && !dies && preview.push === "WILL_PUSH";
+  const opensCapture =
     pushesOffCenter &&
     center !== undefined &&
     view.units.some(
@@ -6856,110 +6857,74 @@ function stampedeScoreUncachedV7(
         distance(unit.at, center.at) <= 2 &&
         canCaptureV7(view, unit),
     );
-  if (clearsCenter) value += 50;
   if (pushesOffCenter)
-    value +=
-      STAMPEDE_PUSH_CENTER_VALUE_V7 +
-      (capturerNear ? STAMPEDE_CAPTURER_NEAR_VALUE_V7 : 0);
-  const egg = threatenedEggValueV7(context, target.id);
-  if (egg > 0)
-    value += dies
-      ? egg
-      : Math.floor((egg * Math.min(target.hp, damage)) / target.hp);
-  const exposure = stampedeExposureV7(context, actor, target, preview, hp);
-  if (exposure >= hp)
-    value -=
-      visibleImmediateDamage(view, actor, actor.at, context) >= actor.hp
-        ? Math.floor(retained / 3)
-        : retained;
-  else value -= Math.floor((retained * exposure) / (2 * hp));
-  if (value <= 0) return NO_DINOSAUR_SCORE_V7;
-  const threatening = context.threats.some(
-    (threat) => threat.unitId === target.id,
-  );
+    gain +=
+      CHARGE_PUSH_CENTER_VALUE_V7 +
+      (opensCapture ? CHARGE_CAPTURER_NEAR_VALUE_V7 : 0);
+  // The Triceratops's HP when the enemies reply: a kill that makes it Big
+  // or Alpha fully heals it (revision 20 section 5).
+  const grows =
+    dies &&
+    (actor.kills + 1 === GROWTH_KILLS_V7[0] ||
+      actor.kills + 1 === GROWTH_KILLS_V7[1]);
+  const hp = grows
+    ? actor.maxHp + GROWTH_HP_V7
+    : actor.hp - preview.damageToAttacker + preview.attackerHeal;
+  const retained = retainedUnitValue(view, actor);
+  const exposure = chargeExposureV7(context, actor, target, preview, hp);
+  const lethal = exposure >= hp;
+  const doomedAnyway =
+    lethal &&
+    visibleImmediateDamage(view, actor, actor.at, context) >= actor.hp;
+  const penalty = lethal
+    ? doomedAnyway
+      ? Math.floor(retained / 3)
+      : retained
+    : Math.floor((retained * exposure) / (2 * hp));
+  const total =
+    gain +
+    hostileLossValueV7(context, target, preview.damageToDefender, dies) +
+    (dies && hostileCenter ? 50 : 0) +
+    (grows ? growthKillValueV7(view, actor, hp) : 0);
   return {
-    priority: dies
-      ? clearsCenter
-        ? STAMPEDE_CLEAR_CENTER_PRIORITY_V7
-        : threatening
-          ? STAMPEDE_CITY_SAVE_PRIORITY_V7
-          : STAMPEDE_KILL_PRIORITY_V7
-      : capturerNear
-        ? STAMPEDE_PUSH_CENTER_PRIORITY_V7
-        : threatening
-          ? 1240
-          : preview.fieldDefenseDestroyed.length > 0
-            ? STAMPEDE_BREAKER_PRIORITY_V7
-            : STAMPEDE_CHIP_PRIORITY_V7,
-    strategic: value,
-    immediate: 10 * damage + 20 * Number(dies),
+    strategic: gain - penalty,
+    opensCapture,
+    breaksFieldDefense,
+    diesForNoGain: lethal && !doomedAnyway && total < retained,
   };
 }
 
 /**
- * The own Triceratopses that hold their Move this turn because a worthwhile
- * Stampede is offered for them (a Triceratops cannot Stampede after moving).
+ * The best Charge! an own Triceratops could make from `from` after a Move of
+ * `pathLength` tiles: the hostile loss of the projected hit (run-up
+ * included, fortification ignored) on a visible hostile unit next to `from`.
  */
-function stampedeHoldUnitIdsV7(context: PolicyContextV7): ReadonlySet<UnitId> {
-  const facts = dinosaurFactsV7(context);
-  if (facts.stampedeHolds !== null) return facts.stampedeHolds;
-  const holds = new Set<UnitId>();
-  for (const command of context.commands)
-    if (
-      command.kind === "STAMPEDE" &&
-      !holds.has(command.unitId) &&
-      stampedeScoreV7(context, command).priority >= 0
-    )
-      holds.add(command.unitId);
-  facts.stampedeHolds = holds;
-  return holds;
-}
-
-/**
- * The value of standing an unmoved own Triceratops on `to`: the best hit of
- * a Stampede from there along an open lane on a visible hostile unit or Egg
- * (0 when there is none, or when the visible enemies would kill it there).
- */
-function stampedeLaneMoveValueV7(
+function chargeFromV7(
   context: PolicyContextV7,
   actor: PublicUnitV7,
-  to: CoordV7,
-): number {
+  from: CoordV7,
+  pathLength: number,
+): { readonly value: number; readonly kills: boolean } {
   const view = context.view;
-  if (
-    actor.ownerId !== view.viewer.id ||
-    view.viewer.faction !== "DINOSAUR" ||
-    !stampederV7(view, actor) ||
-    actor.activation.moved ||
-    !primaryReadyForPolicyV7(actor)
-  )
-    return 0;
-  let best = 0;
+  const bonusAttack2 = chargeRunUpForPolicyV7(view, actor, pathLength);
+  let value = 0;
+  let kills = false;
   for (const hostile of context.lookup.visibleHostiles) {
-    if (isAfloatV7(hostile) || hostile.hp <= 0) continue;
-    const run = stampedeLaneRunV7(
-      view,
-      actor.ownerId,
-      to,
-      hostile.at,
-      actor.id,
-    );
-    if (run === 0) continue;
+    if (hostile.hp <= 0 || distance(from, hostile.at) !== 1) continue;
     const damage = publicProjectedDamageWithLookupV7(
       view,
       actor,
       hostile,
       hostile.at,
-      { bonusAttack2: 2 * run },
+      { bonusAttack2 },
       context.lookup,
     );
-    best = Math.max(
-      best,
-      hostileLossValueV7(context, hostile, damage, damage >= hostile.hp),
-    );
+    const dies = damage >= hostile.hp;
+    const loss = hostileLossValueV7(context, hostile, damage, dies);
+    if (loss > value) value = loss;
+    if (dies) kills = true;
   }
-  if (best <= 0) return 0;
-  return visibleImmediateDamage(view, actor, to, context) < actor.hp ? best : 0;
+  return { value, kills };
 }
 
 /** Own land attackers next to `at`, other than `excludedId`. */
@@ -6990,23 +6955,25 @@ function eggGuardsV7(
 /**
  * Dinosaur-match Move adjustments.
  *
- * As Dinosaurs: an unmoved Triceratops takes a safe tile with an open lane
- * to a target; a Shaman with its action steps next to an Egg it can hatch,
+ * As Dinosaurs: an unmoved Triceratops takes a safe tile next to a target it
+ * can then Charge, preferring the longer run-up, and one already next to a
+ * target steps around it when the run-up makes the Charge better (revision
+ * 20); a Shaman with its action steps next to an Egg it can hatch,
  * and stays by a long Egg; a unit guards an own Egg that visible enemies can
  * reach before it hatches, and its sole guard stays until it hatches; a
  * grown unit never makes a routine Move into visible lethal reach, leaves
  * it, and when wounded steps out of reach to heal.
  *
  * Every seat: a unit that can attack after moving steps where it destroys a
- * visible hostile Egg; a cheap unit blocks the open lane of a hostile
- * Triceratops to a defended own center; a Move into the lethal reach of a
- * hostile unit one kill from Big or Alpha costs that growth.
+ * visible hostile Egg; a Move into the lethal reach of a hostile unit one
+ * kill from Big or Alpha costs that growth.
  */
 function dinosaurMoveValueV7(
   context: PolicyContextV7,
   actor: PublicUnitV7,
   to: CoordV7,
   priority: number,
+  pathLength: number,
 ): { readonly priority: number; readonly strategic: number } {
   const view = context.view;
   if (
@@ -7038,33 +7005,30 @@ function dinosaurMoveValueV7(
 
   if (view.viewer.faction === "DINOSAUR") {
     const dinosaur = dinosaurFactsV7(context);
-    const lane = stampedeLaneMoveValueV7(context, actor, to);
-    if (lane > 0) {
-      raised = Math.max(raised, STAMPEDE_LANE_MOVE_PRIORITY_V7);
-      strategic += Math.min(24, Math.ceil(lane / 4));
-    } else if (
-      raised < STAMPEDE_APPROACH_PRIORITY_V7 &&
-      stampederV7(view, actor) &&
+    if (
+      linebreakerV7(view, actor) &&
       !actor.activation.moved &&
       primaryReadyForPolicyV7(actor)
     ) {
-      // `pulp_wars-c87.8`: with no lane tile in reach, a Triceratops walks
-      // toward the nearest launch tile instead of trailing its army.
-      let launch = dinosaur.stampedeLaunchTiles.get(actor.id);
-      if (launch === undefined) {
-        launch = stampedeLaunchTilesV7(
-          view,
-          actor,
-          context.lookup.visibleHostiles,
-        );
-        dinosaur.stampedeLaunchTiles.set(actor.id, launch);
-      }
-      if (launch.length > 0) {
-        const here = nearestDistance(actor.at, launch);
-        const there = nearestDistance(to, launch);
-        if (there < here && dangerThere() < actor.hp) {
-          raised = STAMPEDE_APPROACH_PRIORITY_V7;
-          strategic += 2 * (here - there);
+      // Revision 20: the run-up. Exposure counts before the run-up, so
+      // among equally exposed tiles the longer run-up wins.
+      const there = chargeFromV7(context, actor, to, pathLength);
+      if (there.value > 0 && dangerThere() < actor.hp) {
+        const here = chargeFromV7(context, actor, actor.at, 0);
+        const better =
+          here.value === 0
+            ? CHARGE_APPROACH_PRIORITY_V7
+            : there.kills && !here.kills
+              ? CHARGE_RUN_UP_KILL_PRIORITY_V7
+              : there.value > here.value && dangerThere() <= dangerHere()
+                ? CHARGE_RUN_UP_CHIP_PRIORITY_V7
+                : -1;
+        if (better >= 0) {
+          raised = Math.max(raised, better);
+          strategic +=
+            Math.min(24, Math.ceil(there.value / 4)) +
+            chargeRunUpForPolicyV7(view, actor, pathLength) -
+            Math.min(12, dangerThere());
         }
       }
     }
@@ -7169,33 +7133,6 @@ function dinosaurMoveValueV7(
     if (smash > 0 && dangerThere() < actor.hp) {
       raised = Math.max(raised, EGG_SMASH_SETUP_PRIORITY_V7);
       strategic += Math.floor(smash / 2);
-    }
-  }
-
-  for (const hostile of context.lookup.visibleHostiles) {
-    if (!stampederV7(view, hostile)) continue;
-    for (const city of view.cities) {
-      if (city.ownerId !== view.viewer.id) continue;
-      const defender = (
-        context.threatLookup.occupantsByKey.get(coordKey(city.at)) ?? []
-      ).find(
-        (unit) =>
-          unit.ownerId === view.viewer.id &&
-          unit.hp > 0 &&
-          same(unit.at, city.at),
-      );
-      if (
-        defender === undefined ||
-        defender.id === actor.id ||
-        retainedUnitValue(view, actor) > retainedUnitValue(view, defender) ||
-        !stampedeLaneBetweenV7(view, hostile.ownerId, hostile.at, city.at).some(
-          (at) => same(at, to),
-        ) ||
-        dangerThere() >= actor.hp
-      )
-        continue;
-      raised = Math.max(raised, LANE_BLOCK_PRIORITY_V7);
-      strategic += 10 + (distance(to, hostile.at) === 1 ? 4 : 0);
     }
   }
 
@@ -7526,7 +7463,11 @@ function combatStrategicValue(
       context.view.viewer.id
   )
     value += 10;
-  if (attacker.role === "CATAPULT") {
+  // Revision 20: the volley bonus is for siege units, not the Triceratops.
+  if (
+    attacker.role === "CATAPULT" &&
+    policySiegeRuleV7(unitRoleRuleV7(context.view, attacker))
+  ) {
     const medicHealing = context.view.units.some(
       (item) =>
         item.ownerId === target.ownerId &&
@@ -7647,7 +7588,68 @@ function researchValue(
     tech === "ENGINEERING"
       ? (context.view.leaderboard.find((item) => item.isViewer)?.cityCount ?? 0)
       : 0;
+  // Revision 20: Nesting's city slot and Wallbreaker (Dinosaur seat only).
+  const branch = dinosaurBranchResearchV7(context, tech);
+  if (branch !== null) return { ...branch, cost: node.cost };
   return { priority: 1040, strategic: fortification, cost: node.cost };
+}
+
+/**
+ * Revision 20 Dinosaur Industry branch: Nesting is worth a unit slot in
+ * every owned city (and its Egg effects), and is researched ahead of the
+ * next role technology while an own city has no room for a two-slot Egg;
+ * Wallbreaker is worth each visible hostile city with Walls, while the seat
+ * owns a dinosaur to use it (one whose attack does not already ignore
+ * Walls through Charge! or Acid). Null for every other seat and technology.
+ */
+function ignoresWallsBenefitsV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  const abilities = unitRoleRuleV7(view, unit).abilities;
+  return (
+    unit.form === "LAND" &&
+    abilities.includes("GROW") &&
+    !abilities.includes("LINEBREAKER") &&
+    !abilities.includes("ACID")
+  );
+}
+
+function dinosaurBranchResearchV7(
+  context: PolicyContextV7,
+  tech: TechnologyIdV7,
+): { readonly priority: number; readonly strategic: number } | null {
+  const view = context.view;
+  if (view.viewer.faction !== "DINOSAUR") return null;
+  if (tech === technologyWithUnlockV7(view, "NESTING")) {
+    const cities = view.cities.filter(
+      (city) => city.ownerId === view.viewer.id,
+    );
+    const crowded = cities.some((city) => freeCapacity(view, city.id) < 2);
+    return {
+      priority: crowded ? NESTING_RESEARCH_PRIORITY_V7 : 1040,
+      strategic: NESTING_SLOT_VALUE_V7 * cities.length + NESTING_EGG_VALUE_V7,
+    };
+  }
+  if (tech === technologyWithUnlockV7(view, "WALLBREAKER")) {
+    const walled = view.cities.filter(
+      (city) =>
+        isHostile(view, city.ownerId) &&
+        city.rewards.some(
+          (record) => record.reachedLevel === 3 && record.reward === "WALLS",
+        ),
+    ).length;
+    const dinosaurs = view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id && ignoresWallsBenefitsV7(view, unit),
+    );
+    if (walled === 0 || !dinosaurs) return null;
+    return {
+      priority: WALLBREAKER_RESEARCH_PRIORITY_V7,
+      strategic: WALLBREAKER_WALLED_CITY_VALUE_V7 * walled,
+    };
+  }
+  return null;
 }
 
 function totalResearchCost(
@@ -7835,7 +7837,13 @@ function trainingStrategicValue(
   ).maxHp;
   if (command.role === "GUARD" && threatenedCity(context, command.cityId))
     value += 20;
-  if (command.role === "CATAPULT" && hasDurableScreen(context, command.cityId))
+  if (
+    command.role === "CATAPULT" &&
+    policySiegeRuleV7(
+      effectiveRoleRuleV7(command.role, context.view.viewer.faction),
+    ) &&
+    hasDurableScreen(context, command.cityId)
+  )
     value += 12;
   return value;
 }
@@ -7879,7 +7887,7 @@ function tacticalMovementObjectiveValueV7(
   if (assigned === undefined)
     return movementObjectiveValue(context.view, actor.at, to);
   let value = distance(actor.at, assigned) - distance(to, assigned);
-  const role = unitRoleRuleV7(context.view, actor).tacticalRole;
+  const role = policyTacticalRoleV7(unitRoleRuleV7(context.view, actor));
   if (role === "SIEGE") {
     const range = distance(to, assigned);
     if (range >= 2 && range <= 3 && hasReachableScreenAtV7(context, actor, to))
@@ -8028,8 +8036,11 @@ function screenValue(
   actor: PublicUnitV7,
   at: CoordV7 | null,
 ): number {
-  if (at === null || actor.role === "CATAPULT" || actor.role === "MARKSMAN")
-    return 0;
+  // Revision 20: a Triceratops (a line unit) screens and needs no screen.
+  const screened = (unit: PublicUnitV7): boolean =>
+    (unit.role === "CATAPULT" && !linebreakerV7(view, unit)) ||
+    unit.role === "MARKSMAN";
+  if (at === null || screened(actor)) return 0;
   if (
     actor.hp * 2 < actor.maxHp ||
     actor.form !== "LAND" ||
@@ -8040,7 +8051,7 @@ function screenValue(
     view.units.filter(
       (unit) =>
         unit.ownerId === view.viewer.id &&
-        (unit.role === "CATAPULT" || unit.role === "MARKSMAN") &&
+        screened(unit) &&
         distance(unit.at, at) === 1,
     ).length * 5
   );
@@ -8080,13 +8091,12 @@ function visibleImmediateDamage(
     const directlyThreatened = d >= minimumRange && d <= maximumRange;
     const reachableThreat =
       context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false;
-    // Revision 19: the lane tiles a hostile Triceratops would run to hit a
-    // unit on `at` (the actor itself never blocks its own lane).
-    const stampedeRun =
-      hostile.form === "LAND" && facts.abilities.includes("STAMPEDE")
-        ? stampedeLaneRunV7(view, hostile.ownerId, hostile.at, at, actor.id)
-        : 0;
-    if (!directlyThreatened && !reachableThreat && stampedeRun === 0) {
+    // Revision 20: a hostile Triceratops that reaches `at` by a Move charges
+    // with its run-up (`min(2, path length)`, at least the tiles between).
+    const runUp2 = directlyThreatened
+      ? 0
+      : chargeRunUpForPolicyV7(view, hostile, d - 1);
+    if (!directlyThreatened && !reachableThreat) {
       // pulp_wars-vkq.21: Battleship splash counts like Lich splash (Liches
       // died one after another to it on naval maps); revision 17 adds the
       // Bomb Chucker's bomb.
@@ -8116,8 +8126,8 @@ function visibleImmediateDamage(
                 2 * gangUpForPolicyV7(view, hostile, at, new Set([actor.id])),
             }
           : {}),
-        // Revision 19: the Stampede run bonus (+1 Attack per lane tile).
-        ...(stampedeRun > 0 ? { bonusAttack2: 2 * stampedeRun } : {}),
+        // Revision 20: the Charge! run-up (+1 Attack per tile moved).
+        ...(runUp2 > 0 ? { bonusAttack2: runUp2 } : {}),
       },
       effectiveLookup,
     );
@@ -8232,13 +8242,30 @@ function publicProjectedDamageWithLookupV7(
     ? { numerator: 1, denominator: 1 }
     : projectedDefenseBonus(view, defender, defenderAt);
   const defenderTile = findPublicTileV7(view, defenderAt);
-  const fortificationLevel =
+  const tileFortification =
     !acid &&
     defender.form === "LAND" &&
     defenderTile?.explored === true &&
     defenderTile.territoryOwnerId === defender.ownerId
       ? (defenderTile.fortificationLevel ?? 0)
       : 0;
+  // Revision 20: a Charge! ignores every fortification level, and a
+  // dinosaur with Wallbreaker the City Walls levels (the tile level is
+  // Walls plus Field Defense). Only a Dinosaur unit has either.
+  const fortificationLevel =
+    tileFortification === 0
+      ? 0
+      : attacker.form === "LAND" &&
+          attackFacts.abilities.includes("LINEBREAKER")
+        ? 0
+        : ignoresWallsForPolicyV7(view, attacker)
+          ? Math.min(
+              tileFortification,
+              defenderTile?.explored === true && defenderTile.fieldDefense
+                ? 1
+                : 0,
+            )
+          : tileFortification;
   // Revision 19: an Egg defends with a fixed 1, like an embarked unit.
   const defense2 =
     defender.form === "EMBARKED"
@@ -8643,6 +8670,9 @@ function projectPublicUnits(
         unit.activation.attacksUsed === 0
           ? 2
           : 0;
+      // Revision 20: the Charge! run-up of a projected Triceratops (0 for
+      // every unit without `LINEBREAKER`).
+      const runUp2 = chargeRunUpAttack2V7(view, unit);
       const sight = embarked
         ? 1
         : Math.max(
@@ -8678,7 +8708,7 @@ function projectPublicUnits(
               : stat.id === "ATTACK"
                 ? statValue(
                     stat,
-                    embarked ? 0 : role.attack2 + charge2 + inspired2,
+                    embarked ? 0 : role.attack2 + charge2 + inspired2 + runUp2,
                     2,
                     embarked ? 0 : role.attack2,
                     2,

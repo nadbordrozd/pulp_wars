@@ -10,7 +10,6 @@ import {
   effectiveRoleRuleV7,
   isEggLaidRoleV7,
   previewLayEggV7,
-  previewStampedeV7,
   projectEventsV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
@@ -28,18 +27,23 @@ import {
   ABANDON_EGG_LABEL_V7,
   ARMOURED_PREVIEW_V7,
   DINOSAUR_HELP_RULES_V7,
+  CHARGE_DESCRIPTION_V7,
+  CHARGE_LABEL_V7,
   HATCH_NEW_EGG_V7,
   LAY_EGG_NO_TILE_V7,
-  STAMPEDE_MOVED_V7,
-  STAMPEDE_NO_LANE_V7,
-  STAMPEDE_TOOLTIP_V7,
+  PROMOTE_TOOLTIP_V7,
+  PROMOTION_HELP_TIP_V7,
   abandonEggTooltipV7,
   bigBodyRolesV7,
+  chargePreviewLinesV7,
+  chargeRunUpBonusV7,
+  chargeRunUpMaximumV7,
   cityCapacityTextV7,
   dinosaurAbilityDescriptionV7,
   dinosaurAbilityNameV7,
   dinosaurBoundaryNoticeV7,
   dinosaurCombatNoteV7,
+  dinosaurCombatSemanticNoteV7,
   dinosaurCommandLabelV7,
   dinosaurFieldDefenseBlockedV7,
   dinosaurRecruitNotesV7,
@@ -54,12 +58,11 @@ import {
   layEggRowTextV7,
   layEggUnavailableTextV7,
   matchHasDinosaurV7,
+  nestingCitySlotsV7,
   nestingEggHpBonusV7,
+  nestingUnlockTextV7,
   slotCapacityTooltipV7,
   slotsTextV7,
-  stampedePreviewTextV7,
-  stampedeRunBonusV7,
-  stampedeUnavailableTextV7,
   turnsTextV7,
   unitDisplayNameV7,
 } from "../../src/render/dinosaur-presentation-v7";
@@ -67,6 +70,7 @@ import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-pla
 import { tacticalAttachmentsV7 } from "../../src/render/tactical-presentation-v7";
 import { technologyNameV7 } from "../../src/render/goblin-presentation-v7";
 import { withTileV7 } from "../fixtures/v7-dinosaur-arena";
+import { walledV7 } from "../fixtures/v7-revision20";
 import {
   DINOSAUR_BLAST_V7,
   DINOSAUR_CITY_V7,
@@ -83,8 +87,8 @@ import {
 import { goblinShowcaseFixtureV7 } from "../fixtures/v7-goblin-ui";
 
 // Every Dinosaur number in these expectations comes from the registry or a
-// public preview: the balance bead (`pulp_wars-c87.8`) may tune hatch times,
-// slots, costs, HP, Attack, the Egg, growth and the Stampede bonus. The
+// public preview: the balance beads may tune hatch times, slots, costs, HP,
+// Attack, the Egg, growth and the Charge! run-up. The
 // fixtures fix the outcomes instead (a 1 HP target dies, a Juggernaut
 // survives), so retuning never changes which sentence is expected.
 
@@ -99,7 +103,7 @@ const hatchTurns = (role: UnitRoleIdV7): number =>
   mechanics(role).hatchTurns ?? 0;
 const GROWTH_RULE = `Big after ${GROWTH_KILLS_V7[0]} kill${GROWTH_KILLS_V7[0] === 1 ? "" : "s"} (+${GROWTH_HP_V7} HP)`;
 const ALPHA_RULE = `Alpha after ${GROWTH_KILLS_V7[1]} kills (+${GROWTH_HP_V7} more HP and +${ALPHA_ATTACK2_V7 / 2} Attack)`;
-const GROWTH_INFO = `Big: +${GROWTH_HP_V7} HP. Alpha: +${GROWTH_HP_V7 * 2} HP, +${ALPHA_ATTACK2_V7 / 2} Attack.`;
+const GROWTH_INFO = `Big: +${GROWTH_HP_V7} HP. Alpha: +${GROWTH_HP_V7 * 2} HP, +${ALPHA_ATTACK2_V7 / 2} Attack. Growing fully heals.`;
 
 function humanView(state: GameStateV7): PlayerViewV7 {
   return viewForV7(state, state.humanPlayerId);
@@ -113,14 +117,43 @@ function unitAt(view: PlayerViewV7, at: CoordV7) {
   return unit;
 }
 
-function stampede(view: PlayerViewV7, from: CoordV7, target: CoordV7) {
-  const preview = previewStampedeV7(
+/** The state after the unit on `from` moved along `path` (tiles entered). */
+function moved(
+  state: GameStateV7,
+  from: CoordV7,
+  path: readonly CoordV7[],
+): GameStateV7 {
+  const result = applyCommandV7(state, state.humanPlayerId, {
+    kind: "MOVE",
+    unitId: unitAt(humanView(state), from).id,
+    path: [...path],
+  });
+  if (!result.accepted) throw new Error(result.error.code);
+  return result.state;
+}
+
+/** The offered attack of the unit on `from` and its Charge! preview lines. */
+function charge(view: PlayerViewV7, from: CoordV7, target: CoordV7) {
+  const preview = queryCombatPreviewV7(
     view,
     unitAt(view, from).id,
     unitAt(view, target).id,
   );
-  if (preview === null) throw new Error("Stampede not offered");
-  return { preview, text: stampedePreviewTextV7(view, preview) };
+  if (preview === null) throw new Error("attack not offered");
+  return {
+    preview,
+    lines: chargePreviewLinesV7(view, preview),
+    note: dinosaurCombatNoteV7(preview, view),
+    semantic: dinosaurCombatSemanticNoteV7(preview, view),
+  };
+}
+
+/** The showcase with its Triceratops moved next to the Juggernaut. */
+function chargingShowcase(): GameStateV7 {
+  return moved(dinosaurShowcaseFixtureV7(), AT.triceratops, [
+    AT.laneCaveman,
+    AT.chargeFrom,
+  ]);
 }
 
 function ownCity(view: PlayerViewV7) {
@@ -169,7 +202,12 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
   it("labels the commands, abilities and Nesting for a Dinosaur viewer only", () => {
     expect(dinosaurCommandLabelV7("LAY_EGG", "DINOSAUR")).toBe("Lay Egg");
     expect(dinosaurCommandLabelV7("HATCH", "DINOSAUR")).toBe("Hatch");
-    expect(dinosaurCommandLabelV7("STAMPEDE", "DINOSAUR")).toBe("Stampede");
+    // Revision 20: Stampede is no command; Charge! is the passive ability.
+    expect(dinosaurCommandLabelV7("STAMPEDE", "DINOSAUR")).toBe(null);
+    expect(dinosaurAbilityNameV7("LINEBREAKER", "DINOSAUR")).toBe("Charge!");
+    expect(dinosaurAbilityNameV7("STAMPEDE", "DINOSAUR")).toBe(null);
+    expect(dinosaurAbilityNameV7("LINEBREAKER", "ORIGINAL")).toBe(null);
+    expect(CHARGE_LABEL_V7).toBe("Charge!");
     expect(dinosaurCommandLabelV7("RALLY", "DINOSAUR")).toBe("War Drums");
     expect(dinosaurCommandLabelV7("RALLY", "ORIGINAL")).toBe(null);
     expect(
@@ -178,18 +216,26 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
       ),
     ).toEqual(["War Drums", "Rampage", "Pounce", "Grows", "Acid", "Armoured"]);
     expect(dinosaurAbilityNameV7("OVERRUN", "ORIGINAL")).toBe(null);
-    // The Stampede bonus per tile is the Triceratops's registry value.
-    expect(stampedeRunBonusV7()).toBe(
-      mechanics("CATAPULT").stampedeRunBonus2 / 2,
+    // The run-up per tile and its maximum are the Triceratops's registry
+    // values (revision 20 section 7.2 "Unit info (Triceratops)").
+    expect(chargeRunUpBonusV7()).toBe(mechanics("CATAPULT").runUpBonus2 / 2);
+    expect(chargeRunUpMaximumV7()).toBe(mechanics("CATAPULT").runUpBonus2);
+    expect(CHARGE_DESCRIPTION_V7).toBe(
+      `+${chargeRunUpBonusV7()} Attack per tile moved this turn (up to +${chargeRunUpMaximumV7()}). Ignores Walls and Field Defense, destroys Field Defense, and pushes back.`,
     );
-    expect(STAMPEDE_TOOLTIP_V7).toBe(
-      `Charge a unit 2 or 3 tiles away in a straight line: +${stampedeRunBonusV7()} Attack per tile run.`,
+    expect(CHARGE_DESCRIPTION_V7).toBe(
+      "+1 Attack per tile moved this turn (up to +2). Ignores Walls and Field Defense, destroys Field Defense, and pushes back.",
     );
-    expect(dinosaurAbilityDescriptionV7("STAMPEDE", "DINOSAUR")).toBe(
-      `${STAMPEDE_TOOLTIP_V7} No retaliation; a survivor is pushed back.`,
+    expect(dinosaurAbilityDescriptionV7("LINEBREAKER", "DINOSAUR")).toBe(
+      CHARGE_DESCRIPTION_V7,
     );
+    expect(dinosaurAbilityDescriptionV7("STAMPEDE", "DINOSAUR")).toBe(null);
     expect(dinosaurAbilityDescriptionV7("GROW", "DINOSAUR")).toBe(
-      `${GROWTH_RULE}; ${ALPHA_RULE}, for good.`,
+      `${GROWTH_RULE}; ${ALPHA_RULE}, for good. Growing fully heals.`,
+    );
+    expect(PROMOTE_TOOLTIP_V7).toBe("Promote: +5 maximum HP and a full heal");
+    expect(PROMOTION_HELP_TIP_V7).toBe(
+      "Promotion: a unit with 3 kills can be promoted once: +5 maximum HP and a full heal.",
     );
     expect(dinosaurAbilityDescriptionV7("ARMOURED", "DINOSAUR")).toBe(
       `Takes ${mechanics("GUARD").armourReduction} less damage from every hit, to a minimum of 1.`,
@@ -200,6 +246,11 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
     expect(dinosaurAbilityDescriptionV7("ACID", "GOBLIN")).toBe(null);
     expect(technologyNameV7("FORTIFICATION", "DINOSAUR")).toBe("Nesting");
     expect(technologyNameV7("FORTIFICATION", "ORIGINAL")).toBe("Fortification");
+    expect(technologyNameV7("EXPLOSIVES", "DINOSAUR")).toBe("Wallbreaker");
+    expect(technologyNameV7("EXPLOSIVES", "ORIGINAL")).toBe("Explosives");
+    expect(nestingUnlockTextV7()).toBe(
+      `Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner; +${nestingCitySlotsV7()} unit slot in every city`,
+    );
     expect(ABANDON_EGG_LABEL_V7).toBe("Abandon Egg");
     expect(abandonEggTooltipV7(5)).toBe("Remove this Egg for 5 Coins");
     for (const role of EGG_ROLES)
@@ -330,11 +381,12 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
       "Egg weakness",
       ...(bigBodies.length > 0 ? ["Big bodies"] : []),
       "Grow",
-      "Stampede",
+      "Charge!",
       "Acid",
       "Armoured",
       "Hatch",
       "Nesting",
+      "Wallbreaker",
       "Wild",
       "Rampage, Pounce, War Drums",
     ]);
@@ -344,15 +396,22 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
     expect(rule("Egg weakness")).toBe(
       `an Egg cannot move or fight and has only ${EGG_HP_V7} HP, so enemies can smash it before it hatches, and all Eggs of a captured city are lost.`,
     );
+    // Revision 20 section 7.2: the Grow, Charge!, Nesting and Wallbreaker
+    // lines (with the contract values, the spec's sentences word for word).
     expect(rule("Grow")).toBe(
-      `a Dinosaur grows when it kills: ${GROWTH_RULE} and ${ALPHA_RULE}, for good.`,
+      `a Dinosaur grows when it kills: ${GROWTH_RULE} and ${ALPHA_RULE}, for good; each growth fully heals it.`,
     );
-    expect(rule("Stampede")).toContain(
-      `with +${stampedeRunBonusV7()} Attack per tile run and no retaliation`,
+    expect(rule("Charge!")).toBe(
+      `a Triceratops hits harder the farther it moved this turn (+${chargeRunUpBonusV7()} Attack per tile, up to +${chargeRunUpMaximumV7()}); its attack ignores Walls and Field Defense, destroys Field Defense, and pushes a surviving defender back, taking its place.`,
     );
     expect(rule("Nesting")).toBe(
-      `with Nesting, Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner.`,
+      `with Nesting, Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner, and every city has one more unit slot.`,
     );
+    expect(nestingCitySlotsV7()).toBe(1);
+    expect(rule("Wallbreaker")).toBe(
+      "with Wallbreaker, dinosaurs ignore City Walls when they attack.",
+    );
+    expect(rule("Stampede")).toBe("");
     expect(nestingEggHpBonusV7()).toBeGreaterThan(0);
     expect(rule("Wild")).toBe("Dinosaurs cannot build Field Defense.");
     // Every two-slot role is named, and only those.
@@ -369,40 +428,10 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
       expect(slotCapacityTooltipV7()).toContain(label(role));
   });
 
-  it("explains the Field Defense, Stampede and Hatch restrictions", () => {
+  it("explains the Field Defense and Hatch restrictions", () => {
     const state = dinosaurShowcaseFixtureV7();
     const view = humanView(state);
-    const commands = queryPlayerCommandsV7(view);
-    const offered = (unitId: number) =>
-      commands.some(
-        (command) => command.kind === "STAMPEDE" && command.unitId === unitId,
-      );
     const triceratops = unitAt(view, AT.triceratops);
-    expect(
-      stampedeUnavailableTextV7(view, triceratops.id, offered(triceratops.id)),
-    ).toBe(null);
-    // No offered Stampede: "no lane" before moving, "moved" afterwards.
-    expect(stampedeUnavailableTextV7(view, triceratops.id, false)).toBe(
-      STAMPEDE_NO_LANE_V7,
-    );
-    const moved = boundary(state, {
-      kind: "MOVE",
-      unitId: triceratops.id,
-      path: [{ x: 3, y: 2 }],
-    });
-    expect(stampedeUnavailableTextV7(moved.after, triceratops.id, false)).toBe(
-      STAMPEDE_MOVED_V7,
-    );
-    expect(STAMPEDE_MOVED_V7).toBe(
-      "A Triceratops cannot Stampede after moving",
-    );
-    expect(STAMPEDE_NO_LANE_V7).toBe(
-      "No clear lane: needs open ground in a straight line",
-    );
-    // A unit that is no Triceratops never shows the hint.
-    expect(
-      stampedeUnavailableTextV7(view, unitAt(view, AT.shaman).id, false),
-    ).toBe(null);
     // The Shaman's adjacent Egg laid this turn cannot be hatched yet.
     expect(
       hatchBlockedEggsV7(view, unitAt(view, AT.shaman).id).map((egg) => egg.at),
@@ -436,102 +465,145 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
   });
 });
 
-describe("Revision 19 Stampede preview text", () => {
-  it("describes a Push with the follow, a kill with the advance, and no retaliation", () => {
-    const view = humanView(dinosaurShowcaseFixtureV7());
-    const push = stampede(view, AT.triceratops, AT.pushTarget);
-    const { combat } = push.preview;
+describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
+  it("writes the run-up and the Push with the follow, and no Push for a kill", () => {
+    // Two tiles over the own Caveman, next to the Juggernaut.
+    const view = humanView(chargingShowcase());
+    const push = charge(view, AT.chargeFrom, AT.pushTarget);
     // The fixture decides the outcome; the engine preview gives the numbers.
-    expect(combat.defenderDies).toBe(false);
-    expect(combat.push).toBe("WILL_PUSH");
-    expect(push.preview.runTiles).toBe(2);
-    expect(push.text).toEqual({
-      run: `Runs 2 tiles: +${combat.stampede} Attack`,
-      damage: `Deals ${combat.damageToDefender} damage`,
-      outcome: "Pushes Juggernaut back; Triceratops follows",
-      outcomeShort: "Pushes back · follows",
-      noRetaliation: "No retaliation",
-      fieldDefense: null,
-      armoured: null,
-      warnings: [],
-      warningSummary: null,
-      needsConfirmation: false,
-      boardLabel: `Deal ${combat.damageToDefender} · run +${combat.stampede}`,
-      boardNote: "Pushes back · follows · No retaliation",
-      chip: `Juggernaut −${combat.damageToDefender}`,
-      description: `Runs 2 tiles: +${combat.stampede} Attack. Deals ${combat.damageToDefender} damage. Pushes Juggernaut back; Triceratops follows. No retaliation.`,
+    expect(push.preview).toMatchObject({
+      defenderDies: false,
+      push: "WILL_PUSH",
+      advances: true,
+      runUp: 2,
     });
-    const kill = stampede(view, AT.triceratops, AT.killTarget);
-    expect(kill.preview.combat.defenderDies).toBe(true);
-    expect(kill.preview.runTiles).toBe(1);
-    expect(kill.text).toMatchObject({
-      run: `Runs 1 tile: +${kill.preview.combat.stampede} Attack`,
-      damage: `Deals ${kill.preview.combat.damageToDefender} damage`,
-      outcome: "Kills Fighter; Triceratops advances",
-      boardNote: "Kills · advances · No retaliation",
-    });
+    expect(push.lines).toEqual([
+      `Charge +${push.preview.runUp}`,
+      "Pushes back; Triceratops follows",
+    ]);
+    expect(push.note).toBe("Charge +2 · Pushes back; Triceratops follows");
+    expect(push.semantic).toBe("Charge +2. Pushes back; Triceratops follows.");
+    // The moved Triceratops shows its run-up as a unit status.
+    expect(
+      view.unitStats.find(
+        (entry) => entry.unitId === unitAt(view, AT.chargeFrom).id,
+      )?.statuses,
+    ).toEqual([`Charge! +${push.preview.runUp} Attack`]);
+    // One tile, next to the 1-HP Fighter: a kill has no Push line.
+    const killView = humanView(
+      moved(dinosaurShowcaseFixtureV7(), AT.triceratops, [AT.killFrom]),
+    );
+    const kill = charge(killView, AT.killFrom, AT.killTarget);
+    expect(kill.preview).toMatchObject({ defenderDies: true, runUp: 1 });
+    expect(kill.lines).toEqual(["Charge +1"]);
+    // Unmoved: no run-up line; the Push stays.
+    const still = humanView(
+      dinosaurUiFieldV7([
+        { seat: 0, role: "CATAPULT", at: { x: 4, y: 2 } },
+        { seat: 1, role: "JUGGERNAUT", at: { x: 5, y: 2 } },
+      ]),
+    );
+    expect(charge(still, { x: 4, y: 2 }, { x: 5, y: 2 }).lines).toEqual([
+      "Pushes back; Triceratops follows",
+    ]);
   });
 
-  it("says 'may be pushed' for a Mountain behind the target, and names a blocked Push", () => {
+  it("says 'may be pushed back' for a Mountain behind the target, and names a blocked Push", () => {
     // Behind the target (7, 2) is (8, 2): a Mountain hides the target
     // owner's Engineering from the viewer.
     const mountain = humanView(
-      withTileV7(
-        dinosaurShowcaseFixtureV7(),
-        { x: 8, y: 2 },
-        { terrain: "MOUNTAIN" },
-      ),
+      withTileV7(chargingShowcase(), { x: 8, y: 2 }, { terrain: "MOUNTAIN" }),
     );
-    const unknown = stampede(mountain, AT.triceratops, AT.pushTarget);
-    expect(unknown.preview.combat.push).toBe("UNKNOWN_BEHIND_FOG");
-    expect(unknown.text).toMatchObject({
-      outcome: "Juggernaut may be pushed back",
-      boardNote: "May be pushed · No retaliation",
-    });
+    const unknown = charge(mountain, AT.chargeFrom, AT.pushTarget);
+    expect(unknown.preview.push).toBe("UNKNOWN_BEHIND_FOG");
+    expect(unknown.lines).toEqual([
+      "Charge +2",
+      "Juggernaut may be pushed back",
+    ]);
     // A unit behind the target blocks the Push: nothing moves.
     const blocked = humanView(
       dinosaurUiFieldV7([
-        { seat: 0, role: "CATAPULT", at: { x: 4, y: 2 } },
+        { seat: 0, role: "CATAPULT", at: { x: 6, y: 2 } },
         { seat: 1, role: "JUGGERNAUT", at: { x: 7, y: 2 } },
         { seat: 1, role: "FIGHTER", at: { x: 8, y: 2 } },
       ]),
     );
-    expect(
-      stampede(blocked, { x: 4, y: 2 }, { x: 7, y: 2 }).text,
-    ).toMatchObject({
-      outcome: "Juggernaut cannot be pushed; Triceratops stops next to it",
-      boardNote: "Not pushed · stops · No retaliation",
-    });
+    expect(charge(blocked, { x: 6, y: 2 }, { x: 7, y: 2 }).lines).toEqual([
+      "Juggernaut cannot be pushed",
+    ]);
   });
 
-  it("reports the Field Defense lost and the death-blast chain warnings", () => {
+  it("reports ignored fortification and the Field Defense destroyed", () => {
+    // A Guard on Field Defense in its own territory, next to the Triceratops.
     const fortified = humanView(
-      withTileV7(dinosaurShowcaseFixtureV7(), AT.pushTarget, {
-        fieldDefense: true,
-      }),
+      withTileV7(
+        dinosaurUiFieldV7([
+          { seat: 0, role: "CATAPULT", at: { x: 4, y: 7 } },
+          { seat: 1, role: "GUARD", at: { x: 3, y: 7 } },
+        ]),
+        { x: 3, y: 7 },
+        { fieldDefense: true },
+      ),
     );
-    const lost = stampede(fortified, AT.triceratops, AT.pushTarget).text;
-    expect(lost.fieldDefense).toBe("Destroys Field Defense");
-    expect(lost.boardNote).toBe(
-      "Pushes back · follows · No retaliation · Field Defense destroyed",
+    const broken = charge(fortified, { x: 4, y: 7 }, { x: 3, y: 7 });
+    expect(broken.preview).toMatchObject({
+      fortificationLevel: 0,
+      fortificationIgnored: 1,
+    });
+    expect(broken.lines).toEqual([
+      "Ignores fortification",
+      "Pushes back; Triceratops follows",
+      "Destroys Field Defense",
+    ]);
+    expect(broken.note).toBe(
+      "Ignores fortification · Pushes back; Triceratops follows · Destroys Field Defense",
     );
-    const blastView = humanView(dinosaurBlastFixtureV7());
-    const blast = stampede(
-      blastView,
+  });
+
+  it("names Wallbreaker for another dinosaur that ignores City Walls", () => {
+    // Seat 1 is the Dinosaur seat here, on its turn: its T-Rex attacks the
+    // Guard on the Human seat's Walled center.
+    const state = walledV7({
+      attackers: [{ role: "KNIGHT", at: { x: 7, y: 8 } }],
+    });
+    const actor = state.turnOrder[state.activeSeatIndex];
+    if (actor === undefined) throw new Error("no active player");
+    const view = viewForV7(state, actor);
+    const wall = charge(view, { x: 7, y: 8 }, { x: 8, y: 8 });
+    expect(wall.preview).toMatchObject({
+      fortificationIgnored: 2,
+      runUp: 0,
+    });
+    // No Push or follow line: the T-Rex has no Charge!.
+    expect(wall.lines).toEqual(["Wallbreaker: ignores City Walls"]);
+    // A Triceratops on the same Walls ignores fortification through Charge!.
+    const triceratops = walledV7({
+      attackers: [{ role: "CATAPULT", at: { x: 7, y: 8 } }],
+    });
+    expect(
+      charge(viewForV7(triceratops, actor), { x: 7, y: 8 }, { x: 8, y: 8 })
+        .lines,
+    ).toEqual(["Ignores fortification", "Pushes back; Triceratops follows"]);
+  });
+
+  it("keeps the death-blast chain warnings of the ordinary attack preview", () => {
+    // The Triceratops moves next to the 1-HP Bomb Chucker and kills it; its
+    // blast and the Rocket Cart's chain are previewed as for any attack.
+    const state = moved(
+      dinosaurBlastFixtureV7(),
       DINOSAUR_BLAST_V7.triceratops,
+      [{ x: 5, y: 3 }, DINOSAUR_BLAST_V7.chargeFrom],
+    );
+    const view = humanView(state);
+    const kill = charge(
+      view,
+      DINOSAUR_BLAST_V7.chargeFrom,
       DINOSAUR_BLAST_V7.bombChucker,
     );
-    const totals = blast.preview.explosions.totals;
-    expect(blast.text.needsConfirmation).toBe(true);
-    expect(blast.text.outcome).toBe("Kills Bomb Chucker; Triceratops advances");
-    // Blast damages are the Goblin registry's.
-    expect(blast.text.warnings).toEqual([
-      `Enemy Bomb Chucker explodes on death: ${GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.deathBlastDamage} damage around it`,
-      `Chain reaction: enemy Rocket Cart explodes (${GOBLIN_ROLE_MECHANICS_V7.CATAPULT.deathBlastDamage} damage)`,
-      `Blasts hit 2 of your units, ${totals.friendlyKills} killed`,
-    ]);
-    expect(blast.text.warningSummary).toBe(
-      `Chain: 2 blasts · 2 yours hit${totals.friendlyKills > 0 ? `, ${totals.friendlyKills} killed` : ""}`,
+    expect(kill.preview).toMatchObject({ defenderDies: true, advances: true });
+    expect(kill.lines).toEqual(["Charge +2"]);
+    expect(GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.deathBlastDamage).toBeGreaterThan(
+      0,
     );
   });
 });
@@ -546,13 +618,16 @@ describe("Revision 19 Acid and Armoured attack notes", () => {
     );
     if (plain === null) throw new Error("preview missing");
     const note = (flags: Partial<CombatPreviewV7>) =>
-      dinosaurCombatNoteV7({
-        ...plain,
-        acid: false,
-        defenderArmoured: false,
-        attackerArmoured: false,
-        ...flags,
-      });
+      dinosaurCombatNoteV7(
+        {
+          ...plain,
+          acid: false,
+          defenderArmoured: false,
+          attackerArmoured: false,
+          ...flags,
+        },
+        own,
+      );
     expect(note({})).toBe(null);
     expect(note({ acid: true })).toBe("Acid: ignores cover and fortification");
     expect(note({ defenderArmoured: true })).toBe(ARMOURED_PREVIEW_V7);
@@ -579,49 +654,44 @@ describe("Revision 19 Acid and Armoured attack notes", () => {
     expect(armoured?.defenderArmoured).toBe(true);
     if (acid === null || armoured === null || armoured === undefined)
       throw new Error("preview missing");
-    expect(dinosaurCombatNoteV7(acid)).toBe(
+    expect(dinosaurCombatNoteV7(acid, own)).toBe(
       "Acid: ignores cover and fortification",
     );
-    expect(dinosaurCombatNoteV7(armoured)).toBe(ARMOURED_PREVIEW_V7);
+    expect(dinosaurCombatNoteV7(armoured, enemy)).toBe(ARMOURED_PREVIEW_V7);
   });
 });
 
 describe("Revision 19 log lines", () => {
-  it("logs a Stampede, a Hatch, a laid Egg and growth", () => {
+  it("logs a Hatch, a laid Egg and growth, and no Stampede line", () => {
     const state = dinosaurShowcaseFixtureV7();
     const view = humanView(state);
-    const triceratops = unitAt(view, AT.triceratops);
-    const pushed = boundary(state, {
-      kind: "STAMPEDE",
-      unitId: triceratops.id,
-      targetUnitId: unitAt(view, AT.pushTarget).id,
+    // A Charge that only pushes writes no Dinosaur notice (the ordinary
+    // combat log covers it).
+    const charging = chargingShowcase();
+    const chargingView = humanView(charging);
+    const pushed = boundary(charging, {
+      kind: "ATTACK",
+      unitId: unitAt(chargingView, AT.chargeFrom).id,
+      targetUnitId: unitAt(chargingView, AT.pushTarget).id,
     });
-    const pushDamage = stampede(view, AT.triceratops, AT.pushTarget).preview
-      .combat.damageToDefender;
     expect(
       dinosaurBoundaryNoticeV7(
         pushed.envelope.events,
         pushed.before,
         pushed.after,
       ),
-    ).toEqual({
-      text: `Your Triceratops stampeded Player 2's Juggernaut: ${pushDamage} damage`,
-      toast: true,
-    });
+    ).toBe(null);
     // The Triceratops is one kill short of Big, so this kill grows it.
-    const kill = boundary(state, {
-      kind: "STAMPEDE",
-      unitId: triceratops.id,
-      targetUnitId: unitAt(view, AT.killTarget).id,
+    const beside = moved(state, AT.triceratops, [AT.killFrom]);
+    const besideView = humanView(beside);
+    const kill = boundary(beside, {
+      kind: "ATTACK",
+      unitId: unitAt(besideView, AT.killFrom).id,
+      targetUnitId: unitAt(besideView, AT.killTarget).id,
     });
-    const killDamage = stampede(view, AT.triceratops, AT.killTarget).preview
-      .combat.damageToDefender;
     expect(
-      dinosaurBoundaryNoticeV7(kill.envelope.events, kill.before, kill.after)
-        ?.text,
-    ).toBe(
-      `Your Triceratops stampeded Player 2's Fighter: ${killDamage} damage · Your Triceratops grew: Big`,
-    );
+      dinosaurBoundaryNoticeV7(kill.envelope.events, kill.before, kill.after),
+    ).toEqual({ text: "Your Triceratops grew: Big", toast: true });
     const hatch = boundary(state, {
       kind: "HATCH",
       unitId: unitAt(view, AT.shaman).id,
@@ -682,41 +752,29 @@ describe("Revision 19 log lines", () => {
 });
 
 describe("Revision 19 presentation steps", () => {
-  it("runs, hits from the stand tile, pushes the survivor, then follows", () => {
-    const state = dinosaurShowcaseFixtureV7();
+  it("lunges, flashes after a run-up, slides the survivor back, then follows", () => {
+    const state = chargingShowcase();
     const view = humanView(state);
-    const triceratops = unitAt(view, AT.triceratops);
+    const triceratops = unitAt(view, AT.chargeFrom);
     const target = unitAt(view, AT.pushTarget);
-    const stampeded = boundary(state, {
-      kind: "STAMPEDE",
+    const charged = boundary(state, {
+      kind: "ATTACK",
       unitId: triceratops.id,
       targetUnitId: target.id,
     });
-    const stand = { x: 6, y: 2 };
     expect(
-      corePresentationPlanV7(
-        stampeded.before,
-        stampeded.envelope,
-        stampeded.after,
-      ),
+      corePresentationPlanV7(charged.before, charged.envelope, charged.after),
     ).toEqual([
-      {
-        kind: "MOVE",
-        unitId: triceratops.id,
-        path: [AT.triceratops, AT.laneCaveman, stand],
-        durationMs: 180,
-        stampedeRun: true,
-      },
       {
         kind: "MELEE",
         unitId: triceratops.id,
-        from: stand,
+        from: AT.chargeFrom,
         to: AT.pushTarget,
         durationMs: 230,
       },
       {
         kind: "DINOSAUR",
-        effect: "STAMPEDE_HIT",
+        effect: "CHARGE_HIT",
         cells: [AT.pushTarget],
         unitIds: [],
         durationMs: 250,
@@ -726,31 +784,34 @@ describe("Revision 19 presentation steps", () => {
         unitId: target.id,
         path: [AT.pushTarget, { x: 8, y: 2 }],
         durationMs: 120,
+        pushSlide: true,
       },
       {
         kind: "MOVE",
         unitId: triceratops.id,
-        path: [stand, AT.pushTarget],
+        path: [AT.chargeFrom, AT.pushTarget],
         durationMs: 90,
       },
     ]);
   });
 
-  it("shows growth after a Stampede kill and an ordinary Triceratops attack as melee", () => {
-    const state = dinosaurShowcaseFixtureV7();
+  it("shows growth after a Charge kill, and no flash without a run-up", () => {
+    const state = moved(dinosaurShowcaseFixtureV7(), AT.triceratops, [
+      AT.killFrom,
+    ]);
     const view = humanView(state);
-    const triceratops = unitAt(view, AT.triceratops);
     const kill = boundary(state, {
-      kind: "STAMPEDE",
-      unitId: triceratops.id,
+      kind: "ATTACK",
+      unitId: unitAt(view, AT.killFrom).id,
       targetUnitId: unitAt(view, AT.killTarget).id,
     });
     expect(
       corePresentationPlanV7(kill.before, kill.envelope, kill.after).map(
         (step) => (step.kind === "DINOSAUR" ? step.effect : step.kind),
       ),
-    ).toEqual(["MOVE", "MELEE", "STAMPEDE_HIT", "GROW", "MOVE"]);
-    // Adjacent target: an ordinary attack, a lunge and no thrown rock.
+    ).toEqual(["MELEE", "CHARGE_HIT", "GROW", "MOVE"]);
+    // Unmoved next to its target: a lunge and no thrown rock, the slide of
+    // the pushed Guard, and the follow.
     const adjacent = dinosaurUiFieldV7([
       { seat: 0, role: "CATAPULT", at: { x: 4, y: 2 } },
       { seat: 1, role: "GUARD", at: { x: 5, y: 2 } },
@@ -761,9 +822,31 @@ describe("Revision 19 presentation steps", () => {
       unitId: unitAt(adjacentView, { x: 4, y: 2 }).id,
       targetUnitId: unitAt(adjacentView, { x: 5, y: 2 }).id,
     });
+    const steps = corePresentationPlanV7(
+      attack.before,
+      attack.envelope,
+      attack.after,
+    );
+    expect(steps[0]).toMatchObject({ kind: "MELEE", from: { x: 4, y: 2 } });
     expect(
-      corePresentationPlanV7(attack.before, attack.envelope, attack.after)[0],
-    ).toMatchObject({ kind: "MELEE", from: { x: 4, y: 2 } });
+      steps.map((step) => (step.kind === "DINOSAUR" ? step.effect : step.kind)),
+    ).toEqual(["MELEE", "MOVE", "MOVE"]);
+    // A Brontosaurus's Push keeps its revision-18 cut: no slide, no follow.
+    const giant = dinosaurUiFieldV7([
+      { seat: 0, role: "JUGGERNAUT", at: { x: 4, y: 2 } },
+      { seat: 1, role: "GUARD", at: { x: 5, y: 2 } },
+    ]);
+    const giantView = humanView(giant);
+    const shove = boundary(giant, {
+      kind: "ATTACK",
+      unitId: unitAt(giantView, { x: 4, y: 2 }).id,
+      targetUnitId: unitAt(giantView, { x: 5, y: 2 }).id,
+    });
+    expect(
+      corePresentationPlanV7(shove.before, shove.envelope, shove.after).map(
+        (step) => step.kind,
+      ),
+    ).toEqual(["MELEE"]);
   });
 
   it("lobs a Spitter's acid, calls and hatches an Egg, pops a laid Egg, and scatters a destroyed one", () => {

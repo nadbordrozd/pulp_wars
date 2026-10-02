@@ -33,8 +33,7 @@ import {
  * (`pulp_wars-c87.5`). Two-seat field: seat 0 (the viewer) capital (8, 8)
  * with territory x 7-9, y 7-9; seat 1 capital (2, 8) with territory x 1-3,
  * y 7-9; villages (5, 5), (8, 5), (5, 8). Every other land tile is open
- * Grass with no resource, improvement, Road, Field Defense, or chest, so
- * every straight line is an open Stampede lane unless a test closes it.
+ * Grass with no resource, improvement, Road, Field Defense, or chest.
  */
 export interface DinosaurFieldOptionsV7 extends GoblinArenaOptionsV7 {
   readonly eggs?: readonly EggPieceV7[];
@@ -192,16 +191,6 @@ export const attackV7 = (
   to: CoordV7,
 ): Extract<CommandV7, { kind: "ATTACK" }> => ({
   kind: "ATTACK",
-  unitId: unitIdAtV7(state, from),
-  targetUnitId: unitIdAtV7(state, to),
-});
-
-export const stampedeV7 = (
-  state: GameStateV7,
-  from: CoordV7,
-  to: CoordV7,
-): Extract<CommandV7, { kind: "STAMPEDE" }> => ({
-  kind: "STAMPEDE",
   unitId: unitIdAtV7(state, from),
   targetUnitId: unitIdAtV7(state, to),
 });

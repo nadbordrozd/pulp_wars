@@ -834,7 +834,8 @@ function validPayload(
         parseCoordV7(e.at) !== null
       );
     case "EGG_LAID":
-      // Revision 19: an Egg has 6 or 10 HP and at most three turns to hatch.
+      // Revision 19: an Egg has 6 or 10 HP. Revision 20: at most four turns
+      // to hatch (the T-Rex).
       return (
         id(e.playerId) &&
         id(e.cityId) &&
@@ -845,7 +846,8 @@ function validPayload(
         (e.hp === 6 || e.hp === 10) &&
         (e.turnsRemaining === 1 ||
           e.turnsRemaining === 2 ||
-          e.turnsRemaining === 3)
+          e.turnsRemaining === 3 ||
+          e.turnsRemaining === 4)
       );
     case "EGG_HATCHED":
       return (
@@ -999,8 +1001,8 @@ function validPayload(
         id(e.unitId) &&
         (e.stage === 1 || e.stage === 2) &&
         pos(e.maxHp) &&
-        pos(e.hp) &&
-        Number(e.hp) <= Number(e.maxHp)
+        // Revision 20 section 5: growing fully heals.
+        e.hp === e.maxHp
       );
     case "UNIT_DIED":
       return (
@@ -1089,7 +1091,8 @@ function combat(input: unknown): boolean {
       "retaliation",
       "splash",
       "targetUnitId",
-      "stampede",
+      "runUp",
+      "fortificationIgnored",
       "acid",
       "defenderArmoured",
       "attackerArmoured",
@@ -1109,8 +1112,15 @@ function combat(input: unknown): boolean {
     ].every(pos) &&
     isPositiveSafeIntegerV7(input.attacksUsed) &&
     (input.gangUp === 0 || input.gangUp === 1 || input.gangUp === 2) &&
-    // Revision 19: the Stampede run bonus and the Acid and Armoured flags.
-    (input.stampede === 0 || input.stampede === 1 || input.stampede === 2) &&
+    // Revision 20: the Charge! run-up and the fortification levels removed
+    // by Charge! (up to 3) or Wallbreaker (2); Acid reports none.
+    (input.runUp === 0 || input.runUp === 1 || input.runUp === 2) &&
+    (input.fortificationIgnored === 0 ||
+      input.fortificationIgnored === 1 ||
+      input.fortificationIgnored === 2 ||
+      input.fortificationIgnored === 3) &&
+    (input.acid !== true || input.fortificationIgnored === 0) &&
+    // Revision 19: the Acid and Armoured flags.
     [input.acid, input.defenderArmoured, input.attackerArmoured].every(
       (item) => typeof item === "boolean",
     ) &&
@@ -1178,7 +1188,7 @@ function combat(input: unknown): boolean {
       input.push as string,
     ) &&
     (input.noRetaliationReason === null ||
-      ["DEFENDER_DIED", "OUT_OF_RANGE", "UNANSWERED", "STAMPEDE"].includes(
+      ["DEFENDER_DIED", "OUT_OF_RANGE", "UNANSWERED"].includes(
         input.noRetaliationReason as string,
       ))
   );

@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("pins the r19 identity, a gap-free prior list ending at r18, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r19");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r19");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r19.current");
+  it("keeps r18 among the gap-free prior identities after the r20 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r20");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r20");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r20.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 17 },
+        { length: 18 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 17 },
+        { length: 18 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -150,7 +150,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r17.current", "r17"],
       ["pulpWars.save.v7r18.current", "r18"],
-      [SAVE_STORAGE_KEY_V7, "r19"],
+      [SAVE_STORAGE_KEY_V7, "r20"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
       ["pulpWars.artSet.v1", "art"],
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r19");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r20");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -493,29 +493,32 @@ describe("ruleset-7 Dinosaur roster", () => {
       "SUPPORT",
     ],
     [
+      // Revision 20 section 2.1: hatch 2, 2 slots, 20 HP, Move 2, attacks
+      // after moving, Charge! (`LINEBREAKER`).
       "Triceratops",
       "CATAPULT",
       "SAWMILLING",
       8,
-      1,
-      1,
-      18,
+      2,
+      2,
+      20,
       6,
       4,
+      2,
       1,
       1,
       1,
-      1,
-      false,
-      ["ATTACK", "STAMPEDE", "GROW"],
+      true,
+      ["ATTACK", "LINEBREAKER", "GROW"],
       "SIEGE",
     ],
     [
+      // Revision 20 section 3: cost 14 (was 10), hatch 4 (was 3).
       "T-Rex",
       "KNIGHT",
       "CHIVALRY",
-      10,
-      3,
+      14,
+      4,
       2,
       28,
       8,
@@ -637,7 +640,7 @@ describe("ruleset-7 Dinosaur roster", () => {
           role,
           mechanics.capacitySlots,
           mechanics.hatchTurns,
-          mechanics.stampedeRunBonus2,
+          mechanics.runUpBonus2,
           mechanics.armourReduction,
           mechanics.buildsFieldDefense,
           mechanics.advancesAfterKill,
@@ -650,8 +653,8 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["MARKSMAN", 1, 1, 0, 0, false, true, false],
       ["GUARD", 1, 2, 0, 1, false, true, false],
       ["CAPTAIN", 1, null, 0, 0, false, true, false],
-      ["CATAPULT", 1, 1, 2, 0, false, true, false],
-      ["KNIGHT", 2, 3, 0, 0, false, true, false],
+      ["CATAPULT", 2, 2, 2, 0, false, true, false],
+      ["KNIGHT", 2, 4, 0, 0, false, true, false],
       ["JUGGERNAUT", 2, null, 0, 0, false, true, false],
       ["PATROL_BOAT", 1, null, 0, 0, false, true, false],
       ["BATTLESHIP", 1, null, 0, 0, false, true, true],
@@ -661,13 +664,15 @@ describe("ruleset-7 Dinosaur roster", () => {
         expect(roleMechanicsV7(role, faction)).toMatchObject({
           capacitySlots: 1,
           hatchTurns: null,
-          stampedeRunBonus2: 0,
+          runUpBonus2: 0,
           armourReduction: 0,
         });
         // No other faction has a Dinosaur ability.
         expect(
           effectiveRoleRuleV7(role, faction).abilities.filter((ability) =>
-            ["STAMPEDE", "HATCH", "ACID", "ARMOURED", "GROW"].includes(ability),
+            ["LINEBREAKER", "HATCH", "ACID", "ARMOURED", "GROW"].includes(
+              ability,
+            ),
           ),
         ).toEqual([]);
       }
@@ -711,7 +716,8 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["GUARD", 2],
       ["CAPTAIN", 2],
       ["CATAPULT", 4],
-      ["KNIGHT", 5],
+      // Revision 20: half of 14.
+      ["KNIGHT", 7],
     ] as const;
     for (const [role, refund] of refunds) {
       const state = goblinArenaV7(
@@ -791,7 +797,7 @@ describe("ruleset-7 Dinosaur roster", () => {
 });
 
 describe("ruleset-7 Dinosaur technology", () => {
-  it("differs from the Human graph only in the Fortification unlock", () => {
+  it("differs from the Human graph only in the Fortification and Explosives unlocks", () => {
     expect(DINOSAUR_BASELINE_V1_NODES).toHaveLength(
       ORIGINAL_BASELINE_V5_NODES.length,
     );
@@ -811,9 +817,16 @@ describe("ruleset-7 Dinosaur technology", () => {
         human.prerequisites,
         human.unlockedRoles,
       ]);
+      // Revision 20: Nesting also grants a city slot, and Explosives
+      // (Wallbreaker) keeps both Human unlocks and adds `WALLBREAKER`.
       if (human.id === "FORTIFICATION")
         expect(dinosaur.unlocks).toEqual([
-          { kind: "NESTING", eggHp: 4, hatchTurns: 1 },
+          { kind: "NESTING", eggHp: 4, hatchTurns: 1, citySlots: 1 },
+        ]);
+      else if (human.id === "EXPLOSIVES")
+        expect(dinosaur.unlocks).toEqual([
+          ...human.unlocks,
+          { kind: "WALLBREAKER" },
         ]);
       else expect(dinosaur.unlocks).toEqual(human.unlocks);
     });
@@ -866,14 +879,18 @@ describe("ruleset-7 Dinosaur technology", () => {
   it("names and describes technologies from the viewer's faction", () => {
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.DINOSAUR).toEqual({
       FORTIFICATION: "Nesting",
+      EXPLOSIVES: "Wallbreaker",
     });
+    expect(
+      FACTION_IDS_V7.map((faction) => technologyNameV7("EXPLOSIVES", faction)),
+    ).toEqual(["Explosives", "Explosives", "Explosives", "Wallbreaker"]);
     expect(
       FACTION_IDS_V7.map((faction) =>
         technologyNameV7("FORTIFICATION", faction),
       ),
     ).toEqual(["Fortification", "Fortification", "Fortification", "Nesting"]);
     for (const tech of TECHNOLOGY_IDS_V7)
-      if (tech !== "FORTIFICATION")
+      if (tech !== "FORTIFICATION" && tech !== "EXPLOSIVES")
         expect(technologyNameV7(tech, "DINOSAUR")).toBe(
           technologyNameV7(tech, "ORIGINAL"),
         );
@@ -893,8 +910,18 @@ describe("ruleset-7 Dinosaur technology", () => {
       );
     };
     expect(text(0, "FORTIFICATION")).toEqual([
-      "Eggs have +4 HP and hatch one turn sooner",
+      "Eggs have +4 HP and hatch one turn sooner; +1 unit slot in every city",
     ]);
+    expect(text(0, "EXPLOSIVES")).toEqual([
+      "Blast mountain",
+      "Surviving melee attacks destroy Field Defense",
+      "Dinosaurs ignore City Walls",
+    ]);
+    expect(text(1, "EXPLOSIVES")).toEqual([
+      "Blast mountain",
+      "Surviving melee attacks destroy Field Defense",
+    ]);
+    expect(text(0, "SAWMILLING")).toContain("Triceratops Egg (Charge!)");
     expect(text(1, "FORTIFICATION")).toEqual(["Build field defense"]);
     expect(text(0, "ADMINISTRATION")).toEqual([
       "Train Shaman",
@@ -902,7 +929,7 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Build market",
       "Shamans beat War Drums or Tend nearby troops, and Hatch Eggs",
     ]);
-    expect(text(0, "SAWMILLING")).toContain("Triceratops Egg (Stampede)");
+
     expect(text(0, "MARKSMANSHIP")).toEqual(["Spitter Egg"]);
     expect(text(0, "SCOUTING")).toEqual(["Raptor Egg", "Raptor sight 2"]);
     expect(text(0, "DRILL")).toContain("Ankylosaurus Egg");
@@ -975,7 +1002,8 @@ describe("ruleset-7 Dinosaur technology", () => {
       killsToNextStage: 1,
       armourReduction: 0,
       acid: false,
-      stampedeRunBonus: 0,
+      runUpBonus: 0,
+      runUpMaximum: 0,
       egg: null,
     });
     expect(
@@ -1065,16 +1093,17 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
   });
 
   it("grants a hatched 2-slot Brontosaurus for the level-5 reward, over capacity", () => {
-    // Three T-Rexes already use 6 of the capital's 7 slots (the Triceratops
-    // uses one slot since pulp_wars-c87.8).
+    // Three T-Rexes and a Caveman already use 7 of the capital's 8 slots
+    // (level 5, Planning, and since revision 20 Nesting).
     const fixture = rewardStateV7("JUGGERNAUT", "DINOSAUR", [
       { role: "KNIGHT", at: { x: 4, y: 3 } },
       { role: "KNIGHT", at: { x: 5, y: 3 } },
       { role: "KNIGHT", at: { x: 6, y: 3 } },
+      { role: "FIGHTER", at: { x: 4, y: 2 } },
     ]);
     const city = cityOfV7(fixture.state, 0);
-    expect(cityUnitCapacityV7(fixture.state, city)).toBe(7);
-    expect(assignedUnitCountV7(fixture.state, city.id)).toBe(6);
+    expect(cityUnitCapacityV7(fixture.state, city)).toBe(8);
+    expect(assignedUnitCountV7(fixture.state, city.id)).toBe(7);
     const result = applyOkV7(
       fixture.state,
       fixture.state.humanPlayerId,
@@ -1096,10 +1125,10 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
     expect(unitRoleRuleV7(result.state, brontosaurus).label).toBe(
       "Brontosaurus",
     );
-    expect(assignedUnitCountV7(result.state, city.id)).toBe(8);
+    expect(assignedUnitCountV7(result.state, city.id)).toBe(9);
     expect(previewCityCapacityV7(result.state, city.id)).toMatchObject({
-      capacity: 7,
-      assigned: 8,
+      capacity: 8,
+      assigned: 9,
       available: 0,
       overCapacity: 1,
     });
@@ -1373,9 +1402,9 @@ describe("ruleset-7 Dinosaur Showcase", () => {
     expect(
       state.players.find((player) => player.id === dinosaurId)?.researchedTechs,
     ).toEqual(TECHNOLOGY_IDS_V7);
-    // Used slots: the capital starts exactly full. With the two-slot
-    // Triceratops of the contract it started one over capacity (root
-    // decision 37); pulp_wars-c87.8 made the Triceratops a one-slot unit.
+    // Used slots (revision 20 section 4.1): the Triceratops uses two slots
+    // again and Nesting adds a slot to every city, so the capital starts
+    // exactly full at 8 of 8, North at 3 of 7 and Coast at 2 of 6.
     const slots = state.cities
       .filter((city) => city.ownerId === dinosaurId)
       .map((city) => [
@@ -1383,9 +1412,9 @@ describe("ruleset-7 Dinosaur Showcase", () => {
         cityUnitCapacityV7(state, city),
       ]);
     expect(slots).toEqual([
-      [7, 7],
-      [3, 6],
-      [2, 5],
+      [8, 8],
+      [3, 7],
+      [2, 6],
     ]);
     // The other seats keep one slot per unit.
     expect(
@@ -1469,13 +1498,14 @@ describe("ruleset-7 Dinosaur Showcase", () => {
 });
 
 describe("ruleset-7 revision-19 declared shapes", () => {
-  it("orders and parses the three new commands, which only a Dinosaur seat is offered", () => {
+  it("orders and parses the two Dinosaur commands, which only a Dinosaur seat is offered", () => {
+    // Revision 20 removed `STAMPEDE` (it sat between KABOOM and HATCH).
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("KABOOM"),
-        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 4,
+        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 3,
       ),
-    ).toEqual(["KABOOM", "STAMPEDE", "HATCH", "RECOVER"]);
+    ).toEqual(["KABOOM", "HATCH", "RECOVER"]);
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL"),
@@ -1487,19 +1517,14 @@ describe("ruleset-7 revision-19 declared shapes", () => {
       [
         { seat: 0, role: "CATAPULT", at: { x: 4, y: 3 } },
         { seat: 0, role: "CAPTAIN", at: { x: 4, y: 5 } },
-        // A third unit fills the capital's three slots (the Triceratops
-        // uses one slot since pulp_wars-c87.8).
+        // A third unit fills the capital's four slots (level 1, Planning,
+        // Nesting; the Triceratops uses two).
         { seat: 0, role: "FIGHTER", at: { x: 2, y: 5 } },
         { seat: 1, role: "FIGHTER", at: { x: 6, y: 3 } },
       ],
     );
     const city = cityOfV7(state, 0);
     const commands = [
-      {
-        kind: "STAMPEDE",
-        unitId: unitAtV7(state, { x: 4, y: 3 }).id,
-        targetUnitId: unitAtV7(state, { x: 6, y: 3 }).id,
-      },
       {
         kind: "HATCH",
         unitId: unitAtV7(state, { x: 4, y: 5 }).id,
@@ -1522,9 +1547,16 @@ describe("ruleset-7 revision-19 declared shapes", () => {
         } as never),
       ).toMatchObject({ accepted: false, error: { code: "INVALID_COMMAND" } });
     }
+    // A `STAMPEDE` command is an unknown kind since revision 20.
+    const stampede = {
+      kind: "STAMPEDE",
+      unitId: unitAtV7(state, { x: 4, y: 3 }).id,
+      targetUnitId: unitAtV7(state, { x: 6, y: 3 }).id,
+    };
+    expect(parseCommandV7(stampede).ok).toBe(false);
     expect(
-      parseCommandV7({ kind: "STAMPEDE", unitId: 1, targetUnitId: 0 }).ok,
-    ).toBe(false);
+      applyCommandV7(state, state.humanPlayerId, stampede as never),
+    ).toMatchObject({ accepted: false, error: { code: "INVALID_COMMAND" } });
     expect(parseCommandV7({ kind: "HATCH", unitId: 1 }).ok).toBe(false);
     expect(
       parseCommandV7({
@@ -1534,18 +1566,16 @@ describe("ruleset-7 revision-19 declared shapes", () => {
         at: { x: 1, y: 1 },
       }).ok,
     ).toBe(false);
-    // The Dinosaur seat is offered its Stampede; the other two are rejected
-    // by their own rules here (no Egg next to the Shaman, a full city).
-    const offered = queryPlayerCommandsV7(state, state.humanPlayerId);
-    expect(offered).toContainEqual(commands[0]);
+    // Both are rejected by their own rules here (no Egg next to the Shaman,
+    // a full city).
     expect(
-      applyCommandV7(state, state.humanPlayerId, commands[1]),
+      applyCommandV7(state, state.humanPlayerId, commands[0]),
     ).toMatchObject({
       accepted: false,
       error: { code: "HATCH_NOT_LEGAL", params: { reason: "NO_EGG" } },
     });
     expect(
-      applyCommandV7(state, state.humanPlayerId, commands[2]),
+      applyCommandV7(state, state.humanPlayerId, commands[1]),
     ).toMatchObject({
       accepted: false,
       error: { code: "CITY_CAPACITY_FULL" },
@@ -1562,7 +1592,7 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     );
     expect(
       queryPlayerCommandsV7(human, human.humanPlayerId).filter((command) =>
-        ["STAMPEDE", "HATCH", "LAY_EGG"].includes(command.kind),
+        ["HATCH", "LAY_EGG"].includes(command.kind),
       ),
     ).toEqual([]);
     for (const command of commands)
@@ -1598,10 +1628,10 @@ describe("ruleset-7 revision-19 declared shapes", () => {
       cityId: 1,
       unitId: 9,
       role: "KNIGHT",
-      cost: 10,
+      cost: 14,
       at: { x: 7, y: 8 },
       hp: 6,
-      turnsRemaining: 3,
+      turnsRemaining: 4,
     };
     const hatched = {
       kind: "EGG_HATCHED",
@@ -1612,7 +1642,8 @@ describe("ruleset-7 revision-19 declared shapes", () => {
       cause: "TIME",
       sourceUnitId: null,
     };
-    const grew = { kind: "UNIT_GREW", unitId: 9, stage: 2, maxHp: 36, hp: 30 };
+    // Revision 20: growing fully heals, so `hp` equals `maxHp`.
+    const grew = { kind: "UNIT_GREW", unitId: 9, stage: 2, maxHp: 36, hp: 36 };
     for (const event of [
       laid,
       { ...laid, hp: 10, turnsRemaining: 1 },
@@ -1626,7 +1657,7 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     for (const event of [
       { ...laid, hp: 7 },
       { ...laid, turnsRemaining: 0 },
-      { ...laid, turnsRemaining: 4 },
+      { ...laid, turnsRemaining: 5 },
       { ...laid, cost: 0 },
       { ...hatched, cause: "SHAMAN" },
       { ...hatched, sourceUnitId: 4 },
@@ -1634,6 +1665,7 @@ describe("ruleset-7 revision-19 declared shapes", () => {
       { ...grew, stage: 0 },
       { ...grew, stage: 3 },
       { ...grew, hp: 37 },
+      { ...grew, hp: 30 },
       { ...grew, extra: 1 },
       { kind: "UNIT_DIED", unitId: 9, cause: "EGG" },
     ])
@@ -1676,14 +1708,19 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     );
     if (combat?.kind !== "COMBAT_RESOLVED") throw new Error("no combat");
     expect(combat.preview).toMatchObject({
-      stampede: 0,
+      runUp: 0,
+      fortificationIgnored: 0,
       acid: false,
       defenderArmoured: false,
       attackerArmoured: false,
     });
     expect(parseEventV7(combat).ok).toBe(true);
     for (const patch of [
-      { stampede: 3 },
+      { runUp: 3 },
+      { fortificationIgnored: 4 },
+      { stampede: 0 },
+      { acid: true, fortificationIgnored: 1 },
+      { noRetaliationReason: "STAMPEDE" },
       { acid: "no" },
       { defenderArmoured: 0 },
       { acid: true, fortificationLevel: 1 },
@@ -1696,18 +1733,16 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     expect(
       parseEventV7({
         ...combat,
-        preview: {
-          ...combat.preview,
-          retaliation: false,
-          damageToAttacker: 0,
-          noRetaliationReason: "STAMPEDE",
-          stampede: 2,
-        },
+        preview: { ...combat.preview, runUp: 2, fortificationIgnored: 3 },
       }).ok,
     ).toBe(true);
-    const { stampede: _stampede, ...withoutField } = combat.preview;
-    void _stampede;
-    expect(parseEventV7({ ...combat, preview: withoutField }).ok).toBe(false);
+    const { runUp: _runUp, ...withoutRunUp } = combat.preview;
+    void _runUp;
+    expect(parseEventV7({ ...combat, preview: withoutRunUp }).ok).toBe(false);
+    const { fortificationIgnored: _ignored, ...withoutIgnored } =
+      combat.preview;
+    void _ignored;
+    expect(parseEventV7({ ...combat, preview: withoutIgnored }).ok).toBe(false);
     expect(result.state.eggs).toEqual([]);
     // The projected event keeps the fields.
     const projected = projectEventsV7(
@@ -1718,7 +1753,9 @@ describe("ruleset-7 revision-19 declared shapes", () => {
     );
     expect(
       projected.events.find((event) => event.kind === "COMBAT_RESOLVED"),
-    ).toMatchObject({ preview: { stampede: 0, acid: false } });
+    ).toMatchObject({
+      preview: { runUp: 0, fortificationIgnored: 0, acid: false },
+    });
   });
 
   it("requires the `eggs` state key and a real Egg unit for every entry", () => {

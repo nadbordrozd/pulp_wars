@@ -216,12 +216,6 @@ describe("CHIBI interface subjects", () => {
         "DINOSAUR",
       ),
     ).toBe("ICON:ACTION:HATCH");
-    expect(
-      commandSubjectV7(
-        { kind: "STAMPEDE", unitId: 1 as never, targetUnitId: 2 as never },
-        "DINOSAUR",
-      ),
-    ).toBe("ICON:ACTION:STAMPEDE");
     expect(commandSubjectV7(commands[13] as CommandV7, "DINOSAUR")).toBe(
       "PORTRAIT:DINOSAUR:GUARD",
     );

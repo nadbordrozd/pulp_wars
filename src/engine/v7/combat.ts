@@ -2,6 +2,9 @@ import type { PlayerId, UnitId } from "../model/ids";
 import {
   EGG_DEFENSE2_V7,
   armouredDamageV7,
+  attackIgnoresCityWallsV7,
+  attackIsChargeV7,
+  chargeRunUpAttack2V7,
   factionRulesV7,
   playerFactionV7,
   unitAlphaAttack2V7,
@@ -33,31 +36,76 @@ export function defenseBonusForUnitV7(
     : NO_BONUS;
 }
 
-export function fortificationLevelForUnitV7(
+/** The fortification levels City Walls add to a unit on a Walled center. */
+export const CITY_WALLS_FORTIFICATION_LEVELS_V7 = 2;
+
+/**
+ * A unit's fortification by source: the City Walls levels (0 or 2) and the
+ * Field Defense level (0 or 1) of its tile in its owner's territory.
+ */
+export function fortificationPartsForUnitV7(
   state: GameStateV7,
   unit: UnitStateV7,
-): number {
-  if (unit.form !== "LAND") return 0;
+): { readonly walls: number; readonly fieldDefense: number } {
+  const none = { walls: 0, fieldDefense: 0 };
+  if (unit.form !== "LAND") return none;
   const tile = tileAtV7(state.board, unit.at);
-  if (tile === undefined || tile.territoryCityId === null) return 0;
+  if (tile === undefined || tile.territoryCityId === null) return none;
   const territoryCity = state.cities.find(
     (city) => city.id === tile.territoryCityId,
   );
-  if (territoryCity?.ownerId !== unit.ownerId) return 0;
+  if (territoryCity?.ownerId !== unit.ownerId) return none;
   const city = state.cities.find(
     (candidate) =>
       candidate.id === tile.territoryCityId && same(candidate.at, unit.at),
   );
-  let level = tile.fieldDefense ? 1 : 0;
-  if (city !== undefined) {
-    if (
+  return {
+    walls:
+      city !== undefined &&
       city.rewards.some(
         (record) => record.reachedLevel === 3 && record.reward === "WALLS",
       )
-    )
-      level += 2;
-  }
-  return level;
+        ? CITY_WALLS_FORTIFICATION_LEVELS_V7
+        : 0,
+    fieldDefense: tile.fieldDefense ? 1 : 0,
+  };
+}
+
+export function fortificationLevelForUnitV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+): number {
+  const parts = fortificationPartsForUnitV7(state, unit);
+  return parts.walls + parts.fieldDefense;
+}
+
+/**
+ * Revision 20: the fortification an attack applies and the levels it
+ * removes. Acid removes everything and reports no ignored levels (it keeps
+ * its own `acid` flag); Charge! removes every level; Wallbreaker removes the
+ * City Walls levels and keeps Field Defense.
+ */
+export function attackFortificationV7(
+  parts: { readonly walls: number; readonly fieldDefense: number },
+  attack: {
+    readonly acid: boolean;
+    readonly charge: boolean;
+    readonly ignoresCityWalls: boolean;
+  },
+): {
+  readonly fortificationLevel: number;
+  readonly fortificationIgnored: number;
+} {
+  if (attack.acid) return { fortificationLevel: 0, fortificationIgnored: 0 };
+  const ignored = attack.charge
+    ? parts.walls + parts.fieldDefense
+    : attack.ignoresCityWalls
+      ? parts.walls
+      : 0;
+  return {
+    fortificationLevel: parts.walls + parts.fieldDefense - ignored,
+    fortificationIgnored: ignored,
+  };
 }
 
 /**
@@ -90,27 +138,19 @@ export function gangUpBonusV7(
 }
 
 /**
- * Revision 19 Stampede (section 7.2): the hit of a Triceratops that ran
- * `runTiles` lane tiles. The caller passes a state in which the Triceratops
- * already stands on the stand tile, next to the target.
- */
-export interface StampedeHitV7 {
-  readonly runTiles: 1 | 2;
-}
-
-/**
  * Exact BigInt-backed v7 combat calculation used by resolution and queries.
- * With `stampede` the attack is a Stampede hit: the run bonus is added to the
- * Attack, the target never retaliates, a survivor is pushed under the
- * ordinary Push conditions (whatever the attacker's abilities), and
+ * Revision 20 Charge! (a land-form `LINEBREAKER` attacker): the run-up is
+ * added to the Attack, the defender's fortification is ignored for the whole
+ * exchange, a survivor is pushed under the ordinary Push conditions, and
  * `advances` covers both the advance after a kill and the follow after a
- * Push.
+ * Push. `plannedPathLength` is the run-up of an estimate for an attack after
+ * a planned Move; resolution never passes it.
  */
 export function calculateCombatPreviewV7(
   state: GameStateV7,
   attackerId: UnitId,
   targetUnitId: UnitId,
-  stampede: StampedeHitV7 | null = null,
+  plannedPathLength?: number,
 ): CombatPreviewV7 {
   const attacker = requireUnit(state, attackerId);
   const defender = requireUnit(state, targetUnitId);
@@ -131,11 +171,9 @@ export function calculateCombatPreviewV7(
     attacker.activation.inspired && attacker.activation.attacksUsed === 0;
   const inspiredConsumed = attacker.activation.inspired;
   const gangUp = gangUpBonusV7(state, state.units, attacker, defender);
-  // Revision 19 Stampede: +1 Attack per lane tile run.
-  const stampedeAttack2 =
-    stampede === null
-      ? 0
-      : stampede.runTiles * attackerMechanics.stampedeRunBonus2;
+  // Revision 20 Charge!: +1 Attack per tile moved this turn (up to 2).
+  const charge = attackIsChargeV7(state, attacker);
+  const runUpAttack2 = chargeRunUpAttack2V7(state, attacker, plannedPathLength);
   // Revision 19: an Alpha adds 1 Attack to every attack it makes.
   const attack2 =
     attacker.form === "EMBARKED"
@@ -145,13 +183,24 @@ export function calculateCombatPreviewV7(
         (inspiredApplied ? 2 : 0) +
         gangUp * 2 +
         unitAlphaAttack2V7(state, attacker) +
-        stampedeAttack2;
+        runUpAttack2;
   // Revision 19 Acid (section 8.1): a land-form Spitter's attack removes the
   // defender's cover and fortification from the whole exchange.
   const acid = attackHasAcidV7(attackerRule, attacker);
-  const fortificationLevel = acid
-    ? 0
-    : fortificationLevelForUnitV7(state, defender);
+  // Revision 20: Charge! removes every fortification level and Wallbreaker
+  // the City Walls levels, for the damage and for the retaliation.
+  const { fortificationLevel, fortificationIgnored } = attackFortificationV7(
+    fortificationPartsForUnitV7(state, defender),
+    {
+      acid,
+      charge,
+      ignoresCityWalls: attackIgnoresCityWallsV7(
+        state,
+        attacker,
+        requirePlayer(state, attacker.ownerId).researchedTechs,
+      ),
+    },
+  );
   // Revision 19 section 6.2: an Egg defends with a fixed 1, like an embarked
   // unit (no cover and no fortification: both helpers need land form).
   const defense2 =
@@ -193,12 +242,10 @@ export function calculateCombatPreviewV7(
   // Revision 14 (V1): an UNANSWERED attacker (the Vampire) draws no
   // retaliation.
   const unanswered = attackerRule.abilities.includes("UNANSWERED");
-  // Revision 19: an Egg never retaliates, and neither does the target of a
-  // Stampede.
+  // Revision 19: an Egg never retaliates.
   const retaliates =
     !defenderDies &&
     !unanswered &&
-    stampede === null &&
     defender.form !== "EMBARKED" &&
     defender.form !== "EGG" &&
     defenderRule.abilities.includes("ATTACK") &&
@@ -275,14 +322,13 @@ export function calculateCombatPreviewV7(
     attacker,
     defender,
     !defenderDies && distance === 1,
-    stampede !== null,
   );
   // Revision 19 section 6.7: a melee attacker that destroys an Egg advances
-  // onto its tile exactly as after killing a land unit. A Stampede also
-  // follows a pushed target into the tile it vacated.
+  // onto its tile exactly as after killing a land unit. Revision 20: a
+  // Charge! also follows a pushed target into the tile it vacated.
   const advances =
     ((defenderDies && !afflictions.defenderBittenRises) ||
-      (stampede !== null && push === "WILL_PUSH")) &&
+      (charge && push === "WILL_PUSH")) &&
     !attackerDies &&
     distance === 1 &&
     attackerMechanics.advancesAfterKill &&
@@ -323,11 +369,9 @@ export function calculateCombatPreviewV7(
       ? "DEFENDER_DIED"
       : retaliates
         ? null
-        : stampede !== null
-          ? "STAMPEDE"
-          : unanswered
-            ? "UNANSWERED"
-            : "OUT_OF_RANGE",
+        : unanswered
+          ? "UNANSWERED"
+          : "OUT_OF_RANGE",
     advances,
     push,
     attacksUsed: nextAttacks,
@@ -341,7 +385,8 @@ export function calculateCombatPreviewV7(
     splash,
     ...undead,
     ...afflictions,
-    stampede: (stampedeAttack2 / 2) as 0 | 1 | 2,
+    runUp: runUpAttack2 / 2,
+    fortificationIgnored,
     acid,
     defenderArmoured,
     attackerArmoured,
@@ -475,12 +520,13 @@ function pushState(
   attacker: UnitStateV7,
   defender: UnitStateV7,
   survivesMelee: boolean,
-  stampede: boolean,
 ): CombatPreviewV7["push"] {
+  // Revision 20: a Charge! pushes like a `PUSH` attacker.
   if (
     !survivesMelee ||
     defender.form === "EGG" ||
-    (!stampede && !unitRoleRuleV7(state, attacker).abilities.includes("PUSH"))
+    (!unitRoleRuleV7(state, attacker).abilities.includes("PUSH") &&
+      !attackIsChargeV7(state, attacker))
   )
     return "BLOCKED";
   const behind = {

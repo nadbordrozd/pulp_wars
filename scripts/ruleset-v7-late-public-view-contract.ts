@@ -15,6 +15,11 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * the decision hash then changed twelve more times unnoticed
  * (`pulp_wars-c87.8`). Refresh it here, with the cause, whenever a change is
  * meant to alter this decision or its candidate list.
+ *
+ * Revision 20 (`pulp_wars-0hi.2`): `policyDecisionHash` was 27ee3b…bfeb. The
+ * `STAMPEDE` command kind is removed, so the `-ordinal` tie-break of every
+ * candidate whose kind follows `KABOOM` moves by one. The command, the
+ * candidate count, and the hash with revision-12 ordinals are unchanged.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -22,7 +27,7 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b",
   /** `canonicalHash` of the whole decision (command and candidates). */
   policyDecisionHash:
-    "27ee3b69e87055cf3768a9c9c972cb001357eadc89440f6f712ef5da74ffbfeb",
+    "74d6056adf54e01cd9d535f0327caee08bbaf849cc20dc5ce0f037d9a2cfed4b",
   command: Object.freeze({
     kind: "ATTACK",
     unitId: 19,
@@ -100,10 +105,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r19",
+    rulesetId: "pulp-wars-poc-7r20",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r19",
+      rulesetId: "pulp-wars-poc-7r20",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     },

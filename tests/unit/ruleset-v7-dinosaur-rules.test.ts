@@ -7,8 +7,8 @@ import {
   cityUnitCapacityV7,
   estimateCombatV7,
   fortificationLevelForUnitV7,
-  growthHpGainV7,
   growthStageForKillsV7,
+  grownHpV7,
   grownUnitV7,
   parseEventV7,
   parseGameStateV7,
@@ -32,6 +32,7 @@ import {
   type TechnologyIdV7,
 } from "../../src/engine/index";
 import { checkedV7 } from "../fixtures/v7-builders";
+import { patchTileV7 } from "../fixtures/v7-revision20";
 import {
   cityOfV7,
   newUnitsV7,
@@ -89,6 +90,11 @@ function attack(
   return result;
 }
 
+/** Every technology except Nesting (Fortification) and what needs it. */
+const WITHOUT_NESTING: readonly TechnologyIdV7[] = TECHNOLOGY_IDS_V7.filter(
+  (tech) => tech !== "FORTIFICATION" && tech !== "EXPLOSIVES",
+);
+
 /** Technologies in registry order, for a seat that should lack the rest. */
 const techs = (...ids: readonly TechnologyIdV7[]): readonly TechnologyIdV7[] =>
   TECHNOLOGY_IDS_V7.filter((id) => ids.includes(id));
@@ -108,29 +114,30 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
       ],
       { techs: { 0: [], 1: [] } },
     );
-    // pulp_wars-c87.8: the Triceratops uses one slot (was two); the T-Rex and
-    // the Brontosaurus keep two.
+    // Revision 20 section 2.1: the Triceratops uses two slots again (the
+    // pulp_wars-c87.8 interim baseline had made it one), like the T-Rex and
+    // the Brontosaurus.
     expect(state.units.map((unit) => unitCapacitySlotsV7(state, unit))).toEqual(
-      [1, 1, 2, 2, 1, 1, 1],
+      [1, 2, 2, 2, 1, 1, 1],
     );
     const dinosaurCity = cityOfV7(state, 0);
     const humanCity = cityOfV7(state, 1);
-    expect(assignedUnitCountV7(state, dinosaurCity.id)).toBe(6);
+    expect(assignedUnitCountV7(state, dinosaurCity.id)).toBe(7);
     expect(assignedUnitCountV7(state, humanCity.id)).toBe(3);
     expect(cityUnitCapacityV7(state, dinosaurCity)).toBe(2);
     expect(previewCityCapacityV7(state, dinosaurCity.id)).toEqual({
       cityId: dinosaurCity.id,
       capacity: 2,
-      assigned: 6,
+      assigned: 7,
       available: 0,
-      overCapacity: 4,
+      overCapacity: 5,
       roleSlots: [
         { role: "FIGHTER", slots: 1 },
         { role: "RAIDER", slots: 1 },
         { role: "MARKSMAN", slots: 1 },
         { role: "GUARD", slots: 1 },
         { role: "CAPTAIN", slots: 1 },
-        { role: "CATAPULT", slots: 1 },
+        { role: "CATAPULT", slots: 2 },
         { role: "KNIGHT", slots: 2 },
         { role: "PATROL_BOAT", slots: 1 },
         { role: "BATTLESHIP", slots: 1 },
@@ -147,8 +154,8 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
   });
 
   it("rejects a 2-slot role with one free slot and accepts it with two (level-1 capital)", () => {
-    // The T-Rex is the two-slot egg-laid role (pulp_wars-c87.8 made the
-    // Triceratops a one-slot unit).
+    // The T-Rex is a two-slot egg-laid role (so is the Triceratops again
+    // since revision 20).
     const researched = techs("SCOUTING", "RAIDING", "CHIVALRY");
     // A level-1 capital holds two slots; the starting Caveman uses one.
     const one = goblinArenaV7(
@@ -241,13 +248,17 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
     );
   });
 
-  it("adds one slot with Planning and no Dinosaur capacity bonus", () => {
+  it("adds one slot with Planning and no Dinosaur faction capacity bonus", () => {
+    // Revision 20: Nesting adds a slot of its own
+    // (tests/unit/ruleset-v7-revision20-industry.test.ts), so this seat has
+    // every technology except Nesting and Wallbreaker.
     const planned = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
         { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
       ],
+      { techs: { 0: WITHOUT_NESTING } },
     );
     const city = cityOfV7(planned, 0);
     // Level + 1, +1 Planning: the Caveman (1) and a T-Rex (2) fit.
@@ -281,11 +292,17 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
         ]),
         1,
       );
-      const state = goblinArenaV7(factions, [
-        { seat: 0, role: "FIGHTER", at: target.at, captureEligible: true },
-        { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
-        { seat: 1, role: "KNIGHT", at: { x: 1, y: 1 } },
-      ]);
+      // Without Nesting (revision 20 gives it a slot of its own, which also
+      // follows the owner: ruleset-v7-revision20-industry.test.ts).
+      const state = goblinArenaV7(
+        factions,
+        [
+          { seat: 0, role: "FIGHTER", at: target.at, captureEligible: true },
+          { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
+          { seat: 1, role: "KNIGHT", at: { x: 1, y: 1 } },
+        ],
+        { techs: { 0: WITHOUT_NESTING, 1: WITHOUT_NESTING } },
+      );
       const before = cityUnitCapacityV7(state, target);
       const captured = applyOkV7(state, state.humanPlayerId, {
         kind: "CAPTURE",
@@ -421,19 +438,20 @@ describe("ruleset-7 Dinosaur Grow", () => {
         unitAlphaAttack2V7(state, { ...raptor, kills }),
       ),
     ).toEqual([0, 0, 0, 2]);
-    expect(growthHpGainV7(state, raptor, 0, 1)).toBe(4);
-    expect(growthHpGainV7(state, raptor, 0, 3)).toBe(8);
-    expect(growthHpGainV7(state, raptor, 1, 2)).toBe(0);
-    expect(growthHpGainV7(state, unitAtV7(state, { x: 5, y: 3 }), 0, 3)).toBe(
-      0,
-    );
+    // Revision 20 section 5: each stage reached fully heals. The public
+    // simulations' helper gives the HP after the growth (the new maximum),
+    // or the HP unchanged when no stage is reached.
+    expect(grownHpV7(state, raptor, 0, 1, 5)).toBe(16);
+    expect(grownHpV7(state, raptor, 0, 3, 5)).toBe(20);
+    expect(grownHpV7(state, raptor, 1, 2, 5)).toBe(5);
+    expect(grownHpV7(state, unitAtV7(state, { x: 5, y: 3 }), 0, 3, 5)).toBe(5);
     // A unit that crosses both thresholds at once gains both stages in order.
     const events: DomainEventV7[] = [];
     const grown = grownUnitV7(state, 0, { ...raptor, kills: 3, hp: 5 }, events);
-    expect([grown.hp, grown.maxHp]).toEqual([13, 20]);
+    expect([grown.hp, grown.maxHp]).toEqual([20, 20]);
     expect(events).toEqual([
-      { kind: "UNIT_GREW", unitId: raptor.id, stage: 1, maxHp: 16, hp: 9 },
-      { kind: "UNIT_GREW", unitId: raptor.id, stage: 2, maxHp: 20, hp: 13 },
+      { kind: "UNIT_GREW", unitId: raptor.id, stage: 1, maxHp: 16, hp: 16 },
+      { kind: "UNIT_GREW", unitId: raptor.id, stage: 2, maxHp: 20, hp: 20 },
     ]);
     for (const event of events) expect(parseEventV7(event).ok).toBe(true);
     // A dead unit and a non-growing unit are returned unchanged.
@@ -465,12 +483,13 @@ describe("ruleset-7 Dinosaur Grow", () => {
       unitId: raptor.id,
       stage: 1,
       maxHp: 16,
-      hp: 11,
+      // Revision 20: growing fully heals (was 7 + 4 = 11).
+      hp: 16,
     });
     expect(unitAtV7(result.state, { x: 5, y: 3 })).toMatchObject({
       id: raptor.id,
       kills: 1,
-      hp: 11,
+      hp: 16,
       maxHp: 16,
       veteran: false,
     });
@@ -574,11 +593,12 @@ describe("ruleset-7 Dinosaur Grow", () => {
       unitId: ankylosaurus.id,
       stage: 1,
       maxHp: 24,
-      hp: 23,
+      // Revision 20: growing fully heals (was 19 + 4 = 23).
+      hp: 24,
     });
     expect(unitAtV7(result.state, { x: 5, y: 3 })).toMatchObject({
       kills: 1,
-      hp: 23,
+      hp: 24,
       maxHp: 24,
     });
   });
@@ -607,18 +627,18 @@ describe("ruleset-7 Dinosaur Grow", () => {
       "UNIT_GREW",
       "UNIT_MOVED",
     ]);
-    // Big: 20 + 4 of 28 + 4.
+    // Big: 28 + 4, fully healed (revision 20; was 20 + 4 of 32).
     expect(unitAtV7(first.state, { x: 5, y: 3 })).toMatchObject({
       id: trex.id,
       kills: 1,
-      hp: 24,
+      hp: 32,
       maxHp: 32,
     });
     expect(
       publicUnitStatsV7(first.state, unitAtV7(first.state, { x: 5, y: 3 }))
         .statuses,
     ).toEqual(["Rampage: attack again"]);
-    // The continuation fights at the grown HP (24 of 32) and kills the
+    // The continuation fights at the grown HP (32 of 32) and kills the
     // full-HP Fighter; a second kill reaches no new stage.
     const second = attack(first.state, { x: 5, y: 3 }, { x: 6, y: 3 });
     expect(combat(second.events)).toMatchObject({
@@ -631,16 +651,16 @@ describe("ruleset-7 Dinosaur Grow", () => {
     );
     expect(unitAtV7(second.state, { x: 6, y: 3 })).toMatchObject({
       kills: 2,
-      hp: 24,
+      hp: 32,
       maxHp: 32,
     });
     // The third kill makes it Alpha; the next Rampage attack has Attack 5.
     const third = attack(second.state, { x: 6, y: 3 }, { x: 7, y: 3 });
     expect(third.events.filter((event) => event.kind === "UNIT_GREW")).toEqual([
-      { kind: "UNIT_GREW", unitId: trex.id, stage: 2, maxHp: 36, hp: 28 },
+      { kind: "UNIT_GREW", unitId: trex.id, stage: 2, maxHp: 36, hp: 36 },
     ]);
     const alpha = unitAtV7(third.state, { x: 7, y: 3 });
-    expect(alpha).toMatchObject({ kills: 3, hp: 28, maxHp: 36 });
+    expect(alpha).toMatchObject({ kills: 3, hp: 36, maxHp: 36 });
     expect(alpha.activation.overrunActive).toBe(true);
     const fourth = attack(third.state, { x: 7, y: 3 }, { x: 8, y: 3 });
     expect(combat(fourth.events).attack2).toBe(10);
@@ -1650,7 +1670,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
     expect(unitAtV7(state, { x: 5, y: 3 }).captureEligible).toBe(false);
   });
 
-  it("makes the Triceratops a melee body: no attack after moving, an advance, and Field Defense destroyed", () => {
+  it("makes the Triceratops a melee body: an attack after moving, an advance, and Field Defense destroyed", () => {
     const base = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
@@ -1659,18 +1679,33 @@ describe("ruleset-7 Dinosaur ability parities", () => {
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
       ],
     );
-    const state = withTileV7(base, { x: 3, y: 7 }, { fieldDefense: true });
+    // The tile behind the target is open Grass, so the Push is public.
+    const state = patchTileV7(
+      withTileV7(base, { x: 3, y: 7 }, { fieldDefense: true }),
+      { x: 2, y: 7 },
+      {
+        terrain: "GRASS",
+        biome: "PLAINS",
+        resource: null,
+        improvement: null,
+        road: false,
+      },
+    );
     const triceratops = unitAtV7(state, { x: 4, y: 7 });
     const target = unitAtV7(state, { x: 3, y: 7 });
-    // The worked example: an ordinary adjacent Attack on a Fighter. Field
-    // Defense adds 1 Defense here, so 3 against 3 deals 7 and takes 7.
+    // An ordinary adjacent Attack on a Fighter. Revision 20 Charge!: the
+    // Field Defense level is ignored, so 3 against 2 deals 8 and takes 4, as
+    // on open ground (the revision-20 Charge tests cover the rest).
     const result = attack(state, { x: 4, y: 7 }, { x: 3, y: 7 });
     expect(combat(result.events)).toMatchObject({
       attack2: 6,
       minimumRange: 1,
       maximumRange: 1,
-      stampede: 0,
-      fortificationLevel: 1,
+      runUp: 0,
+      fortificationLevel: 0,
+      fortificationIgnored: 1,
+      damageToDefender: 8,
+      damageToAttacker: 4,
       retaliation: true,
       defenderDies: false,
     });
@@ -1679,7 +1714,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
       at: { x: 3, y: 7 },
       reason: "CATAPULT",
     });
-    // On open ground: 8 damage and 4 back (section 7.5, first row).
+    // On open ground: 8 damage and 4 back (revision 20 section 2.5).
     expect(estimateCombatV7(base, triceratops.id, target.id)).toMatchObject({
       damageToDefender: 8,
       damageToAttacker: 4,
@@ -1702,9 +1737,11 @@ describe("ruleset-7 Dinosaur ability parities", () => {
     expect(unitAtV7(killed.state, { x: 5, y: 3 })).toMatchObject({
       role: "CATAPULT",
       kills: 1,
-      maxHp: 22,
+      maxHp: 24,
+      hp: 24,
     });
-    // It cannot attack after moving, and it is not a ranged unit.
+    // Revision 20: it attacks after moving (with its run-up), and it is not
+    // a ranged unit.
     const moved = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
@@ -1719,21 +1756,19 @@ describe("ruleset-7 Dinosaur ability parities", () => {
       ],
     );
     const attacker = unitAtV7(moved, { x: 4, y: 3 });
+    const afterMove = {
+      kind: "ATTACK" as const,
+      unitId: attacker.id,
+      targetUnitId: unitAtV7(moved, { x: 5, y: 3 }).id,
+    };
     expect(
       queryPlayerCommandsV7(moved, moved.humanPlayerId).filter(
         (command) => command.kind === "ATTACK",
       ),
-    ).toEqual([]);
+    ).toEqual([afterMove]);
     expect(
-      applyCommandV7(moved, moved.humanPlayerId, {
-        kind: "ATTACK",
-        unitId: attacker.id,
-        targetUnitId: unitAtV7(moved, { x: 5, y: 3 }).id,
-      }),
-    ).toMatchObject({
-      accepted: false,
-      error: { code: "UNIT_ALREADY_ACTED" },
-    });
+      combat(applyOkV7(moved, moved.humanPlayerId, afterMove).events),
+    ).toMatchObject({ runUp: 1, attack2: 8 });
     const ready = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
@@ -1753,7 +1788,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
     });
     expect(
       publicUnitStatsV7(ready, unitAtV7(ready, { x: 4, y: 3 })).dinosaur,
-    ).toMatchObject({ stampedeRunBonus: 1, capacitySlots: 1 });
+    ).toMatchObject({ runUpBonus: 1, runUpMaximum: 2, capacitySlots: 2 });
   });
 
   it("gives the Brontosaurus Push and the T-Rex no capture", () => {

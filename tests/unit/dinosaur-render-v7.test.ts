@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   EGG_HP_V7,
+  applyCommandV7,
   effectiveRoleRuleV7,
+  previewAttackExplosionsV7,
   previewHatchV7,
-  previewStampedeV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   roleMechanicsV7,
@@ -15,9 +16,9 @@ import {
 } from "../../src/engine/index";
 import {
   ARMOURED_PREVIEW_V7,
-  stampedePreviewTextV7,
   turnsTextV7,
 } from "../../src/render/dinosaur-presentation-v7";
+import { goblinAttackPreviewTextV7 } from "../../src/render/goblin-presentation-v7";
 import type {
   ArtSubjectV7,
   ChibiArtAssetV7,
@@ -40,7 +41,6 @@ import {
   GROWTH_MARKER_FRAME_V7,
   drawEggCountdownV7,
   drawGrowthChevronsV7,
-  drawStampedeLaneCellV7,
   growthSpriteScaleV7,
 } from "../../src/render/canvas/dinosaur-canvas-v7";
 import { drawDinosaurFeedbackV7 } from "../../src/render/canvas/dinosaur-effects-v7";
@@ -93,6 +93,21 @@ function recordingContext(): {
 
 function humanView(state: GameStateV7): PlayerViewV7 {
   return viewForV7(state, state.humanPlayerId);
+}
+
+/** The state after the human's unit on `from` moved along `path`. */
+function moved(
+  state: GameStateV7,
+  from: CoordV7,
+  path: readonly CoordV7[],
+): GameStateV7 {
+  const result = applyCommandV7(state, state.humanPlayerId, {
+    kind: "MOVE",
+    unitId: unitAt(humanView(state), from).id,
+    path: [...path],
+  });
+  if (!result.accepted) throw new Error(result.error.code);
+  return result.state;
 }
 
 function unitAt(view: PlayerViewV7, at: CoordV7) {
@@ -226,144 +241,111 @@ describe("Revision 19 board plan", () => {
     ).toBe(2);
   });
 
-  it("leaves a match without a Dinosaur seat without Eggs, growth or lanes", () => {
+  it("leaves a match without a Dinosaur seat without Eggs or growth", () => {
     const view = humanView(goblinShowcaseFixtureV7());
     const own = view.units.find((unit) => unit.ownerId === view.viewer.id);
     if (own === undefined) throw new Error("own unit missing");
     const plan = planFor(view, own.at);
     expect(
       plan.entries.some(
-        (entry) =>
-          entry.kind === "LANE" ||
-          entry.egg !== undefined ||
-          entry.growthStage !== undefined,
+        (entry) => entry.egg !== undefined || entry.growthStage !== undefined,
       ),
     ).toBe(false);
   });
 
-  it("targets every Stampede with its lane: run tiles, then the stand tile", () => {
-    const view = humanView(dinosaurShowcaseFixtureV7());
-    const plan = planFor(view, AT.triceratops);
-    const stampedes = plan.targets.filter(
-      (target) => target.family === "STAMPEDE",
+  it("targets a Charge as an ordinary attack with its Charge! note, and draws no lane", () => {
+    // Unmoved, the Triceratops has Move targets only: its enemies are two
+    // or three tiles away, and revision 20 has no Stampede or lane.
+    const start = humanView(dinosaurShowcaseFixtureV7());
+    const before = planFor(start, AT.triceratops);
+    expect(new Set(before.targets.map((target) => target.family))).toEqual(
+      new Set(["MOVE"]),
     );
-    // The damage and the run bonus are the engine preview's.
-    const dealt = (at: CoordV7): string => {
-      const preview = previewStampedeV7(
-        view,
-        unitAt(view, AT.triceratops).id,
-        unitAt(view, at).id,
-      );
-      if (preview === null) throw new Error("Stampede not offered");
-      return `Deal ${preview.combat.damageToDefender} · run +${preview.combat.stampede}`;
-    };
     expect(
-      stampedes.map((target) => [
+      before.targets.some(
+        (target) =>
+          target.at.x === AT.chargeFrom.x && target.at.y === AT.chargeFrom.y,
+      ),
+    ).toBe(true);
+    // Two tiles over the own Caveman, next to the Juggernaut.
+    const view = humanView(
+      moved(dinosaurShowcaseFixtureV7(), AT.triceratops, [
+        AT.laneCaveman,
+        AT.chargeFrom,
+      ]),
+    );
+    const plan = planFor(view, AT.chargeFrom);
+    const preview = queryCombatPreviewV7(
+      view,
+      unitAt(view, AT.chargeFrom).id,
+      unitAt(view, AT.pushTarget).id,
+    );
+    if (preview === null) throw new Error("attack not offered");
+    expect(preview).toMatchObject({ runUp: 2, push: "WILL_PUSH" });
+    const attacks = plan.targets.filter((target) => target.family === "ATTACK");
+    expect(
+      attacks.map((target) => [
         target.at,
         target.previewLabel,
         target.previewNote,
-        target.needsConfirmation ?? false,
       ]),
     ).toEqual([
       [
         AT.pushTarget,
-        dealt(AT.pushTarget),
-        "Pushes back · follows · No retaliation",
-        false,
-      ],
-      [
-        AT.killTarget,
-        dealt(AT.killTarget),
-        "Kills · advances · No retaliation",
-        false,
-      ],
-      [
-        AT.diagonalTarget,
-        dealt(AT.diagonalTarget),
-        "Kills · advances · No retaliation",
-        false,
+        `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}`,
+        "Charge +2 · Pushes back; Triceratops follows",
       ],
     ]);
-    const push = previewStampedeV7(
-      view,
-      unitAt(view, AT.triceratops).id,
-      unitAt(view, AT.pushTarget).id,
+    expect(attacks[0]?.semanticLabel).toBe(
+      `Attack preview. Defender fortification level 0. Primary damage ${preview.damageToDefender}. Charge +2. Pushes back; Triceratops follows.`,
     );
-    if (push === null) throw new Error("Stampede not offered");
-    expect(stampedes[0]?.semanticLabel).toBe(
-      `Stampede preview. ${stampedePreviewTextV7(view, push).description}`,
-    );
-    expect(stampedes[0]?.semanticLabel).toContain(
-      "Pushes Juggernaut back; Triceratops follows. No retaliation.",
-    );
-    expect(stampedes[0]?.lane).toEqual({
-      from: AT.triceratops,
-      tiles: [AT.laneCaveman, { x: 6, y: 2 }],
-    });
-    const lanes = plan.entries
-      .filter((entry) => entry.kind === "LANE")
-      .map((entry) => [entry.at, entry.lane]);
-    expect(lanes).toEqual([
-      [
-        { x: 5, y: 1 },
-        { dx: 1, dy: -1, stand: true },
-      ],
-      [
-        { x: 5, y: 2 },
-        { dx: 1, dy: 0, stand: false },
-      ],
-      [
-        { x: 6, y: 2 },
-        { dx: 1, dy: 0, stand: true },
-      ],
-      [
-        { x: 4, y: 3 },
-        { dx: 0, dy: 1, stand: true },
-      ],
-    ]);
-    // No Stampede target is an Attack target, and none without a selection.
-    expect(plan.targets.some((target) => target.family === "ATTACK")).toBe(
-      false,
-    );
-    expect(planFor(view, null).entries.some((e) => e.kind === "LANE")).toBe(
-      false,
-    );
+    // No lane entries exist in any plan.
+    for (const candidate of [before, plan, planFor(view, null)])
+      expect(
+        candidate.entries.some((entry) => (entry.kind as string) === "LANE"),
+      ).toBe(false);
+    expect(
+      [...before.targets, ...plan.targets].some(
+        (target) => (target.family as string) === "STAMPEDE",
+      ),
+    ).toBe(false);
   });
 
-  it("shows only the armed Stampede, with its death-blast chain", () => {
-    const view = humanView(dinosaurBlastFixtureV7());
-    const target = unitAt(view, DINOSAUR_BLAST_V7.bombChucker);
-    const open = planFor(view, DINOSAUR_BLAST_V7.triceratops);
-    expect(open.targets.some((entry) => entry.family === "MOVE")).toBe(true);
-    const stampede = open.targets.find((entry) => entry.family === "STAMPEDE");
-    const preview = previewStampedeV7(
-      view,
-      unitAt(view, DINOSAUR_BLAST_V7.triceratops).id,
-      target.id,
+  it("previews the death-blast chain of a Charge kill like any attack", () => {
+    const view = humanView(
+      moved(dinosaurBlastFixtureV7(), DINOSAUR_BLAST_V7.triceratops, [
+        { x: 5, y: 3 },
+        DINOSAUR_BLAST_V7.chargeFrom,
+      ]),
     );
-    if (preview === null) throw new Error("Stampede not offered");
-    const text = stampedePreviewTextV7(view, preview);
+    const target = unitAt(view, DINOSAUR_BLAST_V7.bombChucker);
+    const triceratops = unitAt(view, DINOSAUR_BLAST_V7.chargeFrom);
+    const plan = planFor(view, DINOSAUR_BLAST_V7.chargeFrom);
+    const attack = plan.targets.find(
+      (entry) =>
+        entry.family === "ATTACK" &&
+        entry.at.x === target.at.x &&
+        entry.at.y === target.at.y,
+    );
+    const preview = queryCombatPreviewV7(view, triceratops.id, target.id);
+    const chain = previewAttackExplosionsV7(view, triceratops.id, target.id);
+    if (preview === null || chain === null)
+      throw new Error("attack not offered");
+    const text = goblinAttackPreviewTextV7(view, preview, chain);
     expect(text.warnings).toHaveLength(3);
-    expect(stampede).toMatchObject({
-      needsConfirmation: true,
+    expect(attack).toMatchObject({
+      previewNote: "Charge +2",
       previewWarnings: text.warnings,
-      previewWarningSummary: text.warningSummary,
+      previewWarningSummary: text.summary,
     });
     // The attacker is hit on the tile it advances onto, by both blasts.
     expect(
-      stampede?.blast?.cells.find(
+      attack?.blast?.cells.find(
         (cell) =>
           cell.at.x === DINOSAUR_BLAST_V7.bombChucker.x &&
           cell.at.y === DINOSAUR_BLAST_V7.bombChucker.y,
       )?.label,
     ).toMatch(/^Attacker −\d+$/);
-    const armed = planFor(view, DINOSAUR_BLAST_V7.triceratops, {
-      stampedeTargetUnitId: target.id,
-    });
-    expect(armed.targets.map((entry) => entry.family)).toEqual(["STAMPEDE"]);
-    expect(armed.entries.filter((entry) => entry.kind === "LANE")).toHaveLength(
-      2,
-    );
   });
 
   it("targets the hatchable Egg and marks the Egg laid this turn", () => {
@@ -658,7 +640,7 @@ describe("Revision 19 board drawing", () => {
     expect(image([{ unitId: 8, scale: 2 }])).toEqual(still);
   });
 
-  it("draws a countdown number, lane arrows and each cue in the unowned palette", () => {
+  it("draws a countdown number and each cue in the unowned palette", () => {
     const owner = "#12a4a4";
     const countdown = recordingContext();
     drawEggCountdownV7(countdown.context, 0, 0, 0.3, 3, {
@@ -674,31 +656,6 @@ describe("Revision 19 board drawing", () => {
         (call) => call[0] === "set" && call[1] === "font",
       )?.[2],
     ).toBe("800 10px system-ui");
-    const lane = recordingContext();
-    drawStampedeLaneCellV7(
-      lane.context,
-      0,
-      0,
-      1,
-      { dx: 1, dy: 0, stand: false },
-      false,
-    );
-    // Two arrowheads on a run tile, each outlined then filled; no outline box.
-    expect(lane.log.filter((call) => call[0] === "stroke")).toHaveLength(4);
-    expect(lane.log.some((call) => call[0] === "strokeRect")).toBe(false);
-    const stand = recordingContext();
-    drawStampedeLaneCellV7(
-      stand.context,
-      0,
-      0,
-      1,
-      { dx: 0, dy: 1, stand: true },
-      false,
-    );
-    expect(stand.log.filter((call) => call[0] === "strokeRect")).toHaveLength(
-      2,
-    );
-    expect(stand.log.filter((call) => call[0] === "stroke")).toHaveLength(2);
     const allowed = new Set([
       "#ffffff",
       "#efe6c8",
@@ -708,8 +665,7 @@ describe("Revision 19 board drawing", () => {
       "#000000",
     ]);
     for (const effect of [
-      "STAMPEDE_RUN",
-      "STAMPEDE_HIT",
+      "CHARGE_HIT",
       "ACID_HIT",
       "HATCH",
       "HATCH_CALL",
@@ -743,7 +699,7 @@ describe("Revision 19 board drawing", () => {
 
   it("times the sprite cues: a laid Egg bounces, a hatchling grows in, growth pulses", () => {
     const step = (
-      effect: "EGG_LAID" | "HATCH" | "GROW" | "STAMPEDE_HIT",
+      effect: "EGG_LAID" | "HATCH" | "GROW" | "CHARGE_HIT",
     ): Parameters<typeof dinosaurUnitPulsesV7>[0] => ({
       kind: "DINOSAUR",
       effect,
@@ -774,6 +730,6 @@ describe("Revision 19 board drawing", () => {
       1.2,
     );
     expect(dinosaurUnitPulsesV7(step("GROW"), 1, 1)[0]?.scale).toBeCloseTo(1);
-    expect(dinosaurUnitPulsesV7(step("STAMPEDE_HIT"), 0.5, 1)).toEqual([]);
+    expect(dinosaurUnitPulsesV7(step("CHARGE_HIT"), 0.5, 1)).toEqual([]);
   });
 });

@@ -2,19 +2,28 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r19` (autosave
-`pulpWars.save.v7r19.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r18.current`), whose rules for the three factions
+The current client runs `pulp-wars-poc-7r20` (autosave
+`pulpWars.save.v7r20.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r19.current`), whose rules for the three factions
 the setup screen offers, Human, Undead, and Goblin, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The engine also
 registers the Dinosaur faction of the
 [revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
 (`pulp_wars-c87.2`: identity, roster, capacity slots, Grow, Acid, Armoured;
-`pulp_wars-c87.3`: Eggs, Shaman Hatch, Nesting, and Stampede, with their
-public previews `previewLayEggV7`, `previewHatchV7`, `previewStampedeV7`, and
-`queryStampedeLanesV7`); the client draws its units as the Human art and
-offers the faction, the Egg marker, and those commands from
-`pulp_wars-c87.4`. That document
+`pulp_wars-c87.3`: Eggs, Shaman Hatch, and Nesting, with their public
+previews `previewLayEggV7` and `previewHatchV7`); the client offers the
+faction, the Egg marker, and those commands from `pulp_wars-c87.4`.
+[Revision 20](../product/RULESET_7_REVISION_20.md) (`pulp_wars-0hi.2`)
+removes the revision-19 Stampede command with its previews
+(`previewStampedeV7`, `queryStampedeLanesV7`) and board lanes: the
+Triceratops attacks with the ordinary `ATTACK`, and its Charge! reaches the
+client only through `queryCombatPreviewV7` (`runUp`, `fortificationIgnored`,
+`push`, `advances`), `publicUnitStats` (the "Charge!" Attack modifier and
+status, `dinosaur.runUpBonus` and `runUpMaximum`), and the `UNIT_PUSHED`
+and `UNIT_MOVED` events of the attack. The same revision adds Wallbreaker,
+the Nesting city slot, and the full heal of a Promotion or growth stage;
+the client reads each from the registry and the public previews. The
+current-rules document
 folds in the
 [revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md)
 (`pulp_wars-0ao.9`), the

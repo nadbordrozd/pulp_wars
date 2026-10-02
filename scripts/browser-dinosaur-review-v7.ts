@@ -13,10 +13,10 @@ import {
  * Revision 19 Dinosaur UI visual review (pulp_wars-c87.4). It captures the
  * default-route setup with a Dinosaur seat; a Showcase launch with a
  * Dinosaur seat (the slot capacity, the Lay Egg cards, nest-tile picking,
- * Eggs with countdowns, and the Stampede lanes of the real board); and, on
- * the Dinosaur UI fixtures, the Stampede lanes and preview, the Shaman's
+ * Eggs with countdowns, and the Triceratops of the real board); and, on
+ * the Dinosaur UI fixtures, the Charge! attack preview, the Shaman's
  * Hatch, Egg docks, growth chevrons and scale, Acid and Armoured previews,
- * the armed Stampede confirmation, enemy Eggs as attack targets, the Lay
+ * the death-blast warning of a Charge kill, enemy Eggs as attack targets, the Lay
  * Egg reasons, the cues pinned mid-animation, and Help, in the CHIBI and
  * LEGACY art sets at desktop and phone widths. It needs the Vite dev
  * server, because the fixtures are imported from `tests/fixtures`.
@@ -82,7 +82,7 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__DINOSAUR_REVIEW__";
-const SAVE_KEY = "pulpWars.save.v7r19.current";
+const SAVE_KEY = "pulpWars.save.v7r20.current";
 
 try {
   const target = await waitForTarget();
@@ -134,16 +134,32 @@ try {
       // Growth chevrons and Eggs with countdowns, nothing selected.
       await focusCell(connection, at.bigRaptor as Coord);
       await capture(connection, `board-growth-eggs-${suffix}.png`);
-      // Stampede: three lanes with their run and stand tiles and previews.
+      // Charge! (revision 20): the unmoved Triceratops has Move targets
+      // only; after a two-tile Move its dock shows the run-up and the attack
+      // preview says "Charge +2" and that it pushes back.
       await activate(connection, at.triceratops as Coord);
-      evidence[`${suffix}StampedeButtons`] = await evaluate(
+      evidence[`${suffix}ChargeUnmovedStatuses`] = await evaluate(
         connection,
-        `Array.from(document.querySelectorAll('[data-action^="command-stampede-"]')).map((node) => node.getAttribute('aria-label'))`,
+        `Array.from(document.querySelectorAll('.v7-selection-dock .v7-unit-status-cues .v7-chip')).map((node) => node.textContent)`,
       );
-      await capture(connection, `stampede-lanes-${suffix}.png`);
-      await keys(connection, ["ArrowRight", "ArrowRight", "ArrowRight"]);
-      evidence[`${suffix}StampedeCursor`] = await cursorText(connection);
-      await capture(connection, `stampede-target-${suffix}.png`);
+      await capture(connection, `charge-unmoved-${suffix}.png`);
+      await evaluate(
+        connection,
+        `${REVIEW}.boardHost.activate(${JSON.stringify(at.chargeFrom)})`,
+      );
+      await waitFor(
+        connection,
+        `${REVIEW}.traces.some((trace) => trace.command.kind === 'MOVE')`,
+      );
+      await delay(1_000);
+      await activate(connection, at.chargeFrom as Coord);
+      evidence[`${suffix}ChargeStatuses`] = await evaluate(
+        connection,
+        `Array.from(document.querySelectorAll('.v7-selection-dock .v7-unit-status-cues .v7-chip')).map((node) => node.textContent)`,
+      );
+      await keys(connection, ["ArrowRight"]);
+      evidence[`${suffix}ChargeCursor`] = await cursorText(connection);
+      await capture(connection, `charge-target-${suffix}.png`);
       // The Shaman's Hatch: the hatchable Egg is a target, the new one not.
       await activate(connection, at.shaman as Coord);
       evidence[`${suffix}ShamanActions`] = await evaluate(
@@ -223,20 +239,43 @@ try {
         `document.querySelector('[data-action="close-overlay"]')?.click()`,
       );
       await delay(300);
-      // The cues pinned mid-animation: run dust, hit star, hatch chips,
-      // Egg destroyed, the Shaman's call.
-      await focusCell(connection, at.triceratops as Coord);
+      // Technology tree (revision 20): Nesting and Wallbreaker with their
+      // unlock text.
+      await evaluate(
+        connection,
+        `document.querySelector('[data-action="tech"]')?.click()`,
+      );
+      await delay(400);
+      for (const tech of ["fortification", "explosives"] as const) {
+        await evaluate(
+          connection,
+          `document.querySelector('[data-action="tech-${tech}"]')?.click()`,
+        );
+        await delay(300);
+        evidence[`${suffix}Tech${tech}`] = await evaluate(
+          connection,
+          `({ name: document.querySelector('[data-action="tech-${tech}"] .v7-tech-name')?.textContent, unlocks: Array.from(document.querySelectorAll('.v7-tech-unlocks li')).map((node) => node.textContent) })`,
+        );
+        await capture(connection, `tech-${tech}-${suffix}.png`);
+      }
+      await evaluate(
+        connection,
+        `(document.querySelector('[data-action="close-tech-detail"]')?.click(), document.querySelector('[data-action="close-overlay"]')?.click())`,
+      );
+      await delay(300);
+      // The cues pinned mid-animation: Charge hit star, hatch chips, Egg
+      // destroyed, the Shaman's call.
+      await focusCell(connection, at.chargeFrom as Coord);
       await evaluate(
         connection,
         `${REVIEW}.boardHost.pinDinosaurFeedback([
-          { effect: 'STAMPEDE_RUN', cells: [${JSON.stringify(at.triceratops)}, ${JSON.stringify(at.laneCaveman)}], progress: 0.75 },
-          { effect: 'STAMPEDE_HIT', cells: [${JSON.stringify(at.pushTarget)}], progress: 0.3 },
+          { effect: 'CHARGE_HIT', cells: [${JSON.stringify(at.pushTarget)}], progress: 0.3 },
           { effect: 'ACID_HIT', cells: [${JSON.stringify(at.killTarget)}], progress: 0.4 },
           { effect: 'EGG_DESTROYED', cells: [${JSON.stringify(at.diagonalTarget)}], progress: 0.45 },
         ])`,
       );
       await delay(200);
-      await capture(connection, `effects-stampede-${suffix}.png`);
+      await capture(connection, `effects-charge-${suffix}.png`);
       await focusCell(connection, at.shaman as Coord);
       await evaluate(
         connection,
@@ -249,22 +288,22 @@ try {
       await delay(200);
       await capture(connection, `effects-hatch-${suffix}.png`);
       await evaluate(connection, `${REVIEW}.boardHost.pinDinosaurFeedback([])`);
-      // The real Stampede on the Guard: pushed back, the Triceratops follows.
-      await activate(connection, at.triceratops as Coord);
+      // The real Charge on the Guard: pushed back, the Triceratops follows.
+      await activate(connection, at.chargeFrom as Coord);
       await evaluate(
         connection,
         `${REVIEW}.boardHost.activate(${JSON.stringify(at.pushTarget)})`,
       );
       await waitFor(
         connection,
-        `${REVIEW}.traces.some((trace) => trace.command.kind === 'STAMPEDE') && (document.querySelector('#v7-live')?.textContent ?? '').includes('stampeded')`,
+        `${REVIEW}.traces.some((trace) => trace.command.kind === 'ATTACK')`,
       );
       await delay(1_400);
-      evidence[`${suffix}AfterStampede`] = await evaluate(
+      evidence[`${suffix}AfterCharge`] = await evaluate(
         connection,
         `({ notice: document.querySelector('#v7-live')?.textContent, events: ${REVIEW}.traces.at(-1).eventKinds })`,
       );
-      await capture(connection, `stampede-after-${suffix}.png`);
+      await capture(connection, `charge-after-${suffix}.png`);
       // The real Hatch: the T-Rex appears at once, exhausted.
       await deselect(connection);
       await activate(connection, at.shaman as Coord);
@@ -283,28 +322,27 @@ try {
       );
       await capture(connection, `hatch-after-${suffix}.png`);
 
-      // A Stampede that sets off a death-blast chain asks to confirm.
+      // A Charge kill that sets off a death-blast chain warns on its target.
       await mount(connection, art, "dinosaurBlastFixtureV7");
       const blast = (await evaluate(connection, `${REVIEW}.blast`)) as Record<
         string,
         Coord
       >;
       await activate(connection, blast.triceratops as Coord);
-      await capture(connection, `stampede-blast-warning-${suffix}.png`);
       await evaluate(
         connection,
-        `${REVIEW}.boardHost.activate(${JSON.stringify(blast.bombChucker)})`,
+        `${REVIEW}.boardHost.activate(${JSON.stringify(blast.chargeFrom)})`,
       );
       await waitFor(
         connection,
-        `document.querySelector('[data-v7-stampede="armed"]') !== null`,
+        `${REVIEW}.traces.some((trace) => trace.command.kind === 'MOVE')`,
       );
-      await delay(500);
-      evidence[`${suffix}StampedePanel`] = await evaluate(
-        connection,
-        `Array.from(document.querySelectorAll('.v7-stampede-preview p, .v7-stampede-preview li')).map((node) => node.textContent)`,
-      );
-      await capture(connection, `stampede-armed-${suffix}.png`);
+      await delay(1_000);
+      await activate(connection, blast.chargeFrom as Coord);
+      // The Bomb Chucker stands south-east of the tile it is charged from.
+      await keys(connection, ["ArrowRight", "ArrowDown"]);
+      evidence[`${suffix}ChargeBlastCursor`] = await cursorText(connection);
+      await capture(connection, `charge-blast-warning-${suffix}.png`);
 
       // Enemy Eggs are attack targets; an Armoured defender.
       await mount(connection, art, "dinosaurEnemyFixtureV7");
@@ -494,16 +532,16 @@ async function showcase(
     `globalThis.__PULP_WARS_APP__.controller.snapshot().view.eggs`,
   );
   await capture(connection, `showcase-eggs-${size}.png`);
-  // The Triceratops (2, 9), one tile north of that Egg, has a turn-1 lane
-  // to the neighbour's Captain.
+  // The Triceratops (2, 9), one tile north of that Egg: its dock (no
+  // Stampede control in revision 20).
   await focus();
   await keys(connection, ["ArrowUp", "Enter"]);
   await delay(800);
-  evidence[`showcase${size}Stampede`] = await evaluate(
+  evidence[`showcase${size}TriceratopsActions`] = await evaluate(
     connection,
-    `Array.from(document.querySelectorAll('[data-action^="command-stampede-"]')).map((node) => node.getAttribute('aria-label'))`,
+    `Array.from(document.querySelectorAll('.v7-selection-dock .v7-action-label')).map((node) => node.textContent)`,
   );
-  await capture(connection, `showcase-stampede-${size}.png`);
+  await capture(connection, `showcase-triceratops-${size}.png`);
   await evaluate(connection, `localStorage.removeItem('${SAVE_KEY}')`);
 }
 

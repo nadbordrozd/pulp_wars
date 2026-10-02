@@ -8,9 +8,10 @@ import {
   applyCommandV7,
   effectiveRoleRuleV7,
   previewHatchV7,
+  previewAttackExplosionsV7,
   previewLayEggV7,
-  previewStampedeV7,
   projectEventsV7,
+  queryCombatPreviewV7,
   queryPlayerCommandsV7,
   roleMechanicsV7,
   viewForV7,
@@ -40,7 +41,8 @@ import {
 } from "../../src/render/dom/app-view-v7";
 import {
   DINOSAUR_HELP_RULES_V7,
-  STAMPEDE_TOOLTIP_V7,
+  PROMOTION_HELP_TIP_V7,
+  WALLBREAKER_UNLOCK_TEXT_V7,
   dinosaurAbilityDescriptionV7,
   dinosaurRecruitNotesV7,
   dinosaurRewardLabelV7,
@@ -53,11 +55,12 @@ import {
   layEggRowTextV7,
   layEggUnavailableTextV7,
   nestingEggHpBonusV7,
+  nestingUnlockTextV7,
   slotCapacityTooltipV7,
   slotsTextV7,
-  stampedePreviewTextV7,
   turnsTextV7,
 } from "../../src/render/dinosaur-presentation-v7";
+import { goblinAttackPreviewTextV7 } from "../../src/render/goblin-presentation-v7";
 import { rewardStateV7 } from "../fixtures/v7-dinosaur-arena";
 import {
   DINOSAUR_BLAST_V7,
@@ -76,7 +79,7 @@ import { goblinShowcaseFixtureV7 } from "../fixtures/v7-goblin-ui";
 
 // Every Dinosaur number expected below is read from the registry or from a
 // public preview of the same view: the balance bead (`pulp_wars-c87.8`) may
-// retune hatch times, slots, costs, HP, Attack and the Stampede bonus.
+// retune hatch times, slots, costs, HP, Attack and the Charge! bonus.
 const AT = DINOSAUR_SHOWCASE_V7;
 const EGG_ROLES = eggLaidRolesV7(UNIT_ROLE_IDS_V7, "DINOSAUR");
 const roleLabel = (role: UnitRoleIdV7): string =>
@@ -101,15 +104,26 @@ function slotsText(view: PlayerViewV7, cityId: number): string {
   return `${preview.usedSlots}/${preview.capacity} slots`;
 }
 
-function stampedeText(view: PlayerViewV7, unitId: number, targetId: number) {
-  const unit = required(view.units.find((entry) => entry.id === unitId));
-  const target = required(view.units.find((entry) => entry.id === targetId));
-  const preview = required(previewStampedeV7(view, unit.id, target.id));
-  return {
-    preview,
-    damage: preview.combat.damageToDefender,
-    text: stampedePreviewTextV7(view, preview),
-  };
+const STAMPEDE_CONTROLS =
+  '[data-action*="stampede"], .v7-stampede-legend, .v7-stampede-chip, [data-v7-stampede]';
+
+/** The board target of `family` on `at`, or undefined. */
+function boardTarget(host: RecordingBoardHost, family: string, at: CoordV7) {
+  return boardPlan(host).targets.find(
+    (candidate) =>
+      candidate.family === family &&
+      candidate.at.x === at.x &&
+      candidate.at.y === at.y,
+  );
+}
+
+/** The dock's status chips (the full status texts). */
+function statusChips(): (string | null)[] {
+  return [
+    ...document.querySelectorAll(
+      ".v7-selection-dock .v7-unit-status-cues .v7-chip",
+    ),
+  ].map((chip) => chip.textContent);
 }
 
 beforeEach(() => {
@@ -220,30 +234,61 @@ describe("Revision 19 Dinosaur setup", () => {
     );
     // The city action is spent: the cards explain it.
     expect(new Set(eggReasons())).toEqual(new Set(["City action spent"]));
-    // The Triceratops has a turn-1 lane to the neighbour's Captain.
+    // Revision 20: the Triceratops moves two tiles next to the neighbour's
+    // Captain and attacks it with Charge! (no Stampede control exists).
     const triceratops = required(own.find((unit) => unit.role === "CATAPULT"));
     host.callbacks?.onSelection({ kind: "UNIT", unitId: triceratops.id });
-    const stampede = requiredElement<HTMLButtonElement>(
-      '[data-action^="command-stampede-"]',
-    );
-    const charge = stampedeText(
-      required(app.controller.snapshot().view),
-      triceratops.id,
-      Number(stampede.dataset.action?.replace("command-stampede-", "")),
-    );
-    expect(stampede.getAttribute("aria-label")).toBe(
-      `Stampede · ${charge.text.description}`,
-    );
-    expect(charge.text.description).toContain("Captain");
-    stampede.click();
-    await waitUntil(() =>
-      (document.querySelector("#v7-live")?.textContent ?? "").startsWith(
-        `Your Triceratops stampeded Player 2's Captain: ${charge.damage} damage`,
+    expect(document.querySelector(STAMPEDE_CONTROLS)).toBe(null);
+    const current = () => required(app.controller.snapshot().view);
+    const captain = required(
+      current().units.find(
+        (unit) =>
+          unit.ownerId !== view.viewer.id &&
+          unit.role === "CAPTAIN" &&
+          Math.max(
+            Math.abs(unit.at.x - triceratops.at.x),
+            Math.abs(unit.at.y - triceratops.at.y),
+          ) <= 3,
       ),
     );
+    const step = required(
+      boardPlan(host).targets.find(
+        (candidate) =>
+          candidate.family === "MOVE" &&
+          candidate.command.kind === "MOVE" &&
+          candidate.command.path.length === 2 &&
+          Math.max(
+            Math.abs(candidate.at.x - captain.at.x),
+            Math.abs(candidate.at.y - captain.at.y),
+          ) === 1,
+      ),
+    );
+    host.callbacks?.onCommand(step);
+    await waitUntil(
+      () => boardTarget(host, "ATTACK", captain.at) !== undefined,
+    );
+    const charge = required(
+      queryCombatPreviewV7(current(), triceratops.id, captain.id),
+    );
+    expect(charge.runUp).toBe(2);
+    await waitUntil(() => statusChips().length > 0);
+    expect(statusChips()).toContain("Charge! +2 Attack");
+    const attack = required(boardTarget(host, "ATTACK", captain.at));
+    expect(attack.previewNote).toContain("Charge +2");
+    host.callbacks?.onCommand(attack);
+    await waitUntil(() => {
+      const target = app.controller
+        .snapshot()
+        .view?.units.find((unit) => unit.id === captain.id);
+      return target === undefined || target.hp < captain.hp;
+    });
     await waitUntil(() => !app.controller.snapshot().transitioning);
     const played = required(app.controller.snapshot().view);
     expect(played.eggs).toHaveLength(1);
+    expect(
+      (played.units.find((unit) => unit.id === captain.id)?.hp ?? 0) <=
+        captain.hp - charge.damageToDefender,
+    ).toBe(true);
     // Save and quit, then a fresh page load resumes the same Dinosaur match.
     requiredButton("compact-menu").click();
     requiredButton("main-menu").click();
@@ -663,137 +708,95 @@ describe("Revision 19 Egg dock and Shaman Hatch", () => {
   });
 });
 
-describe("Revision 19 Stampede", () => {
-  it("lists a Stampede per target with its preview and performs it in one click", async () => {
+describe("Revision 20 Charge!", () => {
+  it("has no Stampede control, shows the run-up after a Move and charges from the board", async () => {
     const controller = new FixtureController(dinosaurShowcaseFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     const triceratops = selectUnitAt(controller, host, AT.triceratops);
     const guard = unitAt(controller, AT.pushTarget);
-    const view = required(controller.snapshot().view);
-    const charge = (at: CoordV7) =>
-      stampedeText(view, triceratops.id, unitAt(controller, at).id);
-    const push = charge(AT.pushTarget);
     expect(requiredElement(".v7-selection-dock h2").textContent).toBe(
       "Triceratops",
     );
-    expect(actionLabels()).toEqual([
-      "Stampede",
-      "Stampede",
-      "Stampede",
-      "Disband",
-      "Wait",
-    ]);
+    // Revision 20: no Stampede button, chip, legend or hint; unmoved, it has
+    // no run-up and its enemies are out of reach.
+    expect(actionLabels()).toEqual(["Disband", "Wait"]);
+    expect(document.querySelector(STAMPEDE_CONTROLS)).toBe(null);
+    expect(statusChips()).toEqual([]);
     expect(
-      [...document.querySelectorAll(".v7-stampede-chip")].map(
-        (chip) => chip.textContent,
-      ),
-    ).toEqual([
-      `Juggernaut −${push.damage}`,
-      `Fighter −${charge(AT.killTarget).damage}`,
-      `Marksman −${charge(AT.diagonalTarget).damage}`,
-    ]);
-    const stampede = requiredButton(`command-stampede-${guard.id}`);
-    expect(stampede.title).toBe(STAMPEDE_TOOLTIP_V7);
-    expect(stampede.getAttribute("aria-label")).toBe(
-      `Stampede · ${push.text.description}`,
+      boardPlan(host).targets.some((target) => target.family === "ATTACK"),
+    ).toBe(false);
+    // Two tiles over the own Caveman, next to the Juggernaut.
+    host.callbacks?.onCommand(
+      required(boardTarget(host, "MOVE", AT.chargeFrom)),
     );
-    expect(push.text.outcome).toBe(
-      "Pushes Juggernaut back; Triceratops follows",
-    );
-    expect(stampede.hasAttribute("aria-pressed")).toBe(false);
-    expect(
-      [
-        ...document.querySelectorAll<HTMLElement>(
-          ".v7-stampede-legend [data-stampede-marker]",
-        ),
-      ].map((item) => [item.dataset.stampedeMarker, item.textContent]),
-    ).toEqual([
-      ["run", "Run tile"],
-      ["stand", "Stops here"],
-      ["target", "Stampede target"],
-    ]);
-    // The board target of the same Stampede performs it at once.
-    const target = required(
-      boardPlan(host).targets.find(
-        (candidate) =>
-          candidate.family === "STAMPEDE" &&
-          candidate.at.x === AT.pushTarget.x &&
-          candidate.at.y === AT.pushTarget.y,
-      ),
-    );
-    host.callbacks?.onCommand(target);
     await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toEqual({
-      kind: "STAMPEDE",
+    await waitUntil(
+      () => boardTarget(host, "ATTACK", AT.pushTarget) !== undefined,
+    );
+    const view = required(controller.snapshot().view);
+    const preview = required(
+      queryCombatPreviewV7(view, triceratops.id, guard.id),
+    );
+    expect(preview).toMatchObject({ runUp: 2, push: "WILL_PUSH" });
+    // The dock returns once the Move has been presented.
+    await waitUntil(() => statusChips().length > 0);
+    expect(statusChips()).toEqual(["Charge! +2 Attack"]);
+    const attack = required(boardTarget(host, "ATTACK", AT.pushTarget));
+    expect(attack.previewLabel).toBe(
+      `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}`,
+    );
+    expect(attack.previewNote).toBe(
+      "Charge +2 · Pushes back; Triceratops follows",
+    );
+    // One activation of the board target performs the ordinary Attack.
+    host.callbacks?.onCommand(attack);
+    await waitUntil(() => controller.accepted.length === 2);
+    expect(controller.accepted[1]).toEqual({
+      kind: "ATTACK",
       unitId: triceratops.id,
       targetUnitId: guard.id,
     });
-    await waitUntil(
-      () =>
-        document.querySelector("#v7-live")?.textContent ===
-        `Your Triceratops stampeded Player 2's Juggernaut: ${push.damage} damage`,
+    // The Juggernaut was pushed one tile east and the Triceratops followed.
+    const after = required(controller.snapshot().view);
+    expect(after.units.find((unit) => unit.id === guard.id)).toMatchObject({
+      at: { x: AT.pushTarget.x + 1, y: AT.pushTarget.y },
+      hp: guard.hp - preview.damageToDefender,
+    });
+    expect(after.units.find((unit) => unit.id === triceratops.id)?.at).toEqual(
+      AT.pushTarget,
     );
-    expect(document.querySelector(".v7-toast")?.textContent).toBe(
-      `Your Triceratops stampeded Player 2's Juggernaut: ${push.damage} damage`,
-    );
-    // It has moved and acted: no Stampede button and no hint remain.
-    expect(document.querySelector('[data-action^="command-stampede-"]')).toBe(
-      null,
-    );
-    expect(document.querySelector('[data-action="stampede-unavailable"]')).toBe(
-      null,
-    );
+    // It has attacked: the run-up status is gone.
+    await waitUntil(() => statusChips().length === 0);
+    expect(document.querySelector(STAMPEDE_CONTROLS)).toBe(null);
     app.destroy();
   });
 
-  it("explains a moved Triceratops and one without a lane", async () => {
+  it("shows a shorter run-up after a one-tile Move", async () => {
     const controller = new FixtureController(dinosaurShowcaseFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     const triceratops = selectUnitAt(controller, host, AT.triceratops);
-    host.callbacks?.onCommand({
-      at: { x: 3, y: 2 },
-      command: { kind: "MOVE", unitId: triceratops.id, path: [{ x: 3, y: 2 }] },
-      family: "MOVE",
-    });
-    await waitUntil(() => controller.accepted.length === 1);
+    const fighter = unitAt(controller, AT.killTarget);
+    host.callbacks?.onCommand(required(boardTarget(host, "MOVE", AT.killFrom)));
     await waitUntil(
-      () =>
-        document.querySelector('[data-action="stampede-unavailable"]') !== null,
+      () => boardTarget(host, "ATTACK", AT.killTarget) !== undefined,
     );
-    const moved = requiredButton("stampede-unavailable");
-    expect(moved.dataset.disabledReason).toBe("stampede-moved");
-    expect(moved.getAttribute("aria-label")).toBe(
-      "Stampede unavailable. A Triceratops cannot Stampede after moving",
+    const view = required(controller.snapshot().view);
+    const preview = required(
+      queryCombatPreviewV7(view, triceratops.id, fighter.id),
     );
-    // A tap shows the reason (touch has no hover).
-    moved.click();
-    expect(document.querySelector(".v7-toast")?.textContent).toBe(
-      "A Triceratops cannot Stampede after moving.",
+    expect(preview).toMatchObject({ runUp: 1, defenderDies: true });
+    await waitUntil(() => statusChips().length > 0);
+    expect(statusChips()).toEqual(["Charge! +1 Attack"]);
+    // A kill has no Push line.
+    expect(boardTarget(host, "ATTACK", AT.killTarget)?.previewNote).toBe(
+      "Charge +1",
     );
     app.destroy();
-
-    document.body.innerHTML = '<div id="app"></div>';
-    const lonely = new FixtureController(
-      dinosaurUiFieldV7([
-        { seat: 0, role: "CATAPULT", at: { x: 4, y: 2 } },
-        { seat: 1, role: "FIGHTER", at: { x: 2, y: 6 } },
-      ]),
-    );
-    const lonelyHost = new RecordingBoardHost();
-    const lonelyApp = mount(lonely, lonelyHost);
-    selectUnitAt(lonely, lonelyHost, { x: 4, y: 2 });
-    const lane = requiredButton("stampede-unavailable");
-    expect(lane.dataset.disabledReason).toBe("stampede-lane");
-    expect(lane.title).toBe(
-      "No clear lane: needs open ground in a straight line",
-    );
-    expect(document.querySelector(".v7-stampede-legend")).toBe(null);
-    lonelyApp.destroy();
   });
 
-  it("arms a Stampede that sets off a death blast and asks to confirm", async () => {
+  it("warns of the death blast of a Charge kill on its board target", async () => {
     const controller = new FixtureController(dinosaurBlastFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
@@ -803,105 +806,39 @@ describe("Revision 19 Stampede", () => {
       DINOSAUR_BLAST_V7.triceratops,
     );
     const target = unitAt(controller, DINOSAUR_BLAST_V7.bombChucker);
-    const action = `command-stampede-${target.id}`;
-    const blast = stampedeText(
-      required(controller.snapshot().view),
-      triceratops.id,
-      target.id,
+    host.callbacks?.onCommand(
+      required(boardTarget(host, "MOVE", DINOSAUR_BLAST_V7.chargeFrom)),
     );
-    expect(blast.text.warnings).toHaveLength(3);
-    expect(requiredButton(action).getAttribute("aria-pressed")).toBe("false");
-    expect(
-      requiredButton(action).querySelector('[data-friendly-fire="true"]')
-        ?.textContent,
-    ).toBe("Blast");
-    // Clicking the target on the board arms it: nothing is dispatched.
-    const boardTarget = required(
-      boardPlan(host).targets.find(
-        (candidate) => candidate.family === "STAMPEDE",
-      ),
+    await waitUntil(
+      () =>
+        boardTarget(host, "ATTACK", DINOSAUR_BLAST_V7.bombChucker) !==
+        undefined,
     );
-    expect(boardTarget.needsConfirmation).toBe(true);
-    host.callbacks?.onCommand(boardTarget);
-    await Promise.resolve();
-    expect(controller.accepted).toEqual([]);
-    expect(host.lastModel?.interaction.stampedeTargetUnitId).toBe(target.id);
-    const panel = requiredElement<HTMLElement>('[data-v7-stampede="armed"]');
-    expect(panel.querySelector(".v7-kaboom-summary")?.textContent).toBe(
-      `${blast.text.run}. ${blast.text.damage}.`,
+    const view = required(controller.snapshot().view);
+    const preview = required(
+      queryCombatPreviewV7(view, triceratops.id, target.id),
     );
-    expect(
-      [...panel.querySelectorAll<HTMLElement>("[data-stampede-line]")].map(
-        (line) => [
-          line.dataset.stampedeLine,
-          line.textContent,
-          line.classList.contains("is-warning"),
-        ],
-      ),
-    ).toEqual([
-      ["outcome", "Kills Bomb Chucker; Triceratops advances", false],
-      ["no-retaliation", "No retaliation", false],
-      ...blast.text.warnings.map((warning) => ["warning", warning, true]),
-    ]);
-    expect(requiredButton(action).getAttribute("aria-pressed")).toBe("true");
-    expect(requiredButton(action).dataset.stampede).toBe("armed");
-    // Escape, Cancel and the armed button all disarm.
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    const chain = required(
+      previewAttackExplosionsV7(view, triceratops.id, target.id),
     );
-    expect(document.querySelector('[data-v7-stampede="armed"]')).toBe(null);
-    expect(host.lastModel?.interaction.stampedeTargetUnitId).toBeUndefined();
-    expect(requiredElement(".v7-selection-dock h2").textContent).toBe(
-      "Triceratops",
+    const text = goblinAttackPreviewTextV7(view, preview, chain);
+    expect(text.warnings).toHaveLength(3);
+    const attack = required(
+      boardTarget(host, "ATTACK", DINOSAUR_BLAST_V7.bombChucker),
     );
-    requiredButton(action).click();
-    expect(document.querySelector('[data-v7-stampede="armed"]')).not.toBe(null);
-    requiredButton("cancel-stampede").click();
-    expect(document.querySelector('[data-v7-stampede="armed"]')).toBe(null);
-    requiredButton(action).click();
-    requiredButton(action).click();
-    expect(document.querySelector('[data-v7-stampede="armed"]')).toBe(null);
-    expect(controller.accepted).toEqual([]);
-    // Confirm performs it.
-    requiredButton(action).click();
-    const confirm = requiredButton("confirm-stampede");
-    expect(confirm.getAttribute("aria-label")).toContain(
-      `Confirm Stampede. ${blast.text.run}. ${blast.text.damage}. Kills Bomb Chucker; Triceratops advances.`,
-    );
-    confirm.click();
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toEqual({
-      kind: "STAMPEDE",
+    expect(attack).toMatchObject({
+      previewWarnings: text.warnings,
+      previewWarningSummary: text.summary,
+    });
+    // No Stampede arming panel exists: it is an ordinary attack.
+    expect(document.querySelector(STAMPEDE_CONTROLS)).toBe(null);
+    host.callbacks?.onCommand(attack);
+    await waitUntil(() => controller.accepted.length === 2);
+    expect(controller.accepted[1]).toEqual({
+      kind: "ATTACK",
       unitId: triceratops.id,
       targetUnitId: target.id,
     });
-    await waitUntil(() =>
-      (document.querySelector("#v7-live")?.textContent ?? "").includes(
-        `Your Triceratops stampeded Player 2's Bomb Chucker: ${blast.damage} damage`,
-      ),
-    );
-    app.destroy();
-  });
-
-  it("performs an armed Stampede on a second activation of its board target", async () => {
-    const controller = new FixtureController(dinosaurBlastFixtureV7());
-    const host = new RecordingBoardHost();
-    const app = mount(controller, host);
-    selectUnitAt(controller, host, DINOSAUR_BLAST_V7.triceratops);
-    const first = required(
-      boardPlan(host).targets.find(
-        (candidate) => candidate.family === "STAMPEDE",
-      ),
-    );
-    host.callbacks?.onCommand(first);
-    await Promise.resolve();
-    expect(controller.accepted).toEqual([]);
-    // While armed, the armed Stampede is the board's only target.
-    const armed = boardPlan(host).targets;
-    expect(armed.map((candidate) => candidate.family)).toEqual(["STAMPEDE"]);
-    host.callbacks?.onCommand(required(armed[0]));
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]?.kind).toBe("STAMPEDE");
     app.destroy();
   });
 });
@@ -1001,7 +938,7 @@ describe("Revision 19 growth, abilities and labels", () => {
     ]);
     expect(abilityNames(AT.shaman)).toEqual(["War Drums", "Tend", "Hatch"]);
     expect(abilityNames(AT.triceratops)).toEqual([
-      "Stampede",
+      "Charge!",
       "Grows",
       "Growth",
       ...bigBody("CATAPULT"),
@@ -1053,7 +990,7 @@ describe("Revision 19 growth, abilities and labels", () => {
     app.destroy();
   });
 
-  it("names Nesting and the Egg unlocks in the technology tree", () => {
+  it("names Nesting, Wallbreaker and the Egg unlocks in the technology tree", () => {
     const controller = new FixtureController(
       dinosaurCityFixtureV7({ techs: { 0: [] } }),
     );
@@ -1069,14 +1006,28 @@ describe("Revision 19 growth, abilities and labels", () => {
         (item) => item.textContent,
       );
     };
-    expect(unlocks("fortification")).toEqual([
-      `Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner`,
-    ]);
+    expect(unlocks("fortification")).toEqual([nestingUnlockTextV7()]);
+    // Revision 20: Nesting also gives every city a slot.
+    expect(nestingUnlockTextV7()).toBe(
+      `Eggs have +${nestingEggHpBonusV7()} HP and hatch one turn sooner; +1 unit slot in every city`,
+    );
     expect(requiredElement(".v7-tech-detail").getAttribute("aria-label")).toBe(
       "Nesting details",
     );
     expect(unlocks("scouting")).toContain("Raptor Egg");
-    expect(unlocks("sawmilling")).toContain("Triceratops Egg (Stampede)");
+    expect(unlocks("sawmilling")).toContain("Triceratops Egg (Charge!)");
+    // Revision 20: the Explosives slot is Wallbreaker for a Dinosaur.
+    expect(
+      requiredButton("tech-explosives").querySelector(".v7-tech-name")
+        ?.textContent,
+    ).toBe("Wallbreaker");
+    // It keeps both Explosives unlocks and adds its own.
+    expect(unlocks("explosives")).toEqual(
+      expect.arrayContaining(["Blast mountain", WALLBREAKER_UNLOCK_TEXT_V7]),
+    );
+    expect(requiredElement(".v7-tech-detail").getAttribute("aria-label")).toBe(
+      "Wallbreaker details",
+    );
     expect(unlocks("chivalry")).toEqual(
       expect.arrayContaining([
         "T-Rex Egg",
@@ -1097,8 +1048,8 @@ describe("Revision 19 growth, abilities and labels", () => {
     expect(recruitmentRolePresentationV7("CATAPULT", "DINOSAUR")).toMatchObject(
       {
         label: "Triceratops",
+        // Revision 20: it attacks after moving.
         restrictions: [
-          "Can't attack after moving.",
           "Can't capture.",
           ...dinosaurRecruitNotesV7("CATAPULT", "DINOSAUR"),
         ],
@@ -1107,7 +1058,7 @@ describe("Revision 19 growth, abilities and labels", () => {
     expect(
       recruitmentRolePresentationV7("CATAPULT", "DINOSAUR").abilities,
     ).toEqual([
-      `Stampede: ${dinosaurAbilityDescriptionV7("STAMPEDE", "DINOSAUR")}`,
+      `Charge!: ${dinosaurAbilityDescriptionV7("LINEBREAKER", "DINOSAUR")}`,
       `Grows: ${dinosaurAbilityDescriptionV7("GROW", "DINOSAUR")}`,
     ]);
     expect(dinosaurRecruitNotesV7("CATAPULT", "DINOSAUR")[0]).toMatch(
@@ -1168,6 +1119,8 @@ describe("Revision 19 Help", () => {
       expect(
         tips.includes("Select your city to train units and lay Eggs."),
       ).toBe(laysEggs);
+      // Revision 20: every viewer is told that a Promotion fully heals.
+      expect(tips).toContain(PROMOTION_HELP_TIP_V7);
       // A Raptor has no Escape, so a Dinosaur viewer is not told of it.
       expect(
         tips.includes(

@@ -20,7 +20,6 @@ import {
   previewKaboomV7,
   previewDevourV7,
   previewRaiseDeadV7,
-  previewStampedeV7,
   previewTendWoundedV7,
   previewWailV7,
   queryCombatPreviewV7,
@@ -35,7 +34,6 @@ import {
   dinosaurCombatSemanticNoteV7,
   hatchBlockedEggsV7,
   matchHasDinosaurV7,
-  stampedePreviewTextV7,
   turnsTextV7,
   unitDisplayNameV7,
 } from "../dinosaur-presentation-v7";
@@ -64,7 +62,6 @@ import {
   drawDinosaurBadgeV7,
   drawEggCountdownV7,
   drawGrowthChevronsV7,
-  drawStampedeLaneCellV7,
   growthSpriteScaleV7,
 } from "./dinosaur-canvas-v7";
 import { drawGoblinBadgeV7 } from "./goblin-canvas-v7";
@@ -167,12 +164,6 @@ export interface BoardRenderInteractionV7 {
     readonly cityId: number;
     readonly role: UnitRoleIdV7;
   } | null;
-  /**
-   * Revision 19: the target of the selected Triceratops's armed Stampede
-   * (one that asks for confirmation). Its lane and preview are the only
-   * preview of that unit; null or omitted shows every lane.
-   */
-  readonly stampedeTargetUnitId?: number | null;
 }
 
 /** Revision 19: the ID of the legacy code-drawn Egg (no raster exists). */
@@ -194,25 +185,10 @@ export interface MapCommandTargetV7 {
     | "MONUMENT"
     | "DISEMBARK"
     | "LANDING_AFTER_MOVE"
-    /** Revision 19: a Triceratops Stampede target, 2 or 3 tiles away. */
-    | "STAMPEDE"
     /** Revision 19: an adjacent own Egg a Shaman may hatch. */
     | "HATCH"
     /** Revision 19: a legal nest tile of the Egg being laid. */
     | "LAY_EGG";
-  /**
-   * Revision 19 STAMPEDE: a death blast follows the kill, so the UI asks
-   * for confirmation instead of dispatching on the first activation.
-   */
-  readonly needsConfirmation?: boolean;
-  /**
-   * Revision 19 STAMPEDE: the Triceratops's tile and its lane (the run
-   * tiles in order; the last one is the stand tile).
-   */
-  readonly lane?: {
-    readonly from: CoordV7;
-    readonly tiles: readonly CoordV7[];
-  };
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -280,9 +256,7 @@ export interface BoardRenderPlanEntryV7 {
     | "CURSOR"
     | "GRAVE"
     | "ABILITY_AREA"
-    | "ABILITY_TARGET"
-    /** Revision 19: one tile of a Stampede lane (run or stand tile). */
-    | "LANE";
+    | "ABILITY_TARGET";
   readonly assetId?: string;
   /** Art-set-neutral subject; the CHIBI art set resolves its raster from it. */
   readonly artSubject?: ArtSubjectV7;
@@ -344,15 +318,6 @@ export interface BoardRenderPlanEntryV7 {
   readonly egg?: { readonly turnsRemaining: number };
   /** UNIT only, revision 19: a grown Dinosaur unit, Big (1) or Alpha (2). */
   readonly growthStage?: 1 | 2;
-  /**
-   * LANE only: the run direction, and whether this is the stand tile (the
-   * last lane tile, next to the target).
-   */
-  readonly lane?: {
-    readonly dx: number;
-    readonly dy: number;
-    readonly stand: boolean;
-  };
 }
 
 export interface BoardRenderPlanV7 {
@@ -747,12 +712,7 @@ export function buildBoardRenderPlanV7(
     : layEgg !== null
       ? layEggTargets(view, commands, layEgg)
       : dedupeMapTargets(
-          mapTargets(
-            view,
-            commands,
-            interaction.selectedUnitId,
-            interaction.stampedeTargetUnitId ?? null,
-          ),
+          mapTargets(view, commands, interaction.selectedUnitId),
         );
   for (const target of targets) {
     if (target.family === "LAY_EGG")
@@ -763,21 +723,6 @@ export function buildBoardRenderPlanV7(
         at: target.at,
         abilityStyle: "NEST",
         targetEdges: [],
-      });
-    const lane = target.lane;
-    if (lane === undefined) continue;
-    const last = lane.tiles.at(-1);
-    for (const at of lane.tiles)
-      entries.push({
-        key: `lane:${coordKey(target.at)}:${coordKey(at)}`,
-        kind: "LANE",
-        layer: 6.5,
-        at,
-        lane: {
-          dx: Math.sign(target.at.x - lane.from.x),
-          dy: Math.sign(target.at.y - lane.from.y),
-          stand: last !== undefined && same(at, last),
-        },
       });
   }
   const targetEdges = mapTargetEdges(targets);
@@ -1229,8 +1174,7 @@ export function drawBoardV7(input: {
         entry.kind === "SELECTION" ||
         entry.kind === "CURSOR" ||
         entry.kind === "ABILITY_AREA" ||
-        entry.kind === "ABILITY_TARGET" ||
-        entry.kind === "LANE"
+        entry.kind === "ABILITY_TARGET"
       )
         continue;
       if (
@@ -1983,17 +1927,6 @@ export function drawBoardV7(input: {
     context.restore();
   }
   drawAbilityAreasV7(context, camera, input.plan.entries);
-  // Revision 19: the run and stand tiles of every offered Stampede.
-  for (const entry of input.plan.entries)
-    if (entry.kind === "LANE" && entry.lane !== undefined)
-      drawStampedeLaneCellV7(
-        context,
-        camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
-        camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom,
-        camera.zoom,
-        entry.lane,
-        input.highContrast ?? false,
-      );
   // Selection and action outlines keep visual priority over ownership.
   for (const entry of input.plan.entries) {
     const size = TILE_WIDTH * camera.zoom;
@@ -2257,7 +2190,6 @@ function mapTargetEdges(
 
 function targetPriority(family: MapCommandTargetV7["family"]): number {
   if (family === "ATTACK") return 6;
-  if (family === "STAMPEDE") return 5;
   if (family === "HATCH") return 4;
   // Revision 16: a two-step landing cell keeps its whole dotted outline
   // where it touches a "Land now" or Move target.
@@ -2269,7 +2201,7 @@ function targetPriority(family: MapCommandTargetV7["family"]): number {
 function targetStroke(
   family: MapCommandTargetV7["family"] | undefined,
 ): string {
-  if (family === "ATTACK" || family === "STAMPEDE") return "#ff655f";
+  if (family === "ATTACK") return "#ff655f";
   if (family === "LANDING_AFTER_MOVE") return "#f4c95d";
   // Revision 19: Hatch and nest-tile targets use the unowned cue cream.
   if (family === "HATCH" || family === "LAY_EGG") return "#fff8d0";
@@ -2492,11 +2424,8 @@ function drawAttackBlastPreviewV7(
   defer: (draw: () => void) => void,
   paintLater?: (paint: () => void) => void,
 ): void {
-  // Revision 19: a Stampede that kills an exploding unit previews its chain.
   const blastTargets = plan.targets.filter(
-    (target) =>
-      (target.family === "ATTACK" || target.family === "STAMPEDE") &&
-      target.blast !== undefined,
+    (target) => target.family === "ATTACK" && target.blast !== undefined,
   );
   const target =
     (focus === null
@@ -3031,28 +2960,7 @@ function mapTargets(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
   selectedUnitId: number | null,
-  stampedeTargetUnitId: number | null,
 ): MapCommandTargetV7[] {
-  // Revision 19: an armed Stampede is the only preview of its unit, so its
-  // Move, Attack and other Stampede targets step aside (as for Kaboom!).
-  const armed =
-    stampedeTargetUnitId !== null &&
-    commands.some(
-      (command) =>
-        command.kind === "STAMPEDE" &&
-        command.unitId === selectedUnitId &&
-        command.targetUnitId === stampedeTargetUnitId,
-    );
-  if (armed)
-    return commandMapTargets(
-      view,
-      commands.filter(
-        (command) =>
-          command.kind === "STAMPEDE" &&
-          command.targetUnitId === stampedeTargetUnitId,
-      ),
-      selectedUnitId,
-    );
   return [
     ...commandMapTargets(view, commands, selectedUnitId),
     ...landingAfterMoveTargets(view, commands, selectedUnitId),
@@ -3118,48 +3026,6 @@ function commandMapTargets(
   const dinosaurMatch = matchHasDinosaurV7(view);
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
-    // Revision 19: a Stampede target with its lane, the hit, the Push or
-    // advance, and any death-blast chain (the Goblin warning presentation).
-    if (command.kind === "STAMPEDE" && command.unitId === selectedUnitId) {
-      const target = view.units.find(
-        (unit) => unit.id === command.targetUnitId,
-      );
-      const preview = previewStampedeV7(
-        view,
-        command.unitId,
-        command.targetUnitId,
-      );
-      if (target === undefined || preview === null) return [];
-      const text = stampedePreviewTextV7(view, preview);
-      return [
-        {
-          at: target.at,
-          command,
-          family: "STAMPEDE",
-          previewLabel: text.boardLabel,
-          previewNote: text.boardNote,
-          semanticLabel: `Stampede preview. ${text.description}`,
-          lane: { from: preview.from, tiles: preview.lane },
-          ...(text.warnings.length === 0
-            ? {}
-            : { previewWarnings: text.warnings }),
-          ...(text.warnings.length === 0 || text.warningSummary === null
-            ? {}
-            : { previewWarningSummary: text.warningSummary }),
-          ...(preview.explosions.explosions.length === 0
-            ? {}
-            : {
-                blast: blastPreviewPresentationV7(
-                  view,
-                  preview.explosions,
-                  null,
-                  command.unitId,
-                ),
-              }),
-          ...(text.needsConfirmation ? { needsConfirmation: true } : {}),
-        },
-      ];
-    }
     // Revision 19: an adjacent own Egg the selected Shaman may hatch.
     if (command.kind === "HATCH" && command.unitId === selectedUnitId) {
       const preview = previewHatchV7(view, command.unitId, command.eggUnitId);
@@ -3232,10 +3098,11 @@ function commandMapTargets(
                 )
                 .map((item) => item.unitId),
             );
-      // Revision 19 (Dinosaur matches only): Acid and Armoured.
+      // Revision 19 (Dinosaur matches only): Acid and Armoured; revision
+      // 20: the Charge! run-up, ignored fortification, Push and follow.
       const dinosaurNote =
         dinosaurMatch && preview !== null
-          ? dinosaurCombatNoteV7(preview)
+          ? dinosaurCombatNoteV7(preview, view)
           : null;
       const noteParts = [
         undeadNote,
@@ -3247,7 +3114,7 @@ function commandMapTargets(
         undeadSemanticNote,
         goblin?.semantic ?? null,
         dinosaurMatch && preview !== null
-          ? dinosaurCombatSemanticNoteV7(preview)
+          ? dinosaurCombatSemanticNoteV7(preview, view)
           : null,
       ].filter((part): part is string => part !== null);
       const semanticNote =

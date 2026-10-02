@@ -225,9 +225,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   /** Revision 19: this frame's unit sprite cues (growth, Egg, hatchling). */
   #unitPulses: readonly UnitPulseV7[] = [];
   /**
-   * Revision 19: units of a Stampede boundary held where their next slide
-   * starts (the Triceratops on the stand tile, the survivor on its tile),
-   * so the board never shows them at their final tile early.
+   * Revision 20: units of a Charge! boundary with a Push held where their
+   * next slide starts (the Triceratops and the survivor on their tiles), so
+   * the board never shows them at their final tile early.
    */
   #heldUnits: ReadonlyMap<number, CoordV7> = new Map();
   #impact: {
@@ -423,26 +423,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
    */
   #frameKaboomPreview(model: BoardHostModelV7): void {
     const unitId = model.interaction.kaboomPreviewUnitId ?? null;
-    // Revision 19: the nest tiles of the Egg being laid and the lanes of the
-    // selected Triceratops are framed the same way, once per preview.
+    // Revision 19: the nest tiles of the Egg being laid are framed the same
+    // way, once per preview.
     const layEgg = model.interaction.layEgg ?? null;
-    const plan =
-      unitId === null && layEgg === null && model.interactive
-        ? this.#planFor(model.view, model.offeredCommands)
-        : null;
-    const stampedeUnitId =
-      plan !== null &&
-      plan.targets.some((target) => target.family === "STAMPEDE")
-        ? model.interaction.selectedUnitId
-        : null;
     const subject =
       unitId !== null
         ? String(unitId)
         : layEgg !== null
           ? `nest:${layEgg.cityId}:${layEgg.role}`
-          : stampedeUnitId !== null
-            ? `stampede:${stampedeUnitId}:${model.interaction.stampedeTargetUnitId ?? "all"}`
-            : null;
+          : null;
     if (subject === null) {
       this.#kaboomFramedKey = null;
       return;
@@ -451,24 +440,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const key = `${subject}:${Math.round(band.top)}:${Math.round(band.bottom)}:${this.#viewport.width}x${this.#viewport.height}`;
     if (key === this.#kaboomFramedKey) return;
     this.#kaboomFramedKey = key;
-    const framed = plan ?? this.#planFor(model.view, model.offeredCommands);
+    const framed = this.#planFor(model.view, model.offeredCommands);
     const area = cellWorldBounds(
-      unitId !== null || layEgg !== null
-        ? framed.entries
-            .filter(
-              (entry) =>
-                entry.kind === "ABILITY_AREA" &&
-                entry.abilityStyle === (unitId !== null ? "BLAST" : "NEST"),
-            )
-            .map((entry) => entry.at)
-        : [
-            ...framed.entries
-              .filter((entry) => entry.kind === "LANE")
-              .map((entry) => entry.at),
-            ...framed.targets
-              .filter((target) => target.family === "STAMPEDE")
-              .map((target) => target.at),
-          ],
+      framed.entries
+        .filter(
+          (entry) =>
+            entry.kind === "ABILITY_AREA" &&
+            entry.abilityStyle === (unitId !== null ? "BLAST" : "NEST"),
+        )
+        .map((entry) => entry.at),
     );
     if (area === null) return;
     const delta = panToFrameArea(this.#camera, area, this.#viewport, band);
@@ -717,25 +697,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#draw();
       return;
     }
-    const stampedeBoundary = steps.some(
-      (step) => step.kind === "MOVE" && step.stampedeRun === true,
+    const pushBoundary = steps.some(
+      (step) => step.kind === "MOVE" && step.pushSlide === true,
     );
     for (const [index, step] of steps.entries()) {
-      // Revision 19: in a Stampede boundary, a unit with a later slide
-      // waits where that slide starts.
-      this.#heldUnits = stampedeBoundary
+      // Revision 20: in a Charge! boundary with a Push, a unit with a later
+      // slide waits where that slide starts.
+      this.#heldUnits = pushBoundary
         ? heldUnitsAfterV7(steps, index)
         : NO_HELD_UNITS;
       if (step.kind === "MOVE") {
-        // The Stampede run keeps the board before the hit: the target is
-        // still standing, and dust rises behind the Triceratops.
-        const run = step.stampedeRun === true;
-        this.#presentedView = run ? before : after;
+        this.#presentedView = after;
         const unit = before.units.find(
           (candidate) => candidate.id === step.unitId,
         );
         if (
-          !run &&
           step.followCamera &&
           unit !== undefined &&
           !after.units.some((candidate) => candidate.id === unit.id)
@@ -746,25 +722,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           step.path,
           step.durationMs * durationScale,
           step.followCamera === true,
-          run
-            ? (progress) => {
-                this.#dinosaurFeedback = {
-                  effect: "STAMPEDE_RUN",
-                  cells: step.path.slice(0, -1),
-                  progress,
-                };
-              }
-            : undefined,
         );
         if (token !== this.#presentationToken) return;
-        if (run) {
-          // The Triceratops waits on the stand tile for the hit.
-          this.#dinosaurFeedback = null;
-          this.#drawSupportOverlay();
-        } else {
-          this.#animatedUnit = null;
-          this.#presentedView = after;
-        }
+        this.#animatedUnit = null;
+        this.#presentedView = after;
       } else if (step.kind === "DINOSAUR") {
         const first = step.cells[0];
         if (first !== undefined && step.followCamera === true)
@@ -1823,8 +1784,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     path: readonly CoordV7[],
     duration: number,
     followCamera = false,
-    /** Revision 19: per-frame cue state, set before the frame is drawn. */
-    onProgress?: (progress: number) => void,
   ): Promise<void> {
     const first = path[0];
     if (first === undefined) return;
@@ -1834,7 +1793,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#draw();
     }
     await this.#animate(duration, (progress) => {
-      onProgress?.(progress);
       if (path.length === 1) {
         this.#draw();
         return;

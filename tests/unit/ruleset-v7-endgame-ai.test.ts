@@ -178,12 +178,27 @@ describe("ruleset-7 Normal AI endgame siege (pulp_wars-1mc)", () => {
 
   it.each([
     // Round-capped (150) at c7b1849 in the revision-15 balance matrix.
-    { factions: ["ORIGINAL", "ORIGINAL"], seed: 7, mapType: "ARCHIPELAGO" },
-    { factions: ["ORIGINAL", "ORIGINAL"], seed: 0, mapType: "PANGEA" },
-    { factions: ["UNDEAD", "UNDEAD"], seed: 0, mapType: "PANGEA" },
+    {
+      factions: ["ORIGINAL", "ORIGINAL"],
+      seed: 7,
+      mapType: "ARCHIPELAGO",
+      rounds: 60,
+    },
+    {
+      factions: ["ORIGINAL", "ORIGINAL"],
+      seed: 0,
+      mapType: "PANGEA",
+      rounds: 60,
+    },
+    // Revision 20 (`pulp_wars-0hi.2`): a Promotion fully heals, so this
+    // match leaves its revision-19 course at its first Promotion of a
+    // wounded unit and now ends by conquest in round 142 (was round 47). It
+    // still finishes below the 150-round cap without a stall; eight other
+    // Undead mirror seeds on this map stay within five rounds of revision 19.
+    { factions: ["UNDEAD", "UNDEAD"], seed: 0, mapType: "PANGEA", rounds: 150 },
   ] as const)(
     "finishes a formerly stalled $factions $mapType seed $seed match",
-    ({ factions, seed, mapType }) => {
+    ({ factions, seed, mapType, rounds }) => {
       const match = runAiMatchV7(
         { ...setupWith(seed), factions: [...factions], mapType },
         { maxRounds: 150, recordCheckpointHashes: false },
@@ -191,7 +206,7 @@ describe("ruleset-7 Normal AI endgame siege (pulp_wars-1mc)", () => {
       expect(match.errors).toEqual([]);
       expect(match.stalls).toEqual([]);
       expect(match.termination).toBe("OUTCOME");
-      expect(match.rounds).toBeLessThan(60);
+      expect(match.rounds).toBeLessThan(rounds);
     },
     600_000,
   );

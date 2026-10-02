@@ -1,27 +1,16 @@
 import { describe, expect, it } from "vitest";
-import {
-  EGG_SMASH_SETUP_PRIORITY_V7,
-  LANE_BLOCK_PRIORITY_V7,
-} from "../../src/ai/v7-dinosaur";
-import {
-  inspectNormalTacticalFactsV7,
-  publicThreatenedTilesForPolicyV7,
-} from "../../src/ai/v7";
+import { EGG_SMASH_SETUP_PRIORITY_V7 } from "../../src/ai/v7-dinosaur";
 import {
   applyCommandV7,
   previewKaboomV7,
   queryCombatPreviewV7,
-  type CoordV7,
   type GameStateV7,
 } from "../../src/engine/index";
 import {
   attackV7,
   dinosaurFieldV7,
-  forestTileV7,
-  mountainTileV7,
   isCandidateV7,
   moveCandidateV7,
-  publicUnitAtV7,
   scoreV7,
   unitCandidatesV7,
   unitIdAtV7,
@@ -60,7 +49,6 @@ const human = (
   pieces: readonly GoblinPieceV7[],
   eggs: readonly EggPieceV7[] = [],
 ): GameStateV7 => dinosaurFieldV7(HD, pieces, { eggs });
-const key = (at: CoordV7): string => `${at.x},${at.y}`;
 
 describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Eggs", () => {
   const fighter = { x: 4, y: 7 };
@@ -113,9 +101,9 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Eggs", () => {
       attackV7(state, from, { x: 3, y: 9 }),
       attackV7(state, from, { x: 3, y: 7 }),
     ]);
-    // T-Rex Egg: 10 * 4 + 6 HP + 2 * 3 turns.
+    // T-Rex Egg (revision 20: cost 14, hatch 4): 14 * 4 + 6 HP + 2 * 4 turns.
     expect(attacks.map((candidate) => candidate.score.strategicValue)).toEqual([
-      52, 24,
+      70, 24,
     ]);
   });
 
@@ -169,117 +157,9 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Eggs", () => {
   });
 });
 
-describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Stampede lanes", () => {
-  it("includes open lanes in a hostile Triceratops's threat envelope", () => {
-    const state = human([own("FIGHTER", 6, 2), foe("CATAPULT", 2, 3)]);
-    const triceratops = publicUnitAtV7(state, { x: 2, y: 3 });
-    const reach = new Set(
-      publicThreatenedTilesForPolicyV7(viewerViewV7(state), triceratops).map(
-        key,
-      ),
-    );
-    // Adjacent tiles, and distance 2 and 3 in the eight directions.
-    for (const at of ["3,3", "4,3", "5,3", "4,5", "5,6", "2,5", "2,6", "0,1"])
-      expect(reach.has(at), at).toBe(true);
-    // Not off the lines, and not beyond three tiles.
-    for (const at of ["4,4", "5,4", "6,3", "3,5"])
-      expect(reach.has(at), at).toBe(false);
-    // A Mountain on (3, 3) closes the row; a Forest there does not
-    // (pulp_wars-c87.8: Forest lane tiles are open).
-    const wooded = new Set(
-      publicThreatenedTilesForPolicyV7(
-        viewerViewV7(forestTileV7(state, { x: 3, y: 3 })),
-        triceratops,
-      ).map(key),
-    );
-    expect(wooded.has("4,3")).toBe(true);
-    expect(wooded.has("5,3")).toBe(true);
-    const closed = mountainTileV7(state, { x: 3, y: 3 });
-    const closedReach = new Set(
-      publicThreatenedTilesForPolicyV7(viewerViewV7(closed), triceratops).map(
-        key,
-      ),
-    );
-    expect(closedReach.has("4,3")).toBe(false);
-    expect(closedReach.has("5,3")).toBe(false);
-    expect(closedReach.has("4,5")).toBe(true);
-    // A Human Catapult has no lanes: only its range band.
-    const catapult = dinosaurFieldV7(
-      ["ORIGINAL", "ORIGINAL"],
-      [own("FIGHTER", 6, 2), foe("CATAPULT", 2, 3)],
-    );
-    const band = publicThreatenedTilesForPolicyV7(
-      viewerViewV7(catapult),
-      publicUnitAtV7(catapult, { x: 2, y: 3 }),
-    ).map(key);
-    expect(band).not.toContain("3,3");
-    expect(band).toContain("5,4");
-  });
-
-  it("steps out of a lane when an equally good tile exists", () => {
-    // From (6, 2), three Moves make the same progress; (5, 3) is three tiles
-    // down the Triceratops's row (Attack 3 + 2: lethal to a Fighter).
-    const state = human([own("FIGHTER", 6, 2), foe("CATAPULT", 2, 3)]);
-    const from = { x: 6, y: 2 };
-    const lane = moveCandidateV7(state, from, { x: 5, y: 3 });
-    const clear = moveCandidateV7(state, from, { x: 6, y: 3 });
-    expect(lane?.score.safetyValue).toBe(-10);
-    expect(clear?.score.safetyValue).toBe(0);
-    expect(lane?.score.objectiveValue).toBe(clear?.score.objectiveValue);
-    expect(unitCandidatesV7(state, from)[0]?.command).toEqual(clear?.command);
-    // With the lane closed by a Mountain the tile is as safe as the others.
-    const closed = mountainTileV7(state, { x: 3, y: 3 });
-    expect(
-      moveCandidateV7(closed, from, { x: 5, y: 3 })?.score.safetyValue,
-    ).toBe(0);
-  });
-
-  it("blocks the lane to a defended own center with a cheap unit", () => {
-    // The Triceratops on (5, 8) aims down the row at the Guard on (8, 8).
-    const state = human([
-      own("GUARD", 8, 8),
-      own("FIGHTER", 7, 7),
-      foe("CATAPULT", 5, 8),
-    ]);
-    expect(
-      inspectNormalTacticalFactsV7(viewerViewV7(state)).threats.map(
-        (threat) => threat.unitId,
-      ),
-    ).toEqual([unitIdAtV7(state, { x: 5, y: 8 })]);
-    const from = { x: 7, y: 7 };
-    const block = moveCandidateV7(state, from, { x: 6, y: 8 });
-    expect(block?.score.priority).toBe(LANE_BLOCK_PRIORITY_V7);
-    // Next to the Triceratops: it has no run left at all.
-    expect(block?.score.strategicValue).toBe(14);
-    expect(unitCandidatesV7(state, from)[0]).toEqual(block);
-    // (7, 8) would be hit by a two-tile Stampede: lethal, so not taken.
-    expect(
-      moveCandidateV7(state, from, { x: 7, y: 8 })?.score.priority ?? 0,
-    ).toBeLessThan(LANE_BLOCK_PRIORITY_V7);
-    // Four tiles away there is no lane to block.
-    const far = human([
-      own("GUARD", 8, 8),
-      own("FIGHTER", 7, 7),
-      foe("CATAPULT", 4, 8),
-    ]);
-    expect(
-      unitCandidatesV7(far, from, "MOVE").every(
-        (candidate) => candidate.score.priority < LANE_BLOCK_PRIORITY_V7,
-      ),
-    ).toBe(true);
-    // A unit worth more than the defender is not spent as a blocker.
-    const knight = human([
-      own("FIGHTER", 8, 8),
-      own("KNIGHT", 7, 7),
-      foe("CATAPULT", 5, 8),
-    ]);
-    expect(
-      unitCandidatesV7(knight, from, "MOVE").every(
-        (candidate) => candidate.score.priority !== LANE_BLOCK_PRIORITY_V7,
-      ),
-    ).toBe(true);
-  });
-});
+// Revision 20 removed Stampede and its lanes: the estimates against a
+// Triceratops's Charge! are covered by
+// tests/unit/ruleset-v7-revision20-ai.test.ts.
 
 describe("ruleset-7 revision-19 Normal AI against Dinosaurs: growth", () => {
   const from = { x: 4, y: 3 };
@@ -337,8 +217,14 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: growth", () => {
       expect(score.priority).toBe(1180);
       return score.strategicValue;
     };
-    expect(kill(1)).toBe(kill(0) + 10);
-    expect(kill(3)).toBe(kill(0) + 20);
+    // Each growth stage adds 10 to the kill.
+    expect(kill(3)).toBe(kill(1) + 10);
+    // Revision 20: a wounded dinosaur one kill from a stage would be fully
+    // healed by it, so killing it first is worth half of that growth. At
+    // 1 of 12 HP, Big restores 11 + 4 HP (37, halved to 18); at 1 of 16 HP
+    // with two kills, Alpha restores 15 + 4 HP and adds Attack (53, 26).
+    expect(kill(0)).toBe(kill(1) - 10 + 18);
+    expect(kill(2)).toBe(kill(1) + 26);
   });
 });
 
@@ -416,8 +302,9 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Goblin blasts", () 
     const nest = bomb([egg("KNIGHT", 3, 7)]);
     expect(bare.splash).toEqual([]);
     expect(nest.splash).toEqual([3]);
-    // Half of the T-Rex Egg (10 * 4 + 6 HP + 2 * 3 turns = 52): 3 of 6 HP.
-    expect(nest.score.strategicValue - bare.score.strategicValue).toBe(26);
+    // Half of the T-Rex Egg (revision 20: 14 * 4 + 6 HP + 2 * 4 turns = 70):
+    // 3 of 6 HP.
+    expect(nest.score.strategicValue - bare.score.strategicValue).toBe(35);
     expect(nest.score.immediateValue - bare.score.immediateValue).toBe(30);
   });
 });

@@ -5,7 +5,7 @@ Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The headless CLI
-accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r19`
+accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r20`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). The
 [Ruleset-7 revision-4 biome-economy specification](../product/RULESET_7_REVISION_4_BIOME_ECONOMY.md)
 is historical: it introduced the simulation matrix, telemetry, and revision-4
@@ -23,10 +23,10 @@ with `--factions` needs exactly one `--ai-counts` value, and each batch entry
 records its `factions`.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r19 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
-npm run headless -- batch --ruleset pulp-wars-poc-7r19 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
-npm run headless -- match --ruleset pulp-wars-poc-7r19 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r19 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r20 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
+npm run headless -- batch --ruleset pulp-wars-poc-7r20 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
+npm run headless -- match --ruleset pulp-wars-poc-7r20 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r20 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
 ```
 
 A Dinosaur seat
@@ -34,9 +34,18 @@ A Dinosaur seat
 with the Normal policy on the Dinosaur registration. It trains Cavemen and
 Shamans, lays every other role as an Egg (`LAY_EGG`, counted with its role's
 production and Coins in the role inventories), and plays Eggs, Hatch, Grow,
-and Stampede with the
+and the Triceratops's Charge!
+([revision 20](../product/RULESET_7_REVISION_20.md); the Stampede command
+is removed) with the
 [Dinosaur policy](NORMAL_AI.md#revision-19-dinosaur-play-pulp_wars-c875)
-(`pulp_wars-c87.5`); the Dinosaur telemetry follows (`pulp_wars-c87.8`).
+(`pulp_wars-c87.5`, `pulp_wars-0hi.2`); the Dinosaur telemetry follows
+(`pulp_wars-c87.8`). The balance matrix
+(`scripts/ruleset7-undead-balance-matrix.ts`) reports Charge! in place of
+the Stampede counters, in the `charge` block of each Dinosaur seat and of
+the summary: attacks by a Triceratops, split by run-up (0, 1, 2), with
+their kills, Pushes, follows, blocked Pushes, Field Defense destroyed,
+attacks that ignored fortification, and attacks by a dinosaur that ignored
+City Walls through Wallbreaker.
 
 Every v7 result adds, beside the mechanical-role inventories:
 
@@ -133,7 +142,7 @@ change the board): its size defaults to 16 for every seat count, any other
 types at 16. No validation or balance matrix includes it by default.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r19 --map-type showcase --ai-count 3 --factions human,undead,goblin,human --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r20 --map-type showcase --ai-count 3 --factions human,undead,goblin,human --max-rounds 50
 ```
 
 The naval

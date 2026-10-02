@@ -488,14 +488,18 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/engine/v7/explosions.ts": 1,
     "src/engine/v7/graves.ts": 1,
     "src/engine/v7/movement.ts": 3,
-    "src/engine/v7/query.ts": 5,
-    "src/engine/v7/reducer.ts": 13,
+    // Revision 20 removed the Stampede resolution and preview (two tests
+    // each in the reducer and the queries).
+    "src/engine/v7/query.ts": 3,
+    "src/engine/v7/reducer.ts": 11,
     "src/engine/v7/state-schema.ts": 2,
     "src/engine/v7/wail.ts": 1,
     "src/engine/rules/ruleset-v7.ts": 1,
     // `pulp_wars-c87.5`: the own land units counted for the Shaman training
     // bias (an Egg and an embarked unit are neither a Shaman nor a fighter).
-    "src/ai/v7-dinosaur.ts": 1,
+    // Revision 20: the Wallbreaker estimate asks for a land-form attacker
+    // (an Egg and an embarked unit never attack).
+    "src/ai/v7-dinosaur.ts": 2,
     "src/ai/v7-goblin.ts": 1,
     "src/ai/v7-undead.ts": 1,
     "src/ai/v7.ts": 11,
