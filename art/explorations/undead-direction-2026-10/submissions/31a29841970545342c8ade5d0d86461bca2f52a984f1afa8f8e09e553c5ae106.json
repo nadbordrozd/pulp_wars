@@ -1,0 +1,36 @@
+{
+  "id": "necromancer-accent-cyan-edit",
+  "jobId": "afea7884-ace6-4697-a6d0-9749e23375bc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead-direction-study",
+    "asset": "chibi-study-necromancer",
+    "subject": "UNIT:UNDEAD:CAPTAIN",
+    "faction": "TEST-UNDEAD-BONE",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79211,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing cyan. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing cyan. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing cyan. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing cyan. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "necromancer-bone-edit-c",
+      "candidate": 0,
+      "sha256": "486175839bdcd6880503648c2f2a922c60118592fb90881a7d0236f5dcc4ce7e"
+    }
+  }
+}

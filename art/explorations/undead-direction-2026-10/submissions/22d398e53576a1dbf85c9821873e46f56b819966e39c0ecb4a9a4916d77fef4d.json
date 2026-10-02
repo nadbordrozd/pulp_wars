@@ -1,0 +1,36 @@
+{
+  "id": "necromancer-bone-edit-b",
+  "jobId": "27c561b7-1ad8-4d68-a22c-236e3d2f4f96",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead-direction-study",
+    "asset": "chibi-study-necromancer",
+    "subject": "UNIT:UNDEAD:CAPTAIN",
+    "faction": "TEST-UNDEAD-BONE",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colour of the magic: every pale blue flame and every pale blue spark (the big flame above the skull staff, the flame at his raised hand, the small sparks beside him) becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, the white beard, the skull, the staff, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colour of the magic: every pale blue flame and every pale blue spark (the big flame above the skull staff, the flame at his raised hand, the small sparks beside him) becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, the white beard, the skull, the staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colour of the magic: every pale blue flame and every pale blue spark (the big flame above the skull staff, the flame at his raised hand, the small sparks beside him) becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, the white beard, the skull, the staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only the colour of the magic: every pale blue flame and every pale blue spark (the big flame above the skull staff, the flame at his raised hand, the small sparks beside him) becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, the white beard, the skull, the staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "necromancer-bone-edit-a",
+      "candidate": 0,
+      "sha256": "7f08c60ba1d1df3f1885b98b79bf4987e6a9095df57fa8685f6b48b6d80f65f0"
+    }
+  }
+}

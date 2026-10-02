@@ -1,0 +1,750 @@
+{
+  "bead": "pulp_wars-3tq.11",
+  "note": "deltaE is CIE76 in L*a*b* (about 2 is just noticeable, 10 is clear at a glance, 20 and more are different colours); contrast is the WCAG luminance ratio (1 to 21). The deuteranopia and protanopia columns repeat deltaE after the Machado 2009 simulation. Terrain colours are measured on the untoned rasters; the game tones terrain towards its mean, so the Mountain's light rock is a little darker in play. The accent colour is the lit tone of each option (the commonest generated tone, remapped).",
+  "terrain": {
+    "grassMean": "#89b75b",
+    "forestMean": "#769a51",
+    "forestDark": "#2d3a37",
+    "mountainMean": "#929ca9",
+    "mountainLightRock": "#d1dbe8",
+    "mountainGround": "#a2aab6"
+  },
+  "litAccent": {
+    "violet": "#a221ee",
+    "cyan": "#21ceee",
+    "green": "#21ee44"
+  },
+  "boneAgainstTerrain": [
+    {
+      "a": "bone #e6e0c8",
+      "b": "Grass #89b75b",
+      "deltaE": 45.6,
+      "contrast": 1.8,
+      "deuteranopiaDeltaE": 33.3,
+      "protanopiaDeltaE": 39.8
+    },
+    {
+      "a": "bone #e6e0c8",
+      "b": "Forest (mean) #769a51",
+      "deltaE": 43.6,
+      "contrast": 2.4,
+      "deuteranopiaDeltaE": 36.2,
+      "protanopiaDeltaE": 39
+    },
+    {
+      "a": "bone #e6e0c8",
+      "b": "Mountain (mean) #929ca9",
+      "deltaE": 32.4,
+      "contrast": 2.1,
+      "deuteranopiaDeltaE": 33.3,
+      "protanopiaDeltaE": 31.3
+    },
+    {
+      "a": "bone #e6e0c8",
+      "b": "Mountain (light rock) #d1dbe8",
+      "deltaE": 20.1,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 20.8,
+      "protanopiaDeltaE": 19.7
+    },
+    {
+      "a": "bone #e6e0c8",
+      "b": "Mountain ground #a2aab6",
+      "deltaE": 27.9,
+      "contrast": 1.8,
+      "deuteranopiaDeltaE": 28.9,
+      "protanopiaDeltaE": 27.1
+    },
+    {
+      "a": "bone, shaded #bab497",
+      "b": "Mountain (light rock) #d1dbe8",
+      "deltaE": 27,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 27,
+      "protanopiaDeltaE": 27.8
+    },
+    {
+      "a": "bone, shaded #bab497",
+      "b": "Mountain (mean) #929ca9",
+      "deltaE": 25.3,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 25.8,
+      "protanopiaDeltaE": 25.2
+    },
+    {
+      "a": "pallid flesh #948884",
+      "b": "Grass #89b75b",
+      "deltaE": 52.8,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 36.3,
+      "protanopiaDeltaE": 46.6
+    },
+    {
+      "a": "pallid flesh #948884",
+      "b": "Mountain (mean) #929ca9",
+      "deltaE": 14.1,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 13.8,
+      "protanopiaDeltaE": 13.1
+    },
+    {
+      "a": "pallid flesh #948884",
+      "b": "Goblin skin (today) #9dab3a",
+      "deltaE": 56.7,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 48.7,
+      "protanopiaDeltaE": 58.7
+    }
+  ],
+  "darkClothAgainstTerrain": [
+    {
+      "a": "dark cloth #313135",
+      "b": "Grass #89b75b",
+      "deltaE": 73.3,
+      "contrast": 5.5,
+      "deuteranopiaDeltaE": 63.7,
+      "protanopiaDeltaE": 70.9
+    },
+    {
+      "a": "dark cloth #313135",
+      "b": "Forest (mean) #769a51",
+      "deltaE": 59.8,
+      "contrast": 4,
+      "deuteranopiaDeltaE": 52.1,
+      "protanopiaDeltaE": 57.6
+    },
+    {
+      "a": "dark cloth #313135",
+      "b": "Forest (dark tones) #2d3a37",
+      "deltaE": 8,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 3.8,
+      "protanopiaDeltaE": 4.7
+    },
+    {
+      "a": "dark cloth #313135",
+      "b": "Mountain (mean) #929ca9",
+      "deltaE": 43.9,
+      "contrast": 4.7,
+      "deuteranopiaDeltaE": 43.7,
+      "protanopiaDeltaE": 44.4
+    },
+    {
+      "a": "Coral garment (today) #f06762",
+      "b": "Grass #89b75b",
+      "deltaE": 84.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 5.5,
+      "protanopiaDeltaE": 33.3
+    },
+    {
+      "a": "Teal garment (today) #28b7a4",
+      "b": "Grass #89b75b",
+      "deltaE": 43.5,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 43.3,
+      "protanopiaDeltaE": 42.7
+    }
+  ],
+  "accent": {
+    "violet": [
+      {
+        "a": "violet accent #a221ee",
+        "b": "Coral plate #f06762",
+        "deltaE": 109.6,
+        "contrast": 1.7,
+        "deuteranopiaDeltaE": 109.2,
+        "protanopiaDeltaE": 99.9
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "Teal plate #28b7a4",
+        "deltaE": 142.5,
+        "contrast": 2.1,
+        "deuteranopiaDeltaE": 71.2,
+        "protanopiaDeltaE": 89.4
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "Gold plate #e2b63f",
+        "deltaE": 160.9,
+        "contrast": 2.8,
+        "deuteranopiaDeltaE": 138.4,
+        "protanopiaDeltaE": 149.1
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "Violet plate #a277d2",
+        "deltaE": 57.3,
+        "contrast": 1.5,
+        "deuteranopiaDeltaE": 35.1,
+        "protanopiaDeltaE": 40.3
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "Grass #89b75b",
+        "deltaE": 162.4,
+        "contrast": 2.3,
+        "deuteranopiaDeltaE": 113.6,
+        "protanopiaDeltaE": 130.1
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "Forest (mean) #769a51",
+        "deltaE": 152,
+        "contrast": 1.6,
+        "deuteranopiaDeltaE": 105.8,
+        "protanopiaDeltaE": 120.2
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "Mountain (light rock) #d1dbe8",
+        "deltaE": 112.6,
+        "contrast": 3.8,
+        "deuteranopiaDeltaE": 76.2,
+        "protanopiaDeltaE": 84.4
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "Shallow Water (mean) #8fd3dc",
+        "deltaE": 122.1,
+        "contrast": 3.1,
+        "deuteranopiaDeltaE": 68.2,
+        "protanopiaDeltaE": 81.7
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "Goblin skin (today) #9dab3a",
+        "deltaE": 164.7,
+        "contrast": 2.1,
+        "deuteranopiaDeltaE": 126.2,
+        "protanopiaDeltaE": 142.3
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "dark cloth #313135",
+        "deltaE": 109.6,
+        "contrast": 2.5,
+        "deuteranopiaDeltaE": 76,
+        "protanopiaDeltaE": 83.3
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "bone #e6e0c8",
+        "deltaE": 127.1,
+        "contrast": 4,
+        "deuteranopiaDeltaE": 95.4,
+        "protanopiaDeltaE": 102
+      },
+      {
+        "a": "violet accent #a221ee",
+        "b": "today's pale blue flame #4dc7ed",
+        "deltaE": 114.9,
+        "contrast": 2.7,
+        "deuteranopiaDeltaE": 48.3,
+        "protanopiaDeltaE": 65.6
+      }
+    ],
+    "cyan": [
+      {
+        "a": "cyan accent #21ceee",
+        "b": "Coral plate #f06762",
+        "deltaE": 101.1,
+        "contrast": 1.6,
+        "deuteranopiaDeltaE": 66.8,
+        "protanopiaDeltaE": 48.7
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "Teal plate #28b7a4",
+        "deltaE": 30.1,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 28.3,
+        "protanopiaDeltaE": 29
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "Gold plate #e2b63f",
+        "deltaE": 96.9,
+        "contrast": 1,
+        "deuteranopiaDeltaE": 93.9,
+        "protanopiaDeltaE": 89.1
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "Violet plate #a277d2",
+        "deltaE": 68.5,
+        "contrast": 1.8,
+        "deuteranopiaDeltaE": 18.4,
+        "protanopiaDeltaE": 31.8
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "Grass #89b75b",
+        "deltaE": 69.3,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 70.3,
+        "protanopiaDeltaE": 70.6
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "Forest (mean) #769a51",
+        "deltaE": 64,
+        "contrast": 1.7,
+        "deuteranopiaDeltaE": 65.3,
+        "protanopiaDeltaE": 64.4
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "Mountain (light rock) #d1dbe8",
+        "deltaE": 36.6,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 26.7,
+        "protanopiaDeltaE": 16.4
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "Shallow Water (mean) #8fd3dc",
+        "deltaE": 19.7,
+        "contrast": 1.1,
+        "deuteranopiaDeltaE": 19.1,
+        "protanopiaDeltaE": 14.3
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "Goblin skin (today) #9dab3a",
+        "deltaE": 82.7,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 83.5,
+        "protanopiaDeltaE": 84.2
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "dark cloth #313135",
+        "deltaE": 68.5,
+        "contrast": 6.9,
+        "deuteranopiaDeltaE": 60.7,
+        "protanopiaDeltaE": 63.1
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "bone #e6e0c8",
+        "deltaE": 50.2,
+        "contrast": 1.4,
+        "deuteranopiaDeltaE": 46.7,
+        "protanopiaDeltaE": 35.4
+      },
+      {
+        "a": "cyan accent #21ceee",
+        "b": "today's pale blue flame #4dc7ed",
+        "deltaE": 7.9,
+        "contrast": 1,
+        "deuteranopiaDeltaE": 1.6,
+        "protanopiaDeltaE": 2.9
+      }
+    ],
+    "green": [
+      {
+        "a": "green accent #21ee44",
+        "b": "Coral plate #f06762",
+        "deltaE": 136.5,
+        "contrast": 2,
+        "deuteranopiaDeltaE": 28.9,
+        "protanopiaDeltaE": 70
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "Teal plate #28b7a4",
+        "deltaE": 77.4,
+        "contrast": 1.6,
+        "deuteranopiaDeltaE": 65.3,
+        "protanopiaDeltaE": 77.5
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "Gold plate #e2b63f",
+        "deltaE": 81.8,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 4.8,
+        "protanopiaDeltaE": 18.8
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "Violet plate #a277d2",
+        "deltaE": 156.5,
+        "contrast": 2.2,
+        "deuteranopiaDeltaE": 101.8,
+        "protanopiaDeltaE": 128
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "Grass #89b75b",
+        "deltaE": 53.8,
+        "contrast": 1.5,
+        "deuteranopiaDeltaE": 23.5,
+        "protanopiaDeltaE": 36.7
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "Forest (mean) #769a51",
+        "deltaE": 65,
+        "contrast": 2.1,
+        "deuteranopiaDeltaE": 34.5,
+        "protanopiaDeltaE": 49.2
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "Mountain (light rock) #d1dbe8",
+        "deltaE": 105.9,
+        "contrast": 1.1,
+        "deuteranopiaDeltaE": 67.2,
+        "protanopiaDeltaE": 88.3
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "Shallow Water (mean) #8fd3dc",
+        "deltaE": 96.4,
+        "contrast": 1.1,
+        "deuteranopiaDeltaE": 72.1,
+        "protanopiaDeltaE": 89
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "Goblin skin (today) #9dab3a",
+        "deltaE": 60.4,
+        "contrast": 1.6,
+        "deuteranopiaDeltaE": 15.3,
+        "protanopiaDeltaE": 27.7
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "dark cloth #313135",
+        "deltaE": 121.1,
+        "contrast": 8.3,
+        "deuteranopiaDeltaE": 86.3,
+        "protanopiaDeltaE": 106.2
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "bone #e6e0c8",
+        "deltaE": 92.4,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 47.1,
+        "protanopiaDeltaE": 68.7
+      },
+      {
+        "a": "green accent #21ee44",
+        "b": "today's pale blue flame #4dc7ed",
+        "deltaE": 109.5,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 91.8,
+        "protanopiaDeltaE": 105.6
+      }
+    ]
+  },
+  "accentShareOfSprite": {
+    "violet": {
+      "Skeleton": "4.6%",
+      "Zombie": "3.5%",
+      "Necromancer": "13.4%"
+    },
+    "cyan": {
+      "Skeleton": "4.6%",
+      "Zombie": "3.5%",
+      "Necromancer": "13.4%"
+    },
+    "green": {
+      "Skeleton": "4.6%",
+      "Zombie": "3.5%",
+      "Necromancer": "13.4%"
+    }
+  },
+  "accentPixelsInBase": {
+    "Skeleton": 120,
+    "Zombie": 76,
+    "Necromancer": 290
+  },
+  "boneShareOfSprite": {
+    "Skeleton": {
+      "bone": "15%",
+      "paleFleshOrBeard": "3.3%",
+      "darkCloth": "23.6%"
+    },
+    "Zombie": {
+      "bone": "19.9%",
+      "paleFleshOrBeard": "9%",
+      "darkCloth": "36.7%"
+    },
+    "Necromancer": {
+      "bone": "5.1%",
+      "paleFleshOrBeard": "9.4%",
+      "darkCloth": "24.8%"
+    }
+  },
+  "markers": [
+    {
+      "marker": "Grave marker",
+      "source": "undead-canvas-v7.ts drawGraveCornerMarkerV7 (code-drawn)",
+      "colours": [
+        "#d9dcd4",
+        "#3a4044",
+        "#16130f"
+      ],
+      "leadHue": 83,
+      "leadSaturation": 0.04,
+      "deltaEToAccent": {
+        "violet": 120.8,
+        "cyan": 42.7,
+        "green": 97.3
+      }
+    },
+    {
+      "marker": "Undead badge",
+      "source": "undead-canvas-v7.ts BONE on BADGE_FILL (stand-in sprites only)",
+      "colours": [
+        "#efe8cf",
+        "#231a2c"
+      ],
+      "leadHue": 47,
+      "leadSaturation": 0.13,
+      "deltaEToAccent": {
+        "violet": 128.4,
+        "cyan": 51.5,
+        "green": 92.5
+      }
+    },
+    {
+      "marker": "Plague chip",
+      "source": "STATUS:PLAGUED raster on the #20242e token",
+      "colours": [
+        "#9fac8a",
+        "#6e7b5d",
+        "#414a37"
+      ],
+      "leadHue": 83,
+      "leadSaturation": 0.2,
+      "deltaEToAccent": {
+        "violet": 130.1,
+        "cyan": 48,
+        "green": 84.3
+      }
+    },
+    {
+      "marker": "Bitten chip",
+      "source": "STATUS:BITTEN raster on the #20242e token",
+      "colours": [
+        "#3e4859",
+        "#7f8ca0"
+      ],
+      "leadHue": 218,
+      "leadSaturation": 0.3,
+      "deltaEToAccent": {
+        "violet": 102.3,
+        "cyan": 57.4,
+        "green": 121.4
+      }
+    },
+    {
+      "marker": "Raise Dead effect",
+      "source": "EFFECT:RAISE raster",
+      "colours": [
+        "#7f8ca0",
+        "#a9bdd8",
+        "#3e4859"
+      ],
+      "leadHue": 216,
+      "leadSaturation": 0.21,
+      "deltaEToAccent": {
+        "violet": 102,
+        "cyan": 38.1,
+        "green": 112.3
+      }
+    },
+    {
+      "marker": "Wail effect",
+      "source": "EFFECT:WAIL raster",
+      "colours": [
+        "#3e4859",
+        "#a9bdd8",
+        "#7f8ca0"
+      ],
+      "leadHue": 218,
+      "leadSaturation": 0.3,
+      "deltaEToAccent": {
+        "violet": 102.3,
+        "cyan": 57.4,
+        "green": 121.4
+      }
+    },
+    {
+      "marker": "Spirit wisp (Infect, lifesteal)",
+      "source": "EFFECT:WISP raster",
+      "colours": [
+        "#a9bdd8",
+        "#3e4859",
+        "#7f8ca0"
+      ],
+      "leadHue": 214,
+      "leadSaturation": 0.22,
+      "deltaEToAccent": {
+        "violet": 104.1,
+        "cyan": 31,
+        "green": 111.8
+      }
+    },
+    {
+      "marker": "Lich splash effect",
+      "source": "EFFECT:SPLASH raster",
+      "colours": [
+        "#7f8ca0",
+        "#3e4859",
+        "#a9bdd8"
+      ],
+      "leadHue": 216,
+      "leadSaturation": 0.21,
+      "deltaEToAccent": {
+        "violet": 102,
+        "cyan": 38.1,
+        "green": 112.3
+      }
+    },
+    {
+      "marker": "Raise Dead target preview",
+      "source": "undead-canvas-v7.ts ability preview RAISE stroke",
+      "colours": [
+        "#8ff0a4"
+      ],
+      "leadHue": 133,
+      "leadSaturation": 0.4,
+      "deltaEToAccent": {
+        "violet": 166.1,
+        "cyan": 58.2,
+        "green": 50.2
+      }
+    },
+    {
+      "marker": "Wail radius preview",
+      "source": "undead-canvas-v7.ts ability preview WAIL stroke",
+      "colours": [
+        "#c9a6ff"
+      ],
+      "leadHue": 264,
+      "leadSaturation": 0.35,
+      "deltaEToAccent": {
+        "violet": 66.9,
+        "cyan": 61.1,
+        "green": 150.5
+      }
+    }
+  ],
+  "plates": [
+    {
+      "a": "Coral plate #f06762",
+      "b": "Teal plate #28b7a4",
+      "deltaE": 98.1,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 39.3,
+      "protanopiaDeltaE": 21.3
+    },
+    {
+      "a": "Coral plate #f06762",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 61,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 30.4,
+      "protanopiaDeltaE": 51.9
+    },
+    {
+      "a": "Coral plate #f06762",
+      "b": "Violet plate #a277d2",
+      "deltaE": 72.5,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 75.5,
+      "protanopiaDeltaE": 62.8
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 78.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 68.1,
+      "protanopiaDeltaE": 61.8
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Violet plate #a277d2",
+      "deltaE": 85.9,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 36.6,
+      "protanopiaDeltaE": 50.7
+    },
+    {
+      "a": "Gold plate #e2b63f",
+      "b": "Violet plate #a277d2",
+      "deltaE": 110.2,
+      "contrast": 1.8,
+      "deuteranopiaDeltaE": 104.6,
+      "protanopiaDeltaE": 111.8
+    }
+  ],
+  "platesAgainstGrass": [
+    {
+      "a": "Coral plate #f06762",
+      "b": "Grass #89b75b",
+      "deltaE": 84.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 5.5,
+      "protanopiaDeltaE": 33.3
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Grass #89b75b",
+      "deltaE": 43.5,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 43.3,
+      "protanopiaDeltaE": 42.7
+    },
+    {
+      "a": "Gold plate #e2b63f",
+      "b": "Grass #89b75b",
+      "deltaE": 41.9,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 25.4,
+      "protanopiaDeltaE": 19.3
+    },
+    {
+      "a": "Violet plate #a277d2",
+      "b": "Grass #89b75b",
+      "deltaE": 106.1,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 79.8,
+      "protanopiaDeltaE": 92.6
+    }
+  ],
+  "widthAgainstPlate": [
+    {
+      "unit": "Skeleton",
+      "spriteWidth": 51,
+      "feetWidth": 30,
+      "plateWidth": 52,
+      "widerThanPlate": false,
+      "feetWiderThanPlate": false
+    },
+    {
+      "unit": "Zombie",
+      "spriteWidth": 51,
+      "feetWidth": 34,
+      "plateWidth": 52,
+      "widerThanPlate": false,
+      "feetWiderThanPlate": false
+    },
+    {
+      "unit": "Necromancer",
+      "spriteWidth": 53,
+      "feetWidth": 45,
+      "plateWidth": 52,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    }
+  ]
+}

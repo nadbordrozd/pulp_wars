@@ -1,0 +1,128 @@
+{
+  "bead": "pulp_wars-3tq.11",
+  "note": "Review evidence of the Undead direction study. The scene and same-unit images are drawn by the real board host with the look the game draws by default; nothing here is registered as production art.",
+  "files": [
+    {
+      "file": "alternatives-x4.png",
+      "sha256": "e2ea8f7e9560d8eecde1f059a70cef239a28ad70e3363ac88757cbcc99a01c67",
+      "width": 1438,
+      "height": 1404
+    },
+    {
+      "file": "candidates-x3.png",
+      "sha256": "61630c18a515b303de8912d31e56bfa6f963902abf3c4a6216f1d11f0ed2b6b0",
+      "width": 2202,
+      "height": 1816
+    },
+    {
+      "file": "markers-x4.png",
+      "sha256": "19e35096696eed2dcf4eac61ab63c4ab8d86a9a4215375f2c18246e53a95d105",
+      "width": 1498,
+      "height": 2008
+    },
+    {
+      "file": "options-1x.png",
+      "sha256": "274cddf7136700abfbaa1eb4c45efc418851da36746ce20a3d9cf530eb359511",
+      "width": 908,
+      "height": 358
+    },
+    {
+      "file": "options-x4.png",
+      "sha256": "473d7951c2b46303e39e9ce29fb3da6ea64e2fc2232d7afeece6d242bfb72d97",
+      "width": 3020,
+      "height": 1294
+    },
+    {
+      "file": "palette.json",
+      "sha256": "cad8b3e8cc11cf16a4280c6ae73b383bbdd76d69cdd477db72586e9d5eb16f79"
+    },
+    {
+      "file": "palette.png",
+      "sha256": "c38e13505244b81c39a796977148a2a5066e74c3658be43401ffb22b4670f987",
+      "width": 976,
+      "height": 1266
+    },
+    {
+      "file": "readability.json",
+      "sha256": "bef17c1c211a95c48290445075b6a547d4a14f29f2a8c881d8b579a9742063b0"
+    },
+    {
+      "file": "same-unit-desktop-zoom-0.75.png",
+      "sha256": "1b154a85b3700a7fedc60fe55b364b0003725dc09c7bc4ba169c2135c827cbaa",
+      "width": 948,
+      "height": 759
+    },
+    {
+      "file": "same-unit-desktop-zoom-1.png",
+      "sha256": "b0318a7dbf829f6c5af80e6117ca1c0d8f61bbfe10f023c8cc95377b269ad812",
+      "width": 1248,
+      "height": 966
+    },
+    {
+      "file": "same-unit-phone-zoom-0.75.png",
+      "sha256": "09fcd0dd30cd048a4485acf8c723bd297009231687a510c88d693519914aea8b",
+      "width": 2748,
+      "height": 2001
+    },
+    {
+      "file": "same-unit-phone-zoom-1.png",
+      "sha256": "8fa1c9231341147d9526f247ce170a80f2afabb648e6f41b95284f0d415e0272",
+      "width": 3558,
+      "height": 2622
+    },
+    {
+      "file": "scene-four-desktop-zoom-0.75.png",
+      "sha256": "76e3953ee81b597e8a09521d3905d7a42e9a595c4f92c5a0746c5c4b250dc5e2",
+      "width": 936,
+      "height": 1026
+    },
+    {
+      "file": "scene-four-desktop-zoom-1.png",
+      "sha256": "e1d0124a1b49b8e11ce8f9ea810e879d8253a8c8c0fde39d45ac21cc1099d03a",
+      "width": 1236,
+      "height": 1336
+    },
+    {
+      "file": "scene-four-phone-zoom-0.75.png",
+      "sha256": "66d2d3be0e56f5ce66678c3350456b589bc3e5dc0ad5ea2659317a09f94bdd7d",
+      "width": 2376,
+      "height": 2886
+    },
+    {
+      "file": "scene-four-phone-zoom-1.png",
+      "sha256": "32283ede294494d16cd957bbc1e98060a01ad9e7bfacdc24f930d54b21996a1b",
+      "width": 2376,
+      "height": 3816
+    },
+    {
+      "file": "scene-mixed-desktop-zoom-0.75.png",
+      "sha256": "3cd5d6fc095b7b94d911e7b6b2b5affd09a655f4391186b7a7389bc1f35990a3",
+      "width": 936,
+      "height": 1026
+    },
+    {
+      "file": "scene-mixed-desktop-zoom-1.png",
+      "sha256": "3e51dfea3b282e329db1151a896aafd18ae83a6296d71a3c3f445bf77cfe174c",
+      "width": 1236,
+      "height": 1336
+    },
+    {
+      "file": "scene-mixed-phone-zoom-0.75.png",
+      "sha256": "a06e1109770ad732c65edff6885ec57f197d5466831293df5bc1e0d2f309e132",
+      "width": 2376,
+      "height": 2886
+    },
+    {
+      "file": "scene-mixed-phone-zoom-1.png",
+      "sha256": "cf69fdfd1c90438a1c03a74c3f26178e02b7888af2716a6b30b0299acee50595",
+      "width": 2376,
+      "height": 3816
+    },
+    {
+      "file": "terrain-x3.png",
+      "sha256": "13e056ea612fc3f6582890f2b33913e29b86e87fd78677c489a84b2890ce8dd1",
+      "width": 2546,
+      "height": 982
+    }
+  ]
+}

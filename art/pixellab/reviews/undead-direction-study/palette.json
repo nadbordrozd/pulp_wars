@@ -1,0 +1,116 @@
+{
+  "bead": "pulp_wars-3tq.11",
+  "note": "Measured on the three sprites of each option pooled: share of opaque pixels and the three commonest colours of each role. Every role but the accent is identical in the three options.",
+  "shared": {
+    "bone": {
+      "label": "bone, lit",
+      "share": "8.7%",
+      "colours": [
+        "#e6e0c8",
+        "#fefbdd",
+        "#d0c9a9"
+      ]
+    },
+    "boneShade": {
+      "label": "bone, shaded",
+      "share": "4.7%",
+      "colours": [
+        "#bab497",
+        "#a59e84",
+        "#898670"
+      ]
+    },
+    "flesh": {
+      "label": "pallid flesh",
+      "share": "2.8%",
+      "colours": [
+        "#948884",
+        "#9e918b",
+        "#a89b93"
+      ]
+    },
+    "cloth": {
+      "label": "dark cloth",
+      "share": "28.1%",
+      "colours": [
+        "#313135",
+        "#14181a",
+        "#100f10"
+      ]
+    },
+    "iron": {
+      "label": "iron",
+      "share": "11%",
+      "colours": [
+        "#64717e",
+        "#818f9b",
+        "#3d424d"
+      ]
+    },
+    "bronze": {
+      "label": "tarnished bronze",
+      "share": "3.6%",
+      "colours": [
+        "#574329",
+        "#966f40",
+        "#755732"
+      ]
+    },
+    "white": {
+      "label": "beard white",
+      "share": "4.2%",
+      "colours": [
+        "#ffffff",
+        "#ebecf1",
+        "#fffffd"
+      ]
+    }
+  },
+  "accent": {
+    "violet": {
+      "share": "7%",
+      "lit": "#a221ee",
+      "colours": [
+        "#6f06c9",
+        "#9d1aea",
+        "#7614ca"
+      ],
+      "remap": {
+        "hue": 274,
+        "hueSpread": 0.5,
+        "saturation": 1,
+        "value": 1
+      }
+    },
+    "cyan": {
+      "share": "7%",
+      "lit": "#21ceee",
+      "colours": [
+        "#06b6c9",
+        "#1acaea",
+        "#14b8ca"
+      ],
+      "remap": {
+        "hue": 187,
+        "hueSpread": 0.3,
+        "saturation": 1,
+        "value": 1
+      }
+    },
+    "green": {
+      "share": "7%",
+      "lit": "#21ee44",
+      "colours": [
+        "#06c91d",
+        "#1aea3e",
+        "#14ca29"
+      ],
+      "remap": {
+        "hue": 128,
+        "hueSpread": 0.3,
+        "saturation": 1,
+        "value": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "batch": "undead-direction-study",
+  "title": "Undead visual-direction study: Skeleton, Zombie and Necromancer in pale bone, dark cloth and one accent colour (exploration, never registered)",
+  "bead": "pulp_wars-3tq.11",
+  "faction": "TEST-UNDEAD-BONE",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-study-skeleton",
+      "subject": "UNIT:UNDEAD:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-study-zombie",
+      "subject": "UNIT:UNDEAD:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-study-necromancer",
+      "subject": "UNIT:UNDEAD:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "skeleton-bone-edit-a",
+      "asset": "chibi-study-skeleton",
+      "endpoint": "edit-image-pixen",
+      "seed": 79001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "skeleton-a-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Change only his clothes: remove the red tabard so his bare pale warm ivory ribcage, spine and hip bones show; he wears only a short ragged near-black charcoal loincloth with a thin bright violet trim; the red helmet crest becomes a ragged near-black crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bone-heavy A: tabard removed, bare ribcage, black loincloth and crest, violet eyes, trim and flame."
+    },
+    {
+      "id": "skeleton-bone-edit-b",
+      "asset": "chibi-study-skeleton",
+      "endpoint": "edit-image-pixen",
+      "seed": 79002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "skeleton-a-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours of his clothes: the red tabard becomes a ragged near-black charcoal tabard, open at the chest so pale warm ivory ribs show, with a thin bright violet trim along its torn hem; the red helmet crest becomes a bright violet crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Bone-heavy B: the tabard kept but charcoal and open at the ribs; the crest carries the accent."
+    },
+    {
+      "id": "zombie-bone-edit-a",
+      "asset": "chibi-study-zombie",
+      "endpoint": "edit-image-pixen",
+      "seed": 79101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "zombie-d-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin (face, arms) becomes pallid light ash grey, not blue; he wears a necklace of small pale warm ivory bones; his eyes glow bright violet. Keep the face, hair, bandaged hands, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Flesh A: charcoal smock, ash grey skin, a bone necklace, violet eyes and hem trim."
+    },
+    {
+      "id": "necromancer-bone-edit-a",
+      "asset": "chibi-study-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 79201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "necromancer-a-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours: the red hood and red robe become near-black charcoal cloth with a thin bright violet trim along the hood's edge and the torn hem; every pale blue flame and spark (on the skull staff, at his hand, his eyes) becomes bright glowing violet; his face becomes pallid light ash grey. Keep the pale ivory skull on the staff, the white beard, the staff, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Caster A: charcoal hood and robe with violet trim; violet flame, sparks and eyes."
+    },
+    {
+      "id": "skeleton-bone-edit-c",
+      "asset": "chibi-study-skeleton",
+      "endpoint": "edit-image-pixen",
+      "seed": 79003,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "skeleton-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the metal: the grey helmet and the grey round shield become dark tarnished bronze with a dull rusted iron rim, shaded dark brown. Do not touch the skull, the eyes, the bones, the black crest, the loincloth or the sword. Keep everything else exactly the same: the pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "A with the helmet and shield in tarnished bronze instead of steel grey, so the metal is not the Human steel."
+    },
+    {
+      "id": "zombie-bone-edit-b",
+      "asset": "chibi-study-zombie",
+      "endpoint": "edit-image-pixen",
+      "seed": 79102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "zombie-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: his skin (face, ears, both arms) becomes pallid light warm ash grey with no blue at all, shaded darker grey; and his two eyes become small glowing bright violet eyes instead of yellow-green. Keep everything else exactly the same: the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Repair of A: the skin stayed blue-grey and the eyes came out yellow-green."
+    },
+    {
+      "id": "necromancer-bone-edit-b",
+      "asset": "chibi-study-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 79202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "necromancer-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the magic: every pale blue flame and every pale blue spark (the big flame above the skull staff, the flame at his raised hand, the small sparks beside him) becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, the white beard, the skull, the staff, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Repair of A: the flames and sparks stayed pale blue."
+    },
+    {
+      "id": "skeleton-bone-edit-d",
+      "asset": "chibi-study-skeleton",
+      "endpoint": "edit-image-pixen",
+      "seed": 79004,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "skeleton-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two thin details: the rim of the helmet and the rim of the round shield become dull tarnished bronze, a muted dark yellow-brown metal. The helmet dome and the shield face stay dark grey iron. Do not touch the skull, the violet eyes, the bones, the black crest, the black loincloth with its violet trim, the sword or the boots. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "A with only the rims in tarnished bronze: bronze as a minor accent, the iron kept."
+    },
+    {
+      "id": "zombie-bone-edit-c",
+      "asset": "chibi-study-zombie",
+      "endpoint": "edit-image-pixen",
+      "seed": 79103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "zombie-bone-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: a ragged torn hole in the black smock on his belly, showing three clean pale warm ivory ribs, cartoon bones with no blood. Keep everything else exactly the same: the ash grey face and arms, the violet eyes, the dark hair, the bone necklace, the violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "B with more bone: ribs showing through a tear in the smock."
+    },
+    {
+      "id": "necromancer-bone-edit-c",
+      "asset": "chibi-study-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 79203,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "necromancer-bone-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only bone ornaments: one small pale warm ivory skull on each shoulder of the black robe, and a row of three small pale ivory bone spikes along the top ridge of the black hood. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, flames and sparks, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "B with more bone on the dark robe: shoulder skulls and bone spikes on the hood."
+    },
+    {
+      "id": "skeleton-bone-a",
+      "asset": "chibi-study-skeleton",
+      "endpoint": "create-image-pixen",
+      "seed": 79011,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "bow, quiver, arrows, robe, hood, staff",
+      "notes": "Fresh creation from the bone faction layer, for comparison with the edits."
+    },
+    {
+      "id": "necromancer-accent-cyan-edit",
+      "asset": "chibi-study-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 79211,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "necromancer-bone-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing cyan. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Accent by an edit pass, to compare with the recorded hue remap: cyan."
+    },
+    {
+      "id": "necromancer-accent-green-edit",
+      "asset": "chibi-study-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 79212,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "necromancer-bone-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing spectral green. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Accent by an edit pass, to compare with the recorded hue remap: green."
+    }
+  ]
+}

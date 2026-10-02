@@ -1,0 +1,399 @@
+{
+  "bead": "pulp_wars-3tq.11",
+  "note": "Exploration sample sprites of the Undead direction study. A chosen asset is its recipe's candidate with the accent pixels (sourceBand, HSV) remapped as recorded in `derivation.remap`: new hue = remap.hue + (hue - sourceBand.hueCentre) * remap.hueSpread, saturation and value multiplied. The URLs are served by the Vite dev server from the repository root; nothing here is registered as production art.",
+  "assets": [
+    {
+      "id": "chibi-study-skeleton-violet",
+      "subject": "UNIT:UNDEAD:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-skeleton-violet.png",
+      "role": "chosen",
+      "unit": "skeleton",
+      "accent": "violet",
+      "recipe": "skeleton-bone-edit-d",
+      "candidate": 0,
+      "derivation": {
+        "kind": "accent-hue-remap",
+        "sourceBand": {
+          "hueFrom": 250,
+          "hueTo": 320,
+          "saturationMin": 0.4,
+          "valueMin": 0.2,
+          "hueCentre": 285
+        },
+        "remap": {
+          "hue": 274,
+          "hueSpread": 0.5,
+          "saturation": 1,
+          "value": 1
+        },
+        "accentPixels": 120,
+        "opaquePixels": 2606
+      },
+      "note": "bare ribcage, black loincloth and crest, iron helmet and shield with bronze rims"
+    },
+    {
+      "id": "chibi-study-skeleton-cyan",
+      "subject": "UNIT:UNDEAD:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-skeleton-cyan.png",
+      "role": "chosen",
+      "unit": "skeleton",
+      "accent": "cyan",
+      "recipe": "skeleton-bone-edit-d",
+      "candidate": 0,
+      "derivation": {
+        "kind": "accent-hue-remap",
+        "sourceBand": {
+          "hueFrom": 250,
+          "hueTo": 320,
+          "saturationMin": 0.4,
+          "valueMin": 0.2,
+          "hueCentre": 285
+        },
+        "remap": {
+          "hue": 187,
+          "hueSpread": 0.3,
+          "saturation": 1,
+          "value": 1
+        },
+        "accentPixels": 120,
+        "opaquePixels": 2606
+      },
+      "note": "bare ribcage, black loincloth and crest, iron helmet and shield with bronze rims"
+    },
+    {
+      "id": "chibi-study-skeleton-green",
+      "subject": "UNIT:UNDEAD:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-skeleton-green.png",
+      "role": "chosen",
+      "unit": "skeleton",
+      "accent": "green",
+      "recipe": "skeleton-bone-edit-d",
+      "candidate": 0,
+      "derivation": {
+        "kind": "accent-hue-remap",
+        "sourceBand": {
+          "hueFrom": 250,
+          "hueTo": 320,
+          "saturationMin": 0.4,
+          "valueMin": 0.2,
+          "hueCentre": 285
+        },
+        "remap": {
+          "hue": 128,
+          "hueSpread": 0.3,
+          "saturation": 1,
+          "value": 1
+        },
+        "accentPixels": 120,
+        "opaquePixels": 2606
+      },
+      "note": "bare ribcage, black loincloth and crest, iron helmet and shield with bronze rims"
+    },
+    {
+      "id": "chibi-study-zombie-violet",
+      "subject": "UNIT:UNDEAD:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-zombie-violet.png",
+      "role": "chosen",
+      "unit": "zombie",
+      "accent": "violet",
+      "recipe": "zombie-bone-edit-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "accent-hue-remap",
+        "sourceBand": {
+          "hueFrom": 250,
+          "hueTo": 320,
+          "saturationMin": 0.4,
+          "valueMin": 0.2,
+          "hueCentre": 285
+        },
+        "remap": {
+          "hue": 274,
+          "hueSpread": 0.5,
+          "saturation": 1,
+          "value": 1
+        },
+        "accentPixels": 76,
+        "opaquePixels": 2158
+      },
+      "note": "pallid ash grey skin, charcoal smock, bone necklace, bandaged arms"
+    },
+    {
+      "id": "chibi-study-zombie-cyan",
+      "subject": "UNIT:UNDEAD:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-zombie-cyan.png",
+      "role": "chosen",
+      "unit": "zombie",
+      "accent": "cyan",
+      "recipe": "zombie-bone-edit-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "accent-hue-remap",
+        "sourceBand": {
+          "hueFrom": 250,
+          "hueTo": 320,
+          "saturationMin": 0.4,
+          "valueMin": 0.2,
+          "hueCentre": 285
+        },
+        "remap": {
+          "hue": 187,
+          "hueSpread": 0.3,
+          "saturation": 1,
+          "value": 1
+        },
+        "accentPixels": 76,
+        "opaquePixels": 2158
+      },
+      "note": "pallid ash grey skin, charcoal smock, bone necklace, bandaged arms"
+    },
+    {
+      "id": "chibi-study-zombie-green",
+      "subject": "UNIT:UNDEAD:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-zombie-green.png",
+      "role": "chosen",
+      "unit": "zombie",
+      "accent": "green",
+      "recipe": "zombie-bone-edit-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "accent-hue-remap",
+        "sourceBand": {
+          "hueFrom": 250,
+          "hueTo": 320,
+          "saturationMin": 0.4,
+          "valueMin": 0.2,
+          "hueCentre": 285
+        },
+        "remap": {
+          "hue": 128,
+          "hueSpread": 0.3,
+          "saturation": 1,
+          "value": 1
+        },
+        "accentPixels": 76,
+        "opaquePixels": 2158
+      },
+      "note": "pallid ash grey skin, charcoal smock, bone necklace, bandaged arms"
+    },
+    {
+      "id": "chibi-study-necromancer-violet",
+      "subject": "UNIT:UNDEAD:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-necromancer-violet.png",
+      "role": "chosen",
+      "unit": "necromancer",
+      "accent": "violet",
+      "recipe": "necromancer-bone-edit-c",
+      "candidate": 0,
+      "derivation": {
+        "kind": "accent-hue-remap",
+        "sourceBand": {
+          "hueFrom": 250,
+          "hueTo": 320,
+          "saturationMin": 0.4,
+          "valueMin": 0.2,
+          "hueCentre": 285
+        },
+        "remap": {
+          "hue": 274,
+          "hueSpread": 0.5,
+          "saturation": 1,
+          "value": 1
+        },
+        "accentPixels": 290,
+        "opaquePixels": 2157
+      },
+      "note": "near-black hood and robe, bone spikes on the hood, skull staff, white beard"
+    },
+    {
+      "id": "chibi-study-necromancer-cyan",
+      "subject": "UNIT:UNDEAD:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-necromancer-cyan.png",
+      "role": "chosen",
+      "unit": "necromancer",
+      "accent": "cyan",
+      "recipe": "necromancer-bone-edit-c",
+      "candidate": 0,
+      "derivation": {
+        "kind": "accent-hue-remap",
+        "sourceBand": {
+          "hueFrom": 250,
+          "hueTo": 320,
+          "saturationMin": 0.4,
+          "valueMin": 0.2,
+          "hueCentre": 285
+        },
+        "remap": {
+          "hue": 187,
+          "hueSpread": 0.3,
+          "saturation": 1,
+          "value": 1
+        },
+        "accentPixels": 290,
+        "opaquePixels": 2157
+      },
+      "note": "near-black hood and robe, bone spikes on the hood, skull staff, white beard"
+    },
+    {
+      "id": "chibi-study-necromancer-green",
+      "subject": "UNIT:UNDEAD:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-necromancer-green.png",
+      "role": "chosen",
+      "unit": "necromancer",
+      "accent": "green",
+      "recipe": "necromancer-bone-edit-c",
+      "candidate": 0,
+      "derivation": {
+        "kind": "accent-hue-remap",
+        "sourceBand": {
+          "hueFrom": 250,
+          "hueTo": 320,
+          "saturationMin": 0.4,
+          "valueMin": 0.2,
+          "hueCentre": 285
+        },
+        "remap": {
+          "hue": 128,
+          "hueSpread": 0.3,
+          "saturation": 1,
+          "value": 1
+        },
+        "accentPixels": 290,
+        "opaquePixels": 2157
+      },
+      "note": "near-black hood and robe, bone spikes on the hood, skull staff, white beard"
+    },
+    {
+      "id": "chibi-study-skeleton-steel",
+      "subject": "UNIT:UNDEAD:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-skeleton-steel.png",
+      "role": "alternative",
+      "recipe": "skeleton-bone-edit-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "all-iron helmet and shield, no bronze"
+    },
+    {
+      "id": "chibi-study-skeleton-crest",
+      "subject": "UNIT:UNDEAD:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-skeleton-crest.png",
+      "role": "alternative",
+      "recipe": "skeleton-bone-edit-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "tabard kept in charcoal; the accent on the whole crest"
+    },
+    {
+      "id": "chibi-study-zombie-ribs",
+      "subject": "UNIT:UNDEAD:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-zombie-ribs.png",
+      "role": "alternative",
+      "recipe": "zombie-bone-edit-c",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "more bone: a bare ribcage and bone arms under the smock"
+    },
+    {
+      "id": "chibi-study-necromancer-plain",
+      "subject": "UNIT:UNDEAD:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-necromancer-plain.png",
+      "role": "alternative",
+      "recipe": "necromancer-bone-edit-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "no bone spikes on the hood"
+    },
+    {
+      "id": "chibi-study-necromancer-cyan-by-edit",
+      "subject": "UNIT:UNDEAD:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-necromancer-cyan-by-edit.png",
+      "role": "alternative",
+      "recipe": "necromancer-accent-cyan-edit",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "cyan by a PixelLab edit, not by the remap: the eyes stayed violet"
+    },
+    {
+      "id": "chibi-study-necromancer-green-by-edit",
+      "subject": "UNIT:UNDEAD:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/undead-direction-2026-10/assets/chibi-study-necromancer-green-by-edit.png",
+      "role": "alternative",
+      "recipe": "necromancer-accent-green-edit",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "green by a PixelLab edit, not by the remap: thicker, brighter trim"
+    }
+  ]
+}

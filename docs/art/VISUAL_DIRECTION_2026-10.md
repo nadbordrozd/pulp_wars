@@ -1502,3 +1502,336 @@ portraits, and the cities with their renderer change last.
 - Colour-blindness simulation: Machado, Oliveira and Fernandes, "A
   physiologically-based model for simulation of color vision deficiency"
   (2009).
+
+## 15. Undead study
+
+**Status:** bead `pulp_wars-3tq.11`, waiting for the user's review. The
+user's direction for the Undead: "I'm ok with dark for the undead esp
+necromancers robes. but there should be a lot of pale bones plus one accent
+color. violet, cyan or green. run a study and show me." This is a study on
+three units, each in the three accent options. **Nothing is live:** the
+game draws the Undead exactly as before, no sprite is registered, and
+[UNDEAD.md](factions/UNDEAD.md) is unchanged.
+
+Units chosen from the roster (`src/engine/rules/ruleset-v7.ts`):
+
+- **Skeleton** (`UNIT:UNDEAD:FIGHTER`), the bone-heavy basic unit;
+- **Zombie** (`UNIT:UNDEAD:GUARD`), the flesh unit. It is chosen over the
+  Ghoul because Infect and the Bitten status turn other units into Zombies,
+  so it is the flesh unit seen most, and its upright figure compares
+  directly with the Human Guard;
+- **Necromancer** (`UNIT:UNDEAD:CAPTAIN`), the caster that raises the dead
+  from Graves, in dark robes.
+
+![Rows: Skeleton, Zombie, Necromancer. Columns: today in the four player colours, the violet, cyan and green options, the Human unit of the role](../../art/pixellab/reviews/undead-direction-study/options-x4.png)
+
+### The look
+
+The same rules as the Human direction (section 12) and the Goblin study
+(section 14): fixed faction colours, no owner area and no mask; the player
+is read from the seat-shaped plate, the pennant and the border; chibi
+proportions, camera, top-left light and black outline unchanged; the same
+56 x 80 canvas and anchor.
+
+| Role             | Colours (measured on the three sprites) | Share of the sprites | Used for                                                             |
+| ---------------- | --------------------------------------- | -------------------- | -------------------------------------------------------------------- |
+| Bone, lit        | `#e6e0c8`, `#fefbdd`, `#d0c9a9`         | 8.7%                 | skulls, ribs, arm and hip bones, bandages, the bone necklace         |
+| Bone, shaded     | `#bab497`, `#a59e84`, `#898670`         | 4.7%                 | the warm grey shade of bone                                          |
+| Pallid flesh     | `#948884`, `#9e918b`, `#a89b93`         | 2.8% (Zombie 9%)     | Zombie skin: a warm ash grey, hue 15, saturation 0.11                |
+| Dark cloth       | `#313135`, `#14181a`, `#100f10`         | 28.1%                | loincloth, smock, hood and robe, crest: near-black charcoal          |
+| Iron             | `#64717e`, `#818f9b`, `#3d424d`         | 11%                  | helmet dome, shield face, sword, staff                               |
+| Tarnished bronze | `#574329`, `#966f40`, `#755732`         | 3.6%                 | the rims of the Skeleton's helmet and shield only                    |
+| Beard white      | `#ffffff`, `#ebecf1`                    | 4.2%                 | the Necromancer's beard                                              |
+| **Accent**       | one of the three below                  | 7% (3.5% to 13.4%)   | eye glow, flames and sparks, the staff head, a thin hem or hood trim |
+
+| Option | Lit tone  | Commonest tones                 | Derivation (hue, spread) |
+| ------ | --------- | ------------------------------- | ------------------------ |
+| Violet | `#a221ee` | `#6f06c9`, `#9d1aea`, `#7614ca` | 274°, 0.5                |
+| Cyan   | `#21ceee` | `#06b6c9`, `#1acaea`, `#14b8ca` | 187°, 0.3                |
+| Green  | `#21ee44` | `#06c91d`, `#1aea3e`, `#14ca29` | 128°, 0.3                |
+
+Bone and the pale face or beard together are 18% of the Skeleton, 29% of
+the Zombie and 15% of the Necromancer; dark cloth is 24%, 37% and 25%. The
+accent is 4.6% of the Skeleton (eye sockets, the small flame, the hem), 3.5%
+of the Zombie (eyes and hem) and 13.4% of the Necromancer (two flames,
+sparks, eyes, hood and hem trim). The table is written from `palette.json`,
+which `npm run art:undead-direction-study-review` measures on the sprites.
+
+![The palette of each option beside the colours it must stay apart from](../../art/pixellab/reviews/undead-direction-study/palette.png)
+
+- **Skeleton** (`skeleton-bone-edit-d`, candidate 0): the tabard is gone,
+  so the ribcage, spine and hip bones show; a short near-black loincloth
+  with an accent hem; a black crest; the eye sockets glow; iron helmet and
+  shield with bronze rims.
+- **Zombie** (`zombie-bone-edit-b`, candidate 0): pallid ash grey skin
+  (today it is blue-grey), a ragged charcoal smock with an accent hem, a
+  necklace of small bones, the bandaged arms, thin glowing eyes.
+- **Necromancer** (`necromancer-bone-edit-c`, candidate 0): near-black hood
+  and robe with a thin accent trim, small bone spikes along the hood's
+  ridge, the skull staff with its flame, the white beard and glowing eyes.
+
+### How it was made
+
+Run
+[`art/explorations/undead-direction-2026-10/`](../../art/explorations/undead-direction-2026-10/)
+(`batch.json` with every recipe, seed and instruction; `faction.md`;
+`subjects.json`; `records.json` with each request as sent and each verdict;
+receipts in `submissions/`; candidates in `raw/`): 13 recipes, 13 PixelLab
+calls, 25 candidates.
+
+![Every candidate with its verdict](../../art/pixellab/reviews/undead-direction-study/candidates-x3.png)
+
+**Step 1, the base.** Each unit is an `edit-image-pixen` chain on its
+accepted sprite (batch `undead`), always asking for a violet accent:
+
+| Recipe                          | Result                                                                                                                                          |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `skeleton-bone-edit-a`          | alternative: tabard removed, bare ribcage, black loincloth and crest, violet eyes, trim and flame; all-iron helmet and shield                   |
+| `skeleton-bone-edit-b`          | alternative: the tabard kept in charcoal with a few ribs showing and the whole crest violet; less bone, and the crest is a large accent area    |
+| `skeleton-bone-edit-c`          | rejected: "tarnished bronze" helmet and shield came out as brown wood, the loincloth turned solid violet, the boots brown                       |
+| `skeleton-bone-edit-d`          | **base**: `edit-a` with only the rims of the helmet and shield in bronze                                                                        |
+| `skeleton-bone-a`               | rejected: a fresh creation; thinner, a thinner outline, a different skull and cap                                                               |
+| `zombie-bone-edit-a`            | rejected: the skin stayed blue-grey and the eyes came out yellow-green                                                                          |
+| `zombie-bone-edit-b`            | **base**: a repair naming only the skin ("with no blue at all") and the eyes                                                                    |
+| `zombie-bone-edit-c`            | alternative: "a torn hole showing three ribs" replaced the whole torso and one arm with bare bones; a second Skeleton, no longer the flesh unit |
+| `necromancer-bone-edit-a`       | rejected: hood, robe, trim and eyes right, but every flame stayed pale blue                                                                     |
+| `necromancer-bone-edit-b`       | alternative: a repair naming every flame and spark                                                                                              |
+| `necromancer-bone-edit-c`       | **base**: `edit-b` plus bone spikes on the hood (the shoulder skulls that were also asked for did not appear)                                   |
+| `necromancer-accent-cyan-edit`  | comparison: the cyan accent by a PixelLab edit; the eyes stayed violet and the trim became twice as thick                                       |
+| `necromancer-accent-green-edit` | comparison: the green accent by a PixelLab edit; correct, but a thicker and brighter trim than the base                                         |
+
+**Step 2, the accent options.** The three options of a unit are the same
+base with only its accent pixels recoloured, by
+[`scripts/art/undead-direction/accent.ts`](../../scripts/art/undead-direction/accent.ts):
+a pixel is an accent pixel when its hue is 250° to 320°, its saturation at
+least 0.4 and its value at least 0.2 (nothing else in the look comes near:
+bone is hue 30° to 55°, flesh and iron are below saturation 0.3, and the
+Zombie's navy hair is hue 227°); its new hue is the option's hue plus a
+fraction of its distance from 285°, with saturation and value unchanged.
+So the violet, cyan and green sprites of a unit are pixel-identical outside
+the accent (120, 76 and 290 accent pixels), and a test checks that.
+[`samples.ts`](../../scripts/art/undead-direction/samples.ts) cuts the nine
+masters and six alternatives into `assets/` and records each derivation in
+`samples.json`. The violet option is itself a remap: PixelLab's "bright
+violet" is a magenta (`#d521ee`, hue 293°), moved here to a true violet
+(274°).
+
+The two accents made by an edit pass show why the remap is the better
+method: an edit changes the trim's thickness and brightness and can miss a
+part (the eyes), so the options would not be like for like.
+
+![Each base beside its alternatives, and the two accents made by an edit pass](../../art/pixellab/reviews/undead-direction-study/alternatives-x4.png)
+
+What worked in the prompts:
+
+- **"Remove the tabard so his bare ribcage, spine and hip bones show"** is
+  the one instruction that makes a unit bone-heavy. "Open at the chest so
+  ribs show" gives a dark shirt with three ribs.
+- **Name the skin's wrong colour.** "Pallid light ash grey" alone left the
+  blue-grey skin; "pallid light warm ash grey with no blue at all" in an
+  edit of its own changed it.
+- **Name every glow.** "Every pale blue flame and spark becomes violet" in
+  an edit that also recolours the robe changed nothing; a second edit that
+  lists the flame above the staff, the flame at the hand and the sparks,
+  and ends "Nothing blue is left", changed all of them. Eyes need their own
+  clause.
+- **Ask for bronze on a rim, not on an object.** A bronze helmet is drawn
+  as brown wood or leather at this size; "the rim of the helmet and the rim
+  of the shield become dull tarnished bronze … the dome and the face stay
+  dark grey iron" works.
+- **"A thin trim along the torn hem"** gives a one-pixel zigzag line, which
+  is the right amount. "The crest becomes violet" gives a large solid
+  accent area.
+- **Do not add bone to a flesh unit by a hole in its clothes:** the
+  generator replaces the body under the hole.
+- As for the Humans and the Goblins, **edits keep the silhouette and fresh
+  creations do not.**
+
+Not used: verdigris. A blue-green metal sits between the cyan and the green
+option and would be a second accent beside either; the study keeps the
+metal to iron and bronze.
+
+### In the game
+
+`npm run art:undead-direction-study-review` draws the scenes of
+[`scene.ts`](../../scripts/art/undead-direction/scene.ts) through the real
+board host with the look the game draws: today's sprites, then each accent.
+
+![Four Undead players on the desktop at zoom 1: today, violet, cyan, green](../../art/pixellab/reviews/undead-direction-study/scene-four-desktop-zoom-1.png)
+
+`FOUR` has four Undead players (Coral, Teal, Gold, Violet): rows of
+Skeletons, Zombies and Necromancers on Grass with the ready rim and the
+damaged HP bar, a row on Forest, a row beside and inside Undead cities of
+the three tiers, a row on Mountain and a row on a Road with Graves, a
+Plague chip and a Bitten chip.
+
+![Undead against Human and today's Goblins on the desktop at zoom 0.75](../../art/pixellab/reviews/undead-direction-study/scene-mixed-desktop-zoom-0.75.png)
+
+`MIXED` has an Undead player in Teal and one in Violet, a Human player in
+Coral and a Goblin player in Gold (today's Goblin sprites; the Goblin
+study's sprites are not used). The three factions separate at once:
+crimson and gold, yellow-olive skin, and black with ivory.
+
+### Readability
+
+`readability.json` (CIE76 colour difference: about 10 is clear at a glance,
+20 and more are different colours; "contrast" is the WCAG luminance ratio).
+Terrain is measured on the untoned rasters.
+
+| Check                                       | Result                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bone against Grass (`#89b75b`)              | 46 (33 under simulated deuteranopia). Bone is the lightest thing on a Grass tile.                                                                                                                                                                                                                                                                          |
+| Bone against Mountain                       | 32 against the Mountain's mean (`#929ca9`), 28 against its ground, and 20 against its light rock (`#d1dbe8`) with a luminance contrast of 1.1: bone and snow-lit rock are equally bright and differ only as warm against cool. The known risk is real, and the black outline and dark cloth do the separating: on the Mountain row every unit still reads. |
+| Pallid flesh                                | 53 against Grass, 57 against today's Goblin skin, but only 14 against the Mountain's mean: a Zombie's face on a Mountain is grey on grey, held by its outline and dark hair.                                                                                                                                                                               |
+| Dark cloth against Grass and Forest         | 73 against Grass (contrast 5.5) and 60 against the Forest's mean (contrast 4.0); today's Coral and Teal garments have a contrast of 1.3 and 1.1. Against the Forest's own dark tones (`#2d3a37`) the cloth is 8: a robe in front of a tree trunk merges with it, and the beard, skull and flame carry the Necromancer there.                               |
+| Violet accent                               | 57 against the Violet plate (35 deuteranopia), 162 against Grass, 122 against Shallow Water, 110 or more against every other plate. Darkest of the three: contrast 2.5 against the dark cloth, so the thin trim is the weakest of the three at zoom 0.75; eyes and flames read.                                                                            |
+| Cyan accent                                 | 30 against the Teal plate (28 deuteranopia): cyan is bluer and lighter than Teal, but they are neighbours. 69 against Grass, 37 against the Mountain's light rock (16 under protanopia), **20 against Shallow Water**. Contrast 6.9 against the dark cloth. 8 from today's pale blue flames.                                                               |
+| Green accent                                | 54 against Grass and 60 against today's Goblin skin as seen, but 24 and 15 under deuteranopia, and **5 against the Gold plate** under deuteranopia. Contrast 8.3 against the dark cloth: the brightest trim.                                                                                                                                               |
+| Under simulated deuteranopia and protanopia | Violet stays a clear blue. Cyan turns a pale grey-white close to bone. Green turns the yellow of bone and of the Gold plate. Violet is the only accent that is still a colour.                                                                                                                                                                             |
+| Four Undead players by plate only           | Plate colours differ by 61 to 110 from each other. With nothing on the sprite to help, the plate is the only cue; it works at zoom 0.75 on a phone for all three units. Coral and Teal plates under colour blindness are unchanged from section 7.                                                                                                         |
+| Any unit wider than its plate               | No. The sprites are 51, 51 and 53 px wide against a 52 px plate, and their feet 30, 34 and 45 px, so the plate shows on both sides. The Necromancer's flame overhangs by a pixel.                                                                                                                                                                          |
+
+![The four Undead players' units per accent on a phone at zoom 0.75, as seen and under simulated colour blindness](../../art/pixellab/reviews/undead-direction-study/same-unit-phone-zoom-0.75.png)
+
+### The existing Undead markers
+
+| Marker or effect                                   | Its colour today                             | Violet                              | Cyan                     | Green                                                              |
+| -------------------------------------------------- | -------------------------------------------- | ----------------------------------- | ------------------------ | ------------------------------------------------------------------ |
+| Grave marker (code-drawn tombstone)                | neutral stone `#d9dcd4` on a dark outline    | agrees                              | agrees                   | agrees                                                             |
+| Undead badge of a stand-in sprite                  | bone `#efe8cf` on a violet-black `#231a2c`   | agrees                              | agrees                   | agrees                                                             |
+| Plague chip (`STATUS:PLAGUED`)                     | grey-green cloud `#9fac8a`                   | agrees: a different, dull colour    | agrees                   | **clashes**: every unit already glows green, so the chip says less |
+| Bitten chip (`STATUS:BITTEN`)                      | slate jaws `#3e4859`, `#7f8ca0`, ivory teeth | agrees                              | agrees                   | agrees                                                             |
+| Raise Dead effect (`EFFECT:RAISE`)                 | slate and pale blue `#7f8ca0`, `#a9bdd8`     | off: pale blue wisps, violet caster | agrees                   | off                                                                |
+| Wail, spirit wisp, Lich splash effects             | the same slate and pale blue                 | off                                 | agrees                   | off                                                                |
+| Raise Dead target preview                          | green outline `#8ff0a4`                      | off                                 | off                      | agrees                                                             |
+| Wail radius preview                                | violet outline `#c9a6ff`                     | agrees                              | off                      | off                                                                |
+| Flames in the Undead cities, portraits, four icons | pale blue                                    | off until converted                 | agrees before conversion | off until converted                                                |
+
+The five effect rasters are palette-mapped onto a checked-in palette (the
+[pipeline](CHIBI_PIPELINE.md#status-markers-and-effects)), so moving them to
+another accent is a palette change and a re-map, not new art. The two
+ability previews are one colour constant each.
+
+![The existing markers and effects beside the three accents](../../art/pixellab/reviews/undead-direction-study/markers-x4.png)
+
+### Findings per accent
+
+- **Violet.** The only hue nothing else on the board uses: terrain is
+  green, water is blue-green, Humans are red and gold, Goblins yellow-olive.
+  It is the furthest from Grass, Forest, Mountain, water and Goblin skin,
+  and the only accent that survives red-green colour blindness as a colour.
+  Its weaknesses: it is the darkest, so the hem and hood trim nearly
+  disappear on black cloth at zoom 0.75 (the eyes and flames do not); it is
+  the Violet player's hue family (57 apart: a saturated blue-violet glow
+  against a pastel plate), so a Violet player's Undead look "matched" and
+  another player's Undead carry a little of a rival's colour; and the pale
+  blue effect sprites must be re-mapped.
+- **Cyan.** The brightest and cleanest glow on black cloth, and it is
+  today's pale blue flame made saturated (8 apart), so every existing
+  effect, icon, portrait and city flame already agrees. Its weaknesses: it
+  is the Teal player's neighbour (30); it is close to Shallow Water (20),
+  which matters for a unit on a shore; it is weakest on the Mountain's
+  light rock; and under red-green colour blindness it fades to the grey
+  white of bone.
+- **Green.** The loudest trim, and the classic colour of plague. But it is
+  a green glow on a green map: the same hue family as Grass and Forest, 15
+  from Goblin skin and 5 from the Gold plate under deuteranopia, where it
+  turns bone yellow. It also makes the Plague chip less of a signal.
+
+### Recommendation
+
+**Violet.** Reasons, in order: it gives the Undead a hue of their own that
+no terrain, faction or water uses; it is the most robust under colour
+blindness; and bone, not the accent, is what separates the units from the
+Grass, so the accent does not need to be the brightest thing on the sprite.
+Its two costs are small and known: lighten the trim one step in production
+(a lit tone near `#b45cff` on hems and hoods, the eyes and flames as they
+are), and re-map the five effect sprites and two preview colours.
+
+**Cyan is the runner-up**, and the right choice if keeping every existing
+effect, icon and city flame untouched matters more than a hue of the
+faction's own. **Green is not recommended.**
+
+### Weak spots
+
+- **The Zombie is quiet.** Its accent is two thin eye slits and a hem: 76
+  pixels. It reads as an Undead unit by its pallid face and black smock,
+  not by the accent. A production pass could give it glowing stitches or a
+  larger eye glow.
+- **The Necromancer's body is a black shape.** The hood, robe and staff
+  merge inside the outline; the beard, skull, bone spikes and flames carry
+  it. That is the look asked for, but three Necromancers in a row are
+  heavy.
+- **The Skeleton's helmet and shield are the Human steel.** The bronze rims
+  help; the dome is still the same grey as a Human helmet.
+- **A patch of olive moss** (`#637409`, 21 pixels) is left on the
+  Skeleton's helmet from the old "moss" motif. It is not an accent pixel in
+  any option, but it is a second green beside the green accent.
+- **Bone is warm, the old palette's bone was cool.** The new bone
+  (`#e6e0c8`) is fine against Gold (the plate is far more saturated), but
+  UNDEAD.md's rule "bone is shaded with cool grey, never brown" no longer
+  holds.
+- **The violet option is a remap too**, so its exact tone is a choice of
+  this study (274°), not what PixelLab drew (293°, a magenta).
+- **The cities in the scenes are today's art** with player-coloured roofs
+  and pale blue flames; so are the portraits and the interface.
+
+### Open questions for the user
+
+1. Which accent: violet (recommended), cyan or green?
+2. If violet: this blue-violet (`#a221ee`), or closer to PixelLab's magenta
+   (`#d521ee`, the `alternatives-x4.png` sprites)?
+3. Skeleton: bare ribcage with a loincloth (chosen), or a charcoal tabard
+   with an accent crest (`skeleton-bone-edit-b`)?
+4. Should bronze stay (rims only), or should all Undead metal be dark iron
+   (`skeleton-bone-edit-a`)? Should verdigris be tried at all, given that
+   it reads as a second accent beside cyan or green?
+5. Zombie: flesh with a bone necklace (chosen), or the half-skeleton
+   (`zombie-bone-edit-c`)?
+6. Should the Violet player keep that colour if the Undead accent is
+   violet, or does the planned "one player per faction" rule make that
+   moot?
+
+### Plan for the rest of the roster
+
+On approval, first rewrite [UNDEAD.md](factions/UNDEAD.md): warm ivory
+bone, near-black cloth, pallid ash grey flesh, the chosen accent, bronze
+allowed; its negative fragment today forbids "glowing green, cyan glow,
+purple magic glow, bronze, brown", which existed to protect the red key
+colour and the player colours. Then one production batch
+(`direction-undead`, `fixedFactionColours`, every asset
+`ownerColour: false`) as edits of the accepted `undead`, `5-undead` and
+`cities-undead` assets, importing the three base recipes with
+`art:chibi -- import`.
+
+**The accent method for production:** generate every base with a violet
+accent, as here, whatever accent is chosen, because violet is the one hue
+that no other material of the look uses and so can be found by colour
+alone. If the choice is cyan or green, the pipeline needs the remap as a
+recorded derivation (like `seated` and `crop-rows`), so that `art:validate`
+re-derives each master.
+
+| Piece               | Plan                                                                                                                 | Predicted difficulty                                                                                                                                                                                                                     |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ghoul               | pallid grey skin, ivory claws, the red hooded cloak becomes a ragged charcoal cloak with an accent hem; glowing eyes | Medium. The hood covers the head, so a charcoal hood leaves a small pale face on a dark lump. Push the hood back or give it a bone trim.                                                                                                 |
+| Banshee             | pale hair and face, a charcoal shroud with an accent hem, glowing eyes and mouth                                     | Medium to high. She has no bone at all and her gown is most of the sprite: in charcoal she is a dark tadpole. A bone-white shroud with a dark hood may fit her better; needs two samples.                                                |
+| Lich                | crowned skull, bare bone hands, a near-black royal robe, a bronze crown, the orb in the accent                       | Medium. The orb is the largest glow in the faction (well above 13%); the wide robe is the largest black area. Ribs showing at the open robe would bring the bone back.                                                                   |
+| Vampire             | pale face, black cape and coat, the cape's lining in the accent                                                      | High. A vampire's red lining is the one place where "exactly one accent" fights the subject; an accent-coloured lining is a large area, and a black cape on a black coat has no inner lines.                                             |
+| Abomination         | pallid patchwork flesh, a charcoal smock, bone spurs or a visible rib, accent stitches                               | Medium. The largest flesh area: ash grey must not drift back to blue (it did on the Zombie) or to goblin green. Its four blue flames each need naming.                                                                                   |
+| Portraits (8)       | edits of the `5-undead` busts with the unit's instruction                                                            | Low to medium. At 48 x 48 a hem trim does not exist; the eyes carry the accent.                                                                                                                                                          |
+| Cities 1 to 3       | red roofs and drapes become dark slate with bone trim; flames in the accent                                          | Medium to high. As for the Goblins: code-drawn pennants with recorded anchors and `factionCities` no longer `"CLASSIC"` for the Undead, which is renderer work with tests. A dark necropolis may need bone-white stone to stay readable. |
+| Effects and markers | re-map the five effect rasters and the pale blue flame of the four command icons; two preview colours                | Low. Not needed at all if the choice is cyan.                                                                                                                                                                                            |
+
+Expected cost: about 2 edits per unit (the skin and the glows each needed a
+repair edit here), 1.5 per portrait and 2 per city, roughly 40 to 50
+PixelLab calls. Order: the fragment and the batch scaffold; Banshee,
+Vampire and Lich as the next sample (they are the three that the rules fit
+worst); then the rest, the portraits, and the cities with their renderer
+change last. Until then an Undead player keeps today's sprites on plates.
+
+Evidence in
+[`art/pixellab/reviews/undead-direction-study/`](../../art/pixellab/reviews/undead-direction-study/):
+`candidates-x3.png`, `options-{1x,x4}.png`, `terrain-x3.png`,
+`alternatives-x4.png`, `markers-x4.png`, `palette.{png,json}`,
+`readability.json`, `scene-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png`,
+`same-unit-{desktop,phone}-zoom-{1,0.75}.png` and `index.json`.

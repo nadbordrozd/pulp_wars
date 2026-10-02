@@ -598,3 +598,25 @@ Buildings may also be generated with `create-image-pixflux`
 endpoint with a shading option. The demo's four Pixflux samples ignored the
 subject and drew ground plates, so every accepted building still comes from
 Pixen.
+
+## Undead direction study review
+
+`npm run art:undead-direction-study-review` (bead `pulp_wars-3tq.11`) writes
+`art/pixellab/reviews/undead-direction-study/`, the evidence of the
+[Undead direction study](VISUAL_DIRECTION_2026-10.md#15-undead-study):
+`candidates-x3.png`, `options-{1x,x4}.png` (today's sprite in the four
+player colours, the violet, cyan and green options and the Human unit of
+the role), `terrain-x3.png`, `alternatives-x4.png`, `markers-x4.png` (the
+existing Undead markers and effects beside the accents),
+`palette.{png,json}` and `readability.json` (measured on the sprites),
+`scene-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png` and
+`same-unit-{desktop,phone}-zoom-{1,0.75}.png` (the scenes of
+[`scene.ts`](../../scripts/art/undead-direction/scene.ts) drawn by the real
+board host with the default look) and `index.json`. Its captures start Vite
+on port 6491 unless `--port` says otherwise; the full-screen captures go to
+`--captures DIR` (a temporary directory by default). It reads the samples
+that `npx tsx scripts/art/undead-direction/samples.ts` cuts from the run
+and derives: each accent option is its unit's base candidate with the
+accent pixels remapped by
+[`accent.ts`](../../scripts/art/undead-direction/accent.ts), recorded per
+asset in the run's `samples.json`.

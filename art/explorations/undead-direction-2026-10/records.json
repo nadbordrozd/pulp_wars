@@ -1,0 +1,837 @@
+{
+  "schemaVersion": 1,
+  "batch": "undead-direction-study",
+  "recipes": {
+    "necromancer-accent-cyan-edit": {
+      "id": "necromancer-accent-cyan-edit",
+      "asset": "chibi-study-necromancer",
+      "jobId": "afea7884-ace6-4697-a6d0-9749e23375bc",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-necromancer",
+        "subject": "UNIT:UNDEAD:CAPTAIN",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79211,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing cyan. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing cyan. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing cyan. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing cyan. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "necromancer-bone-edit-c",
+          "candidate": 0,
+          "sha256": "486175839bdcd6880503648c2f2a922c60118592fb90881a7d0236f5dcc4ce7e"
+        }
+      },
+      "submittedAt": "2026-10-02T14:55:33.451Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/necromancer-accent-cyan-edit.png",
+      "rawSheetSha256": "8bdb8dbe667cb427610dd0bbf7803b99424df153964641ec2a89afc10e579512",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6852,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6852,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:56:09.443Z"
+    },
+    "necromancer-accent-green-edit": {
+      "id": "necromancer-accent-green-edit",
+      "asset": "chibi-study-necromancer",
+      "jobId": "c4d1e6a6-31ea-4fcc-a480-996eccf9ff07",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-necromancer",
+        "subject": "UNIT:UNDEAD:CAPTAIN",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79212,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing spectral green. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing spectral green. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing spectral green. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Change only one colour: everything violet (the flame above the skull staff, the flame and sparks at his hand, his glowing eyes, the thin trim on the hood and the hem) becomes bright glowing spectral green. Nothing violet is left. Keep everything else exactly the same: the black hood and robe, the bone spikes, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "necromancer-bone-edit-c",
+          "candidate": 0,
+          "sha256": "486175839bdcd6880503648c2f2a922c60118592fb90881a7d0236f5dcc4ce7e"
+        }
+      },
+      "submittedAt": "2026-10-02T14:56:09.448Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/necromancer-accent-green-edit.png",
+      "rawSheetSha256": "3aad90d4b498d1e7c3d55abaca60b45466419fd639b10b104a6090301a3ce812",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0547,
+          "footprintWidthShare": 0.6981,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0547,
+          "footprintWidthShare": 0.6981,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:56:58.060Z"
+    },
+    "necromancer-bone-edit-a": {
+      "id": "necromancer-bone-edit-a",
+      "asset": "chibi-study-necromancer",
+      "jobId": "7c192505-1f11-4aa6-97ab-7279cc75b096",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-necromancer",
+        "subject": "UNIT:UNDEAD:CAPTAIN",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79201,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours: the red hood and red robe become near-black charcoal cloth with a thin bright violet trim along the hood's edge and the torn hem; every pale blue flame and spark (on the skull staff, at his hand, his eyes) becomes bright glowing violet; his face becomes pallid light ash grey. Keep the pale ivory skull on the staff, the white beard, the staff, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colours: the red hood and red robe become near-black charcoal cloth with a thin bright violet trim along the hood's edge and the torn hem; every pale blue flame and spark (on the skull staff, at his hand, his eyes) becomes bright glowing violet; his face becomes pallid light ash grey. Keep the pale ivory skull on the staff, the white beard, the staff, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colours: the red hood and red robe become near-black charcoal cloth with a thin bright violet trim along the hood's edge and the torn hem; every pale blue flame and spark (on the skull staff, at his hand, his eyes) becomes bright glowing violet; his face becomes pallid light ash grey. Keep the pale ivory skull on the staff, the white beard, the staff, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colours: the red hood and red robe become near-black charcoal cloth with a thin bright violet trim along the hood's edge and the torn hem; every pale blue flame and spark (on the skull staff, at his hand, his eyes) becomes bright glowing violet; his face becomes pallid light ash grey. Keep the pale ivory skull on the staff, the white beard, the staff, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "undead",
+          "recipe": "necromancer-a-edit-2",
+          "candidate": 1,
+          "sha256": "9f379bb8af6b071bc297d066bec98863d88666e1b783748228358e31ade3c313"
+        }
+      },
+      "submittedAt": "2026-10-02T14:47:55.069Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/necromancer-bone-edit-a.png",
+      "rawSheetSha256": "e7df5de544f71c062ce7896fa565c8683edd78238d8d2660d5efd8ac703ece53",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6981,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6981,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:48:41.917Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Hood, robe, trim and eyes are right, but every flame and spark stayed pale blue: two glow colours on one unit. Repaired by edit-b.",
+        "reviewedAt": "2026-10-02T15:06:57.333Z"
+      }
+    },
+    "necromancer-bone-edit-b": {
+      "id": "necromancer-bone-edit-b",
+      "asset": "chibi-study-necromancer",
+      "jobId": "27c561b7-1ad8-4d68-a22c-236e3d2f4f96",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-necromancer",
+        "subject": "UNIT:UNDEAD:CAPTAIN",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79202,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colour of the magic: every pale blue flame and every pale blue spark (the big flame above the skull staff, the flame at his raised hand, the small sparks beside him) becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, the white beard, the skull, the staff, pose, proportions, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colour of the magic: every pale blue flame and every pale blue spark (the big flame above the skull staff, the flame at his raised hand, the small sparks beside him) becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, the white beard, the skull, the staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colour of the magic: every pale blue flame and every pale blue spark (the big flame above the skull staff, the flame at his raised hand, the small sparks beside him) becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, the white beard, the skull, the staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Change only the colour of the magic: every pale blue flame and every pale blue spark (the big flame above the skull staff, the flame at his raised hand, the small sparks beside him) becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, the white beard, the skull, the staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "necromancer-bone-edit-a",
+          "candidate": 0,
+          "sha256": "7f08c60ba1d1df3f1885b98b79bf4987e6a9095df57fa8685f6b48b6d80f65f0"
+        }
+      },
+      "submittedAt": "2026-10-02T14:50:54.934Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/necromancer-bone-edit-b.png",
+      "rawSheetSha256": "3e7fb09e67265784bc66c7d329d8820e5bbef531506a7b2eeb3a3a8f5a9b897e",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6981,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6981,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:51:23.682Z"
+    },
+    "necromancer-bone-edit-c": {
+      "id": "necromancer-bone-edit-c",
+      "asset": "chibi-study-necromancer",
+      "jobId": "d2b2c0ad-b51f-4594-894d-ca04fac2b2f9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-necromancer",
+        "subject": "UNIT:UNDEAD:CAPTAIN",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79203,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add only bone ornaments: one small pale warm ivory skull on each shoulder of the black robe, and a row of three small pale ivory bone spikes along the top ridge of the black hood. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, flames and sparks, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Add only bone ornaments: one small pale warm ivory skull on each shoulder of the black robe, and a row of three small pale ivory bone spikes along the top ridge of the black hood. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, flames and sparks, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Add only bone ornaments: one small pale warm ivory skull on each shoulder of the black robe, and a row of three small pale ivory bone spikes along the top ridge of the black hood. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, flames and sparks, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Add only bone ornaments: one small pale warm ivory skull on each shoulder of the black robe, and a row of three small pale ivory bone spikes along the top ridge of the black hood. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, flames and sparks, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "necromancer-bone-edit-b",
+          "candidate": 0,
+          "sha256": "7732255972380de56c743b2b91ab12de6b8d6c8918529a1eb47c08d00abd186f"
+        }
+      },
+      "submittedAt": "2026-10-02T14:53:31.224Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/necromancer-bone-edit-c.png",
+      "rawSheetSha256": "ee603d1d45d08901e58f49c660a188e48cb326aab45eed994a418dbb581f4e63",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6981,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6981,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:54:07.677Z"
+    },
+    "skeleton-bone-a": {
+      "id": "skeleton-bone-a",
+      "asset": "chibi-study-skeleton",
+      "jobId": "sync-6c3ce6c1-3c19-4220-b091-6b6985bb0f98",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-skeleton",
+        "subject": "UNIT:UNDEAD:FIGHTER",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79011,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/undead-direction-2026-10/faction.md#prompt-fragment + art/explorations/undead-direction-2026-10/faction.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/undead-direction-2026-10/subjects.json",
+            "text": "Subject: Skeleton, a chunky cute friendly skeleton warrior with a huge round pale warm ivory skull head about half of the figure's height and a tiny body made of bare bones: big dark round eye sockets with small glowing bright violet pupils and a wide toothy grin, a dented dark rusted iron half-helmet with a short ragged near-black crest, a bare pale ivory ribcage, spine and hip bones with no shirt, a short ragged near-black charcoal loincloth with a torn zigzag hem and a thin bright violet trim, thin pale ivory bone arms and legs, an oversized notched light grey iron sword held up in the right hand, a round dark iron shield with a tarnished bronze rim and a small ivory skull boss on the left arm, ivory bone hands and feet; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "bow, quiver, arrows, robe, hood, staff"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Skeleton, a chunky cute friendly skeleton warrior with a huge round pale warm ivory skull head about half of the figure's height and a tiny body made of bare bones: big dark round eye sockets with small glowing bright violet pupils and a wide toothy grin, a dented dark rusted iron half-helmet with a short ragged near-black crest, a bare pale ivory ribcage, spine and hip bones with no shirt, a short ragged near-black charcoal loincloth with a torn zigzag hem and a thin bright violet trim, thin pale ivory bone arms and legs, an oversized notched light grey iron sword held up in the right hand, a round dark iron shield with a tarnished bronze rim and a small ivory skull boss on the left arm, ivory bone hands and feet; simple shapes and very few details.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, robe, hood, staff",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Skeleton, a chunky cute friendly skeleton warrior with a huge round pale warm ivory skull head about half of the figure's height and a tiny body made of bare bones: big dark round eye sockets with small glowing bright violet pupils and a wide toothy grin, a dented dark rusted iron half-helmet with a short ragged near-black crest, a bare pale ivory ribcage, spine and hip bones with no shirt, a short ragged near-black charcoal loincloth with a torn zigzag hem and a thin bright violet trim, thin pale ivory bone arms and legs, an oversized notched light grey iron sword held up in the right hand, a round dark iron shield with a tarnished bronze rim and a small ivory skull boss on the left arm, ivory bone hands and feet; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, robe, hood, staff."
+      },
+      "submittedAt": "2026-10-02T14:54:43.076Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/skeleton-bone-a.png",
+      "rawSheetSha256": "3f494049b4f1c159ee40f70dc2f1e4354445a8201621d8ece0ae8108ceedf234",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7321,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:55:33.445Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A fresh creation: a smaller, thinner figure with a thinner outline, a brown horned cap and a different skull from the accepted Skeleton; it would not stand beside the unconverted units. The edits keep the silhouette.",
+        "reviewedAt": "2026-10-02T15:06:56.534Z"
+      }
+    },
+    "skeleton-bone-edit-a": {
+      "id": "skeleton-bone-edit-a",
+      "asset": "chibi-study-skeleton",
+      "jobId": "0266ef07-129a-4390-b59f-784be24118cd",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-skeleton",
+        "subject": "UNIT:UNDEAD:FIGHTER",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79001,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only his clothes: remove the red tabard so his bare pale warm ivory ribcage, spine and hip bones show; he wears only a short ragged near-black charcoal loincloth with a thin bright violet trim; the red helmet crest becomes a ragged near-black crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only his clothes: remove the red tabard so his bare pale warm ivory ribcage, spine and hip bones show; he wears only a short ragged near-black charcoal loincloth with a thin bright violet trim; the red helmet crest becomes a ragged near-black crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only his clothes: remove the red tabard so his bare pale warm ivory ribcage, spine and hip bones show; he wears only a short ragged near-black charcoal loincloth with a thin bright violet trim; the red helmet crest becomes a ragged near-black crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only his clothes: remove the red tabard so his bare pale warm ivory ribcage, spine and hip bones show; he wears only a short ragged near-black charcoal loincloth with a thin bright violet trim; the red helmet crest becomes a ragged near-black crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "undead",
+          "recipe": "skeleton-a-edit-2",
+          "candidate": 1,
+          "sha256": "74e4e714eec986191738a66c5adf39e9536f78e65ff2aa2c7be7829945ed3705"
+        }
+      },
+      "submittedAt": "2026-10-02T14:46:00.067Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/skeleton-bone-edit-a.png",
+      "rawSheetSha256": "4e2e5234245008cd1a523a399a33d9a00be3b30355793e38004f0014b08e58aa",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:46:39.086Z"
+    },
+    "skeleton-bone-edit-b": {
+      "id": "skeleton-bone-edit-b",
+      "asset": "chibi-study-skeleton",
+      "jobId": "a0fd3a22-c7dc-4909-adf2-9285cff13b44",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-skeleton",
+        "subject": "UNIT:UNDEAD:FIGHTER",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79002,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours of his clothes: the red tabard becomes a ragged near-black charcoal tabard, open at the chest so pale warm ivory ribs show, with a thin bright violet trim along its torn hem; the red helmet crest becomes a bright violet crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colours of his clothes: the red tabard becomes a ragged near-black charcoal tabard, open at the chest so pale warm ivory ribs show, with a thin bright violet trim along its torn hem; the red helmet crest becomes a bright violet crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colours of his clothes: the red tabard becomes a ragged near-black charcoal tabard, open at the chest so pale warm ivory ribs show, with a thin bright violet trim along its torn hem; the red helmet crest becomes a bright violet crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colours of his clothes: the red tabard becomes a ragged near-black charcoal tabard, open at the chest so pale warm ivory ribs show, with a thin bright violet trim along its torn hem; the red helmet crest becomes a bright violet crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "undead",
+          "recipe": "skeleton-a-edit-2",
+          "candidate": 1,
+          "sha256": "74e4e714eec986191738a66c5adf39e9536f78e65ff2aa2c7be7829945ed3705"
+        }
+      },
+      "submittedAt": "2026-10-02T14:46:39.111Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/skeleton-bone-edit-b.png",
+      "rawSheetSha256": "d329d0be6e0c148907e512952ffc25a33535dd925803552196f0d6a6ffc83428",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:47:06.177Z"
+    },
+    "skeleton-bone-edit-c": {
+      "id": "skeleton-bone-edit-c",
+      "asset": "chibi-study-skeleton",
+      "jobId": "c2000b1e-1077-4fbb-aec2-ef9ba5854f0a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-skeleton",
+        "subject": "UNIT:UNDEAD:FIGHTER",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79003,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colour of the metal: the grey helmet and the grey round shield become dark tarnished bronze with a dull rusted iron rim, shaded dark brown. Do not touch the skull, the eyes, the bones, the black crest, the loincloth or the sword. Keep everything else exactly the same: the pose, proportions, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colour of the metal: the grey helmet and the grey round shield become dark tarnished bronze with a dull rusted iron rim, shaded dark brown. Do not touch the skull, the eyes, the bones, the black crest, the loincloth or the sword. Keep everything else exactly the same: the pose, proportions, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colour of the metal: the grey helmet and the grey round shield become dark tarnished bronze with a dull rusted iron rim, shaded dark brown. Do not touch the skull, the eyes, the bones, the black crest, the loincloth or the sword. Keep everything else exactly the same: the pose, proportions, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Change only the colour of the metal: the grey helmet and the grey round shield become dark tarnished bronze with a dull rusted iron rim, shaded dark brown. Do not touch the skull, the eyes, the bones, the black crest, the loincloth or the sword. Keep everything else exactly the same: the pose, proportions, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "skeleton-bone-edit-a",
+          "candidate": 0,
+          "sha256": "935d63772a476942bc0e9db01942eba9a7d1552d32e45971d5d075125daebec5"
+        }
+      },
+      "submittedAt": "2026-10-02T14:49:24.511Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/skeleton-bone-edit-c.png",
+      "rawSheetSha256": "5f5d526984ae502ca0ee2c9ae57b3111dd70f6d904b6a9e94a8afeae2e361493",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.125,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.125,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:50:07.171Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Tarnished bronze on the whole helmet and shield came out as brown wood or leather, the loincloth turned solid violet (a whole garment in the accent) and the boots brown. Edit-d asks for bronze on the rims only.",
+        "reviewedAt": "2026-10-02T15:06:56.144Z"
+      }
+    },
+    "skeleton-bone-edit-d": {
+      "id": "skeleton-bone-edit-d",
+      "asset": "chibi-study-skeleton",
+      "jobId": "34c77304-6c2e-483d-8ac7-f554f27cd6f5",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-skeleton",
+        "subject": "UNIT:UNDEAD:FIGHTER",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79004,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only two thin details: the rim of the helmet and the rim of the round shield become dull tarnished bronze, a muted dark yellow-brown metal. The helmet dome and the shield face stay dark grey iron. Do not touch the skull, the violet eyes, the bones, the black crest, the black loincloth with its violet trim, the sword or the boots. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only two thin details: the rim of the helmet and the rim of the round shield become dull tarnished bronze, a muted dark yellow-brown metal. The helmet dome and the shield face stay dark grey iron. Do not touch the skull, the violet eyes, the bones, the black crest, the black loincloth with its violet trim, the sword or the boots. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only two thin details: the rim of the helmet and the rim of the round shield become dull tarnished bronze, a muted dark yellow-brown metal. The helmet dome and the shield face stay dark grey iron. Do not touch the skull, the violet eyes, the bones, the black crest, the black loincloth with its violet trim, the sword or the boots. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only two thin details: the rim of the helmet and the rim of the round shield become dull tarnished bronze, a muted dark yellow-brown metal. The helmet dome and the shield face stay dark grey iron. Do not touch the skull, the violet eyes, the bones, the black crest, the black loincloth with its violet trim, the sword or the boots. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "skeleton-bone-edit-a",
+          "candidate": 0,
+          "sha256": "935d63772a476942bc0e9db01942eba9a7d1552d32e45971d5d075125daebec5"
+        }
+      },
+      "submittedAt": "2026-10-02T14:52:17.953Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/skeleton-bone-edit-d.png",
+      "rawSheetSha256": "a1fdd7518ee62d44e11ed60b38ab6e57ceadbeb6fd528035e8a899b55a93a666",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0528,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0528,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:52:50.460Z"
+    },
+    "zombie-bone-edit-a": {
+      "id": "zombie-bone-edit-a",
+      "asset": "chibi-study-zombie",
+      "jobId": "8e944832-38c1-4a9f-8d72-bfe316c65ce0",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-zombie",
+        "subject": "UNIT:UNDEAD:GUARD",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79101,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin (face, arms) becomes pallid light ash grey, not blue; he wears a necklace of small pale warm ivory bones; his eyes glow bright violet. Keep the face, hair, bandaged hands, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin (face, arms) becomes pallid light ash grey, not blue; he wears a necklace of small pale warm ivory bones; his eyes glow bright violet. Keep the face, hair, bandaged hands, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin (face, arms) becomes pallid light ash grey, not blue; he wears a necklace of small pale warm ivory bones; his eyes glow bright violet. Keep the face, hair, bandaged hands, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin (face, arms) becomes pallid light ash grey, not blue; he wears a necklace of small pale warm ivory bones; his eyes glow bright violet. Keep the face, hair, bandaged hands, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "undead",
+          "recipe": "zombie-d-edit-2",
+          "candidate": 1,
+          "sha256": "23af706cdaddbcdf5df8e9df2181fb74f5cd87d528623f6e70ed2c3235a361c6"
+        }
+      },
+      "submittedAt": "2026-10-02T14:47:06.184Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/zombie-bone-edit-a.png",
+      "rawSheetSha256": "297e097186e793ef9397f8b34cc9867445de1f4ae5c4a9b391ad3ac8b5accb67",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:47:55.061Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The smock, the hem trim and the bone necklace are right, but the skin stayed blue-grey and the eyes came out yellow-green instead of the accent. Repaired by edit-b.",
+        "reviewedAt": "2026-10-02T15:06:56.948Z"
+      }
+    },
+    "zombie-bone-edit-b": {
+      "id": "zombie-bone-edit-b",
+      "asset": "chibi-study-zombie",
+      "jobId": "c1535f41-453f-4cf6-b7d6-38bd1116ad29",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-zombie",
+        "subject": "UNIT:UNDEAD:GUARD",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79102,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only two things: his skin (face, ears, both arms) becomes pallid light warm ash grey with no blue at all, shaded darker grey; and his two eyes become small glowing bright violet eyes instead of yellow-green. Keep everything else exactly the same: the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Change only two things: his skin (face, ears, both arms) becomes pallid light warm ash grey with no blue at all, shaded darker grey; and his two eyes become small glowing bright violet eyes instead of yellow-green. Keep everything else exactly the same: the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only two things: his skin (face, ears, both arms) becomes pallid light warm ash grey with no blue at all, shaded darker grey; and his two eyes become small glowing bright violet eyes instead of yellow-green. Keep everything else exactly the same: the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Change only two things: his skin (face, ears, both arms) becomes pallid light warm ash grey with no blue at all, shaded darker grey; and his two eyes become small glowing bright violet eyes instead of yellow-green. Keep everything else exactly the same: the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "zombie-bone-edit-a",
+          "candidate": 0,
+          "sha256": "7778cf69abcf10a18440796125f1af537b03ce2ddf2d58921227fc07b6ae578b"
+        }
+      },
+      "submittedAt": "2026-10-02T14:50:07.177Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/zombie-bone-edit-b.png",
+      "rawSheetSha256": "dae547fc66c38b20525829978860769722cfae31f854724a1eb53602ce637adb",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:50:54.927Z"
+    },
+    "zombie-bone-edit-c": {
+      "id": "zombie-bone-edit-c",
+      "asset": "chibi-study-zombie",
+      "jobId": "b8c8e514-8bbd-434c-a04e-9579ec3009cb",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "undead-direction-study",
+        "asset": "chibi-study-zombie",
+        "subject": "UNIT:UNDEAD:GUARD",
+        "faction": "TEST-UNDEAD-BONE",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 79103,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add only one thing: a ragged torn hole in the black smock on his belly, showing three clean pale warm ivory ribs, cartoon bones with no blood. Keep everything else exactly the same: the ash grey face and arms, the violet eyes, the dark hair, the bone necklace, the violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Add only one thing: a ragged torn hole in the black smock on his belly, showing three clean pale warm ivory ribs, cartoon bones with no blood. Keep everything else exactly the same: the ash grey face and arms, the violet eyes, the dark hair, the bone necklace, the violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Add only one thing: a ragged torn hole in the black smock on his belly, showing three clean pale warm ivory ribs, cartoon bones with no blood. Keep everything else exactly the same: the ash grey face and arms, the violet eyes, the dark hair, the bone necklace, the violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Add only one thing: a ragged torn hole in the black smock on his belly, showing three clean pale warm ivory ribs, cartoon bones with no blood. Keep everything else exactly the same: the ash grey face and arms, the violet eyes, the dark hair, the bone necklace, the violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "zombie-bone-edit-b",
+          "candidate": 0,
+          "sha256": "8ed13408e3c40347a484c44a20a48cb68d8e495f77d24b10e9627328c061a39a"
+        }
+      },
+      "submittedAt": "2026-10-02T14:52:50.467Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/undead-direction-2026-10/raw/zombie-bone-edit-c.png",
+      "rawSheetSha256": "cb27b544aa4268378e8c8c24bd795bd20556296c84a77531e6f6b3e45becfcb9",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T14:53:31.218Z"
+    }
+  },
+  "assets": {}
+}

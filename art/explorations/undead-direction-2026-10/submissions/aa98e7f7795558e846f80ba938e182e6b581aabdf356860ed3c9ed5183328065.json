@@ -1,0 +1,36 @@
+{
+  "id": "zombie-bone-edit-c",
+  "jobId": "b8c8e514-8bbd-434c-a04e-9579ec3009cb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead-direction-study",
+    "asset": "chibi-study-zombie",
+    "subject": "UNIT:UNDEAD:GUARD",
+    "faction": "TEST-UNDEAD-BONE",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79103,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one thing: a ragged torn hole in the black smock on his belly, showing three clean pale warm ivory ribs, cartoon bones with no blood. Keep everything else exactly the same: the ash grey face and arms, the violet eyes, the dark hair, the bone necklace, the violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one thing: a ragged torn hole in the black smock on his belly, showing three clean pale warm ivory ribs, cartoon bones with no blood. Keep everything else exactly the same: the ash grey face and arms, the violet eyes, the dark hair, the bone necklace, the violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one thing: a ragged torn hole in the black smock on his belly, showing three clean pale warm ivory ribs, cartoon bones with no blood. Keep everything else exactly the same: the ash grey face and arms, the violet eyes, the dark hair, the bone necklace, the violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Add only one thing: a ragged torn hole in the black smock on his belly, showing three clean pale warm ivory ribs, cartoon bones with no blood. Keep everything else exactly the same: the ash grey face and arms, the violet eyes, the dark hair, the bone necklace, the violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "zombie-bone-edit-b",
+      "candidate": 0,
+      "sha256": "8ed13408e3c40347a484c44a20a48cb68d8e495f77d24b10e9627328c061a39a"
+    }
+  }
+}
