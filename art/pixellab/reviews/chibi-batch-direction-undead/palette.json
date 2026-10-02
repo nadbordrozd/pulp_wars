@@ -1,0 +1,101 @@
+{
+  "bead": "pulp_wars-3tq.12",
+  "swatches": [
+    {
+      "role": "Bone, lit",
+      "colours": [
+        "#e6e0c8",
+        "#fefbdd",
+        "#d0c9a9"
+      ],
+      "share": 15.4
+    },
+    {
+      "role": "Bone, shaded",
+      "colours": [
+        "#bab497",
+        "#a59e84"
+      ],
+      "share": null
+    },
+    {
+      "role": "Pallid flesh",
+      "colours": [
+        "#948884",
+        "#9e918b",
+        "#a89b93"
+      ],
+      "share": 1.1
+    },
+    {
+      "role": "Dark cloth (share with the outline)",
+      "colours": [
+        "#313135",
+        "#14181a",
+        "#100f10"
+      ],
+      "share": 53.1
+    },
+    {
+      "role": "Iron",
+      "colours": [
+        "#64717e",
+        "#818f9b",
+        "#3d424d"
+      ],
+      "share": null
+    },
+    {
+      "role": "Tarnished bronze (rims, crown)",
+      "colours": [
+        "#574329",
+        "#966f40"
+      ],
+      "share": null
+    },
+    {
+      "role": "Violet accent",
+      "colours": [
+        "#a221ee",
+        "#6f06c9",
+        "#7614ca"
+      ],
+      "share": 5.9
+    },
+    {
+      "role": "Violet trim on dark cloth (lightened)",
+      "colours": [
+        "#a85df5"
+      ],
+      "share": 2.7
+    },
+    {
+      "role": "Violet effects",
+      "colours": [
+        "#46247c",
+        "#7b36c9",
+        "#b06bf2",
+        "#dcc4ff"
+      ],
+      "share": null
+    },
+    {
+      "role": "Player plates",
+      "colours": [
+        "#f06762",
+        "#28b7a4",
+        "#e2b63f",
+        "#a277d2"
+      ],
+      "share": null
+    },
+    {
+      "role": "Human crimson and gold",
+      "colours": [
+        "#b0282e",
+        "#e2b63f"
+      ],
+      "share": null
+    }
+  ]
+}

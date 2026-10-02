@@ -1,0 +1,36 @@
+{
+  "id": "abomination-bone-edit-d",
+  "jobId": "9f53b518-91a7-4a2b-8f93-9b4fd41bac35",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-abomination",
+    "subject": "UNIT:UNDEAD:JUGGERNAUT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 80604,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the green: the two or three small olive green moss patches on his grey iron shoulder plates become the same dark grey iron as the plate around them. Nothing green is left. Do not change the pale ivory bone spurs on his shoulders. Keep everything else exactly the same: the violet flames and eyes, the ash grey skin, stitches, manacles, chains, black smock with its violet trim, belt, boots, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the green: the two or three small olive green moss patches on his grey iron shoulder plates become the same dark grey iron as the plate around them. Nothing green is left. Do not change the pale ivory bone spurs on his shoulders. Keep everything else exactly the same: the violet flames and eyes, the ash grey skin, stitches, manacles, chains, black smock with its violet trim, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the green: the two or three small olive green moss patches on his grey iron shoulder plates become the same dark grey iron as the plate around them. Nothing green is left. Do not change the pale ivory bone spurs on his shoulders. Keep everything else exactly the same: the violet flames and eyes, the ash grey skin, stitches, manacles, chains, black smock with its violet trim, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the green: the two or three small olive green moss patches on his grey iron shoulder plates become the same dark grey iron as the plate around them. Nothing green is left. Do not change the pale ivory bone spurs on his shoulders. Keep everything else exactly the same: the violet flames and eyes, the ash grey skin, stitches, manacles, chains, black smock with its violet trim, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "abomination-bone-edit-b",
+      "candidate": 0,
+      "sha256": "25855a076fe1473c67ee41bdad0f15b74dc2dce70838fc5c0451272af4501543"
+    }
+  }
+}

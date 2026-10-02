@@ -113,19 +113,27 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
       registry.variants("IMPROVEMENT:FARM").map((asset) => asset.id),
     ).toEqual(["chibi-direction-farm"]);
     // Ships are shared by every faction and are not converted; neither are
-    // the Undead and the Dinosaurs. The Goblins have their own list since
-    // bead pulp_wars-3tq.9 (tested below).
+    // the Dinosaurs. The Goblins have their own list since bead
+    // pulp_wars-3tq.9 (tested below), and the Undead since bead
+    // pulp_wars-3tq.12, in a module of their own that the registry adds.
     for (const subject of [
       "UNIT:PATROL_BOAT",
       "UNIT:BATTLESHIP",
       "UNIT:EMBARKED_TRANSPORT",
-      "UNIT:UNDEAD:FIGHTER",
       "UNIT:DINOSAUR:FIGHTER",
-      "CITY:UNDEAD:1",
       "CITY:DINOSAUR:1",
-      "PORTRAIT:UNDEAD:FIGHTER",
+      "PORTRAIT:DINOSAUR:FIGHTER",
     ] as const)
       expect(registry.variants(subject), subject).toHaveLength(0);
+    for (const subject of ["UNIT:UNDEAD:FIGHTER", "CITY:UNDEAD:1"] as const) {
+      expect(registry.variants(subject), subject).toHaveLength(1);
+      expect(
+        CHIBI_DIRECTION_ART_ASSETS_V7.some(
+          (asset) => asset.subject === subject,
+        ),
+        subject,
+      ).toBe(false);
+    }
   });
 
   it("keeps the default registry untouched: the direction art is a separate list", () => {
@@ -221,10 +229,13 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
   });
 
   it("records a pennant anchor inside the art of City 1-3, the Port and the Shipyard only", () => {
+    // The Human and shared pieces of this batch; a converted faction's
+    // cities (Goblin, Undead) have anchors and tests of their own.
     const anchored = Object.keys(DIRECTION_FLAG_ANCHORS_V7).filter(
       (id) =>
         id.startsWith("chibi-direction-") &&
-        !id.startsWith("chibi-direction-goblin-"),
+        !id.startsWith("chibi-direction-goblin-") &&
+        !id.startsWith("chibi-direction-undead-"),
     );
     expect(anchored.sort()).toEqual([
       "chibi-direction-city-1",

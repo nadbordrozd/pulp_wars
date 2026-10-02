@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-raise-dead-violet-edit-b",
+  "jobId": "4d184fd1-3cab-4d30-be7e-f87c68aee282",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-icon-action-raise-dead",
+    "subject": "ICON:ACTION:RAISE_DEAD",
+    "faction": "UNDEAD",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the green: the olive green rim at the bottom of the grey stone base becomes dark grey stone like the rest of the base. Nothing green is left. Keep the pale ivory bone hand, the grey stone, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the green: the olive green rim at the bottom of the grey stone base becomes dark grey stone like the rest of the base. Nothing green is left. Keep the pale ivory bone hand, the grey stone, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the green: the olive green rim at the bottom of the grey stone base becomes dark grey stone like the rest of the base. Nothing green is left. Keep the pale ivory bone hand, the grey stone, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the green: the olive green rim at the bottom of the grey stone base becomes dark grey stone like the rest of the base. Nothing green is left. Keep the pale ivory bone hand, the grey stone, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-raise-dead-violet-edit",
+      "candidate": 0,
+      "sha256": "f3da54316b00fdd055a7cd602544133044aed7bf876a401855288b598bbcf267"
+    }
+  }
+}

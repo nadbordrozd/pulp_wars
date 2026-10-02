@@ -57,10 +57,23 @@ export interface SupportEffectImageV7 {
 export interface SupportEffectArtV7 {
   image(subject: SupportEffectSubjectV7): SupportEffectImageV7 | null;
   readonly devicePixelRatio: number;
+  /**
+   * The colour of the code-drawn rings and glows that go with the sprites.
+   * The default look passes the Undead violet (bead pulp_wars-3tq.12);
+   * without it they keep the classic pale blue-white.
+   */
+  readonly glow?: string;
 }
 
-/** Pale blue-white of the Undead palette, never close to a player colour. */
+/** Pale blue-white of the classic Undead palette. */
 const CHIBI_UNDEAD_GLOW = "#d2e2f6";
+
+/**
+ * The Undead accent of the new visual direction as a glow: the lightened
+ * violet of the trim (docs/art/factions/UNDEAD.md), for the Wail rings, the
+ * Raise Dead rays and the lifesteal orb drawn in code beside the sprites.
+ */
+export const UNDEAD_VIOLET_GLOW_V7 = "#c9a6ff";
 
 /**
  * Draws the short support cue on its own overlay, without repainting the
@@ -85,7 +98,7 @@ export function drawSupportFeedbackV7(
       camera.zoom,
       progress,
       fade,
-      sprites === null ? UNDEAD_PULSE_COLORS.WAIL : CHIBI_UNDEAD_GLOW,
+      sprites === null ? UNDEAD_PULSE_COLORS.WAIL : sprites.glow,
     );
   if (feedback.effect === "LIFESTEAL") {
     for (const from of recipients)
@@ -132,7 +145,7 @@ export function drawSupportFeedbackV7(
           fade,
           sprites !== null &&
             (feedback.effect === "RAISE" || feedback.effect === "WAIL")
-            ? CHIBI_UNDEAD_GLOW
+            ? sprites.glow
             : UNDEAD_PULSE_COLORS[feedback.effect],
           (feedback.effect === "RAISE" && !actor) ||
             feedback.effect === "BITTEN",
@@ -144,6 +157,8 @@ export function drawSupportFeedbackV7(
 interface SpriteDrawer {
   /** CSS px per master px: the chibi zoom step. */
   readonly step: number;
+  /** Colour of the code-drawn glows beside the sprites. */
+  readonly glow: string;
   /** False when the subject has no loaded raster. */
   draw(
     subject: SupportEffectSubjectV7,
@@ -186,7 +201,7 @@ function spriteDrawer(
     context.restore();
     return true;
   };
-  return { step, draw };
+  return { step, draw, glow: art.glow ?? CHIBI_UNDEAD_GLOW };
 }
 
 /**
@@ -298,7 +313,7 @@ function drawLifesteal(
     if (sprites?.draw("EFFECT:WISP", point, 1, alpha) === true) continue;
     context.save();
     context.globalAlpha = alpha;
-    context.fillStyle = CHIBI_UNDEAD_GLOW;
+    context.fillStyle = sprites?.glow ?? CHIBI_UNDEAD_GLOW;
     context.strokeStyle = "#1b2230";
     context.lineWidth = Math.max(1, 2 * zoom);
     context.beginPath();

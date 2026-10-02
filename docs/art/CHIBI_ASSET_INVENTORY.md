@@ -92,6 +92,21 @@ is the unowned Grave marker: RESOURCE, 40 x 40, centred, no mask; without a
 raster (and in LEGACY) the code-drawn marker stays. Prompts and recipes:
 [UNDEAD.md](factions/UNDEAD.md) and `scripts/art/chibi/batches/batch-undead.json`.
 
+**Undead direction art (bead `pulp_wars-3tq.12`).** The default look
+resolves a second set first, batch `direction-undead`, registered in
+[`chibi-direction-undead-art-manifest.ts`](../../src/assets/chibi-direction-undead-art-manifest.ts):
+`chibi-direction-undead-<unit>` for the eight `UNIT:UNDEAD:<ROLE>` subjects
+(the canvases and anchors of the classic sprites, `fixedColours`, no mask),
+`chibi-direction-portrait-undead-<unit>` for `PORTRAIT:UNDEAD:<ROLE>`
+(48 x 48, `fixedColours`), `chibi-direction-icon-action-<name>` for
+`ICON:ACTION:RAISE_DEAD`, `ICON:ACTION:DEVOUR`, `ICON:ACTION:WAIL` and
+`ICON:ACTION:UNDEAD:RALLY` (48 x 48), and `chibi-direction-effect-<name>`
+for `EFFECT:WAIL`, `EFFECT:SPLASH`, `EFFECT:RAISE` and `EFFECT:WISP` (the
+classic sprites in the violet palette, batch `effects-undead`). The classic
+assets above stay registered: the Classic look draws them, and a direction
+raster that fails to load falls back to them. `STATUS:PLAGUED`,
+`STATUS:BITTEN`, `EFFECT:CURE` and `GRAVE` have no direction art.
+
 **Goblin subjects (revision 17, bead `pulp_wars-0ao.8`).** A Goblin land
 unit asks for `UNIT:GOBLIN:<ROLE>` (Goblin `FIGHTER`, Wolf Rider `RAIDER`,
 Bomb Chucker `MARKSMAN`, Orc Brute `GUARD`, Orc Warboss `CAPTAIN`, Rocket
@@ -303,6 +318,18 @@ without a usable raster falls back to the Human `CITY:<level>`
 keeps `building-city-<level>` for every faction. Review evidence:
 `npm run art:chibi-faction-cities-review`
 ([pipeline](CHIBI_PIPELINE.md#review-evidence)).
+
+**Undead direction cities (bead `pulp_wars-3tq.12`).** The default look
+draws these instead of the three `cities-undead` rasters, which remain for
+the Classic look and as the fallback. They have no mask (`fixedColours`);
+the owner is shown by a code-drawn pennant at the asset's entry in
+`DIRECTION_FLAG_ANCHORS_V7`.
+
+| Art subject     | Asset                           | Batch              | Canvas  | Anchor  | Overflow side / up | Mask | Pennant anchor (x, y, pole) |
+| --------------- | ------------------------------- | ------------------ | ------- | ------- | ------------------ | ---- | --------------------------- |
+| `CITY:UNDEAD:1` | `chibi-direction-undead-city-1` | `direction-undead` | 80 x 80 | default | 0 / 0              | none | 39.5, 0, 5                  |
+| `CITY:UNDEAD:2` | `chibi-direction-undead-city-2` | `direction-undead` | 88 x 88 | default | 4 / 8              | none | 44.5, 0, 6                  |
+| `CITY:UNDEAD:3` | `chibi-direction-undead-city-3` | `direction-undead` | 96 x 88 | default | 8 / 8              | none | 44.5, 6, 11                 |
 
 ## New visual direction: batch `direction-human` (bead `pulp_wars-3tq.5`)
 

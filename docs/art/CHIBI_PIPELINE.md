@@ -331,6 +331,44 @@ Batch `direction-goblin` is the second fixed-colour batch: faction `GOBLIN`,
 - PixelLab's tier allows eight jobs at once: more concurrent `generate`
   runs are refused with HTTP 429 before a job is created, and can be rerun.
 
+### The accent step and the palette swap (bead `pulp_wars-3tq.12`)
+
+Batch `direction-undead` holds the
+[Undead production art](VISUAL_DIRECTION_2026-10.md#17-undead-production)
+of the new direction (`"fixedFactionColours": true`, every unit, portrait
+and city `ownerColour: false`). It added two pipeline pieces:
+
+- **`accent`**: an asset may name an accent preset of
+  [`accent.ts`](../../scripts/art/chibi/accent.ts) (`"accent":
+"undead-violet"`). After the class derivation (`as-is` or `seated`), the
+  sprite's accent pixels are found by colour (the preset's HSV band: the
+  magenta that PixelLab draws for "bright violet") and recoloured: the hue
+  moves to the preset's hue, and a pixel of thin trim on dark cloth (few
+  accent neighbours, several dark ones) is lightened. Every other pixel is
+  copied. The record stores the preset whole (`derivation.accent`: name,
+  spec, accent and trim pixel counts). `art:validate` re-derives the master
+  from the recorded candidate and the preset and fails if a byte differs,
+  or if the manifest and the record name different presets. An accent is
+  only for fixed-colour assets (an owner mask is cut from the key red, which
+  a recolour must never touch).
+- **Palette swap** (`palette-map` classes): an asset with `paletteFrom`
+  maps its candidate to that palette first and then replaces each colour by
+  the colour at the same position in `palette`; the two palettes must have
+  the same number of colours. With `paletteRecipe` the asset takes the
+  candidate of another asset's recipe (same subject and size) and needs no
+  recipe of its own: `accept --id <recipe> --candidate K --asset <id>`. The
+  four violet effects (`chibi-direction-effect-{wail,splash,raise,wisp}` in
+  batch `effects-undead`) are the accepted effect sprites swapped from
+  `undead-frost.png` to `undead-violet.png`, so their shapes are the
+  reviewed ones and no PixelLab call is made. `art:validate` re-derives
+  them too. `npx tsx scripts/art/undead-direction/violet-palette.ts` writes
+  the violet palette from the list in that file; a test checks the bytes.
+
+Its cities use the `calm-settlement` class with the subject keys
+`CITY:UNDEAD:<level>/CALM`; its units and portraits are `edit-image-pixen`
+chains on the accepted `undead` and `5-undead` candidates, with seven study
+recipes brought in by `import`.
+
 ## Terrain palettes and variants
 
 - **Forced palette:** a Pixflux recipe may name a checked-in PNG in
@@ -603,6 +641,31 @@ that `npx tsx scripts/art/goblin-direction/samples.ts` cuts from the run.
 Its "today" panels keep drawing the classic Goblin sprites: the study scene
 passes the Human production art plus the study's samples as the direction
 art, not the live registry, which now holds the Goblin production art.
+
+`npm run art:chibi-undead-direction-review` (bead `pulp_wars-3tq.12`)
+writes `art/pixellab/reviews/chibi-batch-direction-undead/`:
+`units-old-new-{1x,x4}.png` and `units-zoom-0.75.png` (every Undead unit:
+today's sprite in the key colour and for a Teal player, the new one on
+Grass, Forest and Mountain, and the Human unit of its role),
+`portraits-old-new-{1x,x4}.png` (the eight portraits and the four command
+icons), `cities-{1x,x4}.png` (City 1-3: today, new with the pennant at its
+recorded anchor, and the Human city), `effects-old-new-x4.png` (the four
+effects in the classic and the violet palette, and the markers that are not
+converted), `palette.{png,json}` and `readability.json` (measured on the
+masters), `setup-{desktop,phone}.png`,
+`showcase-undead-{desktop,phone}-zoom-{1,0.75}.png` (a Showcase match with
+an Undead viewer against Human, Goblin and Dinosaur),
+`showcase-undead-classic-desktop-zoom-1.png` (the same match with the
+Classic look on), `showcase-undead-{dock,train,tech,help}-desktop.png`,
+`scene-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png`,
+`scene-four-classic-desktop-zoom-1.png` and
+`scene-magic-{raise-preview,wail-preview,cues,cues-b}-{desktop,phone}-zoom-{1,0.75}.png`
+(the scenes of
+[`review-undead-direction-scene-v7.ts`](../../scripts/art/chibi/review-undead-direction-scene-v7.ts)
+drawn by the real board host: four Undead players, Undead against Human,
+and the Raise Dead and Wail previews and the ability cues pinned
+mid-animation) and `index.json`. Its captures start Vite on port 6501
+unless `--port` says otherwise.
 
 ## Dry run
 

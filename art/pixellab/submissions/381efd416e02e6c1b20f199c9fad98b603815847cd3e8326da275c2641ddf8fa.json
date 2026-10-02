@@ -1,0 +1,36 @@
+{
+  "id": "vampire-bone-edit-b",
+  "jobId": "bc8074b2-2509-4564-8e8f-eca1f482d8b7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-vampire",
+    "subject": "UNIT:UNDEAD:KNIGHT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80402,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two small details: the orange cravat at his neck and the orange belt become dull tarnished bronze, a muted dark yellow-brown metal colour. Nothing orange is left. Keep everything else exactly the same: the black cape with its violet lining and trim, the black coat with its bone buttons, the pale grey face, the violet eyes and flames, the hair, fangs, rapier, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two small details: the orange cravat at his neck and the orange belt become dull tarnished bronze, a muted dark yellow-brown metal colour. Nothing orange is left. Keep everything else exactly the same: the black cape with its violet lining and trim, the black coat with its bone buttons, the pale grey face, the violet eyes and flames, the hair, fangs, rapier, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two small details: the orange cravat at his neck and the orange belt become dull tarnished bronze, a muted dark yellow-brown metal colour. Nothing orange is left. Keep everything else exactly the same: the black cape with its violet lining and trim, the black coat with its bone buttons, the pale grey face, the violet eyes and flames, the hair, fangs, rapier, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only two small details: the orange cravat at his neck and the orange belt become dull tarnished bronze, a muted dark yellow-brown metal colour. Nothing orange is left. Keep everything else exactly the same: the black cape with its violet lining and trim, the black coat with its bone buttons, the pale grey face, the violet eyes and flames, the hair, fangs, rapier, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "vampire-bone-edit-a",
+      "candidate": 0,
+      "sha256": "fe384f98bf36dfcbfc4b2f760424fb034869958208a7fed40e2b498d3d6af1db"
+    }
+  }
+}

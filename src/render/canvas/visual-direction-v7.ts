@@ -124,6 +124,13 @@ export interface BoardVisualDirectionV7 {
     readonly roads: "BOLD" | "CALM";
     readonly borders: "DASHED" | "SOLID";
   };
+  /**
+   * The Undead faction's accent colour (bead pulp_wars-3tq.12). VIOLET
+   * draws the Raise Dead target preview and the code-drawn glows of the
+   * Undead effects in the faction's violet instead of the classic green and
+   * pale blue. Omitted, they are drawn as in the classic look.
+   */
+  readonly undeadAccent?: "VIOLET";
 }
 
 /** Draws exactly like no direction at all (used to test the wiring). */
@@ -260,17 +267,23 @@ export const HUMAN_DEMO_DIRECTION_V7: BoardVisualDirectionV7 = {
  * demo's rules with the production art. The app passes it to the board
  * unless the developer option "Classic look (previous art)" is on.
  *
- * Undead and Dinosaur are not converted: their units keep the
+ * The Dinosaurs are not converted: their units keep the
  * player-coloured garments and stand on a plate, and their cities are drawn
  * as in the classic look (owner recolour, capital crown) without the seat
  * badge. Goblins are converted since bead pulp_wars-3tq.9: their units,
  * portraits and cities resolve from the direction art registry in fixed
  * faction colours, and their cities fly the pennant. Ships keep the
  * player-coloured sail and stand in a thin ring.
+ *
+ * Since bead pulp_wars-3tq.12 the Undead are converted too, by the same
+ * mechanism: the art registry the game passes holds their units, portraits,
+ * cities and effects, and their cities fly the pennant.
  */
 export const LIVE_DIRECTION_V7: BoardVisualDirectionV7 = {
   ...HUMAN_DEMO_DIRECTION_V7,
   city: { ...HUMAN_DEMO_DIRECTION_V7.city, factionCities: "CLASSIC" },
+  // Undead (bead pulp_wars-3tq.12): the faction's magic is violet.
+  undeadAccent: "VIOLET",
 };
 
 /**
@@ -305,6 +318,13 @@ export const DIRECTION_FLAG_ANCHORS_V7: Readonly<
   "chibi-direction-city-1": { x: 40, y: 7, pole: 12 },
   "chibi-direction-city-2": { x: 43.5, y: 0, pole: 6 },
   "chibi-direction-city-3": { x: 48.5, y: 9, pole: 7 },
+  // --- Undead (bead pulp_wars-3tq.12, batch `direction-undead`) ---
+  // The crypt tower's cone tip; the bell tower's top; the tip of the
+  // central spire, on a pole that keeps the pennant inside the canvas.
+  "chibi-direction-undead-city-1": { x: 39.5, y: 0, pole: 5 },
+  "chibi-direction-undead-city-2": { x: 44.5, y: 0, pole: 6 },
+  "chibi-direction-undead-city-3": { x: 44.5, y: 6, pole: 11 },
+  // --- end Undead ---
   // The same masters as the demo's Port and Shipyard.
   "chibi-direction-port": { x: 49.5, y: 22, pole: 0 },
   "chibi-direction-shipyard": { x: 21, y: 4, pole: 11 },
@@ -765,7 +785,20 @@ export function createDirectedChibiArtV7(input: {
     },
     resolve(request) {
       const group = directionSubjectGroupV7(request.subject);
-      if (group === null) return base.resolve(request);
+      if (group === null) {
+        // Undead (bead pulp_wars-3tq.12): the direction's own effect sprites
+        // (the violet Wail, splash, Raise Dead hands and spirit wisp) are
+        // drawn where it registers one; every other subject is unchanged.
+        if (
+          input.samples !== undefined &&
+          direction.unit.samples &&
+          request.subject.startsWith("EFFECT:")
+        ) {
+          const sample = input.samples.resolve(request);
+          if (sample.kind !== "MISSING") return sample;
+        }
+        return base.resolve(request);
+      }
       if (group === "TERRAIN") {
         const resolved = base.resolve(request);
         return resolved.kind === "READY"
@@ -791,7 +824,8 @@ export function createDirectedChibiArtV7(input: {
         };
       }
       // An unconverted faction's city keeps its classic raster; a faction
-      // city with direction art of its own (Goblin) is drawn from it.
+      // city with direction art of its own (Goblin, Undead) is drawn from
+      // it, and falls back to its classic raster when that fails to load.
       if (
         group === "CITY" &&
         direction.city.factionCities === "CLASSIC" &&

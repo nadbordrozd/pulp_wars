@@ -1,0 +1,37 @@
+{
+  "id": "zombie-bone-edit-a",
+  "jobId": "8e944832-38c1-4a9f-8d72-bfe316c65ce0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead-direction-study",
+    "asset": "chibi-study-zombie",
+    "subject": "UNIT:UNDEAD:GUARD",
+    "faction": "TEST-UNDEAD-BONE",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin (face, arms) becomes pallid light ash grey, not blue; he wears a necklace of small pale warm ivory bones; his eyes glow bright violet. Keep the face, hair, bandaged hands, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin (face, arms) becomes pallid light ash grey, not blue; he wears a necklace of small pale warm ivory bones; his eyes glow bright violet. Keep the face, hair, bandaged hands, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin (face, arms) becomes pallid light ash grey, not blue; he wears a necklace of small pale warm ivory bones; his eyes glow bright violet. Keep the face, hair, bandaged hands, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin (face, arms) becomes pallid light ash grey, not blue; he wears a necklace of small pale warm ivory bones; his eyes glow bright violet. Keep the face, hair, bandaged hands, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "undead",
+      "recipe": "zombie-d-edit-2",
+      "candidate": 1,
+      "sha256": "23af706cdaddbcdf5df8e9df2181fb74f5cd87d528623f6e70ed2c3235a361c6"
+    }
+  }
+}

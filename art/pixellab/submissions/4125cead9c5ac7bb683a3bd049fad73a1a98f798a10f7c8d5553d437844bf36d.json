@@ -1,0 +1,37 @@
+{
+  "id": "portrait-undead-zombie-bone-edit",
+  "jobId": "4e27d96d-2222-4dba-b153-8a8cb1c5ccbf",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-portrait-undead-zombie",
+    "subject": "PORTRAIT:UNDEAD:GUARD",
+    "faction": "UNDEAD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: the red smock becomes ragged near-black charcoal with a thin bright violet trim; his skin becomes pallid light warm ash grey with no blue at all; his eyes glow bright violet; every small blue flame becomes bright violet; he wears a necklace of small pale warm ivory bones. Keep the face, hair, bandaged hands, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours: the red smock becomes ragged near-black charcoal with a thin bright violet trim; his skin becomes pallid light warm ash grey with no blue at all; his eyes glow bright violet; every small blue flame becomes bright violet; he wears a necklace of small pale warm ivory bones. Keep the face, hair, bandaged hands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours: the red smock becomes ragged near-black charcoal with a thin bright violet trim; his skin becomes pallid light warm ash grey with no blue at all; his eyes glow bright violet; every small blue flame becomes bright violet; he wears a necklace of small pale warm ivory bones. Keep the face, hair, bandaged hands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours: the red smock becomes ragged near-black charcoal with a thin bright violet trim; his skin becomes pallid light warm ash grey with no blue at all; his eyes glow bright violet; every small blue flame becomes bright violet; he wears a necklace of small pale warm ivory bones. Keep the face, hair, bandaged hands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-undead",
+      "recipe": "portrait-undead-zombie-b",
+      "candidate": 0,
+      "sha256": "33203c091cec790554a4085507c78cf496c6ec49deda5e65a79871e47aacadc2"
+    }
+  }
+}

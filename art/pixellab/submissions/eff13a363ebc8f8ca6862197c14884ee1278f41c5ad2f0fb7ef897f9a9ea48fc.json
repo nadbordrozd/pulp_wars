@@ -1,0 +1,37 @@
+{
+  "id": "portrait-undead-vampire-bone-edit",
+  "jobId": "488f6607-b022-4501-8527-677c9297a8a9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-portrait-undead-vampire",
+    "subject": "PORTRAIT:UNDEAD:KNIGHT",
+    "faction": "UNDEAD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81006,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: the red cape and collar become near-black charcoal with a bright violet lining inside the collar and a thin bright violet trim; his skin becomes very pale ash grey with no blue; his eyes glow bright violet. Keep the black hair, the fangs, the cream shirt, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours: the red cape and collar become near-black charcoal with a bright violet lining inside the collar and a thin bright violet trim; his skin becomes very pale ash grey with no blue; his eyes glow bright violet. Keep the black hair, the fangs, the cream shirt, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours: the red cape and collar become near-black charcoal with a bright violet lining inside the collar and a thin bright violet trim; his skin becomes very pale ash grey with no blue; his eyes glow bright violet. Keep the black hair, the fangs, the cream shirt, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours: the red cape and collar become near-black charcoal with a bright violet lining inside the collar and a thin bright violet trim; his skin becomes very pale ash grey with no blue; his eyes glow bright violet. Keep the black hair, the fangs, the cream shirt, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-undead",
+      "recipe": "portrait-undead-vampire-a",
+      "candidate": 0,
+      "sha256": "1983de4f5aca50855bb52c2edddc34c6235ada7941e425b58cf5c412e9708559"
+    }
+  }
+}

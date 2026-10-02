@@ -2095,3 +2095,265 @@ text and are unaffected.
 - **Review evidence of other commands** that happens to show a Goblin
   (`art:chibi-faction-cities-review`, `art:chibi-dinosaur-review`,
   `art:chibi-playtest3-review`, the study reviews) was not regenerated.
+
+## 17. Undead production
+
+**Status:** bead `pulp_wars-3tq.12`. The user reviewed the Undead study
+(section 15) on 2026-10-02: "let's go with the violet-accented undead.
+generate the remaining sprites and merge it into the game." This section is
+that work: the whole Undead roster, its portraits, command icons, cities and
+effects in the new direction, **live in the default look**. It replaces
+what sections 12, 13 and 16 say about the Undead ("not converted"); the
+Human, Goblin and Dinosaur art is unchanged by it. The Classic look and the LEGACY
+art set are unchanged.
+
+![Every Undead unit: today in the key colour and for a Teal player, new on Grass, Forest and Mountain, and the Human unit of the role](../../art/pixellab/reviews/chibi-batch-direction-undead/units-old-new-x4.png)
+
+### The look, final
+
+The palette of [UNDEAD.md](factions/UNDEAD.md#palette), measured on the
+eight unit masters (`palette.json`):
+
+| Role             | Colours                                    | Mean share of a unit |
+| ---------------- | ------------------------------------------ | -------------------- |
+| Bone, lit        | `#e6e0c8`, `#fefbdd`, `#d0c9a9`            | 15.4% (0.6% to 44%)  |
+| Bone, shaded     | `#bab497`, `#a59e84`                       | (counted with bone)  |
+| Pallid flesh     | `#948884`, `#9e918b`, `#a89b93`            | warm ash grey        |
+| Dark cloth       | `#313135`, `#14181a`, `#100f10`            | 53% with the outline |
+| Iron             | `#64717e`, `#818f9b`, `#3d424d`            |                      |
+| Tarnished bronze | `#574329`, `#966f40`                       | rims, crown, buckle  |
+| Violet accent    | lit `#a221ee`; `#6f06c9`, `#7614ca`        | 5.9% (2.9% to 10.5%) |
+| Violet trim      | `#a85df5` to `#b25df5`, lightened          | 2.7% (0.8% to 5.6%)  |
+| Violet effects   | `#46247c`, `#7b36c9`, `#b06bf2`, `#dcc4ff` |                      |
+
+![The palette beside the player plates and the Human colours](../../art/pixellab/reviews/chibi-batch-direction-undead/palette.png)
+
+### Decisions
+
+Each was left to this bead by the user's brief; each is recorded in
+[UNDEAD.md](factions/UNDEAD.md#decisions).
+
+1. **The accent is derived by a recorded pipeline step.** Every sprite is
+   generated with PixelLab's "bright violet" (a magenta, hue about 293°).
+   The `undead-violet` accent preset
+   ([`accent.ts`](../../scripts/art/chibi/accent.ts)) finds those pixels by
+   colour (hue 250° to 320°, saturation at least 0.4, value at least 0.2),
+   moves them to hue 274° with half of the hue spread, exactly as the study
+   did, and stores the preset in the asset record. `art:validate` re-derives
+   every master from its recorded candidate and fails if a byte differs, so
+   no master is a hand-made file (the study flagged that its remap was not
+   in the pipeline).
+2. **Thin trim on dark cloth is lightened.** The study measured a contrast
+   of 2.5 for the violet hem on black cloth. An accent pixel with at most
+   two accent neighbours and at least three dark neighbours (value at most
+   0.3) is trim: its saturation is capped at 0.62 and its value raised to
+   0.96, about `#a85df5`. Eyes, flames, the orb and the cape lining are not
+   trim and keep the full violet. Between 14 (Banshee) and 115 (Lich)
+   pixels per unit are lightened.
+3. **Skeleton:** the study's base with a repair edit: the helmet dome is
+   blackened iron under the bronze rim, and the olive moss patch is gone.
+4. **Zombie:** a repair edit adds violet stitches on the cheek, a violet
+   seam down the arm and bigger glowing eyes. Its accent grew from 76
+   pixels to 121.
+5. **Banshee:** two samples. The dark shroud left her a dark tadpole with
+   two flames still blue; the **bone-white shroud** with a dark hood lining
+   is the pale spirit the brief asks for, and gives the roster its one
+   mostly pale unit (44% bone). She is opaque: a translucent sprite would
+   break the outline and the plate under her.
+6. **Vampire:** black cape and coat, a pale grey face, bone buttons, and a
+   **violet cape lining** where a vampire's would be red (red is the Human
+   colour). The lining is the largest accent area of the roster (10.5%); it
+   is a dark violet, not a glow. A repair edit turned an orange cravat and
+   belt to bronze.
+7. **Lich:** crowned skull, bare ribs and spine in an open black robe, bone
+   arms and feet, a bronze crown, and the orb as the faction's biggest
+   glow. It took three edits: the first drew a red-brown chest, the second
+   painted it dark and lost the ribs, the third brought the ribs back.
+8. **Ghoul:** the first edit made a dark lump with a pale face; a repair
+   made the arms and legs pallid skin. Bone spikes run along the hood.
+9. **Abomination:** ash grey patchwork skin, a black smock, bone spurs on
+   the shoulder plates and four violet flames. The first edit left the
+   flames blue and turned the feet violet; a repair fixed both.
+10. **Portraits:** eight edits of the classic busts and five repairs (a
+    flame, a face or an eye that stayed blue or red). The eyes carry the
+    accent at 48 x 48, as the study predicted.
+11. **Command icons:** the four Undead icons (Raise Dead, Devour, Wail,
+    Frenzy) are edited to violet sparks and flames; the moss on the Devour
+    bone and the green rim of the Raise Dead grave are removed. The Wail
+    ghost is bone-white with a violet mouth.
+12. **Effects are a palette swap.** The four effect sprites that are the
+    faction's magic (Wail, the Lich's splash, the Raise Dead hands, the
+    spirit wisp) are the accepted sprites of batch `effects-undead` with
+    each colour of the frost palette replaced by the colour at the same
+    position of `undead-violet.png`: the same shapes, no new art, no
+    PixelLab call. The code-drawn rings and the lifesteal orb beside them
+    are `#c9a6ff`.
+13. **Raise Dead's preview is violet**, the colour of the Wail preview
+    (`#c9a6ff`), instead of green: the faction's abilities have one colour.
+14. **Plague stays grey-green, Bitten slate and ivory, the cure white.**
+    Plague and a bite are afflictions that sit on any faction's unit, most
+    often a Human or a Goblin; they are not the caster's glow. A violet
+    Plague chip on a unit would read as "Undead magic is helping this
+    unit", and it would be the accent on a sprite that is not Undead. The
+    dull grey-green differs from the violet effects by 98 (CIE76). The cure
+    sparkle is a Human Captain's Tend. The Devour and splash previews
+    (coral, orange) mark damage like every faction's previews.
+15. **Cities are re-created**, not kept: three `calm-settlement` creations
+    with a ground-removal edit each (6 calls), in dark slate with bone trim
+    and violet windows, on canvases close to the Human direction's. The
+    pennant is drawn in code at a recorded anchor on the tallest tower.
+16. **Moss is dropped** from the faction; **bronze** is allowed on rims and
+    the Lich's crown.
+
+### What was made
+
+Batch [`direction-undead`](../../scripts/art/chibi/batches/batch-direction-undead.json):
+23 assets from 47 recipes, 7 of them imported from the study's run with
+`art:chibi -- import` and 40 new PixelLab calls. Batch `effects-undead`
+gained 4 assets and no recipe.
+
+| Asset                                      | Recipes tried  | Accepted                                | Notes                                                   |
+| ------------------------------------------ | -------------- | --------------------------------------- | ------------------------------------------------------- |
+| Skeleton                                   | 3 (2 imported) | `skeleton-bone-edit-e`                  | the study's base plus the helmet repair                 |
+| Zombie                                     | 3 (2 imported) | `zombie-bone-edit-d`, candidate 1       | the study's base plus stitches and eyes                 |
+| Necromancer                                | 3 (imported)   | `necromancer-bone-edit-c`               | the study's base, unchanged                             |
+| Banshee                                    | 2              | `banshee-bone-edit-a`                   | bone-white shroud; the dark shroud rejected             |
+| Ghoul                                      | 2              | `ghoul-bone-edit-b`                     | pallid limbs                                            |
+| Vampire                                    | 2              | `vampire-bone-edit-b`                   | bronze cravat and belt                                  |
+| Lich                                       | 3              | `lich-bone-edit-c`                      | ribs back in the open robe                              |
+| Abomination                                | 4              | `abomination-bone-edit-b`               | two later edits could not remove the last olive patches |
+| 8 portraits                                | 13             | first edit, or its repair               | Necromancer, Ghoul, Lich: `-b`; Abomination: `-c`       |
+| 4 command icons                            | 6              | first edit; Devour and Raise Dead: `-b` | Frenzy: candidate 1 (candidate 0 has a cyan streak)     |
+| City 1, 2, 3                               | 2 each         | `undead-city-<n>-calm-a-edit`           | creation at 96 x 96, then ground removal                |
+| 4 effects (Wail, splash, Raise Dead, wisp) | 0 new          | the accepted `effects-undead` recipes   | palette swap frost to violet                            |
+
+Recipes that worked, beyond those of the study:
+
+- **A repair edit names one thing and lists what stays.** "Change only the
+  helmet dome: it becomes blackened rusted iron … and the green moss patch
+  on it is removed. Keep the bronze rim, …".
+- **Redraw, do not recolour, a detail that will not change.** "The red ring
+  of his big round eye becomes violet" did nothing; "it becomes one glowing
+  bright violet eyeball with a small dark pupil and a dark outline, with no
+  white and no red ring" worked.
+- **"Nothing blue is left"** after a list of every flame is needed in every
+  first edit; three of eight units and three of eight portraits kept a blue
+  flame without it or despite it.
+- **Bone on a dark unit comes from a named object**: "a row of small pale
+  warm ivory bone spikes along the hood's ridge", "bone spurs", "bone
+  buttons". Asking for ribs on a robed figure needs "open at the chest".
+- **Calm cities work for a dark faction** with the stone and roof colours
+  in the subject line; "one small arched window glowing bright violet"
+  gives a window, not a flame.
+- **What did not work:** removing small olive patches from the
+  Abomination's shoulder plates (two edits: one also painted the bone spurs
+  dark, one changed nothing).
+
+### What is live
+
+| Piece                                             | Default look                                                                                             |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Undead land units (all eight)                     | the production sprite in fixed colours, on the player's plate                                            |
+| Portraits (train buttons, cards, technology tree) | the production portrait, drawn as authored                                                               |
+| Selection dock, Help                              | the production unit sprite                                                                               |
+| Raise Dead, Devour, Wail, Frenzy icons            | the violet icons                                                                                         |
+| Undead City 1 to 3                                | the production art with a pennant on the tower: seat shape in cream, gold for the capital, no crown      |
+| Wail, splash, Raise Dead, wisp effects            | the violet sprites, with violet code-drawn rings and orb                                                 |
+| Raise Dead target preview                         | violet                                                                                                   |
+| Plague and Bitten chips, cure sparkle, Graves     | unchanged                                                                                                |
+| Ships and the embarked transport                  | unchanged (shared art, player-coloured sail)                                                             |
+| Showcase                                          | an Undead seat draws all of the above                                                                    |
+| Setup screen                                      | unchanged: it has no faction art, only a select                                                          |
+| Classic look, LEGACY                              | unchanged: the classic Undead art in the owner's colour, pale blue effects, the green Raise Dead preview |
+
+A direction raster that fails to load falls back to the classic asset of
+that piece alone (a unit or portrait in the owner's colour, a city with its
+owner-coloured roofs and the stock capital crown, a pale blue effect).
+
+### Runtime
+
+- [`chibi-direction-undead-art-manifest.ts`](../../src/assets/chibi-direction-undead-art-manifest.ts)
+  lists the 27 Undead entries; `chibiDirectionArtRegistryV7` adds them to
+  the Human list, so the board and the interface resolve them first, as
+  they do the Human art. Units and portraits needed no other change.
+- **Cities.** They use the mechanism the Goblin production added (section
+  16): `LIVE_DIRECTION_V7` still says `factionCities: "CLASSIC"`, a faction
+  city asks the direction's art first and keeps the classic raster only
+  when none is registered (Dinosaur) or it failed to load. The pennant anchors are the `chibi-direction-undead-city-*` entries
+  of `DIRECTION_FLAG_ANCHORS_V7`; a city whose pennant was drawn on its art
+  already takes the Human path of the chrome (no badge, no crown).
+- **Effects.** The directed resolver passes `EFFECT:*` subjects to the
+  direction's art first; the board host asks it, not the classic resolver,
+  for the cue sprites, and passes the glow colour `UNDEAD_VIOLET_GLOW_V7`.
+- **`undeadAccent: "VIOLET"`** is a new optional field of the direction. It
+  selects the violet glow and the violet Raise Dead preview
+  (`undeadPreviewStyleV7`). Without it (the baseline, the study's benches,
+  the Classic look) both are drawn as before.
+
+### Readability
+
+`readability.json` (CIE76 colour difference; contrast is the WCAG luminance
+ratio; terrain colours as the study measured them).
+
+| Check                            | Result                                                                                                                                                                                                                                                    |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bone against Grass               | 46 (contrast 1.8): bone is the lightest thing on a Grass tile.                                                                                                                                                                                            |
+| Bone against Mountain            | 32 against the mean, 20 against the light rock (contrast 1.1). As in the study, the outline and the dark cloth separate a unit from the rock; the bone-white Banshee is the weakest unit on a Mountain and still reads by her dark hood and violet face.  |
+| Pallid flesh                     | 53 against Grass, 14 against the Mountain's mean.                                                                                                                                                                                                         |
+| Dark cloth against Forest        | 60 against the Forest's mean (contrast 4.0), 8 against its dark tones: a robe in front of a trunk merges with it, and bone, beard and glow carry the unit.                                                                                                |
+| Violet accent on dark cloth      | lit `#a221ee`: contrast 2.5 on cloth, 3.4 on its shade. Lightened trim `#a85df5`: **3.4 and 4.7**. The hem and hood trim now read at zoom 0.75.                                                                                                           |
+| Violet accent against the plates | Violet plate `#a277d2`: **57** for the lit accent, **34** for the lightened trim, **25** for the effects' lit violet `#b06bf2`. Coral 110, Teal 143, Gold 161.                                                                                            |
+| Plague chip against the effects  | 98 from the violet effects, 33 from Grass.                                                                                                                                                                                                                |
+| Unit width against the plate     | Skeleton 51, Banshee 49, Zombie 51 (plate 52): narrower. Necromancer 53 (52). Ghoul 66, Lich 64, Vampire 67 (plate 57) and Abomination 82 (68) are wider, as their classic sprites are; the Ghoul's and the Lich's feet (63, 61) cover the plate's width. |
+
+![Four Undead players on the desktop at zoom 1](../../art/pixellab/reviews/chibi-batch-direction-undead/scene-four-desktop-zoom-1.png)
+
+![Undead against Human on a phone at zoom 0.75](../../art/pixellab/reviews/chibi-batch-direction-undead/scene-mixed-phone-zoom-0.75.png)
+
+![The Raise Dead preview on the Necromancer's Graves](../../art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-raise-preview-desktop-zoom-1.png)
+
+![Raise Dead, Wail, the Lich's splash and lifesteal mid-animation](../../art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-cues-desktop-zoom-1.png)
+
+### Evidence
+
+`npm run art:chibi-undead-direction-review` writes
+[`art/pixellab/reviews/chibi-batch-direction-undead/`](../../art/pixellab/reviews/chibi-batch-direction-undead/)
+(see [the pipeline document](CHIBI_PIPELINE.md#review-evidence) for the
+list).
+
+![City 1 to 3: today, new with the pennant, and the Human city](../../art/pixellab/reviews/chibi-batch-direction-undead/cities-x4.png)
+
+![The portraits and command icons, today and new](../../art/pixellab/reviews/chibi-batch-direction-undead/portraits-old-new-x4.png)
+
+![The four effects in the classic and the violet palette](../../art/pixellab/reviews/chibi-batch-direction-undead/effects-old-new-x4.png)
+
+### Weak spots left
+
+- **The roster is dark.** Seven of eight units are more than half black
+  (cloth and outline); only the Banshee is pale. That is the look asked
+  for, and bone is on every silhouette, but a row of Necromancers, Vampires
+  and Abominations is heavy, and the Vampire has almost no bone (0.6%).
+- **Wide units hide their plate.** The Ghoul and the Lich cover the
+  plate's width with their feet and hem; with no colour on the sprite, the
+  player is read from the plate's ends and the border. Unchanged from the
+  classic sprites, which had the garment to help.
+- **The Violet player's Undead look matched,** and the effects' lit violet
+  is only 25 from the Violet plate. A Wail sprite over a Violet player's
+  unit sits close to its plate colour; its dark outline separates it.
+- **The Abomination keeps a few olive patches** on its shoulder plates.
+- **City 3 is the darkest piece on the board** and is lower than City 2,
+  whose bell tower is the tallest thing in the set: the tiers are told
+  apart by width and walls, not by height. City 2's tower is a warmer tan
+  than the bone trim of City 1.
+- **City 2 is 8 px taller than its cell** (88 x 88): its pennant and tower
+  top reach into the cell above, like the classic cities did by 16 to 24 px.
+- **The garrison covers most of a city**, as for the Human cities.
+- **The Lich's crown reads brown** rather than bronze at this size.
+- **The Banshee is opaque,** not translucent.
+- **The effects' bone tones moved too:** the Raise Dead hands are the warm
+  ivory of the new units, not the cool ivory of the classic ones.
+- **The Devour icon's bite** is shallower after the moss was removed.
+- **The setup screen shows no art** for any faction.
+- **The study's review** (`art:undead-direction-study-review`) now pins its
+  "today" panels to the classic art by its own registry; its checked-in
+  evidence was not regenerated.

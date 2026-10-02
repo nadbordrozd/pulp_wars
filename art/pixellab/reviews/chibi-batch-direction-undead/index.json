@@ -1,0 +1,278 @@
+{
+  "bead": "pulp_wars-3tq.12",
+  "batch": "direction-undead",
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. The new units, cities and portraits have no owner area: they are drawn as authored for every player.",
+  "captures": "showcase-undead-*: a Showcase match (16 x 16) launched from the setup form with ?art=chibi in the default look, with an Undead viewer against Human, Goblin and Dinosaur; 'classic' is the same match with Settings > Developer tools > Classic look (previous art) ON. scene-*: the scenes of scripts/art/chibi/review-undead-direction-scene-v7.ts drawn by the real board host with the look the game draws.",
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/units-old-new-1x.png",
+      "width": 760,
+      "height": 1080,
+      "sha256": "1ba3d9f4d24726eebfa929c1ddf63d4a2d02560a6d13097d41b75c8aee163865"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/units-old-new-x4.png",
+      "width": 2488,
+      "height": 3672,
+      "sha256": "c721434d8ad5f9b408c32aec5f0caa615262ace00d5a08be921956acc9368998"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/units-zoom-0.75.png",
+      "width": 570,
+      "height": 810,
+      "sha256": "efe2fd3ea6f682b2d2db7de30745345d85b1baf94ba3d2366181d560517775e6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/portraits-old-new-1x.png",
+      "width": 328,
+      "height": 944,
+      "sha256": "b47fac8e9e75bdc33c07a574deced5b0443e230a47d07e56b2ec024f622ad745"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/portraits-old-new-x4.png",
+      "width": 832,
+      "height": 2816,
+      "sha256": "6bfe97bcf75b977896a61627b2c6499be4ab8904c091b7dce1245e73064ea5f2"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/cities-1x.png",
+      "width": 472,
+      "height": 422,
+      "sha256": "b67878ca7b3ccc8686525d123cbc2990b175168250cb3e20ab0e5e179acb316c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/cities-x4.png",
+      "width": 1408,
+      "height": 1430,
+      "sha256": "a9c0ee25cff5984b9de5eb589e8eb7223872beabb7b5fd1cd1574c53a6980a06"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/effects-old-new-x4.png",
+      "width": 1432,
+      "height": 1178,
+      "sha256": "5f4a709b24e962fcd227dc088e2893c056ab82d97d4ade43541b89ebed2ee607"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/palette.png",
+      "width": 760,
+      "height": 500,
+      "sha256": "a95cc81565bf458f71abd3e56ea1b0eefbcf19547c0cbbecb82d0f4b99b6346a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/setup-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "db766222189253739ca44b110c1286ce93ea56f1e8ddafc2bacfab3c5dd979fc"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/showcase-undead-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a9aff79bb675f44c5f9644f264575b5904aaf6b8356e396a990f0a9bd6223da9"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/showcase-undead-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1136db4b6ebc3488581e28334ee5c15f418bdf0e4cc9edd72e0ad9eae77732c6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/showcase-undead-dock-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6fe7ee87f9557ec5e1a54b2df9aec2c9e79fec5abad908367e9043223b85d0e1"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/showcase-undead-train-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ebf314bd02ac0b9d94310e69fc4a449c866ceb592be4e97e25e1ab46a48b8428"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/showcase-undead-tech-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "79d7b2c80456c5f20e24480874553849797197d40bf1caf866b3f8aa248420c5"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/showcase-undead-help-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "576efe3475bfaf29fcc96ef9aa24b41d2b499aedad486d68a578a0cc6aeae96a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-four-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "017dc8220f0daf6164c5e26099cb83815b53257fe984ba3426eceb200dd8d860"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-four-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "712c1beddcb7dd85e28fd1ce4d8bdef4bddd500de0ef8edf41cd4ca184a6be44"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-mixed-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cf793aa53368b3d4d5f5f1f733a06e5d49b3ec8b10a5293ce010f7a2ad67c296"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-mixed-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2e8ea9d43ad4c1dd2510c9049402569886e68052c43e445118dbbfca9167bd50"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-raise-preview-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1f4520bcf3c73d9162c8ddda77cd21569a872e08b8c4897ff2f4c85fd0a54943"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-raise-preview-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "33b710a6bd47ce66509daf905f7238c6cfd156afd936f957aa4967a67a5f22fc"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-wail-preview-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e6036e03607db0317f999a7bf7d1dee2618e0d5500658ff5c5504903aea9501b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-wail-preview-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ab40d5116040043b80869019a8c45e3c786d07e18baa5c10cebcb5c81044df77"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-cues-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e6b29ff97ae5ccb4255b7e4ce14595fa68263d00bdce837dd822591b2067832d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-cues-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b7dcd262f2ceaca9ac596bb1c476f1bc19ae5cab38df722e10b0def9a54d26f8"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-cues-b-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "dd653d191b0fdeee795ce4c20e0a2fca1d18fd00b308bb1da90400415a939b7d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-cues-b-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a69fcd41795a9bd886c1a13e210046dfa873a6b0915cb5a09cfc6fa85b3a2a1b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-four-classic-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "37d758d6780b8909272e6b473d03d22aebea878866e5c97f79fb42a207c443fb"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/showcase-undead-classic-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0cffb011d2de8f3a0d430d3b4578f6b306496f31443d94c7bbcff6792320d515"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/setup-phone.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "278f20ae95b1f98f2fd22270d7602f28164bea7f00553818ed2ca1685f8c46f4"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/showcase-undead-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "fefa33d7bab8ae7839666bff061daa35396271a7ab2f7c9e6245cb50f107534d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/showcase-undead-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "db355e8ff6eaaa1edd896697d8b7e257e24d3b68b863fb3cd4b36bae64b51eed"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-four-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "ccc533b59b4fd4047a65c1b9dc81fb61005b05825361268f86d0a0bfea6c662c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-four-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "d1f599b0288005c3e8fdc4243510754aea5309c156d6041070655a6db6bb905d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-mixed-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "0c0298e71ac7c35a8f72c45ae47e2e8db752bc863490d7e65b49d3a7e3080dde"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-mixed-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "473c41a342cb741fe0660c961483d1d9820f9b13c95ba46b00c6643d7822d88d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-raise-preview-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "aae0e554d6ae9b101e4dd15aebc2622f7d6fff413ef2876e9d08a09757904166"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-raise-preview-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "7d8e86765766c1afc19e261d63c4a255a02d01a1bed5d90dfe1430605edaeec5"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-wail-preview-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "6e326769ea65dc89637b44697cfdd031d9e8792ddfa57820f089c5656fa550c1"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-wail-preview-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "cdc891a9def41383a2a0a8cc372bc5362ff710104eb76a00f7b9a87eb2d15ff5"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-cues-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "198279d0d2480ac9f6ccb2258ffb0b0c63531c2ca555bcb651d808d43d70afac"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-cues-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "7ba67784490007b04cf57444f6e3ba93c1aa1d799102e79d9d5c6ddf978467a9"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-cues-b-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "70225feeebebe3229521133e62c8a006aac12082aff3ed35e5fe24b80cff4a97"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-undead/scene-magic-cues-b-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "74d07d49bfa8e469f6a346242e553c49d53483996b4a88b15ceb0e866462bd66"
+    }
+  ]
+}

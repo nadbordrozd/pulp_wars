@@ -27,6 +27,7 @@ import {
   loadSubmissionReceipt,
   saveSubmissionReceipt,
 } from "../pixellab-recovery";
+import { accentPreset, accentRaster, type AccentSpec } from "./accent";
 import {
   BATCH_ID_PATTERN,
   CHIBI_CLASS_RECIPES,
@@ -68,6 +69,7 @@ import {
   offPalettePixels,
   paletteColours,
   paletteMapRaster,
+  paletteSwapRaster,
   plateCheck,
   seatedRaster,
   transparentPixels,
@@ -361,6 +363,15 @@ export interface AssetRecord {
     readonly cropRows?: CropRowsSpec;
     /** palette-map: the palette the master's colours were mapped to. */
     readonly palette?: { readonly path: string; readonly sha256: string };
+    /** palette-map: the palette the candidate was mapped to before the swap. */
+    readonly paletteFrom?: { readonly path: string; readonly sha256: string };
+    /** The accent step applied after `kind` (scripts/art/chibi/accent.ts). */
+    readonly accent?: {
+      readonly preset: string;
+      readonly spec: AccentSpec;
+      readonly accentPixels: number;
+      readonly trimPixels: number;
+    };
     readonly ground?: {
       readonly asset: string;
       readonly sha256: string;
@@ -1425,12 +1436,56 @@ async function acceptedGroundAsset(
   return undefined;
 }
 
+type DerivedMaster = {
+  raster: RgbaRaster;
+  derivation: AssetRecord["derivation"];
+};
+
+/** The class derivation, then the asset's accent step when it names one. */
 async function deriveMaster(
   context: PipelineContext,
   records: BatchRecords,
   asset: ChibiAssetSpec,
   candidate: RgbaRaster,
-): Promise<{ raster: RgbaRaster; derivation: AssetRecord["derivation"] }> {
+): Promise<DerivedMaster> {
+  const base = await deriveClassMaster(context, records, asset, candidate);
+  if (asset.accent === undefined) return base;
+  const spec = accentPreset(asset.accent);
+  if (spec === undefined)
+    throw new Error(`${asset.id}: unknown accent preset ${asset.accent}`);
+  const result = accentRaster(base.raster, spec);
+  return {
+    raster: result.raster,
+    derivation: {
+      ...base.derivation,
+      accent: {
+        preset: asset.accent,
+        spec,
+        accentPixels: result.accentPixels,
+        trimPixels: result.trimPixels,
+      },
+    },
+  };
+}
+
+/** A palette file's colours, checked against its recorded hash. */
+async function checkedPalette(
+  root: string,
+  assetId: string,
+  palette: { readonly path: string; readonly sha256: string },
+): Promise<ReturnType<typeof paletteColours>> {
+  const bytes = await readFile(path.join(root, palette.path));
+  if (sha256(bytes) !== palette.sha256)
+    throw new Error(`${assetId}: palette ${palette.path} changed`);
+  return paletteColours(await readRaster(bytes));
+}
+
+async function deriveClassMaster(
+  context: PipelineContext,
+  records: BatchRecords,
+  asset: ChibiAssetSpec,
+  candidate: RgbaRaster,
+): Promise<DerivedMaster> {
   const kind = CHIBI_CLASS_RECIPES[asset.recipeClass].derivation;
   if (kind === "seamless-crop") {
     const region = asset.cropRegion ?? {
@@ -1481,17 +1536,29 @@ async function deriveMaster(
   if (kind === "palette-map") {
     const palette = asset.palette;
     if (palette === undefined) throw new Error(`${asset.id}: no palette`);
-    const bytes = await readFile(path.join(context.root, palette.path));
-    if (sha256(bytes) !== palette.sha256)
-      throw new Error(`${asset.id}: palette ${palette.path} changed`);
+    const colours = await checkedPalette(context.root, asset.id, palette);
+    const from = asset.paletteFrom;
+    if (from === undefined)
+      return {
+        raster: paletteMapRaster(candidate, colours),
+        derivation: {
+          kind,
+          palette: { path: palette.path, sha256: palette.sha256 },
+        },
+      };
     return {
-      raster: paletteMapRaster(
-        candidate,
-        paletteColours(await readRaster(bytes)),
+      raster: paletteSwapRaster(
+        paletteMapRaster(
+          candidate,
+          await checkedPalette(context.root, asset.id, from),
+        ),
+        await checkedPalette(context.root, asset.id, from),
+        colours,
       ),
       derivation: {
         kind,
         palette: { path: palette.path, sha256: palette.sha256 },
+        paletteFrom: { path: from.path, sha256: from.sha256 },
       },
     };
   }
@@ -1589,9 +1656,13 @@ export async function acceptRecipe(
   const recipe = findRecipe(context.manifest, recipeId);
   const asset = findAsset(context.manifest, assetId ?? recipe.asset);
   const sharedField = asset.id !== recipe.asset;
-  if (sharedField && asset.fieldRecipe !== recipeId)
+  if (
+    sharedField &&
+    asset.fieldRecipe !== recipeId &&
+    asset.paletteRecipe !== recipeId
+  )
     throw new Error(
-      `${asset.id}: its fieldRecipe is not ${recipeId}, so it cannot be cropped from it`,
+      `${asset.id}: its fieldRecipe or paletteRecipe is not ${recipeId}, so it cannot be derived from it`,
     );
   // The lock is held from reading the records to writing them, so a verdict
   // or recipe written by another run is never lost and the master, mask and
@@ -1726,6 +1797,8 @@ export async function verifyAssetRecord(
     problems.push(
       `${label}: master is not ${asset.canvas.width}x${asset.canvas.height}`,
     );
+  if (asset.accent !== record.derivation.accent?.preset)
+    problems.push(`${label}: the recorded accent is not the manifest's`);
   if (assetOwned(asset)) {
     if (record.mask === undefined) return [...problems, `${label}: no mask`];
     const maskFile = path.join(root, record.mask.path);
@@ -1763,7 +1836,9 @@ export async function verifyAssetRecord(
         problems.push(`${label}: palette ${palette.path} changed`);
       else if (
         asset.palette?.path !== palette.path ||
-        asset.palette.sha256 !== palette.sha256
+        asset.palette.sha256 !== palette.sha256 ||
+        asset.paletteFrom?.path !== record.derivation.paletteFrom?.path ||
+        asset.paletteFrom?.sha256 !== record.derivation.paletteFrom?.sha256
       )
         problems.push(`${label}: recorded palette is not the manifest's`);
       else {
@@ -1938,9 +2013,14 @@ async function rederivedMasterProblems(
   record: AssetRecord,
 ): Promise<string[]> {
   const kind = record.derivation.kind;
+  const accent = record.derivation.accent;
+  const swapFrom = record.derivation.paletteFrom;
   if (
     record.status !== "ACCEPTED" ||
-    (kind !== "seated" && kind !== "crop-rows")
+    (kind !== "seated" &&
+      kind !== "crop-rows" &&
+      accent === undefined &&
+      swapFrom === undefined)
   )
     return [];
   const label = `batch ${manifest.batch} asset ${record.id}`;
@@ -1965,18 +2045,37 @@ async function rederivedMasterProblems(
     return [`${label}: candidate differs from the record`];
   let derived: RgbaRaster;
   try {
-    derived =
-      kind === "seated"
-        ? seatedRaster(
-            candidate,
-            asset.canvas,
-            asset.bottomMargin ?? SEATED_BOTTOM_MARGIN,
-          )
-        : cropRowsRaster(
-            candidate,
-            asset.canvas,
-            asset.cropRows ?? record.derivation.cropRows ?? missingCropRows(),
-          );
+    if (kind === "seated")
+      derived = seatedRaster(
+        candidate,
+        asset.canvas,
+        asset.bottomMargin ?? SEATED_BOTTOM_MARGIN,
+      );
+    else if (kind === "crop-rows")
+      derived = cropRowsRaster(
+        candidate,
+        asset.canvas,
+        asset.cropRows ?? record.derivation.cropRows ?? missingCropRows(),
+      );
+    else if (kind === "palette-map" && swapFrom !== undefined) {
+      const to = record.derivation.palette;
+      if (to === undefined) return [`${label}: palette is missing`];
+      const from = await checkedPalette(root, record.id, swapFrom);
+      derived = paletteSwapRaster(
+        paletteMapRaster(candidate, from),
+        from,
+        await checkedPalette(root, record.id, to),
+      );
+    } else derived = candidate;
+    if (accent !== undefined) {
+      if (
+        asset.accent !== accent.preset ||
+        JSON.stringify(accentPreset(accent.preset)) !==
+          JSON.stringify(accent.spec)
+      )
+        return [`${label}: the recorded accent is not the manifest's preset`];
+      derived = accentRaster(derived, accent.spec).raster;
+    }
   } catch (error) {
     return [
       `${label}: ${error instanceof Error ? error.message : String(error)}`,
@@ -1984,7 +2083,9 @@ async function rederivedMasterProblems(
   }
   return pixelSha256(derived) === pixelSha256(await readRaster(masterFile))
     ? []
-    : [`${label}: the ${kind} derivation does not reproduce the master`];
+    : [
+        `${label}: the ${kind}${accent === undefined ? "" : " + accent"} derivation does not reproduce the master`,
+      ];
 }
 
 function missingCropRows(): never {

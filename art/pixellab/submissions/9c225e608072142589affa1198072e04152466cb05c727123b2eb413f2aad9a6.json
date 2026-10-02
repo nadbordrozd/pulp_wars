@@ -1,0 +1,36 @@
+{
+  "id": "abomination-bone-edit-b",
+  "jobId": "b323524d-1311-46ea-bfc0-b0b0c6141ebc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-abomination",
+    "subject": "UNIT:UNDEAD:JUGGERNAUT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 80602,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only these colours: every pale blue flame (two on his shoulders, one at each wrist) becomes bright glowing violet with a pale core, nothing blue is left; the green moss on his shoulder plates becomes pale warm ivory bone; his two violet feet become dark charcoal grey boots. Keep everything else exactly the same: the skin, eyes, stitches, iron plates, manacles, chains, smock, belt, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only these colours: every pale blue flame (two on his shoulders, one at each wrist) becomes bright glowing violet with a pale core, nothing blue is left; the green moss on his shoulder plates becomes pale warm ivory bone; his two violet feet become dark charcoal grey boots. Keep everything else exactly the same: the skin, eyes, stitches, iron plates, manacles, chains, smock, belt, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only these colours: every pale blue flame (two on his shoulders, one at each wrist) becomes bright glowing violet with a pale core, nothing blue is left; the green moss on his shoulder plates becomes pale warm ivory bone; his two violet feet become dark charcoal grey boots. Keep everything else exactly the same: the skin, eyes, stitches, iron plates, manacles, chains, smock, belt, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only these colours: every pale blue flame (two on his shoulders, one at each wrist) becomes bright glowing violet with a pale core, nothing blue is left; the green moss on his shoulder plates becomes pale warm ivory bone; his two violet feet become dark charcoal grey boots. Keep everything else exactly the same: the skin, eyes, stitches, iron plates, manacles, chains, smock, belt, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "abomination-bone-edit-a",
+      "candidate": 0,
+      "sha256": "2ddc90187668c3922748df5c773642e992ace07755aba0ddeb25db4278279008"
+    }
+  }
+}

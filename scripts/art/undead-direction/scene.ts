@@ -522,7 +522,11 @@ export function showUndeadStudySceneV7(
     highContrast: false,
     artSet: "CHIBI",
     ...look,
-    ...(samples.length === 0 ? {} : { visualDirectionArt: art.registry }),
+    // Always the study's own registry (the Human production art plus the
+    // samples): since bead pulp_wars-3tq.12 the game's registry holds the
+    // Undead production art, and the "today" panel must stay the art the
+    // study compared against.
+    visualDirectionArt: art.registry,
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

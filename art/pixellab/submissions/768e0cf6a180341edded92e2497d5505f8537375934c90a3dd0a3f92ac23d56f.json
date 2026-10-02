@@ -1,0 +1,36 @@
+{
+  "id": "portrait-undead-necromancer-bone-edit-b",
+  "jobId": "4a3c6250-4270-450f-a795-87bb58463a84",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-portrait-undead-necromancer",
+    "subject": "PORTRAIT:UNDEAD:CAPTAIN",
+    "faction": "UNDEAD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81013,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only these colours: the small blue flame beside him becomes bright glowing violet with a pale core; his blue-grey face becomes pallid light warm ash grey; his beard becomes ivory-white. Nothing blue is left. Keep everything else exactly the same: the black hood with its violet trim, the violet eyes, the skull staff, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only these colours: the small blue flame beside him becomes bright glowing violet with a pale core; his blue-grey face becomes pallid light warm ash grey; his beard becomes ivory-white. Nothing blue is left. Keep everything else exactly the same: the black hood with its violet trim, the violet eyes, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only these colours: the small blue flame beside him becomes bright glowing violet with a pale core; his blue-grey face becomes pallid light warm ash grey; his beard becomes ivory-white. Nothing blue is left. Keep everything else exactly the same: the black hood with its violet trim, the violet eyes, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only these colours: the small blue flame beside him becomes bright glowing violet with a pale core; his blue-grey face becomes pallid light warm ash grey; his beard becomes ivory-white. Nothing blue is left. Keep everything else exactly the same: the black hood with its violet trim, the violet eyes, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-undead-necromancer-bone-edit",
+      "candidate": 0,
+      "sha256": "56dbe462d411327ee0a669b8244a89c2e0095437885c3985970f6c6bf914cfa7"
+    }
+  }
+}

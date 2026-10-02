@@ -8,19 +8,19 @@
       "file": "art/pixellab/reviews/chibi-batch-direction-human/units-old-new-1x.png",
       "width": 656,
       "height": 1080,
-      "sha256": "fdb6dc2945a98c24f95ae8c0a546779821c90ada28b2e4f087881f4c8f0c4665"
+      "sha256": "48457f89d2205e4b3b37e24028de6de6a4a08132e9abd43ec49260c5d8a7e86d"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/units-old-new-x4.png",
       "width": 2096,
       "height": 3672,
-      "sha256": "b4864d66a52cc08b6c1527981954891de7d7d54d9e7f1dd0ab58203f8e4225d5"
+      "sha256": "281f3da3f04103c168df7f08a908bae3c98ee0ef8461b67d172570ad0e1a8d91"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/units-zoom-0.75.png",
       "width": 492,
       "height": 810,
-      "sha256": "b4e92580b793166413c0a310c7003fa03ad111e81af800c3245ca8bc3d37edab"
+      "sha256": "feeee9bf93d6b316654ba7a9c3496cfc59843fce6d2999bfeff674608a7fc4c8"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/portraits-old-new-1x.png",
@@ -68,13 +68,13 @@
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "1e8efbeb08dc83316e1412a0e344752eac9612dc1648bc1dfde0ed03c06f1a1c"
+      "sha256": "60578b2942ea11ee5e6645f7a61cd255c8b83fa2b3550f5343b96aef26462b35"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "849b484b348cc6f788ecdd49aeca183c9ac35a13be83dc74305d3cc7aee0b1ce"
+      "sha256": "68b440828c73d50d4368905c6d61d329f427c1921bddd6804b59a2a7dfb6c7fb"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-dock-desktop.png",
@@ -104,19 +104,19 @@
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-mixed-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "c688a3517afe3e8d3bb3606dd03593fedaf8c2670d4b493faa776637c82470a8"
+      "sha256": "27b385f7d919a11888958ca30eb83935f60e32ba1dbb7a769d0ce87fe1b04364"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-mixed-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "2352af5c05c98d76f02b847ef627c36e77b4d66fb9af1de36fa9f330a565372e"
+      "sha256": "80388d83fd0d3f7d7aa5c59696dd80727d5d96b01c1e42518f306ddc083ef81f"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-today-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "f4ac04542efc9b73d004c574bcfc40c8c4bc1e374eeff32d4a66ccdce7a2c498"
+      "sha256": "efb488ca9c515a341da4ccd8f61537cbe2231458d2066169f09e1f49c92ac186"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-phone-zoom-1.png",
@@ -146,13 +146,13 @@
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-mixed-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "df5cb969f5119fee4861846141411615d0f030fed48eb724871c267107ca2014"
+      "sha256": "f3f295f9e91d6d9e16b4768e9d314a18ea52568010c53cc4e177d6053b9ec8d5"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-mixed-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "a19938a24b1e37fc4f4f3e3cc1192299b8a3fa0fe28f25fdf669d9761f075a3c"
+      "sha256": "e47880b77cb206c5e1d2dc42e3a002065c21948f786fe9e04d14cfd0e323b468"
     }
   ]
 }

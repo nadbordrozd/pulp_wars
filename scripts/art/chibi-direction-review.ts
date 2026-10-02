@@ -299,10 +299,19 @@ async function writeGrid(
   return file;
 }
 
-/** Master path of the accepted art of each subject, later batches winning. */
+/**
+ * Master path of the accepted art of each subject, later batches winning; a
+ * faction's own direction batch (`direction-undead`, bead pulp_wars-3tq.12)
+ * wins over its classic batches, since that is what the default look draws.
+ */
 async function acceptedMasters(): Promise<Map<string, string>> {
   const masters = new Map<string, string>();
-  for (const batch of await listBatches(ROOT)) {
+  const batches = await listBatches(ROOT);
+  const converted = (batch: string): number =>
+    batch.startsWith("direction-") ? 1 : 0;
+  for (const batch of [...batches].sort(
+    (left, right) => converted(left) - converted(right),
+  )) {
     if (batch === BATCH || batch === GOBLIN_BATCH) continue;
     const manifest = await loadBatchManifest(ROOT, batch);
     if (manifest.dryRun) continue;
@@ -372,7 +381,7 @@ async function sheets(directory: string): Promise<string[]> {
           : [
               {
                 image: file,
-                label: `${faction[0]}${faction.slice(1).toLowerCase()} (key red)`,
+                label: `${faction[0]}${faction.slice(1).toLowerCase()} ${file.includes("/chibi-direction-") ? "(new)" : "(key red)"}`,
                 background: "grass" as const,
               },
             ];

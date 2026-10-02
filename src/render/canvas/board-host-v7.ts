@@ -86,6 +86,7 @@ import {
 import {
   SUPPORT_EFFECT_SUBJECTS_V7,
   drawSupportFeedbackV7,
+  UNDEAD_VIOLET_GLOW_V7,
   drawWindmillHealingFeedbackV7,
   type SupportEffectArtV7,
   type SupportFeedbackV7,
@@ -1193,9 +1194,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (this.#artSet() !== "CHIBI") return null;
     const devicePixelRatio = this.#document.defaultView?.devicePixelRatio ?? 1;
     const deviceScale = chibiMasterScale(this.#camera) * devicePixelRatio;
-    const art = this.#chibiArt;
+    // The default look draws the direction's own effect sprites (the Undead
+    // violet set, bead pulp_wars-3tq.12) and tints the code-drawn glows to
+    // match; the classic look keeps the pale blue set.
+    const model = this.#model;
+    const directed = model?.visualDirection?.undeadAccent === "VIOLET";
+    const art =
+      model?.visualDirection === undefined
+        ? this.#chibiArt
+        : this.#directionRuntime(
+            model.visualDirection,
+            model.visualDirectionArt,
+          ).art;
     return {
       devicePixelRatio,
+      ...(directed ? { glow: UNDEAD_VIOLET_GLOW_V7 } : {}),
       image: (subject) => {
         const resolved = art.resolve({
           subject,

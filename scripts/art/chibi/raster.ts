@@ -184,6 +184,42 @@ export function paletteMapRaster(
   return { width: raster.width, height: raster.height, data };
 }
 
+/**
+ * The palette swap (bead pulp_wars-3tq.12): every pixel of a raster already
+ * mapped to `from` takes the colour at the same position in `to`. The two
+ * palettes must have the same number of colours. Shapes are untouched, so a
+ * recoloured effect is its accepted sprite in another palette.
+ */
+export function paletteSwapRaster(
+  raster: RgbaRaster,
+  from: readonly PaletteColour[],
+  to: readonly PaletteColour[],
+): RgbaRaster {
+  if (from.length !== to.length)
+    throw new Error(
+      `a palette swap needs palettes of the same length (${from.length} and ${to.length})`,
+    );
+  const index = new Map(
+    from.map(([r, g, b], position) => [(r << 16) | (g << 8) | b, position]),
+  );
+  const data = new Uint8Array(raster.data);
+  for (let offset = 0; offset < data.length; offset += 4) {
+    if ((data[offset + 3] ?? 0) === 0) continue;
+    const position = index.get(
+      ((data[offset] ?? 0) << 16) |
+        ((data[offset + 1] ?? 0) << 8) |
+        (data[offset + 2] ?? 0),
+    );
+    const colour = position === undefined ? undefined : to[position];
+    if (colour === undefined)
+      throw new Error("a palette swap found a pixel off the source palette");
+    data[offset] = colour[0];
+    data[offset + 1] = colour[1];
+    data[offset + 2] = colour[2];
+  }
+  return { width: raster.width, height: raster.height, data };
+}
+
 /** Pixels of a palette-mapped master that are not a palette colour or not crisp. */
 export function offPalettePixels(
   raster: RgbaRaster,

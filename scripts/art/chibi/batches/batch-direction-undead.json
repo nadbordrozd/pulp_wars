@@ -1,0 +1,1065 @@
+{
+  "schemaVersion": 1,
+  "batch": "direction-undead",
+  "title": "New visual direction: Undead units, portraits, command icons and City 1-3 in pale bone, dark cloth, pallid flesh and one violet accent",
+  "bead": "pulp_wars-3tq.12",
+  "faction": "UNDEAD",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-undead-skeleton",
+      "subject": "UNIT:UNDEAD:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:UNDEAD:FIGHTER/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-undead-ghoul",
+      "subject": "UNIT:UNDEAD:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:UNDEAD:RAIDER/BONE",
+      "accent": "undead-violet",
+      "anchor": {
+        "x": 32,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-direction-undead-banshee",
+      "subject": "UNIT:UNDEAD:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:UNDEAD:MARKSMAN/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-undead-zombie",
+      "subject": "UNIT:UNDEAD:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:UNDEAD:GUARD/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-undead-necromancer",
+      "subject": "UNIT:UNDEAD:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:UNDEAD:CAPTAIN/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-undead-lich",
+      "subject": "UNIT:UNDEAD:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:UNDEAD:CATAPULT/BONE",
+      "accent": "undead-violet",
+      "anchor": {
+        "x": 29,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-direction-undead-vampire",
+      "subject": "UNIT:UNDEAD:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:UNDEAD:KNIGHT/BONE",
+      "accent": "undead-violet",
+      "anchor": {
+        "x": 33,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-direction-undead-abomination",
+      "subject": "UNIT:UNDEAD:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:UNDEAD:JUGGERNAUT/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-portrait-undead-skeleton",
+      "subject": "PORTRAIT:UNDEAD:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:UNDEAD:FIGHTER/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-portrait-undead-zombie",
+      "subject": "PORTRAIT:UNDEAD:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:UNDEAD:GUARD/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-portrait-undead-necromancer",
+      "subject": "PORTRAIT:UNDEAD:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:UNDEAD:CAPTAIN/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-portrait-undead-banshee",
+      "subject": "PORTRAIT:UNDEAD:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:UNDEAD:MARKSMAN/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-portrait-undead-ghoul",
+      "subject": "PORTRAIT:UNDEAD:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:UNDEAD:RAIDER/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-portrait-undead-vampire",
+      "subject": "PORTRAIT:UNDEAD:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:UNDEAD:KNIGHT/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-portrait-undead-lich",
+      "subject": "PORTRAIT:UNDEAD:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:UNDEAD:CATAPULT/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-portrait-undead-abomination",
+      "subject": "PORTRAIT:UNDEAD:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:UNDEAD:JUGGERNAUT/BONE",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-icon-action-raise-dead",
+      "subject": "ICON:ACTION:RAISE_DEAD",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "subjectKey": "ICON:ACTION:RAISE_DEAD/VIOLET",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-icon-action-devour",
+      "subject": "ICON:ACTION:DEVOUR",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "subjectKey": "ICON:ACTION:DEVOUR/VIOLET",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-icon-action-wail",
+      "subject": "ICON:ACTION:WAIL",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "subjectKey": "ICON:ACTION:WAIL/VIOLET",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-icon-action-undead-rally",
+      "subject": "ICON:ACTION:UNDEAD:RALLY",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "subjectKey": "ICON:ACTION:UNDEAD:RALLY/VIOLET",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-undead-city-1",
+      "subject": "CITY:UNDEAD:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:UNDEAD:1/CALM",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-undead-city-2",
+      "subject": "CITY:UNDEAD:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 88,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:UNDEAD:2/CALM",
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-direction-undead-city-3",
+      "subject": "CITY:UNDEAD:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 96,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:UNDEAD:3/CALM",
+      "accent": "undead-violet"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "skeleton-bone-edit-a",
+      "asset": "chibi-direction-undead-skeleton",
+      "endpoint": "edit-image-pixen",
+      "seed": 79001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "skeleton-a-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Change only his clothes: remove the red tabard so his bare pale warm ivory ribcage, spine and hip bones show; he wears only a short ragged near-black charcoal loincloth with a thin bright violet trim; the red helmet crest becomes a ragged near-black crest; his eye sockets glow bright violet and the small blue flame becomes bright violet. Keep the skull, helmet, sword, shield, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/undead-direction-2026-10/."
+    },
+    {
+      "id": "skeleton-bone-edit-d",
+      "asset": "chibi-direction-undead-skeleton",
+      "endpoint": "edit-image-pixen",
+      "seed": 79004,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "skeleton-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two thin details: the rim of the helmet and the rim of the round shield become dull tarnished bronze, a muted dark yellow-brown metal. The helmet dome and the shield face stay dark grey iron. Do not touch the skull, the violet eyes, the bones, the black crest, the black loincloth with its violet trim, the sword or the boots. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/undead-direction-2026-10/."
+    },
+    {
+      "id": "zombie-bone-edit-a",
+      "asset": "chibi-direction-undead-zombie",
+      "endpoint": "edit-image-pixen",
+      "seed": 79101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "zombie-d-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin (face, arms) becomes pallid light ash grey, not blue; he wears a necklace of small pale warm ivory bones; his eyes glow bright violet. Keep the face, hair, bandaged hands, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/undead-direction-2026-10/."
+    },
+    {
+      "id": "zombie-bone-edit-b",
+      "asset": "chibi-direction-undead-zombie",
+      "endpoint": "edit-image-pixen",
+      "seed": 79102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "zombie-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: his skin (face, ears, both arms) becomes pallid light warm ash grey with no blue at all, shaded darker grey; and his two eyes become small glowing bright violet eyes instead of yellow-green. Keep everything else exactly the same: the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/undead-direction-2026-10/."
+    },
+    {
+      "id": "necromancer-bone-edit-a",
+      "asset": "chibi-direction-undead-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 79201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "necromancer-a-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours: the red hood and red robe become near-black charcoal cloth with a thin bright violet trim along the hood's edge and the torn hem; every pale blue flame and spark (on the skull staff, at his hand, his eyes) becomes bright glowing violet; his face becomes pallid light ash grey. Keep the pale ivory skull on the staff, the white beard, the staff, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/undead-direction-2026-10/."
+    },
+    {
+      "id": "necromancer-bone-edit-b",
+      "asset": "chibi-direction-undead-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 79202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "necromancer-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the magic: every pale blue flame and every pale blue spark (the big flame above the skull staff, the flame at his raised hand, the small sparks beside him) becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, the white beard, the skull, the staff, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/undead-direction-2026-10/."
+    },
+    {
+      "id": "necromancer-bone-edit-c",
+      "asset": "chibi-direction-undead-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 79203,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "necromancer-bone-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only bone ornaments: one small pale warm ivory skull on each shoulder of the black robe, and a row of three small pale ivory bone spikes along the top ridge of the black hood. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, flames and sparks, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/undead-direction-2026-10/."
+    },
+    {
+      "id": "skeleton-bone-edit-e",
+      "asset": "chibi-direction-undead-skeleton",
+      "endpoint": "edit-image-pixen",
+      "seed": 80001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "skeleton-bone-edit-d",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the helmet dome: it becomes blackened rusted iron, a very dark warm charcoal grey with two small rust-brown dents and no shine, clearly darker than the sword, and the green moss patch on it is removed. Keep the bronze rim, the black crest, the skull, the violet eyes, the bones, the shield, the sword, the loincloth with its violet trim, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The study's leftovers: the dome read as Human polished steel, and an olive moss patch was left on it."
+    },
+    {
+      "id": "zombie-bone-edit-d",
+      "asset": "chibi-direction-undead-zombie",
+      "endpoint": "edit-image-pixen",
+      "seed": 80101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "zombie-bone-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only small glowing details: a short row of bright violet stitches across his cheek and another across his bare forearm, and his two eyes become a little bigger and glow bright violet. Keep everything else exactly the same: the pallid ash grey skin, the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The study found the Zombie quiet: its accent was two eye slits and a hem."
+    },
+    {
+      "id": "ghoul-bone-edit-a",
+      "asset": "chibi-direction-undead-ghoul",
+      "endpoint": "edit-image-pixen",
+      "seed": 80201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "ghoul-b-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours: the red hooded cloak becomes a ragged near-black charcoal cloak with a thin bright violet trim along its torn hem and a row of small pale warm ivory bone spikes along the hood's ridge; his skin becomes pallid light warm ash grey with no blue at all; his eyes glow bright violet and every small blue flame becomes bright violet; the claws stay pale ivory. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "banshee-bone-edit-a",
+      "asset": "chibi-direction-undead-banshee",
+      "endpoint": "edit-image-pixen",
+      "seed": 80301,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "banshee-c-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours: the red hooded shroud gown becomes a pale bone-white ghostly shroud, warm ivory shaded with warm grey, with a near-black hood lining and a thin bright violet trim along the torn hem; her face and hands become very pale ash grey with no blue; her eyes and open mouth glow bright violet and every small blue flame becomes bright violet. Keep the hair, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Sample A: a pale spirit in a bone-white shroud."
+    },
+    {
+      "id": "banshee-bone-edit-b",
+      "asset": "chibi-direction-undead-banshee",
+      "endpoint": "edit-image-pixen",
+      "seed": 80302,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "banshee-c-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours: the red hooded shroud gown becomes a ragged near-black charcoal shroud with a thin bright violet trim along the hood's edge, the torn hem and the tail; her hair becomes pale warm ivory white; her face and hands become very pale ash grey with no blue; her eyes and open mouth glow bright violet and every small blue flame becomes bright violet. Keep the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Sample B: the dark shroud, for comparison with A."
+    },
+    {
+      "id": "vampire-bone-edit-a",
+      "asset": "chibi-direction-undead-vampire",
+      "endpoint": "edit-image-pixen",
+      "seed": 80401,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "vampire-a-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours: the red cape becomes near-black charcoal with a thin bright violet trim along its scalloped edge and a deep violet lining on its inside; the red coat becomes near-black charcoal with pale ivory bone buttons; his skin becomes very pale ash grey with no blue; his eyes glow bright violet and every blue flame becomes bright violet. Keep the shirt, hair, fangs, rapier,pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "lich-bone-edit-a",
+      "asset": "chibi-direction-undead-lich",
+      "endpoint": "edit-image-pixen",
+      "seed": 80501,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "lich-c-edit-b-3",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours: the red royal robe becomes near-black charcoal with a thin bright violet trim along its collar and torn hem, open at the chest so his pale warm ivory ribcage shows; the crown becomes dull tarnished bronze; the orb of flame above his head and his eye sockets glow bright violet, and nothing blue is left. Keep the skull, the bone arms, hands and feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "abomination-bone-edit-a",
+      "asset": "chibi-direction-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 80601,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "batch": "undead",
+        "recipe": "abomination-b-edit-2",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours: the red smock becomes a ragged near-black charcoal smock with a thin bright violet trim along its torn hem; his skin becomes pallid light warm ash grey with no blue at all; the four blue flames and his eyes become bright glowing violet; the green moss on his shoulders becomes pale ivory bone spurs. Keep the stitches, iron plates, manacles, chains, belt, face,pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "vampire-bone-edit-b",
+      "asset": "chibi-direction-undead-vampire",
+      "endpoint": "edit-image-pixen",
+      "seed": 80402,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "vampire-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two small details: the orange cravat at his neck and the orange belt become dull tarnished bronze, a muted dark yellow-brown metal colour. Nothing orange is left. Keep everything else exactly the same: the black cape with its violet lining and trim, the black coat with its bone buttons, the pale grey face, the violet eyes and flames, the hair, fangs, rapier, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Repair of A: the cravat and belt stayed orange, a second accent."
+    },
+    {
+      "id": "lich-bone-edit-b",
+      "asset": "chibi-direction-undead-lich",
+      "endpoint": "edit-image-pixen",
+      "seed": 80502,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "lich-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the red-brown area inside his open chest, behind the ribs, becomes near-black charcoal, so the pale ivory ribs and spine stand out. Nothing red or brown is left on the chest. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes and orb, the black robe with its violet trim, the grey ragged kilt, the bone arms, hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Repair of A: the inside of the ribcage came out red-brown."
+    },
+    {
+      "id": "abomination-bone-edit-b",
+      "asset": "chibi-direction-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 80602,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "abomination-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only these colours: every pale blue flame (two on his shoulders, one at each wrist) becomes bright glowing violet with a pale core, nothing blue is left; the green moss on his shoulder plates becomes pale warm ivory bone; his two violet feet become dark charcoal grey boots. Keep everything else exactly the same: the skin, eyes, stitches, iron plates, manacles, chains, smock, belt, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Repair of A: the four flames stayed blue, the moss stayed green and the feet turned violet."
+    },
+    {
+      "id": "ghoul-bone-edit-b",
+      "asset": "chibi-direction-undead-ghoul",
+      "endpoint": "edit-image-pixen",
+      "seed": 80202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "ghoul-bone-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of his limbs: his two long arms and his two legs become bare pallid light warm ash grey skin, the same pale skin as his face, shaded darker grey, instead of dark grey. Keep everything else exactly the same: the black hooded cloak with its violet trim and bone spikes, the pale face, the violet eyes and mouth, the pale ivory claws, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "A is a dark lump with a pale face: the arms and legs came out dark grey. Pale limbs bring the flesh back."
+    },
+    {
+      "id": "lich-bone-edit-c",
+      "asset": "chibi-direction-undead-lich",
+      "endpoint": "edit-image-pixen",
+      "seed": 80503,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "lich-bone-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only bones on his chest: between the two sides of the open black robe his bare pale warm ivory ribcage and spine show, five clear pale ivory ribs on a near-black background, and the brown belt becomes near-black. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes and orb, the black robe with its violet trim, the grey ragged kilt, the bone arms, hands and feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "B painted the chest dark and lost the ribs; the Lich should be bone-heavy."
+    },
+    {
+      "id": "abomination-bone-edit-c",
+      "asset": "chibi-direction-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 80603,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "abomination-bone-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one small detail: the few small olive green patches on his grey iron shoulder plates become dark grey iron like the rest of the plates. Nothing green is left. Keep everything else exactly the same: the bone spurs, the violet flames and eyes, the ash grey skin, stitches, manacles, chains, black smock with its violet trim, belt, boots, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "B left a few olive moss patches on the shoulder plates."
+    },
+    {
+      "id": "portrait-undead-skeleton-bone-edit",
+      "asset": "chibi-direction-portrait-undead-skeleton",
+      "endpoint": "edit-image-pixen",
+      "seed": 81001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "portrait-undead-skeleton-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red helmet crest becomes a ragged near-black crest; the helmet becomes blackened iron with a dull tarnished bronze rim; the red tabard is removed so his bare pale warm ivory collar bones and ribs show, with a ragged near-black charcoal collar with a thin bright violet trim; his eye sockets glow bright violet. Keep the skull, the grin, the sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-undead-zombie-bone-edit",
+      "asset": "chibi-direction-portrait-undead-zombie",
+      "endpoint": "edit-image-pixen",
+      "seed": 81002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "portrait-undead-zombie-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red smock becomes ragged near-black charcoal with a thin bright violet trim; his skin becomes pallid light warm ash grey with no blue at all; his eyes glow bright violet; every small blue flame becomes bright violet; he wears a necklace of small pale warm ivory bones. Keep the face, hair, bandaged hands, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-undead-necromancer-bone-edit",
+      "asset": "chibi-direction-portrait-undead-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 81003,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "portrait-undead-necromancer-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red hood and robe become near-black charcoal with a thin bright violet trim along the hood's edge; the pale blue flame and his eyes become bright glowing violet, nothing blue is left; his face becomes pallid light ash grey; his beard becomes ivory-white. Keep the skull staff, the beard's shape, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-undead-banshee-bone-edit",
+      "asset": "chibi-direction-portrait-undead-banshee",
+      "endpoint": "edit-image-pixen",
+      "seed": 81004,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "portrait-undead-banshee-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red hood becomes a pale bone-white shroud, warm ivory shaded with warm grey, with a near-black lining and a thin bright violet trim; her blue face and hands become very pale ash grey with no blue; her eyes and open mouth glow bright violet. Keep the hair, the face, the hands, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-undead-ghoul-bone-edit",
+      "asset": "chibi-direction-portrait-undead-ghoul",
+      "endpoint": "edit-image-pixen",
+      "seed": 81005,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "portrait-undead-ghoul-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red hood becomes ragged near-black charcoal with a thin bright violet trim along its edge; his skin becomes pallid light warm ash grey with no blue at all; his eyes glow bright violet; his claws stay pale ivory. Keep the face, the grin, the raised hand, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-undead-vampire-bone-edit",
+      "asset": "chibi-direction-portrait-undead-vampire",
+      "endpoint": "edit-image-pixen",
+      "seed": 81006,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "portrait-undead-vampire-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red cape and collar become near-black charcoal with a bright violet lining inside the collar and a thin bright violet trim; his skin becomes very pale ash grey with no blue; his eyes glow bright violet. Keep the black hair, the fangs, the cream shirt, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-undead-lich-bone-edit",
+      "asset": "chibi-direction-portrait-undead-lich",
+      "endpoint": "edit-image-pixen",
+      "seed": 81007,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "portrait-undead-lich-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red royal robe becomes near-black charcoal with a thin bright violet trim along its collar; the crown becomes dull tarnished bronze; the pale blue flame and his eye sockets become bright glowing violet, nothing blue is left. Keep the pale ivory skull, the bone hand, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-undead-abomination-bone-edit",
+      "asset": "chibi-direction-portrait-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 81008,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "portrait-undead-abomination-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red smock becomes ragged near-black charcoal with a thin bright violet trim; his skin becomes pallid light warm ash grey with no blue and no green; both eyes glow bright violet, nothing red is left; every small blue flame becomes bright violet; the stitches stay dark. Keep the face, the underbite grin, the bolts, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "icon-action-raise-dead-violet-edit",
+      "asset": "chibi-direction-icon-action-raise-dead",
+      "endpoint": "edit-image-pixen",
+      "seed": 81101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "icon-action-raise-dead-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the blue-green stone base becomes weathered dark grey stone, and four small bright glowing violet sparks float around the bone hand. Nothing blue or green is left. Keep the pale ivory bone hand, the shapes, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "icon-action-devour-violet-edit",
+      "asset": "chibi-direction-icon-action-devour",
+      "endpoint": "edit-image-pixen",
+      "seed": 81102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "icon-action-devour-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: every small pale blue spark becomes bright glowing violet, and the green moss patches on the bone become pale warm ivory bone. Nothing blue or green is left. Keep the bitten bone, the crumbs, the shapes, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "icon-action-wail-violet-edit",
+      "asset": "chibi-direction-icon-action-wail",
+      "endpoint": "edit-image-pixen",
+      "seed": 81103,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "icon-action-wail-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the ghost head becomes pale bone-white, warm ivory shaded with warm grey, with no blue; its eyes and its open mouth glow bright violet; the sound rings and small sparks around it become bright glowing violet. Nothing blue is left. Keep the shapes, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "icon-action-undead-rally-violet-edit",
+      "asset": "chibi-direction-icon-action-undead-rally",
+      "endpoint": "edit-image-pixen",
+      "seed": 81104,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-undead",
+        "recipe": "icon-action-undead-rally-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the magic: every pale blue flame around the sword becomes bright glowing violet with a pale core. Nothing blue is left. Keep the dark iron sword, the small ivory skull on its crossguard, the shapes, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "undead-city-1-calm-a",
+      "asset": "chibi-direction-undead-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 82001,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "negativeAddendum": "person, character, skeleton, ghost, red roof, red banner, flag"
+    },
+    {
+      "id": "undead-city-2-calm-a",
+      "asset": "chibi-direction-undead-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 82101,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "negativeAddendum": "person, character, skeleton, ghost, red roof, red banner, flag"
+    },
+    {
+      "id": "undead-city-3-calm-a",
+      "asset": "chibi-direction-undead-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 82201,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "negativeAddendum": "person, character, skeleton, ghost, red roof, red banner, flag"
+    },
+    {
+      "id": "portrait-undead-necromancer-bone-edit-b",
+      "asset": "chibi-direction-portrait-undead-necromancer",
+      "endpoint": "edit-image-pixen",
+      "seed": 81013,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-undead-necromancer-bone-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only these colours: the small blue flame beside him becomes bright glowing violet with a pale core; his blue-grey face becomes pallid light warm ash grey; his beard becomes ivory-white. Nothing blue is left. Keep everything else exactly the same: the black hood with its violet trim, the violet eyes, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Repair: the flame and the face stayed blue-grey."
+    },
+    {
+      "id": "portrait-undead-ghoul-bone-edit-b",
+      "asset": "chibi-direction-portrait-undead-ghoul",
+      "endpoint": "edit-image-pixen",
+      "seed": 81015,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-undead-ghoul-bone-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one small detail: the blue patch on his chest under the hood becomes near-black charcoal cloth. Nothing blue is left. Keep everything else exactly the same: the black hood with its violet trim, the pale face, the violet eyes, the grin, the raised clawed hand, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Repair: a blue patch was left on the chest."
+    },
+    {
+      "id": "portrait-undead-lich-bone-edit-b",
+      "asset": "chibi-direction-portrait-undead-lich",
+      "endpoint": "edit-image-pixen",
+      "seed": 81017,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-undead-lich-bone-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the pale blue flame above his hand becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes, the black robe with its violet trim, the bone hand, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Repair: the flame stayed pale blue."
+    },
+    {
+      "id": "portrait-undead-abomination-bone-edit-b",
+      "asset": "chibi-direction-portrait-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 81018,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-undead-abomination-bone-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one small detail: the red ring of his big round eye becomes bright glowing violet, like his other eye. Nothing red is left. Keep everything else exactly the same: the pale ash grey skin, the stitches, the underbite grin, the violet flames, the black smock with its violet trim, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Repair: the big eye kept its red ring."
+    },
+    {
+      "id": "abomination-bone-edit-d",
+      "asset": "chibi-direction-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 80604,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "abomination-bone-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the green: the two or three small olive green moss patches on his grey iron shoulder plates become the same dark grey iron as the plate around them. Nothing green is left. Do not change the pale ivory bone spurs on his shoulders. Keep everything else exactly the same: the violet flames and eyes, the ash grey skin, stitches, manacles, chains, black smock with its violet trim, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "C removed the moss but also the bone spurs; a narrower instruction on B."
+    },
+    {
+      "id": "undead-city-1-calm-a-edit",
+      "asset": "chibi-direction-undead-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 82002,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "undead-city-1-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the brown dirt plate and the small bones lying on it under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same.",
+      "notes": "The hamlet stands on a brown dirt slab."
+    },
+    {
+      "id": "undead-city-2-calm-a-edit",
+      "asset": "chibi-direction-undead-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 82102,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "undead-city-2-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and dirt plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same.",
+      "notes": "The town stands on a grass slab."
+    },
+    {
+      "id": "undead-city-3-calm-a-edit",
+      "asset": "chibi-direction-undead-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 82202,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "undead-city-3-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the pale green grass plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same.",
+      "notes": "The necropolis stands on a pale grass slab."
+    },
+    {
+      "id": "portrait-undead-abomination-bone-edit-c",
+      "asset": "chibi-direction-portrait-undead-abomination",
+      "endpoint": "edit-image-pixen",
+      "seed": 81028,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-undead-abomination-bone-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his big round right eye: it becomes one glowing bright violet eyeball with a small dark pupil and a dark outline, with no white and no red ring. Keep everything else exactly the same: the pale ash grey skin, the left violet eye, the stitches, the underbite grin, the violet flames, the black smock with its violet trim, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "The big eye still had its red ring after B."
+    },
+    {
+      "id": "icon-action-devour-violet-edit-b",
+      "asset": "chibi-direction-icon-action-devour",
+      "endpoint": "edit-image-pixen",
+      "seed": 81112,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-devour-violet-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the green: every green moss patch on the bone becomes pale warm ivory bone, shaded warm grey, and the grey patches become pale ivory bone too. Nothing green is left. Keep the bitten bone, the crumbs, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The moss patches stayed green."
+    },
+    {
+      "id": "icon-action-raise-dead-violet-edit-b",
+      "asset": "chibi-direction-icon-action-raise-dead",
+      "endpoint": "edit-image-pixen",
+      "seed": 81111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-raise-dead-violet-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the green: the olive green rim at the bottom of the grey stone base becomes dark grey stone like the rest of the base. Nothing green is left. Keep the pale ivory bone hand, the grey stone, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The base kept an olive green rim."
+    }
+  ]
+}

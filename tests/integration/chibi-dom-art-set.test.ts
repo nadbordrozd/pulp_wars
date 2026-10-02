@@ -202,8 +202,13 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     expect(identity?.querySelector(".v7-undead-badge")).toBeNull();
     const image = identity?.querySelector<HTMLImageElement>("img");
     expect(image?.dataset.chibiSubject).toBe("UNIT:UNDEAD:CAPTAIN");
-    // Recoloured through the mask with the unit owner's colour (Coral).
-    expect(image?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    // The Necromancer of the new direction (bead pulp_wars-3tq.12): fixed
+    // faction colours, so the master is shown and nothing is recoloured to
+    // the owner (the fixture paints every master in the key colour).
+    expect(image?.dataset.chibiAssetId).toBe(
+      "chibi-direction-undead-necromancer",
+    );
+    expect(image?.getAttribute("src")).toBe("data:image/test;216,38,44");
     expect(image?.style.width).toBe("1rem");
     expect(image?.style.height).toBe("1.5rem");
     expect(image?.dataset.chibiScale).toBe("4");
@@ -336,24 +341,43 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     failing.select({ x: 9, y: 7 });
     expect(identity()?.dataset.chibiAssetId).toBe("chibi-direction-fighter");
     failing.app.destroy();
-    // Undead units, portraits and cities are not converted: nothing of
-    // theirs resolves to the direction's Human art.
+    // Undead units, portraits, command icons and cities are converted too
+    // (bead pulp_wars-3tq.12): they resolve to the direction's Undead art,
+    // never to its Human art.
     const undead = mount(undeadShowcaseFixtureV7(), "CHIBI");
     undead.select(UNDEAD_SHOWCASE_V7.necromancer);
-    expect(identity()?.dataset.chibiAssetId).toBe("chibi-undead-necromancer");
+    expect(identity()?.dataset.chibiAssetId).toBe(
+      "chibi-direction-undead-necromancer",
+    );
+    expect(identity()?.getAttribute("src")).toBe("data:image/test;216,38,44");
+    expect(assetIds(".v7-selection-dock img")).toContain(
+      "chibi-direction-icon-action-raise-dead",
+    );
     undead.selectCapital();
     const undeadArt = assetIds(".v7-action-card img, .v7-selection-dock img");
     expect(undeadArt.length).toBeGreaterThan(0);
-    expect(
-      undeadArt.filter(
-        (id) =>
-          id !== undefined &&
-          id.startsWith("chibi-direction-") &&
-          (id.includes("portrait") || id.includes("city")),
-      ),
-    ).toEqual([]);
-    expect(undeadArt).toContain("chibi-undead-city-1");
+    const directed = undeadArt.filter(
+      (id) =>
+        id !== undefined &&
+        id.startsWith("chibi-direction-") &&
+        (id.includes("portrait") || id.includes("city")),
+    );
+    expect(directed.length).toBeGreaterThan(0);
+    expect(directed.every((id) => id?.includes("undead") === true)).toBe(true);
+    expect(undeadArt).toContain("chibi-direction-undead-city-1");
+    expect(undeadArt).not.toContain("chibi-undead-city-1");
     undead.app.destroy();
+    // An Undead direction raster that fails to load falls back to the
+    // classic Undead asset of that piece, in the owner's colour.
+    const failingUndead = mount(
+      undeadShowcaseFixtureV7(),
+      "CHIBI",
+      environment("chibi-direction-undead-necromancer."),
+    );
+    failingUndead.select(UNDEAD_SHOWCASE_V7.necromancer);
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-undead-necromancer");
+    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    failingUndead.app.destroy();
     // The developer option returns the interface to the previous art.
     const classicStorage = {
       getItem: (key: string) =>
@@ -374,6 +398,24 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     expect(identity()?.dataset.chibiAssetId).toBe("chibi-captain");
     expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
     classic.app.destroy();
+    // The classic look keeps the classic Undead art, in the owner's colour.
+    const classicUndead = mount(
+      undeadShowcaseFixtureV7(),
+      "CHIBI",
+      environment(),
+      undefined,
+      classicStorage,
+    );
+    classicUndead.select(UNDEAD_SHOWCASE_V7.necromancer);
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-undead-necromancer");
+    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    classicUndead.selectCapital();
+    const classicArt = assetIds(".v7-action-card img, .v7-selection-dock img");
+    expect(classicArt).toContain("chibi-undead-city-1");
+    expect(
+      classicArt.filter((id) => id?.startsWith("chibi-direction-") === true),
+    ).toEqual([]);
+    classicUndead.app.destroy();
   });
 
   it("draws the Goblin direction art by default, the classic Goblin art in the Classic look and LEGACY art in LEGACY, and falls back per piece (pulp_wars-3tq.9)", () => {

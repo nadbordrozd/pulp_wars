@@ -1,0 +1,36 @@
+{
+  "id": "portrait-undead-abomination-bone-edit-c",
+  "jobId": "91e8b242-0025-430f-a692-25ed10648aee",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-portrait-undead-abomination",
+    "subject": "PORTRAIT:UNDEAD:JUGGERNAUT",
+    "faction": "UNDEAD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81028,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his big round right eye: it becomes one glowing bright violet eyeball with a small dark pupil and a dark outline, with no white and no red ring. Keep everything else exactly the same: the pale ash grey skin, the left violet eye, the stitches, the underbite grin, the violet flames, the black smock with its violet trim, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his big round right eye: it becomes one glowing bright violet eyeball with a small dark pupil and a dark outline, with no white and no red ring. Keep everything else exactly the same: the pale ash grey skin, the left violet eye, the stitches, the underbite grin, the violet flames, the black smock with its violet trim, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his big round right eye: it becomes one glowing bright violet eyeball with a small dark pupil and a dark outline, with no white and no red ring. Keep everything else exactly the same: the pale ash grey skin, the left violet eye, the stitches, the underbite grin, the violet flames, the black smock with its violet trim, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only his big round right eye: it becomes one glowing bright violet eyeball with a small dark pupil and a dark outline, with no white and no red ring. Keep everything else exactly the same: the pale ash grey skin, the left violet eye, the stitches, the underbite grin, the violet flames, the black smock with its violet trim, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-undead-abomination-bone-edit-b",
+      "candidate": 0,
+      "sha256": "4a29fbb59a8f098c6a50d6d6196e4452cc4d5a9c76431b12cfc405396340143d"
+    }
+  }
+}

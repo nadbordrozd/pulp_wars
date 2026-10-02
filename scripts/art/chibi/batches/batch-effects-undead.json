@@ -145,6 +145,82 @@
         "path": "scripts/art/chibi/palettes/undead-frost.png",
         "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
       }
+    },
+    {
+      "id": "chibi-direction-effect-wail",
+      "subject": "EFFECT:WAIL",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-violet.png",
+        "sha256": "25ab9b1042c602635bb0e34a6102ccfc40121bd00039a91214afd085464351fe"
+      },
+      "paletteFrom": {
+        "path": "scripts/art/chibi/palettes/undead-frost.png",
+        "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+      },
+      "paletteRecipe": "effect-wail-c"
+    },
+    {
+      "id": "chibi-direction-effect-splash",
+      "subject": "EFFECT:SPLASH",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-violet.png",
+        "sha256": "25ab9b1042c602635bb0e34a6102ccfc40121bd00039a91214afd085464351fe"
+      },
+      "paletteFrom": {
+        "path": "scripts/art/chibi/palettes/undead-frost.png",
+        "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+      },
+      "paletteRecipe": "effect-splash-d"
+    },
+    {
+      "id": "chibi-direction-effect-raise",
+      "subject": "EFFECT:RAISE",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-violet.png",
+        "sha256": "25ab9b1042c602635bb0e34a6102ccfc40121bd00039a91214afd085464351fe"
+      },
+      "paletteFrom": {
+        "path": "scripts/art/chibi/palettes/undead-frost.png",
+        "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+      },
+      "paletteRecipe": "effect-raise-b-edit"
+    },
+    {
+      "id": "chibi-direction-effect-wisp",
+      "subject": "EFFECT:WISP",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 24,
+        "height": 24
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/undead-violet.png",
+        "sha256": "25ab9b1042c602635bb0e34a6102ccfc40121bd00039a91214afd085464351fe"
+      },
+      "paletteFrom": {
+        "path": "scripts/art/chibi/palettes/undead-frost.png",
+        "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+      },
+      "paletteRecipe": "effect-wisp-b"
     }
   ],
   "recipes": [

@@ -1,0 +1,36 @@
+{
+  "id": "lich-bone-edit-b",
+  "jobId": "cc54d5ae-ee59-4dd0-bc95-7ca2b782f71d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-lich",
+    "subject": "UNIT:UNDEAD:CATAPULT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80502,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the red-brown area inside his open chest, behind the ribs, becomes near-black charcoal, so the pale ivory ribs and spine stand out. Nothing red or brown is left on the chest. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes and orb, the black robe with its violet trim, the grey ragged kilt, the bone arms, hands and feet, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the red-brown area inside his open chest, behind the ribs, becomes near-black charcoal, so the pale ivory ribs and spine stand out. Nothing red or brown is left on the chest. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes and orb, the black robe with its violet trim, the grey ragged kilt, the bone arms, hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the red-brown area inside his open chest, behind the ribs, becomes near-black charcoal, so the pale ivory ribs and spine stand out. Nothing red or brown is left on the chest. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes and orb, the black robe with its violet trim, the grey ragged kilt, the bone arms, hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only one thing: the red-brown area inside his open chest, behind the ribs, becomes near-black charcoal, so the pale ivory ribs and spine stand out. Nothing red or brown is left on the chest. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes and orb, the black robe with its violet trim, the grey ragged kilt, the bone arms, hands and feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "lich-bone-edit-a",
+      "candidate": 0,
+      "sha256": "be9a8f9a1decfe5d08dc1df9c98bbaac199289bf16d5e132010d022751778f58"
+    }
+  }
+}

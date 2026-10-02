@@ -1,0 +1,37 @@
+{
+  "id": "portrait-undead-banshee-bone-edit",
+  "jobId": "d9fbad2f-3c60-4366-b0e0-2e399b5b19c7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-portrait-undead-banshee",
+    "subject": "PORTRAIT:UNDEAD:MARKSMAN",
+    "faction": "UNDEAD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81004,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: the red hood becomes a pale bone-white shroud, warm ivory shaded with warm grey, with a near-black lining and a thin bright violet trim; her blue face and hands become very pale ash grey with no blue; her eyes and open mouth glow bright violet. Keep the hair, the face, the hands, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours: the red hood becomes a pale bone-white shroud, warm ivory shaded with warm grey, with a near-black lining and a thin bright violet trim; her blue face and hands become very pale ash grey with no blue; her eyes and open mouth glow bright violet. Keep the hair, the face, the hands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours: the red hood becomes a pale bone-white shroud, warm ivory shaded with warm grey, with a near-black lining and a thin bright violet trim; her blue face and hands become very pale ash grey with no blue; her eyes and open mouth glow bright violet. Keep the hair, the face, the hands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours: the red hood becomes a pale bone-white shroud, warm ivory shaded with warm grey, with a near-black lining and a thin bright violet trim; her blue face and hands become very pale ash grey with no blue; her eyes and open mouth glow bright violet. Keep the hair, the face, the hands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-undead",
+      "recipe": "portrait-undead-banshee-a",
+      "candidate": 0,
+      "sha256": "528e7df6be4776dc87cbc4d893a2e4693e9b0e0f8faa0796e542eb72380e49ba"
+    }
+  }
+}

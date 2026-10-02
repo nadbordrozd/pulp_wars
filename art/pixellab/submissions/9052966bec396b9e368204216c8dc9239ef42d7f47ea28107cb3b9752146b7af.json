@@ -1,0 +1,36 @@
+{
+  "id": "portrait-undead-lich-bone-edit-b",
+  "jobId": "92bf39ac-ee2e-4cc6-b18a-9727577f8aec",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-portrait-undead-lich",
+    "subject": "PORTRAIT:UNDEAD:CATAPULT",
+    "faction": "UNDEAD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81017,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the pale blue flame above his hand becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes, the black robe with its violet trim, the bone hand, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the pale blue flame above his hand becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes, the black robe with its violet trim, the bone hand, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the pale blue flame above his hand becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes, the black robe with its violet trim, the bone hand, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only one thing: the pale blue flame above his hand becomes bright glowing violet with a pale core. Nothing blue is left. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes, the black robe with its violet trim, the bone hand, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-undead-lich-bone-edit",
+      "candidate": 0,
+      "sha256": "2bccef5ae41dc9f0c9e430b2452f6bb35032ab919dd9b044e3a427857199dc95"
+    }
+  }
+}

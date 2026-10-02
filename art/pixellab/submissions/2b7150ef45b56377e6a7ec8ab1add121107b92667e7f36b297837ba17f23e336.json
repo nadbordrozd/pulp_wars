@@ -1,0 +1,37 @@
+{
+  "id": "vampire-bone-edit-a",
+  "jobId": "5b083cb0-ba6c-467c-bce6-5dd83464d186",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-vampire",
+    "subject": "UNIT:UNDEAD:KNIGHT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80401,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: the red cape becomes near-black charcoal with a thin bright violet trim along its scalloped edge and a deep violet lining on its inside; the red coat becomes near-black charcoal with pale ivory bone buttons; his skin becomes very pale ash grey with no blue; his eyes glow bright violet and every blue flame becomes bright violet. Keep the shirt, hair, fangs, rapier,pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours: the red cape becomes near-black charcoal with a thin bright violet trim along its scalloped edge and a deep violet lining on its inside; the red coat becomes near-black charcoal with pale ivory bone buttons; his skin becomes very pale ash grey with no blue; his eyes glow bright violet and every blue flame becomes bright violet. Keep the shirt, hair, fangs, rapier,pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours: the red cape becomes near-black charcoal with a thin bright violet trim along its scalloped edge and a deep violet lining on its inside; the red coat becomes near-black charcoal with pale ivory bone buttons; his skin becomes very pale ash grey with no blue; his eyes glow bright violet and every blue flame becomes bright violet. Keep the shirt, hair, fangs, rapier,pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours: the red cape becomes near-black charcoal with a thin bright violet trim along its scalloped edge and a deep violet lining on its inside; the red coat becomes near-black charcoal with pale ivory bone buttons; his skin becomes very pale ash grey with no blue; his eyes glow bright violet and every blue flame becomes bright violet. Keep the shirt, hair, fangs, rapier,pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "undead",
+      "recipe": "vampire-a-edit-2",
+      "candidate": 1,
+      "sha256": "0bc9c748135e39c49c1885b3368200ced143b12752493749e54955cc07d520fb"
+    }
+  }
+}

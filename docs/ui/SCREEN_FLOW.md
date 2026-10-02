@@ -68,6 +68,21 @@ Roads, that text now describes the **Classic look** developer option
   green troll in brown leather, rust and gunmetal scrap, and the fireworks
   cart. Undead and Dinosaur units and portraits keep their player-coloured
   garments.
+- **Undead (bead `pulp_wars-3tq.12`).** The Undead are converted too, which
+  replaces what the bullets above say about them: every Undead land
+  unit, its portrait and the Raise Dead, Devour, Wail and Frenzy icons use
+  the direction's art in fixed colours (pale bone, near-black cloth, pallid
+  ash grey flesh, one violet accent) for every player, on the board and in
+  the docks, training cards, technology cards and Help. An Undead city is a
+  dark slate necropolis with bone trim and violet windows and flies the same
+  code-drawn pennant from a tower as a Human city (seat shape in cream, gold
+  for the capital, no separate crown). The Wail, Lich splash, Raise Dead and
+  spirit wisp effects are violet, with violet rings; the Raise Dead target
+  preview is violet like the Wail radius. Plague and Bitten markers, the
+  cure sparkle and Grave markers are unchanged. A raster that fails to load
+  falls back to the classic Undead asset of that piece. Dinosaur art is
+  not converted. See
+  [the Undead production section](../art/VISUAL_DIRECTION_2026-10.md#17-undead-production).
 - **Territory borders** are one thin solid line in the owner colour with a
   soft dark casing; a border shared by two owners alternates their colours.
 - **Roads** have no black casing. Terrain, resources and Treasure keep their

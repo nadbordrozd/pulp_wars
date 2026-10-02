@@ -4,6 +4,7 @@ import {
   type ChibiArtRegistryV7,
 } from "./chibi-art-v7";
 import { chibiArtUrl } from "./chibi-art-manifest";
+import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "./chibi-direction-undead-art-manifest";
 
 /**
  * Production art of the new visual direction (bead pulp_wars-3tq.5, batch
@@ -530,6 +531,8 @@ export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
   const built = buildChibiArtRegistryV7([
     ...CHIBI_DIRECTION_ART_ASSETS_V7,
     ...CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7,
+    // --- Undead (pulp_wars-3tq.12) ---
+    ...CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7,
   ]);
   if (built.problems.length > 0) throw new Error(built.problems.join("; "));
   return built.registry;

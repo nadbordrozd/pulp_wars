@@ -12,6 +12,7 @@ import type {
   ChibiArtAssetV7,
 } from "../../src/assets/chibi-art-v7";
 import { CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-art-manifest";
+import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-undead-art-manifest";
 import {
   drawBoardV7,
   type BoardRenderPlanEntryV7,
@@ -707,8 +708,9 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
           asset.subject.startsWith("CITY:") ? 88 : 80,
         );
     // Every pennant anchor belongs to a demo sample, to its production
-    // successor (bead pulp_wars-3tq.5) or to a Goblin city (bead
-    // pulp_wars-3tq.9) and lies inside it.
+    // successor (bead pulp_wars-3tq.5), to a Goblin city (bead
+    // pulp_wars-3tq.9) or to an Undead city (bead pulp_wars-3tq.12), and
+    // lies inside it.
     const anchors = Object.entries(DIRECTION_FLAG_ANCHORS_V7);
     expect(anchors.length).toBeGreaterThan(0);
     for (const [id, anchor] of anchors) {
@@ -716,6 +718,7 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
         ...HUMAN_DEMO_SAMPLE_ASSETS_V7,
         ...VISUAL_DIRECTION_SAMPLE_SETS_V7.PRODUCTION,
         ...CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7,
+        ...CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7,
       ].find((candidate) => candidate.id === id);
       expect(asset, id).toBeDefined();
       if (asset === undefined) continue;
@@ -1144,14 +1147,14 @@ describe("live default look (pulp_wars-3tq.6)", () => {
       "chibi-direction-goblin-city-2",
       "chibi-direction-goblin-city-3",
     ]);
-    // Undead and Dinosaur are still not converted.
-    for (const subject of [
-      "UNIT:UNDEAD:FIGHTER",
-      "UNIT:DINOSAUR:FIGHTER",
-      "CITY:UNDEAD:1",
-      "CITY:DINOSAUR:1",
-    ] as const)
+    // The Dinosaurs are still not converted; the Undead are since bead
+    // pulp_wars-3tq.12, from a list of their own.
+    for (const subject of ["UNIT:DINOSAUR:FIGHTER", "CITY:DINOSAUR:1"] as const)
       expect(LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject)).toHaveLength(0);
+    for (const subject of ["UNIT:UNDEAD:FIGHTER", "CITY:UNDEAD:1"] as const)
+      expect(LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject)[0]?.id).toContain(
+        "chibi-direction-undead-",
+      );
 
     const goblin = entry("UNIT", 1, 2, "unit-fighter", "UNIT:GOBLIN:FIGHTER", {
       key: "unit:7",

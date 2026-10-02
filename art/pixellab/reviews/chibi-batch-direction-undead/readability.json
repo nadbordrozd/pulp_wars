@@ -1,0 +1,402 @@
+{
+  "bead": "pulp_wars-3tq.12",
+  "note": "deltaE is CIE76 in L*a*b* (about 2 is just noticeable, 10 is clear at a glance, 20 and more are different colours); contrast is the WCAG luminance ratio (1 to 21). Terrain colours are those the Undead study measured on the untoned rasters. Materials are classified by colour on the accepted masters: `darkCloth` is the near-black cloth and the black outline together, and pallid flesh in a warm light counts as bone on some sprites, so the flesh share is a lower bound. The plate width is that of drawDirectedUnitBaseV7.",
+  "accentDerivation": {
+    "preset": "undead-violet",
+    "spec": {
+      "band": {
+        "hueFrom": 250,
+        "hueTo": 320,
+        "saturationMin": 0.4,
+        "valueMin": 0.2,
+        "hueCentre": 285
+      },
+      "hue": 274,
+      "hueSpread": 0.5,
+      "trim": {
+        "maxAccentNeighbours": 2,
+        "minDarkNeighbours": 3,
+        "darkValueMax": 0.3,
+        "saturationMax": 0.62,
+        "valueMin": 0.96
+      }
+    },
+    "sourceBandIsAccent": true,
+    "litAccent": "#a221ee",
+    "lightenedTrim": "#a85df5"
+  },
+  "boneAgainstTerrain": [
+    {
+      "a": "bone #e6e0c8",
+      "b": "Grass #89b75b",
+      "deltaE": 45.6,
+      "contrast": 1.8
+    },
+    {
+      "a": "bone #e6e0c8",
+      "b": "Forest (mean) #769a51",
+      "deltaE": 43.6,
+      "contrast": 2.4
+    },
+    {
+      "a": "bone #e6e0c8",
+      "b": "Mountain (mean) #929ca9",
+      "deltaE": 32.4,
+      "contrast": 2.1
+    },
+    {
+      "a": "bone #e6e0c8",
+      "b": "Mountain (light rock) #d1dbe8",
+      "deltaE": 20.1,
+      "contrast": 1.1
+    },
+    {
+      "a": "bone, shaded #bab497",
+      "b": "Mountain (mean) #929ca9",
+      "deltaE": 25.3,
+      "contrast": 1.3
+    },
+    {
+      "a": "pallid flesh #948884",
+      "b": "Grass #89b75b",
+      "deltaE": 52.8,
+      "contrast": 1.5
+    },
+    {
+      "a": "pallid flesh #948884",
+      "b": "Mountain (mean) #929ca9",
+      "deltaE": 14.1,
+      "contrast": 1.2
+    }
+  ],
+  "darkClothAgainstTerrain": [
+    {
+      "a": "dark cloth #313135",
+      "b": "Grass #89b75b",
+      "deltaE": 73.3,
+      "contrast": 5.5
+    },
+    {
+      "a": "dark cloth #313135",
+      "b": "Forest (mean) #769a51",
+      "deltaE": 59.8,
+      "contrast": 4
+    },
+    {
+      "a": "dark cloth #313135",
+      "b": "Forest (dark tones) #2d3a37",
+      "deltaE": 8,
+      "contrast": 1.1
+    }
+  ],
+  "accent": [
+    {
+      "a": "violet accent, lit #a221ee",
+      "b": "Violet plate #a277d2",
+      "deltaE": 57.4,
+      "contrast": 1.5
+    },
+    {
+      "a": "violet trim, lightened #a85df5",
+      "b": "Violet plate #a277d2",
+      "deltaE": 33.8,
+      "contrast": 1.1
+    },
+    {
+      "a": "violet accent, lit #a221ee",
+      "b": "dark cloth #313135",
+      "deltaE": 109.6,
+      "contrast": 2.5
+    },
+    {
+      "a": "violet accent, lit #a221ee",
+      "b": "dark cloth, shaded #14181a",
+      "deltaE": 115,
+      "contrast": 3.4
+    },
+    {
+      "a": "violet trim, lightened #a85df5",
+      "b": "dark cloth #313135",
+      "deltaE": 91.4,
+      "contrast": 3.4
+    },
+    {
+      "a": "violet trim, lightened #a85df5",
+      "b": "dark cloth, shaded #14181a",
+      "deltaE": 98.5,
+      "contrast": 4.7
+    },
+    {
+      "a": "violet accent, lit #a221ee",
+      "b": "Grass #89b75b",
+      "deltaE": 162.4,
+      "contrast": 2.3
+    },
+    {
+      "a": "violet trim, lightened #a85df5",
+      "b": "bone #e6e0c8",
+      "deltaE": 103.8,
+      "contrast": 2.9
+    },
+    {
+      "a": "violet accent, lit #a221ee",
+      "b": "CORAL plate #f06762",
+      "deltaE": 109.6,
+      "contrast": 1.7
+    },
+    {
+      "a": "violet accent, lit #a221ee",
+      "b": "TEAL plate #28b7a4",
+      "deltaE": 142.5,
+      "contrast": 2.1
+    },
+    {
+      "a": "violet accent, lit #a221ee",
+      "b": "GOLD plate #e2b63f",
+      "deltaE": 160.9,
+      "contrast": 2.8
+    }
+  ],
+  "violetEffects": [
+    {
+      "a": "effect, lit violet #b06bf2",
+      "b": "Violet plate #a277d2",
+      "deltaE": 24.5,
+      "contrast": 1
+    },
+    {
+      "a": "effect, lit violet #b06bf2",
+      "b": "Grass #89b75b",
+      "deltaE": 130.2,
+      "contrast": 1.4
+    },
+    {
+      "a": "effect, pale glow #dcc4ff",
+      "b": "Grass #89b75b",
+      "deltaE": 85.4,
+      "contrast": 1.5
+    },
+    {
+      "a": "Plague marker #9fac8a",
+      "b": "effect, lit violet #b06bf2",
+      "deltaE": 97.6,
+      "contrast": 1.4
+    },
+    {
+      "a": "Plague marker #9fac8a",
+      "b": "Grass #89b75b",
+      "deltaE": 32.7,
+      "contrast": 1
+    }
+  ],
+  "units": {
+    "Skeleton": {
+      "master": "public/assets/chibi/units/chibi-direction-undead-skeleton.png",
+      "recipe": "skeleton-bone-edit-e (candidate 0)",
+      "opaquePixels": 2606,
+      "sharePercent": {
+        "bone": 12.6,
+        "flesh": 0,
+        "darkCloth": 50.6,
+        "accent": 3.1,
+        "accentTrim": 1.5
+      },
+      "commonest": {
+        "bone": "#fffbdc",
+        "flesh": null,
+        "darkCloth": "#000000",
+        "accent": "#6604bf",
+        "accentTrim": "#af5df5"
+      },
+      "accentPixelsRemapped": 120,
+      "trimPixelsLightened": 38,
+      "widthPx": 51,
+      "feetWidthPx": 30,
+      "plateWidthPx": 52,
+      "widerThanPlate": false,
+      "feetWiderThanPlate": false
+    },
+    "Ghoul": {
+      "master": "public/assets/chibi/units/chibi-direction-undead-ghoul.png",
+      "recipe": "ghoul-bone-edit-b (candidate 0)",
+      "opaquePixels": 2891,
+      "sharePercent": {
+        "bone": 11.8,
+        "flesh": 0,
+        "darkCloth": 53.3,
+        "accent": 4.3,
+        "accentTrim": 3.3
+      },
+      "commonest": {
+        "bone": "#d1c3a9",
+        "flesh": null,
+        "darkCloth": "#000000",
+        "accent": "#a830fe",
+        "accentTrim": "#aa5df5"
+      },
+      "accentPixelsRemapped": 217,
+      "trimPixelsLightened": 94,
+      "widthPx": 66,
+      "feetWidthPx": 63,
+      "plateWidthPx": 57,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": true
+    },
+    "Banshee": {
+      "master": "public/assets/chibi/units/chibi-direction-undead-banshee.png",
+      "recipe": "banshee-bone-edit-a (candidate 0)",
+      "opaquePixels": 1982,
+      "sharePercent": {
+        "bone": 44.1,
+        "flesh": 0,
+        "darkCloth": 29.5,
+        "accent": 7.1,
+        "accentTrim": 0.8
+      },
+      "commonest": {
+        "bone": "#fffbe6",
+        "flesh": null,
+        "darkCloth": "#000000",
+        "accent": "#5a03b2",
+        "accentTrim": "#a55df5"
+      },
+      "accentPixelsRemapped": 155,
+      "trimPixelsLightened": 14,
+      "widthPx": 49,
+      "feetWidthPx": 18,
+      "plateWidthPx": 52,
+      "widerThanPlate": false,
+      "feetWiderThanPlate": false
+    },
+    "Zombie": {
+      "master": "public/assets/chibi/units/chibi-direction-undead-zombie.png",
+      "recipe": "zombie-bone-edit-d (candidate 1)",
+      "opaquePixels": 2150,
+      "sharePercent": {
+        "bone": 16.2,
+        "flesh": 8.8,
+        "darkCloth": 52.7,
+        "accent": 2.9,
+        "accentTrim": 2.7
+      },
+      "commonest": {
+        "bone": "#e5dec6",
+        "flesh": "#9e9188",
+        "darkCloth": "#000000",
+        "accent": "#740dd1",
+        "accentTrim": "#ad5df5"
+      },
+      "accentPixelsRemapped": 121,
+      "trimPixelsLightened": 54,
+      "widthPx": 51,
+      "feetWidthPx": 33,
+      "plateWidthPx": 52,
+      "widerThanPlate": false,
+      "feetWiderThanPlate": false
+    },
+    "Necromancer": {
+      "master": "public/assets/chibi/units/chibi-direction-undead-necromancer.png",
+      "recipe": "necromancer-bone-edit-c (candidate 0)",
+      "opaquePixels": 2157,
+      "sharePercent": {
+        "bone": 3.8,
+        "flesh": 0,
+        "darkCloth": 61.8,
+        "accent": 9.3,
+        "accentTrim": 4.1
+      },
+      "commonest": {
+        "bone": "#faf2d4",
+        "flesh": null,
+        "darkCloth": "#000000",
+        "accent": "#9d1aea",
+        "accentTrim": "#c762fb"
+      },
+      "accentPixelsRemapped": 290,
+      "trimPixelsLightened": 63,
+      "widthPx": 53,
+      "feetWidthPx": 39,
+      "plateWidthPx": 52,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    },
+    "Lich": {
+      "master": "public/assets/chibi/units/chibi-direction-undead-lich.png",
+      "recipe": "lich-bone-edit-c (candidate 0)",
+      "opaquePixels": 3159,
+      "sharePercent": {
+        "bone": 17.2,
+        "flesh": 0,
+        "darkCloth": 55.2,
+        "accent": 6.3,
+        "accentTrim": 5.6
+      },
+      "commonest": {
+        "bone": "#f4e8b1",
+        "flesh": null,
+        "darkCloth": "#000000",
+        "accent": "#6e0dd0",
+        "accentTrim": "#b25df5"
+      },
+      "accentPixelsRemapped": 376,
+      "trimPixelsLightened": 115,
+      "widthPx": 64,
+      "feetWidthPx": 61,
+      "plateWidthPx": 57,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": true
+    },
+    "Vampire": {
+      "master": "public/assets/chibi/units/chibi-direction-undead-vampire.png",
+      "recipe": "vampire-bone-edit-b (candidate 0)",
+      "opaquePixels": 3591,
+      "sharePercent": {
+        "bone": 0.6,
+        "flesh": 0,
+        "darkCloth": 60.7,
+        "accent": 10.5,
+        "accentTrim": 1.1
+      },
+      "commonest": {
+        "bone": "#fcefba",
+        "flesh": null,
+        "darkCloth": "#000000",
+        "accent": "#7b00e9",
+        "accentTrim": "#ad5df5"
+      },
+      "accentPixelsRemapped": 417,
+      "trimPixelsLightened": 32,
+      "widthPx": 67,
+      "feetWidthPx": 47,
+      "plateWidthPx": 57,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    },
+    "Abomination": {
+      "master": "public/assets/chibi/units/chibi-direction-undead-abomination.png",
+      "recipe": "abomination-bone-edit-b (candidate 0)",
+      "opaquePixels": 5213,
+      "sharePercent": {
+        "bone": 17.1,
+        "flesh": 0,
+        "darkCloth": 60.6,
+        "accent": 3.3,
+        "accentTrim": 2.2
+      },
+      "commonest": {
+        "bone": "#948874",
+        "flesh": null,
+        "darkCloth": "#000000",
+        "accent": "#892ae6",
+        "accentTrim": "#d68dfe"
+      },
+      "accentPixelsRemapped": 285,
+      "trimPixelsLightened": 57,
+      "widthPx": 82,
+      "feetWidthPx": 68,
+      "plateWidthPx": 68,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    }
+  }
+}

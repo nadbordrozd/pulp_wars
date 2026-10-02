@@ -1,0 +1,36 @@
+{
+  "id": "abomination-bone-edit-c",
+  "jobId": "d117f929-a770-4bbb-9877-a48e26b9ae8a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-abomination",
+    "subject": "UNIT:UNDEAD:JUGGERNAUT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 80603,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one small detail: the few small olive green patches on his grey iron shoulder plates become dark grey iron like the rest of the plates. Nothing green is left. Keep everything else exactly the same: the bone spurs, the violet flames and eyes, the ash grey skin, stitches, manacles, chains, black smock with its violet trim, belt, boots, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one small detail: the few small olive green patches on his grey iron shoulder plates become dark grey iron like the rest of the plates. Nothing green is left. Keep everything else exactly the same: the bone spurs, the violet flames and eyes, the ash grey skin, stitches, manacles, chains, black smock with its violet trim, belt, boots, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one small detail: the few small olive green patches on his grey iron shoulder plates become dark grey iron like the rest of the plates. Nothing green is left. Keep everything else exactly the same: the bone spurs, the violet flames and eyes, the ash grey skin, stitches, manacles, chains, black smock with its violet trim, belt, boots, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one small detail: the few small olive green patches on his grey iron shoulder plates become dark grey iron like the rest of the plates. Nothing green is left. Keep everything else exactly the same: the bone spurs, the violet flames and eyes, the ash grey skin, stitches, manacles, chains, black smock with its violet trim, belt, boots, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "abomination-bone-edit-b",
+      "candidate": 0,
+      "sha256": "25855a076fe1473c67ee41bdad0f15b74dc2dce70838fc5c0451272af4501543"
+    }
+  }
+}

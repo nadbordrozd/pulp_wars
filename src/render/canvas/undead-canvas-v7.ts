@@ -472,6 +472,19 @@ export function drawAbilityAreaCellV7(
   context.restore();
 }
 
+/**
+ * The preview style as the look draws it (bead pulp_wars-3tq.12): with the
+ * Undead violet accent a Raise Dead target takes the violet of the Wail
+ * preview instead of the classic green, so the faction's magic is one
+ * colour. Every other style, and the classic look, is unchanged.
+ */
+export function undeadPreviewStyleV7(
+  style: AbilityPreviewStyleV7,
+  violetAccent: boolean,
+): AbilityPreviewStyleV7 {
+  return violetAccent && style === "RAISE" ? "WAIL" : style;
+}
+
 /** Outline of one previewed area edge. */
 export function abilityAreaStrokeV7(style: AbilityPreviewStyleV7): string {
   return STYLE_COLORS[style].stroke;

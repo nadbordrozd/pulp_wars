@@ -1,0 +1,36 @@
+{
+  "id": "zombie-bone-edit-b",
+  "jobId": "c1535f41-453f-4cf6-b7d6-38bd1116ad29",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead-direction-study",
+    "asset": "chibi-study-zombie",
+    "subject": "UNIT:UNDEAD:GUARD",
+    "faction": "TEST-UNDEAD-BONE",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: his skin (face, ears, both arms) becomes pallid light warm ash grey with no blue at all, shaded darker grey; and his two eyes become small glowing bright violet eyes instead of yellow-green. Keep everything else exactly the same: the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: his skin (face, ears, both arms) becomes pallid light warm ash grey with no blue at all, shaded darker grey; and his two eyes become small glowing bright violet eyes instead of yellow-green. Keep everything else exactly the same: the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: his skin (face, ears, both arms) becomes pallid light warm ash grey with no blue at all, shaded darker grey; and his two eyes become small glowing bright violet eyes instead of yellow-green. Keep everything else exactly the same: the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only two things: his skin (face, ears, both arms) becomes pallid light warm ash grey with no blue at all, shaded darker grey; and his two eyes become small glowing bright violet eyes instead of yellow-green. Keep everything else exactly the same: the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "zombie-bone-edit-a",
+      "candidate": 0,
+      "sha256": "7778cf69abcf10a18440796125f1af537b03ce2ddf2d58921227fc07b6ae578b"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-undead-abomination-bone-edit-b",
+  "jobId": "3b9d7d28-7b9d-44c0-b250-dd5a29b676f2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-portrait-undead-abomination",
+    "subject": "PORTRAIT:UNDEAD:JUGGERNAUT",
+    "faction": "UNDEAD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81018,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one small detail: the red ring of his big round eye becomes bright glowing violet, like his other eye. Nothing red is left. Keep everything else exactly the same: the pale ash grey skin, the stitches, the underbite grin, the violet flames, the black smock with its violet trim, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one small detail: the red ring of his big round eye becomes bright glowing violet, like his other eye. Nothing red is left. Keep everything else exactly the same: the pale ash grey skin, the stitches, the underbite grin, the violet flames, the black smock with its violet trim, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one small detail: the red ring of his big round eye becomes bright glowing violet, like his other eye. Nothing red is left. Keep everything else exactly the same: the pale ash grey skin, the stitches, the underbite grin, the violet flames, the black smock with its violet trim, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only one small detail: the red ring of his big round eye becomes bright glowing violet, like his other eye. Nothing red is left. Keep everything else exactly the same: the pale ash grey skin, the stitches, the underbite grin, the violet flames, the black smock with its violet trim, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-undead-abomination-bone-edit",
+      "candidate": 0,
+      "sha256": "47a8ac69387b37261e80740784fa5b0ae0609819663f36e010a1a455c581808c"
+    }
+  }
+}

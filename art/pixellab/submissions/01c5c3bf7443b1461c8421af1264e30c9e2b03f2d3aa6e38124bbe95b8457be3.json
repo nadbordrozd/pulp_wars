@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-devour-violet-edit-b",
+  "jobId": "6be4b6b3-93f6-4d79-b736-35c2b9c55d90",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-icon-action-devour",
+    "subject": "ICON:ACTION:DEVOUR",
+    "faction": "UNDEAD",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81112,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the green: every green moss patch on the bone becomes pale warm ivory bone, shaded warm grey, and the grey patches become pale ivory bone too. Nothing green is left. Keep the bitten bone, the crumbs, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the green: every green moss patch on the bone becomes pale warm ivory bone, shaded warm grey, and the grey patches become pale ivory bone too. Nothing green is left. Keep the bitten bone, the crumbs, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the green: every green moss patch on the bone becomes pale warm ivory bone, shaded warm grey, and the grey patches become pale ivory bone too. Nothing green is left. Keep the bitten bone, the crumbs, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the green: every green moss patch on the bone becomes pale warm ivory bone, shaded warm grey, and the grey patches become pale ivory bone too. Nothing green is left. Keep the bitten bone, the crumbs, the bright violet sparks, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-devour-violet-edit",
+      "candidate": 0,
+      "sha256": "587d6a6562e8742937351e09d92b701bb170cbcb5962f5aedcda91f97c35bd62"
+    }
+  }
+}

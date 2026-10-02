@@ -1,0 +1,36 @@
+{
+  "id": "necromancer-bone-edit-c",
+  "jobId": "d2b2c0ad-b51f-4594-894d-ca04fac2b2f9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead-direction-study",
+    "asset": "chibi-study-necromancer",
+    "subject": "UNIT:UNDEAD:CAPTAIN",
+    "faction": "TEST-UNDEAD-BONE",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only bone ornaments: one small pale warm ivory skull on each shoulder of the black robe, and a row of three small pale ivory bone spikes along the top ridge of the black hood. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, flames and sparks, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Add only bone ornaments: one small pale warm ivory skull on each shoulder of the black robe, and a row of three small pale ivory bone spikes along the top ridge of the black hood. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, flames and sparks, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only bone ornaments: one small pale warm ivory skull on each shoulder of the black robe, and a row of three small pale ivory bone spikes along the top ridge of the black hood. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, flames and sparks, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Add only bone ornaments: one small pale warm ivory skull on each shoulder of the black robe, and a row of three small pale ivory bone spikes along the top ridge of the black hood. Keep everything else exactly the same: the black hood and robe with the violet trim, the violet eyes, flames and sparks, the white beard, the skull staff, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "necromancer-bone-edit-b",
+      "candidate": 0,
+      "sha256": "7732255972380de56c743b2b91ab12de6b8d6c8918529a1eb47c08d00abd186f"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "icon-action-raise-dead-violet-edit",
+  "jobId": "9b93e818-3c08-46df-9815-452142c64772",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-icon-action-raise-dead",
+    "subject": "ICON:ACTION:RAISE_DEAD",
+    "faction": "UNDEAD",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: the blue-green stone base becomes weathered dark grey stone, and four small bright glowing violet sparks float around the bone hand. Nothing blue or green is left. Keep the pale ivory bone hand, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours: the blue-green stone base becomes weathered dark grey stone, and four small bright glowing violet sparks float around the bone hand. Nothing blue or green is left. Keep the pale ivory bone hand, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours: the blue-green stone base becomes weathered dark grey stone, and four small bright glowing violet sparks float around the bone hand. Nothing blue or green is left. Keep the pale ivory bone hand, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours: the blue-green stone base becomes weathered dark grey stone, and four small bright glowing violet sparks float around the bone hand. Nothing blue or green is left. Keep the pale ivory bone hand, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-undead",
+      "recipe": "icon-action-raise-dead-a",
+      "candidate": 0,
+      "sha256": "a37ed98f5e53764bd43d8e99d72e393262809c1647c082134b3b00051e8609f7"
+    }
+  }
+}

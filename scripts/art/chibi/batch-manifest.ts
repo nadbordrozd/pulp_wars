@@ -16,6 +16,7 @@ import {
   type ChibiAssetClassV7,
   type ChibiPointV7,
 } from "../../../src/assets/chibi-art-v7";
+import { accentPreset } from "./accent";
 import { WAIVABLE_MASK_QA_CODES } from "./owner-mask";
 import type { CropRowsSpec } from "./raster";
 
@@ -490,6 +491,25 @@ export interface ChibiAssetSpec {
    * scripts/art/chibi/palettes/) every opaque master pixel is mapped to.
    */
   readonly palette?: ColorImageSpec;
+  /**
+   * palette-map only (bead pulp_wars-3tq.12): the candidate is mapped to
+   * this palette first, and each of its colours is then replaced by the
+   * colour at the same position in `palette`. A recolour of an accepted
+   * effect keeps its exact shapes this way.
+   */
+  readonly paletteFrom?: ColorImageSpec;
+  /**
+   * palette-map only: the recipe of another asset of the same subject whose
+   * candidate this asset is derived from (with its own palettes); the asset
+   * needs no recipe of its own.
+   */
+  readonly paletteRecipe?: string;
+  /**
+   * A named accent preset (scripts/art/chibi/accent.ts) applied after the
+   * class derivation: the sprite's accent pixels, found by colour, are
+   * recoloured (bead pulp_wars-3tq.12, the Undead violet).
+   */
+  readonly accent?: string;
 }
 
 export interface CropRegion {
@@ -1132,6 +1152,35 @@ export function batchManifestProblems(
         );
     } else if (asset.palette !== undefined)
       problems.push(`${label}: palette is only for palette-map classes`);
+    if (asset.paletteFrom !== undefined || asset.paletteRecipe !== undefined) {
+      if (classRecipe.derivation !== "palette-map")
+        problems.push(
+          `${label}: paletteFrom and paletteRecipe are only for palette-map classes`,
+        );
+      const from = asset.paletteFrom;
+      if (
+        from !== undefined &&
+        (!from.path.startsWith("scripts/art/chibi/palettes/") ||
+          !from.path.endsWith(".png") ||
+          !SHA_PATTERN.test(from.sha256))
+      )
+        problems.push(
+          `${label}: palettes are PNGs in scripts/art/chibi/palettes/ with a sha256`,
+        );
+    }
+    if (asset.accent !== undefined) {
+      if (accentPreset(asset.accent) === undefined)
+        problems.push(`${label}: unknown accent preset ${asset.accent}`);
+      if (
+        classRecipe.derivation !== "as-is" &&
+        classRecipe.derivation !== "seated"
+      )
+        problems.push(
+          `${label}: an accent is only for as-is and seated classes`,
+        );
+      if (owned)
+        problems.push(`${label}: an accent is only for fixed-colour assets`);
+    }
     if (classRecipe.derivation === "ground-composite") {
       if (asset.groundAsset === undefined)
         problems.push(`${label}: tall terrain needs a groundAsset`);
@@ -1314,6 +1363,26 @@ export function batchManifestProblems(
         );
       if (asset.cropRegion === undefined)
         problems.push(`${label}: a shared field needs its own cropRegion`);
+      continue;
+    }
+    if (asset.paletteRecipe !== undefined) {
+      const label = `${at} asset ${asset.id}`;
+      const shared = manifest.recipes.find(
+        (recipe) => recipe.id === asset.paletteRecipe,
+      );
+      const owner = manifest.assets.find((entry) => entry.id === shared?.asset);
+      if (shared === undefined || owner === undefined)
+        problems.push(
+          `${label}: unknown palette recipe ${asset.paletteRecipe}`,
+        );
+      else if (
+        owner.subject !== asset.subject ||
+        owner.canvas.width !== asset.canvas.width ||
+        owner.canvas.height !== asset.canvas.height
+      )
+        problems.push(
+          `${label}: a palette recipe must belong to an asset of the same subject and size`,
+        );
       continue;
     }
     if (!manifest.recipes.some((recipe) => recipe.asset === asset.id))

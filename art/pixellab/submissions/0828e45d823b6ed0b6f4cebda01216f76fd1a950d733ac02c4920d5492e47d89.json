@@ -1,0 +1,36 @@
+{
+  "id": "lich-bone-edit-c",
+  "jobId": "fc4fc8c6-92ee-4308-9fbe-59104e206a0f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-lich",
+    "subject": "UNIT:UNDEAD:CATAPULT",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80503,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only bones on his chest: between the two sides of the open black robe his bare pale warm ivory ribcage and spine show, five clear pale ivory ribs on a near-black background, and the brown belt becomes near-black. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes and orb, the black robe with its violet trim, the grey ragged kilt, the bone arms, hands and feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only bones on his chest: between the two sides of the open black robe his bare pale warm ivory ribcage and spine show, five clear pale ivory ribs on a near-black background, and the brown belt becomes near-black. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes and orb, the black robe with its violet trim, the grey ragged kilt, the bone arms, hands and feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only bones on his chest: between the two sides of the open black robe his bare pale warm ivory ribcage and spine show, five clear pale ivory ribs on a near-black background, and the brown belt becomes near-black. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes and orb, the black robe with its violet trim, the grey ragged kilt, the bone arms, hands and feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only bones on his chest: between the two sides of the open black robe his bare pale warm ivory ribcage and spine show, five clear pale ivory ribs on a near-black background, and the brown belt becomes near-black. Keep everything else exactly the same: the bronze crown, the skull, the violet eyes and orb, the black robe with its violet trim, the grey ragged kilt, the bone arms, hands and feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "lich-bone-edit-b",
+      "candidate": 0,
+      "sha256": "ea665ff3ba9e8991a153abc5742b648a3cd1ed05ac8fc55fdf091399dfda0973"
+    }
+  }
+}

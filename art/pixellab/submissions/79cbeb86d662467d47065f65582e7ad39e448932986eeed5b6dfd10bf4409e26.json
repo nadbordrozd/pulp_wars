@@ -1,0 +1,36 @@
+{
+  "id": "undead-city-2-calm-a-edit",
+  "jobId": "22430410-54ea-42f2-b616-3430dc78f047",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-city-2",
+    "subject": "CITY:UNDEAD:2",
+    "faction": "UNDEAD",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 82102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and dirt plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and dirt plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and dirt plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and dirt plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "undead-city-2-calm-a",
+      "candidate": 0,
+      "sha256": "67cf24de5e2591d7158e5477f5259c07f49a7ebfa3b8d266243fea9aab6ec653"
+    }
+  }
+}

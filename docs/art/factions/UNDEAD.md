@@ -1,17 +1,21 @@
 # Faction fragment: UNDEAD
 
-**Status:** approved by the user on 2026-09-29 (bead `pulp_wars-vkq.11`),
-with the recommended answer to every open question (see
-[Decisions](#decisions-approved-2026-09-29)). Written from [FACTION_TEMPLATE.md](FACTION_TEMPLATE.md)
-under the rules in the [README](README.md), which come from the
-faction-layer dry run (`pulp_wars-tt3.1`).
+**Status:** rewritten for the
+[new visual direction](../VISUAL_DIRECTION_2026-10.md#17-undead-production)
+in bead `pulp_wars-3tq.12`. The user's direction (2026-10-02): "I'm ok with
+dark for the undead esp necromancers robes. but there should be a lot of
+pale bones plus one accent color", and after the
+[study](../VISUAL_DIRECTION_2026-10.md#15-undead-study): "let's go with the
+violet-accented undead. generate the remaining sprites and merge it into the
+game." The first version of this document (approved 2026-09-29, bead
+`pulp_wars-vkq.11`) described owner-coloured garments in the key red; that
+art is still in the game as the [Classic look](#the-classic-look).
 
 The art pipeline reads the two `text` blocks under **Prompt fragment** and
 **Negative fragment** below as layer 3 of every Undead prompt, so edit them
-here and nowhere else. The sample bead (`pulp_wars-vkq.12`) copies the
-approved subject lines further down into
-`scripts/art/chibi/subjects/UNDEAD.json`; a line may still be tuned there
-when the sample shows it needs it, within the rules of this document.
+here and nowhere else. Recipes that were already generated keep the request
+stored in their record (see the
+[pipeline](../CHIBI_PIPELINE.md#fragment-changes-and-historical-records)).
 
 The rules and roster come from the
 [revision-13 Undead spec](../../product/RULESET_7_REVISION_13_UNDEAD.md)
@@ -27,379 +31,219 @@ never horror; think a children's Halloween picture book, not a crypt. The
 faction theme is attrition: death feeds them through Graves, raising,
 infection and lifesteal.
 
+The faction wears **fixed colours**: a lot of pale bone, near-black cloth,
+pallid ash grey flesh and exactly one accent, violet. No sprite has an owner
+area or a mask. The player is read from the seat-shaped plate under a unit,
+the pennant on a city and the territory border.
+
 ## Prompt fragment
 
-59 words. It names only a mood, materials, surfaces, colours and small
-motifs: no figure (not even "undead" or "ghost") and no place or building.
+It names only a mood, materials, surfaces, colours and small motifs: no
+figure and no place or building.
 
 ```text
-Faction: cheerful spooky storybook, playful and never scary. Everything is
-made of smooth bleached ivory bone, ragged cloth with torn zigzag hems, dull
-dark iron and weathered grey stone, with small grey-green moss patches,
-stitched seams and small cold pale blue flames as details; bone is shaded
-with cool grey, iron and stone with darker slate blue-grey, never brown.
+Faction: cheerful spooky storybook, playful and never scary. Their fixed
+colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets),
+ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey
+skin, small pieces of tarnished bronze and dark rusted iron, and exactly one
+accent colour, a bright glowing violet, only as small glows and thin trim:
+eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey,
+cloth near-black.
 ```
 
 ## Negative fragment
 
-Gore and horror words keep the tone playful. Wood is excluded because every
-Undead handle, staff and shield is iron or bone, and wood drifts brown. Cyan,
-green and purple glows are excluded because they sit close to the Teal and
-Violet player colours; orange flames and pumpkins sit close to Coral and
-Gold. See-through ghosts would break the black outline and the owner mask.
-It ends with the red-brown drift words the dry run needed for a bone and
-metal faction, plus brown cloth, verdigris (tarnish drifting green) and
-maroon.
+Gore and horror words keep the tone playful. Red cloth is excluded because
+red is the Human faction's colour, green and blue skin because flesh is ash
+grey (green is the Goblins'), and blue flames, yellow glows and gold because
+the faction has one accent. A large glowing area would make the accent a
+body colour.
 
 ```text
 blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy
-realism, rotting flesh, slime, glowing green, cyan glow, purple magic glow,
-orange flames, pumpkin, see-through, translucent, wood, timber, gun, musket,
-modern clothing, brown boots, brown leather, brown cloth, bronze, copper,
-verdigris, rust, dark brown shading, red-brown, maroon
+realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue
+skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern
+clothing, blue flames, yellow glow, gold armour, large glowing area, moss
 ```
 
 ## Palette
 
-- **Owner colour:** only the shared key colour `#d8262c`, on a garment that
-  covers the torso and legs (shroud, tabard, smock, robe, cloak, cape) plus a
-  hood, crest or collar, and on banners. Never on bone or skin: a red
-  skeleton or a red-skinned zombie stays under the 15% mask minimum, as the
-  dry run's red-plated robots did. Every owner garment has torn zigzag hems.
-- **Secondary colours (three):**
+Measured on the eight unit masters
+([`palette.json`](../../../art/pixellab/reviews/chibi-batch-direction-undead/palette.json)).
 
-| Colour                     | Approximate values                                 | Used for                                              | Why it is safe                                                                                                                                                                                                                                                              |
-| -------------------------- | -------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Bone ivory                 | `#ece6d2`, shaded cool grey `#a6abb5`              | skulls, bones, claws, beards, hair, small trim        | Pale and nearly unsaturated, so it is far lighter than grass `#8ab85c` and every player colour. It must stay cool: a yellow ivory would drift towards Gold `#e2b63f`, hence "cool grey" shading, never brown.                                                               |
-| Slate blue-grey (one ramp) | dark `#3e4859`, mid `#7f8ca0`, pale glow `#d2e2f6` | iron, stone, undead skin, boots, glowing eyes, flames | A desaturated blue, clearly off the green-cyan Teal `#28b7a4` and the saturated purple Violet `#a277d2`. The dark end contrasts with grass by value, the pale glow by value and hue. Glows stay pale blue-white and small, never cyan, so they cannot read as a Teal owner. |
-| Grey-green moss (accents)  | `#7c8c6c`                                          | small moss patches only                               | Close to grass in value, so it is never a large area; greyer and bluer than the grass so it does not merge, and far from Teal in saturation.                                                                                                                                |
+| Role             | Colours                                    | Used for                                                                          |
+| ---------------- | ------------------------------------------ | --------------------------------------------------------------------------------- |
+| Bone, lit        | `#e6e0c8`, `#fefbdd`, `#d0c9a9`            | skulls, ribs, limbs, claws, bandages, bone spikes and spurs, the Banshee's shroud |
+| Bone, shaded     | `#bab497`, `#a59e84`                       | the warm grey shade of bone                                                       |
+| Pallid flesh     | `#948884`, `#9e918b`, `#a89b93`            | Zombie, Ghoul, Vampire and Abomination skin: a warm ash grey, never green or blue |
+| Dark cloth       | `#313135`, `#14181a`, `#100f10`            | robes, hoods, cloaks, smocks, the cape and coat                                   |
+| Iron             | `#64717e`, `#818f9b`, `#3d424d`            | swords, the shield face, plates, manacles and chains                              |
+| Tarnished bronze | `#574329`, `#966f40`                       | rims of the Skeleton's helmet and shield, the Lich's crown, the Vampire's buckle  |
+| **Violet**       | lit `#a221ee`; `#6f06c9`, `#7614ca`        | eyes, flames, sparks, the Lich's orb, stitches, the Vampire's cape lining         |
+| **Violet trim**  | `#a85df5` to `#b25df5` (lightened)         | one-pixel hems, hood edges and robe borders on dark cloth                         |
+| Violet effects   | `#46247c`, `#7b36c9`, `#b06bf2`, `#dcc4ff` | the Wail, splash, Raise Dead and wisp sprites; code glows are `#c9a6ff`           |
 
-Black is the shared outline, eye sockets and the Vampire's hair; it does not
-count as a secondary colour. Nothing is red, red-brown, orange or brown, so
-the Coral owner reads cleanly, and no large area is yellow or purple.
+Rules:
+
+- **Bone carries each silhouette.** No unit is a featureless dark shape: the
+  Skeleton and the Lich show a bare ribcage, the Ghoul and the Abomination
+  have bone spikes and spurs, the Zombie a bone necklace and bandages, the
+  Necromancer a skull staff, bone spikes and a white beard, the Vampire a
+  pale face and bone buttons, and the Banshee is bone-white herself.
+- **One accent.** Violet is on every unit, as small glows and thin trim.
+  Nothing is red, orange, blue, cyan or green.
+- **The accent is derived, not painted.** PixelLab's "bright violet" is a
+  magenta (hue about 293°). The `undead-violet` accent preset of the
+  [pipeline](../CHIBI_PIPELINE.md#the-accent-step-and-the-palette-swap-bead-pulp_wars-3tq12)
+  finds those pixels by colour, moves them to hue 274°, and lightens
+  one-pixel trim that sits on dark cloth (saturation at most 0.62, value at
+  least 0.96). The lightened trim has a contrast of 3.4 against the cloth
+  and 4.7 against its shade; the unlightened violet had 2.5 and 3.4.
+- **Against the Violet player** (`#a277d2`): the lit accent differs by 57
+  (CIE76), the lightened trim by 34 and the effect sprites' lit violet by 25. The accent areas stay small, and a plate is a flat pastel shape under
+  the feet, so the two are not confused; a Violet player's Undead simply
+  look matched.
+- **Metal** is iron, with bronze on rims only. The Skeleton's helmet dome is
+  blackened iron, so it does not read as Human polished steel.
+- **Moss is gone** from the look (the first version used grey-green moss as
+  a third colour).
 
 ## Silhouette language
 
 This guides the subject lines; it is not sent to PixelLab.
 
-- **Heads tell the faction apart at zoom 0.75.** Humans wear steel helmets
-  and red hoods over human faces; Undead heads are pale ivory skulls or pale
-  blue-grey faces with big dark eye sockets or big round eyes. Every head
-  still takes about half of the figure's height, with a grin or a funny
-  expression rather than a snarl.
-- **Ragged edges.** Every owner garment ends in torn zigzag hems, against
-  the Humans' neat tunics. The hems also make the owner area big and flat.
+- **Heads tell the faction apart at zoom 0.75.** Undead heads are pale ivory
+  skulls or pallid faces with glowing violet eyes. Every head still takes
+  about half of the figure's height, with a grin or a funny expression
+  rather than a snarl.
+- **Ragged edges.** Every garment ends in torn zigzag hems, against the
+  Humans' neat tunics.
 - **Posture varies by role**, where every Human stands upright: the Ghoul
   lopes on all fours, the Zombie shambles with its arms out, the Banshee
   floats, the Lich towers, the Vampire spreads his cape.
-- **Iron and bone, never wood.** Weapons and staffs are dull dark iron or
-  bone, oversized and a little notched. No bows, no horses, no shields made
-  of wood.
-- **Small pale blue lights** (eyes, the Necromancer's staff, the Lich's orb)
+- **Iron and bone, never wood.** No bows, no horses, no wooden shields.
+- **Small violet lights** (eyes, the Necromancer's staff, the Lich's orb)
   are the only glow, and always small.
-- **Settlements:** the Undead have their own city set, a necropolis; the
-  neutral village stays shared (see
-  [Cities and villages](#cities-and-villages)).
-- **Portraits and icons (batch 5, bead `pulp_wars-67q.11`):** each
-  `PORTRAIT:UNDEAD:<ROLE>` line in `scripts/art/chibi/subjects/UNDEAD.json`
-  repeats its unit's head, owner garment and signature item as a
-  head-and-shoulders bust; the Undead command icons (Raise Dead, Devour,
-  Wail and Frenzy, `ICON:ACTION:UNDEAD:RALLY`) use the same bone, iron and
-  pale blue flame vocabulary.
 
-## Subject lines
+## Roster
 
-Approved lines for `scripts/art/chibi/subjects/UNDEAD.json`, written like the
-Human lines in `scripts/art/chibi/subjects/ORIGINAL.json`. Each unit line
-carries the full body language and puts the owner colour on a garment that
-covers the torso and legs. Each line names its mechanical role; in the JSON
-file it is keyed by the runtime subject `UNIT:UNDEAD:<ROLE>` (for example
-`UNIT:UNDEAD:FIGHTER` for the Skeleton), which the renderer asks for first
-and replaces with the Human `UNIT:<ROLE>` sprite plus the Undead badge while
-no Undead raster is registered. The canvas classes follow the
-[asset inventory](../CHIBI_ASSET_INVENTORY.md).
+Batch [`direction-undead`](../../../scripts/art/chibi/batches/batch-direction-undead.json).
+Every unit is an `edit-image-pixen` chain on its accepted classic sprite, so
+the canvas, the anchor and the footprint are unchanged. The subject lines
+(keys `UNIT:UNDEAD:<ROLE>/BONE` and `PORTRAIT:UNDEAD:<ROLE>/BONE` in
+[`subjects/UNDEAD.json`](../../../scripts/art/chibi/subjects/UNDEAD.json))
+describe the result, for a fresh creation if one is ever needed.
 
-**Skeleton** (`UNIT:FIGHTER`, standard unit 56 x 80):
+| Unit (role)                | Canvas   | Accepted recipe           | What it shows                                                                                                  |
+| -------------------------- | -------- | ------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Skeleton (`FIGHTER`)       | 56 x 80  | `skeleton-bone-edit-e`    | bare ribcage, black loincloth and crest, blackened helmet and iron shield with bronze rims, violet eyes        |
+| Ghoul (`RAIDER`)           | 72 x 88  | `ghoul-bone-edit-b`       | black hooded cloak with bone spikes, pallid face and limbs, ivory claws, violet eyes and mouth                 |
+| Banshee (`MARKSMAN`)       | 56 x 80  | `banshee-bone-edit-a`     | a pale spirit: bone-white shroud with a dark hood lining, pale hair, violet eyes, mouth and flames             |
+| Zombie (`GUARD`)           | 56 x 80  | `zombie-bone-edit-d`      | ash grey skin, charcoal smock, bone necklace, bandaged arms, big violet eyes, violet stitches on cheek and arm |
+| Necromancer (`CAPTAIN`)    | 56 x 80  | `necromancer-bone-edit-c` | black hood and robe with violet trim, bone spikes, skull staff with a violet flame, white beard                |
+| Lich (`CATAPULT`)          | 72 x 88  | `lich-bone-edit-c`        | crowned skull, bare ribcage in an open black robe, bone arms and feet, violet orb, bronze crown                |
+| Vampire (`KNIGHT`)         | 72 x 88  | `vampire-bone-edit-b`     | black cape with a violet lining, black coat with bone buttons, pale grey face, violet eyes and flames          |
+| Abomination (`JUGGERNAUT`) | 88 x 104 | `abomination-bone-edit-b` | ash grey patchwork skin, black smock, bone spurs on iron shoulder plates, four violet flames                   |
+| Patrol Boat, Battleship    | Human    | (unchanged)               | shared ships with the player-coloured sail                                                                     |
 
-```text
-Subject: Skeleton, a chunky cute friendly skeleton warrior with a huge round
-ivory skull head about half of the figure's height and a tiny sturdy body:
-big dark round eye sockets with tiny pale blue pupils and a wide toothy grin,
-a dented dark slate-grey iron half-helmet with a big bright red crest, a big
-bright red ragged tabard with torn zigzag hems covering the chest, belly and
-legs down to the knees, thin ivory bone arms and shins, an oversized notched
-light grey iron sword held up in the right hand, a round dark slate-grey
-iron shield with a small ivory skull boss on the left arm, ivory bone hands
-and feet; simple shapes and very few details.
-```
+Each unit has a 48 x 48 portrait (`chibi-direction-portrait-undead-<unit>`)
+edited from its classic portrait, and the four command icons (Raise Dead,
+Devour, Wail, Frenzy) have a violet version
+(`chibi-direction-icon-action-<name>`).
 
-**Ghoul** (`UNIT:RAIDER`, large unit 72 x 88):
+The treasure-chest reward unit of the faction is the Vampire
+(`treasureUnitRole: "KNIGHT"`); the Skeletons that Raise Dead raises and the
+Zombies that Infect and a bite raise are the roster's own Skeleton and
+Zombie, so no further sprite exists.
 
-```text
-Subject: Ghoul, a chunky cute hunched ghoul loping forward on all fours,
-wide and low, filling the whole width of the image: a big round bald head
-about half of the body's height with pale blue-grey skin, big round pale
-blue eyes, pointy ears and a toothy grin, a big bright red ragged hooded
-cloak with torn zigzag hems over the head, back and hips, trailing behind,
-long thin pale blue-grey arms ending in big ivory claws, bony pale blue-grey
-legs and feet; no weapon, no mount; simple shapes and very few details; the
-hands and feet are the lowest thing in the image; clearly a fast crouching
-runner, not an upright soldier.
-```
+## Cities and villages
 
-**Banshee** (`UNIT:MARKSMAN`, standard unit 56 x 80):
+The Undead necropolis has a set of its own in the direction's calm building
+style (`calm-settlement`, subject keys `CITY:UNDEAD:<level>/CALM`): dark
+slate stone, near-black slate roofs, pale bone trim and violet windows. No
+roof takes a player colour; the owner's pennant is drawn in code on a tower
+(`DIRECTION_FLAG_ANCHORS_V7`), with the seat shape, gold for the capital.
 
-```text
-Subject: Banshee, a chunky cute wailing ghost lady with a huge round head
-about half of the figure's height and a small floating body: a pale
-ghost-blue face with big dark eyes and a wide round open mouth mid-wail,
-both small pale ghost-blue hands raised beside her cheeks, long flowing
-ivory-white hair, a big bright red hooded shroud gown with torn zigzag hems
-covering her from the shoulders down to a long wispy tail, all in solid
-opaque colours; no legs, no weapon, no bow; the tip of the gown's tail is
-the lowest thing in the image; simple shapes and very few details; clearly
-a floating spirit, not an archer.
-```
+| Level | Asset                           | Canvas  | What it shows                                                                           |
+| ----- | ------------------------------- | ------- | --------------------------------------------------------------------------------------- |
+| 1     | `chibi-direction-undead-city-1` | 80 x 80 | a round crypt tower with a violet window, three crypts with bone trim, a skull door     |
+| 2     | `chibi-direction-undead-city-2` | 88 x 88 | black-roofed crypts round a pale bone bell tower with violet windows, inside a low wall |
+| 3     | `chibi-direction-undead-city-3` | 96 x 88 | a dark ring wall with four cone-roofed towers, a bone gate and a violet-windowed spire  |
 
-The Banshee floats, so she relaxes the shared unit class fragment's "both
-feet visible; the feet are the lowest thing in the image" for her recipe
-only. The class fragment itself stays unchanged; the override lives in the
-subject line above (no legs, the tail's tip is the lowest thing) and in her
-batch-manifest recipe:
+The canvases are smaller than the classic ones (88 x 96, 96 x 100,
+96 x 104): City 1 and 3 stay inside the Human direction's canvases, and
+City 2 is 8 px taller than the Human City 2 because of its bell tower. The
+neutral village (`SITE:VILLAGE`) is the shared one.
 
-- `promptAddendum`: `She floats with no feet: the tip of her gown's tail
-takes the place of the feet and touches the bottom of the image.` The tail
-  must touch the bottom so she stands on the tile at the same anchor as
-  every other unit, not hovering above it.
-- `negativeAddendum`: `feet, legs, shoes, boots, bow, quiver, arrows`.
+## Ability effects and status markers
 
-The other shared rules (outline, camera, nothing under her, owner-mask
-minimum) still apply in full.
+| Cue                         | Default look                                           | Why                                                                                                   |
+| --------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Wail (`EFFECT:WAIL`)        | violet sprite, violet rings                            | the faction's magic                                                                                   |
+| Lich splash                 | violet sprite                                          | the faction's magic                                                                                   |
+| Raise Dead (`EFFECT:RAISE`) | bone hands with violet wisps                           | the faction's magic                                                                                   |
+| Spirit wisp                 | violet sprite (Infect, a bite rising, lifesteal)       | the faction's magic                                                                                   |
+| Raise Dead target preview   | violet outline `#c9a6ff`, like the Wail radius         | one colour for the faction's abilities; it was green                                                  |
+| Plague marker and puff      | **unchanged**: grey-green cloud `#9fac8a`              | an affliction on any faction's unit, not the caster's magic; a dull green is the opposite of the glow |
+| Bitten marker               | **unchanged**: slate jaws, ivory teeth                 | an affliction, as above                                                                               |
+| Cure sparkle                | **unchanged**: white                                   | a Human Captain's Tend cures; it is not Undead magic                                                  |
+| Devour and splash previews  | **unchanged**: coral and orange                        | they mark damage and healing amounts, like every faction's previews                                   |
+| Grave marker                | **unchanged**: a neutral stone tombstone drawn in code | it belongs to no faction                                                                              |
+| Undead badge of a stand-in  | **unchanged**: bone on violet-black                    | it already agrees                                                                                     |
 
-**Zombie** (`UNIT:GUARD`, standard unit 56 x 80):
+The four violet effect sprites are the accepted sprites of batch
+`effects-undead` in the palette
+`scripts/art/chibi/palettes/undead-violet.png`: a palette swap, so every
+shape is the one that was reviewed.
 
-```text
-Subject: Zombie, a chunky cute big shambling zombie with a huge round head
-about half of the figure's height and a wide stocky body in a braced
-stance: pale blue-grey skin with a few stitched seams, sleepy droopy eyes
-and a small lopsided grin, a tuft of dark slate hair, a big bright red
-ragged smock with torn zigzag hems covering the chest, belly and legs down
-to the shins, both arms stretched straight forward with big ivory-bandaged
-hands, big dark slate-grey feet; no weapon, no shield; simple shapes and
-very few details; clearly a slow heavy wall of a body, not a sword fighter.
-```
+## What is live
 
-**Necromancer** (`UNIT:CAPTAIN`, standard unit 56 x 80):
+The default look of the CHIBI art set draws all of the above for an Undead
+player: units on the board, the selection dock, portraits on train buttons,
+cards and the technology tree, the command icons, the cities and the
+effects. A raster that fails to load falls back to the classic asset of
+that piece. The setup screen has no faction art: it offers the faction in a
+select.
 
-```text
-Subject: Necromancer, a chunky cute old sorcerer with a huge round head
-about half of the figure's height and a tiny sturdy body: a gaunt pale
-blue-grey face with glowing pale blue eyes and a long ivory-white beard, a
-big bright red pointed hood and a long bright red ragged robe with torn
-zigzag hems down to the feet, a tall crooked dark slate-grey iron staff held
-upright in the left hand, topped with a small ivory skull holding a cold
-pale blue flame high above his head, the right hand raised with small pale
-blue sparks, dark slate-grey shoes; no shield, no helmet, no sword; simple
-shapes and very few details; clearly a spellcaster with a skull staff.
-```
+### The Classic look
 
-**Lich** (`UNIT:CATAPULT`, large unit 72 x 88):
+The developer option "Classic look (previous art)" and the LEGACY art set
+are unchanged. The Classic look draws the first Undead art (batches
+`undead`, `5-undead`, `cities-undead`, `effects-undead`): garments, roofs
+and banners in the owner's colour through a mask, slate blue-grey skin and
+iron, pale blue flames and effects, grey-green moss, and the green Raise
+Dead preview. Their records keep the prompt fragment they were generated
+with (bleached ivory bone shaded cool grey, "never brown", the key colour
+`#d8262c` on a garment covering torso and legs). That fragment is no longer
+the faction's: a new classic-style asset would need it restored in an
+exploration run.
 
-```text
-Subject: Lich, a chunky cute tall skeleton sorcerer king, clearly bigger
-than a soldier: a huge round ivory skull head with glowing pale blue eye
-sockets and a spiky dark slate-grey iron crown, a huge wide bright red
-ragged royal robe with a tall stiff collar and torn zigzag hems spreading
-out on both sides, thin ivory bone hands raised above the head holding up a
-big round orb of cold pale blue flame, small ivory bone feet peeking out
-under the hem; simple shapes and very few details; the feet and the robe's
-hem are the lowest thing in the image; clearly a big spell-hurling caster,
-not a war machine.
-```
+## Decisions
 
-**Vampire** (`UNIT:KNIGHT`, large unit 72 x 88):
+Approved by the user on 2026-09-29 and still in force:
 
-```text
-Subject: Vampire, a chunky cute vampire count, clearly bigger and grander
-than a soldier: a huge round head about half of his height with pale
-ghost-blue skin, slicked-back black hair with a widow's peak, big pale blue
-eyes and two tiny white fangs in a smug grin, a huge bright red
-high-collared cape spread wide behind him like bat wings with pointed
-scalloped edges, filling the whole width of the image, a bright red long
-coat over a cream-white shirt, slate-grey trousers and pointed dark
-slate-grey boots, a slim light grey iron rapier in the right hand; no horse,
-no mount; simple shapes and very few details; the boots are the lowest
-thing in the image; clearly a dashing noble, not an armoured knight.
-```
+1. **Banshee:** floats with no feet; the tip of her shroud is the lowest
+   thing in the image and stands on the tile.
+2. **Vampire:** on foot, with a huge bat-wing cape; no mount.
+3. **Ghoul:** alone on all fours in the large 72 x 88 canvas; no mount.
+4. **Zombie:** arms stretched forward; no shield and no weapon.
+5. **Tone:** playful and goofy, never menacing, gory or horror.
+6. **Cities:** the Undead have their own City 1-3 (2026-10-01); the village
+   is shared.
+7. **Grave marker:** unowned; the board draws a small code-drawn tombstone.
 
-**Abomination** (`UNIT:JUGGERNAUT`, giant unit 88 x 104):
+Decided in bead `pulp_wars-3tq.12` under the user's direction of
+2026-10-02 (each is described in the
+[production section](../VISUAL_DIRECTION_2026-10.md#17-undead-production)):
 
-```text
-Subject: Abomination, a chunky cute giant stitched-together brute, a huge
-hulking lump much wider and taller than a normal soldier: a big round head
-sunk low between enormous shoulders, pale blue-grey patchwork skin with big
-stitched seams and a few iron bolts, one eye bigger than the other and a
-goofy underbite grin, one arm bigger than the other, big fists in dark iron
-manacles with short broken iron chains, a huge bright red patchwork smock
-with torn zigzag hems over the barrel belly and down to the knees, thick
-legs and big dark slate-grey feet, wide braced stance; simple shapes and
-very few details; clearly a giant, not a normal soldier.
-```
-
-**Grave marker** (new subject, for example `GRAVE`; unowned, resource-sized
-about 40 x 40, no mask):
-
-```text
-Subject: a small grave marker: one short rounded headstone of weathered
-light blue-grey stone with a small engraved ivory skull, leaning slightly,
-with a tiny tuft of grey-green moss at its foot; small, low and calm, much
-smaller than a unit.
-```
-
-Its recipe adds `negativeAddendum`: `person, character, skeleton, hand,
-coffin, red`. A Grave has no owner and may share a tile with a unit of any
-faction, so it carries no key colour and must stay readable, below the
-unit, when a unit stands on it.
-
-Since `pulp_wars-6gd.4` the board no longer draws this raster. Every explored
-Grave is a small code-drawn tombstone in the tile's bottom-right corner (18
-CSS px on an 80 CSS px tile, drawn above units, in both art sets; see the
-[screen flow](../../ui/SCREEN_FLOW.md#current-ruleset-7-playtest-round-3-interface-overlay)).
-The 40 x 40 `GRAVE` raster stays registered in the manifest but is unused on
-the board.
-
-### Cities and villages
-
-**Undead cities are a necropolis (bead `pulp_wars-6gd.6`).** On 2026-10-01
-the user asked that "each faction should have its own set of city sprites
-that fit the faction esthetics", which replaces the earlier decision to
-share the Human settlement art. The neutral village (`SITE:VILLAGE`) stays
-shared: it has no owner and so no faction.
-
-- **Subjects:** `CITY:UNDEAD:1`, `CITY:UNDEAD:2` and `CITY:UNDEAD:3` in
-  `scripts/art/chibi/subjects/UNDEAD.json`, one raster per art level like the
-  Human `CITY:<level>`, on the same canvases (88 x 96, 96 x 100, 96 x 104),
-  the default bottom-centre anchor and the same overflow, each with an owner
-  mask. The capital crown, the City Wall badge, the population pips, the HP
-  bar and the garrisoned unit are the shared code-drawn overlays.
-- **Resolution:** a city asks for the set of its **owner's** faction
-  (`cityArtSubjectV7` in `src/assets/chibi-art-v7.ts`), so a captured city
-  changes its look with its owner. A level without a usable Undead raster
-  falls back to the Human `CITY:<level>`, as `UNIT:UNDEAD:<ROLE>` does.
-  LEGACY is unchanged.
-- **Look:** weathered grey stone crypts, mausoleums and crooked towers,
-  ivory bone trim, dark iron spikes, bare grey dead trees and small cold
-  pale blue flames. The flames stay pale blue, never teal or cyan, which
-  would read as the Teal player colour (see [Palette](#palette)). Trees are
-  slate grey: the faction uses no wood.
-- **Owner colour** on roofs, cone roofs, banners and drapes.
-
-| Level | Asset                 | What it shows                                                                                                                          | Owner area |
-| ----- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| 1     | `chibi-undead-city-1` | a crooked crypt tower with a ragged banner, three red-roofed crypts, a big ivory skull ornament, headstones, blue flames               | 31.9%      |
-| 2     | `chibi-undead-city-2` | a square bell tower with a flag, four red-roofed crypts, a round corner tower, a spiked front wall with an arch gate, a dead tree      | 17.8%      |
-| 3     | `chibi-undead-city-3` | a dark crenellated ring wall, crooked towers with red cone roofs, a gothic spire, a red-roofed hall, red drapes over the gate, a flame | 15.1%      |
-
-Batch `cities-undead` took 8 PixelLab calls. Findings:
-
-- Every text-to-image city stood on a slab (grass, soil, or a slab with a
-  key-red rim that the mask picked up); a ground-removal edit fixed each.
-- "Slate roofs" came back as a tile pattern with pale tiles, which the mask
-  turned into speckles (`undead-city-1-a`). Ask for "one plain flat solid
-  bright red surface with no tile pattern".
-- The walled City 3 has little roof to show: its first candidate had 11.1%
-  owner area (`COVERAGE_LOW`). An edit painting the hall roof and the cream
-  cone roofs red reached 15.1%. City 2 and 3 pass the 15% minimum but sit
-  under the 20–40% target; the drapes, roofs and banner still read in all
-  four player colours at zoom 0.75.
-
-Evidence: `npm run art:chibi-faction-cities-review` writes
-[`art/pixellab/reviews/chibi-faction-cities/`](../../../art/pixellab/reviews/chibi-faction-cities/)
-(see the [pipeline](../CHIBI_PIPELINE.md#review-evidence)).
-
-### Ability effects and status markers (bead `pulp_wars-vkq.14`)
-
-The CHIBI art set draws raster effects and markers; LEGACY keeps its
-code-drawn cues. None is owned, so none uses the key red, and none uses
-green, cyan or purple: every master is palette-mapped onto a checked-in
-palette (see the [pipeline](../CHIBI_PIPELINE.md#status-markers-and-effects)).
-Each effect is one sprite that the effects canvas moves, scales and fades
-in code; reduced motion freezes it at its midpoint.
-
-| Cue                     | Sprite (subject, master)                            | Animation                                                                |
-| ----------------------- | --------------------------------------------------- | ------------------------------------------------------------------------ |
-| Plague marker           | grey-green queasy cloud (`STATUS:PLAGUED`, 32 x 32) | none; drawn at 16 CSS px on a dark token in the unit's marker slot       |
-| Bitten marker           | slate jaws with ivory teeth (`STATUS:BITTEN`, 32)   | none; as the Plague marker                                               |
-| Wail                    | ((( ))) sound fans (`EFFECT:WAIL`, 48)              | grows over the Banshee inside pale blue-white rings; above each hit unit |
-| Lich splash             | frost starburst (`EFFECT:SPLASH`, 48)               | bursts on the target, smaller on each splashed unit                      |
-| Raise Dead              | two bone hands with wisps (`EFFECT:RAISE`, 40)      | rise out of each raised Grave                                            |
-| Infect, Bitten rising   | pale blue spirit wisp (`EFFECT:WISP`, 24)           | three wisps spiral up the risen Zombie                                   |
-| Lifesteal               | the same wisp                                       | two wisps arc from the drained unit to the Vampire                       |
-| Plague damage or spread | the Plague marker at 1:1                            | a puff drifting up over each unit                                        |
-| Plague cured or lifted  | white sparkles (`EFFECT:CURE`, 32)                  | twinkle over the unit's head (Plague lifted, and a Tend that cures)      |
-
-The markers use a 32 x 32 master (Pixflux's smallest canvas; Pixen's
-16 x 16 output was noise) drawn into the 16 px marker frame, which is 1:1 on
-DPR 2 screens. The dock's Plague and bite chips keep their vector glyphs
-([inventory flag 11](../CHIBI_ASSET_INVENTORY.md#flags-the-plan-did-not-foresee)).
-
-## Roster notes
-
-Canvas and class follow the mechanical role's subject in the
-[asset inventory](../CHIBI_ASSET_INVENTORY.md).
-
-| Role or building           | Canvas        | Owner colour on                           | Distinguishing silhouette                                                                     |
-| -------------------------- | ------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Skeleton (`FIGHTER`)       | 56 x 80       | ragged tabard to the knees, helmet crest  | ivory skull head, thin bone limbs, notched iron sword, round iron shield                      |
-| Ghoul (`RAIDER`)           | 72 x 88       | hooded cloak over head, back and hips     | low and wide on all fours, long arms, big claws, no weapon, no mount                          |
-| Banshee (`MARKSMAN`)       | 56 x 80       | hooded shroud gown from shoulders to tail | floating, no legs, wispy tail, hands at cheeks, open wailing mouth                            |
-| Zombie (`GUARD`)           | 56 x 80       | ragged smock to the shins                 | wide stocky body, both arms straight forward, no weapon or shield                             |
-| Necromancer (`CAPTAIN`)    | 56 x 80       | pointed hood and full-length robe         | tall crooked iron staff with a skull and a pale blue flame, long beard                        |
-| Lich (`CATAPULT`)          | 72 x 88       | wide royal robe with a tall collar        | tall crowned skull, orb of pale blue flame held overhead, robe spreading on both sides        |
-| Vampire (`KNIGHT`)         | 72 x 88       | huge bat-wing cape and long coat          | cape spread wide like wings, black widow's-peak hair, rapier; no horse                        |
-| Abomination (`JUGGERNAUT`) | 88 x 104      | patchwork smock over belly and knees      | giant stitched hulk, head sunk between shoulders, one arm bigger, manacles with broken chains |
-| Patrol Boat, Battleship    | Human art     | Human art                                 | reused unchanged (spec section 3)                                                             |
-| Grave marker               | about 40 x 40 | none (unowned)                            | small leaning rounded headstone with an engraved skull and a moss tuft                        |
-| City 1–3                   | Human canvas  | roofs, cone roofs, banners, drapes        | grey stone necropolis: crypts, crooked towers, spikes, dead trees, pale blue flames           |
-| Village                    | Human art     | none (unowned)                            | shared Human art                                                                              |
-
-## Decisions (approved 2026-09-29)
-
-The user approved this document with the recommended answer to every open
-question of the draft:
-
-1. **Cities:** Undead share the Human city and village art; there are no
-   Undead city tiers. **Superseded on 2026-10-01** (bead `pulp_wars-6gd.6`):
-   the Undead have their own City 1–3; only the village stays shared (see
-   [Cities and villages](#cities-and-villages)).
-2. **Banshee:** floats with no feet; the "feet visible" class rule is
-   relaxed for her recipe only, through her subject line and recipe
-   addenda (see [Subject lines](#subject-lines)). The Lich keeps small feet
-   under its robe.
-3. **Vampire:** on foot, with a huge bat-wing cape; no mount.
-4. **Ghoul:** alone on all fours in the large 72 x 88 canvas; no mount.
-5. **Zombie:** arms stretched forward; no shield and no weapon.
-6. **Tone:** playful and goofy (grins, sleepy eyes, funny faces), never
-   menacing, gory or horror.
-7. **Palette:** grey-green moss stays as the third secondary colour, as
-   small accents only.
-8. **Grave marker:** unowned and resource-sized (about 40 x 40). The raster
-   stays registered but is unused on the board since `pulp_wars-6gd.4`: the
-   board draws a small code-drawn tombstone in the tile's bottom-right
-   corner, above units.
-
-The brown wording in
-[chibi direction section 4](../CHIBI_ART_DIRECTION.md#4-owner-colour) is
-being reworded to "non-owner materials never red or red-brown" in a
-separate bead, which matches this faction's never-brown rule.
-
-## Check before approval
-
-- [x] The prompt fragment names no figure and no building.
-- [x] Every material has a non-red, non-brown shading colour.
-- [x] Every unit line puts red on a garment covering torso and legs.
-- [x] Feet, hands, handles, stocks and shields have non-brown colours.
-- [x] City lines end "Buildings only." with figure words in the recipe's
-      `negativeAddendum`; the village is the shared Human art.
-- [ ] The sample (Skeleton and Banshee) passes mask QA and reads apart from
-      the Human set at zoom 0.75.
+8. **Accent:** violet at hue 274°, lightened on thin trim over dark cloth.
+9. **Banshee:** a bone-white shroud, not a dark one; opaque, not
+   translucent.
+10. **Vampire:** a violet cape lining instead of a red one.
+11. **Lich:** bare ribs in an open robe; a bronze crown; the orb is the
+    largest glow of the faction.
+12. **Zombie:** violet stitches and bigger glowing eyes.
+13. **Moss is dropped;** bronze is allowed on rims and the crown.
+14. **Plague, Bitten and cure** keep their colours; **Raise Dead's preview**
+    becomes violet.
+15. **Cities:** a new calm-style set with a code-drawn pennant.

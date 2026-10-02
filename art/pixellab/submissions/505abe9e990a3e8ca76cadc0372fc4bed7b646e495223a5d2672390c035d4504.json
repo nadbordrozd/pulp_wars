@@ -1,0 +1,36 @@
+{
+  "id": "portrait-undead-ghoul-bone-edit-b",
+  "jobId": "e7e5af69-431a-4c5e-b639-4b75a02997e5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-portrait-undead-ghoul",
+    "subject": "PORTRAIT:UNDEAD:RAIDER",
+    "faction": "UNDEAD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81015,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one small detail: the blue patch on his chest under the hood becomes near-black charcoal cloth. Nothing blue is left. Keep everything else exactly the same: the black hood with its violet trim, the pale face, the violet eyes, the grin, the raised clawed hand, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one small detail: the blue patch on his chest under the hood becomes near-black charcoal cloth. Nothing blue is left. Keep everything else exactly the same: the black hood with its violet trim, the pale face, the violet eyes, the grin, the raised clawed hand, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one small detail: the blue patch on his chest under the hood becomes near-black charcoal cloth. Nothing blue is left. Keep everything else exactly the same: the black hood with its violet trim, the pale face, the violet eyes, the grin, the raised clawed hand, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only one small detail: the blue patch on his chest under the hood becomes near-black charcoal cloth. Nothing blue is left. Keep everything else exactly the same: the black hood with its violet trim, the pale face, the violet eyes, the grin, the raised clawed hand, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-undead-ghoul-bone-edit",
+      "candidate": 0,
+      "sha256": "25bcc845fdf0d8c427804276f40e7f9d0a362539a3a0e0990710af898f0b3e5d"
+    }
+  }
+}

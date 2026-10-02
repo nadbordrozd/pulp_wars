@@ -2215,6 +2215,190 @@
     }
   },
   "assets": {
+    "chibi-direction-effect-raise": {
+      "id": "chibi-direction-effect-raise",
+      "subject": "EFFECT:RAISE",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-raise-b-edit",
+      "candidate": 0,
+      "candidateSha256": "a9c0f0d6857fa37c058599618ccc621c75aaa2572a9a5f2bb1778ac036b6ef36",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-raise.png",
+        "sha256": "5d2e827635988fb0ca3788905db87f9a9205c6c48b724d9e88f3e5b961b93747",
+        "pixelSha256": "7fd95d374186d21368e1429234f94be13a0f2c0eb463202ab7304e375115674f",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-violet.png",
+          "sha256": "25ab9b1042c602635bb0e34a6102ccfc40121bd00039a91214afd085464351fe"
+        },
+        "paletteFrom": {
+          "path": "scripts/art/chibi/palettes/undead-frost.png",
+          "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+        }
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The accepted sprite in the violet palette of the new direction (palette swap, same shapes).",
+      "acceptedAt": "2026-10-02T15:52:56.821Z"
+    },
+    "chibi-direction-effect-splash": {
+      "id": "chibi-direction-effect-splash",
+      "subject": "EFFECT:SPLASH",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-splash-d",
+      "candidate": 0,
+      "candidateSha256": "1a6aeaf734125cd2670f19d1e36aa32c02bc7494760fb497b86a093f878a3003",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-splash.png",
+        "sha256": "d568c68cc79457f24dfb43ccd43ca7d21772c84822348fe3166edb40909c6f0e",
+        "pixelSha256": "4727458e2a60713a987164bbe09daa7a815ed1223d77eb4c26ddbaedfd5a6fde",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-violet.png",
+          "sha256": "25ab9b1042c602635bb0e34a6102ccfc40121bd00039a91214afd085464351fe"
+        },
+        "paletteFrom": {
+          "path": "scripts/art/chibi/palettes/undead-frost.png",
+          "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The accepted sprite in the violet palette of the new direction (palette swap, same shapes).",
+      "acceptedAt": "2026-10-02T15:52:55.670Z"
+    },
+    "chibi-direction-effect-wail": {
+      "id": "chibi-direction-effect-wail",
+      "subject": "EFFECT:WAIL",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-wail-c",
+      "candidate": 0,
+      "candidateSha256": "26cda31a99c66b177450a3a8572ce94d503bfd5e95bcb85ce620fd723c8cff3b",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-wail.png",
+        "sha256": "75d3759677653e1a9c2299cd81ec40a5a4b2827e4c505ad0fe32b17f02defd8a",
+        "pixelSha256": "dfbf7fa43b6efda774dcdd50ee589e70960357c88eb200ee0cf2b675e565b094",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-violet.png",
+          "sha256": "25ab9b1042c602635bb0e34a6102ccfc40121bd00039a91214afd085464351fe"
+        },
+        "paletteFrom": {
+          "path": "scripts/art/chibi/palettes/undead-frost.png",
+          "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The accepted sprite in the violet palette of the new direction (palette swap, same shapes).",
+      "acceptedAt": "2026-10-02T15:52:54.473Z"
+    },
+    "chibi-direction-effect-wisp": {
+      "id": "chibi-direction-effect-wisp",
+      "subject": "EFFECT:WISP",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-wisp-b",
+      "candidate": 0,
+      "candidateSha256": "84a4d47077d0a98dd6c867cf8d27af28a09c6c321e7db69bf9eebc06deee94bd",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-wisp.png",
+        "sha256": "550cb1404199d39fdd3cb82bc37795b965dcb748ab4870dc12100108b732c32d",
+        "pixelSha256": "7590d1a38a6d09f239379635019a0b39c1a110ea725d410e153822ddaa6f3a4d",
+        "width": 24,
+        "height": 24
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/undead-violet.png",
+          "sha256": "25ab9b1042c602635bb0e34a6102ccfc40121bd00039a91214afd085464351fe"
+        },
+        "paletteFrom": {
+          "path": "scripts/art/chibi/palettes/undead-frost.png",
+          "sha256": "aa5f8c6f34c1bdae7a5120808e21a05c9ae1e0ac936d7f7bf782adf6288c73e6"
+        }
+      },
+      "anchor": {
+        "x": 12,
+        "y": 12
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The accepted sprite in the violet palette of the new direction (palette swap, same shapes).",
+      "acceptedAt": "2026-10-02T15:52:57.871Z"
+    },
     "chibi-effect-cure": {
       "id": "chibi-effect-cure",
       "subject": "EFFECT:CURE",

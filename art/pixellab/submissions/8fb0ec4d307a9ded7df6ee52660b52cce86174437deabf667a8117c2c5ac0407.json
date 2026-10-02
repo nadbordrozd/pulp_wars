@@ -1,0 +1,36 @@
+{
+  "id": "undead-city-1-calm-a-edit",
+  "jobId": "0fa65d9c-6efa-4249-a3fd-e65400b279f0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-city-1",
+    "subject": "CITY:UNDEAD:1",
+    "faction": "UNDEAD",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 82002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the brown dirt plate and the small bones lying on it under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the brown dirt plate and the small bones lying on it under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the brown dirt plate and the small bones lying on it under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the brown dirt plate and the small bones lying on it under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, the dark slate roofs, the pale bone trim, the violet windows, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "undead-city-1-calm-a",
+      "candidate": 0,
+      "sha256": "479e908a4407e966da7511f4e819131bd71fa2045cfd365aeb475babe8dca49b"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "id": "undead-city-2-calm-a",
+  "jobId": "sync-f406e266-031d-4d3a-af21-420e587de85e",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-city-2",
+    "subject": "CITY:UNDEAD:2",
+    "faction": "UNDEAD",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 82101,
+    "noBackground": true,
+    "options": {
+      "outline": "selective outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+        "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-calm-settlement.txt + scripts/art/chibi/fragments/class-calm-settlement.negative.txt",
+        "text": "Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/UNDEAD.json",
+        "text": "Subject: a level-2 graveyard town, the second of three sizes of one necropolis and clearly bigger than the small one: five mausoleums and crypts of dark slate-grey stone with near-black slate roofs and pale warm ivory bone trim packed around a tall crooked square bell tower of the same stone with arched windows glowing bright violet, a low dark slate-grey stone wall across the front with a pointed arch gate and a row of pale ivory bone spikes on top, and one round leaning corner tower with a near-black slate cone roof; no flag. Buildings only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+        "negative": "person, character, skeleton, ghost, red roof, red banner, flag"
+      }
+    ],
+    "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a level-2 graveyard town, the second of three sizes of one necropolis and clearly bigger than the small one: five mausoleums and crypts of dark slate-grey stone with near-black slate roofs and pale warm ivory bone trim packed around a tall crooked square bell tower of the same stone with arched windows glowing bright violet, a low dark slate-grey stone wall across the front with a pointed arch gate and a row of pale ivory bone spikes on top, and one round leaning corner tower with a near-black slate cone roof; no flag. Buildings only. The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, skeleton, ghost, red roof, red banner",
+    "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a level-2 graveyard town, the second of three sizes of one necropolis and clearly bigger than the small one: five mausoleums and crypts of dark slate-grey stone with near-black slate roofs and pale warm ivory bone trim packed around a tall crooked square bell tower of the same stone with arched windows glowing bright violet, a low dark slate-grey stone wall across the front with a pointed arch gate and a row of pale ivory bone spikes on top, and one round leaning corner tower with a near-black slate cone roof; no flag. Buildings only. The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, skeleton, ghost, red roof, red banner."
+  }
+}

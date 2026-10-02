@@ -1,0 +1,36 @@
+{
+  "id": "zombie-bone-edit-d",
+  "jobId": "5023b0f5-26aa-4a92-8391-15e0a173845d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-undead-zombie",
+    "subject": "UNIT:UNDEAD:GUARD",
+    "faction": "UNDEAD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only small glowing details: a short row of bright violet stitches across his cheek and another across his bare forearm, and his two eyes become a little bigger and glow bright violet. Keep everything else exactly the same: the pallid ash grey skin, the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only small glowing details: a short row of bright violet stitches across his cheek and another across his bare forearm, and his two eyes become a little bigger and glow bright violet. Keep everything else exactly the same: the pallid ash grey skin, the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only small glowing details: a short row of bright violet stitches across his cheek and another across his bare forearm, and his two eyes become a little bigger and glow bright violet. Keep everything else exactly the same: the pallid ash grey skin, the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only small glowing details: a short row of bright violet stitches across his cheek and another across his bare forearm, and his two eyes become a little bigger and glow bright violet. Keep everything else exactly the same: the pallid ash grey skin, the dark hair, the bone necklace, the charcoal smock with its violet hem, the bandaged hands, the feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "zombie-bone-edit-b",
+      "candidate": 0,
+      "sha256": "8ed13408e3c40347a484c44a20a48cb68d8e495f77d24b10e9627328c061a39a"
+    }
+  }
+}

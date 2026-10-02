@@ -1,0 +1,37 @@
+{
+  "id": "icon-action-devour-violet-edit",
+  "jobId": "475af05e-e915-42bb-8380-0c5fb1e6c623",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-undead",
+    "asset": "chibi-direction-icon-action-devour",
+    "subject": "ICON:ACTION:DEVOUR",
+    "faction": "UNDEAD",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: every small pale blue spark becomes bright glowing violet, and the green moss patches on the bone become pale warm ivory bone. Nothing blue or green is left. Keep the bitten bone, the crumbs, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours: every small pale blue spark becomes bright glowing violet, and the green moss patches on the bone become pale warm ivory bone. Nothing blue or green is left. Keep the bitten bone, the crumbs, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours: every small pale blue spark becomes bright glowing violet, and the green moss patches on the bone become pale warm ivory bone. Nothing blue or green is left. Keep the bitten bone, the crumbs, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours: every small pale blue spark becomes bright glowing violet, and the green moss patches on the bone become pale warm ivory bone. Nothing blue or green is left. Keep the bitten bone, the crumbs, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-undead",
+      "recipe": "icon-action-devour-a",
+      "candidate": 0,
+      "sha256": "767c959b099457ec6608b4d445f079804b2dbfa675ab995bc572eadffd834afa"
+    }
+  }
+}

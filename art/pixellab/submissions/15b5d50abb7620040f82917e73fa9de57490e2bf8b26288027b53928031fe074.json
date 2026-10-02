@@ -1,0 +1,36 @@
+{
+  "id": "skeleton-bone-edit-d",
+  "jobId": "34c77304-6c2e-483d-8ac7-f554f27cd6f5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "undead-direction-study",
+    "asset": "chibi-study-skeleton",
+    "subject": "UNIT:UNDEAD:FIGHTER",
+    "faction": "TEST-UNDEAD-BONE",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79004,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two thin details: the rim of the helmet and the rim of the round shield become dull tarnished bronze, a muted dark yellow-brown metal. The helmet dome and the shield face stay dark grey iron. Do not touch the skull, the violet eyes, the bones, the black crest, the black loincloth with its violet trim, the sword or the boots. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two thin details: the rim of the helmet and the rim of the round shield become dull tarnished bronze, a muted dark yellow-brown metal. The helmet dome and the shield face stay dark grey iron. Do not touch the skull, the violet eyes, the bones, the black crest, the black loincloth with its violet trim, the sword or the boots. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two thin details: the rim of the helmet and the rim of the round shield become dull tarnished bronze, a muted dark yellow-brown metal. The helmet dome and the shield face stay dark grey iron. Do not touch the skull, the violet eyes, the bones, the black crest, the black loincloth with its violet trim, the sword or the boots. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two thin details: the rim of the helmet and the rim of the round shield become dull tarnished bronze, a muted dark yellow-brown metal. The helmet dome and the shield face stay dark grey iron. Do not touch the skull, the violet eyes, the bones, the black crest, the black loincloth with its violet trim, the sword or the boots. Keep the pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "skeleton-bone-edit-a",
+      "candidate": 0,
+      "sha256": "935d63772a476942bc0e9db01942eba9a7d1552d32e45971d5d075125daebec5"
+    }
+  }
+}
