@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-spots-probe-a",
+  "jobId": "f0f8e9fb-0178-4726-9d60-a84ab187535c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only a pattern on the hide: about eight big bold bright amber-orange leopard spots, colour #f08c1e, each a round blot with a dark navy centre, on the back, flank, thighs and tail, few and wide apart. No spots on the head or belly. Do not redraw anything. Keep the crest and back spikes, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only a pattern on the hide: about eight big bold bright amber-orange leopard spots, colour #f08c1e, each a round blot with a dark navy centre, on the back, flank, thighs and tail, few and wide apart. No spots on the head or belly. Do not redraw anything. Keep the crest and back spikes, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only a pattern on the hide: about eight big bold bright amber-orange leopard spots, colour #f08c1e, each a round blot with a dark navy centre, on the back, flank, thighs and tail, few and wide apart. No spots on the head or belly. Do not redraw anything. Keep the crest and back spikes, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only a pattern on the hide: about eight big bold bright amber-orange leopard spots, colour #f08c1e, each a round blot with a dark navy centre, on the back, flank, thighs and tail, few and wide apart. No spots on the head or belly. Do not redraw anything. Keep the crest and back spikes, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-hide-a",
+      "candidate": 0,
+      "sha256": "3b1af70f53529f9ce1a3cab21e7c1862512f8eaa25e5da7982a2e49aa6d941fe"
+    }
+  }
+}

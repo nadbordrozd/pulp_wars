@@ -1,0 +1,37 @@
+{
+  "id": "caveman-fur-plain-a",
+  "jobId": "0e326835-187e-4c78-a7c2-bceb8fed004b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-caveman",
+    "subject": "UNIT:DINOSAUR:FIGHTER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 81202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his clothes: the red fur tunic becomes a plain tawny tan fur pelt, colour #c99652 with #8a5f2e shadows, with no spots; the red headband is removed; he wears a necklace of big cream teeth and small bones; the red wrist wrap becomes a cream bone bracelet. Nothing red is left. Keep the face, hair, beard, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his clothes: the red fur tunic becomes a plain tawny tan fur pelt, colour #c99652 with #8a5f2e shadows, with no spots; the red headband is removed; he wears a necklace of big cream teeth and small bones; the red wrist wrap becomes a cream bone bracelet. Nothing red is left. Keep the face, hair, beard, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his clothes: the red fur tunic becomes a plain tawny tan fur pelt, colour #c99652 with #8a5f2e shadows, with no spots; the red headband is removed; he wears a necklace of big cream teeth and small bones; the red wrist wrap becomes a cream bone bracelet. Nothing red is left. Keep the face, hair, beard, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only his clothes: the red fur tunic becomes a plain tawny tan fur pelt, colour #c99652 with #8a5f2e shadows, with no spots; the red headband is removed; he wears a necklace of big cream teeth and small bones; the red wrist wrap becomes a cream bone bracelet. Nothing red is left. Keep the face, hair, beard, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "dinosaur",
+      "recipe": "caveman-b-edit-2",
+      "candidate": 0,
+      "sha256": "ae1ba88bde8accf9c4c9ff413633e6b4eef6c68aaea44a5030071343bf255595"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-steel-stripes-b",
+  "jobId": "b4833030-d02c-49f1-a899-d1648401ba60",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81117,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only a pattern on the hide: six very thick dark navy tiger stripes, colour #16203f: three down the back and flank and three across the tail. Each stripe is a fat solid wedge at least four pixels wide, with plain hide between them; no thin lines, no orange. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only a pattern on the hide: six very thick dark navy tiger stripes, colour #16203f: three down the back and flank and three across the tail. Each stripe is a fat solid wedge at least four pixels wide, with plain hide between them; no thin lines, no orange. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only a pattern on the hide: six very thick dark navy tiger stripes, colour #16203f: three down the back and flank and three across the tail. Each stripe is a fat solid wedge at least four pixels wide, with plain hide between them; no thin lines, no orange. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Add only a pattern on the hide: six very thick dark navy tiger stripes, colour #16203f: three down the back and flank and three across the tail. Each stripe is a fat solid wedge at least four pixels wide, with plain hide between them; no thin lines, no orange. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-hide-b",
+      "candidate": 0,
+      "sha256": "311d12c95a1b0738b118db788f131f7ad6081dc53f0ef5cab5bacc78284ae9fc"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "caveman-spots-skin-a",
+  "jobId": "4eb2a85c-c40f-4f43-9176-f09436eb00c8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-caveman",
+    "subject": "UNIT:DINOSAUR:FIGHTER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 81203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes tanned warm brown skin, colour #c8875a with #96583a shadows. Add war paint: two short bright amber-orange #f08c1e stripes on each cheek and one amber-orange band round his upper arm. Do not redraw anything. Keep the hair, beard, spotted fur, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes tanned warm brown skin, colour #c8875a with #96583a shadows. Add war paint: two short bright amber-orange #f08c1e stripes on each cheek and one amber-orange band round his upper arm. Do not redraw anything. Keep the hair, beard, spotted fur, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes tanned warm brown skin, colour #c8875a with #96583a shadows. Add war paint: two short bright amber-orange #f08c1e stripes on each cheek and one amber-orange band round his upper arm. Do not redraw anything. Keep the hair, beard, spotted fur, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes tanned warm brown skin, colour #c8875a with #96583a shadows. Add war paint: two short bright amber-orange #f08c1e stripes on each cheek and one amber-orange band round his upper arm. Do not redraw anything. Keep the hair, beard, spotted fur, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "caveman-fur-spots-a",
+      "candidate": 0,
+      "sha256": "e792ba7c976432bfa7d1c72f42326e27f2013f238d6ad67f9368cf4ae0dba381"
+    }
+  }
+}

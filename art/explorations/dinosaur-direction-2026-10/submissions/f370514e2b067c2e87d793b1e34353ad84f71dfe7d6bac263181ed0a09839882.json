@@ -1,0 +1,36 @@
+{
+  "id": "raptor-spots-a",
+  "jobId": "49025f0f-0a15-4a32-91df-481a702caf12",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-raptor",
+    "subject": "UNIT:DINOSAUR:RAIDER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81013,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only a pattern on the hide: six big solid bright amber-orange round spots, colour #f08c1e, each a filled blot about as big as its eye with no ring and no hole: three on the back and flank, one on the thigh, two on the tail, wide apart. The head, belly and lower legs stay plain. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only a pattern on the hide: six big solid bright amber-orange round spots, colour #f08c1e, each a filled blot about as big as its eye with no ring and no hole: three on the back and flank, one on the thigh, two on the tail, wide apart. The head, belly and lower legs stay plain. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only a pattern on the hide: six big solid bright amber-orange round spots, colour #f08c1e, each a filled blot about as big as its eye with no ring and no hole: three on the back and flank, one on the thigh, two on the tail, wide apart. The head, belly and lower legs stay plain. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Add only a pattern on the hide: six big solid bright amber-orange round spots, colour #f08c1e, each a filled blot about as big as its eye with no ring and no hole: three on the back and flank, one on the thigh, two on the tail, wide apart. The head, belly and lower legs stay plain. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "raptor-base-b",
+      "candidate": 0,
+      "sha256": "27363365277a2c32cbcf32e9dd17406d070b63bb67931d5be418b175b834ce8c"
+    }
+  }
+}

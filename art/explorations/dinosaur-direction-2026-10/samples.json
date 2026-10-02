@@ -1,0 +1,716 @@
+{
+  "bead": "pulp_wars-3tq.14",
+  "note": "Exploration sample sprites of the Dinosaur direction study. Every asset is its recipe's candidate as generated. `steadiness` compares a pattern variant with the plain sprite it was edited from (`base`): pixels whose opacity changed, clearly changed pixels (further than 48 in RGB) that were hide in the base (hue 195 to 250, saturation at least 0.2, value at least 0.15: the pattern), other clearly changed pixels (drift), and pixels repainted at all. The URLs are served by the Vite dev server from the repository root; nothing here is registered as production art.",
+  "variants": [
+    {
+      "id": "a",
+      "name": "A. Tiger stripes",
+      "hide": "slate",
+      "pattern": "bold amber stripes across the back and tail"
+    },
+    {
+      "id": "b",
+      "name": "B. Spots",
+      "hide": "slate",
+      "pattern": "a few big solid amber spots"
+    },
+    {
+      "id": "c",
+      "name": "C. Bands and saddle",
+      "hide": "slate",
+      "pattern": "a dark navy saddle and tail bands; amber on the crest only"
+    },
+    {
+      "id": "d",
+      "name": "D. Plain",
+      "hide": "slate",
+      "pattern": "no body pattern; amber on the crest only (the control)"
+    },
+    {
+      "id": "e",
+      "name": "E. Pale steel, navy stripes",
+      "hide": "pale steel",
+      "pattern": "dark navy tiger stripes; amber on the crest only"
+    },
+    {
+      "id": "f",
+      "name": "F. Deep blue, amber stripes",
+      "hide": "deep blue",
+      "pattern": "the amber stripes of A on a deeper, more saturated hide"
+    }
+  ],
+  "assets": [
+    {
+      "id": "chibi-study-dino-caveman-a",
+      "subject": "UNIT:DINOSAUR:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-caveman-a.png",
+      "role": "chosen",
+      "unit": "caveman",
+      "variant": "a",
+      "recipe": "caveman-fur-stripes-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "caveman-spots-skin-b",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 0,
+        "hidePixels": 0,
+        "otherPixels": 259,
+        "repaintedPixels": 1630,
+        "opaquePixels": 2078
+      },
+      "note": "treatment 1 with a tiger-striped pelt, to stand beside striped dinosaurs"
+    },
+    {
+      "id": "chibi-study-dino-caveman-b",
+      "subject": "UNIT:DINOSAUR:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-caveman-b.png",
+      "role": "chosen",
+      "unit": "caveman",
+      "variant": "b",
+      "recipe": "caveman-spots-skin-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "treatment 1: spotted tawny fur, light tan skin, amber war paint on the cheeks and arm"
+    },
+    {
+      "id": "chibi-study-dino-caveman-c",
+      "subject": "UNIT:DINOSAUR:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-caveman-c.png",
+      "role": "chosen",
+      "unit": "caveman",
+      "variant": "c",
+      "recipe": "caveman-plain-skin-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "treatment 2: plain tawny fur, light tan skin, a necklace of teeth, no paint"
+    },
+    {
+      "id": "chibi-study-dino-caveman-d",
+      "subject": "UNIT:DINOSAUR:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-caveman-d.png",
+      "role": "chosen",
+      "unit": "caveman",
+      "variant": "d",
+      "recipe": "caveman-plain-skin-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "treatment 2: plain tawny fur, light tan skin, a necklace of teeth, no paint"
+    },
+    {
+      "id": "chibi-study-dino-caveman-e",
+      "subject": "UNIT:DINOSAUR:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-caveman-e.png",
+      "role": "chosen",
+      "unit": "caveman",
+      "variant": "e",
+      "recipe": "caveman-spots-skin-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "treatment 1: spotted tawny fur, light tan skin, amber war paint on the cheeks and arm"
+    },
+    {
+      "id": "chibi-study-dino-caveman-f",
+      "subject": "UNIT:DINOSAUR:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-caveman-f.png",
+      "role": "chosen",
+      "unit": "caveman",
+      "variant": "f",
+      "recipe": "caveman-fur-stripes-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "caveman-spots-skin-b",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 0,
+        "hidePixels": 0,
+        "otherPixels": 259,
+        "repaintedPixels": 1630,
+        "opaquePixels": 2078
+      },
+      "note": "treatment 1 with a tiger-striped pelt, to stand beside striped dinosaurs"
+    },
+    {
+      "id": "chibi-study-dino-raptor-a",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-a.png",
+      "role": "chosen",
+      "unit": "raptor",
+      "variant": "a",
+      "recipe": "raptor-stripes-probe-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 91,
+        "hidePixels": 201,
+        "otherPixels": 22,
+        "repaintedPixels": 2186,
+        "opaquePixels": 2745
+      },
+      "note": "about nine amber wedges from the spine, back and tail"
+    },
+    {
+      "id": "chibi-study-dino-raptor-b",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-b.png",
+      "role": "chosen",
+      "unit": "raptor",
+      "variant": "b",
+      "recipe": "raptor-spots-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 0,
+        "hidePixels": 196,
+        "otherPixels": 4,
+        "repaintedPixels": 2179,
+        "opaquePixels": 2745
+      },
+      "note": "ten solid amber spots on the back, thigh and tail"
+    },
+    {
+      "id": "chibi-study-dino-raptor-c",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-c.png",
+      "role": "chosen",
+      "unit": "raptor",
+      "variant": "c",
+      "recipe": "raptor-saddle-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 0,
+        "hidePixels": 106,
+        "otherPixels": 0,
+        "repaintedPixels": 2176,
+        "opaquePixels": 2745
+      },
+      "note": "navy bands on the back and tail; the calmest"
+    },
+    {
+      "id": "chibi-study-dino-raptor-d",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-d.png",
+      "role": "chosen",
+      "unit": "raptor",
+      "variant": "d",
+      "recipe": "raptor-base-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "plain slate hide, navy tail top, amber feather crest"
+    },
+    {
+      "id": "chibi-study-dino-raptor-e",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-e.png",
+      "role": "chosen",
+      "unit": "raptor",
+      "variant": "e",
+      "recipe": "raptor-steel-stripes-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "raptor-hide-b",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 3,
+        "hidePixels": 131,
+        "otherPixels": 0,
+        "repaintedPixels": 2136,
+        "opaquePixels": 2745
+      },
+      "note": "pale steel hide with eight navy stripes"
+    },
+    {
+      "id": "chibi-study-dino-raptor-f",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-f.png",
+      "role": "chosen",
+      "unit": "raptor",
+      "variant": "f",
+      "recipe": "raptor-deep-stripes-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "raptor-hide-c",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 1,
+        "hidePixels": 180,
+        "otherPixels": 6,
+        "repaintedPixels": 2125,
+        "opaquePixels": 2799
+      },
+      "note": "deep blue hide with amber stripes"
+    },
+    {
+      "id": "chibi-study-dino-raptor-today-blue",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-today-blue.png",
+      "role": "alternative",
+      "unit": "raptor",
+      "recipe": "raptor-base-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "today's light blue kept: only the crest recoloured and the blanket removed"
+    },
+    {
+      "id": "chibi-study-dino-raptor-two-tone",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-two-tone.png",
+      "role": "alternative",
+      "unit": "raptor",
+      "recipe": "raptor-hide-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "light head and flank under a navy back"
+    },
+    {
+      "id": "chibi-study-dino-raptor-steel",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-steel.png",
+      "role": "alternative",
+      "unit": "raptor",
+      "recipe": "raptor-hide-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "pale steel, plain: the base of variant E"
+    },
+    {
+      "id": "chibi-study-dino-raptor-deep",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-deep.png",
+      "role": "alternative",
+      "unit": "raptor",
+      "recipe": "raptor-hide-c",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "deep blue, plain: the base of variant F"
+    },
+    {
+      "id": "chibi-study-dino-raptor-rosettes",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-raptor-rosettes.png",
+      "role": "alternative",
+      "unit": "raptor",
+      "recipe": "raptor-spots-probe-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "amber rings instead of solid spots: freckles at native size"
+    },
+    {
+      "id": "chibi-study-dino-t-rex-a",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 30,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-t-rex-a.png",
+      "role": "chosen",
+      "unit": "t-rex",
+      "variant": "a",
+      "recipe": "t-rex-stripes-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 0,
+        "hidePixels": 142,
+        "otherPixels": 45,
+        "repaintedPixels": 2225,
+        "opaquePixels": 2685
+      },
+      "note": "fat amber wedges on the neck, back and tail; plain legs"
+    },
+    {
+      "id": "chibi-study-dino-t-rex-b",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 30,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-t-rex-b.png",
+      "role": "chosen",
+      "unit": "t-rex",
+      "variant": "b",
+      "recipe": "t-rex-spots-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 0,
+        "hidePixels": 252,
+        "otherPixels": 2,
+        "repaintedPixels": 2265,
+        "opaquePixels": 2685
+      },
+      "note": "about twelve solid amber spots; a yellower amber than the crest"
+    },
+    {
+      "id": "chibi-study-dino-t-rex-c",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 30,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-t-rex-c.png",
+      "role": "chosen",
+      "unit": "t-rex",
+      "variant": "c",
+      "recipe": "t-rex-saddle-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 0,
+        "hidePixels": 342,
+        "otherPixels": 25,
+        "repaintedPixels": 2220,
+        "opaquePixels": 2685
+      },
+      "note": "navy head, back and bands; two small amber marks under the eye"
+    },
+    {
+      "id": "chibi-study-dino-t-rex-d",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 30,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-t-rex-d.png",
+      "role": "chosen",
+      "unit": "t-rex",
+      "variant": "d",
+      "recipe": "t-rex-hide-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "plain slate hide, navy back and legs, amber brow crest and back spikes"
+    },
+    {
+      "id": "chibi-study-dino-t-rex-e",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 30,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-t-rex-e.png",
+      "role": "chosen",
+      "unit": "t-rex",
+      "variant": "e",
+      "recipe": "t-rex-steel-stripes-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "t-rex-hide-b",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 0,
+        "hidePixels": 291,
+        "otherPixels": 13,
+        "repaintedPixels": 2161,
+        "opaquePixels": 2717
+      },
+      "note": "steel hide with navy stripes on the flank and tail"
+    },
+    {
+      "id": "chibi-study-dino-t-rex-f",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 30,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-t-rex-f.png",
+      "role": "chosen",
+      "unit": "t-rex",
+      "variant": "f",
+      "recipe": "t-rex-deep-stripes-a",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "base": {
+        "recipe": "t-rex-hide-d",
+        "candidate": 0
+      },
+      "steadiness": {
+        "silhouettePixels": 0,
+        "hidePixels": 112,
+        "otherPixels": 29,
+        "repaintedPixels": 2685,
+        "opaquePixels": 2685
+      },
+      "note": "deep blue hide with amber stripes"
+    },
+    {
+      "id": "chibi-study-dino-t-rex-today-blue",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 30,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-t-rex-today-blue.png",
+      "role": "alternative",
+      "unit": "t-rex",
+      "recipe": "t-rex-base-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "today's bright blue kept: cape, scarf and bands removed, amber crest added"
+    },
+    {
+      "id": "chibi-study-dino-t-rex-steel",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 30,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-t-rex-steel.png",
+      "role": "alternative",
+      "unit": "t-rex",
+      "recipe": "t-rex-hide-b",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "steel blue, plain: the base of variant E (smaller crest)"
+    },
+    {
+      "id": "chibi-study-dino-t-rex-deep",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 30,
+        "y": 48
+      },
+      "fixedColours": true,
+      "url": "/art/explorations/dinosaur-direction-2026-10/assets/chibi-study-dino-t-rex-deep.png",
+      "role": "alternative",
+      "unit": "t-rex",
+      "recipe": "t-rex-hide-d",
+      "candidate": 0,
+      "derivation": {
+        "kind": "as-is"
+      },
+      "note": "deep blue, plain: the base of variant F"
+    }
+  ]
+}

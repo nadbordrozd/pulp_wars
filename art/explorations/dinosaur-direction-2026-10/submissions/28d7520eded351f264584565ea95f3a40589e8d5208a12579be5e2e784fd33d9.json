@@ -1,0 +1,36 @@
+{
+  "id": "raptor-deep-stripes-b",
+  "jobId": "5f83fdfc-44b2-4709-8eab-504e55ddc256",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-raptor",
+    "subject": "UNIT:DINOSAUR:RAIDER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81020,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only a pattern on the hide: five bold bright amber-orange tiger stripes, colour #f08c1e, across the back and three across the straight tail, each a thick tapering wedge running down from the spine, wide apart. No stripes on the head, belly or legs. The feather crest stays exactly as it is and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only a pattern on the hide: five bold bright amber-orange tiger stripes, colour #f08c1e, across the back and three across the straight tail, each a thick tapering wedge running down from the spine, wide apart. No stripes on the head, belly or legs. The feather crest stays exactly as it is and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only a pattern on the hide: five bold bright amber-orange tiger stripes, colour #f08c1e, across the back and three across the straight tail, each a thick tapering wedge running down from the spine, wide apart. No stripes on the head, belly or legs. The feather crest stays exactly as it is and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Add only a pattern on the hide: five bold bright amber-orange tiger stripes, colour #f08c1e, across the back and three across the straight tail, each a thick tapering wedge running down from the spine, wide apart. No stripes on the head, belly or legs. The feather crest stays exactly as it is and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "raptor-hide-c",
+      "candidate": 0,
+      "sha256": "65916c72899c448429360f870ee3beed4dc9a3a10f93d25491196623c74683d6"
+    }
+  }
+}

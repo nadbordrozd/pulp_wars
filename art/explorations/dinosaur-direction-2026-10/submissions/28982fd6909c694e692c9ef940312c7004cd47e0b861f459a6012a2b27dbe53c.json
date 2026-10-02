@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-hide-c",
+  "jobId": "5591340a-56f2-4a07-82e7-ead6728d7710",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81105,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the bright blue hide: it becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not bright, and dark navy #1a2748 only along the back, the top of the tail and the far leg. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the bright blue hide: it becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not bright, and dark navy #1a2748 only along the back, the top of the tail and the far leg. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the bright blue hide: it becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not bright, and dark navy #1a2748 only along the back, the top of the tail and the far leg. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the bright blue hide: it becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not bright, and dark navy #1a2748 only along the back, the top of the tail and the far leg. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-base-b",
+      "candidate": 0,
+      "sha256": "f531b3382810c3e44fa3ab8498c5b56a75d8b73e74597414bfdcd16799b55be6"
+    }
+  }
+}

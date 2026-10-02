@@ -1,0 +1,9 @@
+{
+  "faction": "TEST-DINOSAUR-PRIMAL",
+  "note": "Subject layer of the Dinosaur visual-direction study (bead pulp_wars-3tq.14). Exploration only. Every recipe of the study is an edit of an accepted sprite, so these lines describe the plain base of each unit and are not sent to PixelLab.",
+  "subjects": {
+    "UNIT:DINOSAUR:FIGHTER": "Subject: Caveman, a chunky cute friendly caveman with a huge round head about half of the figure's height and a tiny sturdy body: tanned skin, a big wild mane of dark hair, a bushy dark beard and thick eyebrows, a tawny tan fur pelt over one shoulder down to the knees, a cord belt with one cream tooth, a huge chunky cream bone club raised in the right hand, bare arms and big bare feet; simple shapes and very few details; clearly a caveman with a giant bone, not a soldier.",
+    "UNIT:DINOSAUR:RAIDER": "Subject: Raptor, a chunky cute lean running raptor dinosaur, wide and low: a big long-snouted head with big round friendly eyes and a toothy grin, a slim body leaning forward on two strong hind legs with big cream sickle claws, two small clawed arms and a long stiff tail; smooth slate blue hide, darker navy along the back, a warm cream belly and throat, and a tall crest of bright amber-orange feathers from the top of the head down the neck; no blanket and no rider; simple shapes and very few details.",
+    "UNIT:DINOSAUR:KNIGHT": "Subject: T-Rex, a chunky cute huge tyrannosaurus standing upright, a head on legs: an enormous head with a wide toothy grin of chunky cream teeth, two tiny arms, thick legs and a heavy tail; smooth slate blue hide, darker navy along the back, a warm cream belly, throat and lower jaw, and a short crest of bright amber-orange spikes over the brow; no cape and no scarf; simple shapes and very few details."
+  }
+}

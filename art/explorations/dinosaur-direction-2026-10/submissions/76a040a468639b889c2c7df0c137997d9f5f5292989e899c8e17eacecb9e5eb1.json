@@ -1,0 +1,36 @@
+{
+  "id": "raptor-steel-stripes-a",
+  "jobId": "a440e081-4392-4833-bbe4-d67846d2b583",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-raptor",
+    "subject": "UNIT:DINOSAUR:RAIDER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81015,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only a pattern on the hide: five bold dark navy tiger stripes, colour #16203f, across the back and three across the tail, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head, belly or legs. Do not redraw anything. Keep the amber-orange crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only a pattern on the hide: five bold dark navy tiger stripes, colour #16203f, across the back and three across the tail, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head, belly or legs. Do not redraw anything. Keep the amber-orange crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only a pattern on the hide: five bold dark navy tiger stripes, colour #16203f, across the back and three across the tail, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head, belly or legs. Do not redraw anything. Keep the amber-orange crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Add only a pattern on the hide: five bold dark navy tiger stripes, colour #16203f, across the back and three across the tail, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head, belly or legs. Do not redraw anything. Keep the amber-orange crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "raptor-hide-b",
+      "candidate": 0,
+      "sha256": "53fb81cb842812115c5508169ee2be8e746499f2f9d35f8052c76de2038e4143"
+    }
+  }
+}

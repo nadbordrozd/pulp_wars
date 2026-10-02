@@ -1,0 +1,1727 @@
+{
+  "bead": "pulp_wars-3tq.14",
+  "note": "deltaE is CIE76 in L*a*b* (about 2 is just noticeable, 10 is clear at a glance, 20 and more are different colours); contrast is the WCAG luminance ratio (1 to 21). The deuteranopia and protanopia columns repeat deltaE after the Machado 2009 simulation. Terrain colours are measured on the untoned rasters. A variant's hide is the mean of its Raptor's and T-Rex's hide pixels (hue 195 to 250, saturation at least 0.2, value at least 0.4), navy the same hues below value 0.4, amber hue 8 to 45 with saturation at least 0.75, cream hue 30 to 58 with saturation 0.1 to 0.45 and value at least 0.85. The Caveman's fur is measured on rows 46 to 64 and his skin and paint on rows 22 to 44. Steadiness compares a pattern variant with the plain sprite it was edited from; a pixel counts as changed beyond an RGB distance of 48.",
+  "terrain": {
+    "grassMean": "#89b75b",
+    "forestMean": "#769a51",
+    "forestDark": "#2d3a37",
+    "mountainMean": "#929ca9",
+    "mountainLightRock": "#d1dbe8",
+    "shallowWater": "#8fd3dc",
+    "deepWater": "#4277a5"
+  },
+  "others": {
+    "todayHide": "#4b91ce",
+    "humanGold": "#f1b21b",
+    "goblinLeather": "#754019",
+    "goblinSkin": "#838e29",
+    "fireworksOrange": "#e86e0c",
+    "fireworksRed": "#cd1201",
+    "fireworksYellow": "#ffb701"
+  },
+  "todayHideAgainst": [
+    {
+      "a": "today's hide #4b91ce",
+      "b": "Grass #89b75b",
+      "deltaE": 85,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 80.7,
+      "protanopiaDeltaE": 83.7
+    },
+    {
+      "a": "today's hide #4b91ce",
+      "b": "Shallow Water #8fd3dc",
+      "deltaE": 38.2,
+      "contrast": 2,
+      "deuteranopiaDeltaE": 36.2,
+      "protanopiaDeltaE": 35
+    },
+    {
+      "a": "today's hide #4b91ce",
+      "b": "Deep Water #4277a5",
+      "deltaE": 12.7,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 12.9,
+      "protanopiaDeltaE": 13
+    },
+    {
+      "a": "today's hide #4b91ce",
+      "b": "Teal plate #28b7a4",
+      "deltaE": 53.5,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 37.7,
+      "protanopiaDeltaE": 41.5
+    }
+  ],
+  "variants": {
+    "a": {
+      "name": "A. Tiger stripes",
+      "hide": "#455a7f",
+      "navy": "#172049",
+      "amber": "#e25a00",
+      "cream": "#f3dda4",
+      "hideAgainst": [
+        {
+          "a": "hide #455a7f",
+          "b": "Grass #89b75b",
+          "deltaE": 79.6,
+          "contrast": 3,
+          "deuteranopiaDeltaE": 70.6,
+          "protanopiaDeltaE": 76.6
+        },
+        {
+          "a": "hide #455a7f",
+          "b": "Forest (mean) #769a51",
+          "deltaE": 67.5,
+          "contrast": 2.2,
+          "deuteranopiaDeltaE": 60.7,
+          "protanopiaDeltaE": 64.8
+        },
+        {
+          "a": "hide #455a7f",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 29.1,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 28.2,
+          "protanopiaDeltaE": 28.1
+        },
+        {
+          "a": "hide #455a7f",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 30.3,
+          "contrast": 2.5,
+          "deuteranopiaDeltaE": 30.9,
+          "protanopiaDeltaE": 28.9
+        },
+        {
+          "a": "hide #455a7f",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 49.2,
+          "contrast": 4.1,
+          "deuteranopiaDeltaE": 43.5,
+          "protanopiaDeltaE": 45.6
+        },
+        {
+          "a": "hide #455a7f",
+          "b": "Deep Water #4277a5",
+          "deltaE": 13.7,
+          "contrast": 1.5,
+          "deuteranopiaDeltaE": 12.5,
+          "protanopiaDeltaE": 12.3
+        },
+        {
+          "a": "hide #455a7f",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 56.9,
+          "contrast": 2.8,
+          "deuteranopiaDeltaE": 34.4,
+          "protanopiaDeltaE": 41.2
+        },
+        {
+          "a": "hide #455a7f",
+          "b": "Violet plate #a277d2",
+          "deltaE": 41.4,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 26.1,
+          "protanopiaDeltaE": 28
+        },
+        {
+          "a": "navy #172049",
+          "b": "Deep Water #4277a5",
+          "deltaE": 37.6,
+          "contrast": 3.3,
+          "deuteranopiaDeltaE": 34,
+          "protanopiaDeltaE": 35.4
+        },
+        {
+          "a": "navy #172049",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 33.4,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 29.9,
+          "protanopiaDeltaE": 27.9
+        }
+      ],
+      "amberAgainst": [
+        {
+          "a": "amber #e25a00",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 50.3,
+          "contrast": 1.9,
+          "deuteranopiaDeltaE": 17.7,
+          "protanopiaDeltaE": 28.4
+        },
+        {
+          "a": "amber #e25a00",
+          "b": "Coral plate #f06762",
+          "deltaE": 36.2,
+          "contrast": 1.2,
+          "deuteranopiaDeltaE": 29.9,
+          "protanopiaDeltaE": 36
+        },
+        {
+          "a": "amber #e25a00",
+          "b": "Human gold #f1b21b",
+          "deltaE": 45,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 21,
+          "protanopiaDeltaE": 32.6
+        },
+        {
+          "a": "amber #e25a00",
+          "b": "Goblin leather #754019",
+          "deltaE": 49.8,
+          "contrast": 2.3,
+          "deuteranopiaDeltaE": 39.5,
+          "protanopiaDeltaE": 30
+        },
+        {
+          "a": "amber #e25a00",
+          "b": "fireworks orange #e86e0c",
+          "deltaE": 8.5,
+          "contrast": 1.2,
+          "deuteranopiaDeltaE": 5.3,
+          "protanopiaDeltaE": 7.3
+        },
+        {
+          "a": "amber #e25a00",
+          "b": "fireworks red #cd1201",
+          "deltaE": 21.8,
+          "contrast": 1.5,
+          "deuteranopiaDeltaE": 14.7,
+          "protanopiaDeltaE": 19.9
+        },
+        {
+          "a": "amber #e25a00",
+          "b": "fireworks yellow #ffb701",
+          "deltaE": 45.6,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 26.6,
+          "protanopiaDeltaE": 35.6
+        },
+        {
+          "a": "amber #e25a00",
+          "b": "Grass #89b75b",
+          "deltaE": 85.5,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 27,
+          "protanopiaDeltaE": 23.2
+        },
+        {
+          "a": "amber #e25a00",
+          "b": "hide #455a7f",
+          "deltaE": 101.8,
+          "contrast": 1.9,
+          "deuteranopiaDeltaE": 91.5,
+          "protanopiaDeltaE": 77
+        }
+      ],
+      "creamAgainst": [
+        {
+          "a": "cream #f3dda4",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 46,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 47.1,
+          "protanopiaDeltaE": 45.2
+        },
+        {
+          "a": "cream #f3dda4",
+          "b": "Mountain (light rock) #d1dbe8",
+          "deltaE": 38.3,
+          "contrast": 1,
+          "deuteranopiaDeltaE": 39,
+          "protanopiaDeltaE": 38.5
+        },
+        {
+          "a": "cream #f3dda4",
+          "b": "Grass #89b75b",
+          "deltaE": 37.6,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 22.1,
+          "protanopiaDeltaE": 23.8
+        },
+        {
+          "a": "cream #f3dda4",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 46.6,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 45.2,
+          "protanopiaDeltaE": 39.5
+        }
+      ],
+      "patternOnHide": {
+        "a": "amber pattern #e25a00",
+        "b": "hide #455a7f",
+        "deltaE": 101.8,
+        "contrast": 1.9,
+        "deuteranopiaDeltaE": 91.5,
+        "protanopiaDeltaE": 77
+      },
+      "steadiness": {
+        "caveman": {
+          "silhouettePixels": 0,
+          "hidePixels": 0,
+          "otherPixels": 259,
+          "repaintedPixels": 1630,
+          "opaquePixels": 2078
+        },
+        "raptor": {
+          "silhouettePixels": 91,
+          "hidePixels": 201,
+          "otherPixels": 22,
+          "repaintedPixels": 2186,
+          "opaquePixels": 2745
+        },
+        "t-rex": {
+          "silhouettePixels": 0,
+          "hidePixels": 142,
+          "otherPixels": 45,
+          "repaintedPixels": 2225,
+          "opaquePixels": 2685
+        }
+      }
+    },
+    "b": {
+      "name": "B. Spots",
+      "hide": "#485b7e",
+      "navy": "#18204a",
+      "amber": "#e76700",
+      "cream": "#f4dea5",
+      "hideAgainst": [
+        {
+          "a": "hide #485b7e",
+          "b": "Grass #89b75b",
+          "deltaE": 78.3,
+          "contrast": 2.9,
+          "deuteranopiaDeltaE": 69.2,
+          "protanopiaDeltaE": 75.7
+        },
+        {
+          "a": "hide #485b7e",
+          "b": "Forest (mean) #769a51",
+          "deltaE": 66.2,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 59.3,
+          "protanopiaDeltaE": 64
+        },
+        {
+          "a": "hide #485b7e",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 28.2,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 27.3,
+          "protanopiaDeltaE": 27.6
+        },
+        {
+          "a": "hide #485b7e",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 29.3,
+          "contrast": 2.5,
+          "deuteranopiaDeltaE": 29.8,
+          "protanopiaDeltaE": 28.4
+        },
+        {
+          "a": "hide #485b7e",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 48.5,
+          "contrast": 4.1,
+          "deuteranopiaDeltaE": 42.7,
+          "protanopiaDeltaE": 45.2
+        },
+        {
+          "a": "hide #485b7e",
+          "b": "Deep Water #4277a5",
+          "deltaE": 14,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 13,
+          "protanopiaDeltaE": 12.6
+        },
+        {
+          "a": "hide #485b7e",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 56.1,
+          "contrast": 2.7,
+          "deuteranopiaDeltaE": 33.3,
+          "protanopiaDeltaE": 40.6
+        },
+        {
+          "a": "hide #485b7e",
+          "b": "Violet plate #a277d2",
+          "deltaE": 41.8,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 26.6,
+          "protanopiaDeltaE": 28.4
+        },
+        {
+          "a": "navy #18204a",
+          "b": "Deep Water #4277a5",
+          "deltaE": 37.7,
+          "contrast": 3.3,
+          "deuteranopiaDeltaE": 33.9,
+          "protanopiaDeltaE": 35.4
+        },
+        {
+          "a": "navy #18204a",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 34,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 30.5,
+          "protanopiaDeltaE": 28.5
+        }
+      ],
+      "amberAgainst": [
+        {
+          "a": "amber #e76700",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 45.3,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 15.4,
+          "protanopiaDeltaE": 23.8
+        },
+        {
+          "a": "amber #e76700",
+          "b": "Coral plate #f06762",
+          "deltaE": 38.5,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 31.9,
+          "protanopiaDeltaE": 38.7
+        },
+        {
+          "a": "amber #e76700",
+          "b": "Human gold #f1b21b",
+          "deltaE": 39.5,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 17.5,
+          "protanopiaDeltaE": 27.8
+        },
+        {
+          "a": "amber #e76700",
+          "b": "Goblin leather #754019",
+          "deltaE": 50.4,
+          "contrast": 2.5,
+          "deuteranopiaDeltaE": 43.1,
+          "protanopiaDeltaE": 34.7
+        },
+        {
+          "a": "amber #e76700",
+          "b": "fireworks orange #e86e0c",
+          "deltaE": 3.4,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 1.8,
+          "protanopiaDeltaE": 2.5
+        },
+        {
+          "a": "amber #e76700",
+          "b": "fireworks red #cd1201",
+          "deltaE": 27.5,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 18.3,
+          "protanopiaDeltaE": 24.7
+        },
+        {
+          "a": "amber #e76700",
+          "b": "fireworks yellow #ffb701",
+          "deltaE": 40,
+          "contrast": 1.9,
+          "deuteranopiaDeltaE": 23,
+          "protanopiaDeltaE": 30.8
+        },
+        {
+          "a": "amber #e76700",
+          "b": "Grass #89b75b",
+          "deltaE": 81.8,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 28.5,
+          "protanopiaDeltaE": 21
+        },
+        {
+          "a": "amber #e76700",
+          "b": "hide #485b7e",
+          "deltaE": 101.2,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 93,
+          "protanopiaDeltaE": 79.7
+        }
+      ],
+      "creamAgainst": [
+        {
+          "a": "cream #f4dea5",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 46.1,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 47.3,
+          "protanopiaDeltaE": 45.4
+        },
+        {
+          "a": "cream #f4dea5",
+          "b": "Mountain (light rock) #d1dbe8",
+          "deltaE": 38.3,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 39,
+          "protanopiaDeltaE": 38.5
+        },
+        {
+          "a": "cream #f4dea5",
+          "b": "Grass #89b75b",
+          "deltaE": 37.8,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 22.4,
+          "protanopiaDeltaE": 24.1
+        },
+        {
+          "a": "cream #f4dea5",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 46.7,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 45.2,
+          "protanopiaDeltaE": 39.5
+        }
+      ],
+      "patternOnHide": {
+        "a": "amber pattern #e76700",
+        "b": "hide #485b7e",
+        "deltaE": 101.2,
+        "contrast": 2.1,
+        "deuteranopiaDeltaE": 93,
+        "protanopiaDeltaE": 79.7
+      },
+      "steadiness": {
+        "raptor": {
+          "silhouettePixels": 0,
+          "hidePixels": 196,
+          "otherPixels": 4,
+          "repaintedPixels": 2179,
+          "opaquePixels": 2745
+        },
+        "t-rex": {
+          "silhouettePixels": 0,
+          "hidePixels": 252,
+          "otherPixels": 2,
+          "repaintedPixels": 2265,
+          "opaquePixels": 2685
+        }
+      }
+    },
+    "c": {
+      "name": "C. Bands and saddle",
+      "hide": "#495a7d",
+      "navy": "#151d44",
+      "amber": "#d75000",
+      "cream": "#f1dca2",
+      "hideAgainst": [
+        {
+          "a": "hide #495a7d",
+          "b": "Grass #89b75b",
+          "deltaE": 78.5,
+          "contrast": 3,
+          "deuteranopiaDeltaE": 68.7,
+          "protanopiaDeltaE": 75.3
+        },
+        {
+          "a": "hide #495a7d",
+          "b": "Forest (mean) #769a51",
+          "deltaE": 66.4,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 58.8,
+          "protanopiaDeltaE": 63.6
+        },
+        {
+          "a": "hide #495a7d",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 28.1,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 26.8,
+          "protanopiaDeltaE": 27.1
+        },
+        {
+          "a": "hide #495a7d",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 29.5,
+          "contrast": 2.5,
+          "deuteranopiaDeltaE": 29.6,
+          "protanopiaDeltaE": 28.2
+        },
+        {
+          "a": "hide #495a7d",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 49,
+          "contrast": 4.1,
+          "deuteranopiaDeltaE": 42.7,
+          "protanopiaDeltaE": 45.2
+        },
+        {
+          "a": "hide #495a7d",
+          "b": "Deep Water #4277a5",
+          "deltaE": 14.6,
+          "contrast": 1.5,
+          "deuteranopiaDeltaE": 13.5,
+          "protanopiaDeltaE": 12.9
+        },
+        {
+          "a": "hide #495a7d",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 56.7,
+          "contrast": 2.8,
+          "deuteranopiaDeltaE": 33,
+          "protanopiaDeltaE": 40.3
+        },
+        {
+          "a": "hide #495a7d",
+          "b": "Violet plate #a277d2",
+          "deltaE": 41.6,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 27,
+          "protanopiaDeltaE": 28.9
+        },
+        {
+          "a": "navy #151d44",
+          "b": "Deep Water #4277a5",
+          "deltaE": 39,
+          "contrast": 3.4,
+          "deuteranopiaDeltaE": 35.6,
+          "protanopiaDeltaE": 37.3
+        },
+        {
+          "a": "navy #151d44",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 32.9,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 29.4,
+          "protanopiaDeltaE": 28.1
+        }
+      ],
+      "amberAgainst": [
+        {
+          "a": "amber #d75000",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 52.2,
+          "contrast": 2.2,
+          "deuteranopiaDeltaE": 21.1,
+          "protanopiaDeltaE": 33.1
+        },
+        {
+          "a": "amber #d75000",
+          "b": "Coral plate #f06762",
+          "deltaE": 34,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 27.8,
+          "protanopiaDeltaE": 33.8
+        },
+        {
+          "a": "amber #d75000",
+          "b": "Human gold #f1b21b",
+          "deltaE": 47.8,
+          "contrast": 2.2,
+          "deuteranopiaDeltaE": 25.4,
+          "protanopiaDeltaE": 37.3
+        },
+        {
+          "a": "amber #d75000",
+          "b": "Goblin leather #754019",
+          "deltaE": 46.7,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 35.1,
+          "protanopiaDeltaE": 25.4
+        },
+        {
+          "a": "amber #d75000",
+          "b": "fireworks orange #e86e0c",
+          "deltaE": 11.8,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 9.8,
+          "protanopiaDeltaE": 12
+        },
+        {
+          "a": "amber #d75000",
+          "b": "fireworks red #cd1201",
+          "deltaE": 18.7,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 10.1,
+          "protanopiaDeltaE": 15.2
+        },
+        {
+          "a": "amber #d75000",
+          "b": "fireworks yellow #ffb701",
+          "deltaE": 49,
+          "contrast": 2.4,
+          "deuteranopiaDeltaE": 31.1,
+          "protanopiaDeltaE": 40.3
+        },
+        {
+          "a": "amber #d75000",
+          "b": "Grass #89b75b",
+          "deltaE": 85.9,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 25.7,
+          "protanopiaDeltaE": 26.1
+        },
+        {
+          "a": "amber #d75000",
+          "b": "hide #495a7d",
+          "deltaE": 97.4,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 85.9,
+          "protanopiaDeltaE": 72.4
+        }
+      ],
+      "creamAgainst": [
+        {
+          "a": "cream #f1dca2",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 46.1,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 47.3,
+          "protanopiaDeltaE": 45.5
+        },
+        {
+          "a": "cream #f1dca2",
+          "b": "Mountain (light rock) #d1dbe8",
+          "deltaE": 38.7,
+          "contrast": 1,
+          "deuteranopiaDeltaE": 39.5,
+          "protanopiaDeltaE": 39.1
+        },
+        {
+          "a": "cream #f1dca2",
+          "b": "Grass #89b75b",
+          "deltaE": 36.9,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 21.6,
+          "protanopiaDeltaE": 23.2
+        },
+        {
+          "a": "cream #f1dca2",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 46.7,
+          "contrast": 1.2,
+          "deuteranopiaDeltaE": 45.6,
+          "protanopiaDeltaE": 40
+        }
+      ],
+      "patternOnHide": {
+        "a": "navy pattern #151d44",
+        "b": "hide #495a7d",
+        "deltaE": 27.3,
+        "contrast": 2.4,
+        "deuteranopiaDeltaE": 26.5,
+        "protanopiaDeltaE": 26.6
+      },
+      "steadiness": {
+        "raptor": {
+          "silhouettePixels": 0,
+          "hidePixels": 106,
+          "otherPixels": 0,
+          "repaintedPixels": 2176,
+          "opaquePixels": 2745
+        },
+        "t-rex": {
+          "silhouettePixels": 0,
+          "hidePixels": 342,
+          "otherPixels": 25,
+          "repaintedPixels": 2220,
+          "opaquePixels": 2685
+        }
+      }
+    },
+    "d": {
+      "name": "D. Plain",
+      "hide": "#4b5d81",
+      "navy": "#1a224b",
+      "amber": "#d95301",
+      "cream": "#f3dea8",
+      "hideAgainst": [
+        {
+          "a": "hide #4b5d81",
+          "b": "Grass #89b75b",
+          "deltaE": 78.5,
+          "contrast": 2.8,
+          "deuteranopiaDeltaE": 68.6,
+          "protanopiaDeltaE": 75.4
+        },
+        {
+          "a": "hide #4b5d81",
+          "b": "Forest (mean) #769a51",
+          "deltaE": 66.4,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 58.8,
+          "protanopiaDeltaE": 63.7
+        },
+        {
+          "a": "hide #4b5d81",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 29.2,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 27.9,
+          "protanopiaDeltaE": 28.3
+        },
+        {
+          "a": "hide #4b5d81",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 28.7,
+          "contrast": 2.4,
+          "deuteranopiaDeltaE": 28.8,
+          "protanopiaDeltaE": 27.4
+        },
+        {
+          "a": "hide #4b5d81",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 48,
+          "contrast": 3.9,
+          "deuteranopiaDeltaE": 41.6,
+          "protanopiaDeltaE": 44.2
+        },
+        {
+          "a": "hide #4b5d81",
+          "b": "Deep Water #4277a5",
+          "deltaE": 13.4,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 12.3,
+          "protanopiaDeltaE": 11.6
+        },
+        {
+          "a": "hide #4b5d81",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 56.2,
+          "contrast": 2.6,
+          "deuteranopiaDeltaE": 32.3,
+          "protanopiaDeltaE": 39.8
+        },
+        {
+          "a": "hide #4b5d81",
+          "b": "Violet plate #a277d2",
+          "deltaE": 40.8,
+          "contrast": 1.9,
+          "deuteranopiaDeltaE": 25.7,
+          "protanopiaDeltaE": 27.8
+        },
+        {
+          "a": "navy #1a224b",
+          "b": "Deep Water #4277a5",
+          "deltaE": 36.7,
+          "contrast": 3.2,
+          "deuteranopiaDeltaE": 33,
+          "protanopiaDeltaE": 34.8
+        },
+        {
+          "a": "navy #1a224b",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 32.9,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 29.4,
+          "protanopiaDeltaE": 28.1
+        }
+      ],
+      "amberAgainst": [
+        {
+          "a": "amber #d95301",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 51.3,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 20.3,
+          "protanopiaDeltaE": 31.9
+        },
+        {
+          "a": "amber #d95301",
+          "b": "Coral plate #f06762",
+          "deltaE": 34.3,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 28.2,
+          "protanopiaDeltaE": 34.3
+        },
+        {
+          "a": "amber #d95301",
+          "b": "Human gold #f1b21b",
+          "deltaE": 46.8,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 24.4,
+          "protanopiaDeltaE": 36.1
+        },
+        {
+          "a": "amber #d95301",
+          "b": "Goblin leather #754019",
+          "deltaE": 46.9,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 36.1,
+          "protanopiaDeltaE": 26.5
+        },
+        {
+          "a": "amber #d95301",
+          "b": "fireworks orange #e86e0c",
+          "deltaE": 10.7,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 8.8,
+          "protanopiaDeltaE": 10.9
+        },
+        {
+          "a": "amber #d95301",
+          "b": "fireworks red #cd1201",
+          "deltaE": 19.7,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 11.1,
+          "protanopiaDeltaE": 16.4
+        },
+        {
+          "a": "amber #d95301",
+          "b": "fireworks yellow #ffb701",
+          "deltaE": 47.9,
+          "contrast": 2.3,
+          "deuteranopiaDeltaE": 30.1,
+          "protanopiaDeltaE": 39.2
+        },
+        {
+          "a": "amber #d95301",
+          "b": "Grass #89b75b",
+          "deltaE": 85.3,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 25.9,
+          "protanopiaDeltaE": 25.4
+        },
+        {
+          "a": "amber #d95301",
+          "b": "hide #4b5d81",
+          "deltaE": 98,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 86.9,
+          "protanopiaDeltaE": 73.6
+        }
+      ],
+      "creamAgainst": [
+        {
+          "a": "cream #f3dea8",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 44.8,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 46,
+          "protanopiaDeltaE": 44
+        },
+        {
+          "a": "cream #f3dea8",
+          "b": "Mountain (light rock) #d1dbe8",
+          "deltaE": 36.7,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 37.5,
+          "protanopiaDeltaE": 36.9
+        },
+        {
+          "a": "cream #f3dea8",
+          "b": "Grass #89b75b",
+          "deltaE": 38.2,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 23.1,
+          "protanopiaDeltaE": 25.2
+        },
+        {
+          "a": "cream #f3dea8",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 45.2,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 43.8,
+          "protanopiaDeltaE": 37.9
+        }
+      ],
+      "patternOnHide": null,
+      "steadiness": {}
+    },
+    "e": {
+      "name": "E. Pale steel, navy stripes",
+      "hide": "#6686a1",
+      "navy": "#111b3a",
+      "amber": "#d55200",
+      "cream": "#f9e5af",
+      "hideAgainst": [
+        {
+          "a": "hide #6686a1",
+          "b": "Grass #89b75b",
+          "deltaE": 67,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 60,
+          "protanopiaDeltaE": 65.6
+        },
+        {
+          "a": "hide #6686a1",
+          "b": "Forest (mean) #769a51",
+          "deltaE": 56.5,
+          "contrast": 1.2,
+          "deuteranopiaDeltaE": 51.9,
+          "protanopiaDeltaE": 55.5
+        },
+        {
+          "a": "hide #6686a1",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 36.2,
+          "contrast": 3.1,
+          "deuteranopiaDeltaE": 36.3,
+          "protanopiaDeltaE": 36.6
+        },
+        {
+          "a": "hide #6686a1",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 14.2,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 14.8,
+          "protanopiaDeltaE": 12
+        },
+        {
+          "a": "hide #6686a1",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 30.7,
+          "contrast": 2.3,
+          "deuteranopiaDeltaE": 26.3,
+          "protanopiaDeltaE": 28.1
+        },
+        {
+          "a": "hide #6686a1",
+          "b": "Deep Water #4277a5",
+          "deltaE": 13.5,
+          "contrast": 1.2,
+          "deuteranopiaDeltaE": 14.8,
+          "protanopiaDeltaE": 12.8
+        },
+        {
+          "a": "hide #6686a1",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 42.2,
+          "contrast": 1.5,
+          "deuteranopiaDeltaE": 18.9,
+          "protanopiaDeltaE": 25.7
+        },
+        {
+          "a": "hide #6686a1",
+          "b": "Violet plate #a277d2",
+          "deltaE": 45.3,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 21.4,
+          "protanopiaDeltaE": 27.7
+        },
+        {
+          "a": "navy #111b3a",
+          "b": "Deep Water #4277a5",
+          "deltaE": 40.2,
+          "contrast": 3.6,
+          "deuteranopiaDeltaE": 38.1,
+          "protanopiaDeltaE": 39.4
+        },
+        {
+          "a": "navy #111b3a",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 28.4,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 25.9,
+          "protanopiaDeltaE": 24.5
+        }
+      ],
+      "amberAgainst": [
+        {
+          "a": "amber #d55200",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 50.8,
+          "contrast": 2.2,
+          "deuteranopiaDeltaE": 21.4,
+          "protanopiaDeltaE": 32.9
+        },
+        {
+          "a": "amber #d55200",
+          "b": "Coral plate #f06762",
+          "deltaE": 34,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 27.7,
+          "protanopiaDeltaE": 33.9
+        },
+        {
+          "a": "amber #d55200",
+          "b": "Human gold #f1b21b",
+          "deltaE": 46.6,
+          "contrast": 2.2,
+          "deuteranopiaDeltaE": 25.8,
+          "protanopiaDeltaE": 37.2
+        },
+        {
+          "a": "amber #d55200",
+          "b": "Goblin leather #754019",
+          "deltaE": 45.6,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 34.7,
+          "protanopiaDeltaE": 25.5
+        },
+        {
+          "a": "amber #d55200",
+          "b": "fireworks orange #e86e0c",
+          "deltaE": 10.9,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 10.2,
+          "protanopiaDeltaE": 11.9
+        },
+        {
+          "a": "amber #d55200",
+          "b": "fireworks red #cd1201",
+          "deltaE": 20,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 9.7,
+          "protanopiaDeltaE": 15.3
+        },
+        {
+          "a": "amber #d55200",
+          "b": "fireworks yellow #ffb701",
+          "deltaE": 47.9,
+          "contrast": 2.4,
+          "deuteranopiaDeltaE": 31.5,
+          "protanopiaDeltaE": 40.2
+        },
+        {
+          "a": "amber #d55200",
+          "b": "Grass #89b75b",
+          "deltaE": 84.3,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 25.7,
+          "protanopiaDeltaE": 26
+        },
+        {
+          "a": "amber #d55200",
+          "b": "hide #6686a1",
+          "deltaE": 96.2,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 80.5,
+          "protanopiaDeltaE": 68.5
+        }
+      ],
+      "creamAgainst": [
+        {
+          "a": "cream #f9e5af",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 45.9,
+          "contrast": 2.2,
+          "deuteranopiaDeltaE": 47.2,
+          "protanopiaDeltaE": 45.2
+        },
+        {
+          "a": "cream #f9e5af",
+          "b": "Mountain (light rock) #d1dbe8",
+          "deltaE": 36.6,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 37.5,
+          "protanopiaDeltaE": 36.9
+        },
+        {
+          "a": "cream #f9e5af",
+          "b": "Grass #89b75b",
+          "deltaE": 39.3,
+          "contrast": 1.9,
+          "deuteranopiaDeltaE": 25.3,
+          "protanopiaDeltaE": 27
+        },
+        {
+          "a": "cream #f9e5af",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 45.3,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 44.2,
+          "protanopiaDeltaE": 38.2
+        }
+      ],
+      "patternOnHide": {
+        "a": "navy pattern #111b3a",
+        "b": "hide #6686a1",
+        "deltaE": 45.6,
+        "contrast": 4.4,
+        "deuteranopiaDeltaE": 43.8,
+        "protanopiaDeltaE": 44.4
+      },
+      "steadiness": {
+        "raptor": {
+          "silhouettePixels": 3,
+          "hidePixels": 131,
+          "otherPixels": 0,
+          "repaintedPixels": 2136,
+          "opaquePixels": 2745
+        },
+        "t-rex": {
+          "silhouettePixels": 0,
+          "hidePixels": 291,
+          "otherPixels": 13,
+          "repaintedPixels": 2161,
+          "opaquePixels": 2717
+        }
+      }
+    },
+    "f": {
+      "name": "F. Deep blue, amber stripes",
+      "hide": "#1e5088",
+      "navy": "#041144",
+      "amber": "#e86400",
+      "cream": "#f0dba1",
+      "hideAgainst": [
+        {
+          "a": "hide #1e5088",
+          "b": "Grass #89b75b",
+          "deltaE": 92.5,
+          "contrast": 3.5,
+          "deuteranopiaDeltaE": 86,
+          "protanopiaDeltaE": 88.6
+        },
+        {
+          "a": "hide #1e5088",
+          "b": "Forest (mean) #769a51",
+          "deltaE": 80.5,
+          "contrast": 2.5,
+          "deuteranopiaDeltaE": 76.1,
+          "protanopiaDeltaE": 76.9
+        },
+        {
+          "a": "hide #1e5088",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 39,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 40,
+          "protanopiaDeltaE": 36.9
+        },
+        {
+          "a": "hide #1e5088",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 41.7,
+          "contrast": 3,
+          "deuteranopiaDeltaE": 44.1,
+          "protanopiaDeltaE": 38.8
+        },
+        {
+          "a": "hide #1e5088",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 58,
+          "contrast": 4.9,
+          "deuteranopiaDeltaE": 54,
+          "protanopiaDeltaE": 53.7
+        },
+        {
+          "a": "hide #1e5088",
+          "b": "Deep Water #4277a5",
+          "deltaE": 17.7,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 16.3,
+          "protanopiaDeltaE": 15.9
+        },
+        {
+          "a": "hide #1e5088",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 66.3,
+          "contrast": 3.3,
+          "deuteranopiaDeltaE": 48,
+          "protanopiaDeltaE": 52.1
+        },
+        {
+          "a": "hide #1e5088",
+          "b": "Violet plate #a277d2",
+          "deltaE": 39.1,
+          "contrast": 2.4,
+          "deuteranopiaDeltaE": 26,
+          "protanopiaDeltaE": 23.6
+        },
+        {
+          "a": "navy #041144",
+          "b": "Deep Water #4277a5",
+          "deltaE": 45.9,
+          "contrast": 3.8,
+          "deuteranopiaDeltaE": 39.3,
+          "protanopiaDeltaE": 40.7
+        },
+        {
+          "a": "navy #041144",
+          "b": "Forest (dark tones) #2d3a37",
+          "deltaE": 43.9,
+          "contrast": 1.5,
+          "deuteranopiaDeltaE": 37.9,
+          "protanopiaDeltaE": 35.4
+        }
+      ],
+      "amberAgainst": [
+        {
+          "a": "amber #e86400",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 47.1,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 15.7,
+          "protanopiaDeltaE": 24.8
+        },
+        {
+          "a": "amber #e86400",
+          "b": "Coral plate #f06762",
+          "deltaE": 38.1,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 31.6,
+          "protanopiaDeltaE": 38.1
+        },
+        {
+          "a": "amber #e86400",
+          "b": "Human gold #f1b21b",
+          "deltaE": 41.2,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 17.9,
+          "protanopiaDeltaE": 28.8
+        },
+        {
+          "a": "amber #e86400",
+          "b": "Goblin leather #754019",
+          "deltaE": 51,
+          "contrast": 2.5,
+          "deuteranopiaDeltaE": 42.6,
+          "protanopiaDeltaE": 33.7
+        },
+        {
+          "a": "amber #e86400",
+          "b": "fireworks orange #e86e0c",
+          "deltaE": 5.2,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 2.2,
+          "protanopiaDeltaE": 3.5
+        },
+        {
+          "a": "amber #e86400",
+          "b": "fireworks red #cd1201",
+          "deltaE": 25.9,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 17.8,
+          "protanopiaDeltaE": 23.7
+        },
+        {
+          "a": "amber #e86400",
+          "b": "fireworks yellow #ffb701",
+          "deltaE": 41.6,
+          "contrast": 1.9,
+          "deuteranopiaDeltaE": 23.4,
+          "protanopiaDeltaE": 31.8
+        },
+        {
+          "a": "amber #e86400",
+          "b": "Grass #89b75b",
+          "deltaE": 83.5,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 28.3,
+          "protanopiaDeltaE": 21.4
+        },
+        {
+          "a": "amber #e86400",
+          "b": "hide #1e5088",
+          "deltaE": 114.7,
+          "contrast": 2.4,
+          "deuteranopiaDeltaE": 109.4,
+          "protanopiaDeltaE": 91.8
+        }
+      ],
+      "creamAgainst": [
+        {
+          "a": "cream #f0dba1",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 45.9,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 47.2,
+          "protanopiaDeltaE": 45.4
+        },
+        {
+          "a": "cream #f0dba1",
+          "b": "Mountain (light rock) #d1dbe8",
+          "deltaE": 38.7,
+          "contrast": 1,
+          "deuteranopiaDeltaE": 39.5,
+          "protanopiaDeltaE": 39.1
+        },
+        {
+          "a": "cream #f0dba1",
+          "b": "Grass #89b75b",
+          "deltaE": 36.7,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 21.2,
+          "protanopiaDeltaE": 22.9
+        },
+        {
+          "a": "cream #f0dba1",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 46.7,
+          "contrast": 1.2,
+          "deuteranopiaDeltaE": 45.6,
+          "protanopiaDeltaE": 40
+        }
+      ],
+      "patternOnHide": {
+        "a": "amber pattern #e86400",
+        "b": "hide #1e5088",
+        "deltaE": 114.7,
+        "contrast": 2.4,
+        "deuteranopiaDeltaE": 109.4,
+        "protanopiaDeltaE": 91.8
+      },
+      "steadiness": {
+        "caveman": {
+          "silhouettePixels": 0,
+          "hidePixels": 0,
+          "otherPixels": 259,
+          "repaintedPixels": 1630,
+          "opaquePixels": 2078
+        },
+        "raptor": {
+          "silhouettePixels": 1,
+          "hidePixels": 180,
+          "otherPixels": 6,
+          "repaintedPixels": 2125,
+          "opaquePixels": 2799
+        },
+        "t-rex": {
+          "silhouettePixels": 0,
+          "hidePixels": 112,
+          "otherPixels": 29,
+          "repaintedPixels": 2685,
+          "opaquePixels": 2685
+        }
+      }
+    }
+  },
+  "caveman": {
+    "spotted fur, amber war paint": {
+      "fur": "#d8a757",
+      "skin": "#e3ad60",
+      "pairs": [
+        {
+          "a": "fur #d8a757",
+          "b": "Goblin leather #754019",
+          "deltaE": 42.6,
+          "contrast": 3.8,
+          "deuteranopiaDeltaE": 41.1,
+          "protanopiaDeltaE": 42.8
+        },
+        {
+          "a": "fur #d8a757",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 17.3,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 14.8,
+          "protanopiaDeltaE": 19.5
+        },
+        {
+          "a": "fur #d8a757",
+          "b": "Human gold #f1b21b",
+          "deltaE": 28.4,
+          "contrast": 1.2,
+          "deuteranopiaDeltaE": 26.2,
+          "protanopiaDeltaE": 27.7
+        },
+        {
+          "a": "fur #d8a757",
+          "b": "Grass #89b75b",
+          "deltaE": 40.8,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 10.6,
+          "protanopiaDeltaE": 1.5
+        },
+        {
+          "a": "fur #d8a757",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 57,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 57.7,
+          "protanopiaDeltaE": 55.8
+        },
+        {
+          "a": "skin #e3ad60",
+          "b": "fur #d8a757",
+          "deltaE": 3.5,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 3,
+          "protanopiaDeltaE": 3.1
+        },
+        {
+          "a": "skin #e3ad60",
+          "b": "Goblin skin #838e29",
+          "deltaE": 34,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 19.6,
+          "protanopiaDeltaE": 18.1
+        },
+        {
+          "a": "war paint #f26c02",
+          "b": "skin #e3ad60",
+          "deltaE": 44.7,
+          "contrast": 1.5,
+          "deuteranopiaDeltaE": 23.8,
+          "protanopiaDeltaE": 21.8
+        }
+      ]
+    },
+    "plain fur, bone jewellery": {
+      "fur": "#ac823a",
+      "skin": "#e5b06e",
+      "pairs": [
+        {
+          "a": "fur #ac823a",
+          "b": "Goblin leather #754019",
+          "deltaE": 29,
+          "contrast": 2.4,
+          "deuteranopiaDeltaE": 26,
+          "protanopiaDeltaE": 28.8
+        },
+        {
+          "a": "fur #ac823a",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 27.4,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 26.2,
+          "protanopiaDeltaE": 29
+        },
+        {
+          "a": "fur #ac823a",
+          "b": "Human gold #f1b21b",
+          "deltaE": 36.9,
+          "contrast": 1.9,
+          "deuteranopiaDeltaE": 35.7,
+          "protanopiaDeltaE": 35.5
+        },
+        {
+          "a": "fur #ac823a",
+          "b": "Grass #89b75b",
+          "deltaE": 41.4,
+          "contrast": 1.5,
+          "deuteranopiaDeltaE": 11.8,
+          "protanopiaDeltaE": 15.9
+        },
+        {
+          "a": "fur #ac823a",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 53.4,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 53.2,
+          "protanopiaDeltaE": 53.5
+        },
+        {
+          "a": "skin #e5b06e",
+          "b": "fur #ac823a",
+          "deltaE": 18.8,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 18.7,
+          "protanopiaDeltaE": 18.6
+        },
+        {
+          "a": "skin #e5b06e",
+          "b": "Goblin skin #838e29",
+          "deltaE": 35.9,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 21.1,
+          "protanopiaDeltaE": 23.1
+        }
+      ]
+    },
+    "tiger-striped fur, amber war paint": {
+      "fur": "#dba955",
+      "skin": "#e4af5c",
+      "pairs": [
+        {
+          "a": "fur #dba955",
+          "b": "Goblin leather #754019",
+          "deltaE": 44,
+          "contrast": 3.9,
+          "deuteranopiaDeltaE": 42.3,
+          "protanopiaDeltaE": 44.3
+        },
+        {
+          "a": "fur #dba955",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 15.3,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 13.2,
+          "protanopiaDeltaE": 17.4
+        },
+        {
+          "a": "fur #dba955",
+          "b": "Human gold #f1b21b",
+          "deltaE": 26.3,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 24.6,
+          "protanopiaDeltaE": 25.7
+        },
+        {
+          "a": "fur #dba955",
+          "b": "Grass #89b75b",
+          "deltaE": 41.2,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 12.3,
+          "protanopiaDeltaE": 2.2
+        },
+        {
+          "a": "fur #dba955",
+          "b": "Mountain (mean) #929ca9",
+          "deltaE": 59,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 59.2,
+          "protanopiaDeltaE": 57.8
+        },
+        {
+          "a": "skin #e4af5c",
+          "b": "fur #dba955",
+          "deltaE": 2.7,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 2.5,
+          "protanopiaDeltaE": 2.3
+        },
+        {
+          "a": "skin #e4af5c",
+          "b": "Goblin skin #838e29",
+          "deltaE": 33.4,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 20.1,
+          "protanopiaDeltaE": 17
+        },
+        {
+          "a": "war paint #f56700",
+          "b": "skin #e4af5c",
+          "deltaE": 47.6,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 21.8,
+          "protanopiaDeltaE": 20.9
+        }
+      ]
+    }
+  },
+  "plates": [
+    {
+      "a": "Coral plate #f06762",
+      "b": "Teal plate #28b7a4",
+      "deltaE": 98.1,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 39.3,
+      "protanopiaDeltaE": 21.3
+    },
+    {
+      "a": "Coral plate #f06762",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 61,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 30.4,
+      "protanopiaDeltaE": 51.9
+    },
+    {
+      "a": "Coral plate #f06762",
+      "b": "Violet plate #a277d2",
+      "deltaE": 72.5,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 75.5,
+      "protanopiaDeltaE": 62.8
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 78.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 68.1,
+      "protanopiaDeltaE": 61.8
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Violet plate #a277d2",
+      "deltaE": 85.9,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 36.6,
+      "protanopiaDeltaE": 50.7
+    },
+    {
+      "a": "Gold plate #e2b63f",
+      "b": "Violet plate #a277d2",
+      "deltaE": 110.2,
+      "contrast": 1.8,
+      "deuteranopiaDeltaE": 104.6,
+      "protanopiaDeltaE": 111.8
+    }
+  ],
+  "platesAgainstGrass": [
+    {
+      "a": "Coral plate #f06762",
+      "b": "Grass #89b75b",
+      "deltaE": 84.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 5.5,
+      "protanopiaDeltaE": 33.3
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Grass #89b75b",
+      "deltaE": 43.5,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 43.3,
+      "protanopiaDeltaE": 42.7
+    },
+    {
+      "a": "Gold plate #e2b63f",
+      "b": "Grass #89b75b",
+      "deltaE": 41.9,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 25.4,
+      "protanopiaDeltaE": 19.3
+    },
+    {
+      "a": "Violet plate #a277d2",
+      "b": "Grass #89b75b",
+      "deltaE": 106.1,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 79.8,
+      "protanopiaDeltaE": 92.6
+    }
+  ],
+  "platesAgainstShallowWater": [
+    {
+      "a": "Coral plate #f06762",
+      "b": "Shallow Water #8fd3dc",
+      "deltaE": 84.6,
+      "contrast": 1.8,
+      "deuteranopiaDeltaE": 50,
+      "protanopiaDeltaE": 39.3
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Shallow Water #8fd3dc",
+      "deltaE": 27.4,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 16.4,
+      "protanopiaDeltaE": 18.1
+    },
+    {
+      "a": "Gold plate #e2b63f",
+      "b": "Shallow Water #8fd3dc",
+      "deltaE": 78.4,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 75.6,
+      "protanopiaDeltaE": 75.3
+    },
+    {
+      "a": "Violet plate #a277d2",
+      "b": "Shallow Water #8fd3dc",
+      "deltaE": 65.5,
+      "contrast": 2.1,
+      "deuteranopiaDeltaE": 34.6,
+      "protanopiaDeltaE": 44.1
+    }
+  ],
+  "widthAgainstPlate": [
+    {
+      "unit": "Caveman",
+      "spriteWidth": 52,
+      "todayWidth": 52,
+      "feetWidth": 32,
+      "plateWidth": 52,
+      "widerThanPlate": false,
+      "feetWiderThanPlate": false
+    },
+    {
+      "unit": "Raptor",
+      "spriteWidth": 67,
+      "todayWidth": 67,
+      "feetWidth": 43,
+      "plateWidth": 57,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    },
+    {
+      "unit": "T-Rex",
+      "spriteWidth": 60,
+      "todayWidth": 62,
+      "feetWidth": 41,
+      "plateWidth": 57,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    }
+  ]
+}

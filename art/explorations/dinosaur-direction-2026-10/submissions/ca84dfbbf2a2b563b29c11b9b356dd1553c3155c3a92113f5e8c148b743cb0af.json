@@ -1,0 +1,36 @@
+{
+  "id": "raptor-saddle-a",
+  "jobId": "6511647d-6fd9-4493-873f-1c03488d83fd",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-raptor",
+    "subject": "UNIT:DINOSAUR:RAIDER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81014,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only dark markings on the hide: one big dark navy saddle patch, colour #131c3a, over the middle of the back with a clean scalloped lower edge, and four wide dark navy bands across the straight tail. The tall bright amber-orange feather crest on the head stays exactly as it is, and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only dark markings on the hide: one big dark navy saddle patch, colour #131c3a, over the middle of the back with a clean scalloped lower edge, and four wide dark navy bands across the straight tail. The tall bright amber-orange feather crest on the head stays exactly as it is, and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only dark markings on the hide: one big dark navy saddle patch, colour #131c3a, over the middle of the back with a clean scalloped lower edge, and four wide dark navy bands across the straight tail. The tall bright amber-orange feather crest on the head stays exactly as it is, and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Add only dark markings on the hide: one big dark navy saddle patch, colour #131c3a, over the middle of the back with a clean scalloped lower edge, and four wide dark navy bands across the straight tail. The tall bright amber-orange feather crest on the head stays exactly as it is, and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "raptor-base-b",
+      "candidate": 0,
+      "sha256": "27363365277a2c32cbcf32e9dd17406d070b63bb67931d5be418b175b834ce8c"
+    }
+  }
+}

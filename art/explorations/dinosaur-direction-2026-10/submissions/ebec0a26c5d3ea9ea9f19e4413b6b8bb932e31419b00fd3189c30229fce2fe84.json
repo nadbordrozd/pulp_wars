@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-spots-a",
+  "jobId": "f4d316eb-8619-4df7-8501-74502c0c47a7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81114,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only a pattern on the hide: seven big solid bright amber-orange round spots, colour #f08c1e, each a filled blot about as big as its eye with no ring and no hole: three on the back and flank, two on the near thigh, two on the tail, wide apart. The head, belly and arms stay plain. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only a pattern on the hide: seven big solid bright amber-orange round spots, colour #f08c1e, each a filled blot about as big as its eye with no ring and no hole: three on the back and flank, two on the near thigh, two on the tail, wide apart. The head, belly and arms stay plain. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only a pattern on the hide: seven big solid bright amber-orange round spots, colour #f08c1e, each a filled blot about as big as its eye with no ring and no hole: three on the back and flank, two on the near thigh, two on the tail, wide apart. The head, belly and arms stay plain. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Add only a pattern on the hide: seven big solid bright amber-orange round spots, colour #f08c1e, each a filled blot about as big as its eye with no ring and no hole: three on the back and flank, two on the near thigh, two on the tail, wide apart. The head, belly and arms stay plain. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-hide-a",
+      "candidate": 0,
+      "sha256": "3b1af70f53529f9ce1a3cab21e7c1862512f8eaa25e5da7982a2e49aa6d941fe"
+    }
+  }
+}

@@ -1,0 +1,684 @@
+{
+  "schemaVersion": 1,
+  "batch": "dinosaur-direction-study",
+  "title": "Dinosaur visual-direction study: Caveman, Raptor and T-Rex in primal blue with an amber accent and body-pattern variants (exploration, never registered)",
+  "bead": "pulp_wars-3tq.14",
+  "faction": "TEST-DINOSAUR-PRIMAL",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-study-dino-caveman",
+      "subject": "UNIT:DINOSAUR:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-study-dino-raptor",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-study-dino-t-rex",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 30,
+        "y": 48
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "raptor-base-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81001,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "raptor-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the red parts: the red feather crest becomes a bright amber-orange feather crest, colour #f08c1e with #b85c0a shadows; take off the red blanket and its grey cord so the back, sides and thighs are bare smooth blue hide with a cream belly. Nothing red is left. Keep the head, eyes, teeth, arms, legs, claws, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Base step 1 for the Raptor: amber crest, blanket and cord removed; hide colour untouched."
+    },
+    {
+      "id": "raptor-base-b",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81002,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "raptor-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours and remove the blanket: the red feather crest becomes bright amber-orange #f08c1e; the red blanket and its cord are removed, leaving bare hide. The hide becomes plain slate blue, colour #4f73a6, darker navy #26375c along the back and tail top, with no stripes; belly, throat and claws warm cream. Nothing red is left. Keep the head, eyes, teeth, legs, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Base in one step for the Raptor: amber crest, no blanket, slate-blue hide by hex values, no stripes."
+    },
+    {
+      "id": "t-rex-base-a",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81101,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "t-rex-b-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Take off the red cape, the red scarf and the red ankle bands so its neck, back, tail and legs are bare smooth blue hide, with a warm cream belly, throat and lower jaw. Add a short crest of bright amber-orange spikes, colour #f08c1e with #b85c0a shadows, over the brow and down the back of the neck. Nothing red is left. Keep the head, eyes, teeth, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Base step 1 for the T-Rex: cape, scarf and ankle bands removed, an amber brow and neck crest added; hide colour untouched."
+    },
+    {
+      "id": "t-rex-base-b",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "t-rex-b-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the red cape, the red scarf and the red ankle bands, leaving bare hide. The hide becomes plain slate blue, colour #4f73a6, darker navy #26375c along the back and tail top; the belly, throat and lower jaw warm cream. Add a short crest of bright amber-orange #f08c1e spikes over the brow and down the neck. Nothing red is left. Keep the head, eyes, teeth, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Base in one step for the T-Rex: bare slate-blue hide by hex values with an amber crest."
+    },
+    {
+      "id": "caveman-fur-spots-a",
+      "asset": "chibi-study-dino-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 81201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "caveman-b-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes: the red fur tunic becomes a tawny tan fur pelt, colour #c99652 with #8a5f2e shadows, with a few big dark brown spots like a leopard pelt; the red headband becomes a cream bone-white band; the red wrist wrap becomes tan hide. Nothing red is left. Keep the face, hair, beard, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Caveman treatment 1, step 1: spotted tawny fur, bone-white headband; skin and war paint come in a second edit."
+    },
+    {
+      "id": "caveman-fur-plain-a",
+      "asset": "chibi-study-dino-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 81202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "caveman-b-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes: the red fur tunic becomes a plain tawny tan fur pelt, colour #c99652 with #8a5f2e shadows, with no spots; the red headband is removed; he wears a necklace of big cream teeth and small bones; the red wrist wrap becomes a cream bone bracelet. Nothing red is left. Keep the face, hair, beard, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Caveman treatment 2, step 1: plain tawny fur with a tooth and bone necklace; skin in a second edit."
+    },
+    {
+      "id": "raptor-hide-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81003,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the blue hide: the light sky blue becomes slate blue, colour #4f73a6, with dark navy #26375c shading along the back, the top of the tail and the far legs; a mid-tone hide, the shadow clearly darker than the light tone. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Hide step from the light base: sky blue to slate blue by hex values."
+    },
+    {
+      "id": "raptor-hide-b",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81004,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the dark blue-grey hide: it becomes a clearer, lighter steel blue, colour #5578aa on the lit side, the shadow only a little darker, colour #334c78, with dark navy only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Hide step from the dark base: lift the dull slate to a clearer steel blue."
+    },
+    {
+      "id": "t-rex-hide-a",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81103,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright blue hide: it becomes a duller slate blue, colour #4f73a6 on the lit side, with dark navy #26375c shading along the back, tail and far legs. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Hide step for the T-Rex: the cerulean of the accepted sprite to the slate blue of the look, by hex values."
+    },
+    {
+      "id": "t-rex-hide-b",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81104,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-base-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright blue hide: it becomes a duller slate blue, colour #4f73a6 on the lit side, with dark navy #26375c shading along the back, tail and far legs. Do not redraw anything. Keep the amber-orange spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The same hide step on the T-Rex base with the smaller crest (base-a)."
+    },
+    {
+      "id": "caveman-spots-skin-a",
+      "asset": "chibi-study-dino-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 81203,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-fur-spots-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes tanned warm brown skin, colour #c8875a with #96583a shadows. Add war paint: two short bright amber-orange #f08c1e stripes on each cheek and one amber-orange band round his upper arm. Do not redraw anything. Keep the hair, beard, spotted fur, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Caveman treatment 1, step 2: tanned skin and amber war paint."
+    },
+    {
+      "id": "caveman-plain-skin-a",
+      "asset": "chibi-study-dino-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 81204,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-fur-plain-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes tanned warm brown skin, colour #c8875a with #96583a shadows. Do not redraw anything. Keep the hair, beard, the tawny fur, the tooth necklace, the bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Caveman treatment 2, step 2: tanned skin, no paint."
+    },
+    {
+      "id": "raptor-stripes-probe-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81010,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: five bold bright amber-orange tiger stripes, colour #f08c1e, across the back and three across the tail, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head, belly or legs. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Probe: do amber tiger stripes hold on the dark Raptor base, and does the rest stay steady?"
+    },
+    {
+      "id": "t-rex-stripes-probe-a",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81110,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: bold bright amber-orange tiger stripes, colour #f08c1e, four across the back and flank, three across the tail and two on each thigh, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head or belly. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Probe: amber tiger stripes on the T-Rex base."
+    },
+    {
+      "id": "raptor-hide-c",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81005,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the blue hide: the light sky blue becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, and dark navy #1a2748 only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Hide step, third try: a bluer mid tone between the pale steel of hide-b and the dark slate of base-b."
+    },
+    {
+      "id": "t-rex-hide-c",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81105,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright blue hide: it becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not bright, and dark navy #1a2748 only along the back, the top of the tail and the far leg. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Hide step, third try on the T-Rex: bluer than hide-a's dull slate."
+    },
+    {
+      "id": "caveman-spots-skin-b",
+      "asset": "chibi-study-dino-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 81205,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-fur-spots-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows, clearly lighter than brown. Add war paint: two short bright amber-orange #f08c1e stripes on each cheek and one amber-orange band round his upper arm. Do not redraw anything. Keep the hair, beard, spotted fur, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Skin second try: skin-a came out dark brown; ask for a light golden tan."
+    },
+    {
+      "id": "caveman-plain-skin-b",
+      "asset": "chibi-study-dino-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 81206,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-fur-plain-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows, clearly lighter than brown. Do not redraw anything. Keep the hair, beard, the tawny fur, the tooth necklace, the bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Skin second try for the plain-fur Caveman."
+    },
+    {
+      "id": "raptor-spots-probe-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81011,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: about seven big bold bright amber-orange leopard spots, colour #f08c1e, each a round blot with a dark navy centre, on the back, flank, thigh and tail, few and wide apart. No spots on the head, belly or lower legs. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Probe: amber rosettes on the dark Raptor base."
+    },
+    {
+      "id": "t-rex-spots-probe-a",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81111,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: about eight big bold bright amber-orange leopard spots, colour #f08c1e, each a round blot with a dark navy centre, on the back, flank, thighs and tail, few and wide apart. No spots on the head or belly. Do not redraw anything. Keep the crest and back spikes, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Probe: amber rosettes on the dark slate T-Rex."
+    },
+    {
+      "id": "raptor-saddle-probe-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81012,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: one big dark navy saddle patch, colour #131c3a, over the middle of the back with a clean scalloped lower edge, and four wide dark navy bands round the tail. No orange on the body: the amber-orange stays only on the crest. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Probe: navy saddle and banded tail on the Raptor."
+    },
+    {
+      "id": "t-rex-stripes-probe-b",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81112,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: exactly seven bold bright amber-orange tiger stripes, colour #f08c1e: four down the back and flank and three across the tail, each a thick tapering wedge running down from the spine, wide apart with plain hide between them. No stripes on the head, belly, arms or legs. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Probe: fewer stripes on the T-Rex (probe-a striped the legs and was busy), on the slate hide."
+    },
+    {
+      "id": "t-rex-stripes-a",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81113,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: five very thick bright amber-orange tiger stripes, colour #f08c1e: three down the back and flank and two across the tail. Each stripe is a fat solid wedge at least four pixels wide, with wide plain blue hide between them; no thin lines. The head, belly, arms and both legs stay plain blue. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant A for the T-Rex: fewer, fatter stripes; the two probes drew many thin stripes and striped the legs."
+    },
+    {
+      "id": "raptor-spots-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81013,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: six big solid bright amber-orange round spots, colour #f08c1e, each a filled blot about as big as its eye with no ring and no hole: three on the back and flank, one on the thigh, two on the tail, wide apart. The head, belly and lower legs stay plain. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant B for the Raptor: few solid spots instead of the probe's many rings."
+    },
+    {
+      "id": "t-rex-spots-a",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81114,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: seven big solid bright amber-orange round spots, colour #f08c1e, each a filled blot about as big as its eye with no ring and no hole: three on the back and flank, two on the near thigh, two on the tail, wide apart. The head, belly and arms stay plain. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant B for the T-Rex: few solid spots instead of the probe's twenty rings."
+    },
+    {
+      "id": "raptor-saddle-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81014,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only dark markings on the hide: one big dark navy saddle patch, colour #131c3a, over the middle of the back with a clean scalloped lower edge, and four wide dark navy bands across the straight tail. The tall bright amber-orange feather crest on the head stays exactly as it is, and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant C for the Raptor: the probe lost the crest and curled the tail; this names both as kept."
+    },
+    {
+      "id": "t-rex-saddle-a",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81115,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only dark markings on the hide: one big dark navy saddle patch, colour #131c3a, over the back and shoulders with a clean scalloped lower edge, and three wide dark navy bands across the tail. The amber-orange crest and back spikes stay exactly as they are, and two small amber-orange marks sit under the eye. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, arms, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant C for the T-Rex: navy saddle, banded tail, two small amber marks under the eye."
+    },
+    {
+      "id": "raptor-steel-stripes-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81015,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-hide-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: five bold dark navy tiger stripes, colour #16203f, across the back and three across the tail, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head, belly or legs. Do not redraw anything. Keep the amber-orange crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant E, option 1, Raptor: the paler steel-blue hide with dark navy tiger stripes; amber on the crest only."
+    },
+    {
+      "id": "t-rex-steel-stripes-a",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81116,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: five very thick dark navy tiger stripes, colour #16203f: three down the back and flank and two across the tail. Each stripe is a fat solid wedge at least four pixels wide, with wide plain steel-blue hide between them; no thin lines. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant E, option 1, T-Rex: the paler steel-blue hide with dark navy tiger stripes."
+    },
+    {
+      "id": "raptor-teal-stripes-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81016,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: five bold dark teal-green tiger stripes, colour #1f7a6a with #145548 shadows, across the back and three across the tail, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head, belly or legs. Do not redraw anything. Keep the amber-orange crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant E, option 2, Raptor: dark teal-green stripes on the slate hide."
+    },
+    {
+      "id": "raptor-steel-stripes-b",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81017,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-hide-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: six very thick dark navy tiger stripes, colour #16203f: four down the back and flank and two across the tail. Each stripe is a fat solid wedge at least four pixels wide, with plain hide between them; no thin lines. The head, belly and legs stay plain. Do not redraw anything. Keep the amber-orange crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant E, Raptor, second try: fat navy stripes; steel-stripes-a drew a dozen thin lines."
+    },
+    {
+      "id": "t-rex-steel-stripes-b",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81117,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: six very thick dark navy tiger stripes, colour #16203f: three down the back and flank and three across the tail. Each stripe is a fat solid wedge at least four pixels wide, with plain hide between them; no thin lines, no orange. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant E, T-Rex, second try: fat navy stripes and no amber on the tail."
+    },
+    {
+      "id": "raptor-navy-spots-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81018,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: six big dark navy leopard rosettes, colour #131c3a, each a thick dark ring round a slate-blue centre, about as big as its eye: three on the back and flank, one on the thigh, two on the tail, wide apart. The head, belly and lower legs stay plain. Do not redraw anything. Keep the amber-orange crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant B alternative, Raptor: darker-blue rosettes instead of amber spots."
+    },
+    {
+      "id": "t-rex-navy-spots-a",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81118,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: seven big dark navy leopard rosettes, colour #131c3a, each a thick dark ring round a slate-blue centre, about as big as its eye: three on the back and flank, two on the near thigh, two on the tail, wide apart. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange crest and spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Variant B alternative, T-Rex: darker-blue rosettes."
+    },
+    {
+      "id": "caveman-fur-stripes-a",
+      "asset": "chibi-study-dino-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 81207,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-spots-skin-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the pattern of his fur: the dark brown leopard spots on the tawny fur become five bold dark brown tiger stripes, each a thick tapering wedge; the fur stays the same tawny tan. Do not redraw anything. Keep the tanned skin, the amber-orange war paint, the face, hair, beard, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "A tiger-striped pelt for the Caveman, to stand beside the striped dinosaurs of variant A."
+    },
+    {
+      "id": "t-rex-hide-d",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81106,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the dull slate hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright; the dark navy along the back, tail and far leg stays. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Hide alternative for the T-Rex: the deep blue that raptor-hide-c reached, from the slate hide (hide-c from the cerulean base did not move)."
+    },
+    {
+      "id": "raptor-deep-stripes-a",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81019,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-hide-c",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: five bold bright amber-orange tiger stripes, colour #f08c1e, across the back and three across the tail, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head, belly or legs. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Hide alternative: the amber tiger stripes of variant A on the deep blue Raptor (the wording of stripes-probe-a)."
+    },
+    {
+      "id": "t-rex-deep-stripes-a",
+      "asset": "chibi-study-dino-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81119,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-d",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: five very thick bright amber-orange tiger stripes, colour #f08c1e: three down the back and flank and two across the tail. Each stripe is a fat solid wedge at least four pixels wide, with wide plain blue hide between them; no thin lines. The head, belly, arms and both legs stay plain blue. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Hide alternative: the amber tiger stripes of variant A on the deep blue T-Rex (the wording of t-rex-stripes-a)."
+    },
+    {
+      "id": "raptor-deep-stripes-b",
+      "asset": "chibi-study-dino-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81020,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-hide-c",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: five bold bright amber-orange tiger stripes, colour #f08c1e, across the back and three across the straight tail, each a thick tapering wedge running down from the spine, wide apart. No stripes on the head, belly or legs. The feather crest stays exactly as it is and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Second try of the deep blue striped Raptor: deep-stripes-a curled the tail and redrew the crest; this names both as kept."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "raptor-hide-b",
+  "jobId": "f2e047f7-fc05-4f29-8076-edfdde22b5fd",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-raptor",
+    "subject": "UNIT:DINOSAUR:RAIDER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81004,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the dark blue-grey hide: it becomes a clearer, lighter steel blue, colour #5578aa on the lit side, the shadow only a little darker, colour #334c78, with dark navy only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the dark blue-grey hide: it becomes a clearer, lighter steel blue, colour #5578aa on the lit side, the shadow only a little darker, colour #334c78, with dark navy only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the dark blue-grey hide: it becomes a clearer, lighter steel blue, colour #5578aa on the lit side, the shadow only a little darker, colour #334c78, with dark navy only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the dark blue-grey hide: it becomes a clearer, lighter steel blue, colour #5578aa on the lit side, the shadow only a little darker, colour #334c78, with dark navy only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "raptor-base-b",
+      "candidate": 0,
+      "sha256": "27363365277a2c32cbcf32e9dd17406d070b63bb67931d5be418b175b834ce8c"
+    }
+  }
+}

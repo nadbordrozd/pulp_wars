@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-navy-spots-a",
+  "jobId": "a1f4fb76-ecb3-4f28-965a-d2b6903e934c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81118,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only a pattern on the hide: seven big dark navy leopard rosettes, colour #131c3a, each a thick dark ring round a slate-blue centre, about as big as its eye: three on the back and flank, two on the near thigh, two on the tail, wide apart. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange crest and spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only a pattern on the hide: seven big dark navy leopard rosettes, colour #131c3a, each a thick dark ring round a slate-blue centre, about as big as its eye: three on the back and flank, two on the near thigh, two on the tail, wide apart. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange crest and spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only a pattern on the hide: seven big dark navy leopard rosettes, colour #131c3a, each a thick dark ring round a slate-blue centre, about as big as its eye: three on the back and flank, two on the near thigh, two on the tail, wide apart. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange crest and spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Add only a pattern on the hide: seven big dark navy leopard rosettes, colour #131c3a, each a thick dark ring round a slate-blue centre, about as big as its eye: three on the back and flank, two on the near thigh, two on the tail, wide apart. The head, belly and arms stay plain. Do not redraw anything. Keep the amber-orange crest and spikes, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-hide-a",
+      "candidate": 0,
+      "sha256": "3b1af70f53529f9ce1a3cab21e7c1862512f8eaa25e5da7982a2e49aa6d941fe"
+    }
+  }
+}

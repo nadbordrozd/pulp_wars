@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-stripes-probe-a",
+  "jobId": "87bee752-4a16-4d49-bed0-93d76e5a72c5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81110,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only a pattern on the hide: bold bright amber-orange tiger stripes, colour #f08c1e, four across the back and flank, three across the tail and two on each thigh, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head or belly. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only a pattern on the hide: bold bright amber-orange tiger stripes, colour #f08c1e, four across the back and flank, three across the tail and two on each thigh, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head or belly. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only a pattern on the hide: bold bright amber-orange tiger stripes, colour #f08c1e, four across the back and flank, three across the tail and two on each thigh, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head or belly. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only a pattern on the hide: bold bright amber-orange tiger stripes, colour #f08c1e, four across the back and flank, three across the tail and two on each thigh, each a thick tapering wedge running down from the spine, few and wide apart. No stripes on the head or belly. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-base-b",
+      "candidate": 0,
+      "sha256": "f531b3382810c3e44fa3ab8498c5b56a75d8b73e74597414bfdcd16799b55be6"
+    }
+  }
+}

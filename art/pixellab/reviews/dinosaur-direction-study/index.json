@@ -1,0 +1,152 @@
+{
+  "bead": "pulp_wars-3tq.14",
+  "note": "Review evidence of the Dinosaur direction study. The scene, shore and same-unit images are drawn by the real board host with the look the game draws by default; nothing here is registered as production art.",
+  "files": [
+    {
+      "file": "alternatives-x4.png",
+      "sha256": "0b21e69c2394516081ba3273d26c7f40ae6033dda64c7e24fb46c4b14c9c3625",
+      "width": 2154,
+      "height": 938
+    },
+    {
+      "file": "candidates-x3.png",
+      "sha256": "3a742c0e3c69afeee46cd235bba9ed292e4b2af4215483fd7bc0538915c7cc51",
+      "width": 2202,
+      "height": 5436
+    },
+    {
+      "file": "palette.json",
+      "sha256": "816381e818bbf933ec6f6fb89704d06b0e92f8be8775bbe38fd97eb01f31c16e"
+    },
+    {
+      "file": "palette.png",
+      "sha256": "478895376e2627326c2319a65adafdbc10a9496155d6870da0dce017a9f4f09d",
+      "width": 1280,
+      "height": 998
+    },
+    {
+      "file": "readability.json",
+      "sha256": "ffabdc610dcb8c94bcf164ed54549bc6e9f526685fcc68a7dac9f846d89df3a9"
+    },
+    {
+      "file": "same-unit-desktop-zoom-0.75.png",
+      "sha256": "4c2e56db4b9f35c03abb8e957f7c647bebfef5ca58aa2ac2ae6664249b624aac",
+      "width": 1260,
+      "height": 759
+    },
+    {
+      "file": "same-unit-desktop-zoom-1.png",
+      "sha256": "30241af16780c35b9cb47c9b93f25240e456ca41a2f41191d2a4aae69e7ebbbb",
+      "width": 1660,
+      "height": 966
+    },
+    {
+      "file": "same-unit-phone-zoom-0.75.png",
+      "sha256": "5d5a932a025d4cf0e99d17c7d965a248efe7e55372d7d63b28086f89db2cb95b",
+      "width": 3660,
+      "height": 2001
+    },
+    {
+      "file": "same-unit-phone-zoom-1.png",
+      "sha256": "14c6796b66b92bc3aad4054650e42160f1e27d7ea85f204dc63178f3bd606abf",
+      "width": 4740,
+      "height": 2622
+    },
+    {
+      "file": "scene-four-desktop-zoom-0.75.png",
+      "sha256": "1760a4651a081117b8c8a943304ee760e15c69ce7eecd0d487e0314b059675ec",
+      "width": 1860,
+      "height": 1116
+    },
+    {
+      "file": "scene-four-desktop-zoom-1.png",
+      "sha256": "a81ab1ca61536ae7f449a94a667bd087db3a5353ab1dc731a73aa4168db78ba0",
+      "width": 2460,
+      "height": 1456
+    },
+    {
+      "file": "scene-four-phone-zoom-0.75.png",
+      "sha256": "c7e13af9406f47940759127a77790bd6ff467d037028b034568e33bf969f2e09",
+      "width": 4740,
+      "height": 3156
+    },
+    {
+      "file": "scene-four-phone-zoom-1.png",
+      "sha256": "83a4f063c8cdafb9991dace2de871b57f3ae602c5105276acc26afbf558f502f",
+      "width": 4740,
+      "height": 4176
+    },
+    {
+      "file": "scene-mixed-desktop-zoom-0.75.png",
+      "sha256": "7c5d372442ea79a2c0eea7d0f2ab77a9c1334c691ef0a3ff996ee99fcd811245",
+      "width": 1860,
+      "height": 1116
+    },
+    {
+      "file": "scene-mixed-desktop-zoom-1.png",
+      "sha256": "39e8c0d91ac8f99b5461b2e9396271eacef90cd592fbf338dd4601f4399663ec",
+      "width": 2460,
+      "height": 1456
+    },
+    {
+      "file": "scene-mixed-phone-zoom-0.75.png",
+      "sha256": "9c79aa068d7573335a0cf05fbf067d2a56de4631d9829445c680f4f93787d217",
+      "width": 4740,
+      "height": 3156
+    },
+    {
+      "file": "scene-mixed-phone-zoom-1.png",
+      "sha256": "f63848f5524ddb512939c21ff1b014e2a2270c8d2d6a7f79520ca5ed6bf23a41",
+      "width": 4740,
+      "height": 4176
+    },
+    {
+      "file": "shore-desktop-zoom-0.75.png",
+      "sha256": "42a5e6eadd05d762001350ebf361a76e9c00184efd64ffce9a31b2fb113cc430",
+      "width": 936,
+      "height": 1272
+    },
+    {
+      "file": "shore-desktop-zoom-1.png",
+      "sha256": "ec4aa5d2db6fe4e2dd250a8b7c039cf720dec6c81da0f839e80dffcfe13f0df4",
+      "width": 1236,
+      "height": 1594
+    },
+    {
+      "file": "shore-phone-zoom-0.75.png",
+      "sha256": "2188336fbb641d4a513c87f24c85355c6941fb0c8df17a7a033781c16921902c",
+      "width": 2376,
+      "height": 3204
+    },
+    {
+      "file": "shore-phone-zoom-1.png",
+      "sha256": "fa006c055e8c338ba3388ed8e531b7bbd99a42e881c8bccc7a55f5f37b72e9f2",
+      "width": 2376,
+      "height": 4170
+    },
+    {
+      "file": "terrain-x2.png",
+      "sha256": "279e10578afacd0878aeca78ade97319c7da2c025d39ba65fc62c30a66bc2d48",
+      "width": 2926,
+      "height": 1312
+    },
+    {
+      "file": "variants-0.75x.png",
+      "sha256": "3855cb40fbf124becfd79be29d40008bb937d2f86fb2811e1a9136b146f48df2",
+      "width": 874,
+      "height": 280
+    },
+    {
+      "file": "variants-1x.png",
+      "sha256": "d819cee230f4a49ed845c92be32c174aabf18864603bd305a890a2f4ae4facbb",
+      "width": 1116,
+      "height": 358
+    },
+    {
+      "file": "variants-x4.png",
+      "sha256": "6cf7a4bb1714a8702e877abbbfd419aa85cb178f08c3bcfcb196596ba5d9636f",
+      "width": 4094,
+      "height": 1294
+    }
+  ]
+}

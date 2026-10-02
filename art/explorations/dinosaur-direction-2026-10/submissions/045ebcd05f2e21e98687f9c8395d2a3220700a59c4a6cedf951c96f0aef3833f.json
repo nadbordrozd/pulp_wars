@@ -1,0 +1,36 @@
+{
+  "id": "raptor-spots-probe-a",
+  "jobId": "f32cc03d-31a3-46f1-b0e4-48ba6cd7ea31",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-raptor",
+    "subject": "UNIT:DINOSAUR:RAIDER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81011,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only a pattern on the hide: about seven big bold bright amber-orange leopard spots, colour #f08c1e, each a round blot with a dark navy centre, on the back, flank, thigh and tail, few and wide apart. No spots on the head, belly or lower legs. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only a pattern on the hide: about seven big bold bright amber-orange leopard spots, colour #f08c1e, each a round blot with a dark navy centre, on the back, flank, thigh and tail, few and wide apart. No spots on the head, belly or lower legs. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only a pattern on the hide: about seven big bold bright amber-orange leopard spots, colour #f08c1e, each a round blot with a dark navy centre, on the back, flank, thigh and tail, few and wide apart. No spots on the head, belly or lower legs. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only a pattern on the hide: about seven big bold bright amber-orange leopard spots, colour #f08c1e, each a round blot with a dark navy centre, on the back, flank, thigh and tail, few and wide apart. No spots on the head, belly or lower legs. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "raptor-base-b",
+      "candidate": 0,
+      "sha256": "27363365277a2c32cbcf32e9dd17406d070b63bb67931d5be418b175b834ce8c"
+    }
+  }
+}

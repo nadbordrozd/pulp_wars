@@ -1,0 +1,37 @@
+{
+  "id": "t-rex-base-a",
+  "jobId": "0b114bfc-b1ba-4bdb-b879-dfae15c0120e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Take off the red cape, the red scarf and the red ankle bands so its neck, back, tail and legs are bare smooth blue hide, with a warm cream belly, throat and lower jaw. Add a short crest of bright amber-orange spikes, colour #f08c1e with #b85c0a shadows, over the brow and down the back of the neck. Nothing red is left. Keep the head, eyes, teeth, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Take off the red cape, the red scarf and the red ankle bands so its neck, back, tail and legs are bare smooth blue hide, with a warm cream belly, throat and lower jaw. Add a short crest of bright amber-orange spikes, colour #f08c1e with #b85c0a shadows, over the brow and down the back of the neck. Nothing red is left. Keep the head, eyes, teeth, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Take off the red cape, the red scarf and the red ankle bands so its neck, back, tail and legs are bare smooth blue hide, with a warm cream belly, throat and lower jaw. Add a short crest of bright amber-orange spikes, colour #f08c1e with #b85c0a shadows, over the brow and down the back of the neck. Nothing red is left. Keep the head, eyes, teeth, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Take off the red cape, the red scarf and the red ankle bands so its neck, back, tail and legs are bare smooth blue hide, with a warm cream belly, throat and lower jaw. Add a short crest of bright amber-orange spikes, colour #f08c1e with #b85c0a shadows, over the brow and down the back of the neck. Nothing red is left. Keep the head, eyes, teeth, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "dinosaur",
+      "recipe": "t-rex-b-edit-2",
+      "candidate": 0,
+      "sha256": "529049c22a1f48a8f04f9bb4dfbee16966ed1dfbc58e71324b9c037d50e43978"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-hide-b",
+  "jobId": "cd603ff9-8597-4d20-aac4-7b93829dd374",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81104,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the bright blue hide: it becomes a duller slate blue, colour #4f73a6 on the lit side, with dark navy #26375c shading along the back, tail and far legs. Do not redraw anything. Keep the amber-orange spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the bright blue hide: it becomes a duller slate blue, colour #4f73a6 on the lit side, with dark navy #26375c shading along the back, tail and far legs. Do not redraw anything. Keep the amber-orange spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the bright blue hide: it becomes a duller slate blue, colour #4f73a6 on the lit side, with dark navy #26375c shading along the back, tail and far legs. Do not redraw anything. Keep the amber-orange spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the bright blue hide: it becomes a duller slate blue, colour #4f73a6 on the lit side, with dark navy #26375c shading along the back, tail and far legs. Do not redraw anything. Keep the amber-orange spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-base-a",
+      "candidate": 0,
+      "sha256": "1f18cc086da72d081699c74c65eb07b1f27a7d080547ba9bdf735b11c47d78f5"
+    }
+  }
+}

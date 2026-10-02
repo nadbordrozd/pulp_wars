@@ -2357,3 +2357,410 @@ list).
 - **The study's review** (`art:undead-direction-study-review`) now pins its
   "today" panels to the classic art by its own registry; its checked-in
   evidence was not regenerated.
+
+## 18. Dinosaur study
+
+**Status:** bead `pulp_wars-3tq.14`, waiting for the user's review. The
+user accepted the proposed look in principle ("fine. show me a demo with a
+few variants. remember dinos can have patterns on their bodies. e.g. tiger
+stripes or sth."). This is a study on three units in six variants.
+**Nothing is live:** the game draws the Dinosaurs exactly as before, no
+sprite is registered, and [DINOSAUR.md](factions/DINOSAUR.md) is unchanged.
+
+Units chosen from the roster (`src/engine/rules/ruleset-v7.ts`):
+
+- **Caveman** (`UNIT:DINOSAUR:FIGHTER`), the human;
+- **Raptor** (`UNIT:DINOSAUR:RAIDER`), the small dinosaur;
+- **T-Rex** (`UNIT:DINOSAUR:KNIGHT`), the big dinosaur.
+
+![Rows: Caveman, Raptor, T-Rex. Columns: today in Coral and Teal, variants A to F, the live Human, Undead and Goblin unit of the role](../../art/pixellab/reviews/dinosaur-direction-study/variants-x4.png)
+
+### The look
+
+The same rules as the three converted factions: fixed faction colours, no
+owner area and no mask; the player is read from the seat-shaped plate, the
+pennant and the border; chibi proportions, camera, top-left light and black
+outline unchanged; the same canvases (56 x 80, 72 x 88) and anchors as the
+accepted sprites. Today's player-coloured parts are gone: the Raptor's
+feather crest is amber and its blanket is removed; the T-Rex's cape, scarf
+and ankle bands are removed and it has an amber brow crest and back spikes;
+the Caveman's red tunic, headband and wrist wrap are tawny fur and bone.
+
+| Variant                     | Hide (commonest tones)          | Body pattern                                           | Caveman beside it                  |
+| --------------------------- | ------------------------------- | ------------------------------------------------------ | ---------------------------------- |
+| A. Tiger stripes            | slate `#465f82`, `#45547d`      | bold amber wedges from the spine, on the back and tail | tiger-striped fur, amber war paint |
+| B. Spots                    | slate `#46557e`, `#4b6180`      | ten to twelve big solid amber spots                    | spotted fur, amber war paint       |
+| C. Bands and saddle         | slate `#4d627f`, `#46547c`      | navy saddle and tail bands; amber on the crest only    | plain fur, a necklace of teeth     |
+| D. Plain (control)          | slate `#4e6383`, `#495881`      | none; amber on the crest only                          | plain fur, a necklace of teeth     |
+| E. Pale steel, navy stripes | pale steel `#84a2be`, `#577d95` | six to eight navy stripes; amber on the crest only     | spotted fur, amber war paint       |
+| F. Deep blue, amber stripes | deep blue `#205794`, `#164271`  | the stripes of A on a deeper, more saturated hide      | tiger-striped fur, amber war paint |
+
+F was not in the brief. The hide edits reached three blues (below), and the
+brief's E tests the paler one; F shows the deeper one with the pattern of A,
+so the hide colour can be judged in both directions.
+
+| Role         | Colours (measured)                                                       | Share of the two dinosaurs                 | Used for                                             |
+| ------------ | ------------------------------------------------------------------------ | ------------------------------------------ | ---------------------------------------------------- |
+| Hide         | per variant, above; mean `#4b5d81` (D)                                   | 19% to 31%                                 | head, flank, limbs                                   |
+| Navy         | `#151d4d`, `#263253`; F `#050949`                                        | 17% to 29%                                 | the back, tail top and far legs; C's and E's pattern |
+| Cream        | `#f4dda3`, `#f2deab`                                                     | 7%                                         | belly, throat, lower jaw, teeth, claws               |
+| Amber accent | lit `#fe6d00` to `#fe7500`; shade `#c64600`; mean `#d95301` to `#e86400` | D 11% (Raptor 17%, T-Rex 5%); A 18%; B 19% | crest and spikes; stripes, spots, war paint          |
+| Caveman fur  | spotted `#d8a757` with `#431205` spots; plain `#ac823a`                  | most of the body                           | the pelt                                             |
+| Caveman skin | `#e3ad60` to `#e5b06e`                                                   | face, arms, legs                           | a light golden tan                                   |
+| War paint    | `#f66300`                                                                | 0.9% to 1.5% of the Caveman                | two stripes on each cheek, a band on the arm         |
+
+The tables are written from `palette.json`, which
+`npm run art:dinosaur-direction-study-review` measures on the sprites.
+
+![The palette of each variant beside the colours it must stay apart from](../../art/pixellab/reviews/dinosaur-direction-study/palette.png)
+
+**The accent is orange, not amber.** Every edit asked for "bright
+amber-orange, colour `#f08c1e`" and PixelLab drew a red-orange (hue 20° to
+28°, `#fe6d00`) every time; only the T-Rex's spots came out yellower
+(`#ff9d00`). The findings below are for the colour that was drawn.
+
+### How it was made
+
+Run
+[`art/explorations/dinosaur-direction-2026-10/`](../../art/explorations/dinosaur-direction-2026-10/)
+(`batch.json` with every recipe, seed and instruction; `faction.md`;
+`subjects.json`; `records.json` with each request as sent and each verdict;
+receipts in `submissions/`; candidates in `raw/`): 39 recipes, 39 PixelLab
+calls, 78 candidates, every one an `edit-image-pixen` edit of an accepted
+sprite of batch `dinosaur` or of an earlier step. 13 recipes are rejected
+with a recorded reason.
+[`samples.ts`](../../scripts/art/dinosaur-direction/samples.ts) cuts the 18
+masters and 8 alternatives into `assets/` and records them in
+`samples.json`.
+
+![Every candidate with its verdict](../../art/pixellab/reviews/dinosaur-direction-study/candidates-x3.png)
+
+**Step 1, a clean base per unit.**
+
+| Recipe                            | Result                                                                                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `raptor-base-a`                   | alternative: crest amber, blanket and cord gone, today's light blue kept (`#66b1ee`)                                                             |
+| `raptor-base-b`                   | **slate base (D)**: the same with the hide asked for as `#4f73a6`; it came out a darker, duller slate (`#495881`) with no stripes                |
+| `raptor-hide-a`                   | alternative: a light head and flank under a navy back                                                                                            |
+| `raptor-hide-b`                   | **pale steel base (E)**: lifted from the slate base                                                                                              |
+| `raptor-hide-c`                   | **deep blue base (F)**: `#4a78b8` asked for, `#205794` drawn                                                                                     |
+| `t-rex-base-a`, `t-rex-base-b`    | cape, scarf and ankle bands removed and a crest added in one edit; the hide stayed today's bright blue (`#2d86c5`) although `-b` gave hex values |
+| `t-rex-hide-a`                    | **slate base (D)**: a hide-only edit of `base-b`                                                                                                 |
+| `t-rex-hide-b`                    | **pale steel base (E)**: the same edit on `base-a` (smaller crest) landed lighter                                                                |
+| `t-rex-hide-c`                    | rejected: a second hide edit of the bright blue base changed nothing                                                                             |
+| `t-rex-hide-d`                    | **deep blue base (F)**: from the slate result, not from the bright blue one                                                                      |
+| `caveman-fur-spots-a`, `-plain-a` | the two wardrobes: a spotted tawny pelt with a bone-white headband; a plain pelt with a necklace of teeth                                        |
+| `caveman-…-skin-a` (two)          | rejected: "tanned warm brown skin, `#c8875a`" came out dark brown, darker than the fur                                                           |
+| `caveman-…-skin-b` (two)          | **chosen**: "lightly sun-tanned skin, a light golden tan, `#dba673` … clearly lighter than brown", with the war paint in the same edit           |
+| `caveman-fur-stripes-a`           | **chosen for A and F**: the spots of the pelt redrawn as tiger stripes                                                                           |
+
+**Step 2, the patterns,** each an edit of the plain base of its hide:
+
+| Recipe                                            | Result                                                                                                                    |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `raptor-stripes-probe-a`                          | **A**: nine amber wedges on the back and tail, first try                                                                  |
+| `t-rex-stripes-probe-a`, `-b`                     | rejected: twenty thin stripes over the body and both legs; "exactly seven" changed nothing                                |
+| `t-rex-stripes-a`                                 | **A**: "five very thick … each a fat solid wedge at least four pixels wide … no thin lines; both legs stay plain"         |
+| `raptor-spots-probe-a`, `t-rex-spots-probe-a`     | amber rings ("leopard spots … a dark centre"): kept as an alternative on the Raptor, rejected on the T-Rex (twenty rings) |
+| `raptor-spots-a`, `t-rex-spots-a`                 | **B**: "big solid … round spots, each a filled blot about as big as its eye with no ring and no hole"                     |
+| `raptor-navy-spots-a`, `t-rex-navy-spots-a`       | rejected: darker-blue rosettes are too low in contrast and look like suckers                                              |
+| `raptor-saddle-probe-a`                           | rejected: "no orange on the body" removed the crest, and the tail was redrawn curled                                      |
+| `raptor-saddle-a`, `t-rex-saddle-a`               | **C**: the same with "the crest stays exactly as it is and the tail keeps its straight shape"                             |
+| `raptor-steel-stripes-a`, `t-rex-steel-stripes-a` | rejected: a dozen thin navy lines; amber bands appeared on the T-Rex's tail unasked                                       |
+| `raptor-steel-stripes-b`, `t-rex-steel-stripes-b` | **E**: the "fat solid wedge" wording, and "no orange"                                                                     |
+| `raptor-teal-stripes-a`                           | rejected: the head turned teal-green and a teal frill was added                                                           |
+| `raptor-deep-stripes-a`                           | rejected: the tail was redrawn curled and the crest reshaped                                                              |
+| `raptor-deep-stripes-b`, `t-rex-deep-stripes-a`   | **F**                                                                                                                     |
+
+**The alternative palette of E.** Of the two suggested, the paler steel
+hide with navy stripes is chosen over teal-green stripes: a second cool
+colour on a blue hide turned the Raptor's head green (the Goblin colour
+family) and its stripes were the weakest in contrast; navy on pale steel
+has a luminance contrast of 4.4, the highest of any pattern.
+
+![The other hides and patterns kept](../../art/pixellab/reviews/dinosaur-direction-study/alternatives-x4.png)
+
+**Did the pattern edits hold the base steady?** Yes, when the instruction
+says what stays. `samples.json` records, for each pattern variant against
+the plain sprite it was edited from, the pixels whose opacity changed and
+the pixels whose colour clearly changed (further than 48 in RGB), on the
+hide and elsewhere:
+
+| Variant | Raptor: silhouette, hide, elsewhere | T-Rex: silhouette, hide, elsewhere |
+| ------- | ----------------------------------- | ---------------------------------- |
+| A       | 91, 201, 22                         | 0, 142, 45                         |
+| B       | 0, 196, 4                           | 0, 252, 2                          |
+| C       | 0, 106, 0                           | 0, 342, 25                         |
+| E       | 3, 131, 0                           | 0, 291, 13                         |
+| F       | 1, 180, 6                           | 0, 112, 29                         |
+
+Of about 2,700 opaque pixels. The Raptor's 91 silhouette pixels in A are
+stripe tips that stand out from the back and tail as small spines. An edit
+does repaint nearly every pixel by a few steps of tone (2,100 to 2,700
+pixels are not byte-identical), so the variants are like for like to the
+eye but not to a byte comparison, unlike the Undead accents. Two of the
+21 pattern edits redrew the tail and crest and were rejected; both
+were repaired by naming the crest and the tail as kept.
+
+What worked in the prompts:
+
+- **"Add only a pattern on the hide: …"** then the count, the colour as a
+  hex value, where it goes, and where it does not ("No stripes on the head,
+  belly or legs"), then "Do not redraw anything. Keep …".
+- **Ask for size, not for a number.** "Five stripes" or "exactly seven"
+  gave a dozen thin lines. "Very thick … each a fat solid wedge at least
+  four pixels wide, with plain hide between them; no thin lines" gave five
+  to eight bold ones.
+- **"Solid … with no ring and no hole"** for spots. "Leopard spots" and
+  "rosettes" give rings, which are freckles at native size.
+- **Name the crest and the tail as kept** in every pattern edit of the
+  Raptor: "the feather crest stays exactly as it is and the tail keeps its
+  straight shape".
+- **Never write "no orange on the body":** it removes the crest. To keep a
+  pattern navy, write "no orange" inside the stripe clause.
+- **The hide's colour needs an edit of its own, and one only.** In an edit
+  that also removes a cape the hex value is ignored; a hide-only edit moves
+  it once; a second hide edit of the same source does nothing. The hex
+  value sets the direction, not the result: `#4f73a6` gave `#495881` and
+  `#4e6383`; `#4a78b8` gave `#205794`.
+- **"Take off the red cape, the red scarf and the red ankle bands so its
+  neck, back, tail and legs are bare … hide"** removes garments cleanly and
+  redraws the body under them; "Nothing red is left." closes the edit.
+- **Skin: say "light".** "Tanned warm brown" is dark brown. "A light golden
+  tan … clearly lighter than brown" is the tone wanted.
+- **The accent's hue is not controllable by words or hex:** "amber-orange
+  `#f08c1e`" is drawn as `#fe6d00`.
+- An instruction is at most 500 characters.
+
+### In the game
+
+`npm run art:dinosaur-direction-study-review` draws the scenes of
+[`scene.ts`](../../scripts/art/dinosaur-direction/scene.ts) through the real
+board host with the look the game draws, including the live Human, Goblin
+and Undead direction art: today's Dinosaur sprites, then each variant.
+
+![Four Dinosaur players on the desktop at zoom 1: today and variants A to F](../../art/pixellab/reviews/dinosaur-direction-study/scene-four-desktop-zoom-1.png)
+
+`FOUR` has four Dinosaur players (Coral, Teal, Gold, Violet): rows of
+Raptors, T-Rexes and Cavemen on Grass with the ready rim and the damaged HP
+bar, a row on Forest, a row beside and inside Dinosaur cities of the three
+tiers with two Eggs, a row on Mountain, and a row on the shore with
+Shallow Water to the left and below and Deep Water to the right, holding an
+Alpha Raptor and a Big T-Rex (today's scale and chevrons).
+
+![Dinosaur against Human, Undead and Goblin on the desktop at zoom 0.75](../../art/pixellab/reviews/dinosaur-direction-study/scene-mixed-desktop-zoom-0.75.png)
+
+`MIXED` has a Dinosaur player in Teal, a Human player in Coral, an Undead
+player in Violet and a Goblin player in Gold. The four factions separate at
+once: crimson and gold, black and bone, olive and brown, blue and orange.
+
+![The shore row beside Shallow and Deep Water, as seen and under simulated deuteranopia](../../art/pixellab/reviews/dinosaur-direction-study/shore-desktop-zoom-1.png)
+
+![The sheet at native size](../../art/pixellab/reviews/dinosaur-direction-study/variants-1x.png)
+
+![The sheet at zoom 0.75](../../art/pixellab/reviews/dinosaur-direction-study/variants-0.75x.png)
+
+### Readability
+
+`readability.json` (CIE76 colour difference: about 10 is clear at a glance,
+20 and more are different colours; "contrast" is the WCAG luminance ratio).
+Terrain is measured on the untoned rasters. A variant's hide is the mean of
+its Raptor's and T-Rex's hide pixels.
+
+| Check                                       | Result                                                                                                                                                                                                                                                                            |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hide against Grass (`#89b75b`)              | slate 79 (contrast 2.9), pale steel 67 (1.6), deep blue 93 (3.5); today's blue 85 (1.4). Every hide is far from Grass; the pale one is the closest in brightness.                                                                                                                 |
+| Hide against Shallow Water (`#8fd3dc`)      | slate 48 (contrast 4.0), **pale steel 31 (2.3)**, deep blue 58 (4.9); today's blue 38. The known risk is real only for the pale hide; the dark ones are clearer beside Shallow Water than today's sprites.                                                                        |
+| Hide against Deep Water (`#4277a5`)         | **slate 13 to 15, pale steel 14, deep blue 18;** today's blue 13. Every blue hide is the colour of Deep Water. A land unit never stands on water; beside it, the black outline, the navy back (37 to 46 from Deep Water) and the cream belly separate the unit, as they do today. |
+| Hide against Mountain (mean `#929ca9`)      | slate 29, **pale steel 14**, deep blue 42. A pale steel dinosaur on a Mountain is grey on grey.                                                                                                                                                                                   |
+| Hide against the Teal plate (`#28b7a4`)     | slate 56 (33 under deuteranopia), **pale steel 42 (19)**, deep blue 66 (48); today's blue 54 (38). Slate against the Violet plate 41 (26).                                                                                                                                        |
+| Accent against the Gold plate (`#e2b63f`)   | 45 to 52, but **15 to 21 under deuteranopia**, where orange and gold are both yellow-brown. Against Human gold (`#f1b21b`) 40 to 48 (18 to 26).                                                                                                                                   |
+| Accent against the Coral plate (`#f06762`)  | 34 to 39 (28 to 32 under deuteranopia): the drawn red-orange is nearer Coral than Gold.                                                                                                                                                                                           |
+| Accent against Goblin leather and fireworks | leather (`#754019`) 46 to 51. **Fireworks orange (`#e86e0c`) 3 to 12: the same colour.** Fireworks red 19 to 28, yellow 40 to 49. The Rocket Cart's rockets and a dinosaur's crest share a hue; the cart is told apart by its shape, its olive crew and its other colours.        |
+| Cream against Mountain                      | 46 against the mean, 37 to 39 against the light rock (`#d1dbe8`) with a luminance contrast of 1.0 to 1.1: as for Undead bone, warm against cool at equal brightness; the outline and the dark hide separate the unit.                                                             |
+| Pattern on its hide                         | amber on slate 97 to 102 (contrast about 2), amber on deep blue 115 (2.4); navy on slate **27 (2.4)**, navy on pale steel 46 (4.4). C's saddle is a tone-on-tone mark.                                                                                                            |
+| Caveman fur against Goblin leather          | spotted and striped fur 43 to 44 (contrast 3.8): far lighter than leather. Plain fur 29 (2.4).                                                                                                                                                                                    |
+| Caveman fur against the Gold plate          | **spotted 15 to 17**, plain 27: the pale tawny pelt is close to Gold. Against Grass 41, but 11 to 12 under deuteranopia.                                                                                                                                                          |
+| Caveman skin against his fur                | **spotted 3.5**, plain 19: in the spotted treatment skin and pelt are one colour, held apart by the outline and the spots.                                                                                                                                                        |
+| War paint against skin                      | 45 to 48 (contrast 1.5), 22 to 24 under deuteranopia; 19 to 31 pixels.                                                                                                                                                                                                            |
+| Under simulated deuteranopia                | The blue hide stays blue and the orange turns a dark yellow: stripes and spots keep their contrast against the hide (92 to 109). Orange against Grass falls from 84 to 26, so the crest stands out less; the hide carries the unit.                                               |
+| Unit width against the plate                | Caveman 52 on a 52 px plate. Raptor 67 and T-Rex 60 on a 57 px plate, as today (67 and 62): the tail and snout overhang; their feet are 43 and 41 px, so the plate shows on both sides.                                                                                           |
+
+![The four Dinosaur players' units per variant on a phone at zoom 0.75, as seen and under simulated deuteranopia](../../art/pixellab/reviews/dinosaur-direction-study/same-unit-phone-zoom-0.75.png)
+
+### Findings per variant
+
+- **A. Tiger stripes.** The pattern that reads best: at native size and at
+  zoom 0.75 the Raptor is plainly a striped animal, and the T-Rex's tail
+  and neck stripes read as a few orange bars. It says "predator" and ties
+  the body to the crest. Costs: it doubles the accent on the Raptor (25% of
+  the sprite); the T-Rex faces the camera, so its back stripes show only on
+  the tail and behind the neck; the Raptor's stripe tips break the outline
+  as small spines.
+- **B. Spots.** Readable and bold, and the friendliest: big orange dots on
+  a dark body. But solid dots read as polka dots or a ladybird rather than
+  a leopard, real rosettes turn into freckles at native size, and the spots
+  on the T-Rex's legs and belly edge are the busiest result of the six. It
+  suits a slow, round herbivore better than a predator.
+- **C. Bands and saddle.** The calmest, and too calm: navy on slate differs
+  by 27, so at native size C cannot be told from D on the Raptor, and on
+  the T-Rex it reads as "a darker T-Rex". It is a good second layer under
+  another pattern, not a pattern on its own.
+- **D. Plain.** Clean, and already a faction: slate body, cream belly,
+  orange crest. The Raptor's big crest carries it; the plain T-Rex is the
+  dullest sprite of the study, a dark shape with a thin orange ridge.
+- **E. Pale steel with navy stripes.** The stripes have the best contrast
+  of all, and it is the only variant whose accent stays small. But the pale
+  hide is the weakest in the game: 31 from Shallow Water, 14 from Mountain
+  rock, 19 from the Teal plate under deuteranopia, and its lit tone
+  (`#84a2be`) is near the Undead iron (`#818f9b`). It reads as a grey zebra.
+- **F. Deep blue with amber stripes.** The same pattern as A on a hide that
+  measures best everywhere: 93 from Grass, 58 from Shallow Water, 66 from
+  the Teal plate, 115 between stripe and hide. At native size the slate of
+  A to D reads as near-black navy; F still reads as blue, which is the
+  faction's tell. It is a more saturated blue than "slate to steel".
+
+The two Caveman treatments: **spotted fur with war paint** is the livelier
+and reads as a caveman at once, but its pelt, its skin and the Gold plate
+are nearly one colour; the **plain fur with a tooth necklace** has a
+darker pelt that separates from the skin (19) and from Gold (27), and the
+necklace reads at native size, but it has no accent at all. The war paint
+is 19 to 31 pixels: visible at x4, a warm smudge on the cheek at native
+size. The tiger-striped pelt is the clearest of the three patterns on fur.
+
+### Recommendation
+
+1. **Pattern: tiger stripes** (A), as the faction's default body pattern,
+   with the "fat wedge" wording. They read at every size, hold the base
+   steady, and survive colour blindness.
+2. **Hide: the deep blue of F,** or a tone between F and the slate. The
+   slate is correct to the brief and looks good enlarged, but at the size
+   the game is played it is a dark navy silhouette, and blue is what makes
+   a dinosaur a Dinosaur at a glance. Not the pale steel of E.
+3. **One pattern per species, not one for the faction.** Stripes on the
+   predators (Raptor, T-Rex); spots on a round herbivore (Brontosaurus or
+   Triceratops) if variety is wanted; the navy saddle and tail bands of C as
+   an under-layer on the armoured ones (Ankylosaurus). Five striped species
+   in a row would make the pattern the clutter this direction set out to
+   remove.
+4. **Pin the accent by a recorded pipeline step,** as the Undead violet is:
+   generate with PixelLab's orange, find it by colour (hue 8° to 45°,
+   saturation at least 0.75; nothing else on a dinosaur is in that band) and
+   move it to the chosen hue. The user asked for amber; a true amber
+   (`#f08c1e`) is further from Coral and from the Goblin fireworks and
+   nearer to Gold. This is the one open colour choice.
+5. **Caveman:** the plain, darker pelt with the tooth necklace **and** the
+   war paint (a combination this study did not draw), so that he carries
+   the accent and his fur stays apart from his skin and from Gold.
+
+### Growth: Big and Alpha
+
+Today a grown dinosaur is the same sprite drawn larger (x1.125 and x1.25)
+with one or two chevrons beside the HP bar; the shore row of scene `FOUR`
+shows both. A pattern that intensifies with growth is possible in this
+look, because the pattern edits hold the silhouette: a plain base, a
+striped Big and a fully striped Alpha would be three rasters of one
+outline, and the scale and chevrons would stay as they are. Suggested, not
+implemented:
+
+- **Base:** the species' pattern as in this study.
+- **Alpha only:** one extra raster per dinosaur with a second mark on the
+  same stripes, for example amber war paint on the face or a taller crest.
+  Big keeps the base raster and its chevron.
+
+A three-step ladder (plain, some stripes, many stripes) is not
+recommended: the middle step cannot be told from its neighbours at native
+size (C against D shows how little a quiet difference reads), a base
+dinosaur with no pattern would lose the look this study is about, and it
+triples the sprites of seven species. The Alpha-only raster costs seven
+edits and needs a renderer change (a growth-stage art subject) with tests.
+The chevron stays the rule either way: shape, not colour, carries the
+meaning.
+
+### Weak spots
+
+- **The accent is not amber.** See above; every finding about Gold, Coral
+  and the fireworks shifts if the hue is moved.
+- **Blue hide is the colour of Deep Water** (13 to 18), as it is today. It
+  is acceptable only because land units do not stand on water; a dinosaur
+  on the shore in front of Deep Water is held by its outline.
+- **The slate hide is dark at native size.** With the navy back, half of a
+  slate dinosaur is darker than `#4b5d81`.
+- **The hides of the two dinosaurs are not one colour.** In E the Raptor is
+  `#84a2be` and the T-Rex `#577d95`; in the slate variants they differ by a
+  few steps. Hide colour drifts per edit, as the accepted roster's blue
+  does today.
+- **The T-Rex's spots are a yellower orange** (`#ff9d00`) than its crest.
+- **The Raptor's gums are red,** a leftover of the accepted sprite; it is
+  a second warm colour beside the orange.
+- **The spotted Caveman's skin and pelt are one colour** (3.5 apart).
+- **The T-Rex's crest differs between hides:** E was built on the smaller
+  crest of `t-rex-base-a`.
+- **Wide units overhang their plate,** unchanged from today.
+- **Eggs, cities, portraits, icons and the other five units in the scenes
+  are today's art** with player-coloured parts.
+
+### Open questions for the user
+
+1. Which pattern: tiger stripes (recommended), spots, bands, or none?
+2. One pattern for the whole faction, or one per species?
+3. Which hide: slate (A to D), deep blue (F, recommended), or pale steel
+   (E)?
+4. The accent: the red-orange PixelLab draws (`#fe6d00`), or moved to amber
+   (`#f08c1e`) by a recorded remap?
+5. How much accent: on the crest only (D, about 11% of a dinosaur), or
+   crest and pattern (A, about 18%)?
+6. Caveman: spotted pelt with war paint, plain pelt with bone jewellery, or
+   the plain pelt with both? Should the pelt's pattern follow the dinosaurs
+   (tiger pelt beside striped dinosaurs)?
+7. Growth: scale and chevrons only (as today), or an Alpha raster?
+8. May the frills of the Spitter and the Triceratops, today the largest
+   player-coloured areas of the faction, become solid accent areas? A frill
+   is about 30% of those sprites, well above the accent share elsewhere.
+
+### Plan for the rest of the roster
+
+On approval, first rewrite [DINOSAUR.md](factions/DINOSAUR.md): the chosen
+hide by hex, cream, navy, the accent, tawny fur and tanned skin allowed;
+its negative fragment today forbids "orange glow, brown fur, brown hide,
+brown leather, tan, leopard spots", which existed to protect the red key
+colour and the player colours; its rule "a few navy stripes on the Raptor's
+tail are the only skin pattern" is replaced. Then one production batch
+(`direction-dinosaur`, `fixedFactionColours`, every asset
+`ownerColour: false`) as edits of the accepted `dinosaur`, `5-dinosaur` and
+`cities-dinosaur` assets, importing the chosen base and pattern recipes
+with `art:chibi -- import` (a whole chain must be imported).
+
+**Order of edits per dinosaur,** from this study: (1) remove the garments
+and recolour the crest, (2) the hide alone, (3) the pattern, with the kept
+parts named. Three edits, plus repairs.
+
+| Piece                  | Plan                                                                                                                                    | Predicted difficulty                                                                                                                                                                                                                      |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Spitter                | the round frill and the poncho are the owner areas: the poncho is removed, the frill becomes the accent with a cream rim                | High. An accent frill is a third of the sprite, where the rule is a small accent; a hide-coloured frill with accent ribs or an accent rim may be the answer. Needs two samples. The frill is also where a pattern would go, not the body. |
+| Ankylosaurus           | blanket strip and red tail-club ball removed; cream or bone dome plates; navy bands, accent only on the spikes' tips or a brow          | Medium. It is on the standard canvas and mostly shell: little hide to pattern, and removing the blanket once "made a hood over the whole dome". Tan drifts in on its head and legs.                                                       |
+| Shaman                 | tanned skin, tawny robe instead of the red one, the skull headdress kept, its red feathers in the accent, bone and tooth jewellery      | Medium. The robe is most of the sprite: a long tawny robe beside a tawny Caveman, and the Gold plate, needs a darker pelt or a spotted one. The skull hood must not read as Undead bone; the bearded tanned face under it does that.      |
+| Triceratops            | the frill is the owner area: hide-coloured with accent markings, or an accent frill; cream horns                                        | High, for the same reason as the Spitter, and it is a side-view quadruped: an edit once turned the whole animal charcoal. One brown belly strap is left on the accepted sprite.                                                           |
+| Brontosaurus           | neck bands, collar and back blanket removed; a long plain neck with a pattern on the back and flank                                     | Medium to high. It is the giant (88 x 104) and reached the 96 px cap; removing the blanket exposes the largest hide area of the faction, where spots or a saddle fit best. It took ten calls to make.                                     |
+| Raptor, T-Rex, Caveman | import this study's chains; one repair each (the Raptor's red gums, the T-Rex's crest on the chosen hide, the Caveman's pelt and paint) | Low.                                                                                                                                                                                                                                      |
+| Egg                    | the red painted band becomes an accent band, or a band of hide-blue speckles                                                            | Low. One edit. An accent band on every Egg keeps the Egg loud, which helps: it is a 48 px piece.                                                                                                                                          |
+| Cities 1 to 3          | red tent roofs and banners become tawny hide and bone with accent-painted markings; a bare pole for the code-drawn pennant              | Medium to high. As for the Goblins and the Undead: recorded pennant anchors and `factionCities` no longer `"CLASSIC"` for the Dinosaurs, which is renderer work with tests. City 3's hut walls are already dark brown.                    |
+| Portraits (8)          | edits of the `5-dinosaur` busts with the unit's instruction                                                                             | Medium. At 48 x 48 a body pattern does not show on a bust: two or three stripes on the neck at most. A portrait recolour once turned half a crest orange, which is now the wanted colour.                                                 |
+| Command icons          | Lay Egg, War Drums, Stampede: red parts to the accent                                                                                   | Low.                                                                                                                                                                                                                                      |
+| Accent step            | an accent preset in `scripts/art/chibi/accent.ts` (source band orange, target the chosen hue), recorded per asset                       | Low: the mechanism exists for the Undead. Warm fur and skin on the cavemen are outside the band by saturation (below 0.75); the war paint is inside it, as wanted.                                                                        |
+
+Expected cost: three edits and one repair per dinosaur (seven species),
+two to three per caveman, one and a half per portrait, two per city:
+roughly 60 to 70 PixelLab calls. Order: the fragment and the batch
+scaffold; then the Spitter, the Triceratops and the Shaman as the next
+sample (the two frills and the robe are where the rules fit worst); then
+the rest, the portraits and icons, and the cities with their renderer
+change last. Until then a Dinosaur player keeps today's sprites on plates.
+
+Evidence in
+[`art/pixellab/reviews/dinosaur-direction-study/`](../../art/pixellab/reviews/dinosaur-direction-study/):
+`candidates-x3.png`, `variants-{x4,1x,0.75x}.png`, `terrain-x2.png`,
+`alternatives-x4.png`, `palette.{png,json}`, `readability.json`,
+`scene-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png`,
+`shore-{desktop,phone}-zoom-{1,0.75}.png`,
+`same-unit-{desktop,phone}-zoom-{1,0.75}.png` and `index.json`.

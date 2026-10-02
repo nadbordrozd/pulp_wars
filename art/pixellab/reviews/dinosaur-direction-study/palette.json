@@ -1,0 +1,388 @@
+{
+  "bead": "pulp_wars-3tq.14",
+  "note": "Measured on the Raptor and T-Rex of each variant pooled (share of their opaque pixels, mean and the three commonest colours of each role), and on the Caveman of each treatment.",
+  "variants": {
+    "a": {
+      "name": "A. Tiger stripes",
+      "hide": {
+        "mean": "#455a7f",
+        "share": "22.1%",
+        "colours": [
+          "#465f82",
+          "#45547d",
+          "#44537a"
+        ]
+      },
+      "navy": {
+        "mean": "#172049",
+        "share": "19.6%",
+        "colours": [
+          "#101949",
+          "#253152",
+          "#232e4e"
+        ]
+      },
+      "cream": {
+        "mean": "#f3dda4",
+        "share": "7.2%",
+        "colours": [
+          "#f3db9e",
+          "#f2dda8",
+          "#fffce2"
+        ]
+      },
+      "amber": {
+        "mean": "#e25a00",
+        "share": "17.9%",
+        "colours": [
+          "#fe6d00",
+          "#fe7200",
+          "#c64700"
+        ]
+      },
+      "amberShareOfSprite": {
+        "Raptor": "25.2%",
+        "T-Rex": "10.2%"
+      }
+    },
+    "b": {
+      "name": "B. Spots",
+      "hide": {
+        "mean": "#485b7e",
+        "share": "20.6%",
+        "colours": [
+          "#46557e",
+          "#4b6180",
+          "#4c6281"
+        ]
+      },
+      "navy": {
+        "mean": "#18204a",
+        "share": "19%",
+        "colours": [
+          "#273355",
+          "#131b4d",
+          "#243050"
+        ]
+      },
+      "cream": {
+        "mean": "#f4dea5",
+        "share": "7.2%",
+        "colours": [
+          "#f5dda0",
+          "#f2dda9",
+          "#fffbe1"
+        ]
+      },
+      "amber": {
+        "mean": "#e76700",
+        "share": "19.4%",
+        "colours": [
+          "#fd6d00",
+          "#ff9d00",
+          "#c84700"
+        ]
+      },
+      "amberShareOfSprite": {
+        "Raptor": "24.6%",
+        "T-Rex": "14.2%"
+      }
+    },
+    "c": {
+      "name": "C. Bands and saddle",
+      "hide": {
+        "mean": "#495a7d",
+        "share": "18.7%",
+        "colours": [
+          "#4d627f",
+          "#46547c",
+          "#44537a"
+        ]
+      },
+      "navy": {
+        "mean": "#151d44",
+        "share": "29.2%",
+        "colours": [
+          "#151d4b",
+          "#263151",
+          "#111d42"
+        ]
+      },
+      "cream": {
+        "mean": "#f1dca2",
+        "share": "7%",
+        "colours": [
+          "#f2dd9e",
+          "#f2dca8",
+          "#dfc592"
+        ]
+      },
+      "amber": {
+        "mean": "#d75000",
+        "share": "11.4%",
+        "colours": [
+          "#c64600",
+          "#ff6c01",
+          "#eb5800"
+        ]
+      },
+      "amberShareOfSprite": {
+        "Raptor": "17.4%",
+        "T-Rex": "5.4%"
+      }
+    },
+    "d": {
+      "name": "D. Plain",
+      "hide": {
+        "mean": "#4b5d81",
+        "share": "25.6%",
+        "colours": [
+          "#4e6383",
+          "#495881",
+          "#47577f"
+        ]
+      },
+      "navy": {
+        "mean": "#1a224b",
+        "share": "22.3%",
+        "colours": [
+          "#151d4d",
+          "#263253",
+          "#283556"
+        ]
+      },
+      "cream": {
+        "mean": "#f3dea8",
+        "share": "7.3%",
+        "colours": [
+          "#f4dda3",
+          "#f2deab",
+          "#fffadf"
+        ]
+      },
+      "amber": {
+        "mean": "#d95301",
+        "share": "11.2%",
+        "colours": [
+          "#c74801",
+          "#fe7003",
+          "#eb5b01"
+        ]
+      },
+      "amberShareOfSprite": {
+        "Raptor": "17.4%",
+        "T-Rex": "4.8%"
+      }
+    },
+    "e": {
+      "name": "E. Pale steel, navy stripes",
+      "hide": {
+        "mean": "#6686a1",
+        "share": "31.3%",
+        "colours": [
+          "#84a2be",
+          "#577d95",
+          "#83a1bd"
+        ]
+      },
+      "navy": {
+        "mean": "#111b3a",
+        "share": "16.9%",
+        "colours": [
+          "#010525",
+          "#203250",
+          "#0b1631"
+        ]
+      },
+      "cream": {
+        "mean": "#f9e5af",
+        "share": "7%",
+        "colours": [
+          "#fadb9b",
+          "#fff1ba",
+          "#f6e6b3"
+        ]
+      },
+      "amber": {
+        "mean": "#d55200",
+        "share": "10.3%",
+        "colours": [
+          "#e95800",
+          "#fd6a00",
+          "#a23401"
+        ]
+      },
+      "amberShareOfSprite": {
+        "Raptor": "17.4%",
+        "T-Rex": "3.1%"
+      }
+    },
+    "f": {
+      "name": "F. Deep blue, amber stripes",
+      "hide": {
+        "mean": "#1e5088",
+        "share": "23.7%",
+        "colours": [
+          "#205794",
+          "#164271",
+          "#205692"
+        ]
+      },
+      "navy": {
+        "mean": "#041144",
+        "share": "21.4%",
+        "colours": [
+          "#050949",
+          "#042651",
+          "#050846"
+        ]
+      },
+      "cream": {
+        "mean": "#f0dba1",
+        "share": "7.3%",
+        "colours": [
+          "#eddba1",
+          "#f7dda3",
+          "#e3c58b"
+        ]
+      },
+      "amber": {
+        "mean": "#e86400",
+        "share": "16%",
+        "colours": [
+          "#f35600",
+          "#fe7500",
+          "#a82f00"
+        ]
+      },
+      "amberShareOfSprite": {
+        "Raptor": "23.1%",
+        "T-Rex": "8.6%"
+      }
+    }
+  },
+  "caveman": {
+    "spotted fur, amber war paint": {
+      "variants": [
+        "B",
+        "E"
+      ],
+      "fur": {
+        "mean": "#d8a757",
+        "colours": [
+          "#ce8f3c",
+          "#fccd6b",
+          "#fcd479"
+        ]
+      },
+      "furMarkings": {
+        "mean": "#431607",
+        "colours": [
+          "#431205",
+          "#2d0400",
+          "#60441e"
+        ]
+      },
+      "skin": {
+        "mean": "#e3ad60",
+        "colours": [
+          "#e5aa60",
+          "#ecb669",
+          "#e4b877"
+        ]
+      },
+      "warPaint": {
+        "mean": "#f26c02",
+        "colours": [
+          "#f66300",
+          "#fe7b01",
+          "#f26b00"
+        ],
+        "share": "1.5%"
+      }
+    },
+    "plain fur, bone jewellery": {
+      "variants": [
+        "C",
+        "D"
+      ],
+      "fur": {
+        "mean": "#ac823a",
+        "colours": [
+          "#bf912c",
+          "#7a551f",
+          "#fecf84"
+        ]
+      },
+      "furMarkings": {
+        "mean": "#604210",
+        "colours": [
+          "#714d18",
+          "#523a09",
+          "#443104"
+        ]
+      },
+      "skin": {
+        "mean": "#e5b06e",
+        "colours": [
+          "#fecf84",
+          "#d29259",
+          "#cb8b54"
+        ]
+      },
+      "warPaint": {
+        "mean": "#000000",
+        "colours": [],
+        "share": "0%"
+      }
+    },
+    "tiger-striped fur, amber war paint": {
+      "variants": [
+        "A",
+        "F"
+      ],
+      "fur": {
+        "mean": "#dba955",
+        "colours": [
+          "#f8ca69",
+          "#cc8e38",
+          "#d69a40"
+        ]
+      },
+      "furMarkings": {
+        "mean": "#3c1204",
+        "colours": [
+          "#3f0e01",
+          "#3a0c01",
+          "#310800"
+        ]
+      },
+      "skin": {
+        "mean": "#e4af5c",
+        "colours": [
+          "#f8ca69",
+          "#e4a557",
+          "#ebb261"
+        ]
+      },
+      "warPaint": {
+        "mean": "#f56700",
+        "colours": [
+          "#f66300",
+          "#fe7800",
+          "#b54100"
+        ],
+        "share": "0.9%"
+      }
+    }
+  },
+  "others": {
+    "todayHide": "#4b91ce",
+    "humanGold": "#f1b21b",
+    "goblinLeather": "#754019",
+    "goblinSkin": "#838e29",
+    "fireworksOrange": "#e86e0c",
+    "fireworksRed": "#cd1201",
+    "fireworksYellow": "#ffb701"
+  }
+}

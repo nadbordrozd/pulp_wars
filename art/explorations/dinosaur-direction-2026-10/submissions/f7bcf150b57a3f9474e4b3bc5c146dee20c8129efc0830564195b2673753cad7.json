@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-saddle-a",
+  "jobId": "9e313f0e-bdb7-43d6-bb76-c58bb0df37cb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81115,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only dark markings on the hide: one big dark navy saddle patch, colour #131c3a, over the back and shoulders with a clean scalloped lower edge, and three wide dark navy bands across the tail. The amber-orange crest and back spikes stay exactly as they are, and two small amber-orange marks sit under the eye. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, arms, legs, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only dark markings on the hide: one big dark navy saddle patch, colour #131c3a, over the back and shoulders with a clean scalloped lower edge, and three wide dark navy bands across the tail. The amber-orange crest and back spikes stay exactly as they are, and two small amber-orange marks sit under the eye. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, arms, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only dark markings on the hide: one big dark navy saddle patch, colour #131c3a, over the back and shoulders with a clean scalloped lower edge, and three wide dark navy bands across the tail. The amber-orange crest and back spikes stay exactly as they are, and two small amber-orange marks sit under the eye. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, arms, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Add only dark markings on the hide: one big dark navy saddle patch, colour #131c3a, over the back and shoulders with a clean scalloped lower edge, and three wide dark navy bands across the tail. The amber-orange crest and back spikes stay exactly as they are, and two small amber-orange marks sit under the eye. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, arms, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-hide-a",
+      "candidate": 0,
+      "sha256": "3b1af70f53529f9ce1a3cab21e7c1862512f8eaa25e5da7982a2e49aa6d941fe"
+    }
+  }
+}

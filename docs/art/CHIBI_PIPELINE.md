@@ -738,3 +738,24 @@ and derives: each accent option is its unit's base candidate with the
 accent pixels remapped by
 [`accent.ts`](../../scripts/art/undead-direction/accent.ts), recorded per
 asset in the run's `samples.json`.
+
+## Dinosaur direction study review
+
+`npm run art:dinosaur-direction-study-review` (bead `pulp_wars-3tq.14`)
+writes `art/pixellab/reviews/dinosaur-direction-study/`, the evidence of the
+[Dinosaur direction study](VISUAL_DIRECTION_2026-10.md#18-dinosaur-study):
+`candidates-x3.png`, `variants-{x4,1x,0.75x}.png` (today's sprite in two
+player colours, the variants A to F and the live Human, Undead and Goblin
+unit of the role, enlarged, at native size and resampled to zoom 0.75),
+`terrain-x2.png`, `alternatives-x4.png`, `palette.{png,json}` and
+`readability.json` (measured on the sprites),
+`scene-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png`,
+`shore-{desktop,phone}-zoom-{1,0.75}.png` and
+`same-unit-{desktop,phone}-zoom-{1,0.75}.png` (the scenes of
+[`scene.ts`](../../scripts/art/dinosaur-direction/scene.ts) drawn by the
+real board host with the default look) and `index.json`. Its captures start
+Vite on port 6492 unless `--port` says otherwise; the full-screen captures
+go to `--captures DIR` (a temporary directory by default). It reads the
+samples that `npx tsx scripts/art/dinosaur-direction/samples.ts` cuts from
+the run: each variant is one recorded candidate as generated, and
+`samples.json` records how far each pattern edit moved its plain base.

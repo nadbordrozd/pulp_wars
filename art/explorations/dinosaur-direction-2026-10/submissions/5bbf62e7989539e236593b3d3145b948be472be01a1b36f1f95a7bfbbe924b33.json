@@ -1,0 +1,36 @@
+{
+  "id": "caveman-plain-skin-b",
+  "jobId": "1cd23ac5-c51c-4cd9-8e76-44a5e7066c95",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-caveman",
+    "subject": "UNIT:DINOSAUR:FIGHTER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 81206,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows, clearly lighter than brown. Do not redraw anything. Keep the hair, beard, the tawny fur, the tooth necklace, the bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows, clearly lighter than brown. Do not redraw anything. Keep the hair, beard, the tawny fur, the tooth necklace, the bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows, clearly lighter than brown. Do not redraw anything. Keep the hair, beard, the tawny fur, the tooth necklace, the bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows, clearly lighter than brown. Do not redraw anything. Keep the hair, beard, the tawny fur, the tooth necklace, the bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "caveman-fur-plain-a",
+      "candidate": 0,
+      "sha256": "5fed4018a35b5b323dd71d8e8f95e8c147574041973f426f264bcacf81f1243b"
+    }
+  }
+}
