@@ -1,0 +1,64 @@
+{
+  "id": "thrall-a",
+  "jobId": "sync-b620ad96-3886-47a2-a26d-780ad9c5b485",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-thrall",
+    "subject": "UNIT:MARTIAN:THRALL",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91901,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/MARTIAN.md#prompt-fragment + docs/art/factions/MARTIAN.md#negative-fragment",
+        "text": "Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips.",
+        "negative": "green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/MARTIAN.json",
+        "text": "Subject: Thrall, a chunky cute mind-controlled soldier with a huge round head about half of the figure's height and a tiny sturdy body, slumped and hunched with drooping shoulders and both arms hanging down: a pale grey blank face with two empty round white eyes and no pupils, a polished chrome control helmet clamped over the top of the head with a short antenna and one glowing hot magenta light on its front, a dark gunmetal collar ring round the neck, a plain drab mid-grey tunic and trousers with no emblem, dark grey boots, a plain dull grey short club hanging low in one hand; simple shapes and very few details; clearly a dazed puppet, not a knight and not an alien."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The mouth is a tiny dark line.",
+        "negative": "shield, bow, cape, crest, plume, heraldry, red cloth, green skin, skull, bone, alien, bubble helmet"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Thrall, a chunky cute mind-controlled soldier with a huge round head about half of the figure's height and a tiny sturdy body, slumped and hunched with drooping shoulders and both arms hanging down: a pale grey blank face with two empty round white eyes and no pupils, a polished chrome control helmet clamped over the top of the head with a short antenna and one glowing hot magenta light on its front, a dark gunmetal collar ring round the neck, a plain drab mid-grey tunic and trousers with no emblem, dark grey boots, a plain dull grey short club hanging low in one hand; simple shapes and very few details; clearly a dazed puppet, not a knight and not an alien. The mouth is a tiny dark line.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, cape, crest, plume, heraldry, red cloth, skull, bone, alien, bubble helmet",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Thrall, a chunky cute mind-controlled soldier with a huge round head about half of the figure's height and a tiny sturdy body, slumped and hunched with drooping shoulders and both arms hanging down: a pale grey blank face with two empty round white eyes and no pupils, a polished chrome control helmet clamped over the top of the head with a short antenna and one glowing hot magenta light on its front, a dark gunmetal collar ring round the neck, a plain drab mid-grey tunic and trousers with no emblem, dark grey boots, a plain dull grey short club hanging low in one hand; simple shapes and very few details; clearly a dazed puppet, not a knight and not an alien. The mouth is a tiny dark line. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, cape, crest, plume, heraldry, red cloth, skull, bone, alien, bubble helmet."
+  }
+}

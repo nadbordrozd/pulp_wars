@@ -1,0 +1,36 @@
+{
+  "id": "icon-martian-rally-a-edit",
+  "jobId": "7ef20455-4a92-4d77-8a81-249f74e90c0f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-icon-action-martian-rally",
+    "subject": "ICON:ACTION:MARTIAN:RALLY",
+    "faction": "MARTIAN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92114,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the round green grass plate under the stand, leaving empty transparent background there. Keep the chrome antenna dish, its stand, the hot magenta signal arcs and the small star exactly the same."
+      }
+    ],
+    "prompt": "Remove the round green grass plate under the stand, leaving empty transparent background there. Keep the chrome antenna dish, its stand, the hot magenta signal arcs and the small star exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the round green grass plate under the stand, leaving empty transparent background there. Keep the chrome antenna dish, its stand, the hot magenta signal arcs and the small star exactly the same.",
+    "editInstruction": "Remove the round green grass plate under the stand, leaving empty transparent background there. Keep the chrome antenna dish, its stand, the hot magenta signal arcs and the small star exactly the same.",
+    "source": {
+      "recipe": "icon-martian-rally-a",
+      "candidate": 0,
+      "sha256": "09308a599e6109c6adabb0f445868973fed74438545415dd229854f6dce2864d"
+    }
+  }
+}

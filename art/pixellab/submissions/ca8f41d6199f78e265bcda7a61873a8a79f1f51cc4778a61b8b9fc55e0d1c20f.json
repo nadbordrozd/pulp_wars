@@ -1,0 +1,64 @@
+{
+  "id": "brain-a",
+  "jobId": "sync-fe933f67-d22c-4868-ad9b-71b5d982a38a",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-brain",
+    "subject": "UNIT:MARTIAN:CAPTAIN",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91501,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/MARTIAN.md#prompt-fragment + docs/art/factions/MARTIAN.md#negative-fragment",
+        "text": "Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips.",
+        "negative": "green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-machine.txt + scripts/art/chibi/fragments/class-machine.negative.txt",
+        "text": "Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/MARTIAN.json",
+        "text": "Subject: Brain, a chunky cute alien brain in a jar on a walking carrier: one very big wrinkled pale lavender-grey brain with two small glossy black eyes, floating inside a large clear round glass jar dome with one white highlight that takes up the top two thirds of the image, a few small glowing hot magenta sparks around the brain, sitting on a small round polished chrome base with a row of three small hot magenta lights, carried on four short bent dark gunmetal spider legs; simple shapes and very few details; the feet of the legs are the lowest thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The jar is drawn large and fills most of the image.",
+        "negative": "person, soldier, alien body, arms, wheels, tentacles, red brain, pink brain"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Brain, a chunky cute alien brain in a jar on a walking carrier: one very big wrinkled pale lavender-grey brain with two small glossy black eyes, floating inside a large clear round glass jar dome with one white highlight that takes up the top two thirds of the image, a few small glowing hot magenta sparks around the brain, sitting on a small round polished chrome base with a row of three small hot magenta lights, carried on four short bent dark gunmetal spider legs; simple shapes and very few details; the feet of the legs are the lowest thing in the image. The jar is drawn large and fills most of the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, person, soldier, alien body, arms, wheels, red brain, pink brain",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Brain, a chunky cute alien brain in a jar on a walking carrier: one very big wrinkled pale lavender-grey brain with two small glossy black eyes, floating inside a large clear round glass jar dome with one white highlight that takes up the top two thirds of the image, a few small glowing hot magenta sparks around the brain, sitting on a small round polished chrome base with a row of three small hot magenta lights, carried on four short bent dark gunmetal spider legs; simple shapes and very few details; the feet of the legs are the lowest thing in the image. The jar is drawn large and fills most of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, person, soldier, alien body, arms, wheels, red brain, pink brain."
+  }
+}

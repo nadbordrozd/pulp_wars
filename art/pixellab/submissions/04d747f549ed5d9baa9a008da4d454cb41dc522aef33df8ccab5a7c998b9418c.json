@@ -1,0 +1,36 @@
+{
+  "id": "effect-beam-down-a-edit",
+  "jobId": "a9b9de79-e059-4b70-81f2-50f302f3edf1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-effect-martian-beam-down",
+    "subject": "EFFECT:BEAM_DOWN",
+    "faction": "MARTIAN",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92214,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the whole dark background, the plants, the stones and the orange flame: erase everything except the tall pink column of light and the magenta ring at its foot, leaving empty transparent background everywhere else. Keep the column and the ring exactly the same."
+      }
+    ],
+    "prompt": "Remove the whole dark background, the plants, the stones and the orange flame: erase everything except the tall pink column of light and the magenta ring at its foot, leaving empty transparent background everywhere else. Keep the column and the ring exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the whole dark background, the plants, the stones and the orange flame: erase everything except the tall pink column of light and the magenta ring at its foot, leaving empty transparent background everywhere else. Keep the column and the ring exactly the same.",
+    "editInstruction": "Remove the whole dark background, the plants, the stones and the orange flame: erase everything except the tall pink column of light and the magenta ring at its foot, leaving empty transparent background everywhere else. Keep the column and the ring exactly the same.",
+    "source": {
+      "recipe": "effect-beam-down-a",
+      "candidate": 0,
+      "sha256": "fc89e44bee2b4b7141c03a18153d72568f88dd5607602d1d2850fc9b95551576"
+    }
+  }
+}

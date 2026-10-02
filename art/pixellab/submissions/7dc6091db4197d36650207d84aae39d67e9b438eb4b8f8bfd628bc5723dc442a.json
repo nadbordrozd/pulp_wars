@@ -1,0 +1,37 @@
+{
+  "id": "mothership-a",
+  "jobId": "8d774f12-9411-40c8-8340-73779043a2c0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-mothership",
+    "subject": "UNIT:MARTIAN:KNIGHT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91701,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make it a much bigger, grander command ship that fills the width of the image: a very wide thick chrome disc in two stacked tiers with a ring of many hot magenta lights, three small chrome fins, a bigger glass dome with a short antenna and no pilot inside, and under it one big round open beam port glowing hot magenta instead of the thin nozzle. Keep the chrome and gunmetal colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make it a much bigger, grander command ship that fills the width of the image: a very wide thick chrome disc in two stacked tiers with a ring of many hot magenta lights, three small chrome fins, a bigger glass dome with a short antenna and no pilot inside, and under it one big round open beam port glowing hot magenta instead of the thin nozzle. Keep the chrome and gunmetal colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make it a much bigger, grander command ship that fills the width of the image: a very wide thick chrome disc in two stacked tiers with a ring of many hot magenta lights, three small chrome fins, a bigger glass dome with a short antenna and no pilot inside, and under it one big round open beam port glowing hot magenta instead of the thin nozzle. Keep the chrome and gunmetal colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make it a much bigger, grander command ship that fills the width of the image: a very wide thick chrome disc in two stacked tiers with a ring of many hot magenta lights, three small chrome fins, a bigger glass dome with a short antenna and no pilot inside, and under it one big round open beam port glowing hot magenta instead of the thin nozzle. Keep the chrome and gunmetal colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "saucer-a-edit",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "0d7103fddedb2040f69ef2f6756a5e6cc0faf77fbdf531d05827254daba92623"
+    }
+  }
+}

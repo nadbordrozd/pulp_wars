@@ -33,6 +33,13 @@ export type ArtSubjectV7 =
    * role (bead pulp_wars-c87.7, DINOSAUR.md).
    */
   | `UNIT:DINOSAUR:${DinosaurArtRoleV7 | "EGG"}`
+  /**
+   * The Martian units and the Thrall, one sprite for a mind-controlled unit
+   * of any faction (bead pulp_wars-t6s.6, MARTIAN.md). The art exists before
+   * the faction is wired in: nothing resolves these subjects until the UI
+   * bead (pulp_wars-t6s.4) registers them.
+   */
+  | `UNIT:MARTIAN:${MartianArtRoleV7 | "THRALL"}`
   | `CITY:${1 | 2 | 3}`
   /**
    * Faction city sets (bead pulp_wars-6gd.6): the Undead necropolis and the
@@ -45,7 +52,31 @@ export type ArtSubjectV7 =
   /** Revision 13: the unowned Grave marker left by a fallen land unit. */
   | "GRAVE"
   | UiArtSubjectV7
-  | ChibiEffectSubjectV7;
+  | ChibiEffectSubjectV7
+  | MartianArtSubjectV7;
+
+/**
+ * Martian interface and effect subjects (bead pulp_wars-t6s.6): the unit
+ * portraits (the Thrall has one), the landed-saucer colony, the command and
+ * ability icons (`ICON:ACTION:MARTIAN:RALLY` is Psychic Command), the Shield
+ * and Cooling status icons, and the ability effect sprites. They are a list
+ * of their own so that no existing subject family changes.
+ */
+export type MartianArtSubjectV7 =
+  | `PORTRAIT:MARTIAN:${MartianArtRoleV7 | "THRALL"}`
+  | `CITY:MARTIAN:${1 | 2 | 3}`
+  | `ICON:ACTION:${"BEAM_DOWN" | "MIND_CONTROL" | "TRACTOR_BEAM" | "FORCE_FIELD"}`
+  | "ICON:ACTION:MARTIAN:RALLY"
+  | `ICON:STATUS:${"SHIELD" | "COOLING"}`
+  | `EFFECT:${MartianEffectIdV7}`;
+
+/**
+ * Martian ability effect sprites: HEAT_RAY (the impact flash of a heat ray),
+ * SHIELD_FLARE (a hit absorbed by a Shield), BEAM_DOWN (the arrival column),
+ * TRACTOR_BEAM (the pull cone) and MIND_CONTROL (the swirl over the victim).
+ */
+export type MartianEffectIdV7 =
+  "HEAT_RAY" | "SHIELD_FLARE" | "BEAM_DOWN" | "TRACTOR_BEAM" | "MIND_CONTROL";
 
 /**
  * Board overlays of revision 14 and the Undead abilities (bead
@@ -115,6 +146,9 @@ export type GoblinArtRoleV7 = UndeadArtRoleV7;
  * land roles; Dinosaur ships reuse the Human ship art.
  */
 export type DinosaurArtRoleV7 = UndeadArtRoleV7;
+
+/** Roles with their own Martian art (docs/art/factions/MARTIAN.md). */
+export type MartianArtRoleV7 = UndeadArtRoleV7;
 
 /** Factions with their own city art; every other faction uses `CITY:<level>`. */
 export type CityArtFactionV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR";

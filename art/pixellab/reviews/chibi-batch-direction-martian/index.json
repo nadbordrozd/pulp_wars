@@ -1,0 +1,31 @@
+{
+  "bead": "pulp_wars-t6s.6",
+  "batch": "direction-martian",
+  "command": "npm run art:chibi-martian-direction-review",
+  "note": "The scene-* captures draw the Martian rasters under a stand-in faction (scripts/art/martian-direction/scene.ts): the faction is not in the engine yet.",
+  "files": [
+    "cities-x3.png",
+    "effects-x3.png",
+    "icons-x4.png",
+    "palette.json",
+    "palette.png",
+    "portraits-x4.png",
+    "readability.json",
+    "roster-1x.png",
+    "roster-x4.png",
+    "roster-zoom-0.75.png",
+    "scene-four-desktop-zoom-0.75.png",
+    "scene-four-desktop-zoom-1.png",
+    "scene-four-phone-zoom-0.75.png",
+    "scene-four-phone-zoom-1.png",
+    "scene-mixed-a-desktop-zoom-0.75.png",
+    "scene-mixed-a-desktop-zoom-1.png",
+    "scene-mixed-a-phone-zoom-0.75.png",
+    "scene-mixed-a-phone-zoom-1.png",
+    "scene-mixed-b-desktop-zoom-0.75.png",
+    "scene-mixed-b-desktop-zoom-1.png",
+    "scene-mixed-b-phone-zoom-0.75.png",
+    "scene-mixed-b-phone-zoom-1.png",
+    "terrain-x2.png"
+  ]
+}

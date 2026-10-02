@@ -1,0 +1,398 @@
+# Faction fragment: MARTIAN
+
+**Status:** production art made in bead `pulp_wars-t6s.6` (batch
+`direction-martian`), **not wired into the game yet**. The user's direction
+(2026-10-02): "add the martians. Come up with a nice look for them, colors
+and all and just do it. make all the decisions. if i don't like something
+tomorrow we'll change it." The root chose the look, "retro pulp invaders,
+chrome and magenta"; every other decision below was made in this bead and is
+recorded so that it can be overruled.
+
+The art pipeline reads the two `text` blocks under **Prompt fragment** and
+**Negative fragment** below as layer 3 of every Martian prompt, so edit them
+here and nowhere else. Recipes that were already generated keep the request
+stored in their record (see the
+[pipeline](../CHIBI_PIPELINE.md#fragment-changes-and-historical-records)).
+
+The rules and roster come from the
+[Martian spec](../../product/RULESET_7_MARTIANS.md) (sections 3 and 13).
+Patrol Boat, Battleship and the embarked transport of a foot unit reuse the
+shared ship art.
+
+## Identity
+
+Cheerful 1950s pulp invaders: toy-like flying saucers, tall walking machines
+and small big-headed aliens in bubble helmets. They are cute and a little
+smug, never scary: a tin-toy invasion, not a horror film. The faction theme
+is a small high-tech force: frail bodies behind energy Shields, heat rays,
+machines that walk or fly anywhere, and enslaved locals.
+
+The faction wears **fixed colours**: polished chrome, dark gunmetal, pale
+glass, lavender-grey skin and exactly one accent, hot magenta. No sprite has
+an owner area or a mask. The player is read from the seat-shaped plate under
+a unit, the pennant on a city and the territory border.
+
+## Prompt fragment
+
+It names only a mood, materials, surfaces, colours and small motifs: no
+figure and no place or building.
+
+```text
+Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like.
+Their fixed colours: polished chrome and silver-white metal shaded with soft
+blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear
+pale glass domes with one white highlight, and exactly one accent colour, a
+bright glowing hot magenta pink, only as small lights and glows: lamps,
+lenses, antenna tips, emitter tips.
+```
+
+## Negative fragment
+
+Green skin is excluded because green is the Grass and the Goblins; purple
+and violet because violet is the Undead accent; red, gold, brown, wood and
+leather because they are the Human and Goblin materials; blue, cyan, yellow
+and orange glows because the faction has one accent.
+
+```text
+green skin, green alien, lime, slime, tentacles, blue glow, cyan glow,
+yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather,
+rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic,
+large glowing area
+```
+
+## Palette
+
+Measured on the eight faction unit masters
+([`palette.json`](../../../art/pixellab/reviews/chibi-batch-direction-martian/palette.json);
+the Thrall is left out, since its drab cloth is not the faction's).
+
+| Role               | Colours                                                   | Share of a unit | Used for                                                               |
+| ------------------ | --------------------------------------------------------- | --------------- | ---------------------------------------------------------------------- |
+| Chrome, lit        | mean `#d1dbe1`; `#afc6d3`, `#ecf6f8`, `#ffffff`           | 14%             | hulls, suits, the Tripod's hood, dome huts                             |
+| Chrome, shaded     | mean `#65718d`; `#61759e`, `#687c99`                      | 7%              | the soft blue-grey shade of chrome                                     |
+| Gunmetal           | mean `#34354e`; `#3a3e5e`, `#1f2a3b`                      | 11%             | joints, undersides, legs, belts, boots, the Ray Gunner's tank          |
+| Glass              | mean `#8db9cd`; `#c7e7f5`, `#9ed3e6`                      | 18%             | bubble helmets, saucer domes, the Brain's jar                          |
+| Lavender-grey skin | mean `#8e8cb2`; lit `#b5b4d3`, shade `#6e749b`            | 11%             | alien heads; the Brain is a paler pink-grey                            |
+| **Hot magenta**    | lit `#f30a96`; mean `#a81972`; shade `#540738`            | 9% (6% to 14%)  | ray emitters, eye lenses, running lights, antenna tips, the Shield arc |
+| Outline            | `#000000` to `#010016`                                    | 21%             | the thick outline of the chibi look                                    |
+| Code-drawn markers | `#ff2fb0`, glow `#ff8fd6`, pale `#ffd3ee`, dark `#8c1264` | n/a             | Shield bar, beams, glows (`MARTIAN_PALETTE_V7`)                        |
+| Effect sprites     | the eight colours of `martian-magenta.png`                | n/a             | the five ability effect sprites                                        |
+
+Rules:
+
+- **One accent, pinned by a pipeline step.** PixelLab draws "hot magenta
+  pink" anywhere from a purple magenta (hue 300°, the Mothership's beam
+  port) to a pink red (hue 340°, the Grunt's lights). The `martian-magenta`
+  accent preset of the
+  [pipeline](../CHIBI_PIPELINE.md#the-martian-batch-bead-pulp_wars-t6s6)
+  finds those pixels by colour (hue 285° to 350°, saturation at least 0.4,
+  value at least 0.25) and moves them to hue 322° with a fifth of the hue
+  spread, so every accent pixel of every sprite lies between 315° and 328°.
+  The masters measure a mean hue of 322° (320° to 324° per unit).
+- **Magenta against the Undead violet: clearly apart.** The lit magenta
+  `#f30a96` differs from the lit violet `#a221ee` by **65** (CIE76; 20 and
+  more are different colours), by 59 from the lightened violet trim, and by
+  72 and 52 under deuteranopia and protanopia. The hues are 324° and 278°.
+  The lime-yellow fallback was **not** needed.
+- **Against the plates.** Coral `#f06762`: 52 (38 and 50 with the two colour
+  vision deficiencies). Violet `#a277d2`: 57 (38 and 19). Gold: 111. Teal:
+  125 in normal vision but **7 under deuteranopia**: for a deuteranope a
+  magenta light and a Teal plate are the same hue and differ only in
+  lightness (contrast 1.6). The lights are small and sit on chrome or
+  gunmetal, never on the plate, so the unit still reads; it is recorded as
+  a weak spot.
+- **Against the other factions.** Human crimson `#a8202c`: 53. Dinosaur
+  orange `#fe6d00`: 90.
+- **No red, no key colour.** No master has a pixel in the owner key's band
+  (hue 340° to 5°, saturated); a test checks it.
+- **Chrome against Mountain is the weak contrast,** as expected: lit chrome
+  differs from the rock by 16 to 18 (contrast 1.7), lavender skin by 18.
+  The outline (21% of a sprite), gunmetal (47 from the rock, contrast 5.1),
+  shaded chrome (24 to 26) and the magenta lights (85) carry a unit there.
+  On Grass and Forest chrome differs by 53 to 57 and skin by 74. On Shallow
+  Water chrome differs by 19 (contrast 1.2): the machines read by their
+  outline and dark undersides.
+
+## Silhouette language
+
+This guides the subject lines; it is not sent to PixelLab.
+
+- **Domes and bubbles.** Every head or hull ends in a round glass or chrome
+  dome, against the Humans' crested helmets, the Undead's hoods and the
+  Goblins' ears.
+- **Aliens are one design.** A smooth bald lavender-grey head about half the
+  figure's height, two very big black almond eyes, a bubble helmet with one
+  antenna, a silver suit. The Ray Gunner and the Shield Projector are the
+  Grunt with another tool, made as edits of the Grunt.
+- **Machines have no crew on the ground.** The Saucer shows its pilot in the
+  dome; the walkers are a head on legs.
+- **Small magenta lights** on every piece: never a large glowing area,
+  except the Colossus's cannon barrel and the Mothership's beam port.
+
+## Roster
+
+Batch [`direction-martian`](../../../scripts/art/chibi/batches/batch-direction-martian.json),
+subject lines in
+[`subjects/MARTIAN.json`](../../../scripts/art/chibi/subjects/MARTIAN.json).
+The canvas follows the mechanical role, as for every faction.
+
+| Unit (role)                | Canvas   | Sprite   | Accepted recipe      | What it shows, and how its job reads                                                                  |
+| -------------------------- | -------- | -------- | -------------------- | ----------------------------------------------------------------------------------------------------- |
+| Grunt (`FIGHTER`)          | 56 x 80  | 54 x 73  | `grunt-a`            | the alien in a silver suit and bubble helmet with a small ray pistol: the basic trooper               |
+| Saucer (`RAIDER`)          | 72 x 88  | 63 x 56  | `saucer-a-edit`      | a small chrome saucer with a glass dome, its pilot, rim lights and a beam nozzle; no legs: it flies   |
+| Ray Gunner (`MARKSMAN`)    | 56 x 80  | 56 x 73  | `ray-gunner-b`       | the Grunt with a huge rifle across the body and a big magenta emitter ball, and a power tank          |
+| Shield Projector (`GUARD`) | 56 x 80  | 52 x 72  | `shield-projector-a` | the Grunt in heavy shoulder plates holding a dish emitter, with a magenta arc in front of it          |
+| Brain (`CAPTAIN`)          | 56 x 80  | 52 x 69  | `brain-b`            | a big brain with two eyes in a glass jar on a chrome base with spider legs                            |
+| Tripod (`CATAPULT`)        | 72 x 88  | 58 x 77  | `tripod-a-edit-3`    | a smooth chrome hood with one big magenta lens, a heat-ray arm, tall gunmetal legs: the tallest unit  |
+| Mothership (`KNIGHT`)      | 72 x 88  | 68 x 68  | `mothership-a`       | a wide two-tier chrome disc with fins, an antenna and a big magenta beam port: bigger than the Saucer |
+| Colossus (`JUGGERNAUT`)    | 88 x 104 | 83 x 89  | `colossus-b-edit`    | a huge chrome dome head with two magenta eyes, a heavy ray cannon and thick armoured legs             |
+| Thrall (as a `FIGHTER`)    | 56 x 80  | 36 x 70  | `thrall-b`           | a slumped drab grey soldier with a chrome control helmet, an antenna and one magenta light            |
+| Patrol Boat, Battleship    | shared   | (shared) | (unchanged)          | the shared ships with the player-coloured sail                                                        |
+
+Each unit has a 48 x 48 portrait (`chibi-direction-portrait-martian-<unit>`):
+busts for the Grunt, the Ray Gunner, the Shield Projector and the Thrall, and
+whole-object portraits for the machines and the Brain, as the Human Catapult
+has.
+
+How they were made (62 PixelLab calls in all: 39 creations and 23 edits):
+
+- **The Grunt is a fresh creation** with the ordinary `unit` class. An edit
+  of the Human Fighter was tried beside it (`grunt-edit-a`): it kept the
+  Fighter's proportions but came out pale, with almost no magenta. The fresh
+  Grunt has the bigger head, measures 54 x 73 against the Fighter's 52 x 72,
+  and has the thick outline.
+- **Sibling edits keep the aliens alike.** A fresh Ray Gunner
+  (`ray-gunner-a`) was another alien: a dark head, an opaque helmet, a
+  red-orange emitter. The Ray Gunner and the Shield Projector are
+  `edit-image-pixen` edits of the accepted Grunt ("Change only what he
+  holds: …"), and the Mothership is an edit of the accepted Saucer.
+- **Machines use the `machine` class,** a class text without the unit's
+  "big head, both feet visible".
+- **The Thrall is an edit of the Human Fighter,** so it has the scale of a
+  `FIGHTER`; the fresh creation was a 38 px robot knight. The edit removes
+  the shield, the crest and every heraldic colour, so it reads as "some
+  soldier", not as a Human.
+- **Stray horns.** PixelLab put a horn on the Tripod's and the Colossus's
+  head (perhaps the "antenna"); "Change only one thing: erase the pointed
+  horn …" removed each.
+
+## The Thrall
+
+One sprite for a mind-controlled unit of any faction. It is deliberately
+drab: mid-grey tunic, olive-grey trousers, brown boots, a grey blank face,
+no emblem, with a chrome helmet, an antenna and one magenta light (21
+magenta pixels, 1.3% of the sprite). It is narrow (36 px on a 52 px plate),
+so the owner's plate shows well.
+
+## Flying
+
+The Saucer and the Mothership are drawn with no legs and **a gap of ten
+empty rows under the hull**: the lowest pixel of the Saucer is row 71 of 88
+and of the Mothership row 72, where a walker of the same canvas stands on
+row 81 to 84. On a base plate the hull therefore already floats above the
+plate. The interface adds the ground shadow the spec asks for
+(`MARTIAN_FLYER_PRESENTATION_V7`: an ellipse on the ground line, radius
+20 x 4 px for the Saucer and 25 x 5 px for the Mothership, `#10131a` at 35%
+alpha), and may lift the sprite further; the shadow stays on the ground.
+No shadow is baked into a sprite, so the same sprite serves over water.
+
+## Afloat
+
+A self-launched machine over water is drawn as the machine itself
+([spec 13.1](../../product/RULESET_7_MARTIANS.md#131-surfaces)). The four
+machines were checked on Shallow and Deep Water
+([`terrain-x2.png`](../../../art/pixellab/reviews/chibi-batch-direction-martian/terrain-x2.png)
+and the bottom rows of the `scene-four-*` captures): the flyers hover over
+the water with their shadow; the Tripod and the Colossus stand in it on
+their legs. Nothing in the art shows wading; a suggestion for the interface
+is under [code-drawn markers](#suggestions-for-the-code-drawn-markers).
+
+## Cities
+
+A landed-saucer colony in the direction's calm building style
+(`calm-settlement`, subject keys `CITY:MARTIAN:<level>/CALM`), on the
+canvases of the Undead direction cities. No part takes a player colour; each
+colony has an antenna mast of its own for the code-drawn pennant.
+
+| Level | Asset                            | Canvas  | Art     | What it shows                                                                                 | Pennant anchor (`MARTIAN_FLAG_ANCHORS_V7`) |
+| ----- | -------------------------------- | ------- | ------- | --------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| 1     | `chibi-direction-martian-city-1` | 80 x 80 | 70 x 61 | a landed chrome saucer on legs, three chrome dome huts with magenta windows, a lattice mast   | `{ x: 68.5, y: 22, pole: 0 }`              |
+| 2     | `chibi-direction-martian-city-2` | 88 x 88 | 81 x 68 | a big saucer on four chrome domes inside a gunmetal ring wall, a mast with a magenta tip      | `{ x: 80, y: 33, pole: 0 }`                |
+| 3     | `chibi-direction-martian-city-3` | 96 x 88 | 78 x 65 | a central dome with a magenta ring, chrome towers with glass domes, a ring wall, a tower mast | `{ x: 75.5, y: 20, pole: 0 }`              |
+
+The anchor is the top of the mast, in master pixels from the sprite's
+top-left corner; `pole: 0` because the art has the mast. Each city was a
+creation at 96 x 96 and one edit that removes the ground slab (City 1's
+edit also turned two cube houses into dome huts).
+
+## Icons
+
+48 x 48, made with the `icon` class like the existing action icons.
+
+| Subject                     | Asset                                       | What it shows                                        |
+| --------------------------- | ------------------------------------------- | ---------------------------------------------------- |
+| `ICON:ACTION:BEAM_DOWN`     | `chibi-direction-icon-action-beam-down`     | a saucer shining a magenta beam on a small figure    |
+| `ICON:ACTION:MIND_CONTROL`  | `chibi-direction-icon-action-mind-control`  | a brain with magenta waves on both sides             |
+| `ICON:ACTION:TRACTOR_BEAM`  | `chibi-direction-icon-action-tractor-beam`  | a saucer pulling a boulder up a slanted beam         |
+| `ICON:ACTION:MARTIAN:RALLY` | `chibi-direction-icon-action-martian-rally` | Psychic Command: an antenna dish sending signal arcs |
+| `ICON:ACTION:FORCE_FIELD`   | `chibi-direction-icon-action-force-field`   | an emitter pylon under a dome of hexagon cells       |
+| `ICON:STATUS:SHIELD`        | `chibi-direction-icon-status-shield`        | a plain pale pink energy shield with a magenta rim   |
+| `ICON:STATUS:COOLING`       | `chibi-direction-icon-status-cooling`       | a ray gun barrel with heat lines rising, no glow     |
+
+Strafe uses the existing Charge icon of the Raider.
+
+## Ability effects
+
+Five sprites in the format of the Undead effects (`effect` class, mapped to
+the eight colours of
+[`martian-magenta.png`](../../../scripts/art/chibi/palettes/martian-magenta.png),
+written by `npx tsx scripts/art/martian-direction/magenta-palette.ts`).
+
+| Subject               | Asset (`chibi-direction-effect-martian-…`) | Size    | Use                                                                             |
+| --------------------- | ------------------------------------------ | ------- | ------------------------------------------------------------------------------- |
+| `EFFECT:HEAT_RAY`     | `heat-ray`                                 | 48 x 48 | the impact flash of a heat ray on its target                                    |
+| `EFFECT:SHIELD_FLARE` | `shield-flare`                             | 48 x 48 | a hit absorbed by a Shield: a crescent of hexagon cells, turned to the attacker |
+| `EFFECT:BEAM_DOWN`    | `beam-down`                                | 48 x 48 | the arrival column: a pillar of light with a ring at its foot                   |
+| `EFFECT:TRACTOR_BEAM` | `tractor-beam`                             | 48 x 48 | a cone of light crossed by hoops                                                |
+| `EFFECT:MIND_CONTROL` | `mind-control`                             | 40 x 40 | a hypnosis spiral over the victim                                               |
+
+The flash, the crescent and the spiral are usable as they are. **The Beam
+Down column and the Tractor Beam are weak** (see below): a beam is a long
+thin shape that a 48 px sprite cannot hold, so those two are better drawn
+in code with the sprite as an optional end cap.
+
+## Suggestions for the code-drawn markers
+
+The spec makes these code-drawn; the colours are `MARTIAN_PALETTE_V7`.
+
+- **Shield bar:** segments above the HP bar, one per point of the current
+  maximum: filled `#ff2fb0` with a 1 px `#ffd3ee` top edge, empty `#160a14`
+  at 60% alpha with a `#8c1264` rim. A segment raised by a Force Field
+  (the third and fourth) gets a `#ff8fd6` fill, so the field is seen.
+- **Cooling glyph:** the heat lines of the Cooling icon in `#aab3c0` on a
+  `#4a5262` chip; no magenta, so "not glowing" reads as "not at full power".
+- **Thrall collar:** a 2 px ring in `#d5dde6` with one `#ff2fb0` pixel,
+  beside the sprite's own control helmet; the link line from a selected
+  Brain to its Thralls in `#ff8fd6`, dashed.
+- **Flying:** the shadow ellipse above; a ready flyer may bob by 1 px.
+- **Heat ray:** a 3 px line from the emitter to the target, `#ff2fb0` with
+  a 1 px `#ffffff` core, ending in the `heat-ray` flash; the Pierce victim
+  gets a second, thinner line and a half-size flash.
+- **Beam Down:** a vertical bar 12 px wide from above the cell to the
+  ground, `#ff8fd6` at 70% alpha with `#ffffff` sparkles, and a `#ff2fb0`
+  ellipse on the ground.
+- **Tractor Beam:** a cone from the Mothership's beam port to the target,
+  `#ff8fd6` at 50% alpha, with three `#ffffff` hoops moving toward the
+  ship.
+- **Mind Control:** the spiral sprite over the target, then the Thrall
+  sprite; a `#ff8fd6` ring round the Brain's jar.
+- **Force Field:** a thin `#ff8fd6` arc on the tiles next to a Shield
+  Projector when it is selected.
+- **Machines afloat:** two short `#ffffff` ripple arcs at the feet of a
+  wading Tripod or Colossus; the bottom 6 rows of its legs may be drawn at
+  50% alpha.
+
+## What the UI bead must wire
+
+`pulp_wars-t6s.4` (the faction is in the engine by then):
+
+1. Add `...CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7` to
+   `chibiDirectionArtRegistryV7`
+   ([`chibi-direction-art-manifest.ts`](../../../src/assets/chibi-direction-art-manifest.ts)).
+   The art subjects exist already (`UNIT:MARTIAN:<ROLE>`,
+   `UNIT:MARTIAN:THRALL`, `PORTRAIT:MARTIAN:<ROLE>`, `CITY:MARTIAN:<level>`,
+   the icons and effects, in
+   [`chibi-art-v7.ts`](../../../src/assets/chibi-art-v7.ts)).
+2. Resolve them: `unitArtSubjectV7` for a Martian unit (and the Thrall
+   subject for a Thrall of any original faction), `cityArtSubjectV7` and
+   `CityArtFactionV7` for a Martian city, the fallback of
+   `chibiFallbackSubjectV7`, and the portrait and icon lookups of the DOM
+   art hook.
+3. Copy `MARTIAN_FLAG_ANCHORS_V7` into `DIRECTION_FLAG_ANCHORS_V7`.
+4. Draw the flyers' shadow and lift from `MARTIAN_FLYER_PRESENTATION_V7`,
+   and a machine afloat with its own sprite.
+5. Draw the Shield bar, the Cooling glyph, the Thrall collar and the beams
+   in code (above), and the effect sprites through the effects canvas.
+6. The placeholder sprites of
+   [spec 13.4](../../product/RULESET_7_MARTIANS.md#134-placeholder-art) are
+   not needed: this art replaces them. In the Classic look and wherever a
+   raster is missing, a Martian unit still falls back to the Human sprite of
+   its role with a Martian badge.
+7. Turn round the test "is not wired into the game yet" of
+   `tests/unit/chibi-martian-direction-assets.test.ts`, which now checks
+   that no registry holds a Martian asset.
+
+## Evidence
+
+`npm run art:chibi-martian-direction-review` writes
+[`art/pixellab/reviews/chibi-batch-direction-martian/`](../../../art/pixellab/reviews/chibi-batch-direction-martian/)
+(see the [pipeline document](../CHIBI_PIPELINE.md#the-martian-batch-bead-pulp_wars-t6s6)).
+
+![The roster beside the Human, Undead, Goblin and Dinosaur unit of each role](../../../art/pixellab/reviews/chibi-batch-direction-martian/roster-x4.png)
+
+![Four Martian players: the roster on every terrain, Thralls and a city of each tier](../../../art/pixellab/reviews/chibi-batch-direction-martian/scene-four-desktop-zoom-1.png)
+
+![Martian against Human, Undead and Dinosaur](../../../art/pixellab/reviews/chibi-batch-direction-martian/scene-mixed-a-desktop-zoom-1.png)
+
+![City 1 to 3 with the pennant in the four player colours, beside the other factions' cities](../../../art/pixellab/reviews/chibi-batch-direction-martian/cities-x3.png)
+
+## Decisions
+
+Decided in bead `pulp_wars-t6s.6` under the user's "make all the
+decisions":
+
+1. **Look** (root): retro pulp invaders; chrome, gunmetal, glass,
+   lavender-grey skin, one hot magenta accent; fixed colours, no masks.
+2. **Accent:** hot magenta at hue 322°, pinned by the `martian-magenta`
+   preset; kept, because it measures 65 from the Undead violet and 52 and
+   57 from the Coral and Violet plates. The lime-yellow fallback was not
+   used.
+3. **Aliens are one design,** and the Ray Gunner and the Shield Projector
+   are the Grunt with another tool.
+4. **Shield Projector:** an alien carrying a dish, not a drone, so the
+   `GUARD` reads as a trooper who holds the line.
+5. **Brain:** a brain with two eyes in a jar on spider legs, not a
+   hover-chair: it must not read as a third flyer.
+6. **Tripod and Colossus stand on four visible legs.** Three edits and a
+   second creation could not make it three (one removed the eye lens
+   instead of a leg). At board size the shape reads as "a head on tall
+   legs"; it is a known inaccuracy.
+7. **Colossus:** a squat, wide giant with a ball head and a cannon, of the
+   Tripod's family but not a taller Tripod: the `JUGGERNAUT` canvas is
+   wider than it is tall, and a second tall thin walker would read as a
+   Tripod.
+8. **Mothership:** no pilot and a dark dome; it is told from the Saucer by
+   its two tiers, fins, antenna and the big beam port.
+9. **Flyers** carry a 10 px gap under the hull and no baked shadow; the
+   shadow is code-drawn.
+10. **Thrall:** an edit of the Human Fighter into a drab grey soldier; one
+    sprite for every original faction and size.
+11. **Cities:** a landed saucer among dome huts, in the calm style, with a
+    mast for the pennant; canvases of the Undead direction cities.
+12. **Status icons** have a subject family of their own, `ICON:STATUS:*`.
+13. **Effects:** five rasters in one magenta palette; beams are suggested
+    as code-drawn.
+14. **Not registered:** the module is imported by nothing until
+    `pulp_wars-t6s.4`.
+
+## Weak spots
+
+- **The walkers have four legs,** not three (decision 6).
+- **Chrome on Mountain and on Shallow Water** is low in contrast (16 to 19);
+  the outline, gunmetal and the lights carry the unit.
+- **Magenta and the Teal plate** are close for a deuteranope (7).
+- **The Thrall's light is small** (21 pixels), and its boots and trousers
+  are brown and olive, not grey.
+- **The Mothership is only 5 px wider than the Saucer** (68 against 63);
+  it is taller and heavier, and its plate is the same.
+- **The Colossus is 15 px and the Mothership 11 px wider than their plate,**
+  like the other factions' large units.
+- **Glass is a cyan-tinted blue** (`#8db9cd`), 18% of a unit: on a Teal
+  plate a bubble helmet is near the plate's colour family.
+- **The Beam Down and Tractor Beam effect sprites are small** shapes with a
+  base ring or dish; the Beam Down icon's figure is a blob.
+- **Portraits and map sprites differ in detail:** the Brain's portrait has
+  no legs, the Colossus's cannon is chrome in the portrait and magenta on
+  the map, and the busts carry less magenta (the Grunt's 35 pixels).
+- **The Mind Control and Force Field icons** have a few cyan pixels.
+- **The review scenes use stand-in factions,** not a Martian match.

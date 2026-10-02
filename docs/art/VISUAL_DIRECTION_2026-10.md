@@ -2764,3 +2764,7 @@ Evidence in
 `scene-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png`,
 `shore-{desktop,phone}-zoom-{1,0.75}.png`,
 `same-unit-{desktop,phone}-zoom-{1,0.75}.png` and `index.json`.
+
+The Martian faction's production art in this direction (bead
+`pulp_wars-t6s.6`, not live yet) is described in
+[factions/MARTIAN.md](factions/MARTIAN.md).

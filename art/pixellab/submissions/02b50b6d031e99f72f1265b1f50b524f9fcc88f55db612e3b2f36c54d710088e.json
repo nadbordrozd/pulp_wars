@@ -1,0 +1,36 @@
+{
+  "id": "colossus-b-edit",
+  "jobId": "949731e1-e8f3-45ee-ae77-805c1be7e44d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-colossus",
+    "subject": "UNIT:MARTIAN:JUGGERNAUT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 91803,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the pointed horn that sticks out of the left side of the head, so the head is a smooth round chrome dome. Do not redraw anything else: keep the two hot magenta eye lenses, the big hot magenta ray cannon, the antenna, the armoured legs, the size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the pointed horn that sticks out of the left side of the head, so the head is a smooth round chrome dome. Do not redraw anything else: keep the two hot magenta eye lenses, the big hot magenta ray cannon, the antenna, the armoured legs, the size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the pointed horn that sticks out of the left side of the head, so the head is a smooth round chrome dome. Do not redraw anything else: keep the two hot magenta eye lenses, the big hot magenta ray cannon, the antenna, the armoured legs, the size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the pointed horn that sticks out of the left side of the head, so the head is a smooth round chrome dome. Do not redraw anything else: keep the two hot magenta eye lenses, the big hot magenta ray cannon, the antenna, the armoured legs, the size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "colossus-b",
+      "candidate": 0,
+      "sha256": "52cf9c33be53bccc735c7c5c4dad69199796b88b3325eb5a155333cfbeab9acc"
+    }
+  }
+}

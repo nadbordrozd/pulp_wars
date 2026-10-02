@@ -1,0 +1,36 @@
+{
+  "id": "icon-status-shield-b-edit",
+  "jobId": "42e384a7-c285-4446-969d-b629a8c755cc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-icon-status-shield",
+    "subject": "ICON:STATUS:SHIELD",
+    "faction": "MARTIAN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92117,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the grey spiked metal shell and the blue dome behind the shield, leaving empty transparent background there, so that only the big pink and hot magenta shield shape with its dark outline and white highlight remains, floating alone. Keep the shield exactly the same."
+      }
+    ],
+    "prompt": "Remove the grey spiked metal shell and the blue dome behind the shield, leaving empty transparent background there, so that only the big pink and hot magenta shield shape with its dark outline and white highlight remains, floating alone. Keep the shield exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the grey spiked metal shell and the blue dome behind the shield, leaving empty transparent background there, so that only the big pink and hot magenta shield shape with its dark outline and white highlight remains, floating alone. Keep the shield exactly the same.",
+    "editInstruction": "Remove the grey spiked metal shell and the blue dome behind the shield, leaving empty transparent background there, so that only the big pink and hot magenta shield shape with its dark outline and white highlight remains, floating alone. Keep the shield exactly the same.",
+    "source": {
+      "recipe": "icon-status-shield-b",
+      "candidate": 0,
+      "sha256": "f3e03a6af92327bfa55084f630229eed96e2e67bbf949bafc35d480100b558ca"
+    }
+  }
+}

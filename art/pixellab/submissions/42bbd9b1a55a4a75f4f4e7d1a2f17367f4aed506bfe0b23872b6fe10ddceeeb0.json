@@ -1,0 +1,36 @@
+{
+  "id": "icon-status-shield-b-edit-2",
+  "jobId": "9888ef98-9c82-4d27-a908-c7423ec3f029",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-icon-status-shield",
+    "subject": "ICON:STATUS:SHIELD",
+    "faction": "MARTIAN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92118,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the inside of the shield: the pale salmon and peach fill becomes pale pink magenta, colour #ff8fd6, with a lighter #ffd3ee shine; nothing salmon, peach or orange is left. Keep the hot magenta rim, the dark outline, the white highlight and the shape exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the inside of the shield: the pale salmon and peach fill becomes pale pink magenta, colour #ff8fd6, with a lighter #ffd3ee shine; nothing salmon, peach or orange is left. Keep the hot magenta rim, the dark outline, the white highlight and the shape exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the inside of the shield: the pale salmon and peach fill becomes pale pink magenta, colour #ff8fd6, with a lighter #ffd3ee shine; nothing salmon, peach or orange is left. Keep the hot magenta rim, the dark outline, the white highlight and the shape exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the inside of the shield: the pale salmon and peach fill becomes pale pink magenta, colour #ff8fd6, with a lighter #ffd3ee shine; nothing salmon, peach or orange is left. Keep the hot magenta rim, the dark outline, the white highlight and the shape exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-status-shield-b-edit",
+      "candidate": 0,
+      "sha256": "85a1815b3fe30f2f6d0d78b709378743fab6cf67144d848e433684ddaec9c396"
+    }
+  }
+}

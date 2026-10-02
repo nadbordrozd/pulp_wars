@@ -1,0 +1,36 @@
+{
+  "id": "portrait-tripod-a-edit",
+  "jobId": "4c0ba1f2-4474-4f0a-9389-5c0813fea1a7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-tripod",
+    "subject": "PORTRAIT:MARTIAN:CATAPULT",
+    "faction": "MARTIAN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92017,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the cyan and teal parts: the teal cap on top of the head and the cyan leg segments become polished silver-white chrome shaded soft blue-grey, and the leg joints dark gunmetal. Nothing cyan or teal is left. Keep the big hot magenta eye lens, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the cyan and teal parts: the teal cap on top of the head and the cyan leg segments become polished silver-white chrome shaded soft blue-grey, and the leg joints dark gunmetal. Nothing cyan or teal is left. Keep the big hot magenta eye lens, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the cyan and teal parts: the teal cap on top of the head and the cyan leg segments become polished silver-white chrome shaded soft blue-grey, and the leg joints dark gunmetal. Nothing cyan or teal is left. Keep the big hot magenta eye lens, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the cyan and teal parts: the teal cap on top of the head and the cyan leg segments become polished silver-white chrome shaded soft blue-grey, and the leg joints dark gunmetal. Nothing cyan or teal is left. Keep the big hot magenta eye lens, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-tripod-a",
+      "candidate": 0,
+      "sha256": "995334cbd12e527811ff8925b384c7494277c4958c40770eaa0c4e5419473e6e"
+    }
+  }
+}

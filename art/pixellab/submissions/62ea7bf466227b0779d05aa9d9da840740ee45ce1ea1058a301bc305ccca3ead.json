@@ -1,0 +1,36 @@
+{
+  "id": "tripod-a-edit",
+  "jobId": "ef48b90b-222b-4854-bf2f-3e19d9715d1b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-tripod",
+    "subject": "UNIT:MARTIAN:CATAPULT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the legs and remove the spike: it stands on exactly three legs, each twice as thick, dark gunmetal with round chrome silver knee joints (no brass, no yellow) and chunky round chrome feet; the pointed spike on the left of the head is removed. Keep the chrome hooded head, the big hot magenta eye lens, the heat-ray arm with its magenta tip, the height, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the legs and remove the spike: it stands on exactly three legs, each twice as thick, dark gunmetal with round chrome silver knee joints (no brass, no yellow) and chunky round chrome feet; the pointed spike on the left of the head is removed. Keep the chrome hooded head, the big hot magenta eye lens, the heat-ray arm with its magenta tip, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the legs and remove the spike: it stands on exactly three legs, each twice as thick, dark gunmetal with round chrome silver knee joints (no brass, no yellow) and chunky round chrome feet; the pointed spike on the left of the head is removed. Keep the chrome hooded head, the big hot magenta eye lens, the heat-ray arm with its magenta tip, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the legs and remove the spike: it stands on exactly three legs, each twice as thick, dark gunmetal with round chrome silver knee joints (no brass, no yellow) and chunky round chrome feet; the pointed spike on the left of the head is removed. Keep the chrome hooded head, the big hot magenta eye lens, the heat-ray arm with its magenta tip, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "tripod-a",
+      "candidate": 0,
+      "sha256": "279122f630d0a5861443cf5c98f1900affefe2c1c206e4f13dd318ddb3bea5f8"
+    }
+  }
+}

@@ -74,6 +74,26 @@ export const ACCENT_PRESETS = {
       valueMin: 0.96,
     },
   },
+  /**
+   * The Martian accent (bead pulp_wars-t6s.6): hot magenta at hue 322 (lit
+   * `#ff2fb0`). PixelLab draws "hot magenta pink" anywhere from a purple
+   * magenta (hue 290) to a pink red (hue 345); the step pulls all of it to
+   * 322 with a narrow spread (315 to 328), clear of the Undead violet (274)
+   * and of the owner key red (340 to 5). Chrome, gunmetal, glass and the
+   * lavender-grey skin are below saturation 0.4 and are never touched. No
+   * trim rule: magenta on gunmetal already has a contrast above 4.
+   */
+  "martian-magenta": {
+    band: {
+      hueFrom: 285,
+      hueTo: 350,
+      saturationMin: 0.4,
+      valueMin: 0.25,
+      hueCentre: 320,
+    },
+    hue: 322,
+    hueSpread: 0.2,
+  },
 } as const satisfies Readonly<Record<string, AccentSpec>>;
 
 export type AccentPresetName = keyof typeof ACCENT_PRESETS;

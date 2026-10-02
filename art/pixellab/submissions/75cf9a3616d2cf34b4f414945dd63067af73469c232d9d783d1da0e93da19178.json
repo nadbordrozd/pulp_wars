@@ -1,0 +1,37 @@
+{
+  "id": "ray-gunner-b",
+  "jobId": "9ae67764-8dcd-48d2-b789-b374e62b7e00",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-ray-gunner",
+    "subject": "UNIT:MARTIAN:MARKSMAN",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only what he holds: replace the small pistol with one huge long silver ray rifle with big fins and three ring coils, held in both hands across his body and pointing to the right, with a big round glowing hot magenta emitter ball at its muzzle; add a small dark gunmetal power tank on his back. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, size, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only what he holds: replace the small pistol with one huge long silver ray rifle with big fins and three ring coils, held in both hands across his body and pointing to the right, with a big round glowing hot magenta emitter ball at its muzzle; add a small dark gunmetal power tank on his back. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only what he holds: replace the small pistol with one huge long silver ray rifle with big fins and three ring coils, held in both hands across his body and pointing to the right, with a big round glowing hot magenta emitter ball at its muzzle; add a small dark gunmetal power tank on his back. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only what he holds: replace the small pistol with one huge long silver ray rifle with big fins and three ring coils, held in both hands across his body and pointing to the right, with a big round glowing hot magenta emitter ball at its muzzle; add a small dark gunmetal power tank on his back. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "grunt-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "cced8a83858cbafc8acdc02994fb4f7086a48b27d72063662c9385634c8df36d"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "portrait-ray-gunner-b",
+  "jobId": "a1600c02-bb69-484b-8641-ee00b5a83991",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-ray-gunner",
+    "subject": "PORTRAIT:MARTIAN:MARKSMAN",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92012,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only what he holds: replace the small pistol with one huge silver ray rifle with big fins and ring coils resting on his shoulder and pointing up to the right, with a big round glowing hot magenta emitter ball at its muzzle. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only what he holds: replace the small pistol with one huge silver ray rifle with big fins and ring coils resting on his shoulder and pointing up to the right, with a big round glowing hot magenta emitter ball at its muzzle. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only what he holds: replace the small pistol with one huge silver ray rifle with big fins and ring coils resting on his shoulder and pointing up to the right, with a big round glowing hot magenta emitter ball at its muzzle. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only what he holds: replace the small pistol with one huge silver ray rifle with big fins and ring coils resting on his shoulder and pointing up to the right, with a big round glowing hot magenta emitter ball at its muzzle. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-grunt-b",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "9263a086dedad593cf2f95d0e93d29781669be0445084e3e706fb42a323e4849"
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "id": "portrait-grunt-b",
+  "jobId": "sync-50b91602-8c19-4f4f-891d-d7b509a49711",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-grunt",
+    "subject": "PORTRAIT:MARTIAN:FIGHTER",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92011,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/MARTIAN.md#prompt-fragment + docs/art/factions/MARTIAN.md#negative-fragment",
+        "text": "Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips.",
+        "negative": "green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/MARTIAN.json",
+        "text": "Subject: Grunt portrait, head and shoulders of a chunky cute little alien trooper: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, no nose and a tiny mouth, inside a clear round glass bubble helmet with one white highlight and a short antenna with a glowing hot magenta tip; the shoulders of a polished silver-white space suit with a dark gunmetal collar ring; a chunky silver ray pistol with a glowing hot magenta muzzle raised beside the head."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The whole head is inside one clear round glass bubble helmet with exactly one thin antenna on top; a calm friendly face with no eyebrows. The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses.",
+        "negative": "green skin, hair, human face, cape, sword, shield, antennae on the skin, headphones, two antennae, angry"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Grunt portrait, head and shoulders of a chunky cute little alien trooper: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, no nose and a tiny mouth, inside a clear round glass bubble helmet with one white highlight and a short antenna with a glowing hot magenta tip; the shoulders of a polished silver-white space suit with a dark gunmetal collar ring; a chunky silver ray pistol with a glowing hot magenta muzzle raised beside the head. The whole head is inside one clear round glass bubble helmet with exactly one thin antenna on top; a calm friendly face with no eyebrows. The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, hair, human face, cape, shield, antennae on the skin, headphones, two antennae, angry",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Grunt portrait, head and shoulders of a chunky cute little alien trooper: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, no nose and a tiny mouth, inside a clear round glass bubble helmet with one white highlight and a short antenna with a glowing hot magenta tip; the shoulders of a polished silver-white space suit with a dark gunmetal collar ring; a chunky silver ray pistol with a glowing hot magenta muzzle raised beside the head. The whole head is inside one clear round glass bubble helmet with exactly one thin antenna on top; a calm friendly face with no eyebrows. The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, hair, human face, cape, shield, antennae on the skin, headphones, two antennae, angry."
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "saucer-a-edit",
+  "jobId": "2ccbd64a-8a2c-4d6c-ab15-559bae9cfe4f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-saucer",
+    "subject": "UNIT:MARTIAN:RAIDER",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the four legs under the saucer, so it flies with nothing under it except one short round dark gunmetal beam emitter with a glowing hot magenta lens in the centre of its underside. Keep the chrome disc, the hot magenta rim lights, the glass dome, the alien pilot, the size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the four legs under the saucer, so it flies with nothing under it except one short round dark gunmetal beam emitter with a glowing hot magenta lens in the centre of its underside. Keep the chrome disc, the hot magenta rim lights, the glass dome, the alien pilot, the size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the four legs under the saucer, so it flies with nothing under it except one short round dark gunmetal beam emitter with a glowing hot magenta lens in the centre of its underside. Keep the chrome disc, the hot magenta rim lights, the glass dome, the alien pilot, the size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove the four legs under the saucer, so it flies with nothing under it except one short round dark gunmetal beam emitter with a glowing hot magenta lens in the centre of its underside. Keep the chrome disc, the hot magenta rim lights, the glass dome, the alien pilot, the size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "saucer-a",
+      "candidate": 0,
+      "sha256": "75ae3617276470a018e1381cbbb05f2c29879f0b3904c6c8ab8a9d3e3a0aaa42"
+    }
+  }
+}

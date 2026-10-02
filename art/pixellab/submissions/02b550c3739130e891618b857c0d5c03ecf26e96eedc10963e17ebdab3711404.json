@@ -1,0 +1,36 @@
+{
+  "id": "martian-city-1-calm-a-edit",
+  "jobId": "cf96da58-be92-4ab0-a29a-63c0217010e2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-city-1",
+    "subject": "CITY:MARTIAN:1",
+    "faction": "MARTIAN",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 92312,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and dirt plate under the buildings, so they stand directly on a transparent background with nothing at all under them. Also replace the two square houses with two small round silver-white chrome dome huts with one hot magenta round window each. Keep the landed chrome saucer on its legs, its glass dome and magenta lights, the small chrome dome, the antenna mast, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and dirt plate under the buildings, so they stand directly on a transparent background with nothing at all under them. Also replace the two square houses with two small round silver-white chrome dome huts with one hot magenta round window each. Keep the landed chrome saucer on its legs, its glass dome and magenta lights, the small chrome dome, the antenna mast, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and dirt plate under the buildings, so they stand directly on a transparent background with nothing at all under them. Also replace the two square houses with two small round silver-white chrome dome huts with one hot magenta round window each. Keep the landed chrome saucer on its legs, its glass dome and magenta lights, the small chrome dome, the antenna mast, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and dirt plate under the buildings, so they stand directly on a transparent background with nothing at all under them. Also replace the two square houses with two small round silver-white chrome dome huts with one hot magenta round window each. Keep the landed chrome saucer on its legs, its glass dome and magenta lights, the small chrome dome, the antenna mast, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "martian-city-1-calm-a",
+      "candidate": 0,
+      "sha256": "2873d35fb81b4facc0016d6cc501a0fa65049e8a218058726a3a73746b5203a9"
+    }
+  }
+}

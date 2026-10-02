@@ -1,0 +1,95 @@
+{
+  "measuredOn": "the eight faction unit masters (the Thrall is left out)",
+  "palette": [
+    {
+      "role": "Hot magenta accent",
+      "mean": "#a81972",
+      "tones": [
+        "#b00873",
+        "#540738",
+        "#58063a",
+        "#860855"
+      ],
+      "share": 9.3,
+      "lit": "#f30a96",
+      "meanHue": 322
+    },
+    {
+      "role": "Outline and darkest tones",
+      "mean": "#010107",
+      "tones": [
+        "#000000",
+        "#00000a",
+        "#010016",
+        "#000013"
+      ],
+      "share": 21.2
+    },
+    {
+      "role": "Lavender-grey skin",
+      "mean": "#8e8cb2",
+      "tones": [
+        "#b5b4d3",
+        "#b3b1cf",
+        "#b3b1d0",
+        "#6e749b"
+      ],
+      "share": 11.4
+    },
+    {
+      "role": "Glass",
+      "mean": "#8db9cd",
+      "tones": [
+        "#c7e7f5",
+        "#88a6c1",
+        "#9ed3e6",
+        "#64a2bb"
+      ],
+      "share": 17.7
+    },
+    {
+      "role": "Chrome, lit",
+      "mean": "#d1dbe1",
+      "tones": [
+        "#afc6d3",
+        "#ffffff",
+        "#ecf6f8",
+        "#dbd9c8"
+      ],
+      "share": 14
+    },
+    {
+      "role": "Chrome, shaded blue-grey",
+      "mean": "#65718d",
+      "tones": [
+        "#61759e",
+        "#687c99",
+        "#5e719a",
+        "#6a6b71"
+      ],
+      "share": 7.1
+    },
+    {
+      "role": "Gunmetal",
+      "mean": "#34354e",
+      "tones": [
+        "#332a47",
+        "#3a3e5e",
+        "#1f2a3b",
+        "#2c1926"
+      ],
+      "share": 11
+    }
+  ],
+  "codeDrawn": {
+    "magenta": "#ff2fb0",
+    "magentaGlow": "#ff8fd6",
+    "magentaPale": "#ffd3ee",
+    "magentaDark": "#8c1264",
+    "chrome": "#d5dde6",
+    "chromeShade": "#8e9bb0",
+    "gunmetal": "#4a5262",
+    "cooling": "#aab3c0",
+    "shadow": "#10131a"
+  }
+}

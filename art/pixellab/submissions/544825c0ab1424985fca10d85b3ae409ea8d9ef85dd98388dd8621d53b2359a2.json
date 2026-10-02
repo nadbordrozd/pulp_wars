@@ -1,0 +1,36 @@
+{
+  "id": "martian-city-2-calm-a-edit",
+  "jobId": "1a019740-7be0-4c26-bc76-42a8a7b85886",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-city-2",
+    "subject": "CITY:MARTIAN:2",
+    "faction": "MARTIAN",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 92322,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and dirt plate under the ring wall, so the wall and the buildings stand directly on a transparent background with nothing at all under them. Keep the chrome saucer, the chrome domes, the hot magenta lights, the dark gunmetal ring wall, the antenna mast, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and dirt plate under the ring wall, so the wall and the buildings stand directly on a transparent background with nothing at all under them. Keep the chrome saucer, the chrome domes, the hot magenta lights, the dark gunmetal ring wall, the antenna mast, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and dirt plate under the ring wall, so the wall and the buildings stand directly on a transparent background with nothing at all under them. Keep the chrome saucer, the chrome domes, the hot magenta lights, the dark gunmetal ring wall, the antenna mast, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and dirt plate under the ring wall, so the wall and the buildings stand directly on a transparent background with nothing at all under them. Keep the chrome saucer, the chrome domes, the hot magenta lights, the dark gunmetal ring wall, the antenna mast, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "martian-city-2-calm-a",
+      "candidate": 0,
+      "sha256": "61c3ff74782e1d9fa18f9c797509f0971ee6607545b895cb9e5f9ac24d63562b"
+    }
+  }
+}

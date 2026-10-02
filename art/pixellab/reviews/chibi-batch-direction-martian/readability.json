@@ -1,0 +1,503 @@
+{
+  "note": "CIE76 colour difference (about 10 is clear at a glance, 20 and more are different colours); contrast is the WCAG luminance ratio; terrain colours are the mean of the tile rasters.",
+  "verdict": {
+    "rule": "magenta stays if it differs from the Undead violet, the Coral plate and the Violet plate by at least 20 (CIE76) in normal vision and at least 10 under deuteranopia and protanopia; otherwise the lime-yellow fallback applies",
+    "againstUndeadViolet": {
+      "normal": 65.1,
+      "worstCvd": 52
+    },
+    "againstCoralPlate": {
+      "normal": 51.7,
+      "worstCvd": 37.6
+    },
+    "againstVioletPlate": {
+      "normal": 56.8,
+      "worstCvd": 19.1
+    },
+    "hue": 324,
+    "accent": "MAGENTA"
+  },
+  "accent": [
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Undead violet, lit #a221ee",
+      "deltaE": 65.1,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 72,
+      "protanopiaDeltaE": 52,
+      "hueA": 324,
+      "hueB": 278
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Undead violet trim #a85df5",
+      "deltaE": 58.8,
+      "contrast": 1,
+      "deuteranopiaDeltaE": 62.1,
+      "protanopiaDeltaE": 40.7,
+      "hueA": 324,
+      "hueB": 270
+    },
+    {
+      "a": "magenta, mean #a81972",
+      "b": "Undead violet, lit #a221ee",
+      "deltaE": 64.7,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 66.5,
+      "protanopiaDeltaE": 57.3,
+      "hueA": 323,
+      "hueB": 278
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Coral plate #f06762",
+      "deltaE": 51.7,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 37.6,
+      "protanopiaDeltaE": 50.2,
+      "hueA": 324,
+      "hueB": 2
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Violet plate #a277d2",
+      "deltaE": 56.8,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 38.1,
+      "protanopiaDeltaE": 19.1,
+      "hueA": 324,
+      "hueB": 268
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Teal plate #28b7a4",
+      "deltaE": 125.1,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 6.9,
+      "protanopiaDeltaE": 44.3,
+      "hueA": 324,
+      "hueB": 172
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 111.2,
+      "contrast": 2.1,
+      "deuteranopiaDeltaE": 67.4,
+      "protanopiaDeltaE": 101.5,
+      "hueA": 324,
+      "hueB": 44
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Human crimson #a8202c",
+      "deltaE": 52.5,
+      "contrast": 1.8,
+      "deuteranopiaDeltaE": 40.4,
+      "protanopiaDeltaE": 49.4,
+      "hueA": 324,
+      "hueB": 355
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Dinosaur orange #fe6d00",
+      "deltaE": 89.6,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 73.8,
+      "protanopiaDeltaE": 91.7,
+      "hueA": 324,
+      "hueB": 26
+    },
+    {
+      "a": "magenta glow #ff8fd6",
+      "b": "Coral plate #f06762",
+      "deltaE": 48.9,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 49.2,
+      "protanopiaDeltaE": 48,
+      "hueA": 322,
+      "hueB": 2
+    },
+    {
+      "a": "magenta glow #ff8fd6",
+      "b": "Violet plate #a277d2",
+      "deltaE": 32.4,
+      "contrast": 1.7,
+      "deuteranopiaDeltaE": 32.7,
+      "protanopiaDeltaE": 21.1,
+      "hueA": 322,
+      "hueB": 268
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "gunmetal #34354e",
+      "deltaE": 83,
+      "contrast": 3,
+      "deuteranopiaDeltaE": 38.3,
+      "protanopiaDeltaE": 25.1,
+      "hueA": 324,
+      "hueB": 237
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "chrome #d1dbe1",
+      "deltaE": 91.7,
+      "contrast": 2.8,
+      "deuteranopiaDeltaE": 27.8,
+      "protanopiaDeltaE": 51,
+      "hueA": 324,
+      "hueB": 204
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Grass #89b75b",
+      "deltaE": 126.8,
+      "contrast": 1.7,
+      "deuteranopiaDeltaE": 42.2,
+      "protanopiaDeltaE": 82.5,
+      "hueA": 324,
+      "hueB": 90
+    }
+  ],
+  "limeFallback": [
+    {
+      "a": "lime fallback #c8ff2a",
+      "b": "Grass #89b75b",
+      "deltaE": 51.1,
+      "contrast": 2,
+      "deuteranopiaDeltaE": 46.9,
+      "protanopiaDeltaE": 50.1,
+      "hueA": 75,
+      "hueB": 90
+    },
+    {
+      "a": "lime fallback #c8ff2a",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 54.4,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 22.6,
+      "protanopiaDeltaE": 32.3,
+      "hueA": 75,
+      "hueB": 44
+    },
+    {
+      "a": "lime fallback #c8ff2a",
+      "b": "Goblin olive #8a952f",
+      "deltaE": 54.8,
+      "contrast": 2.8,
+      "deuteranopiaDeltaE": 45.5,
+      "protanopiaDeltaE": 49.9,
+      "hueA": 75,
+      "hueB": 66
+    },
+    {
+      "a": "lime fallback #c8ff2a",
+      "b": "chrome #d1dbe1",
+      "deltaE": 98.3,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 84.2,
+      "protanopiaDeltaE": 96.1,
+      "hueA": 75,
+      "hueB": 204
+    }
+  ],
+  "terrain": [
+    {
+      "a": "chrome, lit #d1dbe1",
+      "b": "Grass #89b75b",
+      "deltaE": 56.8,
+      "contrast": 1.7,
+      "deuteranopiaDeltaE": 47,
+      "protanopiaDeltaE": 54.1,
+      "hueA": 204,
+      "hueB": 90
+    },
+    {
+      "a": "chrome, lit #d1dbe1",
+      "b": "Forest #769a51",
+      "deltaE": 52.8,
+      "contrast": 2.3,
+      "deuteranopiaDeltaE": 46.1,
+      "protanopiaDeltaE": 50.5,
+      "hueA": 204,
+      "hueB": 89
+    },
+    {
+      "a": "chrome, lit #d1dbe1",
+      "b": "Mountain rock, mean #a2aab6",
+      "deltaE": 17.8,
+      "contrast": 1.7,
+      "deuteranopiaDeltaE": 17.7,
+      "protanopiaDeltaE": 17.8,
+      "hueA": 204,
+      "hueB": 216
+    },
+    {
+      "a": "chrome, lit #d1dbe1",
+      "b": "Mountain rock, light #a7afbb",
+      "deltaE": 15.8,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 15.8,
+      "protanopiaDeltaE": 15.9,
+      "hueA": 204,
+      "hueB": 216
+    },
+    {
+      "a": "chrome, shaded #65718d",
+      "b": "Mountain rock, mean #a2aab6",
+      "deltaE": 23.9,
+      "contrast": 2.1,
+      "deuteranopiaDeltaE": 24.1,
+      "protanopiaDeltaE": 23,
+      "hueA": 223,
+      "hueB": 216
+    },
+    {
+      "a": "chrome, shaded #65718d",
+      "b": "Mountain rock, light #a7afbb",
+      "deltaE": 25.8,
+      "contrast": 2.2,
+      "deuteranopiaDeltaE": 25.8,
+      "protanopiaDeltaE": 24.8,
+      "hueA": 223,
+      "hueB": 216
+    },
+    {
+      "a": "gunmetal #34354e",
+      "b": "Mountain rock, mean #a2aab6",
+      "deltaE": 47.2,
+      "contrast": 5.1,
+      "deuteranopiaDeltaE": 46.8,
+      "protanopiaDeltaE": 46.8,
+      "hueA": 237,
+      "hueB": 216
+    },
+    {
+      "a": "gunmetal #34354e",
+      "b": "Forest #769a51",
+      "deltaE": 69.1,
+      "contrast": 3.7,
+      "deuteranopiaDeltaE": 59.9,
+      "protanopiaDeltaE": 65.6,
+      "hueA": 237,
+      "hueB": 89
+    },
+    {
+      "a": "lavender skin #8e8cb2",
+      "b": "Grass #89b75b",
+      "deltaE": 73.6,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 59,
+      "protanopiaDeltaE": 68.5,
+      "hueA": 242,
+      "hueB": 90
+    },
+    {
+      "a": "lavender skin #8e8cb2",
+      "b": "Mountain rock, mean #a2aab6",
+      "deltaE": 18.2,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 15.1,
+      "protanopiaDeltaE": 16,
+      "hueA": 242,
+      "hueB": 216
+    },
+    {
+      "a": "chrome, lit #d1dbe1",
+      "b": "Shallow Water #8fd3dc",
+      "deltaE": 19.4,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 11,
+      "protanopiaDeltaE": 6.1,
+      "hueA": 204,
+      "hueB": 187
+    },
+    {
+      "a": "chrome, lit #d1dbe1",
+      "b": "Deep Water #4277a5",
+      "deltaE": 46.2,
+      "contrast": 3.4,
+      "deuteranopiaDeltaE": 48.6,
+      "protanopiaDeltaE": 43.9,
+      "hueA": 204,
+      "hueB": 208
+    },
+    {
+      "a": "gunmetal #34354e",
+      "b": "Deep Water #4277a5",
+      "deltaE": 30.8,
+      "contrast": 2.5,
+      "deuteranopiaDeltaE": 29.7,
+      "protanopiaDeltaE": 29.7,
+      "hueA": 237,
+      "hueB": 208
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Mountain rock, mean #a2aab6",
+      "deltaE": 85,
+      "contrast": 1.7,
+      "deuteranopiaDeltaE": 11.7,
+      "protanopiaDeltaE": 34.8,
+      "hueA": 324,
+      "hueB": 216
+    },
+    {
+      "a": "magenta, lit #f30a96",
+      "b": "Shallow Water #8fd3dc",
+      "deltaE": 105.8,
+      "contrast": 2.4,
+      "deuteranopiaDeltaE": 23.2,
+      "protanopiaDeltaE": 45,
+      "hueA": 324,
+      "hueB": 187
+    }
+  ],
+  "units": [
+    {
+      "unit": "Grunt",
+      "role": "FIGHTER",
+      "asset": "chibi-direction-martian-grunt",
+      "canvas": "56 x 80",
+      "spriteWidth": 54,
+      "spriteHeight": 73,
+      "plateWidth": 52,
+      "widerThanPlateBy": 2,
+      "lowestPixelRow": 75,
+      "accentShare": 13.5,
+      "accentPixels": 330,
+      "accentMeanHue": 321,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Saucer",
+      "role": "RAIDER",
+      "asset": "chibi-direction-martian-saucer",
+      "canvas": "72 x 88",
+      "spriteWidth": 63,
+      "spriteHeight": 56,
+      "plateWidth": 57,
+      "widerThanPlateBy": 6,
+      "lowestPixelRow": 71,
+      "accentShare": 8.2,
+      "accentPixels": 156,
+      "accentMeanHue": 321,
+      "keyRedPixels": 0,
+      "flying": {
+        "hullBottom": 71,
+        "groundLine": 81,
+        "liftGap": 10
+      }
+    },
+    {
+      "unit": "Ray Gunner",
+      "role": "MARKSMAN",
+      "asset": "chibi-direction-martian-ray-gunner",
+      "canvas": "56 x 80",
+      "spriteWidth": 56,
+      "spriteHeight": 73,
+      "plateWidth": 52,
+      "widerThanPlateBy": 4,
+      "lowestPixelRow": 75,
+      "accentShare": 11.2,
+      "accentPixels": 271,
+      "accentMeanHue": 322,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Shield Projector",
+      "role": "GUARD",
+      "asset": "chibi-direction-martian-shield-projector",
+      "canvas": "56 x 80",
+      "spriteWidth": 52,
+      "spriteHeight": 72,
+      "plateWidth": 52,
+      "widerThanPlateBy": 0,
+      "lowestPixelRow": 75,
+      "accentShare": 12.4,
+      "accentPixels": 297,
+      "accentMeanHue": 322,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Brain",
+      "role": "CAPTAIN",
+      "asset": "chibi-direction-martian-brain",
+      "canvas": "56 x 80",
+      "spriteWidth": 52,
+      "spriteHeight": 69,
+      "plateWidth": 52,
+      "widerThanPlateBy": 0,
+      "lowestPixelRow": 73,
+      "accentShare": 5.7,
+      "accentPixels": 129,
+      "accentMeanHue": 324,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Tripod",
+      "role": "CATAPULT",
+      "asset": "chibi-direction-martian-tripod",
+      "canvas": "72 x 88",
+      "spriteWidth": 58,
+      "spriteHeight": 77,
+      "plateWidth": 57,
+      "widerThanPlateBy": 1,
+      "lowestPixelRow": 84,
+      "accentShare": 8.1,
+      "accentPixels": 185,
+      "accentMeanHue": 323,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Mothership",
+      "role": "KNIGHT",
+      "asset": "chibi-direction-martian-mothership",
+      "canvas": "72 x 88",
+      "spriteWidth": 68,
+      "spriteHeight": 68,
+      "plateWidth": 57,
+      "widerThanPlateBy": 11,
+      "lowestPixelRow": 72,
+      "accentShare": 8.3,
+      "accentPixels": 182,
+      "accentMeanHue": 321,
+      "keyRedPixels": 0,
+      "flying": {
+        "hullBottom": 72,
+        "groundLine": 82,
+        "liftGap": 10
+      }
+    },
+    {
+      "unit": "Colossus",
+      "role": "JUGGERNAUT",
+      "asset": "chibi-direction-martian-colossus",
+      "canvas": "88 x 104",
+      "spriteWidth": 83,
+      "spriteHeight": 89,
+      "plateWidth": 68,
+      "widerThanPlateBy": 15,
+      "lowestPixelRow": 96,
+      "accentShare": 7.7,
+      "accentPixels": 320,
+      "accentMeanHue": 324,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Thrall",
+      "role": "THRALL",
+      "asset": "chibi-direction-martian-thrall",
+      "canvas": "56 x 80",
+      "spriteWidth": 36,
+      "spriteHeight": 70,
+      "plateWidth": 52,
+      "widerThanPlateBy": -16,
+      "lowestPixelRow": 74,
+      "accentShare": 1.3,
+      "accentPixels": 21,
+      "accentMeanHue": 320,
+      "keyRedPixels": 0
+    }
+  ]
+}

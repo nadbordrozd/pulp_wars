@@ -1,0 +1,36 @@
+{
+  "id": "tripod-a-edit-3",
+  "jobId": "13b188a4-04ed-4332-9493-ef3d3270660b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-tripod",
+    "subject": "UNIT:MARTIAN:CATAPULT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91204,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the pointed horn that sticks out of the left side of the head, so the head is a smooth round chrome hood. Do not redraw anything else: keep the big hot magenta eye lens, the legs, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the pointed horn that sticks out of the left side of the head, so the head is a smooth round chrome hood. Do not redraw anything else: keep the big hot magenta eye lens, the legs, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the pointed horn that sticks out of the left side of the head, so the head is a smooth round chrome hood. Do not redraw anything else: keep the big hot magenta eye lens, the legs, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the pointed horn that sticks out of the left side of the head, so the head is a smooth round chrome hood. Do not redraw anything else: keep the big hot magenta eye lens, the legs, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "tripod-a-edit",
+      "candidate": 0,
+      "sha256": "876652acbe8654a145c94bb2eb601ee34e4f4cd7a521638664f877857f33bd4f"
+    }
+  }
+}

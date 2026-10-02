@@ -759,3 +759,84 @@ go to `--captures DIR` (a temporary directory by default). It reads the
 samples that `npx tsx scripts/art/dinosaur-direction/samples.ts` cuts from
 the run: each variant is one recorded candidate as generated, and
 `samples.json` records how far each pattern edit moved its plain base.
+
+## The Martian batch (bead `pulp_wars-t6s.6`)
+
+Batch `direction-martian` holds the production art of a fifth faction, the
+[Martians](factions/MARTIAN.md): faction `MARTIAN`, `fixedFactionColours`,
+33 assets (nine units, nine portraits, seven icons, five effects, City 1 to 3) from 62 recipes, all new PixelLab calls. The faction had no accepted
+sprite to edit, so the batch starts from fresh creations. **Nothing
+registers it yet:** its registry lines are in
+[`chibi-direction-martian-art-manifest.ts`](../../src/assets/chibi-direction-martian-art-manifest.ts),
+which no module imports until bead `pulp_wars-t6s.4`. It added these
+pipeline pieces:
+
+- **`machine` recipe class**: the sizes, camera, options and faction layer of
+  `unit`, with a class text (`class-machine.txt`) that asks for "one chunky
+  cute toy-like machine map piece" instead of a figure with "a big head …
+  both feet visible". The Saucer, the Tripod, the Mothership, the Colossus
+  and the Brain's carrier use it. Fresh creations with it keep the thick
+  black outline and the chunky shapes of the chibi look.
+- **Sibling edits** (`"source": { "recipe": …, "candidate": …, "sibling":
+true }`): an `edit-image-pixen` recipe may edit an earlier recipe of
+  **another asset of the same batch**, of the same size. Without `sibling`
+  an in-batch source must still belong to the recipe's own asset. The Ray
+  Gunner and the Shield Projector are edits of the accepted Grunt, the
+  Mothership of the accepted Saucer, and two portraits of the Grunt's bust,
+  so the aliens share one head, helmet and suit. A fresh creation of the
+  Ray Gunner drew a different alien.
+- **`martian-magenta` accent preset**
+  ([`accent.ts`](../../scripts/art/chibi/accent.ts)): the band hue 285 to
+  350, saturation at least 0.4, value at least 0.25; target hue 322 with a
+  fifth of the hue spread and no trim rule. PixelLab's "hot magenta pink"
+  ranged from hue 300 to 340 between sprites; the masters measure 320 to 324. The `undead-violet` preset is unchanged (a test holds it).
+- **Subjects**: `UNIT:MARTIAN:<ROLE>` and `UNIT:MARTIAN:THRALL`,
+  `PORTRAIT:MARTIAN:<ROLE>`, `CITY:MARTIAN:<level>`,
+  `ICON:ACTION:MARTIAN:RALLY` (Psychic Command), and a new family
+  `ICON:STATUS:SHIELD` and `ICON:STATUS:COOLING`.
+- **Effects** are `palette-map` assets on
+  `scripts/art/chibi/palettes/martian-magenta.png`, written by
+  `npx tsx scripts/art/martian-direction/magenta-palette.ts` (a test checks
+  the bytes).
+
+What worked, added to the prompt notes of the earlier batches:
+
+- **A fresh figure holds the chibi proportions** when its subject line says
+  "a huge round head about half of the figure's height and a tiny sturdy
+  body" (the Grunt is 54 x 73 px, the Human Fighter 52 x 72).
+- **Derive the second and third figure by editing the first** ("Change only
+  what he holds: …; Keep his head, big black eyes, glass bubble helmet, …").
+- **A flyer is made by removing its legs**: every saucer creation drew
+  landing legs; "Remove the four legs under the saucer, so it flies with
+  nothing under it except …" worked first time.
+- **"Change only one thing: erase the pointed horn …; do not redraw
+  anything else"** removed a stray horn; an edit that asked for two things
+  (a leg and the horn) removed the eye lens instead.
+- **Scenery behind an effect** is removed by an edit that names what stays
+  ("erase everything except the tall pink column of light and the magenta
+  ring at its foot").
+- **What did not work:** making the Tripod stand on three legs (it stands
+  on four), and recolouring cyan leg segments of a 48 px portrait (a fresh
+  creation with "cyan, teal" excluded replaced it).
+
+`npm run art:chibi-martian-direction-review` writes
+`art/pixellab/reviews/chibi-batch-direction-martian/`:
+`roster-{x4,1x}.png` and `roster-zoom-0.75.png` (the nine units on Grass
+and on Mountain rock, beside the Human, Undead, Goblin and Dinosaur unit of
+the role), `terrain-x2.png` (every unit on Grass, Forest, Mountain, Shallow
+and Deep Water, the flyers with their ground shadow), `portraits-x4.png`,
+`icons-x4.png` (beside five existing command icons, at 48 and 24 px),
+`effects-x3.png` (on five terrains, the dock panel, a Grunt and a Human),
+`cities-x3.png` (as authored, with the pennant in the four player colours,
+on rock, and beside the other factions' cities), `palette.{png,json}` and
+`readability.json` (measured on the masters, with the accent verdict),
+`scene-{four,mixed-a,mixed-b}-{desktop,phone}-zoom-{1,0.75}.png` (the scenes
+of [`scene.ts`](../../scripts/art/martian-direction/scene.ts) drawn by the
+real board host with the default look) and `index.json`. The faction is not
+in the engine yet, so a scene gives a Martian seat a **stand-in faction**
+that it does not otherwise show and registers the Martian rasters under
+that faction's subjects; the Thrall is a second stand-in's Fighter owned by
+a shadow player of the seat's colour. Its captures start Vite on port 6509
+unless `--port` says otherwise, need `CHROME_PATH`, and are written after
+the browser closes (a file written under the project while the page is
+open makes the dev server reload it).

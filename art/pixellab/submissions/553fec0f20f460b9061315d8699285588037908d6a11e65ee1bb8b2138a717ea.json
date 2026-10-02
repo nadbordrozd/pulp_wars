@@ -1,0 +1,37 @@
+{
+  "id": "grunt-edit-a",
+  "jobId": "ecfa8968-767a-4f04-b204-232863862bbd",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-grunt",
+    "subject": "UNIT:MARTIAN:FIGHTER",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a little alien space trooper, same size and stance: a bald pale lavender-grey head with two huge black almond eyes inside a clear glass bubble helmet with a short antenna tipped hot magenta; a plain silver-white space suit with dark gunmetal belt and boots; a chunky silver ray pistol with a hot magenta muzzle in the raised hand; no sword, no shield. Keep the proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a little alien space trooper, same size and stance: a bald pale lavender-grey head with two huge black almond eyes inside a clear glass bubble helmet with a short antenna tipped hot magenta; a plain silver-white space suit with dark gunmetal belt and boots; a chunky silver ray pistol with a hot magenta muzzle in the raised hand; no sword, no shield. Keep the proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a little alien space trooper, same size and stance: a bald pale lavender-grey head with two huge black almond eyes inside a clear glass bubble helmet with a short antenna tipped hot magenta; a plain silver-white space suit with dark gunmetal belt and boots; a chunky silver ray pistol with a hot magenta muzzle in the raised hand; no sword, no shield. Keep the proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw him as a little alien space trooper, same size and stance: a bald pale lavender-grey head with two huge black almond eyes inside a clear glass bubble helmet with a short antenna tipped hot magenta; a plain silver-white space suit with dark gunmetal belt and boots; a chunky silver ray pistol with a hot magenta muzzle in the raised hand; no sword, no shield. Keep the proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "direction-human",
+      "recipe": "fighter-heraldic-edit",
+      "candidate": 0,
+      "sha256": "18e448198d79c948caa6ac2c7eb7264132ef8bc31dd981b3337d93a8f951ab71"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-grunt-b-edit",
+  "jobId": "567ee329-c00d-4d35-ab17-43101f82a2b4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-grunt",
+    "subject": "PORTRAIT:MARTIAN:FIGHTER",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92021,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add three small glowing hot magenta lights, colour #ff2fb0: the ball on the tip of the antenna becomes a bigger hot magenta ball, the muzzle of the pistol glows hot magenta, and one round hot magenta light sits on the chest of the suit. Do not redraw anything else: keep the head, the big black eyes, the glass bubble helmet, the silver suit, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add three small glowing hot magenta lights, colour #ff2fb0: the ball on the tip of the antenna becomes a bigger hot magenta ball, the muzzle of the pistol glows hot magenta, and one round hot magenta light sits on the chest of the suit. Do not redraw anything else: keep the head, the big black eyes, the glass bubble helmet, the silver suit, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add three small glowing hot magenta lights, colour #ff2fb0: the ball on the tip of the antenna becomes a bigger hot magenta ball, the muzzle of the pistol glows hot magenta, and one round hot magenta light sits on the chest of the suit. Do not redraw anything else: keep the head, the big black eyes, the glass bubble helmet, the silver suit, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add three small glowing hot magenta lights, colour #ff2fb0: the ball on the tip of the antenna becomes a bigger hot magenta ball, the muzzle of the pistol glows hot magenta, and one round hot magenta light sits on the chest of the suit. Do not redraw anything else: keep the head, the big black eyes, the glass bubble helmet, the silver suit, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-grunt-b",
+      "candidate": 0,
+      "sha256": "9263a086dedad593cf2f95d0e93d29781669be0445084e3e706fb42a323e4849"
+    }
+  }
+}

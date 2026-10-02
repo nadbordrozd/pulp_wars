@@ -27,6 +27,13 @@ export interface Size {
 
 export type ChibiRecipeClass =
   | "unit"
+  /**
+   * A machine with no body of its own (bead pulp_wars-t6s.6, the Martian
+   * Saucer, Tripod, Mothership, Colossus and Brain carrier): the unit sizes
+   * and Pixen options, but a class text that asks for one vehicle or device
+   * instead of the figure's "big head, both feet visible".
+   */
+  | "machine"
   | "ship"
   | "settlement"
   | "building"
@@ -164,6 +171,16 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     generators: ["create-image-pixen"],
     // A reviewed edit may enlarge the owner area or fix a detail (a red
     // mouth) while keeping the accepted design.
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: { "create-image-pixen": PIECE_OPTIONS },
+  },
+  machine: {
+    camera: "three-quarter",
+    factionLayer: true,
+    assetClasses: ["STANDARD_UNIT", "LARGE_UNIT", "GIANT_UNIT"],
+    generators: ["create-image-pixen"],
     editPass: true,
     noBackground: true,
     derivation: "as-is",
@@ -563,6 +580,14 @@ export interface ChibiRecipe {
     readonly batch?: string;
     readonly recipe: string;
     readonly candidate: number;
+    /**
+     * The source is an earlier recipe of ANOTHER asset of this batch, of the
+     * same size (bead pulp_wars-t6s.6): a faction with no accepted sprites
+     * derives its sibling units from its first accepted one, so they share
+     * its head, suit and outline. Without it an in-batch source must belong
+     * to the recipe's own asset.
+     */
+    readonly sibling?: true;
   };
   /** edit-image-pixen: defaults to fragments/edit-remove-ground.txt. */
   readonly editInstruction?: string;
@@ -940,7 +965,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT):(UNDEAD|GOBLIN|DINOSAUR):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:)?[A-Z_]+$|^CITY:((UNDEAD|GOBLIN|DINOSAUR):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^STATUS:(PLAGUED|BITTEN)$|^EFFECT:[A-Z_]+$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^STATUS:(PLAGUED|BITTEN)$|^EFFECT:[A-Z_]+$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;
@@ -1272,7 +1297,7 @@ export function batchManifestProblems(
         );
         if (!recipeIds.includes(source.recipe) || sourceRecipe === undefined)
           problems.push(`${label}: edit source must be an earlier recipe`);
-        else if (sourceRecipe.asset !== recipe.asset)
+        else if (sourceRecipe.asset !== recipe.asset && source.sibling !== true)
           problems.push(`${label}: edit source belongs to another asset`);
         else if (
           sourceRecipe.requestSize.width !== recipe.requestSize.width ||

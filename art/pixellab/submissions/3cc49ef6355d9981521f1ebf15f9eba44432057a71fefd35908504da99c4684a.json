@@ -1,0 +1,57 @@
+{
+  "id": "effect-beam-down-b",
+  "jobId": "sync-882fcbfc-06ed-4129-8e78-8a6816f3c525",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-effect-martian-beam-down",
+    "subject": "EFFECT:BEAM_DOWN",
+    "faction": "MARTIAN",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92213,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-icon.txt",
+        "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-effect.txt + scripts/art/chibi/fragments/class-effect.negative.txt",
+        "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, text, letters, numbers, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/MARTIAN.json",
+        "text": "Subject: one tall narrow vertical column of light, a teleport beam: a straight pillar slightly wider at the bottom, bright hot magenta at its edges and pale pink to white in its middle, with four small white four-pointed sparkles rising inside it and one flat pale pink ring at its foot; floating in empty space; no saucer, no figure."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Only the column of light, alone on a fully transparent background: no room, no floor, no scenery, no plants.",
+        "negative": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, green, blue, cyan, yellow, orange, saucer, ship, figure, room, scenery, plants, trees, tiles"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one tall narrow vertical column of light, a teleport beam: a straight pillar slightly wider at the bottom, bright hot magenta at its edges and pale pink to white in its middle, with four small white four-pointed sparkles rising inside it and one flat pale pink ring at its foot; floating in empty space; no saucer, no figure. Only the column of light, alone on a fully transparent background: no room, no floor, no scenery, no plants.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow, stone slab, floor, fire pit, logs, green, blue, saucer, ship, figure, room, scenery, plants, trees, tiles",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one tall narrow vertical column of light, a teleport beam: a straight pillar slightly wider at the bottom, bright hot magenta at its edges and pale pink to white in its middle, with four small white four-pointed sparkles rising inside it and one flat pale pink ring at its foot; floating in empty space; no saucer, no figure. Only the column of light, alone on a fully transparent background: no room, no floor, no scenery, no plants. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow, stone slab, floor, fire pit, logs, green, blue, saucer, ship, figure, room, scenery, plants, trees, tiles."
+  }
+}

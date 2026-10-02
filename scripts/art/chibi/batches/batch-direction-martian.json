@@ -1,0 +1,1261 @@
+{
+  "schemaVersion": 1,
+  "batch": "direction-martian",
+  "title": "New visual direction: Martian units, portraits, command icons, effects and the landed-saucer colony City 1-3 in chrome, gunmetal, lavender-grey skin and one hot magenta accent",
+  "bead": "pulp_wars-t6s.6",
+  "faction": "MARTIAN",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-martian-grunt",
+      "subject": "UNIT:MARTIAN:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-saucer",
+      "subject": "UNIT:MARTIAN:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-ray-gunner",
+      "subject": "UNIT:MARTIAN:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-shield-projector",
+      "subject": "UNIT:MARTIAN:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-brain",
+      "subject": "UNIT:MARTIAN:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-tripod",
+      "subject": "UNIT:MARTIAN:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-mothership",
+      "subject": "UNIT:MARTIAN:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-colossus",
+      "subject": "UNIT:MARTIAN:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-thrall",
+      "subject": "UNIT:MARTIAN:THRALL",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-portrait-martian-grunt",
+      "subject": "PORTRAIT:MARTIAN:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-portrait-martian-saucer",
+      "subject": "PORTRAIT:MARTIAN:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-portrait-martian-ray-gunner",
+      "subject": "PORTRAIT:MARTIAN:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-portrait-martian-shield-projector",
+      "subject": "PORTRAIT:MARTIAN:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-portrait-martian-brain",
+      "subject": "PORTRAIT:MARTIAN:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-portrait-martian-tripod",
+      "subject": "PORTRAIT:MARTIAN:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-portrait-martian-mothership",
+      "subject": "PORTRAIT:MARTIAN:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-portrait-martian-colossus",
+      "subject": "PORTRAIT:MARTIAN:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-portrait-martian-thrall",
+      "subject": "PORTRAIT:MARTIAN:THRALL",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-icon-action-beam-down",
+      "subject": "ICON:ACTION:BEAM_DOWN",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-icon-action-mind-control",
+      "subject": "ICON:ACTION:MIND_CONTROL",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-icon-action-tractor-beam",
+      "subject": "ICON:ACTION:TRACTOR_BEAM",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-icon-action-martian-rally",
+      "subject": "ICON:ACTION:MARTIAN:RALLY",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-icon-action-force-field",
+      "subject": "ICON:ACTION:FORCE_FIELD",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-icon-status-shield",
+      "subject": "ICON:STATUS:SHIELD",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-icon-status-cooling",
+      "subject": "ICON:STATUS:COOLING",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-effect-martian-heat-ray",
+      "subject": "EFFECT:HEAT_RAY",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/martian-magenta.png",
+        "sha256": "66f9d40032962776d7ac39fb98f5d580df55753c4e52285b7c6da7346e31934c"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-martian-shield-flare",
+      "subject": "EFFECT:SHIELD_FLARE",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/martian-magenta.png",
+        "sha256": "66f9d40032962776d7ac39fb98f5d580df55753c4e52285b7c6da7346e31934c"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-martian-beam-down",
+      "subject": "EFFECT:BEAM_DOWN",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/martian-magenta.png",
+        "sha256": "66f9d40032962776d7ac39fb98f5d580df55753c4e52285b7c6da7346e31934c"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-martian-tractor-beam",
+      "subject": "EFFECT:TRACTOR_BEAM",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/martian-magenta.png",
+        "sha256": "66f9d40032962776d7ac39fb98f5d580df55753c4e52285b7c6da7346e31934c"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-martian-mind-control",
+      "subject": "EFFECT:MIND_CONTROL",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/martian-magenta.png",
+        "sha256": "66f9d40032962776d7ac39fb98f5d580df55753c4e52285b7c6da7346e31934c"
+      }
+    },
+    {
+      "id": "chibi-direction-martian-city-1",
+      "subject": "CITY:MARTIAN:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:MARTIAN:1/CALM",
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-city-2",
+      "subject": "CITY:MARTIAN:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 88,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:MARTIAN:2/CALM",
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-direction-martian-city-3",
+      "subject": "CITY:MARTIAN:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 96,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:MARTIAN:3/CALM",
+      "accent": "martian-magenta"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "grunt-a",
+      "asset": "chibi-direction-martian-grunt",
+      "endpoint": "create-image-pixen",
+      "seed": 91001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The mouth is a tiny dark line.",
+      "negativeAddendum": "sword, shield, bow, cape, cloak, hair, human face, green skin, antennae on the skin, tentacles, backpack",
+      "notes": "First sample: a fresh creation with the unit class."
+    },
+    {
+      "id": "grunt-edit-a",
+      "asset": "chibi-direction-martian-grunt",
+      "endpoint": "edit-image-pixen",
+      "seed": 91002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "direction-human",
+        "recipe": "fighter-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a little alien space trooper, same size and stance: a bald pale lavender-grey head with two huge black almond eyes inside a clear glass bubble helmet with a short antenna tipped hot magenta; a plain silver-white space suit with dark gunmetal belt and boots; a chunky silver ray pistol with a hot magenta muzzle in the raised hand; no sword, no shield. Keep the proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "First sample: an edit of the accepted Human Fighter, to hold the chibi proportions and outline."
+    },
+    {
+      "id": "saucer-a",
+      "asset": "chibi-direction-martian-saucer",
+      "endpoint": "create-image-pixen",
+      "seed": 91101,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The saucer is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "person standing beside it, soldier, wheels, landing legs, tripod",
+      "notes": "First sample: a fresh creation with the machine class."
+    },
+    {
+      "id": "tripod-a",
+      "asset": "chibi-direction-martian-tripod",
+      "endpoint": "create-image-pixen",
+      "seed": 91201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The machine is drawn large and tall and fills most of the height of the image.",
+      "negativeAddendum": "person standing beside it, soldier, wheels, four legs, spider, camera tripod",
+      "notes": "First sample: a fresh creation with the machine class."
+    },
+    {
+      "id": "saucer-a-edit",
+      "asset": "chibi-direction-martian-saucer",
+      "endpoint": "edit-image-pixen",
+      "seed": 91102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "saucer-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the four legs under the saucer, so it flies with nothing under it except one short round dark gunmetal beam emitter with a glowing hot magenta lens in the centre of its underside. Keep the chrome disc, the hot magenta rim lights, the glass dome, the alien pilot, the size, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "saucer-a is the right little saucer but stands on four legs: it must fly."
+    },
+    {
+      "id": "tripod-a-edit",
+      "asset": "chibi-direction-martian-tripod",
+      "endpoint": "edit-image-pixen",
+      "seed": 91202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "tripod-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the legs and remove the spike: it stands on exactly three legs, each twice as thick, dark gunmetal with round chrome silver knee joints (no brass, no yellow) and chunky round chrome feet; the pointed spike on the left of the head is removed. Keep the chrome hooded head, the big hot magenta eye lens, the heat-ray arm with its magenta tip, the height, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "tripod-a reads as the faction's walker but has four thin legs with brass joints and a spike on its head."
+    },
+    {
+      "id": "ray-gunner-a",
+      "asset": "chibi-direction-martian-ray-gunner",
+      "endpoint": "create-image-pixen",
+      "seed": 91301,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The mouth is a tiny dark line.",
+      "negativeAddendum": "sword, shield, bow, cape, cloak, hair, human face, green skin, antennae on the skin, tentacles, backpack, pistol",
+      "notes": "The Grunt's recipe with the big rifle."
+    },
+    {
+      "id": "tripod-a-edit-2",
+      "asset": "chibi-direction-martian-tripod",
+      "endpoint": "edit-image-pixen",
+      "seed": 91203,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "tripod-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Remove two things only: the one leg in the middle at the back, behind the others, so that exactly three legs remain (left, front and right); and the pointed horn on the left side of the head, leaving a smooth round chrome head. Keep the three other legs, the chrome head, the hot magenta eye lens, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The first edit made the legs sturdy and chrome-jointed but kept four legs and the horn."
+    },
+    {
+      "id": "ray-gunner-b",
+      "asset": "chibi-direction-martian-ray-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 91302,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "grunt-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only what he holds: replace the small pistol with one huge long silver ray rifle with big fins and three ring coils, held in both hands across his body and pointing to the right, with a big round glowing hot magenta emitter ball at its muzzle; add a small dark gunmetal power tank on his back. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The fresh creation drew another alien (dark head, red-orange emitter, brown pack); the Ray Gunner is the Grunt with the big rifle."
+    },
+    {
+      "id": "shield-projector-a",
+      "asset": "chibi-direction-martian-shield-projector",
+      "endpoint": "edit-image-pixen",
+      "seed": 91401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "grunt-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Make him a sturdier, wider trooper: add big rounded silver shoulder plates and thick armoured legs; replace the pistol with one big round silver dish emitter, like a small radar dish with a glowing hot magenta centre, held in both hands in front of his body, and one thin curved hot magenta arc of energy in front of the dish. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The Shield Projector is the Grunt in heavier armour with a dish emitter."
+    },
+    {
+      "id": "mothership-a",
+      "asset": "chibi-direction-martian-mothership",
+      "endpoint": "edit-image-pixen",
+      "seed": 91701,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "saucer-a-edit",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Make it a much bigger, grander command ship that fills the width of the image: a very wide thick chrome disc in two stacked tiers with a ring of many hot magenta lights, three small chrome fins, a bigger glass dome with a short antenna and no pilot inside, and under it one big round open beam port glowing hot magenta instead of the thin nozzle. Keep the chrome and gunmetal colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The Mothership is derived from the accepted Saucer so the two ships match."
+    },
+    {
+      "id": "brain-a",
+      "asset": "chibi-direction-martian-brain",
+      "endpoint": "create-image-pixen",
+      "seed": 91501,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The jar is drawn large and fills most of the image.",
+      "negativeAddendum": "person, soldier, alien body, arms, wheels, tentacles, red brain, pink brain",
+      "notes": "Fresh creation with the machine class."
+    },
+    {
+      "id": "colossus-a",
+      "asset": "chibi-direction-martian-colossus",
+      "endpoint": "create-image-pixen",
+      "seed": 91801,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The machine is drawn very large and fills most of the image, wide and tall.",
+      "negativeAddendum": "person standing beside it, soldier, wheels, four legs, spider, camera tripod, thin legs, brass, gold",
+      "notes": "Fresh creation with the machine class."
+    },
+    {
+      "id": "thrall-a",
+      "asset": "chibi-direction-martian-thrall",
+      "endpoint": "create-image-pixen",
+      "seed": 91901,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The mouth is a tiny dark line.",
+      "negativeAddendum": "shield, bow, cape, crest, plume, heraldry, red cloth, green skin, skull, bone, alien, bubble helmet",
+      "notes": "Fresh creation with the unit class."
+    },
+    {
+      "id": "tripod-a-edit-3",
+      "asset": "chibi-direction-martian-tripod",
+      "endpoint": "edit-image-pixen",
+      "seed": 91204,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "tripod-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the pointed horn that sticks out of the left side of the head, so the head is a smooth round chrome hood. Do not redraw anything else: keep the big hot magenta eye lens, the legs, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Edit 2 removed the eye lens instead of a leg; go back to edit 1 and remove only the horn."
+    },
+    {
+      "id": "tripod-b",
+      "asset": "chibi-direction-martian-tripod",
+      "endpoint": "create-image-pixen",
+      "seed": 91205,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "It has exactly three legs and no more: one leg in front and two legs behind, spread wide like a camera stand, each leg thick and sturdy. The machine is drawn large and tall and fills most of the height of the image.",
+      "negativeAddendum": "person standing beside it, soldier, wheels, four legs, five legs, spider, horn, spike, brass, gold, yellow joints",
+      "notes": "A second fresh creation with the leg count spelled out."
+    },
+    {
+      "id": "brain-b",
+      "asset": "chibi-direction-martian-brain",
+      "endpoint": "create-image-pixen",
+      "seed": 91502,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The glass jar with the brain is huge: it is as wide as the image and fills the top two thirds of it, and the whole piece is as tall as the image. The brain pulses with bright hot magenta veins and sparks.",
+      "negativeAddendum": "person, soldier, alien body, arms, wheels, tentacles, red brain, small jar, tiny",
+      "notes": "brain-a is the right idea but only 35 px tall and has no magenta."
+    },
+    {
+      "id": "thrall-b",
+      "asset": "chibi-direction-martian-thrall",
+      "endpoint": "edit-image-pixen",
+      "seed": 91902,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "direction-human",
+        "recipe": "fighter-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a dazed mind-controlled soldier, same size: slumped, both arms hanging down, no shield; a plain drab mid-grey tunic and trousers, nothing red or gold; a pale grey face with two empty white eyes; instead of his helmet a polished chrome control helmet with a short antenna and one glowing hot magenta light; a dark gunmetal collar; a dull grey short sword hanging low in one hand. Keep the proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "thrall-a came out as a 38 px robot knight; an edit of the Human Fighter keeps the scale of a FIGHTER."
+    },
+    {
+      "id": "colossus-b",
+      "asset": "chibi-direction-martian-colossus",
+      "endpoint": "create-image-pixen",
+      "seed": 91802,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "It is built like a giant tripod walker: one huge round chrome dome head on top, standing high on exactly three thick straight armoured legs spread wide, no arms except the one cannon under the head. The muzzle glows hot magenta, with no fire. The machine is drawn very large and fills most of the image.",
+      "negativeAddendum": "person standing beside it, soldier, wheels, humanoid robot, two legs, knees bent, crouching, mech suit, orange flame, muzzle flash, fire, brass, gold",
+      "notes": "colossus-a is a crouching two-legged robot with an orange muzzle flash; the Colossus is a giant tripod."
+    },
+    {
+      "id": "colossus-b-edit",
+      "asset": "chibi-direction-martian-colossus",
+      "endpoint": "edit-image-pixen",
+      "seed": 91803,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "colossus-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the pointed horn that sticks out of the left side of the head, so the head is a smooth round chrome dome. Do not redraw anything else: keep the two hot magenta eye lenses, the big hot magenta ray cannon, the antenna, the armoured legs, the size, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "colossus-b is the giant walker (a chrome dome head, a big ray cannon, armoured legs) with the same stray horn the Tripod had."
+    },
+    {
+      "id": "portrait-grunt-a",
+      "asset": "chibi-direction-portrait-martian-grunt",
+      "endpoint": "create-image-pixen",
+      "seed": 92001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "green skin, hair, human face, cape, sword, shield, antennae on the skin"
+    },
+    {
+      "id": "portrait-ray-gunner-a",
+      "asset": "chibi-direction-portrait-martian-ray-gunner",
+      "endpoint": "create-image-pixen",
+      "seed": 92002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "green skin, hair, human face, cape, sword, shield, antennae on the skin, pistol"
+    },
+    {
+      "id": "portrait-shield-projector-a",
+      "asset": "chibi-direction-portrait-martian-shield-projector",
+      "endpoint": "create-image-pixen",
+      "seed": 92003,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "green skin, hair, human face, cape, sword, shield, antennae on the skin, pistol, rifle"
+    },
+    {
+      "id": "portrait-thrall-a",
+      "asset": "chibi-direction-portrait-martian-thrall",
+      "endpoint": "create-image-pixen",
+      "seed": 92004,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "heraldry, crest, plume, red cloth, gold, green skin, skull, alien, bubble helmet, smile"
+    },
+    {
+      "id": "portrait-saucer-a",
+      "asset": "chibi-direction-portrait-martian-saucer",
+      "endpoint": "create-image-pixen",
+      "seed": 92005,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "landing legs, person beside it"
+    },
+    {
+      "id": "portrait-brain-a",
+      "asset": "chibi-direction-portrait-martian-brain",
+      "endpoint": "create-image-pixen",
+      "seed": 92006,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "legs, person, body, red brain"
+    },
+    {
+      "id": "portrait-tripod-a",
+      "asset": "chibi-direction-portrait-martian-tripod",
+      "endpoint": "create-image-pixen",
+      "seed": 92007,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, horn, spike, brass, gold, orange, blue metal",
+      "promptAddendum": "The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses."
+    },
+    {
+      "id": "portrait-mothership-a",
+      "asset": "chibi-direction-portrait-martian-mothership",
+      "endpoint": "create-image-pixen",
+      "seed": 92008,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "landing legs, person beside it",
+      "promptAddendum": "The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses."
+    },
+    {
+      "id": "portrait-colossus-a",
+      "asset": "chibi-direction-portrait-martian-colossus",
+      "endpoint": "create-image-pixen",
+      "seed": 92009,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, horn, spike, brass, gold, orange, fire, muzzle flash",
+      "promptAddendum": "The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses."
+    },
+    {
+      "id": "icon-beam-down-a",
+      "asset": "chibi-direction-icon-action-beam-down",
+      "endpoint": "create-image-pixen",
+      "seed": 92101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "green, blue glow, cyan, yellow, orange, fire, red"
+    },
+    {
+      "id": "icon-mind-control-a",
+      "asset": "chibi-direction-icon-action-mind-control",
+      "endpoint": "create-image-pixen",
+      "seed": 92102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "green, blue glow, cyan, yellow, orange, fire, red, jar, body, eyes"
+    },
+    {
+      "id": "icon-tractor-beam-a",
+      "asset": "chibi-direction-icon-action-tractor-beam",
+      "endpoint": "create-image-pixen",
+      "seed": 92103,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "green, blue glow, cyan, yellow, orange, fire, red",
+      "promptAddendum": "The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses."
+    },
+    {
+      "id": "icon-martian-rally-a",
+      "asset": "chibi-direction-icon-action-martian-rally",
+      "endpoint": "create-image-pixen",
+      "seed": 92104,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "green, blue glow, cyan, yellow, orange, fire, red",
+      "promptAddendum": "The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses."
+    },
+    {
+      "id": "icon-force-field-a",
+      "asset": "chibi-direction-icon-action-force-field",
+      "endpoint": "create-image-pixen",
+      "seed": 92105,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "green, blue glow, cyan, yellow, orange, fire, red",
+      "promptAddendum": "The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses."
+    },
+    {
+      "id": "icon-status-shield-a",
+      "asset": "chibi-direction-icon-status-shield",
+      "endpoint": "create-image-pixen",
+      "seed": 92106,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "green, blue glow, cyan, yellow, orange, fire, red, wood, metal rim, cross, lion, sword"
+    },
+    {
+      "id": "icon-status-cooling-a",
+      "asset": "chibi-direction-icon-status-cooling",
+      "endpoint": "create-image-pixen",
+      "seed": 92107,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "green, blue glow, cyan, yellow, orange, fire, red, glow, flame, smoke cloud",
+      "promptAddendum": "The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses."
+    },
+    {
+      "id": "effect-heat-ray-a",
+      "asset": "chibi-direction-effect-martian-heat-ray",
+      "endpoint": "create-image-pixen",
+      "seed": 92201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, green, blue, cyan, yellow, orange"
+    },
+    {
+      "id": "effect-shield-flare-a",
+      "asset": "chibi-direction-effect-martian-shield-flare",
+      "endpoint": "create-image-pixen",
+      "seed": 92202,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, green, blue, cyan, yellow, orange"
+    },
+    {
+      "id": "effect-beam-down-a",
+      "asset": "chibi-direction-effect-martian-beam-down",
+      "endpoint": "create-image-pixen",
+      "seed": 92203,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, green, blue, cyan, yellow, orange, saucer, ship, figure"
+    },
+    {
+      "id": "effect-tractor-beam-a",
+      "asset": "chibi-direction-effect-martian-tractor-beam",
+      "endpoint": "create-image-pixen",
+      "seed": 92204,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, green, blue, cyan, yellow, orange, saucer, ship, figure"
+    },
+    {
+      "id": "effect-mind-control-a",
+      "asset": "chibi-direction-effect-martian-mind-control",
+      "endpoint": "create-image-pixen",
+      "seed": 92205,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, green, blue, cyan, yellow, orange, brain, face, eye"
+    },
+    {
+      "id": "martian-city-1-calm-a",
+      "asset": "chibi-direction-martian-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 92311,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The buildings stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "negativeAddendum": "person, character, alien, robot, red roof, red banner, flag, green, wood, stone, brick"
+    },
+    {
+      "id": "martian-city-2-calm-a",
+      "asset": "chibi-direction-martian-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 92321,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The buildings stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "negativeAddendum": "person, character, alien, robot, red roof, red banner, flag, green, wood, stone, brick"
+    },
+    {
+      "id": "martian-city-3-calm-a",
+      "asset": "chibi-direction-martian-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 92331,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The buildings stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "negativeAddendum": "person, character, alien, robot, red roof, red banner, flag, green, wood, stone, brick"
+    },
+    {
+      "id": "portrait-grunt-b",
+      "asset": "chibi-direction-portrait-martian-grunt",
+      "endpoint": "create-image-pixen",
+      "seed": 92011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The whole head is inside one clear round glass bubble helmet with exactly one thin antenna on top; a calm friendly face with no eyebrows. The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses.",
+      "negativeAddendum": "green skin, hair, human face, cape, sword, shield, antennae on the skin, headphones, two antennae, angry",
+      "notes": "portrait-grunt-a has two antennae, headphones and an angry frown: not the map Grunt."
+    },
+    {
+      "id": "portrait-saucer-b",
+      "asset": "chibi-direction-portrait-martian-saucer",
+      "endpoint": "create-image-pixen",
+      "seed": 92015,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "No legs and no spikes. The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses.",
+      "negativeAddendum": "landing legs, legs, spikes, person beside it, pink hull, blue hull",
+      "notes": "portrait-saucer-a has a blue and magenta hull with spiky legs."
+    },
+    {
+      "id": "icon-status-shield-b",
+      "asset": "chibi-direction-icon-status-shield",
+      "endpoint": "create-image-pixen",
+      "seed": 92116,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the flat shield shape, in two colours, hot magenta and pale pink: no shell, no spikes, no creature, no metal, no gems.",
+      "negativeAddendum": "green, blue glow, cyan, yellow, orange, fire, red, wood, metal rim, cross, lion, sword, turtle, shell, spikes, rock, moss",
+      "notes": "icon-status-shield-a is a spiky mossy turtle shell."
+    },
+    {
+      "id": "effect-beam-down-b",
+      "asset": "chibi-direction-effect-martian-beam-down",
+      "endpoint": "create-image-pixen",
+      "seed": 92213,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the column of light, alone on a fully transparent background: no room, no floor, no scenery, no plants.",
+      "negativeAddendum": "pedestal, plate, base, stand, stone slab, ground, floor, shadow, campfire, fire pit, logs, green, blue, cyan, yellow, orange, saucer, ship, figure, room, scenery, plants, trees, tiles",
+      "notes": "effect-beam-down-a drew a dark scene behind the column."
+    },
+    {
+      "id": "martian-city-1-calm-a-edit",
+      "asset": "chibi-direction-martian-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 92312,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "martian-city-1-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and dirt plate under the buildings, so they stand directly on a transparent background with nothing at all under them. Also replace the two square houses with two small round silver-white chrome dome huts with one hot magenta round window each. Keep the landed chrome saucer on its legs, its glass dome and magenta lights, the small chrome dome, the antenna mast, the colours, outline and art style exactly the same.",
+      "notes": "The colony stands on a grass slab and has two brown and grey cube houses."
+    },
+    {
+      "id": "martian-city-2-calm-a-edit",
+      "asset": "chibi-direction-martian-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 92322,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "martian-city-2-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and dirt plate under the ring wall, so the wall and the buildings stand directly on a transparent background with nothing at all under them. Keep the chrome saucer, the chrome domes, the hot magenta lights, the dark gunmetal ring wall, the antenna mast, the colours, outline and art style exactly the same.",
+      "notes": "The colony stands on a dirt slab."
+    },
+    {
+      "id": "portrait-ray-gunner-b",
+      "asset": "chibi-direction-portrait-martian-ray-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 92012,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-grunt-b",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only what he holds: replace the small pistol with one huge silver ray rifle with big fins and ring coils resting on his shoulder and pointing up to the right, with a big round glowing hot magenta emitter ball at its muzzle. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-ray-gunner-a is another alien with a red pack and no clear rifle; the portrait is the Grunt's bust with the big rifle."
+    },
+    {
+      "id": "portrait-shield-projector-b",
+      "asset": "chibi-direction-portrait-martian-shield-projector",
+      "endpoint": "edit-image-pixen",
+      "seed": 92013,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-grunt-b",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only his gear: add big rounded silver shoulder plates, and replace the small pistol with the top half of one big round silver dish emitter with a glowing hot magenta centre held in front of his chest, with one thin curved hot magenta arc of energy above the dish. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-shield-projector-a has a purple helmet and a heart on the antenna; the portrait is the Grunt's bust with the dish."
+    },
+    {
+      "id": "portrait-thrall-b",
+      "asset": "chibi-direction-portrait-martian-thrall",
+      "endpoint": "edit-image-pixen",
+      "seed": 92014,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "direction-human",
+        "recipe": "portrait-fighter-heraldic-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a dazed mind-controlled soldier: no sword and no shield; a plain drab mid-grey tunic, nothing red or gold; a pale grey face with two empty white eyes and a small flat mouth; instead of his helmet a polished chrome control helmet with a short antenna and one glowing hot magenta light on its front; a dark gunmetal collar ring. Keep the size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-thrall-a is a robot head with a green visor frame."
+    },
+    {
+      "id": "portrait-tripod-a-edit",
+      "asset": "chibi-direction-portrait-martian-tripod",
+      "endpoint": "edit-image-pixen",
+      "seed": 92017,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-tripod-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the cyan and teal parts: the teal cap on top of the head and the cyan leg segments become polished silver-white chrome shaded soft blue-grey, and the leg joints dark gunmetal. Nothing cyan or teal is left. Keep the big hot magenta eye lens, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The Tripod's head and lens are right, but its cap and legs are cyan."
+    },
+    {
+      "id": "portrait-mothership-b",
+      "asset": "chibi-direction-portrait-martian-mothership",
+      "endpoint": "edit-image-pixen",
+      "seed": 92018,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-saucer-b",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Make it a bigger, grander command ship that fills the image: a very wide thick chrome disc in two stacked tiers with a ring of many small hot magenta lights, three small chrome fins on top, a glass dome with a short antenna and no pilot, and under it one big round beam port glowing hot magenta. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-mothership-a is a dark spiked disc with a teal dome and red lights; derived from the accepted Saucer portrait instead."
+    },
+    {
+      "id": "icon-martian-rally-a-edit",
+      "asset": "chibi-direction-icon-action-martian-rally",
+      "endpoint": "edit-image-pixen",
+      "seed": 92114,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-martian-rally-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the round green grass plate under the stand, leaving empty transparent background there. Keep the chrome antenna dish, its stand, the hot magenta signal arcs and the small star exactly the same.",
+      "notes": "The dish stands on a green grass disc."
+    },
+    {
+      "id": "icon-status-shield-b-edit",
+      "asset": "chibi-direction-icon-status-shield",
+      "endpoint": "edit-image-pixen",
+      "seed": 92117,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-status-shield-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the grey spiked metal shell and the blue dome behind the shield, leaving empty transparent background there, so that only the big pink and hot magenta shield shape with its dark outline and white highlight remains, floating alone. Keep the shield exactly the same.",
+      "notes": "The magenta shield is right, but it sits on a spiked metal shell."
+    },
+    {
+      "id": "effect-beam-down-a-edit",
+      "asset": "chibi-direction-effect-martian-beam-down",
+      "endpoint": "edit-image-pixen",
+      "seed": 92214,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-beam-down-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the whole dark background, the plants, the stones and the orange flame: erase everything except the tall pink column of light and the magenta ring at its foot, leaving empty transparent background everywhere else. Keep the column and the ring exactly the same.",
+      "notes": "Both creations drew a dark scene behind the column; the column and ring of the first are right."
+    },
+    {
+      "id": "martian-city-3-calm-a-edit",
+      "asset": "chibi-direction-martian-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 92332,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "martian-city-3-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, the dirt path and the dirt plate under the buildings, so the ring wall and the buildings stand directly on a transparent background with nothing at all under them. Keep the chrome towers, the glass domes, the big central dome with its hot magenta ring, the hot magenta windows, the ring wall, the antenna mast, the colours, outline and art style exactly the same.",
+      "notes": "The colony stands on a grass slab with a dirt path."
+    },
+    {
+      "id": "portrait-tripod-b",
+      "asset": "chibi-direction-portrait-martian-tripod",
+      "endpoint": "create-image-pixen",
+      "seed": 92027,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The head is one smooth round silver-white chrome hood with no cap and no window; the legs are dark gunmetal with round chrome joints. The metal is plain polished silver-white chrome shaded soft blue-grey, never blue, teal or pink; hot magenta appears only as the small lights and lenses.",
+      "negativeAddendum": "person, horn, spike, brass, gold, orange, blue metal, cyan, teal, turquoise, glass, gun barrel on top",
+      "notes": "The recolour edit left the cyan cap and legs."
+    },
+    {
+      "id": "icon-status-shield-b-edit-2",
+      "asset": "chibi-direction-icon-status-shield",
+      "endpoint": "edit-image-pixen",
+      "seed": 92118,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-status-shield-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the inside of the shield: the pale salmon and peach fill becomes pale pink magenta, colour #ff8fd6, with a lighter #ffd3ee shine; nothing salmon, peach or orange is left. Keep the hot magenta rim, the dark outline, the white highlight and the shape exactly the same, on a transparent background.",
+      "notes": "The shield's fill is salmon, close to the Coral player colour."
+    },
+    {
+      "id": "portrait-grunt-b-edit",
+      "asset": "chibi-direction-portrait-martian-grunt",
+      "endpoint": "edit-image-pixen",
+      "seed": 92021,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-grunt-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add three small glowing hot magenta lights, colour #ff2fb0: the ball on the tip of the antenna becomes a bigger hot magenta ball, the muzzle of the pistol glows hot magenta, and one round hot magenta light sits on the chest of the suit. Do not redraw anything else: keep the head, the big black eyes, the glass bubble helmet, the silver suit, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The bust has only ten magenta pixels: the accent must be on every piece."
+    }
+  ]
+}

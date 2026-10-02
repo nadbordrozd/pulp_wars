@@ -1,0 +1,36 @@
+{
+  "id": "martian-city-3-calm-a-edit",
+  "jobId": "52d52a57-0672-43a9-b8d3-d3ac36e5549d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-city-3",
+    "subject": "CITY:MARTIAN:3",
+    "faction": "MARTIAN",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 92332,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass, the dirt path and the dirt plate under the buildings, so the ring wall and the buildings stand directly on a transparent background with nothing at all under them. Keep the chrome towers, the glass domes, the big central dome with its hot magenta ring, the hot magenta windows, the ring wall, the antenna mast, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass, the dirt path and the dirt plate under the buildings, so the ring wall and the buildings stand directly on a transparent background with nothing at all under them. Keep the chrome towers, the glass domes, the big central dome with its hot magenta ring, the hot magenta windows, the ring wall, the antenna mast, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass, the dirt path and the dirt plate under the buildings, so the ring wall and the buildings stand directly on a transparent background with nothing at all under them. Keep the chrome towers, the glass domes, the big central dome with its hot magenta ring, the hot magenta windows, the ring wall, the antenna mast, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass, the dirt path and the dirt plate under the buildings, so the ring wall and the buildings stand directly on a transparent background with nothing at all under them. Keep the chrome towers, the glass domes, the big central dome with its hot magenta ring, the hot magenta windows, the ring wall, the antenna mast, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "martian-city-3-calm-a",
+      "candidate": 0,
+      "sha256": "9308651d6481746b03a3c0b66044408c49389294fc4c52f6cdf9a10579b7297c"
+    }
+  }
+}

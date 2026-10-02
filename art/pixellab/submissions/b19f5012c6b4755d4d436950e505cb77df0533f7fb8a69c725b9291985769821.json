@@ -1,0 +1,37 @@
+{
+  "id": "portrait-thrall-b",
+  "jobId": "5f20a898-a6f6-4eb9-8509-4f2c800f8376",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-thrall",
+    "subject": "PORTRAIT:MARTIAN:THRALL",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92014,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a dazed mind-controlled soldier: no sword and no shield; a plain drab mid-grey tunic, nothing red or gold; a pale grey face with two empty white eyes and a small flat mouth; instead of his helmet a polished chrome control helmet with a short antenna and one glowing hot magenta light on its front; a dark gunmetal collar ring. Keep the size, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a dazed mind-controlled soldier: no sword and no shield; a plain drab mid-grey tunic, nothing red or gold; a pale grey face with two empty white eyes and a small flat mouth; instead of his helmet a polished chrome control helmet with a short antenna and one glowing hot magenta light on its front; a dark gunmetal collar ring. Keep the size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a dazed mind-controlled soldier: no sword and no shield; a plain drab mid-grey tunic, nothing red or gold; a pale grey face with two empty white eyes and a small flat mouth; instead of his helmet a polished chrome control helmet with a short antenna and one glowing hot magenta light on its front; a dark gunmetal collar ring. Keep the size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw him as a dazed mind-controlled soldier: no sword and no shield; a plain drab mid-grey tunic, nothing red or gold; a pale grey face with two empty white eyes and a small flat mouth; instead of his helmet a polished chrome control helmet with a short antenna and one glowing hot magenta light on its front; a dark gunmetal collar ring. Keep the size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "direction-human",
+      "recipe": "portrait-fighter-heraldic-edit",
+      "candidate": 0,
+      "sha256": "66a22cd78de05ffe307af44300940bdeec3f89a39630694a63cc85211ad85fc8"
+    }
+  }
+}

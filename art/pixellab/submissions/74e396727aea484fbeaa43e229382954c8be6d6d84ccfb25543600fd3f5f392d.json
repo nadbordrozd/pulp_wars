@@ -1,0 +1,37 @@
+{
+  "id": "thrall-b",
+  "jobId": "478f5ed8-100c-4b64-a0b4-2ecad385ab77",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-thrall",
+    "subject": "UNIT:MARTIAN:THRALL",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91902,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a dazed mind-controlled soldier, same size: slumped, both arms hanging down, no shield; a plain drab mid-grey tunic and trousers, nothing red or gold; a pale grey face with two empty white eyes; instead of his helmet a polished chrome control helmet with a short antenna and one glowing hot magenta light; a dark gunmetal collar; a dull grey short sword hanging low in one hand. Keep the proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a dazed mind-controlled soldier, same size: slumped, both arms hanging down, no shield; a plain drab mid-grey tunic and trousers, nothing red or gold; a pale grey face with two empty white eyes; instead of his helmet a polished chrome control helmet with a short antenna and one glowing hot magenta light; a dark gunmetal collar; a dull grey short sword hanging low in one hand. Keep the proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a dazed mind-controlled soldier, same size: slumped, both arms hanging down, no shield; a plain drab mid-grey tunic and trousers, nothing red or gold; a pale grey face with two empty white eyes; instead of his helmet a polished chrome control helmet with a short antenna and one glowing hot magenta light; a dark gunmetal collar; a dull grey short sword hanging low in one hand. Keep the proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw him as a dazed mind-controlled soldier, same size: slumped, both arms hanging down, no shield; a plain drab mid-grey tunic and trousers, nothing red or gold; a pale grey face with two empty white eyes; instead of his helmet a polished chrome control helmet with a short antenna and one glowing hot magenta light; a dark gunmetal collar; a dull grey short sword hanging low in one hand. Keep the proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "direction-human",
+      "recipe": "fighter-heraldic-edit",
+      "candidate": 0,
+      "sha256": "18e448198d79c948caa6ac2c7eb7264132ef8bc31dd981b3337d93a8f951ab71"
+    }
+  }
+}

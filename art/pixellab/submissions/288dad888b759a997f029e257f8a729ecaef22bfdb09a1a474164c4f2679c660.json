@@ -1,0 +1,37 @@
+{
+  "id": "shield-projector-a",
+  "jobId": "a12fb47c-def9-4a7a-8def-448fdc368fbd",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-shield-projector",
+    "subject": "UNIT:MARTIAN:GUARD",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91401,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make him a sturdier, wider trooper: add big rounded silver shoulder plates and thick armoured legs; replace the pistol with one big round silver dish emitter, like a small radar dish with a glowing hot magenta centre, held in both hands in front of his body, and one thin curved hot magenta arc of energy in front of the dish. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, size, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make him a sturdier, wider trooper: add big rounded silver shoulder plates and thick armoured legs; replace the pistol with one big round silver dish emitter, like a small radar dish with a glowing hot magenta centre, held in both hands in front of his body, and one thin curved hot magenta arc of energy in front of the dish. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make him a sturdier, wider trooper: add big rounded silver shoulder plates and thick armoured legs; replace the pistol with one big round silver dish emitter, like a small radar dish with a glowing hot magenta centre, held in both hands in front of his body, and one thin curved hot magenta arc of energy in front of the dish. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make him a sturdier, wider trooper: add big rounded silver shoulder plates and thick armoured legs; replace the pistol with one big round silver dish emitter, like a small radar dish with a glowing hot magenta centre, held in both hands in front of his body, and one thin curved hot magenta arc of energy in front of the dish. Keep his head, big black eyes, glass bubble helmet, antenna, silver suit, size, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "grunt-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "cced8a83858cbafc8acdc02994fb4f7086a48b27d72063662c9385634c8df36d"
+    }
+  }
+}

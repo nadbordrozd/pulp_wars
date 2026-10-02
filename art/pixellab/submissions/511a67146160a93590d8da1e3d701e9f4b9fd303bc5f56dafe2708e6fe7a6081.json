@@ -1,0 +1,37 @@
+{
+  "id": "portrait-mothership-b",
+  "jobId": "2fbddfe0-bbb6-4ab0-9d68-1bdac9b21aaa",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-mothership",
+    "subject": "PORTRAIT:MARTIAN:KNIGHT",
+    "faction": "MARTIAN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92018,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make it a bigger, grander command ship that fills the image: a very wide thick chrome disc in two stacked tiers with a ring of many small hot magenta lights, three small chrome fins on top, a glass dome with a short antenna and no pilot, and under it one big round beam port glowing hot magenta. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make it a bigger, grander command ship that fills the image: a very wide thick chrome disc in two stacked tiers with a ring of many small hot magenta lights, three small chrome fins on top, a glass dome with a short antenna and no pilot, and under it one big round beam port glowing hot magenta. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make it a bigger, grander command ship that fills the image: a very wide thick chrome disc in two stacked tiers with a ring of many small hot magenta lights, three small chrome fins on top, a glass dome with a short antenna and no pilot, and under it one big round beam port glowing hot magenta. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make it a bigger, grander command ship that fills the image: a very wide thick chrome disc in two stacked tiers with a ring of many small hot magenta lights, three small chrome fins on top, a glass dome with a short antenna and no pilot, and under it one big round beam port glowing hot magenta. Keep the silver-white chrome colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-saucer-b",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "fbcfaa35efacb598d6eaa9529b8c255d173368967b9a1db3d863378e5232ea90"
+    }
+  }
+}

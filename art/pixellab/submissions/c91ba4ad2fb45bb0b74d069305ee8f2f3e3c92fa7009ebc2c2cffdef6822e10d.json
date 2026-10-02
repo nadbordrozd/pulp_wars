@@ -1,0 +1,36 @@
+{
+  "id": "tripod-a-edit-2",
+  "jobId": "429ee019-1fc9-431f-8bfa-5d6f9b9c7218",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-tripod",
+    "subject": "UNIT:MARTIAN:CATAPULT",
+    "faction": "MARTIAN",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove two things only: the one leg in the middle at the back, behind the others, so that exactly three legs remain (left, front and right); and the pointed horn on the left side of the head, leaving a smooth round chrome head. Keep the three other legs, the chrome head, the hot magenta eye lens, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Remove two things only: the one leg in the middle at the back, behind the others, so that exactly three legs remain (left, front and right); and the pointed horn on the left side of the head, leaving a smooth round chrome head. Keep the three other legs, the chrome head, the hot magenta eye lens, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove two things only: the one leg in the middle at the back, behind the others, so that exactly three legs remain (left, front and right); and the pointed horn on the left side of the head, leaving a smooth round chrome head. Keep the three other legs, the chrome head, the hot magenta eye lens, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Remove two things only: the one leg in the middle at the back, behind the others, so that exactly three legs remain (left, front and right); and the pointed horn on the left side of the head, leaving a smooth round chrome head. Keep the three other legs, the chrome head, the hot magenta eye lens, the heat-ray arm, the height, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "tripod-a-edit",
+      "candidate": 0,
+      "sha256": "876652acbe8654a145c94bb2eb601ee34e4f4cd7a521638664f877857f33bd4f"
+    }
+  }
+}
