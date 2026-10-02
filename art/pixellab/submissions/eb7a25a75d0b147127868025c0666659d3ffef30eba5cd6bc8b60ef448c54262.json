@@ -1,0 +1,36 @@
+{
+  "id": "village-a-edit-b",
+  "jobId": "c8deaf9b-6991-48eb-be7e-9bd32316994e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-village",
+    "subject": "SITE:VILLAGE",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 76303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase only the flat green and grey ground slab under the hamlet and the grass yard between the cottages, making them fully transparent, never white. Do not change anything else: the three thatched cottages and the short dark wooden fence stay exactly as they are, with the same colours, outline and art style."
+      }
+    ],
+    "prompt": "Erase only the flat green and grey ground slab under the hamlet and the grass yard between the cottages, making them fully transparent, never white. Do not change anything else: the three thatched cottages and the short dark wooden fence stay exactly as they are, with the same colours, outline and art style.",
+    "negativePrompt": "",
+    "description": "Erase only the flat green and grey ground slab under the hamlet and the grass yard between the cottages, making them fully transparent, never white. Do not change anything else: the three thatched cottages and the short dark wooden fence stay exactly as they are, with the same colours, outline and art style.",
+    "editInstruction": "Erase only the flat green and grey ground slab under the hamlet and the grass yard between the cottages, making them fully transparent, never white. Do not change anything else: the three thatched cottages and the short dark wooden fence stay exactly as they are, with the same colours, outline and art style.",
+    "source": {
+      "recipe": "village-a",
+      "candidate": 0,
+      "sha256": "64f0caee9d2884d8d1b6c1f470594756f5dd6075f552daa8356f0c5419de7d19"
+    }
+  }
+}

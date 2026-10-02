@@ -239,6 +239,13 @@ export interface ChibiArtAssetV7 {
    */
   readonly ownerMaskUrl?: string;
   /**
+   * The new visual direction (bead pulp_wars-3tq.5): a unit, city or
+   * portrait drawn in its faction's fixed colours. It has no owner area and
+   * no mask, and is never recoloured; the player is shown by the base
+   * plate, the pennant and the interface instead.
+   */
+  readonly fixedColours?: true;
+  /**
    * TALL_TERRAIN only: the two layers the master was composited from (the
    * pipeline's ground composite), so a Road can pass between them. The body
    * has the master's size and anchor and is transparent where the master
@@ -441,11 +448,23 @@ export function chibiAssetProblemsV7(asset: ChibiArtAssetV7): string[] {
     );
   if (overflow.down > 0)
     problems.push(`${label}: nothing may overflow below its cell`);
+  const ownedSubject = OWNED_SUBJECT_PREFIXES.some((prefix) =>
+    asset.subject.startsWith(prefix),
+  );
   if (
-    OWNED_SUBJECT_PREFIXES.some((prefix) => asset.subject.startsWith(prefix)) &&
-    asset.ownerMaskUrl === undefined
+    ownedSubject &&
+    asset.ownerMaskUrl === undefined &&
+    asset.fixedColours !== true
   )
     problems.push(`${label}: owned subjects need a checked-in owner mask`);
+  if (asset.fixedColours === true && asset.ownerMaskUrl !== undefined)
+    problems.push(
+      `${label}: fixed colours and an owner mask exclude each other`,
+    );
+  if (asset.fixedColours === true && !ownedSubject)
+    problems.push(
+      `${label}: only units, cities and portraits declare fixed colours`,
+    );
   if (asset.layers !== undefined && asset.assetClass !== "TALL_TERRAIN")
     problems.push(`${label}: only tall terrain has ground and body layers`);
   return problems;

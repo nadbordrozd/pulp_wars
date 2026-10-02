@@ -1,0 +1,37 @@
+{
+  "id": "portrait-catapult-heraldic-edit",
+  "jobId": "9280ae33-2173-40cb-8450-8796a20de054",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-catapult",
+    "subject": "PORTRAIT:CATAPULT",
+    "faction": "ORIGINAL",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76161,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a high-medieval siege engine: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth on the frame deep crimson with a gold-yellow trim; the wood a warm oak brown with steel bands. Keep the catapult, wheels, throwing arm, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a high-medieval siege engine: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth on the frame deep crimson with a gold-yellow trim; the wood a warm oak brown with steel bands. Keep the catapult, wheels, throwing arm, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a high-medieval siege engine: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth on the frame deep crimson with a gold-yellow trim; the wood a warm oak brown with steel bands. Keep the catapult, wheels, throwing arm, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw it as a high-medieval siege engine: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth on the frame deep crimson with a gold-yellow trim; the wood a warm oak brown with steel bands. Keep the catapult, wheels, throwing arm, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-catapult-a",
+      "candidate": 0,
+      "sha256": "531f8ba98a11222bfa8cd57f9aa42f3b86d6186f2d646a70261c8a5efd575133"
+    }
+  }
+}

@@ -411,7 +411,11 @@ export class Ruleset7DomAppView {
   #boardSaturation: BoardSaturationV7 = DEFAULT_BOARD_SATURATION_V7;
   /** Developer experiment (pulp_wars-3tq.1); presentation only, off by default. */
   #visualDirection = false;
+  /** The direction's production art (pulp_wars-3tq.5), loaded on demand. */
   #visualDirectionSamples: ChibiArtRegistryV7 | null = null;
+  /** Interface art from the same registry: portraits, cities, improvements. */
+  #visualDirectionDom: ChibiDomArtV7 | null = null;
+  readonly #chibiDomEnvironment: ChibiDomEnvironmentV7 | null;
   #developerToolsOpen = false;
   #pendingFocusAction: string | null = null;
   #matchShell: HTMLElement | null = null;
@@ -439,15 +443,18 @@ export class Ruleset7DomAppView {
     this.#randomSeed =
       options.randomSeed ?? (() => browserRandomSeedV7(documentRoot));
     this.#artSet = options.artSet ?? "LEGACY";
-    this.#chibiDom =
+    this.#chibiDomEnvironment =
       this.#artSet === "CHIBI"
-        ? createChibiDomArtV7({
-            environment:
-              options.chibiDomEnvironment ??
-              browserChibiDomEnvironmentV7(documentRoot),
-            onChange: () => this.#queueChibiRender(),
-          })
+        ? (options.chibiDomEnvironment ??
+          browserChibiDomEnvironmentV7(documentRoot))
         : null;
+    this.#chibiDom =
+      this.#chibiDomEnvironment === null
+        ? null
+        : createChibiDomArtV7({
+            environment: this.#chibiDomEnvironment,
+            onChange: () => this.#queueChibiRender(),
+          });
     // Every view claims the document's economy icons, so a LEGACY view never
     // inherits a CHIBI provider left by another view.
     CHIBI_ECONOMY_ICONS.set(documentRoot, this.#economyIcons);
@@ -639,11 +646,21 @@ export class Ruleset7DomAppView {
     readonly factionArt: boolean;
   } | null {
     if (this.#chibiDom === null || subject === null) return null;
-    const resolution = this.#chibiDom.resolve({
+    const request = {
       subject,
       ownerColor,
       ...(at === undefined ? {} : { at }),
-    });
+    };
+    // Developer toggle: the direction's own art for the subject, when it has
+    // one (Human portraits, cities, the shared improvements).
+    const directed =
+      this.#visualDirection && this.#visualDirectionDom !== null
+        ? this.#visualDirectionDom.resolve(request)
+        : null;
+    const resolution =
+      directed !== null && directed.kind !== "MISSING"
+        ? directed
+        : this.#chibiDom.resolve(request);
     if (resolution.kind === "MISSING") return null;
     return {
       element: chibiDomImageV7(this.#document, resolution, box, subject),
@@ -3519,6 +3536,8 @@ export class Ruleset7DomAppView {
         this.#error = "Settings could not be saved.";
       if (input.checked) this.#loadVisualDirectionSamples();
       this.#refreshBoard();
+      // The docks and cards switch their portraits with the board.
+      this.#queueChibiRender();
     });
     label.append(
       input,
@@ -3530,13 +3549,26 @@ export class Ruleset7DomAppView {
     return group;
   }
 
-  /** The exploration sample sprites, fetched only once the toggle is on. */
+  /**
+   * The direction's production art (src/assets/chibi-direction-art-manifest),
+   * imported only once the toggle is on, so the default game never loads it.
+   */
   #loadVisualDirectionSamples(): void {
     if (this.#visualDirectionSamples !== null) return;
-    void import("../canvas/visual-direction-samples-v7")
+    void import("../../assets/chibi-direction-art-manifest")
       .then((module) => {
-        this.#visualDirectionSamples = module.visualDirectionSampleRegistryV7();
-        if (this.#visualDirection) this.#refreshBoard();
+        const registry = module.chibiDirectionArtRegistryV7();
+        this.#visualDirectionSamples = registry;
+        if (this.#chibiDomEnvironment !== null)
+          this.#visualDirectionDom = createChibiDomArtV7({
+            environment: this.#chibiDomEnvironment,
+            onChange: () => this.#queueChibiRender(),
+            registry,
+          });
+        if (this.#visualDirection) {
+          this.#refreshBoard();
+          this.#queueChibiRender();
+        }
       })
       .catch(() => {
         // Without the samples the direction draws the production sprites.

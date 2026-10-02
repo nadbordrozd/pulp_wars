@@ -1,0 +1,36 @@
+{
+  "id": "city-3-d-a-edit",
+  "jobId": "2d335932-11d6-4d17-8b37-ab11a661e6a1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-city-3",
+    "subject": "CITY:3",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 76422,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and dirt plate under the city, so the ring wall stands directly on a transparent background with nothing at all under it, and remove the small flag on the keep. Keep the sandstone walls and towers, the keep, the church, the houses and their terracotta roofs, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and dirt plate under the city, so the ring wall stands directly on a transparent background with nothing at all under it, and remove the small flag on the keep. Keep the sandstone walls and towers, the keep, the church, the houses and their terracotta roofs, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and dirt plate under the city, so the ring wall stands directly on a transparent background with nothing at all under it, and remove the small flag on the keep. Keep the sandstone walls and towers, the keep, the church, the houses and their terracotta roofs, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and dirt plate under the city, so the ring wall stands directly on a transparent background with nothing at all under it, and remove the small flag on the keep. Keep the sandstone walls and towers, the keep, the church, the houses and their terracotta roofs, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "city-3-d-a",
+      "candidate": 0,
+      "sha256": "b4e4e953f9afca2fbe6dc9d4c0a817e5ac80924ba6e981540de8ad24a601c547"
+    }
+  }
+}

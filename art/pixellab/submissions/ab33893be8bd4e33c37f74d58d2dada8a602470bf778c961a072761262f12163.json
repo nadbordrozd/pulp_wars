@@ -1,0 +1,37 @@
+{
+  "id": "portrait-juggernaut-heraldic-edit",
+  "jobId": "26f6cd3a-f17d-49c6-b27b-3fc982db16df",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-juggernaut",
+    "subject": "PORTRAIT:JUGGERNAUT",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76171,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval champion: a gold-yellow crown band around the steel helm; the tabard becomes deep crimson red with a gold-yellow lion and a gold hem; gold trim on the steel pauldrons. Keep the warhammer, the beard, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval champion: a gold-yellow crown band around the steel helm; the tabard becomes deep crimson red with a gold-yellow lion and a gold hem; gold trim on the steel pauldrons. Keep the warhammer, the beard, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval champion: a gold-yellow crown band around the steel helm; the tabard becomes deep crimson red with a gold-yellow lion and a gold hem; gold trim on the steel pauldrons. Keep the warhammer, the beard, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw him as a high-medieval champion: a gold-yellow crown band around the steel helm; the tabard becomes deep crimson red with a gold-yellow lion and a gold hem; gold trim on the steel pauldrons. Keep the warhammer, the beard, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-juggernaut-a",
+      "candidate": 0,
+      "sha256": "9f65beb0ff0c1627e1010781b837941f981f690050bbfe196f5714f3bcb962a2"
+    }
+  }
+}

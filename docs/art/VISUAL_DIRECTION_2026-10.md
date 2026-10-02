@@ -4,8 +4,9 @@
 (`pulp_wars-3tq.2`) and asked for a fully worked-out demo of the Human
 faction before any rollout; that demo is [section 11](#11-human-demo) (bead
 `pulp_wars-3tq.3`), which also changes some of the rules proposed below and
-what the developer toggle draws. Nothing here changes the production manifest,
-the asset registry or what the game draws by default. The
+what the developer toggle draws. The user then chose the direction
+(`pulp_wars-3tq.4`); [section 12](#12-production) records the production art
+(bead `pulp_wars-3tq.5`). Nothing here changes what the game draws by default. The
 [chibi art direction](CHIBI_ART_DIRECTION.md) still governs production art;
 section 6 lists the rules that would change if this direction is approved.
 
@@ -684,6 +685,131 @@ sprites on a base, which looks consistent, if not finished.
    new runtime subjects), or do all factions share one neutral set?
 7. Should the three city tiers share one stone (all sandstone, say)?
 8. Roll out in the order above?
+
+## 12. Production
+
+**Status:** bead `pulp_wars-3tq.5`. The user reviewed the demo on 2026-10-02
+(recorded on `pulp_wars-3tq.4`): the buildings are a clear improvement and
+the pattern stays, even if single buildings need iterating (the Sawmill);
+the units look good, though telling players apart is hard; go ahead
+tentatively with everything: replace the buildings and **all** Human units
+in the live game and do the base plates; do **not** replace the other
+factions' sprites yet. This section is the art half of that decision. Bead
+`pulp_wars-3tq.6` makes it the default rendering; here the default is
+unchanged and the developer toggle draws the production art instead of the
+exploration samples.
+
+**The other factions are not converted.** Undead, Goblin and Dinosaur units,
+cities and portraits are drawn as today (player-coloured garments on a base
+plate with the toggle on). Ships are shared and unchanged. The user will play
+with the new look and then decide (`pulp_wars-3tq.7`).
+
+![The all-Human Showcase with the toggle on](../../art/pixellab/reviews/chibi-batch-direction-human/showcase-human-desktop-zoom-1.png)
+
+### What was made
+
+Batch [`direction-human`](../../scripts/art/chibi/batches/batch-direction-human.json)
+(records in `scripts/art/chibi/records/`, masters under
+`public/assets/chibi/`, registry
+[`chibi-direction-art-manifest.ts`](../../src/assets/chibi-direction-art-manifest.ts)):
+30 assets from 53 recipes, 22 of them imported from the demo's exploration
+runs and 31 new PixelLab calls.
+
+| Asset                     | Recipes tried     | Accepted                   | Notes                                                                                              |
+| ------------------------- | ----------------- | -------------------------- | -------------------------------------------------------------------------------------------------- |
+| Fighter, Marksman, Knight | 1 each (imported) | the demo's edits           | the style anchor, re-accepted unchanged                                                            |
+| Raider, Guard, Juggernaut | 1 each            | first edit                 | cloak, shield and tabard in crimson with gold; props unchanged                                     |
+| Captain                   | 2                 | `captain-heraldic-edit-b`  | the first edit drew a nineteenth-century officer; "change only the colours and the flag" kept him  |
+| Catapult                  | 2                 | `catapult-heraldic-edit-b` | the first edit rebuilt the frame as a box cart; "change only the cloth" kept the machine           |
+| 8 portraits               | 1 each            | first edit                 | edits of the batch-5 portraits                                                                     |
+| Windmill, Port, Shipyard  | 1 each (imported) | the demo's                 |                                                                                                    |
+| Forge, Workshop, Monument | 2 each (imported) | the demo's ground edits    |                                                                                                    |
+| Sawmill                   | 3                 | `sawmill-c-a-edit-2`       | new subject line; the first two had a dark spoked wheel; a third edit made it a solid saw blade    |
+| Market                    | 2                 | `market-c-a-edit`          | open stall with goods on the counter; the edit names the goods so they survive the slab removal    |
+| Lumber Camp               | 3                 | `lumber-camp-c-a-edit-b`   | pines, log stack, axe in a stump; the first ground edit removed the logs and the axe too           |
+| Farm                      | 3 (imported)      | `farm-field-a-edit-2`      | the demo's ears; the new `crop-rows` derivation makes them tile                                    |
+| City 1                    | 3 (2 imported)    | `city-1-c-a-edit-2`        | the demo's town with a sandstone tower                                                             |
+| City 2                    | 3 (2 imported)    | `city-2-c-a-edit-2`        | the demo's walled town repainted from grey stone to sandstone                                      |
+| City 3                    | 6 (3 imported)    | `city-3-d-a-edit-2`        | a new creation: a keep, a church, houses and four towers inside the wall; then ground, then colour |
+| Village                   | 3                 | `village-a-edit-b`         | thatched cottages; the first ground edit painted the yard white                                    |
+
+Recipes that worked:
+
+- **Units and portraits:** `edit-image-pixen` on the accepted sprite. Say what
+  changes and end with "Keep the …, pose, proportions, thick black outline
+  and art style exactly the same". When an edit redesigns the piece, start
+  the instruction with "Change only the colours of …" and list what stays.
+- **Buildings:** the `calm-building` class with a subject line that puts the
+  signature prop first ("one huge round steel circular saw blade …"), the
+  addendum "drawn large and fills most of the image", then a ground-removal
+  edit that lists every prop to keep. An edit that says "erase only the flat
+  ground slab; do not change anything standing on it" keeps small props best.
+- **Cities:** generate at 96 x 96, remove the ground, then one repaint edit
+  that names the stone and roof colours of the set.
+
+### Rules that are now fixed
+
+1. **Human units and portraits** wear crimson and gold for every player and
+   have no owner area and no mask (`fixedColours`).
+2. **Improvements** are one shared neutral set in the calm style. The Sawmill
+   shows a saw blade and logs, the Market stalls and goods, the Lumber Camp
+   pines, logs and an axe.
+3. **The Farm** tiles without a seam: the same two ears repeat every 16 px
+   along a row and the four rows repeat every 20 px, so a block of Farms is
+   one field with even rows across cell boundaries, horizontally and
+   vertically. The 9 px gaps lie on the cell's centre line and edges: a
+   straight Road through the cell shows fully along the rows and as a dashed
+   line across them; a diagonal Road shows through every gap.
+4. **Cities** are one set: pale sandstone, cream plaster with dark oak and
+   terracotta-red roofs, growing from four cottages round a tower (80 x 80)
+   to a walled town (88 x 80) to a walled city full of buildings (96 x 88).
+   The canvases are smaller than today's and stay inside the cell.
+5. **Pennants** are drawn in code at recorded anchors on City 1–3, the Port
+   and the Shipyard (`DIRECTION_FLAG_ANCHORS_V7`).
+6. **The Mine** stays part of the Mined Mountain terrain art (grey rock and
+   pale timber, no red) and is toned with the terrain; the **Village** is
+   re-created in neutral straw and stone.
+
+### Runtime
+
+- [`chibi-direction-art-manifest.ts`](../../src/assets/chibi-direction-art-manifest.ts)
+  lists the production art under the same subjects as the default art but
+  in its own list, so no default subject gains a variant. The developer
+  toggle imports it on demand and resolves it before the default art, on the
+  board and in the interface (docks, training cards, technology cards).
+- With the toggle off nothing is imported and the frame is drawn exactly as
+  before; the test that a baseline direction issues the same canvas calls as
+  no direction still holds.
+- The exploration sample sets remain only for the study's review benches.
+
+### Evidence
+
+`npm run art:chibi-direction-review` writes
+[`art/pixellab/reviews/chibi-batch-direction-human/`](../../art/pixellab/reviews/chibi-batch-direction-human/)
+(see [the pipeline document](CHIBI_PIPELINE.md#review-evidence) for the list).
+
+![Every Human unit, today and new, beside the other factions](../../art/pixellab/reviews/chibi-batch-direction-human/units-old-new-1x.png)
+
+![City 1 to 3, today and new, with the pennant](../../art/pixellab/reviews/chibi-batch-direction-human/cities-x4.png)
+
+![A Farm block over Roads, cities and units in the game](../../art/pixellab/reviews/chibi-batch-direction-human/ingame-farms-desktop-zoom-1.png)
+
+### Weak spots left
+
+- **The city set is close, not identical:** City 1 keeps a heavier dark
+  outline than City 2 and 3, and City 3's stone is a little more yellow.
+- **City roofs are a clear red-orange**, stronger than the improvements'
+  dusty terracotta.
+- **The Lumber Camp and the Village are small** (about half a tile wide).
+- **The Raider's cloak is a brighter red** than the Fighter's surcoat.
+- **The Guard's portrait and map sprite show different faces**, as today.
+- **The Farm is very regular:** every row is the same two ears. It is calm
+  and seamless, but less hand-drawn than the demo's Farm.
+- **A Road crossing the rows** is still partly hidden, and a diagonal Road
+  shows only between the rows.
+- **Four players who all play Human differ only by plate, pennant and
+  border.** The user plans a rule of one player per faction per map later.
+- **Ships, terrain and the other factions** are not converted.
 
 ## Sources
 

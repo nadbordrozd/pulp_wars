@@ -1,0 +1,36 @@
+{
+  "id": "sawmill-c-a-edit-2",
+  "jobId": "e0d478ca-d847-4782-8554-5a91b403aed4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-sawmill",
+    "subject": "IMPROVEMENT:SAWMILL",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 76203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Replace the dark spoked wheel with one big solid round steel saw blade: a plain flat light silver-grey disc with a small dark hub hole in its middle and sharp triangular teeth all around its rim, with no spokes and no holes, standing upright in the same wooden frame, as big as the wheel was. Keep the building, the roofs, the wooden frame, the stack of logs, the colours, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Replace the dark spoked wheel with one big solid round steel saw blade: a plain flat light silver-grey disc with a small dark hub hole in its middle and sharp triangular teeth all around its rim, with no spokes and no holes, standing upright in the same wooden frame, as big as the wheel was. Keep the building, the roofs, the wooden frame, the stack of logs, the colours, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Replace the dark spoked wheel with one big solid round steel saw blade: a plain flat light silver-grey disc with a small dark hub hole in its middle and sharp triangular teeth all around its rim, with no spokes and no holes, standing upright in the same wooden frame, as big as the wheel was. Keep the building, the roofs, the wooden frame, the stack of logs, the colours, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Replace the dark spoked wheel with one big solid round steel saw blade: a plain flat light silver-grey disc with a small dark hub hole in its middle and sharp triangular teeth all around its rim, with no spokes and no holes, standing upright in the same wooden frame, as big as the wheel was. Keep the building, the roofs, the wooden frame, the stack of logs, the colours, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "sawmill-c-a-edit",
+      "candidate": 0,
+      "sha256": "0fdec9ab0dcf73aaf76cf47b675b9c40654f1cf0f58c9b4b7e293a4276c39fd0"
+    }
+  }
+}

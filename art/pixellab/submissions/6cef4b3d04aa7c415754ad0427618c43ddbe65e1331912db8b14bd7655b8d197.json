@@ -1,0 +1,36 @@
+{
+  "id": "village-a-edit",
+  "jobId": "ca99af1f-8006-4e37-86aa-a8ab259ca8f0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-village",
+    "subject": "SITE:VILLAGE",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 76302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and the stone plate under the hamlet, so the cottages and the fence stand directly on a transparent background with nothing at all under them. Keep the three thatched cottages, the fence, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and the stone plate under the hamlet, so the cottages and the fence stand directly on a transparent background with nothing at all under them. Keep the three thatched cottages, the fence, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and the stone plate under the hamlet, so the cottages and the fence stand directly on a transparent background with nothing at all under them. Keep the three thatched cottages, the fence, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and the stone plate under the hamlet, so the cottages and the fence stand directly on a transparent background with nothing at all under them. Keep the three thatched cottages, the fence, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "village-a",
+      "candidate": 0,
+      "sha256": "64f0caee9d2884d8d1b6c1f470594756f5dd6075f552daa8356f0c5419de7d19"
+    }
+  }
+}

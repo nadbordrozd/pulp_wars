@@ -1,0 +1,37 @@
+{
+  "id": "juggernaut-heraldic-edit",
+  "jobId": "7d3314b8-8f2c-43ee-bca8-836c06cc64ea",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-juggernaut",
+    "subject": "UNIT:JUGGERNAUT",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 76041,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval champion: the tabard becomes deep crimson red with a big gold-yellow lion on the chest and a gold hem; the cape deep crimson with a gold-yellow trim; a gold-yellow crown band around the steel helm and gold trim on the pauldrons. Keep the warhammer, armour, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval champion: the tabard becomes deep crimson red with a big gold-yellow lion on the chest and a gold hem; the cape deep crimson with a gold-yellow trim; a gold-yellow crown band around the steel helm and gold trim on the pauldrons. Keep the warhammer, armour, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval champion: the tabard becomes deep crimson red with a big gold-yellow lion on the chest and a gold hem; the cape deep crimson with a gold-yellow trim; a gold-yellow crown band around the steel helm and gold trim on the pauldrons. Keep the warhammer, armour, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "editInstruction": "Redraw him as a high-medieval champion: the tabard becomes deep crimson red with a big gold-yellow lion on the chest and a gold hem; the cape deep crimson with a gold-yellow trim; a gold-yellow crown band around the steel helm and gold trim on the pauldrons. Keep the warhammer, armour, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "source": {
+      "batch": "2",
+      "recipe": "juggernaut-b-edit",
+      "candidate": 1,
+      "sha256": "f8fa7323cc3bc1f066cf70203199cd66cc71aed2323f03e2a83445ec732559f6"
+    }
+  }
+}

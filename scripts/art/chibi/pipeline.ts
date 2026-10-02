@@ -37,12 +37,14 @@ import {
   findRecipe,
   requestBody,
   requestSnapshot,
+  SEATED_BOTTOM_MARGIN,
   type ChibiAssetSpec,
   type ChibiBatchManifest,
   type ChibiCamera,
   type ChibiRecipe,
   type ChibiRecipeClass,
   type ChibiRequestSnapshot,
+  type ChibiStyleName,
   type Fragment,
   type FragmentLibrary,
   type Size,
@@ -61,12 +63,15 @@ import {
   bestSeamlessWindow,
   candidateCell,
   cropRaster,
+  cropRowsRaster,
   groundComposite,
   offPalettePixels,
   paletteColours,
   paletteMapRaster,
   plateCheck,
+  seatedRaster,
   transparentPixels,
+  type CropRowsSpec,
   type CropWindow,
   type PlateCheck,
 } from "./raster";
@@ -210,8 +215,12 @@ export async function loadFragments(root: string): Promise<FragmentLibrary> {
     "portrait",
     "icon",
     "flat",
+    "crop-pattern",
   ] as const)
     camera[name] = await fragmentFile(root, `camera-${name}`, false);
+  const styles = {} as Record<ChibiStyleName, Fragment>;
+  for (const name of ["calm", "crop"] as const)
+    styles[name] = await fragmentFile(root, `style-${name}`, true);
   const subjects: Record<string, Record<string, string>> = {};
   for (const file of (
     await readdir(path.join(root, CHIBI_PATHS.subjects))
@@ -224,6 +233,7 @@ export async function loadFragments(root: string): Promise<FragmentLibrary> {
   }
   return {
     style: await fragmentFile(root, "style", true),
+    styles,
     camera,
     owner: await fragmentFile(root, "owner", false),
     classes,
@@ -272,6 +282,16 @@ export interface RecipeRecord {
   readonly rawSheet?: string;
   readonly rawSheetSha256?: string;
   readonly fixture?: { readonly path: string; readonly provenance: string };
+  /**
+   * Set when the recipe was generated in an exploration run and its record,
+   * raw sheet and receipt were brought into this batch by `import` (bead
+   * pulp_wars-3tq.5). `request` is the exploration's request, verbatim.
+   */
+  readonly importedFrom?: {
+    readonly exploration: string;
+    readonly batch: string;
+    readonly recipe: string;
+  };
   /** Plate heuristic per candidate for transparent classes (a hint for review). */
   readonly plateHints?: readonly PlateCheck[];
   readonly review?: {
@@ -328,8 +348,17 @@ export interface AssetRecord {
   };
   readonly derivation: {
     readonly kind:
-      "as-is" | "seamless-crop" | "ground-composite" | "palette-map";
+      | "as-is"
+      | "seamless-crop"
+      | "ground-composite"
+      | "palette-map"
+      | "seated"
+      | "crop-rows";
     readonly crop?: CropWindow;
+    /** seated: the margin used; the master is the bottom-centred window. */
+    readonly seat?: { readonly bottomMargin: number };
+    /** crop-rows: the stamps and calming the master was built with. */
+    readonly cropRows?: CropRowsSpec;
     /** palette-map: the palette the master's colours were mapped to. */
     readonly palette?: { readonly path: string; readonly sha256: string };
     readonly ground?: {
@@ -1362,6 +1391,13 @@ async function deriveMaster(
       );
     return { raster, derivation: { kind, crop } };
   }
+  if (kind === "seated") {
+    const bottomMargin = asset.bottomMargin ?? SEATED_BOTTOM_MARGIN;
+    return {
+      raster: seatedRaster(candidate, asset.canvas, bottomMargin),
+      derivation: { kind, seat: { bottomMargin } },
+    };
+  }
   if (
     candidate.width !== asset.canvas.width ||
     candidate.height !== asset.canvas.height
@@ -1369,6 +1405,14 @@ async function deriveMaster(
     throw new Error(
       `${asset.id}: candidate ${candidate.width}x${candidate.height} is not the ${asset.canvas.width}x${asset.canvas.height} master`,
     );
+  if (kind === "crop-rows") {
+    const cropRows = asset.cropRows;
+    if (cropRows === undefined) throw new Error(`${asset.id}: no cropRows`);
+    return {
+      raster: cropRowsRaster(candidate, asset.canvas, cropRows),
+      derivation: { kind, cropRows },
+    };
+  }
   if (kind === "palette-map") {
     const palette = asset.palette;
     if (palette === undefined) throw new Error(`${asset.id}: no palette`);
@@ -1807,10 +1851,176 @@ export async function validateChibiProduction(root: string): Promise<string[]> {
           );
       }
     }
-    for (const record of Object.values(records.assets))
+    for (const record of Object.values(records.assets)) {
       problems.push(...(await verifyAssetRecord(root, manifest, record)));
+      problems.push(
+        ...(await rederivedMasterProblems(root, manifest, records, record)),
+      );
+    }
   }
   return problems;
+}
+
+/**
+ * A seated or crop-rows master must be exactly what its derivation makes of
+ * the recorded candidate today, so the master can always be rebuilt from the
+ * raw sheet and the manifest (bead pulp_wars-3tq.5).
+ */
+async function rederivedMasterProblems(
+  root: string,
+  manifest: ChibiBatchManifest,
+  records: BatchRecords,
+  record: AssetRecord,
+): Promise<string[]> {
+  const kind = record.derivation.kind;
+  if (
+    record.status !== "ACCEPTED" ||
+    (kind !== "seated" && kind !== "crop-rows")
+  )
+    return [];
+  const label = `batch ${manifest.batch} asset ${record.id}`;
+  const asset = manifest.assets.find((entry) => entry.id === record.id);
+  const recipe = records.recipes[record.recipe];
+  if (asset === undefined || recipe?.rawSheet === undefined)
+    return [`${label}: no recipe record to re-derive the master from`];
+  if (recipe.candidateSize === undefined)
+    return [`${label}: the recipe record has no candidate size`];
+  const sheetFile = path.join(root, recipe.rawSheet);
+  const masterFile = path.join(root, record.master.path);
+  if (!(await exists(sheetFile)) || !(await exists(masterFile))) return [];
+  const candidate = cropRaster(await readRaster(sheetFile), {
+    ...candidateCell(
+      record.candidate,
+      recipe.candidateCount ?? 1,
+      recipe.candidateSize,
+    ),
+    ...recipe.candidateSize,
+  });
+  if (sha256(await encodePng(candidate)) !== record.candidateSha256)
+    return [`${label}: candidate differs from the record`];
+  let derived: RgbaRaster;
+  try {
+    derived =
+      kind === "seated"
+        ? seatedRaster(
+            candidate,
+            asset.canvas,
+            asset.bottomMargin ?? SEATED_BOTTOM_MARGIN,
+          )
+        : cropRowsRaster(
+            candidate,
+            asset.canvas,
+            asset.cropRows ?? record.derivation.cropRows ?? missingCropRows(),
+          );
+  } catch (error) {
+    return [
+      `${label}: ${error instanceof Error ? error.message : String(error)}`,
+    ];
+  }
+  return pixelSha256(derived) === pixelSha256(await readRaster(masterFile))
+    ? []
+    : [`${label}: the ${kind} derivation does not reproduce the master`];
+}
+
+function missingCropRows(): never {
+  throw new Error("no cropRows in the manifest or the record");
+}
+
+/**
+ * Brings a recipe generated in an exploration run into a production batch
+ * (bead pulp_wars-3tq.5): its record (the request exactly as it was sent),
+ * its raw candidate sheet and its credential-free receipt are copied, with
+ * `importedFrom` naming the run. No PixelLab call is made and nothing is
+ * regenerated; the exploration's verdict is not carried over, so the
+ * candidate is reviewed again with `accept` or `reject`. The batch manifest
+ * must hold a recipe of the same id with the same endpoint, seed, size,
+ * edit instruction and edit source.
+ */
+export async function importRecipe(
+  context: PipelineContext,
+  exploration: string,
+  recipeId: string,
+): Promise<void> {
+  const relative = explorationDirectory(exploration);
+  const recipe = findRecipe(context.manifest, recipeId);
+  const from = explorationLayout(context.root, relative);
+  const sourceManifest = JSON.parse(
+    await readFile(path.join(context.root, relative, "batch.json"), "utf8"),
+  ) as ChibiBatchManifest;
+  const source = (await loadRecords(from, sourceManifest.batch)).recipes[
+    recipeId
+  ];
+  if (
+    source?.rawSheet === undefined ||
+    source.rawSheetSha256 === undefined ||
+    source.completedAt === undefined
+  )
+    throw new Error(`${recipeId}: ${relative} has no completed record of it`);
+  const request = source.request;
+  const tidy = (text: string | undefined): string =>
+    (text ?? "").replaceAll(/\s+/g, " ").trim();
+  const differences = [
+    request.endpoint === recipe.endpoint ? "" : "endpoint",
+    request.seed === recipe.seed ? "" : "seed",
+    request.requestSize.width === recipe.requestSize.width &&
+    request.requestSize.height === recipe.requestSize.height
+      ? ""
+      : "request size",
+    recipe.endpoint !== "edit-image-pixen" ||
+    tidy(request.editInstruction) === tidy(recipe.editInstruction)
+      ? ""
+      : "edit instruction",
+    request.source?.recipe === recipe.source?.recipe &&
+    request.source?.candidate === recipe.source?.candidate
+      ? ""
+      : "edit source",
+  ].filter(Boolean);
+  if (differences.length > 0)
+    throw new Error(
+      `${recipeId}: the batch recipe differs from the exploration request (${differences.join(", ")})`,
+    );
+  const sheet = await readFile(path.join(context.root, source.rawSheet));
+  if (sha256(sheet) !== source.rawSheetSha256)
+    throw new Error(`${recipeId}: the exploration raw sheet changed`);
+  const receipt = await loadSubmissionReceipt<{
+    readonly styleReference?: never;
+  }>(from.submissions, source.jobId);
+  if (receipt?.id !== recipeId)
+    throw new Error(`${recipeId}: the exploration receipt is missing`);
+  const rawFile = path.join(context.layout.raw, `${recipeId}.png`);
+  await updateRecords(context.layout, context.manifest.batch, async (fresh) => {
+    if (fresh.recipes[recipeId] !== undefined)
+      throw new Error(`${recipeId}: already generated or imported`);
+    await mkdir(path.dirname(rawFile), { recursive: true });
+    await writeFile(rawFile, sheet);
+    if (
+      (await loadSubmissionReceipt(
+        context.layout.submissions,
+        source.jobId,
+      )) === undefined
+    )
+      await saveSubmissionReceipt(
+        context.layout.submissions,
+        recipeId,
+        source.jobId,
+        request as ChibiRequestSnapshot & { readonly styleReference?: never },
+      );
+    const { review: _review, ...kept } = source;
+    void _review;
+    fresh.recipes[recipeId] = {
+      ...kept,
+      asset: recipe.asset,
+      rawSheet: posix(path.relative(context.root, rawFile)),
+      importedFrom: {
+        exploration: relative,
+        batch: sourceManifest.batch,
+        recipe: recipeId,
+      },
+    };
+  });
+  context.log(
+    `${recipeId}: imported from ${relative} (${source.candidateCount ?? 1} candidate(s))`,
+  );
 }
 
 /** The source line a batch bead adds to src/assets/chibi-art-manifest.ts. */
@@ -1834,6 +2044,12 @@ export function registryEntry(
     ...(record.mask === undefined
       ? []
       : [`ownerMaskUrl: ${url(record.mask.path)}`]),
+    ...(record.mask === undefined &&
+    ["UNIT:", "CITY:", "PORTRAIT:"].some((prefix) =>
+      asset.subject.startsWith(prefix),
+    )
+      ? ["fixedColours: true"]
+      : []),
     ...(layers === null
       ? []
       : [

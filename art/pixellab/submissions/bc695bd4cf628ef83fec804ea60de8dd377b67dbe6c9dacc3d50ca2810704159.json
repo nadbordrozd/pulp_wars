@@ -1,0 +1,36 @@
+{
+  "id": "city-3-d-a-edit-2",
+  "jobId": "42a56b0a-68d0-44a0-b243-2a590f86fa46",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-city-3",
+    "subject": "CITY:3",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 76423,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Repaint the orange-brown roofs and tower cones as clear terracotta red, and the yellow stone of the walls, towers, keep and church as pale warm sandstone, a light cream-beige with slightly darker beige shading. Keep every shape, the walls, the towers, the keep, the church, the houses, the outline and the art style exactly the same, on a transparent background with nothing under the walls."
+      }
+    ],
+    "prompt": "Repaint the orange-brown roofs and tower cones as clear terracotta red, and the yellow stone of the walls, towers, keep and church as pale warm sandstone, a light cream-beige with slightly darker beige shading. Keep every shape, the walls, the towers, the keep, the church, the houses, the outline and the art style exactly the same, on a transparent background with nothing under the walls.",
+    "negativePrompt": "",
+    "description": "Repaint the orange-brown roofs and tower cones as clear terracotta red, and the yellow stone of the walls, towers, keep and church as pale warm sandstone, a light cream-beige with slightly darker beige shading. Keep every shape, the walls, the towers, the keep, the church, the houses, the outline and the art style exactly the same, on a transparent background with nothing under the walls.",
+    "editInstruction": "Repaint the orange-brown roofs and tower cones as clear terracotta red, and the yellow stone of the walls, towers, keep and church as pale warm sandstone, a light cream-beige with slightly darker beige shading. Keep every shape, the walls, the towers, the keep, the church, the houses, the outline and the art style exactly the same, on a transparent background with nothing under the walls.",
+    "source": {
+      "recipe": "city-3-d-a-edit",
+      "candidate": 0,
+      "sha256": "818768e25952d2d1a3711bcfd2b5a069d2c2502e0fd083c51bc3306f39e18985"
+    }
+  }
+}

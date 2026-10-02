@@ -1,0 +1,1 @@
+Camera: the crop pattern is drawn on a fully transparent background and nothing is cropped; there is no ground, no soil and no shadow anywhere in the image, only the plants themselves.

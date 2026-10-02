@@ -1,0 +1,37 @@
+{
+  "id": "portrait-guard-heraldic-edit",
+  "jobId": "9e442536-ef68-4cb1-9d23-fd9b546bb4a4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-guard",
+    "subject": "PORTRAIT:GUARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76141,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw this soldier as a high-medieval heavy spearman: the shield becomes deep crimson red with a bold gold-yellow cross and a steel border; a gold-yellow band around the steel kettle helmet; a deep crimson surcoat over steel chainmail. Keep the spear, the helmet shape, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw this soldier as a high-medieval heavy spearman: the shield becomes deep crimson red with a bold gold-yellow cross and a steel border; a gold-yellow band around the steel kettle helmet; a deep crimson surcoat over steel chainmail. Keep the spear, the helmet shape, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw this soldier as a high-medieval heavy spearman: the shield becomes deep crimson red with a bold gold-yellow cross and a steel border; a gold-yellow band around the steel kettle helmet; a deep crimson surcoat over steel chainmail. Keep the spear, the helmet shape, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw this soldier as a high-medieval heavy spearman: the shield becomes deep crimson red with a bold gold-yellow cross and a steel border; a gold-yellow band around the steel kettle helmet; a deep crimson surcoat over steel chainmail. Keep the spear, the helmet shape, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-guard-a",
+      "candidate": 0,
+      "sha256": "b03e3eef348e36396d6fe5ba5e47934c51b3140ab9c3702a23265ddc4eb01afd"
+    }
+  }
+}

@@ -299,15 +299,52 @@ keeps `building-city-<level>` for every faction. Review evidence:
 `npm run art:chibi-faction-cities-review`
 ([pipeline](CHIBI_PIPELINE.md#review-evidence)).
 
+## New visual direction: batch `direction-human` (bead `pulp_wars-3tq.5`)
+
+Production art of the [new direction](VISUAL_DIRECTION_2026-10.md#12-production).
+The subjects are the ones above; the rasters are registered in
+[`src/assets/chibi-direction-art-manifest.ts`](../../src/assets/chibi-direction-art-manifest.ts),
+a list separate from the default manifest, so the default rendering does not
+change until bead `pulp_wars-3tq.6`. None has an owner mask.
+
+| Subject                                                                                 | Asset id                          | Canvas   | Class           | Notes                                                           |
+| --------------------------------------------------------------------------------------- | --------------------------------- | -------- | --------------- | --------------------------------------------------------------- |
+| `UNIT:FIGHTER`, `MARKSMAN`, `GUARD`, `CAPTAIN`                                          | `chibi-direction-<role>`          | 56 x 80  | `STANDARD_UNIT` | edits of the accepted sprites; `fixedColours`                   |
+| `UNIT:RAIDER`, `KNIGHT`, `CATAPULT`                                                     | `chibi-direction-<role>`          | 72 x 88  | `LARGE_UNIT`    | as above                                                        |
+| `UNIT:JUGGERNAUT`                                                                       | `chibi-direction-juggernaut`      | 88 x 104 | `GIANT_UNIT`    | as above                                                        |
+| `PORTRAIT:<ROLE>` (the 8 land roles)                                                    | `chibi-direction-portrait-<role>` | 48 x 48  | `PORTRAIT`      | edits of the batch-5 portraits; `fixedColours`                  |
+| `IMPROVEMENT:FARM`                                                                      | `chibi-direction-farm`            | 80 x 80  | `BUILDING`      | crop rows; tiles at 16 px across, 20 px down                    |
+| `IMPROVEMENT:WINDMILL`                                                                  | `chibi-direction-windmill`        | 64 x 72  | `BUILDING`      | calm style, seated                                              |
+| `IMPROVEMENT:LUMBER_CAMP`, `SAWMILL`, `FORGE`, `WORKSHOP`, `MARKET`, `PORT`, `SHIPYARD` | `chibi-direction-<name>`          | 72 x 72  | `BUILDING`      | calm style, seated; Port and Shipyard fly a code-drawn pennant  |
+| `IMPROVEMENT:MONUMENT`                                                                  | `chibi-direction-monument`        | 48 x 72  | `BUILDING`      | calm style, seated                                              |
+| `CITY:1`                                                                                | `chibi-direction-city-1`          | 80 x 80  | `SETTLEMENT`    | generated at 96 x 96, seated; pennant anchor (40, 7), pole 12   |
+| `CITY:2`                                                                                | `chibi-direction-city-2`          | 88 x 80  | `SETTLEMENT`    | pennant anchor (43.5, 0), pole 6                                |
+| `CITY:3`                                                                                | `chibi-direction-city-3`          | 96 x 88  | `SETTLEMENT`    | 8 px side and upward overflow; pennant anchor (48.5, 9), pole 7 |
+| `SITE:VILLAGE`                                                                          | `chibi-direction-village`         | 72 x 72  | `SETTLEMENT`    | neutral; no pennant                                             |
+
+Every improvement and city uses the class placement (bottom-centred), so the
+canvas bottom is the cell bottom and the art stands 3 px above it. The city
+canvases differ from today's (88 x 96, 96 x 100, 96 x 104): the new cities
+stay inside their cell, so a unit to the north keeps its base plate. Pennant
+anchors are master pixels from the top-left corner
+(`DIRECTION_FLAG_ANCHORS_V7`; Port (49.5, 22) on its own mast, Shipyard
+(21, 4) with an 11 px pole).
+
+**Not in the batch:** the Patrol Boat, the Battleship and the embarked
+transport (shared by every faction; unchanged), the Mine (part of the Mined
+Mountain terrain art; toned by code with the terrain), terrain, resources,
+and everything Undead, Goblin and Dinosaur.
+
 ## Counts per batch
 
-| Batch | Map subjects                                                                                      | Minimum rasters (with the variants above)                                                                                                             |
-| ----- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Grass, Forest, Mountain, Shallow and Deep Water, Village, City 1–3, Fighter, Marksman             | about 19: 3 grass, 2–3 forest, 2–3 mountain, 2 + 2 water, 4 settlements, 2 units                                                                      |
-| 2     | Raider, Guard, Captain, Catapult, Knight, Juggernaut                                              | 6                                                                                                                                                     |
-| 3     | 6 resources, Treasure, Farm, Lumber Camp, Port, Monument, Mined Mountain; Roads and Field Defense | about 17 plus 2–3 mined mountains; Roads and Field Defense need a decision first                                                                      |
-| 4     | Windmill, Sawmill, Forge, Workshop, Market, Shipyard, Patrol Boat, Battleship, Embarked form      | 9                                                                                                                                                     |
-| 5     | portraits, 23 technology icons, action, reward and HUD art                                        | 8 portraits, 3 dedicated technology icons plus 5 reused portraits or actions, 13 action icons, 3 reward icons, 2 HUD icons; vector glyphs by decision |
+| Batch             | Map subjects                                                                                           | Minimum rasters (with the variants above)                                                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1                 | Grass, Forest, Mountain, Shallow and Deep Water, Village, City 1–3, Fighter, Marksman                  | about 19: 3 grass, 2–3 forest, 2–3 mountain, 2 + 2 water, 4 settlements, 2 units                                                                      |
+| 2                 | Raider, Guard, Captain, Catapult, Knight, Juggernaut                                                   | 6                                                                                                                                                     |
+| 3                 | 6 resources, Treasure, Farm, Lumber Camp, Port, Monument, Mined Mountain; Roads and Field Defense      | about 17 plus 2–3 mined mountains; Roads and Field Defense need a decision first                                                                      |
+| 4                 | Windmill, Sawmill, Forge, Workshop, Market, Shipyard, Patrol Boat, Battleship, Embarked form           | 9                                                                                                                                                     |
+| 5                 | portraits, 23 technology icons, action, reward and HUD art                                             | 8 portraits, 3 dedicated technology icons plus 5 reused portraits or actions, 13 action icons, 3 reward icons, 2 HUD icons; vector glyphs by decision |
+| `direction-human` | the 8 Human land units and their portraits, the 10 improvements, City 1–3, the Village (new direction) | 30                                                                                                                                                    |
 
 ## Flags the plan did not foresee
 

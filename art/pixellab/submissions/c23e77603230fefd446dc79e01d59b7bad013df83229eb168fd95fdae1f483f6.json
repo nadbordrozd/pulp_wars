@@ -1,0 +1,37 @@
+{
+  "id": "captain-heraldic-edit",
+  "jobId": "d06101e5-ebb8-43ae-85d0-e91f181bdbfc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-captain",
+    "subject": "UNIT:CAPTAIN",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 76021,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval army officer: a deep crimson cap with a gold-yellow band, keeping the white feather; a deep crimson coat with gold-yellow trim and buttons; the banner becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the face, moustache, horn, banner pole, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval army officer: a deep crimson cap with a gold-yellow band, keeping the white feather; a deep crimson coat with gold-yellow trim and buttons; the banner becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the face, moustache, horn, banner pole, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval army officer: a deep crimson cap with a gold-yellow band, keeping the white feather; a deep crimson coat with gold-yellow trim and buttons; the banner becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the face, moustache, horn, banner pole, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "editInstruction": "Redraw him as a high-medieval army officer: a deep crimson cap with a gold-yellow band, keeping the white feather; a deep crimson coat with gold-yellow trim and buttons; the banner becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the face, moustache, horn, banner pole, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "source": {
+      "batch": "2",
+      "recipe": "captain-a",
+      "candidate": 0,
+      "sha256": "b32f042a4673f596fb9b1e8e6427dc0aedbf365c55a63f1294db7d6323a19046"
+    }
+  }
+}

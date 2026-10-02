@@ -1,0 +1,36 @@
+{
+  "id": "lumber-camp-c-a-edit",
+  "jobId": "5f87b0c5-ec0d-457b-b286-2041324199fd",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-lumber-camp",
+    "subject": "IMPROVEMENT:LUMBER_CAMP",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 76222,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and the grey stone plate under the lumber camp, so the pine trees, the log stack, the stump with the axe and the cabin stand directly on a transparent background with nothing at all under them. Keep the two pine trees, the stack of logs, the tree stump with the axe, the cabin, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and the grey stone plate under the lumber camp, so the pine trees, the log stack, the stump with the axe and the cabin stand directly on a transparent background with nothing at all under them. Keep the two pine trees, the stack of logs, the tree stump with the axe, the cabin, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and the grey stone plate under the lumber camp, so the pine trees, the log stack, the stump with the axe and the cabin stand directly on a transparent background with nothing at all under them. Keep the two pine trees, the stack of logs, the tree stump with the axe, the cabin, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and the grey stone plate under the lumber camp, so the pine trees, the log stack, the stump with the axe and the cabin stand directly on a transparent background with nothing at all under them. Keep the two pine trees, the stack of logs, the tree stump with the axe, the cabin, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "lumber-camp-c-a",
+      "candidate": 0,
+      "sha256": "8c0e5d2be9d2d1bc0cdfb450050b94bfa28a9917901e2971fad673ff3500f4ef"
+    }
+  }
+}

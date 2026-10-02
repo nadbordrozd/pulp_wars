@@ -1,0 +1,37 @@
+{
+  "id": "raider-heraldic-edit",
+  "jobId": "3c19b54b-8c20-48af-861f-c338ff96a11c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-raider",
+    "subject": "UNIT:RAIDER",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 76001,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval light horseman: the hooded riding cloak becomes deep crimson red with a gold-yellow trim along its edge and a gold clasp at the neck; a cream tunic with a dark brown leather belt; the saddle blanket deep crimson with a gold-yellow trim. Keep the sandy pony, the raised hand axe, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval light horseman: the hooded riding cloak becomes deep crimson red with a gold-yellow trim along its edge and a gold clasp at the neck; a cream tunic with a dark brown leather belt; the saddle blanket deep crimson with a gold-yellow trim. Keep the sandy pony, the raised hand axe, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval light horseman: the hooded riding cloak becomes deep crimson red with a gold-yellow trim along its edge and a gold clasp at the neck; a cream tunic with a dark brown leather belt; the saddle blanket deep crimson with a gold-yellow trim. Keep the sandy pony, the raised hand axe, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "editInstruction": "Redraw him as a high-medieval light horseman: the hooded riding cloak becomes deep crimson red with a gold-yellow trim along its edge and a gold clasp at the neck; a cream tunic with a dark brown leather belt; the saddle blanket deep crimson with a gold-yellow trim. Keep the sandy pony, the raised hand axe, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+    "source": {
+      "batch": "2",
+      "recipe": "raider-a-edit-2",
+      "candidate": 0,
+      "sha256": "5fac82147256eafc2d9fd0db22b517bb6a2ecdc850cfed5b2f520c0f481197bc"
+    }
+  }
+}

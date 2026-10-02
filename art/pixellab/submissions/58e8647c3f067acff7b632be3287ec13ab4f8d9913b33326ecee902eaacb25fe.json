@@ -1,0 +1,36 @@
+{
+  "id": "farm-field-a-edit-2",
+  "jobId": "f063ffde-911d-4823-acf5-b816964ede94",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "human-demo-farm",
+    "asset": "chibi-demo-farm-field",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-HUMAN-FARM",
+    "recipeClass": "crop-field",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 75003,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent."
+      }
+    ],
+    "prompt": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent.",
+    "negativePrompt": "",
+    "description": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent.",
+    "editInstruction": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent.",
+    "source": {
+      "recipe": "farm-field-a-edit",
+      "candidate": 0,
+      "sha256": "7f2e9d1e38f6d318e5a9c0c30558b4288c648a5d9268181e811d26b717fd5b33"
+    }
+  }
+}

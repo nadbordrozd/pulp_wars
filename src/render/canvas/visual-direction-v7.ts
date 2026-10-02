@@ -207,12 +207,14 @@ export const HUMAN_CRIMSON_COLOUR_V7 = "#a8202c";
 
 /**
  * The Human demo (bead pulp_wars-3tq.3, VISUAL_DIRECTION_2026-10.md, "Human
- * demo"): what the developer toggle draws. Buildings, cities and the three
- * sample units are re-created sprites in fixed faction colours (loaded from
- * the lazily imported sample module); the player is shown by a seat-shaped
+ * demo"): what the developer toggle draws. Buildings, cities and Human units
+ * are re-created sprites in fixed faction colours; since bead pulp_wars-3tq.5
+ * they are the production art of src/assets/chibi-direction-art-manifest.ts
+ * (every Human unit, the shared improvements, City 1-3 and the Village),
+ * imported only when the toggle is on. The player is shown by a seat-shaped
  * plate under each unit, a pennant on each city and on the few buildings
- * that have a mast or a ridge for one, and the territory border. A Human
- * unit without a sample yet wears the faction crimson by code.
+ * that have a mast or a ridge for one, and the territory border. A shared
+ * piece without direction art (a ship) keeps its player-coloured sail.
  */
 export const HUMAN_DEMO_DIRECTION_V7: BoardVisualDirectionV7 = {
   building: {
@@ -258,6 +260,16 @@ export const DIRECTION_FLAG_ANCHORS_V7: Readonly<
   // The pier's own bare mast, and a pole on the boathouse ridge.
   "chibi-demo-port": { x: 49.5, y: 22, pole: 0 },
   "chibi-demo-shipyard": { x: 21, y: 4, pole: 11 },
+  // The production art of bead pulp_wars-3tq.5 (batch `direction-human`).
+  // City 1 and 2 are edits of the demo's, so the tower and keep tips stay;
+  // City 3 flies its pennant from the tip of the back tower on a short
+  // pole, inside its own cell, so the base of a unit to the north shows.
+  "chibi-direction-city-1": { x: 40, y: 7, pole: 12 },
+  "chibi-direction-city-2": { x: 43.5, y: 0, pole: 6 },
+  "chibi-direction-city-3": { x: 48.5, y: 9, pole: 7 },
+  // The same masters as the demo's Port and Shipyard.
+  "chibi-direction-port": { x: 49.5, y: 22, pole: 0 },
+  "chibi-direction-shipyard": { x: 21, y: 4, pole: 11 },
 };
 
 const clampPercent = (value: unknown, low: number, high: number): number =>

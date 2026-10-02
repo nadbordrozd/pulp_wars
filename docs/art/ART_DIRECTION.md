@@ -189,6 +189,20 @@ Examples:
 
 The goal is that a player should be able to recognize a faction **without reading any labels**.
 
+### Owner colour and faction colours (October 2026 direction)
+
+The user chose this on 2026-10-02 (bead `pulp_wars-3tq.4`); the detail is in
+the [chibi direction, section 4a](CHIBI_ART_DIRECTION.md#4a-the-new-owner-colour-rule-october-2026-direction).
+
+- Each faction has **fixed colours**. A unit's garments and a city's roofs
+  never change with the player. Humans are crimson and gold.
+- **The player is shown by markers:** the base plate under a unit, the
+  pennant on a city, the territory border, small accents and the interface.
+- **Buildings are neutral** and calmer and smaller than units, so units stand
+  out and the map recedes.
+- Only the Human faction and the shared improvements are converted so far;
+  the other factions keep the owner-colour mask until the user decides.
+
 ## Tone
 
 Aim for:

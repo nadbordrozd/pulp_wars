@@ -1,0 +1,37 @@
+{
+  "id": "portrait-raider-heraldic-edit",
+  "jobId": "ddde93c8-d3d3-4cf6-a367-66c23478208d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-raider",
+    "subject": "PORTRAIT:RAIDER",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76131,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval light horseman: the hood and riding cloak become deep crimson red with a gold-yellow trim around the face and a gold clasp at the neck; a cream tunic with a dark brown leather belt instead of the steel armour. Keep the hand axe, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval light horseman: the hood and riding cloak become deep crimson red with a gold-yellow trim around the face and a gold clasp at the neck; a cream tunic with a dark brown leather belt instead of the steel armour. Keep the hand axe, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval light horseman: the hood and riding cloak become deep crimson red with a gold-yellow trim around the face and a gold clasp at the neck; a cream tunic with a dark brown leather belt instead of the steel armour. Keep the hand axe, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw him as a high-medieval light horseman: the hood and riding cloak become deep crimson red with a gold-yellow trim around the face and a gold clasp at the neck; a cream tunic with a dark brown leather belt instead of the steel armour. Keep the hand axe, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-raider-c",
+      "candidate": 0,
+      "sha256": "a9a910a50716d2015ffaac4ff6aa45cc4bc370d16ef4f57161b98178910b8edc"
+    }
+  }
+}

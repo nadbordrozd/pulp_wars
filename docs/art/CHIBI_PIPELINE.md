@@ -63,20 +63,23 @@ the Human-era owner text they were generated with.
 
 ## Class recipes
 
-| Recipe class   | Endpoint                                       | Master                                                                                                 |
-| -------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `unit`         | `create-image-pixen`, south-east, low detail   | the candidate, generated at the master size                                                            |
-| `ship`         | as `unit`, then optional edit                  | as `unit`; a boat class text (no water, waves or plate under the hull) for ships and the embarked form |
-| `settlement`   | Pixen, then optional `edit-image-pixen`        | the candidate; the edit removes a plate ("Remove all ground …")                                        |
-| `building`     | Pixen, then optional edit                      | as settlement                                                                                          |
-| `crop-field`   | Pixen, then optional edit, no faction layer    | as settlement: an unowned field of crops registered as a building (the Farm, bead `pulp_wars-6gd.5`)   |
-| `resource`     | Pixen, then optional edit                      | as settlement                                                                                          |
-| `terrain`      | `create-image-pixflux` (flat shading) or Pixen | a field at least 2x the tile; the seamless 80 x 80 window is cropped, optionally inside a `cropRegion` |
-| `tall-terrain` | Pixen, then optional edit                      | the transparent body drawn over an accepted ground tile's bottom cell                                  |
-| `portrait`     | Pixen, `side` view, south-east, low detail     | the candidate: a 48 x 48 head-and-shoulders interface portrait with an owner mask (batch 5)            |
-| `icon`         | Pixen, low top-down, no direction              | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships, the Catapult, the Egg  |
-| `status`       | Pixen, flat camera, side view                  | the candidate palette-mapped: a 32 x 32 board status marker                                            |
-| `effect`       | Pixen, icon camera, side view                  | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                   |
+| Recipe class      | Endpoint                                                                    | Master                                                                                                 |
+| ----------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `unit`            | `create-image-pixen`, south-east, low detail                                | the candidate, generated at the master size                                                            |
+| `ship`            | as `unit`, then optional edit                                               | as `unit`; a boat class text (no water, waves or plate under the hull) for ships and the embarked form |
+| `settlement`      | Pixen, then optional `edit-image-pixen`                                     | the candidate; the edit removes a plate ("Remove all ground …")                                        |
+| `building`        | Pixen, then optional edit                                                   | as settlement                                                                                          |
+| `crop-field`      | Pixen, then optional edit, no faction layer                                 | as settlement: an unowned field of crops registered as a building (the Farm, bead `pulp_wars-6gd.5`)   |
+| `resource`        | Pixen, then optional edit                                                   | as settlement                                                                                          |
+| `terrain`         | `create-image-pixflux` (flat shading) or Pixen                              | a field at least 2x the tile; the seamless 80 x 80 window is cropped, optionally inside a `cropRegion` |
+| `tall-terrain`    | Pixen, then optional edit                                                   | the transparent body drawn over an accepted ground tile's bottom cell                                  |
+| `portrait`        | Pixen, `side` view, south-east, low detail                                  | the candidate: a 48 x 48 head-and-shoulders interface portrait with an owner mask (batch 5)            |
+| `icon`            | Pixen, low top-down, no direction                                           | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships, the Catapult, the Egg  |
+| `status`          | Pixen, flat camera, side view                                               | the candidate palette-mapped: a 32 x 32 board status marker                                            |
+| `effect`          | Pixen, icon camera, side view                                               | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                   |
+| `calm-building`   | Pixen (selective outline), then optional edit; calm style, no faction layer | **seated**: the calm improvement set of the new direction                                              |
+| `calm-settlement` | as `calm-building`                                                          | **seated**: cities and the Village in the calm style                                                   |
+| `crop-rows`       | Pixen, top-down crop pattern, then edits; no faction layer                  | **crop-rows**: the Farm as a seamless pattern of crop rows                                             |
 
 "Generate at the display size" is enforced: a non-terrain request must
 equal its master canvas. Pixen sizes must be multiples of 4.
@@ -225,6 +228,50 @@ from [`review-effects-v7.ts`](../../scripts/art/chibi/review-effects-v7.ts):
 markers on units of all four colours and the cues pinned mid-animation
 through `CanvasBoardHostV7.pinSupportFeedback` (scene A: Wail, Lich splash,
 Plague, Lifesteal; scene B: Raise Dead, Bitten and Infect risings, cure).
+
+### The new visual direction (bead `pulp_wars-3tq.5`)
+
+Batch `direction-human` holds the production art of the
+[new direction](VISUAL_DIRECTION_2026-10.md#12-production). It added these
+pipeline pieces:
+
+- **Style per class.** A recipe class may name another style layer:
+  `calm-building` and `calm-settlement` use `fragments/style-calm.txt`
+  (flat, muted, quiet behind the units) and `crop-rows` uses
+  `style-crop.txt` with the `camera-crop-pattern.txt` camera. The chibi
+  classes still use `style.txt`. The calm classes skip the faction layer:
+  the improvements are one neutral set, so `class-calm-building.txt` names
+  the materials, and a city names its materials in its subject line. Their
+  subject texts are the `<subject>/CALM` keys (`IMPROVEMENT:FARM/ROWS` for
+  the Farm).
+- **Fixed faction colours.** A batch with `"fixedFactionColours": true` may
+  declare units, cities and portraits `ownerColour: false`: no owner layer,
+  no mask, and `registry` prints `fixedColours: true`. Without the flag
+  such subjects must carry the owner colour, as before.
+- **`seated` derivation** (calm classes): the art is centred, seated 3 px
+  above the canvas bottom (`bottomMargin`), made binary-alpha, and the
+  bottom-centred window of the master size is cut. The request may be
+  larger than the master (a city is generated at 96 x 96), never smaller;
+  the art must fit the window.
+- **`crop-rows` derivation** (the Farm): pieces of one crop row of the
+  candidate (`cropRows.stamps`, here two ears) are stamped at a period that
+  divides the tile (16 px) on rows at an even pitch (4 rows, 20 px), then
+  calmed (saturation 80%, 18% toward pale straw). The pattern repeats
+  exactly across cell boundaries in both directions; a test checks it.
+- `art:validate` re-derives every seated and crop-rows master from its
+  recorded candidate and fails if the bytes differ.
+- **`import`** brings a recipe generated in an exploration run into a
+  production batch without a PixelLab call:
+
+  ```sh
+  npm run art:chibi -- import --batch direction-human \
+    --from art/explorations/human-demo-2026-10/units --ids fighter-heraldic-edit
+  ```
+
+  The record (the request exactly as sent), the raw sheet and the receipt
+  are copied and the record gets `importedFrom`. The batch manifest must hold
+  a recipe of the same id, endpoint, seed, size, edit instruction and edit
+  source. The exploration's verdict is not carried over: review again.
 
 ## Terrain palettes and variants
 
@@ -434,6 +481,22 @@ scenes of
 [`review-playtest3-scene-v7.ts`](../../scripts/art/chibi/review-playtest3-scene-v7.ts)
 drawn by the real board host. Its captures start Vite on port 6351 unless
 `--port` says otherwise.
+
+`npm run art:chibi-direction-review` (bead `pulp_wars-3tq.5`) writes
+`art/pixellab/reviews/chibi-batch-direction-human/`:
+`units-old-new-{1x,x4}.png` and `units-zoom-0.75.png` (every Human unit,
+today's sprite beside the new one and the Undead, Goblin and Dinosaur unit
+of its role), `portraits-old-new-{1x,x4}.png`,
+`improvements-old-new-{1x,x4}.png` (the ten improvements, the Village and
+the Mine), `cities-{1x,x4}.png` (three tiers, with the pennant at its
+recorded anchor), `farm-x4.png` (the tile and a 3 x 3 block),
+`showcase-{human,mixed}-{desktop,phone}-zoom-{1,0.75}.png` (a real Showcase
+match with the developer toggle on: every seat Human, and the four
+factions), `showcase-human-today-desktop-zoom-1.png` (toggle off),
+`showcase-human-{dock,tech}-desktop.png`,
+`ingame-farms-{desktop,phone}-zoom-{1,0.75}.png` (a Farm block over straight
+and diagonal Roads, drawn by the real board host) and `index.json`. Its
+captures start Vite on port 6471 unless `--port` says otherwise.
 
 ## Dry run
 

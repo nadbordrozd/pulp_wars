@@ -1,0 +1,36 @@
+{
+  "id": "sawmill-c-a-edit",
+  "jobId": "a1585505-54ec-4e10-8ffc-a35d3c95ccb2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-sawmill",
+    "subject": "IMPROVEMENT:SAWMILL",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 76202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass, dirt and stone plate under the sawmill, so it stands directly on a transparent background with nothing at all under it. Make the big round saw blade a lighter steel grey with clear pointed teeth. Keep the building, the roofs, the saw frame, the stack of logs, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass, dirt and stone plate under the sawmill, so it stands directly on a transparent background with nothing at all under it. Make the big round saw blade a lighter steel grey with clear pointed teeth. Keep the building, the roofs, the saw frame, the stack of logs, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass, dirt and stone plate under the sawmill, so it stands directly on a transparent background with nothing at all under it. Make the big round saw blade a lighter steel grey with clear pointed teeth. Keep the building, the roofs, the saw frame, the stack of logs, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the sawmill, so it stands directly on a transparent background with nothing at all under it. Make the big round saw blade a lighter steel grey with clear pointed teeth. Keep the building, the roofs, the saw frame, the stack of logs, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "sawmill-c-a",
+      "candidate": 0,
+      "sha256": "9cac8831a8dc00b71efb684566f065852ff021a3bbeeac88dca4808109430eef"
+    }
+  }
+}

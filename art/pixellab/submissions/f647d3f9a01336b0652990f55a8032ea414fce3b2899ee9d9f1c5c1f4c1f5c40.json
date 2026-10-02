@@ -1,0 +1,36 @@
+{
+  "id": "monument-b-b-edit",
+  "jobId": "e8f1f48b-0a5c-4baf-a5b1-b530fa159305",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "human-demo-buildings-flat",
+    "asset": "chibi-demo-b-monument",
+    "subject": "IMPROVEMENT:MONUMENT",
+    "faction": "TEST-HUMAN-FLAT",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 48,
+      "height": 72
+    },
+    "seed": 73253,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the house behind the obelisk and remove the grass and dirt plate under it, so only the tall pale stone obelisk with the golden star on its tip remains, standing alone on a transparent background with nothing under it and nothing behind it. Keep the obelisk, its colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the house behind the obelisk and remove the grass and dirt plate under it, so only the tall pale stone obelisk with the golden star on its tip remains, standing alone on a transparent background with nothing under it and nothing behind it. Keep the obelisk, its colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the house behind the obelisk and remove the grass and dirt plate under it, so only the tall pale stone obelisk with the golden star on its tip remains, standing alone on a transparent background with nothing under it and nothing behind it. Keep the obelisk, its colours, outline and art style exactly the same.",
+    "editInstruction": "Remove the house behind the obelisk and remove the grass and dirt plate under it, so only the tall pale stone obelisk with the golden star on its tip remains, standing alone on a transparent background with nothing under it and nothing behind it. Keep the obelisk, its colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "monument-b-b",
+      "candidate": 0,
+      "sha256": "ab3e485d3dcc2cf42c8f8ed9bea689e12372fb53506ce569a0b96b1efb200598"
+    }
+  }
+}

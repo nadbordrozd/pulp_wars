@@ -1,0 +1,37 @@
+{
+  "id": "portrait-fighter-heraldic-edit",
+  "jobId": "225bf2af-d18f-4f59-b7fb-a7dc76bebee9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-fighter",
+    "subject": "PORTRAIT:FIGHTER",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval man-at-arms: a gold-yellow band around the steel helmet under a deep crimson crest; a deep crimson red surcoat with a bold gold-yellow cross on the chest over steel chainmail sleeves; the top of a crimson heater shield with a gold-yellow lion at his shoulder. Keep the sword, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval man-at-arms: a gold-yellow band around the steel helmet under a deep crimson crest; a deep crimson red surcoat with a bold gold-yellow cross on the chest over steel chainmail sleeves; the top of a crimson heater shield with a gold-yellow lion at his shoulder. Keep the sword, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval man-at-arms: a gold-yellow band around the steel helmet under a deep crimson crest; a deep crimson red surcoat with a bold gold-yellow cross on the chest over steel chainmail sleeves; the top of a crimson heater shield with a gold-yellow lion at his shoulder. Keep the sword, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw him as a high-medieval man-at-arms: a gold-yellow band around the steel helmet under a deep crimson crest; a deep crimson red surcoat with a bold gold-yellow cross on the chest over steel chainmail sleeves; the top of a crimson heater shield with a gold-yellow lion at his shoulder. Keep the sword, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-fighter-a",
+      "candidate": 0,
+      "sha256": "e1d6f860d60b482b1e93b32f200c59a0de2a57b265412122c0ce58f15dcb9b03"
+    }
+  }
+}

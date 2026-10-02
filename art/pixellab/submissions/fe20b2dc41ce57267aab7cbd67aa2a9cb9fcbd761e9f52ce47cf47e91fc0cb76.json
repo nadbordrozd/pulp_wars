@@ -1,0 +1,37 @@
+{
+  "id": "catapult-heraldic-edit",
+  "jobId": "9ae2f5c9-5d17-4b76-b00d-7efa3805dd60",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-catapult",
+    "subject": "UNIT:CATAPULT",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 76031,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a high-medieval siege engine: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth on the frame deep crimson with a gold-yellow trim; the crew man's hood deep crimson with a gold-yellow trim; the wood a warm oak brown with steel bands. Keep the catapult, wheels, bucket and stone, the crew man, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the wheels."
+      }
+    ],
+    "prompt": "Redraw it as a high-medieval siege engine: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth on the frame deep crimson with a gold-yellow trim; the crew man's hood deep crimson with a gold-yellow trim; the wood a warm oak brown with steel bands. Keep the catapult, wheels, bucket and stone, the crew man, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the wheels.",
+    "negativePrompt": "",
+    "description": "Redraw it as a high-medieval siege engine: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth on the frame deep crimson with a gold-yellow trim; the crew man's hood deep crimson with a gold-yellow trim; the wood a warm oak brown with steel bands. Keep the catapult, wheels, bucket and stone, the crew man, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the wheels.",
+    "editInstruction": "Redraw it as a high-medieval siege engine: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth on the frame deep crimson with a gold-yellow trim; the crew man's hood deep crimson with a gold-yellow trim; the wood a warm oak brown with steel bands. Keep the catapult, wheels, bucket and stone, the crew man, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the wheels.",
+    "source": {
+      "batch": "2",
+      "recipe": "catapult-b-edit",
+      "candidate": 1,
+      "sha256": "3cb26689830a1078547f196b53fb7ab2b7d6654db4063d03f634db62f914cbe7"
+    }
+  }
+}

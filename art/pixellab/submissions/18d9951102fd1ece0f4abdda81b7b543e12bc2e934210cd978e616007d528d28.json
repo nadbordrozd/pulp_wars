@@ -1,0 +1,36 @@
+{
+  "id": "lumber-camp-c-a-edit-b",
+  "jobId": "0c48aefd-9c2d-40ca-b97d-4cc5683cf202",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-lumber-camp",
+    "subject": "IMPROVEMENT:LUMBER_CAMP",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 76223,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase only the flat green and grey ground slab at the very bottom, making it transparent. Do not change anything standing on it: the big stack of cut logs in front, the tree stump with the steel axe, the two pine trees and the small cabin all stay exactly as they are, with the same colours, outline and art style."
+      }
+    ],
+    "prompt": "Erase only the flat green and grey ground slab at the very bottom, making it transparent. Do not change anything standing on it: the big stack of cut logs in front, the tree stump with the steel axe, the two pine trees and the small cabin all stay exactly as they are, with the same colours, outline and art style.",
+    "negativePrompt": "",
+    "description": "Erase only the flat green and grey ground slab at the very bottom, making it transparent. Do not change anything standing on it: the big stack of cut logs in front, the tree stump with the steel axe, the two pine trees and the small cabin all stay exactly as they are, with the same colours, outline and art style.",
+    "editInstruction": "Erase only the flat green and grey ground slab at the very bottom, making it transparent. Do not change anything standing on it: the big stack of cut logs in front, the tree stump with the steel axe, the two pine trees and the small cabin all stay exactly as they are, with the same colours, outline and art style.",
+    "source": {
+      "recipe": "lumber-camp-c-a",
+      "candidate": 0,
+      "sha256": "8c0e5d2be9d2d1bc0cdfb450050b94bfa28a9917901e2971fad673ff3500f4ef"
+    }
+  }
+}

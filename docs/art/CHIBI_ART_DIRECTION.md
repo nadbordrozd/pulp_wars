@@ -129,6 +129,47 @@ Rules for resolution:
   Nothing has a baked-in owner colour; the sprite review found ships with a
   fixed coral stripe.
 
+### 4a. The new owner-colour rule (October 2026 direction)
+
+The user chose a new direction on 2026-10-02 (bead `pulp_wars-3tq.4`; study
+and production notes in
+[VISUAL_DIRECTION_2026-10.md](VISUAL_DIRECTION_2026-10.md)). Bead
+`pulp_wars-3tq.5` produced its art for the Human faction and the shared
+improvements; bead `pulp_wars-3tq.6` makes it the default. Until then the
+rules above describe the default rendering, and these describe the
+direction the developer toggle draws. Where they differ, these win for
+converted art.
+
+- **The player is shown by markers, not by garments or roofs:** a base plate
+  under each unit (the player colour, with the seat's shape), a pennant
+  drawn in code on a city, a Port and a Shipyard, the territory border, a
+  ship's sail, and the interface. Small accents are allowed; whole garments
+  and whole roofs in the player colour are not.
+- **Faction colours are fixed and may be saturated.** A converted unit, city
+  or portrait is drawn in its faction's colours for every player (Human:
+  crimson and gold, see [ORIGINAL.md](factions/ORIGINAL.md)). A faction
+  colour may be close to a player colour.
+- **Buildings are neutral.** The improvements are one set shared by every
+  faction, in the calm building style: about 70% of the tile (a 64 to 72 px
+  canvas), a thin outline in a darker tone of each colour, cream plaster,
+  dark oak, pale stone and terracotta roofs, no flag and no player colour in
+  the art. The Farm is a full-cell pattern of crop rows with gaps that
+  tiles without a seam. The Village is neutral straw and stone. The Mine
+  stays part of the Mined Mountain terrain art and is toned with it.
+- **Mask policy.** Converted units, cities and portraits have **no owner
+  area and no mask**: their batch sets `fixedFactionColours`, each asset
+  says `ownerColour: false`, no owner layer is sent and the registry entry
+  carries `fixedColours: true` instead of `ownerMaskUrl` (a registry entry
+  must have exactly one of the two). The key colour, mask extraction and
+  mask QA are unchanged for everything not converted: ships (shared, sail in
+  the player colour), and the Undead, Goblin and Dinosaur units, cities and
+  portraits.
+- **Units stay chibi:** black outline, full saturation, the sizes and anchors
+  of section 3. They are the only black-outlined, fully saturated pieces.
+- **Not converted yet:** the other three factions, ships, terrain and
+  resources. With the toggle on they are drawn as today (terrain toned by
+  code).
+
 ## 5. Class notes
 
 - **Units:** generate with `create-image-pixen`: `single color black outline`,

@@ -1,0 +1,37 @@
+{
+  "id": "portrait-captain-heraldic-edit",
+  "jobId": "914c9ee7-41f8-49af-87e1-66727c7ff593",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-captain",
+    "subject": "PORTRAIT:CAPTAIN",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76151,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval army officer: a deep crimson cap with a gold-yellow band, keeping the white feather; a deep crimson coat with gold-yellow trim and buttons; the flag becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the face, moustache, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval army officer: a deep crimson cap with a gold-yellow band, keeping the white feather; a deep crimson coat with gold-yellow trim and buttons; the flag becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the face, moustache, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval army officer: a deep crimson cap with a gold-yellow band, keeping the white feather; a deep crimson coat with gold-yellow trim and buttons; the flag becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the face, moustache, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw him as a high-medieval army officer: a deep crimson cap with a gold-yellow band, keeping the white feather; a deep crimson coat with gold-yellow trim and buttons; the flag becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the face, moustache, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-captain-c",
+      "candidate": 0,
+      "sha256": "f6abef8fd5521e93901a8ffe284602201039249ec676b8191517f1af4acf17b0"
+    }
+  }
+}

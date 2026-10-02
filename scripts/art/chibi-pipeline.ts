@@ -8,6 +8,9 @@
  *       --notes TEXT --native-pass --enlarged-pass --owners-pass
  *       --no-plate-pass --camera-pass [--asset VARIANT]
  *   npm run art:chibi -- reject --batch N --id RECIPE --notes TEXT
+ *   npm run art:chibi -- import --batch N --from art/explorations/<run>
+ *       --ids a,b      (no PixelLab call: copies an exploration recipe's
+ *       record, raw sheet and receipt into the batch for review)
  *   npm run art:chibi -- registry --batch N
  *   npm run art:chibi -- bodies --batch N      (tall-terrain body layers)
  *   npm run art:chibi -- dry-run --batch 0
@@ -42,6 +45,7 @@ import {
   registryEntry,
   rejectRecipe,
   generateRecipe,
+  importRecipe,
   writeTallTerrainBodies,
   type PipelineContext,
 } from "./chibi/pipeline";
@@ -170,6 +174,15 @@ async function main(): Promise<void> {
     for (const id of ids) await generateRecipe(context, id);
     return;
   }
+  if (command === "import") {
+    if (option("--exploration") !== undefined)
+      throw new Error("import brings a recipe into a production batch");
+    const context = await runContext(false);
+    const from = required("--from");
+    for (const id of required("--ids").split(",").filter(Boolean))
+      await importRecipe(context, from, id);
+    return;
+  }
   if (command === "accept") {
     const context = await runContext(false);
     await acceptRecipe(
@@ -213,7 +226,7 @@ async function main(): Promise<void> {
     return;
   }
   console.log(
-    "Usage: chibi-pipeline.ts plan|prompts --batch N [--id R] | generate --batch N --ids a,b | accept --batch N --id R --candidate K --notes TEXT --native-pass --enlarged-pass --owners-pass --no-plate-pass --camera-pass | reject --batch N --id R --notes TEXT | registry --batch N | bodies --batch N | dry-run --batch 0; --exploration art/explorations/<run> replaces --batch N except for registry and dry-run",
+    "Usage: chibi-pipeline.ts plan|prompts --batch N [--id R] | generate --batch N --ids a,b | import --batch N --from art/explorations/<run> --ids a,b | accept --batch N --id R --candidate K --notes TEXT --native-pass --enlarged-pass --owners-pass --no-plate-pass --camera-pass | reject --batch N --id R --notes TEXT | registry --batch N | bodies --batch N | dry-run --batch 0; --exploration art/explorations/<run> replaces --batch N except for registry and dry-run",
   );
 }
 

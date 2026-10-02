@@ -1,3 +1,4 @@
+import { CHIBI_DIRECTION_ART_ASSETS_V7 } from "../../assets/chibi-direction-art-manifest";
 import {
   buildChibiArtRegistryV7,
   type ArtSubjectV7,
@@ -8,11 +9,14 @@ import {
 
 /**
  * The exploration sample sprites of the visual-direction study (beads
- * pulp_wars-3tq.1 and pulp_wars-3tq.3). They live under art/explorations,
- * are never part of the production chibi manifest, and are loaded only when
- * the developer toggle asks for this module (a dynamic import, so the
- * default game never fetches them).
+ * pulp_wars-3tq.1 and pulp_wars-3tq.3). They live under art/explorations
+ * and are never part of the production chibi manifest. Since bead
+ * pulp_wars-3tq.5 the game itself no longer loads this module: the
+ * developer toggle draws the production art of
+ * src/assets/chibi-direction-art-manifest.ts. The sets below remain for the
+ * study's review benches (scripts/art/visual-direction-review.ts).
  *
+ * - PRODUCTION: that production art, so a bench can draw what the game does.
  * - STUDY: the first study's three Human units in cream and steel whose
  *   owner mask covers only a small accent.
  * - DEMO: the Human demo. Fighter, Marksman and Knight in fixed crimson and
@@ -139,7 +143,7 @@ const STYLE_B_SAMPLE_ASSETS_V7: readonly ChibiArtAssetV7[] = [
 ];
 
 export type VisualDirectionSampleSetV7 =
-  "STUDY" | "DEMO" | "STYLE_A" | "STYLE_B";
+  "STUDY" | "DEMO" | "STYLE_A" | "STYLE_B" | "PRODUCTION";
 
 export const VISUAL_DIRECTION_SAMPLE_SETS_V7: Readonly<
   Record<VisualDirectionSampleSetV7, readonly ChibiArtAssetV7[]>
@@ -148,9 +152,10 @@ export const VISUAL_DIRECTION_SAMPLE_SETS_V7: Readonly<
   DEMO: HUMAN_DEMO_SAMPLE_ASSETS_V7,
   STYLE_A: STYLE_A_SAMPLE_ASSETS_V7,
   STYLE_B: STYLE_B_SAMPLE_ASSETS_V7,
+  PRODUCTION: CHIBI_DIRECTION_ART_ASSETS_V7,
 };
 
-/** The registry of one sample set; the toggle uses DEMO. */
+/** The registry of one sample set; the benches default to DEMO. */
 export function visualDirectionSampleRegistryV7(
   set: VisualDirectionSampleSetV7 = "DEMO",
 ): ChibiArtRegistryV7 {

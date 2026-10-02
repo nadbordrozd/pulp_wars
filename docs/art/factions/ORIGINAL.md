@@ -23,6 +23,62 @@ bow or quiver on either unit, no figure in the Village or the Farm, and the
 Guard's red-brown material fell from 4.1% to 0.8%. Its `review/` folder
 holds the old-versus-new sheets.
 
+## New direction (October 2026): crimson and gold, fixed colours
+
+**Status:** the user chose this direction on 2026-10-02 (recorded on bead
+`pulp_wars-3tq.4`); bead `pulp_wars-3tq.5` produced the art (batch
+`direction-human`) and bead `pulp_wars-3tq.6` makes it the default. Until
+then the sections further down describe what the game draws by default, and
+the developer toggle draws this one. See
+[VISUAL_DIRECTION_2026-10.md](../VISUAL_DIRECTION_2026-10.md#12-production).
+
+- **Identity:** a proud high-medieval kingdom of about 1250: knights and
+  men-at-arms in heraldry.
+- **Faction colours, fixed:** deep crimson cloth (`#a8202c` and its shades)
+  with gold-yellow trim, gold-yellow lions and crosses, polished steel and
+  mail, cream linen, dark brown leather. Cities are pale warm sandstone with
+  cream plaster, dark oak framing and terracotta roofs.
+- **No garment recolour:** a Human unit, city or portrait looks the same for
+  every player. It has no owner area and no mask (`fixedColours` in the
+  registry). The player is read from the base plate under the unit, the
+  pennant on a city, the territory border and the interface. Crimson may be
+  close to a player colour (Coral); that is accepted.
+- **Ships** are shared by every faction and are not converted: they keep the
+  player colour on the sail.
+
+| Role       | New look (the signature prop is unchanged)                                      |
+| ---------- | ------------------------------------------------------------------------------- |
+| Fighter    | crimson surcoat with a gold cross, heater shield with a gold lion, gold band    |
+| Raider     | crimson hooded cloak with a gold trim over a cream tunic, on the sandy pony     |
+| Marksman   | crimson hood with a gold trim, cream gambeson with a crimson and gold tabard    |
+| Guard      | crimson tower shield with a gold cross and steel border, gold helmet band       |
+| Captain    | crimson hat with a gold band and white feather, crimson banner with a gold lion |
+| Catapult   | the same frame; crimson pennant with a gold stripe, crimson cloths with gold    |
+| Knight     | crowned great helm, crimson caparison with a gold trim, lance pennant           |
+| Juggernaut | gold crown on the helm, crimson tabard with a gold lion, gold-rimmed pauldrons  |
+
+Every unit and portrait of this direction is an `edit-image-pixen` edit of
+its accepted sprite, so silhouette, scale and feet are unchanged; an edit
+sends only its instruction, so the prompt fragment below was not used. The
+subject lines `UNIT:<ROLE>/HERALDIC`, `PORTRAIT:<ROLE>/HERALDIC` and
+`CITY:<level>/CALM` in
+[`ORIGINAL.json`](../../../scripts/art/chibi/subjects/ORIGINAL.json)
+describe the new look in full. A fresh creation of a Human unit needs this
+faction text instead of the prompt fragment below (it is the demo's proven
+text; it becomes the prompt fragment when the old look is retired):
+
+```text
+Faction: a proud high-medieval kingdom around the year 1250: knights and
+men-at-arms. Its fixed colours are deep crimson red cloth with gold-yellow
+trim and gold-yellow heraldic lions and crosses, over polished steel
+chainmail and helmets and cream linen; steel is shaded with darker
+blue-grey, cloth with a deeper tone of its own colour, leather is dark
+brown.
+```
+
+The other factions are **not** converted: Undead, Goblin and Dinosaur units,
+cities and portraits still carry the owner colour on a mask.
+
 ## Identity
 
 Grounded storybook medieval humans: settlers, soldiers and builders. They are

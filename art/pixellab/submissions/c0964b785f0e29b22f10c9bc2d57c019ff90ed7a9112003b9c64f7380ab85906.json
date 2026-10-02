@@ -1,0 +1,36 @@
+{
+  "id": "market-c-a-edit",
+  "jobId": "118c5ca2-b8d6-4487-8531-3400a094e55f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-market",
+    "subject": "IMPROVEMENT:MARKET",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 76212,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grey stone floor slab and the dirt under the market stall, so the oak posts, the counter, the barrel and the sacks stand directly on a transparent background with nothing at all under them. Keep the striped awning, the posts, the counter, the crates of cabbages and pears, the barrel, the sacks, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grey stone floor slab and the dirt under the market stall, so the oak posts, the counter, the barrel and the sacks stand directly on a transparent background with nothing at all under them. Keep the striped awning, the posts, the counter, the crates of cabbages and pears, the barrel, the sacks, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grey stone floor slab and the dirt under the market stall, so the oak posts, the counter, the barrel and the sacks stand directly on a transparent background with nothing at all under them. Keep the striped awning, the posts, the counter, the crates of cabbages and pears, the barrel, the sacks, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grey stone floor slab and the dirt under the market stall, so the oak posts, the counter, the barrel and the sacks stand directly on a transparent background with nothing at all under them. Keep the striped awning, the posts, the counter, the crates of cabbages and pears, the barrel, the sacks, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "market-c-a",
+      "candidate": 0,
+      "sha256": "2895801e8d0fc26db8f486bcc2d155eef7e29d33a93a48522c4c32177e138721"
+    }
+  }
+}

@@ -17,6 +17,7 @@ import {
   type ChibiPointV7,
 } from "../../../src/assets/chibi-art-v7";
 import { WAIVABLE_MASK_QA_CODES } from "./owner-mask";
+import type { CropRowsSpec } from "./raster";
 
 export interface Size {
   readonly width: number;
@@ -43,7 +44,17 @@ export type ChibiRecipeClass =
   /** Revision 14 board status markers (Plague, Bitten), 16 x 16 (vkq.14). */
   | "status"
   /** Undead ability effect sprites for the effects canvas (vkq.14). */
-  | "effect";
+  | "effect"
+  /**
+   * The calmer building style of the new visual direction (bead
+   * pulp_wars-3tq.5): a smaller, simpler improvement with a toned outline
+   * and no owner colour, in the shared neutral materials.
+   */
+  | "calm-building"
+  /** A city or the Village in the same calm style, with no owner colour. */
+  | "calm-settlement"
+  /** The Farm as a seamless full-cell pattern of crop rows with gaps. */
+  | "crop-rows";
 
 export type ChibiEndpoint =
   "create-image-pixen" | "create-image-pixflux" | "edit-image-pixen";
@@ -62,13 +73,33 @@ export type ChibiDerivation =
    * pulp_wars-vkq.14): Pixen draws the right shape, the palette keeps red,
    * cyan, green and purple (the player colours) out.
    */
-  | "palette-map";
+  | "palette-map"
+  /**
+   * The art is centred and seated a few pixels above the canvas bottom, then
+   * the bottom-centred master window is cut (calm buildings and cities, bead
+   * pulp_wars-3tq.5): whole pixels only. The request may be larger than the
+   * master, never smaller.
+   */
+  | "seated"
+  /**
+   * Pieces of one crop row of the candidate stamped at a period that divides
+   * the tile, on evenly pitched rows, then calmed (the Farm).
+   */
+  | "crop-rows";
 
 export type ChibiCamera =
-  "three-quarter" | "top-down" | "portrait" | "icon" | "flat";
+  "three-quarter" | "top-down" | "portrait" | "icon" | "flat" | "crop-pattern";
+
+/** Style fragments other than the default `style.txt` (`style-<name>.txt`). */
+export type ChibiStyleName = "calm" | "crop";
+
+/** Transparent rows kept under a seated piece unless the asset says otherwise. */
+export const SEATED_BOTTOM_MARGIN = 3;
 
 export interface ChibiClassRecipe {
   readonly camera: ChibiCamera;
+  /** Layer 1 is `style-<name>.txt` instead of the chibi `style.txt`. */
+  readonly style?: ChibiStyleName;
   /** Terrain is faction-neutral: factions never restyle the ground. */
   readonly factionLayer: boolean;
   readonly assetClasses: readonly ChibiAssetClassV7[];
@@ -303,6 +334,60 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     derivation: "palette-map",
     options: EFFECT_OPTIONS,
   },
+  // The new visual direction (bead pulp_wars-3tq.5, proven in the Human demo
+  // of pulp_wars-3tq.3): buildings recede behind the units. They use the
+  // calm style layer and a thin outline in a darker tone of each colour
+  // (Pixen's "selective outline"), are generated at about 70% of the tile
+  // and carry no owner colour. Improvements are one neutral set shared by
+  // every faction, so the class text names the materials and the faction
+  // layer is skipped (a faction's cloth and heraldry would put flags on a
+  // sawmill); cities name their materials in the subject line.
+  "calm-building": {
+    camera: "three-quarter",
+    style: "calm",
+    factionLayer: false,
+    assetClasses: ["BUILDING"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "seated",
+    options: {
+      "create-image-pixen": { ...PIECE_OPTIONS, outline: "selective outline" },
+    },
+  },
+  "calm-settlement": {
+    camera: "three-quarter",
+    style: "calm",
+    factionLayer: false,
+    assetClasses: ["SETTLEMENT"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "seated",
+    options: {
+      "create-image-pixen": { ...PIECE_OPTIONS, outline: "selective outline" },
+    },
+  },
+  // The Farm of the new direction: a flat pattern of crop rows seen from
+  // above. Pixen paints soil between the rows, so an edit erases everything
+  // but the plants; the crop-rows derivation then makes the pattern tile.
+  "crop-rows": {
+    camera: "crop-pattern",
+    style: "crop",
+    factionLayer: false,
+    assetClasses: ["BUILDING"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "crop-rows",
+    options: {
+      "create-image-pixen": {
+        outline: "selective outline",
+        detail: "low detail",
+        view: "high top-down",
+      },
+    },
+  },
 };
 
 /** PixelLab enums from https://api.pixellab.ai/v2/openapi.json. */
@@ -387,6 +472,10 @@ export interface ChibiAssetSpec {
    */
   readonly fieldRecipe?: string;
   readonly maskOverride?: MaskOverrideSpec;
+  /** seated only: transparent rows kept under the art (default 3). */
+  readonly bottomMargin?: number;
+  /** crop-rows only: how the candidate's crop row becomes the tile. */
+  readonly cropRows?: CropRowsSpec;
   /**
    * palette-map only: the checked-in palette PNG (under
    * scripts/art/chibi/palettes/) every opaque master pixel is mapped to.
@@ -469,6 +558,14 @@ export interface ChibiBatchManifest {
   readonly faction: string;
   /** Dry runs use fixtures and never call PixelLab. */
   readonly dryRun: boolean;
+  /**
+   * The new visual direction (bead pulp_wars-3tq.5): the batch's units,
+   * cities and portraits wear fixed faction colours and have no owner area,
+   * so they are declared `ownerColour: false`, get no owner layer and no
+   * mask, and register with `fixedColours: true`. Without this flag such
+   * subjects must carry the owner colour.
+   */
+  readonly fixedFactionColours?: boolean;
   readonly assets: readonly ChibiAssetSpec[];
   readonly recipes: readonly ChibiRecipe[];
 }
@@ -476,6 +573,8 @@ export interface ChibiBatchManifest {
 /** Checked-in fragment texts keyed by their repository-relative source. */
 export interface FragmentLibrary {
   readonly style: Fragment;
+  /** Alternate style layers by name (`style-<name>.txt`). */
+  readonly styles?: Readonly<Partial<Record<ChibiStyleName, Fragment>>>;
   readonly camera: Readonly<Record<ChibiCamera, Fragment>>;
   readonly owner: Fragment;
   readonly classes: Readonly<Record<ChibiRecipeClass, Fragment>>;
@@ -572,7 +671,13 @@ export function layeredPrompt(
         : { negative: clean(fragment.negative) }),
     });
   };
-  push("style", fragments.style);
+  const style =
+    classRecipe.style === undefined
+      ? fragments.style
+      : fragments.styles?.[classRecipe.style];
+  if (style === undefined)
+    throw new Error(`Unknown style fragment ${classRecipe.style}`);
+  push("style", style);
   push("camera", fragments.camera[classRecipe.camera]);
   if (classRecipe.factionLayer) {
     const faction = fragments.factions[manifest.faction];
@@ -893,14 +998,23 @@ export function batchManifestProblems(
       problems.push(
         `${label}: only units, cities, improvements and portraits are owned`,
       );
-    if (
-      !owned &&
-      (asset.subject.startsWith("UNIT:") ||
-        asset.subject.startsWith("CITY:") ||
-        asset.subject.startsWith("PORTRAIT:"))
-    )
+    const ownedSubject =
+      asset.subject.startsWith("UNIT:") ||
+      asset.subject.startsWith("CITY:") ||
+      asset.subject.startsWith("PORTRAIT:");
+    const fixedColours = !owned && ownedSubject;
+    if (fixedColours && manifest.fixedFactionColours !== true)
       problems.push(
         `${label}: units and cities must carry owner colour, as must portraits`,
+      );
+    if (
+      manifest.fixedFactionColours === true &&
+      owned &&
+      ownedSubject &&
+      asset.ownerColour !== true
+    )
+      problems.push(
+        `${label}: a fixed-colour batch must say ownerColour true or false for units, cities and portraits`,
       );
     // The runtime contract for the entry this asset will register as.
     for (const problem of chibiAssetProblemsV7({
@@ -912,8 +1026,49 @@ export function batchManifestProblems(
       url: "contract-check",
       ...(asset.anchor === undefined ? {} : { anchor: asset.anchor }),
       ...(owned ? { ownerMaskUrl: "contract-check" } : {}),
+      ...(fixedColours ? { fixedColours: true as const } : {}),
     }))
       problems.push(`${at}: ${problem}`);
+    if (asset.bottomMargin !== undefined) {
+      if (classRecipe.derivation !== "seated")
+        problems.push(`${label}: bottomMargin is only for seated classes`);
+      if (!Number.isInteger(asset.bottomMargin) || asset.bottomMargin < 0)
+        problems.push(`${label}: bottomMargin must be a non-negative integer`);
+    }
+    if (classRecipe.derivation === "crop-rows") {
+      const rows = asset.cropRows;
+      if (rows === undefined)
+        problems.push(`${label}: a crop-rows asset needs cropRows`);
+      else {
+        if (
+          !Number.isInteger(rows.period) ||
+          rows.period <= 0 ||
+          asset.canvas.width % rows.period !== 0
+        )
+          problems.push(`${label}: the crop period must divide the tile width`);
+        if (
+          !Number.isInteger(rows.rows) ||
+          rows.rows <= 0 ||
+          asset.canvas.height % rows.rows !== 0
+        )
+          problems.push(`${label}: the crop rows must divide the tile height`);
+        if (rows.stamps.length === 0)
+          problems.push(`${label}: cropRows needs at least one stamp`);
+        for (const stamp of rows.stamps)
+          if (
+            ![stamp.left, stamp.width, stamp.at].every(Number.isInteger) ||
+            stamp.left < 0 ||
+            stamp.width <= 0 ||
+            stamp.at < 0 ||
+            stamp.at + stamp.width > rows.period
+          )
+            problems.push(`${label}: a crop stamp must fit inside the period`);
+        for (const value of [rows.saturation, rows.strawMix])
+          if (!(value >= 0 && value <= 1))
+            problems.push(`${label}: saturation and strawMix must be 0..1`);
+      }
+    } else if (asset.cropRows !== undefined)
+      problems.push(`${label}: cropRows is only for the crop-rows class`);
     if (
       asset.subjectKey !== undefined &&
       !new RegExp(`^${asset.subject}/[A-Z_]+$`).test(asset.subjectKey)
@@ -1074,6 +1229,12 @@ export function batchManifestProblems(
       if (width < asset.canvas.width * 2 || height < asset.canvas.height * 2)
         problems.push(
           `${label}: terrain fields must be at least twice the tile in each direction`,
+        );
+    } else if (classRecipe.derivation === "seated") {
+      // A pure bottom-centred crop: the request may be larger, never smaller.
+      if (width < asset.canvas.width || height < asset.canvas.height)
+        problems.push(
+          `${label}: a seated request ${width}x${height} must be at least the ${asset.canvas.width}x${asset.canvas.height} master (never upscale)`,
         );
     } else if (width !== asset.canvas.width || height !== asset.canvas.height)
       problems.push(

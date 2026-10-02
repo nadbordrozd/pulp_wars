@@ -1,0 +1,37 @@
+{
+  "id": "portrait-marksman-heraldic-edit",
+  "jobId": "c81d63dc-4050-4044-ac10-11e6691af0ab",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-marksman",
+    "subject": "PORTRAIT:MARKSMAN",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval longbowman: the hood becomes deep crimson red with a gold-yellow trim around the face; a cream padded gambeson with a crimson and gold tabard on the chest and a dark brown leather strap. Keep the longbow, the arrows, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval longbowman: the hood becomes deep crimson red with a gold-yellow trim around the face; a cream padded gambeson with a crimson and gold tabard on the chest and a dark brown leather strap. Keep the longbow, the arrows, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval longbowman: the hood becomes deep crimson red with a gold-yellow trim around the face; a cream padded gambeson with a crimson and gold tabard on the chest and a dark brown leather strap. Keep the longbow, the arrows, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw him as a high-medieval longbowman: the hood becomes deep crimson red with a gold-yellow trim around the face; a cream padded gambeson with a crimson and gold tabard on the chest and a dark brown leather strap. Keep the longbow, the arrows, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-marksman-a",
+      "candidate": 0,
+      "sha256": "a6390c6f4f579a65ccae5045270805ea51e320664c55b73f0faa62b9cef94ea5"
+    }
+  }
+}

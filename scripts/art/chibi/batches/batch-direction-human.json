@@ -1,0 +1,1183 @@
+{
+  "schemaVersion": 1,
+  "batch": "direction-human",
+  "title": "New visual direction: Human units and portraits in fixed crimson and gold, the shared calm improvement set, the row Farm, Human City 1-3 and the Village",
+  "bead": "pulp_wars-3tq.5",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-fighter",
+      "subject": "UNIT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:FIGHTER/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-marksman",
+      "subject": "UNIT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:MARKSMAN/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-knight",
+      "subject": "UNIT:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:KNIGHT/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-raider",
+      "subject": "UNIT:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:RAIDER/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-guard",
+      "subject": "UNIT:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:GUARD/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-captain",
+      "subject": "UNIT:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:CAPTAIN/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-catapult",
+      "subject": "UNIT:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:CATAPULT/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-juggernaut",
+      "subject": "UNIT:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:JUGGERNAUT/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-portrait-fighter",
+      "subject": "PORTRAIT:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:FIGHTER/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-portrait-marksman",
+      "subject": "PORTRAIT:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:MARKSMAN/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-portrait-knight",
+      "subject": "PORTRAIT:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:KNIGHT/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-portrait-raider",
+      "subject": "PORTRAIT:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:RAIDER/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-portrait-guard",
+      "subject": "PORTRAIT:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GUARD/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-portrait-captain",
+      "subject": "PORTRAIT:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:CAPTAIN/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-portrait-catapult",
+      "subject": "PORTRAIT:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:CATAPULT/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-portrait-juggernaut",
+      "subject": "PORTRAIT:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:JUGGERNAUT/HERALDIC"
+    },
+    {
+      "id": "chibi-direction-windmill",
+      "subject": "IMPROVEMENT:WINDMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 64,
+        "height": 72
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:WINDMILL/CALM"
+    },
+    {
+      "id": "chibi-direction-forge",
+      "subject": "IMPROVEMENT:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FORGE/CALM"
+    },
+    {
+      "id": "chibi-direction-workshop",
+      "subject": "IMPROVEMENT:WORKSHOP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:WORKSHOP/CALM"
+    },
+    {
+      "id": "chibi-direction-monument",
+      "subject": "IMPROVEMENT:MONUMENT",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:MONUMENT/CALM"
+    },
+    {
+      "id": "chibi-direction-port",
+      "subject": "IMPROVEMENT:PORT",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:PORT/CALM"
+    },
+    {
+      "id": "chibi-direction-shipyard",
+      "subject": "IMPROVEMENT:SHIPYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:SHIPYARD/CALM"
+    },
+    {
+      "id": "chibi-direction-sawmill",
+      "subject": "IMPROVEMENT:SAWMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:SAWMILL/CALM"
+    },
+    {
+      "id": "chibi-direction-market",
+      "subject": "IMPROVEMENT:MARKET",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:MARKET/CALM"
+    },
+    {
+      "id": "chibi-direction-lumber-camp",
+      "subject": "IMPROVEMENT:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:LUMBER_CAMP/CALM"
+    },
+    {
+      "id": "chibi-direction-farm",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-rows",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/ROWS",
+      "cropRows": {
+        "rows": 4,
+        "band": 0,
+        "period": 16,
+        "stamps": [
+          {
+            "left": 2,
+            "width": 7,
+            "at": 0
+          },
+          {
+            "left": 9,
+            "width": 7,
+            "at": 8
+          }
+        ],
+        "saturation": 0.8,
+        "strawMix": 0.18
+      }
+    },
+    {
+      "id": "chibi-direction-city-1",
+      "subject": "CITY:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:1/CALM"
+    },
+    {
+      "id": "chibi-direction-city-2",
+      "subject": "CITY:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 88,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:2/CALM"
+    },
+    {
+      "id": "chibi-direction-city-3",
+      "subject": "CITY:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 96,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:3/CALM"
+    },
+    {
+      "id": "chibi-direction-village",
+      "subject": "SITE:VILLAGE",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "subjectKey": "SITE:VILLAGE/CALM"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "fighter-heraldic-edit",
+      "asset": "chibi-direction-fighter",
+      "endpoint": "edit-image-pixen",
+      "seed": 74001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "1",
+        "recipe": "fighter-h-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval man-at-arms: a deep crimson red surcoat with a bold gold-yellow cross on the chest and a gold hem, over steel chainmail sleeves; the round shield becomes a pointed heater shield painted crimson red with a gold-yellow lion; a gold band around the steel helmet under the crimson crest. Keep the face, sword, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+      "notes": "Imported from the demo run units/. Edit of the accepted production Fighter, so the silhouette, scale and feet stay."
+    },
+    {
+      "id": "marksman-heraldic-edit",
+      "asset": "chibi-direction-marksman",
+      "endpoint": "edit-image-pixen",
+      "seed": 74011,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "1",
+        "recipe": "marksman-c",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval longbowman: a deep crimson red hood with a gold-yellow trim, a cream padded gambeson with a crimson and gold tabard on the chest, steel-grey hose, a dark brown leather belt, bracer and boots. Keep the longbow, quiver, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+      "notes": "Imported from the demo run units/."
+    },
+    {
+      "id": "knight-heraldic-edit",
+      "asset": "chibi-direction-knight",
+      "endpoint": "edit-image-pixen",
+      "seed": 74021,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "2",
+        "recipe": "knight-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval knight: the horse's cloth becomes deep crimson red with a wide gold-yellow trim; a crimson and gold surcoat over steel mail; a steel great helm with a gold crown band and a crimson plume; a small crimson and gold pennant below the lance point. Keep the white horse, lance, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves.",
+      "notes": "Imported from the demo run units/."
+    },
+    {
+      "id": "raider-heraldic-edit",
+      "asset": "chibi-direction-raider",
+      "endpoint": "edit-image-pixen",
+      "seed": 76001,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "2",
+        "recipe": "raider-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval light horseman: the hooded riding cloak becomes deep crimson red with a gold-yellow trim along its edge and a gold clasp at the neck; a cream tunic with a dark brown leather belt; the saddle blanket deep crimson with a gold-yellow trim. Keep the sandy pony, the raised hand axe, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the hooves."
+    },
+    {
+      "id": "guard-heraldic-edit",
+      "asset": "chibi-direction-guard",
+      "endpoint": "edit-image-pixen",
+      "seed": 76011,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "2",
+        "recipe": "guard-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw this soldier as a high-medieval heavy spearman: the tower shield becomes deep crimson red with a bold gold-yellow cross and a steel border; a deep crimson surcoat with a gold hem over steel chainmail; a gold-yellow band around the steel kettle helmet. Keep the face, spear, helmet shape, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+    },
+    {
+      "id": "captain-heraldic-edit",
+      "asset": "chibi-direction-captain",
+      "endpoint": "edit-image-pixen",
+      "seed": 76021,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "2",
+        "recipe": "captain-a",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval army officer: a deep crimson cap with a gold-yellow band, keeping the white feather; a deep crimson coat with gold-yellow trim and buttons; the banner becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the face, moustache, horn, banner pole, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+    },
+    {
+      "id": "catapult-heraldic-edit",
+      "asset": "chibi-direction-catapult",
+      "endpoint": "edit-image-pixen",
+      "seed": 76031,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "2",
+        "recipe": "catapult-b-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Redraw it as a high-medieval siege engine: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth on the frame deep crimson with a gold-yellow trim; the crew man's hood deep crimson with a gold-yellow trim; the wood a warm oak brown with steel bands. Keep the catapult, wheels, bucket and stone, the crew man, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the wheels."
+    },
+    {
+      "id": "juggernaut-heraldic-edit",
+      "asset": "chibi-direction-juggernaut",
+      "endpoint": "edit-image-pixen",
+      "seed": 76041,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "batch": "2",
+        "recipe": "juggernaut-b-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Redraw him as a high-medieval champion: the tabard becomes deep crimson red with a big gold-yellow lion on the chest and a gold hem; the cape deep crimson with a gold-yellow trim; a gold-yellow crown band around the steel helm and gold trim on the pauldrons. Keep the warhammer, armour, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+    },
+    {
+      "id": "portrait-fighter-heraldic-edit",
+      "asset": "chibi-direction-portrait-fighter",
+      "endpoint": "edit-image-pixen",
+      "seed": 76101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-fighter-a",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval man-at-arms: a gold-yellow band around the steel helmet under a deep crimson crest; a deep crimson red surcoat with a bold gold-yellow cross on the chest over steel chainmail sleeves; the top of a crimson heater shield with a gold-yellow lion at his shoulder. Keep the sword, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-marksman-heraldic-edit",
+      "asset": "chibi-direction-portrait-marksman",
+      "endpoint": "edit-image-pixen",
+      "seed": 76111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-marksman-a",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval longbowman: the hood becomes deep crimson red with a gold-yellow trim around the face; a cream padded gambeson with a crimson and gold tabard on the chest and a dark brown leather strap. Keep the longbow, the arrows, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-knight-heraldic-edit",
+      "asset": "chibi-direction-portrait-knight",
+      "endpoint": "edit-image-pixen",
+      "seed": 76121,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-knight-b",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval knight: a gold-yellow crown band around the steel great helm and a deep crimson plume; a deep crimson surcoat with a gold-yellow lion over steel mail and a crimson cape with a gold trim; a small crimson and gold pennant below the lance point. Keep the lance, the helm, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-raider-heraldic-edit",
+      "asset": "chibi-direction-portrait-raider",
+      "endpoint": "edit-image-pixen",
+      "seed": 76131,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-raider-c",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval light horseman: the hood and riding cloak become deep crimson red with a gold-yellow trim around the face and a gold clasp at the neck; a cream tunic with a dark brown leather belt instead of the steel armour. Keep the hand axe, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-guard-heraldic-edit",
+      "asset": "chibi-direction-portrait-guard",
+      "endpoint": "edit-image-pixen",
+      "seed": 76141,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-guard-a",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw this soldier as a high-medieval heavy spearman: the shield becomes deep crimson red with a bold gold-yellow cross and a steel border; a gold-yellow band around the steel kettle helmet; a deep crimson surcoat over steel chainmail. Keep the spear, the helmet shape, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-captain-heraldic-edit",
+      "asset": "chibi-direction-portrait-captain",
+      "endpoint": "edit-image-pixen",
+      "seed": 76151,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-captain-c",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval army officer: a deep crimson cap with a gold-yellow band, keeping the white feather; a deep crimson coat with gold-yellow trim and buttons; the flag becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the face, moustache, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-catapult-heraldic-edit",
+      "asset": "chibi-direction-portrait-catapult",
+      "endpoint": "edit-image-pixen",
+      "seed": 76161,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-catapult-a",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw it as a high-medieval siege engine: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth on the frame deep crimson with a gold-yellow trim; the wood a warm oak brown with steel bands. Keep the catapult, wheels, throwing arm, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-juggernaut-heraldic-edit",
+      "asset": "chibi-direction-portrait-juggernaut",
+      "endpoint": "edit-image-pixen",
+      "seed": 76171,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-juggernaut-a",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw him as a high-medieval champion: a gold-yellow crown band around the steel helm; the tabard becomes deep crimson red with a gold-yellow lion and a gold hem; gold trim on the steel pauldrons. Keep the warhammer, the beard, the face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "windmill-flat-a",
+      "asset": "chibi-direction-windmill",
+      "endpoint": "create-image-pixen",
+      "seed": 73101,
+      "requestSize": {
+        "width": 64,
+        "height": 72
+      },
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "forge-b-a",
+      "asset": "chibi-direction-forge",
+      "endpoint": "create-image-pixen",
+      "seed": 73221,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "forge-b-a-edit",
+      "asset": "chibi-direction-forge",
+      "endpoint": "edit-image-pixen",
+      "seed": 73222,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "forge-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "workshop-b-a",
+      "asset": "chibi-direction-workshop",
+      "endpoint": "create-image-pixen",
+      "seed": 73231,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "workshop-b-a-edit",
+      "asset": "chibi-direction-workshop",
+      "endpoint": "edit-image-pixen",
+      "seed": 73232,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "workshop-b-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "monument-b-b",
+      "asset": "chibi-direction-monument",
+      "endpoint": "create-image-pixen",
+      "seed": 73252,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "promptAddendum": "Only the obelisk: one single tall stone needle standing alone, with no house, no chapel and no wall behind or beside it, and no plinth, steps or ground under it.",
+      "negativeAddendum": "house, chapel, church, roof, wall",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "monument-b-b-edit",
+      "asset": "chibi-direction-monument",
+      "endpoint": "edit-image-pixen",
+      "seed": 73253,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "source": {
+        "recipe": "monument-b-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the house behind the obelisk and remove the grass and dirt plate under it, so only the tall pale stone obelisk with the golden star on its tip remains, standing alone on a transparent background with nothing under it and nothing behind it. Keep the obelisk, its colours, outline and art style exactly the same.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "port-b-a",
+      "asset": "chibi-direction-port",
+      "endpoint": "create-image-pixen",
+      "seed": 73261,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "shipyard-b-a",
+      "asset": "chibi-direction-shipyard",
+      "endpoint": "create-image-pixen",
+      "seed": 73271,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "farm-field-a",
+      "asset": "chibi-direction-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 75001,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null
+      },
+      "notes": "Imported from the demo run farm/. Four edge-to-edge rows, but soil bands and a fake transparency chequerboard between them."
+    },
+    {
+      "id": "farm-field-a-edit",
+      "asset": "chibi-direction-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 75002,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "farm-field-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything that is not a wheat plant: remove all the brown soil, the dark lines and the grey-green chequered pattern between the rows, so that the space between the four rows of wheat is completely empty and transparent. Keep only the golden wheat plants of the four rows, each with a thin dark straw-brown outline, exactly where they are.",
+      "notes": "Imported from the demo run farm/."
+    },
+    {
+      "id": "farm-field-a-edit-2",
+      "asset": "chibi-direction-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 75003,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "farm-field-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent.",
+      "notes": "Imported from the demo run farm/."
+    },
+    {
+      "id": "city-1-c-a",
+      "asset": "chibi-direction-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 73401,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "city-1-c-a-edit",
+      "asset": "chibi-direction-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 73402,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-1-c-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "city-2-c-a",
+      "asset": "chibi-direction-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 73411,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "city-2-c-a-edit",
+      "asset": "chibi-direction-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 73412,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-2-c-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "city-3-c-a",
+      "asset": "chibi-direction-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 73421,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "city-3-c-a-edit",
+      "asset": "chibi-direction-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 73422,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-3-c-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the buildings, so the walls stand directly on a transparent background with nothing at all under them. Keep the buildings, roofs, colours, outline and art style exactly the same.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "city-3-c-a-edit-2",
+      "asset": "chibi-direction-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 73423,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-3-c-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Repaint the dark grey-brown stone of the walls, towers and keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and make the house roofs inside the walls a clear terracotta red. Keep the shapes, the walls, the towers, the keep, the transparent courtyard, the outline and the art style exactly the same, on a transparent background with nothing under the walls.",
+      "notes": "Imported from the demo run buildings-flat/."
+    },
+    {
+      "id": "sawmill-c-a",
+      "asset": "chibi-direction-sawmill",
+      "endpoint": "create-image-pixen",
+      "seed": 76201,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "market-c-a",
+      "asset": "chibi-direction-market",
+      "endpoint": "create-image-pixen",
+      "seed": 76211,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "lumber-camp-c-a",
+      "asset": "chibi-direction-lumber-camp",
+      "endpoint": "create-image-pixen",
+      "seed": 76221,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "village-a",
+      "asset": "chibi-direction-village",
+      "endpoint": "create-image-pixen",
+      "seed": 76301,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The building is drawn large and fills most of the image, touching neither edge."
+    },
+    {
+      "id": "sawmill-c-a-edit",
+      "asset": "chibi-direction-sawmill",
+      "endpoint": "edit-image-pixen",
+      "seed": 76202,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "sawmill-c-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the sawmill, so it stands directly on a transparent background with nothing at all under it. Make the big round saw blade a lighter steel grey with clear pointed teeth. Keep the building, the roofs, the saw frame, the stack of logs, the colours, outline and art style exactly the same.",
+      "notes": "sawmill-c-a shows the saw blade and the log stack, but stands on a grass and stone plate and its blade is nearly black."
+    },
+    {
+      "id": "sawmill-c-a-edit-2",
+      "asset": "chibi-direction-sawmill",
+      "endpoint": "edit-image-pixen",
+      "seed": 76203,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "sawmill-c-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Replace the dark spoked wheel with one big solid round steel saw blade: a plain flat light silver-grey disc with a small dark hub hole in its middle and sharp triangular teeth all around its rim, with no spokes and no holes, standing upright in the same wooden frame, as big as the wheel was. Keep the building, the roofs, the wooden frame, the stack of logs, the colours, outline and art style exactly the same, on a transparent background.",
+      "notes": "sawmill-c-a-edit is clean, but its blade is a dark spoked ring that reads as a cogwheel or a water wheel, the demo's weakness again."
+    },
+    {
+      "id": "market-c-a-edit",
+      "asset": "chibi-direction-market",
+      "endpoint": "edit-image-pixen",
+      "seed": 76212,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "market-c-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grey stone floor slab and the dirt under the market stall, so the oak posts, the counter, the barrel and the sacks stand directly on a transparent background with nothing at all under them. Keep the striped awning, the posts, the counter, the crates of cabbages and pears, the barrel, the sacks, the colours, outline and art style exactly the same.",
+      "notes": "market-c-a shows the stall and its goods, but stands on a stone slab."
+    },
+    {
+      "id": "lumber-camp-c-a-edit",
+      "asset": "chibi-direction-lumber-camp",
+      "endpoint": "edit-image-pixen",
+      "seed": 76222,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "lumber-camp-c-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and the grey stone plate under the lumber camp, so the pine trees, the log stack, the stump with the axe and the cabin stand directly on a transparent background with nothing at all under them. Keep the two pine trees, the stack of logs, the tree stump with the axe, the cabin, the colours, outline and art style exactly the same.",
+      "notes": "lumber-camp-c-a shows pine trees, a log stack and an axe in a stump, but stands on a grass and stone plate."
+    },
+    {
+      "id": "village-a-edit",
+      "asset": "chibi-direction-village",
+      "endpoint": "edit-image-pixen",
+      "seed": 76302,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "village-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and the stone plate under the hamlet, so the cottages and the fence stand directly on a transparent background with nothing at all under them. Keep the three thatched cottages, the fence, the colours, outline and art style exactly the same.",
+      "notes": "village-a is a calm thatched hamlet, but stands on a grass plate."
+    },
+    {
+      "id": "captain-heraldic-edit-b",
+      "asset": "chibi-direction-captain",
+      "endpoint": "edit-image-pixen",
+      "seed": 76022,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "2",
+        "recipe": "captain-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours and the flag: his soft hat becomes deep crimson red with a gold-yellow band, keeping its shape and the white feather; his tunic becomes deep crimson red with a gold-yellow hem and a dark leather belt; the flag becomes deep crimson red with a gold-yellow lion and a gold-yellow border. Keep the steel helmet, the face, moustache, horn, banner pole, medieval clothes, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "captain-heraldic-edit redrew him as a nineteenth-century officer (peaked cap, double-breasted uniform) and dropped the steel helmet."
+    },
+    {
+      "id": "catapult-heraldic-edit-b",
+      "asset": "chibi-direction-catapult",
+      "endpoint": "edit-image-pixen",
+      "seed": 76032,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "2",
+        "recipe": "catapult-b-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the colours of the cloth: the pennant becomes deep crimson red with a gold-yellow stripe; the cloth draped over the frame becomes deep crimson red with a gold-yellow trim; the crew man's hood becomes deep crimson red with a gold-yellow trim. Keep the wooden catapult frame, its shape and wood colour, the wheels, the bucket and stone, the crew man, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "catapult-heraldic-edit rebuilt the open frame as a box cart: a different machine with a different silhouette."
+    },
+    {
+      "id": "city-3-d-a",
+      "asset": "chibi-direction-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 76421,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The settlement is drawn large and wide and fills the image from the left edge to the right edge. The walls stand directly on the transparent background: no grass, no dirt and no paved ground under or inside them.",
+      "notes": "The demo's City 3 (city-3-c-a-edit-2) is a ring wall round an empty courtyard. New subject line: a dense town inside the wall."
+    },
+    {
+      "id": "city-2-c-a-edit-2",
+      "asset": "chibi-direction-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 76411,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-2-c-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Repaint the grey stone of the wall, the round tower and the keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and replace the black outline by a thin outline in a darker tone of each colour. Keep the terracotta red roofs, the cream plaster houses with dark timber framing, the gate, every shape and the art style exactly the same, on a transparent background with nothing under the walls.",
+      "notes": "city-2-c-a-edit is clean, but its grey stone and black outline do not match City 3's sandstone."
+    },
+    {
+      "id": "city-1-c-a-edit-2",
+      "asset": "chibi-direction-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 76401,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-1-c-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Repaint the round tower as pale warm sandstone, a light cream-beige with slightly darker beige shading, and replace the thick black outline by a thin outline in a darker tone of each colour. Keep the terracotta red roofs, the cream plaster cottages with dark timber framing, every shape and the art style exactly the same, on a transparent background with nothing under the buildings.",
+      "notes": "city-1-c-a-edit is clean, but its heavy black outline and plaster tower do not match City 2 and 3."
+    },
+    {
+      "id": "lumber-camp-c-a-edit-b",
+      "asset": "chibi-direction-lumber-camp",
+      "endpoint": "edit-image-pixen",
+      "seed": 76223,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "lumber-camp-c-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase only the flat green and grey ground slab at the very bottom, making it transparent. Do not change anything standing on it: the big stack of cut logs in front, the tree stump with the steel axe, the two pine trees and the small cabin all stay exactly as they are, with the same colours, outline and art style.",
+      "notes": "lumber-camp-c-a-edit removed the plate but also the log stack, the stump and the axe: a cabin beside two trees."
+    },
+    {
+      "id": "city-3-d-a-edit",
+      "asset": "chibi-direction-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 76422,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-3-d-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and dirt plate under the city, so the ring wall stands directly on a transparent background with nothing at all under it, and remove the small flag on the keep. Keep the sandstone walls and towers, the keep, the church, the houses and their terracotta roofs, the colours, outline and art style exactly the same.",
+      "notes": "city-3-d-a is a real town inside the walls (keep, church, houses, four towers), but stands on a grass plate and flies a flag."
+    },
+    {
+      "id": "village-a-edit-b",
+      "asset": "chibi-direction-village",
+      "endpoint": "edit-image-pixen",
+      "seed": 76303,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "village-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase only the flat green and grey ground slab under the hamlet and the grass yard between the cottages, making them fully transparent, never white. Do not change anything else: the three thatched cottages and the short dark wooden fence stay exactly as they are, with the same colours, outline and art style.",
+      "notes": "village-a-edit removed the plate but painted the yard between the cottages white."
+    },
+    {
+      "id": "city-3-d-a-edit-2",
+      "asset": "chibi-direction-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 76423,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-3-d-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Repaint the orange-brown roofs and tower cones as clear terracotta red, and the yellow stone of the walls, towers, keep and church as pale warm sandstone, a light cream-beige with slightly darker beige shading. Keep every shape, the walls, the towers, the keep, the church, the houses, the outline and the art style exactly the same, on a transparent background with nothing under the walls.",
+      "notes": "city-3-d-a-edit is the right town, but its stone is more yellow and its roofs more orange-brown than City 1 and 2."
+    }
+  ]
+}

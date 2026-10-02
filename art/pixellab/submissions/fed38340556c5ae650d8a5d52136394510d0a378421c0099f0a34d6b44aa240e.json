@@ -1,0 +1,37 @@
+{
+  "id": "portrait-knight-heraldic-edit",
+  "jobId": "ad7c061b-b619-4ce9-b56b-94843a8204e1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-portrait-knight",
+    "subject": "PORTRAIT:KNIGHT",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76121,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw him as a high-medieval knight: a gold-yellow crown band around the steel great helm and a deep crimson plume; a deep crimson surcoat with a gold-yellow lion over steel mail and a crimson cape with a gold trim; a small crimson and gold pennant below the lance point. Keep the lance, the helm, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw him as a high-medieval knight: a gold-yellow crown band around the steel great helm and a deep crimson plume; a deep crimson surcoat with a gold-yellow lion over steel mail and a crimson cape with a gold trim; a small crimson and gold pennant below the lance point. Keep the lance, the helm, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw him as a high-medieval knight: a gold-yellow crown band around the steel great helm and a deep crimson plume; a deep crimson surcoat with a gold-yellow lion over steel mail and a crimson cape with a gold trim; a small crimson and gold pennant below the lance point. Keep the lance, the helm, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Redraw him as a high-medieval knight: a gold-yellow crown band around the steel great helm and a deep crimson plume; a deep crimson surcoat with a gold-yellow lion over steel mail and a crimson cape with a gold trim; a small crimson and gold pennant below the lance point. Keep the lance, the helm, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-knight-b",
+      "candidate": 0,
+      "sha256": "2e6f0e0665c33c0363fc9c7524570170b970625234fa6cb587bfd71dd4dddc07"
+    }
+  }
+}

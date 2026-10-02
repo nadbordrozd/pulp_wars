@@ -1,0 +1,1 @@
+Style: simple flat pixel art for a turn-based strategy board game map: small simple shapes, flat muted colours with one slightly darker shadow tone, low detail, calm low contrast.

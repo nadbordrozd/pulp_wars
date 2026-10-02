@@ -1,0 +1,36 @@
+{
+  "id": "city-2-c-a-edit-2",
+  "jobId": "d2185f21-21de-4d18-b716-c70e401614bb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-city-2",
+    "subject": "CITY:2",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 76411,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Repaint the grey stone of the wall, the round tower and the keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and replace the black outline by a thin outline in a darker tone of each colour. Keep the terracotta red roofs, the cream plaster houses with dark timber framing, the gate, every shape and the art style exactly the same, on a transparent background with nothing under the walls."
+      }
+    ],
+    "prompt": "Repaint the grey stone of the wall, the round tower and the keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and replace the black outline by a thin outline in a darker tone of each colour. Keep the terracotta red roofs, the cream plaster houses with dark timber framing, the gate, every shape and the art style exactly the same, on a transparent background with nothing under the walls.",
+    "negativePrompt": "",
+    "description": "Repaint the grey stone of the wall, the round tower and the keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and replace the black outline by a thin outline in a darker tone of each colour. Keep the terracotta red roofs, the cream plaster houses with dark timber framing, the gate, every shape and the art style exactly the same, on a transparent background with nothing under the walls.",
+    "editInstruction": "Repaint the grey stone of the wall, the round tower and the keep as pale warm sandstone, a light cream-beige with slightly darker beige shading, and replace the black outline by a thin outline in a darker tone of each colour. Keep the terracotta red roofs, the cream plaster houses with dark timber framing, the gate, every shape and the art style exactly the same, on a transparent background with nothing under the walls.",
+    "source": {
+      "recipe": "city-2-c-a-edit",
+      "candidate": 0,
+      "sha256": "cb0c8933f3d5d8001fd578ebe35e0ded6d22f2aae121dc1aca7b6ff9cda7ed19"
+    }
+  }
+}

@@ -280,3 +280,228 @@ export function plateCheck(raster: RgbaRaster): PlateCheck {
     suspect: groundShare >= 0.25 && footprintWidthShare >= 0.6,
   };
 }
+
+// ------------------------------------------- new visual direction (3tq.5)
+
+export interface OpaqueBounds {
+  readonly left: number;
+  readonly right: number;
+  readonly top: number;
+  readonly bottom: number;
+}
+
+/** The bounding box of the pixels with alpha >= 128, or null when empty. */
+export function opaqueBounds(raster: RgbaRaster): OpaqueBounds | null {
+  let left = raster.width;
+  let right = -1;
+  let top = raster.height;
+  let bottom = -1;
+  for (let y = 0; y < raster.height; y += 1)
+    for (let x = 0; x < raster.width; x += 1)
+      if ((raster.data[(y * raster.width + x) * 4 + 3] ?? 0) >= 128) {
+        left = Math.min(left, x);
+        right = Math.max(right, x);
+        top = Math.min(top, y);
+        bottom = Math.max(bottom, y);
+      }
+  return right < 0 ? null : { left, right, top, bottom };
+}
+
+/**
+ * The `seated` derivation (bead pulp_wars-3tq.5, proven by the Human demo's
+ * cut script): Pixen leaves an uneven margin round a building, so the art is
+ * moved by whole pixels until its bounding box is centred and its lowest
+ * opaque row sits `bottomMargin` pixels above the canvas bottom; alpha
+ * becomes binary. The master is then the bottom-centred `size` window of the
+ * result (a city is generated larger than it is drawn), which the art must
+ * fit. Nothing is resampled.
+ */
+export function seatedRaster(
+  raster: RgbaRaster,
+  size: { readonly width: number; readonly height: number },
+  bottomMargin: number,
+): RgbaRaster {
+  const box = opaqueBounds(raster);
+  if (box === null) throw new Error("the candidate is empty");
+  if (size.width > raster.width || size.height > raster.height)
+    throw new Error("a seated master cannot be larger than its candidate");
+  const dx =
+    Math.floor((raster.width - (box.right - box.left + 1)) / 2) - box.left;
+  const dy = Math.max(-box.top, raster.height - 1 - bottomMargin - box.bottom);
+  const moved = new Uint8Array(raster.data.length);
+  for (let y = 0; y < raster.height; y += 1)
+    for (let x = 0; x < raster.width; x += 1) {
+      const source = (y * raster.width + x) * 4;
+      const nx = x + dx;
+      const ny = y + dy;
+      if (
+        (raster.data[source + 3] ?? 0) < 128 ||
+        nx < 0 ||
+        ny < 0 ||
+        nx >= raster.width ||
+        ny >= raster.height
+      )
+        continue;
+      const target = (ny * raster.width + nx) * 4;
+      moved[target] = raster.data[source] ?? 0;
+      moved[target + 1] = raster.data[source + 1] ?? 0;
+      moved[target + 2] = raster.data[source + 2] ?? 0;
+      moved[target + 3] = 255;
+    }
+  const window = {
+    left: Math.floor((raster.width - size.width) / 2),
+    top: raster.height - size.height,
+    ...size,
+  };
+  const seated = { width: raster.width, height: raster.height, data: moved };
+  const placed = opaqueBounds(seated);
+  if (
+    placed === null ||
+    placed.left < window.left ||
+    placed.right >= window.left + size.width ||
+    placed.top < window.top
+  )
+    throw new Error(
+      `the art (${box.right - box.left + 1} x ${box.bottom - box.top + 1}) does not fit the ${size.width} x ${size.height} master`,
+    );
+  return cropRaster(seated, window);
+}
+
+/** One piece of a crop row: candidate columns stamped at `at` in each period. */
+export interface CropRowStamp {
+  readonly left: number;
+  readonly width: number;
+  readonly at: number;
+}
+
+export interface CropRowsSpec {
+  /** Rows of crops in the tile, at an even pitch of height / rows. */
+  readonly rows: number;
+  /** The candidate's crop row (0 = top) the stamps are cut from. */
+  readonly band: number;
+  /** Horizontal period in pixels; it must divide the tile width. */
+  readonly period: number;
+  readonly stamps: readonly CropRowStamp[];
+  /** Colour kept, 0..1 (1 = unchanged). */
+  readonly saturation: number;
+  /** Mix toward pale straw, 0..1. */
+  readonly strawMix: number;
+}
+
+export const PALE_STRAW: PaletteColour = [238, 220, 160];
+
+/** The crop rows of a candidate: runs of rows that hold an opaque pixel. */
+export function cropBands(
+  raster: RgbaRaster,
+): { readonly top: number; readonly bottom: number }[] {
+  const bands: { top: number; bottom: number }[] = [];
+  for (let y = 0; y < raster.height; y += 1) {
+    let filled = false;
+    for (let x = 0; x < raster.width && !filled; x += 1)
+      filled = (raster.data[(y * raster.width + x) * 4 + 3] ?? 0) >= 128;
+    if (!filled) continue;
+    const last = bands.at(-1);
+    if (last?.bottom === y - 1) last.bottom = y;
+    else bands.push({ top: y, bottom: y });
+  }
+  return bands;
+}
+
+/**
+ * The `crop-rows` derivation (the Farm, bead pulp_wars-3tq.5): a full-cell
+ * pattern of crop rows that tiles without a seam. Pieces of one crop row of
+ * the candidate (`stamps`: an ear, a stalk) are stamped at a horizontal
+ * period that divides the tile width, on `rows` rows at an even vertical
+ * pitch, so the rows and the gaps between them continue across cell
+ * boundaries in both directions; the gaps fall on the cell's centre line
+ * and edges, where Roads run. The crop is then calmed (lower saturation,
+ * mixed toward pale straw). Whole pixels only.
+ */
+export function cropRowsRaster(
+  raster: RgbaRaster,
+  size: { readonly width: number; readonly height: number },
+  spec: CropRowsSpec,
+): RgbaRaster {
+  const band = cropBands(raster)[spec.band];
+  if (band === undefined)
+    throw new Error(`the candidate has no crop row ${spec.band}`);
+  if (
+    !Number.isInteger(spec.period) ||
+    spec.period <= 0 ||
+    size.width % spec.period !== 0
+  )
+    throw new Error("the crop period must divide the tile width");
+  if (!Number.isInteger(spec.rows) || spec.rows <= 0)
+    throw new Error("crop rows must be a positive integer");
+  const bandHeight = band.bottom - band.top + 1;
+  const pitch = size.height / spec.rows;
+  if (bandHeight >= pitch)
+    throw new Error("the crop row is taller than the row pitch: no gap left");
+  const data = new Uint8Array(size.width * size.height * 4);
+  for (const stamp of spec.stamps) {
+    if (
+      stamp.left < 0 ||
+      stamp.left + stamp.width > raster.width ||
+      stamp.at < 0 ||
+      stamp.at + stamp.width > spec.period
+    )
+      throw new Error("a crop stamp falls outside the candidate or the period");
+    for (let row = 0; row < spec.rows; row += 1) {
+      const top = Math.round(pitch * (row + 0.5) - bandHeight / 2);
+      for (let y = 0; y < bandHeight; y += 1)
+        for (let x = 0; x < stamp.width; x += 1) {
+          const source = ((band.top + y) * raster.width + stamp.left + x) * 4;
+          if ((raster.data[source + 3] ?? 0) < 128) continue;
+          const r = raster.data[source] ?? 0;
+          const g = raster.data[source + 1] ?? 0;
+          const b = raster.data[source + 2] ?? 0;
+          const grey = 0.299 * r + 0.587 * g + 0.114 * b;
+          const calm = [r, g, b].map((value, channel) => {
+            const kept = grey + (value - grey) * spec.saturation;
+            return Math.round(
+              kept + ((PALE_STRAW[channel] ?? 0) - kept) * spec.strawMix,
+            );
+          });
+          for (
+            let offset = stamp.at + x;
+            offset < size.width;
+            offset += spec.period
+          ) {
+            const target = ((top + y) * size.width + offset) * 4;
+            data[target] = calm[0] ?? 0;
+            data[target + 1] = calm[1] ?? 0;
+            data[target + 2] = calm[2] ?? 0;
+            data[target + 3] = 255;
+          }
+        }
+    }
+  }
+  return { width: size.width, height: size.height, data };
+}
+
+/**
+ * How many pixels of a tile differ from the pixel one period to the right
+ * or one period below, wrapping round the tile. 0 means the pattern repeats
+ * exactly at those periods, so side-by-side and stacked tiles continue it
+ * without a seam (the periods must divide the tile).
+ */
+export function periodMismatch(
+  raster: RgbaRaster,
+  periodX: number,
+  periodY: number,
+): number {
+  let count = 0;
+  const same = (a: number, b: number): boolean => {
+    for (let c = 0; c < 4; c += 1)
+      if (raster.data[a + c] !== raster.data[b + c]) return false;
+    return true;
+  };
+  for (let y = 0; y < raster.height; y += 1)
+    for (let x = 0; x < raster.width; x += 1) {
+      const here = (y * raster.width + x) * 4;
+      const right = (y * raster.width + ((x + periodX) % raster.width)) * 4;
+      const down = (((y + periodY) % raster.height) * raster.width + x) * 4;
+      if (!same(here, right) || !same(here, down)) count += 1;
+    }
+  return count;
+}

@@ -1,0 +1,37 @@
+{
+  "id": "guard-heraldic-edit",
+  "jobId": "44f78cb8-6899-4c80-a3b5-6f3f45b21657",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-guard",
+    "subject": "UNIT:GUARD",
+    "faction": "ORIGINAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 76011,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw this soldier as a high-medieval heavy spearman: the tower shield becomes deep crimson red with a bold gold-yellow cross and a steel border; a deep crimson surcoat with a gold hem over steel chainmail; a gold-yellow band around the steel kettle helmet. Keep the face, spear, helmet shape, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet."
+      }
+    ],
+    "prompt": "Redraw this soldier as a high-medieval heavy spearman: the tower shield becomes deep crimson red with a bold gold-yellow cross and a steel border; a deep crimson surcoat with a gold hem over steel chainmail; a gold-yellow band around the steel kettle helmet. Keep the face, spear, helmet shape, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "negativePrompt": "",
+    "description": "Redraw this soldier as a high-medieval heavy spearman: the tower shield becomes deep crimson red with a bold gold-yellow cross and a steel border; a deep crimson surcoat with a gold hem over steel chainmail; a gold-yellow band around the steel kettle helmet. Keep the face, spear, helmet shape, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "editInstruction": "Redraw this soldier as a high-medieval heavy spearman: the tower shield becomes deep crimson red with a bold gold-yellow cross and a steel border; a deep crimson surcoat with a gold hem over steel chainmail; a gold-yellow band around the steel kettle helmet. Keep the face, spear, helmet shape, pose, proportions, thick black outline and art style exactly the same, on a transparent background with nothing under the feet.",
+    "source": {
+      "batch": "2",
+      "recipe": "guard-a-edit",
+      "candidate": 0,
+      "sha256": "a1e785df4c859f01e0fe2578cea95e9c760e4fdb376d196fed2a8f204a882eac"
+    }
+  }
+}

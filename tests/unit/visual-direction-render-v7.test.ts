@@ -609,7 +609,13 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
   });
 
   it("registers every demo sample, with a sample for each improvement and city tier", () => {
-    for (const set of ["STUDY", "DEMO", "STYLE_A", "STYLE_B"] as const) {
+    for (const set of [
+      "STUDY",
+      "DEMO",
+      "STYLE_A",
+      "STYLE_B",
+      "PRODUCTION",
+    ] as const) {
       expect(VISUAL_DIRECTION_SAMPLE_SETS_V7[set].length).toBeGreaterThan(0);
       expect(() => visualDirectionSampleRegistryV7(set)).not.toThrow();
     }
@@ -643,13 +649,15 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
         expect(asset.height, asset.id).toBeLessThanOrEqual(
           asset.subject.startsWith("CITY:") ? 88 : 80,
         );
-    // Every pennant anchor belongs to a demo sample and lies inside it.
+    // Every pennant anchor belongs to a demo sample or to its production
+    // successor (bead pulp_wars-3tq.5) and lies inside it.
     const anchors = Object.entries(DIRECTION_FLAG_ANCHORS_V7);
     expect(anchors.length).toBeGreaterThan(0);
     for (const [id, anchor] of anchors) {
-      const asset = HUMAN_DEMO_SAMPLE_ASSETS_V7.find(
-        (candidate) => candidate.id === id,
-      );
+      const asset = [
+        ...HUMAN_DEMO_SAMPLE_ASSETS_V7,
+        ...VISUAL_DIRECTION_SAMPLE_SETS_V7.PRODUCTION,
+      ].find((candidate) => candidate.id === id);
       expect(asset, id).toBeDefined();
       if (asset === undefined) continue;
       expect(anchor.x).toBeGreaterThanOrEqual(0);
