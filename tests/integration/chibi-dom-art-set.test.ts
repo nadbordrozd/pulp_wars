@@ -19,6 +19,7 @@ import {
 } from "../../src/render/dom/app-view-v7";
 import type { ChibiDomEnvironmentV7 } from "../../src/render/dom/chibi-dom-art-v7";
 import type { ArtSetV7 } from "../../src/assets/chibi-art-v7";
+import type { StorageAdapter } from "../../src/persistence/index";
 import {
   UNDEAD_SHOWCASE_V7,
   undeadShowcaseFixtureV7,
@@ -117,6 +118,7 @@ function mount(
   artSet: ArtSetV7 | undefined,
   env: ChibiDomEnvironmentV7 = environment(),
   snapshot = snapshotOf(state),
+  settingsStorage: StorageAdapter | null = null,
 ) {
   document.body.innerHTML = '<div id="app"></div>';
   const host = new Host();
@@ -124,7 +126,7 @@ function mount(
   if (root === null) throw new Error("#app missing");
   const app = new Ruleset7DomAppView(document, root, port(snapshot), {
     boardHost: host,
-    settingsStorage: null,
+    settingsStorage,
     ...(artSet === undefined ? {} : { artSet }),
     chibiDomEnvironment: env,
   });
@@ -290,9 +292,10 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     failing.select({ x: 7, y: 7 });
     expect(artList()).toEqual(legacyArt);
     failing.app.destroy();
-    // Only the captain's map raster fails: the dock keeps its legacy sprite
-    // while the command icons stay chibi.
-    const partial = mount(humanArena(), "CHIBI", environment("chibi-captain."));
+    // Only the captain's map rasters fail (the new direction's and the
+    // default one): the dock keeps its legacy sprite while the command icons
+    // stay chibi.
+    const partial = mount(humanArena(), "CHIBI", environment("-captain."));
     partial.select({ x: 7, y: 7 });
     expect(artList(".v7-identity-art img")).toEqual([
       "legacy:unit-original-captain-v7r10",
@@ -302,6 +305,77 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     );
     partial.app.destroy();
   });
+  it("draws the new direction's Human art by default, falls back per piece, and leaves the other factions' art alone (pulp_wars-3tq.6)", () => {
+    const identity = (): HTMLImageElement | null =>
+      document.querySelector<HTMLImageElement>(".v7-identity-art img");
+    const assetIds = (selector: string): (string | undefined)[] =>
+      [...document.querySelectorAll<HTMLImageElement>(selector)].map(
+        (image) => image.dataset.chibiAssetId,
+      );
+    // A Human unit shows the direction's sprite, as authored: fixed colours,
+    // so the master is used and nothing is recoloured to the owner.
+    const human = mount(humanArena(), "CHIBI");
+    human.select({ x: 7, y: 7 });
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-direction-captain");
+    expect(identity()?.getAttribute("src")).toBe("data:image/test;216,38,44");
+    human.selectCapital();
+    const trained = assetIds(".v7-action-card img, .v7-selection-dock img");
+    expect(trained).toContain("chibi-direction-portrait-fighter");
+    expect(trained).toContain("chibi-direction-city-1");
+    human.app.destroy();
+    // A direction raster that fails to load falls back to the classic
+    // asset of that piece alone, in the owner's colour.
+    const failing = mount(
+      humanArena(),
+      "CHIBI",
+      environment("chibi-direction-captain."),
+    );
+    failing.select({ x: 7, y: 7 });
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-captain");
+    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    failing.select({ x: 9, y: 7 });
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-direction-fighter");
+    failing.app.destroy();
+    // Undead units, portraits and cities are not converted: nothing of
+    // theirs resolves to the direction's Human art.
+    const undead = mount(undeadShowcaseFixtureV7(), "CHIBI");
+    undead.select(UNDEAD_SHOWCASE_V7.necromancer);
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-undead-necromancer");
+    undead.selectCapital();
+    const undeadArt = assetIds(".v7-action-card img, .v7-selection-dock img");
+    expect(undeadArt.length).toBeGreaterThan(0);
+    expect(
+      undeadArt.filter(
+        (id) =>
+          id !== undefined &&
+          id.startsWith("chibi-direction-") &&
+          (id.includes("portrait") || id.includes("city")),
+      ),
+    ).toEqual([]);
+    expect(undeadArt).toContain("chibi-undead-city-1");
+    undead.app.destroy();
+    // The developer option returns the interface to the previous art.
+    const classicStorage = {
+      getItem: (key: string) =>
+        key === "pulpWars.ruleset7.boardClassicLook.v1"
+          ? '{"classic":true}'
+          : null,
+      setItem: () => undefined,
+      removeItem: () => undefined,
+    };
+    const classic = mount(
+      humanArena(),
+      "CHIBI",
+      environment(),
+      undefined,
+      classicStorage,
+    );
+    classic.select({ x: 7, y: 7 });
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-captain");
+    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    classic.app.destroy();
+  });
+
   it("draws the Goblin Kaboom! and WAAAGH! command icons in CHIBI and keeps the code-drawn bomb in LEGACY", () => {
     const bomb = () =>
       document.querySelector(

@@ -59,11 +59,13 @@ import {
   storeBoardSaturationV7,
 } from "../../app/board-saturation-v7";
 import {
-  loadBoardVisualDirectionV7,
-  storeBoardVisualDirectionV7,
+  loadBoardClassicLookV7,
+  storeBoardClassicLookV7,
 } from "../../app/board-visual-direction-v7";
-import type { ChibiArtRegistryV7 } from "../../assets/chibi-art-v7";
-import { HUMAN_DEMO_DIRECTION_V7 } from "../canvas/visual-direction-v7";
+import {
+  LIVE_DIRECTION_ART_REGISTRY_V7,
+  liveBoardLookV7,
+} from "../canvas/live-board-look-v7";
 import {
   SETTINGS_STORAGE_KEY,
   parseSettings,
@@ -409,12 +411,16 @@ export class Ruleset7DomAppView {
   #uiScale: 1 | 1.25 | 1.5 | 2 = 1;
   /** Developer experiment (pulp_wars-x6c); presentation only. */
   #boardSaturation: BoardSaturationV7 = DEFAULT_BOARD_SATURATION_V7;
-  /** Developer experiment (pulp_wars-3tq.1); presentation only, off by default. */
-  #visualDirection = false;
-  /** The direction's production art (pulp_wars-3tq.5), loaded on demand. */
-  #visualDirectionSamples: ChibiArtRegistryV7 | null = null;
-  /** Interface art from the same registry: portraits, cities, improvements. */
-  #visualDirectionDom: ChibiDomArtV7 | null = null;
+  /**
+   * Developer option (pulp_wars-3tq.6): draw the CHIBI set's previous look
+   * instead of the new visual direction. Presentation only, off by default.
+   */
+  #classicLook = false;
+  /**
+   * Interface art of the classic look (the default registry alone); built
+   * on first use, so the default game never loads the previous portraits.
+   */
+  #classicChibiDom: ChibiDomArtV7 | null = null;
   readonly #chibiDomEnvironment: ChibiDomEnvironmentV7 | null;
   #developerToolsOpen = false;
   #pendingFocusAction: string | null = null;
@@ -448,12 +454,16 @@ export class Ruleset7DomAppView {
         ? (options.chibiDomEnvironment ??
           browserChibiDomEnvironmentV7(documentRoot))
         : null;
+    // The interface resolves the new direction's art first (Human
+    // portraits, cities, the shared improvements) and the default art for
+    // everything else, like the board.
     this.#chibiDom =
       this.#chibiDomEnvironment === null
         ? null
         : createChibiDomArtV7({
             environment: this.#chibiDomEnvironment,
             onChange: () => this.#queueChibiRender(),
+            preferred: LIVE_DIRECTION_ART_REGISTRY_V7,
           });
     // Every view claims the document's economy icons, so a LEGACY view never
     // inherits a CHIBI provider left by another view.
@@ -480,8 +490,7 @@ export class Ruleset7DomAppView {
       // Restricted storage must not prevent the public UI from mounting.
     }
     this.#boardSaturation = loadBoardSaturationV7(this.#settingsStorage);
-    this.#visualDirection = loadBoardVisualDirectionV7(this.#settingsStorage);
-    if (this.#visualDirection) this.#loadVisualDirectionSamples();
+    this.#classicLook = loadBoardClassicLookV7(this.#settingsStorage);
     this.#snapshot = controller.snapshot();
     this.#document.addEventListener("keydown", this.#onKeyDown);
     this.#root.addEventListener("dragstart", this.#onDragStart);
@@ -651,21 +660,26 @@ export class Ruleset7DomAppView {
       ownerColor,
       ...(at === undefined ? {} : { at }),
     };
-    // Developer toggle: the direction's own art for the subject, when it has
-    // one (Human portraits, cities, the shared improvements).
-    const directed =
-      this.#visualDirection && this.#visualDirectionDom !== null
-        ? this.#visualDirectionDom.resolve(request)
-        : null;
-    const resolution =
-      directed !== null && directed.kind !== "MISSING"
-        ? directed
-        : this.#chibiDom.resolve(request);
+    const resolution = this.#interfaceArt().resolve(request);
     if (resolution.kind === "MISSING") return null;
     return {
       element: chibiDomImageV7(this.#document, resolution, box, subject),
       factionArt: resolution.factionArt,
     };
+  }
+
+  /** The interface art of the current look; only called for the CHIBI set. */
+  #interfaceArt(): ChibiDomArtV7 {
+    const directed = this.#chibiDom;
+    const environment = this.#chibiDomEnvironment;
+    if (directed === null || environment === null)
+      throw new Error("Interface art requires the CHIBI art set");
+    if (!this.#classicLook) return directed;
+    this.#classicChibiDom ??= createChibiDomArtV7({
+      environment,
+      onChange: () => this.#queueChibiRender(),
+    });
+    return this.#classicChibiDom;
   }
 
   readonly #economyIcons = (
@@ -1357,14 +1371,9 @@ export class Ruleset7DomAppView {
       highContrast: this.#highContrast,
       artSet: this.#artSet,
       saturation: this.#boardSaturation,
-      ...(this.#visualDirection
-        ? {
-            visualDirection: HUMAN_DEMO_DIRECTION_V7,
-            ...(this.#visualDirectionSamples === null
-              ? {}
-              : { visualDirectionSamples: this.#visualDirectionSamples }),
-          }
-        : {}),
+      // The new visual direction is the CHIBI set's default look; the
+      // classic look and the LEGACY set carry no direction at all.
+      ...liveBoardLookV7(this.#artSet, this.#classicLook),
       interaction: {
         selection: this.#selection,
         selectedUnitId,
@@ -3443,7 +3452,7 @@ export class Ruleset7DomAppView {
     developer.append(
       text(this.#document, "summary", "Developer tools"),
       this.#saturationControls(),
-      this.#visualDirectionControl(),
+      this.#classicLookControl(),
       developerActions,
     );
     section.append(display, game, seed, developer);
@@ -3516,63 +3525,34 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * Developer experiment (beads pulp_wars-3tq.1 and pulp_wars-3tq.3): one
-   * checkbox that draws the board in the visual direction's Human demo
-   * (chibi art set only). It updates the board and local storage in place,
-   * like the sliders.
+   * Developer option (bead pulp_wars-3tq.6): one checkbox that returns the
+   * board and the interface art to the previous look, for comparison (chibi
+   * art set only; the new visual direction is the default). It updates the
+   * board and local storage in place, like the sliders.
    */
-  #visualDirectionControl(): HTMLElement {
+  #classicLookControl(): HTMLElement {
     const group = el(this.#document, "fieldset", "v7-saturation-tools");
-    group.append(text(this.#document, "legend", "Visual direction"));
+    group.append(text(this.#document, "legend", "Board look"));
     const label = this.#document.createElement("label");
-    label.className = "v7-visual-direction-toggle";
+    label.className = "v7-classic-look-toggle";
     const input = this.#document.createElement("input");
     input.type = "checkbox";
-    input.id = "v7-visual-direction";
-    input.checked = this.#visualDirection;
+    input.id = "v7-classic-look";
+    input.checked = this.#classicLook;
     input.addEventListener("change", () => {
-      this.#visualDirection = input.checked;
-      if (!storeBoardVisualDirectionV7(this.#settingsStorage, input.checked))
+      this.#classicLook = input.checked;
+      if (!storeBoardClassicLookV7(this.#settingsStorage, input.checked))
         this.#error = "Settings could not be saved.";
-      if (input.checked) this.#loadVisualDirectionSamples();
       this.#refreshBoard();
       // The docks and cards switch their portraits with the board.
       this.#queueChibiRender();
     });
     label.append(
       input,
-      this.#document.createTextNode(
-        " Human faction demo (experiment, chibi art only)",
-      ),
+      this.#document.createTextNode(" Classic look (previous art)"),
     );
     group.append(label);
     return group;
-  }
-
-  /**
-   * The direction's production art (src/assets/chibi-direction-art-manifest),
-   * imported only once the toggle is on, so the default game never loads it.
-   */
-  #loadVisualDirectionSamples(): void {
-    if (this.#visualDirectionSamples !== null) return;
-    void import("../../assets/chibi-direction-art-manifest")
-      .then((module) => {
-        const registry = module.chibiDirectionArtRegistryV7();
-        this.#visualDirectionSamples = registry;
-        if (this.#chibiDomEnvironment !== null)
-          this.#visualDirectionDom = createChibiDomArtV7({
-            environment: this.#chibiDomEnvironment,
-            onChange: () => this.#queueChibiRender(),
-            registry,
-          });
-        if (this.#visualDirection) {
-          this.#refreshBoard();
-          this.#queueChibiRender();
-        }
-      })
-      .catch(() => {
-        // Without the samples the direction draws the production sprites.
-      });
   }
 
   #refreshBoard(): void {

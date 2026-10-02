@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
-  BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7,
-  loadBoardVisualDirectionV7,
-  parseStoredBoardVisualDirectionV7,
-  storeBoardVisualDirectionV7,
+  BOARD_CLASSIC_LOOK_STORAGE_KEY_V7,
+  RETIRED_BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7,
+  loadBoardClassicLookV7,
+  parseStoredBoardClassicLookV7,
+  storeBoardClassicLookV7,
 } from "../../src/app/board-visual-direction-v7";
 import type {
   ArtSubjectV7,
@@ -20,6 +21,11 @@ import type {
   ChibiResolutionV7,
 } from "../../src/render/canvas/chibi-art-resolver-v7";
 import {
+  LIVE_DIRECTION_ART_REGISTRY_V7,
+  liveBoardLookV7,
+} from "../../src/render/canvas/live-board-look-v7";
+import type { SpriteSaturationCacheV7 } from "../../src/render/canvas/sprite-saturation-v7";
+import {
   HUMAN_DEMO_SAMPLE_ASSETS_V7,
   VISUAL_DIRECTION_SAMPLE_SETS_V7,
   visualDirectionSampleRegistryV7,
@@ -27,11 +33,14 @@ import {
 import {
   BASELINE_DIRECTION_V7,
   DIRECTION_FLAG_ANCHORS_V7,
+  DIRECTED_BASE_HP_BAR_TOP_V7,
   HUMAN_DEMO_DIRECTION_V7,
+  LIVE_DIRECTION_V7,
   RECOMMENDED_DIRECTION_V7,
   darkerColourV7,
   directionUnitAfloatV7,
   drawDirectedFlagV7,
+  drawDirectedPieceChromeV7,
   drawDirectedUnitBaseV7,
   UNCHANGED_TONE_V7,
   createDirectedChibiArtV7,
@@ -208,33 +217,39 @@ function draw(direction?: BoardVisualDirectionV7): LogEntry[] {
   return log;
 }
 
-describe("visual direction setting (pulp_wars-3tq.1)", () => {
-  it("is off unless the stored value says recommended: true", () => {
-    expect(parseStoredBoardVisualDirectionV7(null)).toBe(false);
+describe("classic look setting (pulp_wars-3tq.6)", () => {
+  const memory = () => {
+    const values = new Map<string, string>();
+    return {
+      values,
+      storage: {
+        getItem: (key: string) => values.get(key) ?? null,
+        setItem: (key: string, value: string) => void values.set(key, value),
+        removeItem: (key: string) => void values.delete(key),
+      },
+    };
+  };
+
+  it("is off, so the new look is drawn, unless the stored value says classic: true", () => {
+    expect(parseStoredBoardClassicLookV7(null)).toBe(false);
     for (const malformed of ["", "{", "null", "true", "1", "[]", "{}"])
-      expect(parseStoredBoardVisualDirectionV7(malformed)).toBe(false);
-    expect(parseStoredBoardVisualDirectionV7('{"recommended":"yes"}')).toBe(
-      false,
-    );
-    expect(parseStoredBoardVisualDirectionV7('{"recommended":true}')).toBe(
-      true,
-    );
+      expect(parseStoredBoardClassicLookV7(malformed)).toBe(false);
+    expect(parseStoredBoardClassicLookV7('{"classic":"yes"}')).toBe(false);
+    expect(parseStoredBoardClassicLookV7('{"classic":false}')).toBe(false);
+    expect(parseStoredBoardClassicLookV7('{"classic":true}')).toBe(true);
   });
 
   it("persists under its own key and survives restricted storage", () => {
-    const values = new Map<string, string>();
-    const storage = {
-      getItem: (key: string) => values.get(key) ?? null,
-      setItem: (key: string, value: string) => void values.set(key, value),
-      removeItem: (key: string) => void values.delete(key),
-    };
-    expect(loadBoardVisualDirectionV7(storage)).toBe(false);
-    expect(storeBoardVisualDirectionV7(storage, true)).toBe(true);
-    expect(values.get(BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7)).toBe(
-      '{"recommended":true}',
+    const { values, storage } = memory();
+    expect(loadBoardClassicLookV7(storage)).toBe(false);
+    expect(storeBoardClassicLookV7(storage, true)).toBe(true);
+    expect(values.get(BOARD_CLASSIC_LOOK_STORAGE_KEY_V7)).toBe(
+      '{"classic":true}',
     );
-    expect(loadBoardVisualDirectionV7(storage)).toBe(true);
-    expect(loadBoardVisualDirectionV7(null)).toBe(false);
+    expect(loadBoardClassicLookV7(storage)).toBe(true);
+    expect(storeBoardClassicLookV7(storage, false)).toBe(true);
+    expect(loadBoardClassicLookV7(storage)).toBe(false);
+    expect(loadBoardClassicLookV7(null)).toBe(false);
     const denied = {
       getItem: () => {
         throw new Error("denied");
@@ -242,10 +257,39 @@ describe("visual direction setting (pulp_wars-3tq.1)", () => {
       setItem: () => {
         throw new Error("denied");
       },
-      removeItem: () => undefined,
+      removeItem: () => {
+        throw new Error("denied");
+      },
     };
-    expect(loadBoardVisualDirectionV7(denied)).toBe(false);
-    expect(storeBoardVisualDirectionV7(denied, true)).toBe(false);
+    expect(loadBoardClassicLookV7(denied)).toBe(false);
+    expect(storeBoardClassicLookV7(denied, true)).toBe(false);
+  });
+
+  it("never lets the retired experiment key force the classic look, and removes it", () => {
+    expect(BOARD_CLASSIC_LOOK_STORAGE_KEY_V7).not.toBe(
+      RETIRED_BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7,
+    );
+    for (const stored of [
+      '{"recommended":false}',
+      '{"recommended":true}',
+      "garbage",
+    ]) {
+      const { values, storage } = memory();
+      values.set(RETIRED_BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7, stored);
+      expect(loadBoardClassicLookV7(storage), stored).toBe(false);
+      expect(values.has(RETIRED_BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7)).toBe(
+        false,
+      );
+    }
+    // A classic choice made since is kept when the retired key is dropped.
+    const { values, storage } = memory();
+    values.set(
+      RETIRED_BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7,
+      '{"recommended":true}',
+    );
+    values.set(BOARD_CLASSIC_LOOK_STORAGE_KEY_V7, '{"classic":true}');
+    expect(loadBoardClassicLookV7(storage)).toBe(true);
+    expect([...values.keys()]).toEqual([BOARD_CLASSIC_LOOK_STORAGE_KEY_V7]);
   });
 });
 
@@ -793,5 +837,368 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
     expect(fills).toContain(darkerColourV7(CORAL));
     expect(directed.filter((call) => call[0] === "fillText")).toHaveLength(0);
     expect(fills).not.toContain("#65d889");
+  });
+});
+
+describe("live default look (pulp_wars-3tq.6)", () => {
+  const at = { x: 0, y: 0 };
+  const fills = (log: readonly LogEntry[]) =>
+    log
+      .filter((call) => call[0] === "set" && call[1] === "fillStyle")
+      .map((call) => call[2]);
+  /** The direction's own art for the given subjects; MISSING otherwise. */
+  const directionArt = (
+    subjects: readonly ArtSubjectV7[],
+    state: "READY" | "LOADING" = "READY",
+  ): ChibiBoardArtV7 => ({
+    resolve: (request) =>
+      !subjects.includes(request.subject)
+        ? { kind: "MISSING" }
+        : state === "LOADING"
+          ? { kind: "LOADING" }
+          : {
+              kind: "READY",
+              asset: {
+                id: `chibi-direction-${request.subject}`,
+                subject: request.subject,
+                assetClass: request.subject.startsWith("UNIT:")
+                  ? "STANDARD_UNIT"
+                  : "SETTLEMENT",
+                width: 80,
+                height: 80,
+                url: `/direction/${request.subject}.png`,
+              } as ChibiArtAssetV7,
+              image: raster(`direction:${request.subject}`),
+              density: 1,
+              smoothing: false,
+              cacheKey: `direction:${request.subject}`,
+            },
+  });
+  const drawLive = (
+    entries: readonly BoardRenderPlanEntryV7[],
+    options: {
+      readonly samples?: ChibiBoardArtV7;
+      readonly saturation?: SpriteSaturationCacheV7;
+      readonly classic?: boolean;
+    } = {},
+  ): { readonly log: LogEntry[]; readonly images: unknown[] } => {
+    const { context, log } = recordingContext();
+    const base = chibiArt();
+    drawBoardV7({
+      context,
+      viewport: { width: 800, height: 600 },
+      devicePixelRatio: 1,
+      camera: { zoom: 1, offsetX: 200, offsetY: 200 },
+      plan: { version: 7, entries, targets: [] },
+      images: { resolve: () => null },
+      artSet: "CHIBI",
+      chibiArt: base,
+      reducedMotion: true,
+      ...(options.saturation === undefined
+        ? {}
+        : {
+            saturation: {
+              levels: { building: 40, city: 60 },
+              cache: options.saturation,
+            },
+          }),
+      ...(options.classic === true
+        ? {}
+        : {
+            direction: {
+              spec: LIVE_DIRECTION_V7,
+              art: createDirectedChibiArtV7({
+                base,
+                direction: LIVE_DIRECTION_V7,
+                environment,
+                ...(options.samples === undefined
+                  ? {}
+                  : { samples: options.samples }),
+              }),
+            },
+          }),
+    });
+    return {
+      log,
+      images: log
+        .filter((call) => call[0] === "drawImage")
+        .map((call) => call[1]),
+    };
+  };
+
+  it("is what the game passes for the CHIBI set, and nothing for LEGACY or the classic look", () => {
+    expect(liveBoardLookV7("CHIBI")).toEqual({
+      visualDirection: LIVE_DIRECTION_V7,
+      visualDirectionArt: LIVE_DIRECTION_ART_REGISTRY_V7,
+    });
+    expect(liveBoardLookV7("CHIBI", true)).toEqual({});
+    expect(liveBoardLookV7("LEGACY")).toEqual({});
+    expect(liveBoardLookV7(undefined)).toEqual({});
+    expect(LIVE_DIRECTION_V7).toMatchObject({
+      unit: { base: "PLATE", baseShape: "SEAT", samples: true },
+      building: { samples: true, flags: true },
+      city: { samples: true, banner: true, factionCities: "CLASSIC" },
+      chrome: {
+        hp: "DAMAGED",
+        hpPlacement: "BASE",
+        badge: "NONE",
+        ready: "BASE",
+        roads: "CALM",
+        borders: "SOLID",
+      },
+    });
+    // The art is registered up front, with the rest of the CHIBI set.
+    expect(LIVE_DIRECTION_ART_REGISTRY_V7.variants("CITY:2")[0]?.id).toBe(
+      "chibi-direction-city-2",
+    );
+  });
+
+  it("the classic look draws exactly the pre-direction frame", () => {
+    // The classic look passes no direction; a direction that changes
+    // nothing issues the same canvas calls, so no hook leaks into it.
+    const classic = drawLive(ENTRIES, { classic: true }).log;
+    expect(classic).toEqual(draw());
+    expect(classic).toEqual(draw(BASELINE_DIRECTION_V7));
+    // And the live default is a different frame.
+    expect(drawLive(ENTRIES).log).not.toEqual(classic);
+  });
+
+  it("draws the direction's art for a Human piece, nothing while it loads, and the classic asset when it fails", () => {
+    const fighter = entry("UNIT", 1, 2, "unit-fighter", "UNIT:FIGHTER", {
+      key: "unit:7",
+      ownerColor: CORAL,
+      ownerSeat: 0,
+      hp: 10,
+      maxHp: 10,
+    });
+    const ready = drawLive([fighter], {
+      samples: directionArt(["UNIT:FIGHTER"]),
+    });
+    expect(ready.images).toEqual([raster("direction:UNIT:FIGHTER")]);
+    // Still loading: no sprite at all, never a flash of the previous art.
+    const loading = drawLive([fighter], {
+      samples: directionArt(["UNIT:FIGHTER"], "LOADING"),
+    });
+    expect(loading.images).toEqual([]);
+    // The raster failed (MISSING): the classic asset of that piece, in the
+    // faction's fixed colour, so the board is never left without it.
+    const failed = drawLive([fighter], { samples: directionArt([]) });
+    expect(failed.images).toEqual([
+      raster(`UNIT:FIGHTER#${LIVE_DIRECTION_V7.unit.owner}`),
+    ]);
+  });
+
+  it("leaves the other factions unconverted: player-coloured units on plates, classic cities with the crown and no pennant", () => {
+    const base = chibiArt();
+    const readPixels = vi.fn(environment.readPixels);
+    const art = createDirectedChibiArtV7({
+      base,
+      direction: LIVE_DIRECTION_V7,
+      environment: { ...environment, readPixels },
+      samples: directionArt(["UNIT:FIGHTER", "CITY:1", "CITY:2", "CITY:3"]),
+    });
+    for (const subject of [
+      "UNIT:UNDEAD:FIGHTER",
+      "UNIT:GOBLIN:KNIGHT",
+      "UNIT:DINOSAUR:EGG",
+      "CITY:UNDEAD:1",
+      "CITY:GOBLIN:2",
+      "CITY:DINOSAUR:3",
+    ] as const) {
+      const resolved = art.resolve({
+        subject,
+        at,
+        ownerColor: CORAL,
+        deviceScale: 1,
+      });
+      // The classic raster in the player's colour: no Human roof tint, no
+      // crimson garment, no tone.
+      expect(base.requests.at(-1)?.ownerColor, subject).toBe(CORAL);
+      expect(resolved.kind === "READY" && resolved.image, subject).toBe(
+        raster(`${subject}#${CORAL}`),
+      );
+      expect(resolved.kind === "READY" && resolved.cacheKey, subject).toBe(
+        `chibi:fixture-${subject}#${CORAL}`,
+      );
+    }
+    expect(readPixels).not.toHaveBeenCalled();
+    // The study's direction still tones and recolours nothing of theirs
+    // but does tone their cities; the live default does not.
+    const study = createDirectedChibiArtV7({
+      base,
+      direction: HUMAN_DEMO_DIRECTION_V7,
+      environment,
+    }).resolve({
+      subject: "CITY:UNDEAD:1",
+      at,
+      ownerColor: CORAL,
+      deviceScale: 1,
+    });
+    expect(study.kind === "READY" && study.cacheKey).toContain("|tone:");
+
+    const chrome = (
+      piece: BoardRenderPlanEntryV7,
+      flagDrawn: boolean,
+      direction = LIVE_DIRECTION_V7,
+    ) => {
+      const { context, log } = recordingContext();
+      const handled = drawDirectedPieceChromeV7(
+        context,
+        direction,
+        piece,
+        0,
+        0,
+        1,
+        false,
+        flagDrawn,
+      );
+      return { handled, log };
+    };
+    const undeadCapital = entry(
+      "CITY",
+      0,
+      0,
+      "building-city-1",
+      "CITY:UNDEAD:1",
+      {
+        ownerColor: CORAL,
+        ownerSeat: 1,
+        capital: true,
+      },
+    );
+    const faction = chrome(undeadCapital, false);
+    // No seat badge, the stock capital crown, and no pennant drawn.
+    expect(faction.handled).toEqual({ badge: true, hp: false, crown: false });
+    expect(faction.log.filter((call) => call[0] === "fill")).toEqual([]);
+    expect(faction.log.filter((call) => call[0] === "stroke")).toEqual([]);
+    // The study's direction gives the same city a corner pennant.
+    const studied = chrome(undeadCapital, false, HUMAN_DEMO_DIRECTION_V7);
+    expect(studied.handled.crown).toBe(true);
+    expect(fills(studied.log)).toContain(CORAL);
+    // A Human city: its pennant is on the art (flagDrawn) and carries the
+    // capital's gold shape, so the crown and the badge are both replaced.
+    const humanCapital = entry("CITY", 0, 0, "building-city-1", "CITY:1", {
+      ownerColor: CORAL,
+      ownerSeat: 0,
+      capital: true,
+    });
+    expect(chrome(humanCapital, true).handled).toEqual({
+      badge: true,
+      hp: false,
+      crown: true,
+    });
+    // A Human city whose direction raster failed has no anchor: it keeps a
+    // player marker, the corner pennant.
+    const fallback = chrome(humanCapital, false);
+    expect(fallback.handled.crown).toBe(true);
+    expect(fills(fallback.log)).toContain(CORAL);
+  });
+
+  it("draws other factions' units and the Egg on the board with a plate, without a seat number", () => {
+    const pieces = [
+      entry("UNIT", 0, 0, "unit-fighter", "UNIT:UNDEAD:FIGHTER", {
+        key: "unit:1",
+        ownerColor: CORAL,
+        ownerSeat: 2,
+        faction: "UNDEAD",
+        hp: 10,
+        maxHp: 10,
+      }),
+      entry("UNIT", 1, 0, "unit-fighter", "UNIT:DINOSAUR:EGG", {
+        key: "unit:2",
+        ownerColor: "#28b7a4",
+        ownerSeat: 1,
+        faction: "DINOSAUR",
+        hp: 6,
+        maxHp: 6,
+        egg: { turnsRemaining: 2 },
+      }),
+    ] as readonly BoardRenderPlanEntryV7[];
+    const live = drawLive(pieces);
+    expect(live.images).toEqual([
+      raster(`UNIT:UNDEAD:FIGHTER#${CORAL}`),
+      raster("UNIT:DINOSAUR:EGG##28b7a4"),
+    ]);
+    expect(fills(live.log)).toContain(darkerColourV7(CORAL));
+    expect(fills(live.log)).toContain(darkerColourV7("#28b7a4"));
+    // The only text left is the Egg's countdown.
+    expect(
+      live.log.filter((call) => call[0] === "fillText").map((call) => call[1]),
+    ).toEqual(["2"]);
+    // Full health: no HP bar for either.
+    expect(fills(live.log)).not.toContain("#65d889");
+    expect(fills(live.log)).not.toContain("#101718");
+  });
+
+  it("keeps the damaged HP bar on the base, clear of the cell's bottom edge", () => {
+    const { context, log } = recordingContext();
+    const handled = drawDirectedPieceChromeV7(
+      context,
+      LIVE_DIRECTION_V7,
+      entry("UNIT", 0, 0, "unit-fighter", "UNIT:FIGHTER", {
+        ownerColor: CORAL,
+        ownerSeat: 0,
+        hp: 2,
+        maxHp: 10,
+      }),
+      0,
+      0,
+      1,
+    );
+    expect(handled.hp).toBe(true);
+    const rects = log.filter((call) => call[0] === "fillRect");
+    // The dark track, then the red fill of a unit below one third.
+    expect(rects[0]).toEqual([
+      "fillRect",
+      -27,
+      DIRECTED_BASE_HP_BAR_TOP_V7,
+      54,
+      8,
+    ]);
+    expect(fills(log)).toEqual(["#101718", "#f0625a"]);
+    // The cell's edge is 64 world units below its centre; the territory
+    // border's casing and the selection outline reach about 4 units in.
+    expect(DIRECTED_BASE_HP_BAR_TOP_V7 + 8).toBeLessThanOrEqual(60);
+    // A full-health unit draws no bar at all.
+    const full = recordingContext();
+    drawDirectedPieceChromeV7(
+      full.context,
+      LIVE_DIRECTION_V7,
+      entry("UNIT", 0, 0, "unit-fighter", "UNIT:FIGHTER", {
+        ownerColor: CORAL,
+        ownerSeat: 0,
+        hp: 10,
+        maxHp: 10,
+      }),
+      0,
+      0,
+      1,
+    );
+    expect(full.log.filter((call) => call[0] === "fillRect")).toEqual([]);
+  });
+
+  it("keeps the saturation sliders working on the new buildings and cities", () => {
+    const resolved: [unknown, number][] = [];
+    const faded = raster("faded");
+    const cache: SpriteSaturationCacheV7 = {
+      resolve: (image, percent) => {
+        resolved.push([image, percent]);
+        return faded;
+      },
+    };
+    const pieces = ENTRIES.filter(
+      (item) => item.kind === "IMPROVEMENT" || item.kind === "CITY",
+    );
+    const live = drawLive(pieces, {
+      samples: directionArt(["IMPROVEMENT:WINDMILL", "CITY:1"]),
+      saturation: cache,
+    });
+    // The direction's own rasters go through the saturation cache at the
+    // slider levels, and the faded copies are what is drawn.
+    expect(resolved).toEqual([
+      [raster("direction:IMPROVEMENT:WINDMILL"), 40],
+      [raster("direction:CITY:1"), 60],
+    ]);
+    expect(live.images).toEqual([faded, faded]);
   });
 });

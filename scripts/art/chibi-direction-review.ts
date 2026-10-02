@@ -19,11 +19,14 @@
  *   farm-x4.png                      the Farm tile, and a 3 x 3 block with
  *                                    the cell boundaries marked
  *   showcase-{human,mixed}-{desktop,phone}-zoom-{1,0.75}.png
- *                                    a real Showcase match with the
- *                                    developer toggle ON: every seat Human,
- *                                    and Human, Undead, Goblin, Dinosaur
- *   showcase-human-today-desktop-zoom-1.png   the same match, toggle OFF
- *   showcase-human-{dock,tech}-desktop.png    the interface with the toggle ON
+ *                                    a real Showcase match in the default
+ *                                    look (bead pulp_wars-3tq.6): every seat
+ *                                    Human, and Human, Undead, Goblin,
+ *                                    Dinosaur
+ *   showcase-human-today-desktop-zoom-1.png   the same match in the classic
+ *                                    look (Settings > Developer tools >
+ *                                    Classic look), the art before this batch
+ *   showcase-human-{dock,tech}-desktop.png    the interface in the default look
  *   ingame-farms-{desktop,phone}-zoom-{1,0.75}.png
  *                                    the demo patch of
  *                                    scripts/art/visual-direction/scene.ts
@@ -632,7 +635,7 @@ async function screenshot(
 
 const BOARD = `document.querySelector('canvas.board-canvas-v7')`;
 const SCENE = `globalThis.__CHIBI_DIRECTION_SCENE__`;
-const TOGGLE_KEY = "pulpWars.ruleset7.boardVisualDirection.v1";
+const CLASSIC_LOOK_KEY = "pulpWars.ruleset7.boardClassicLook.v1";
 
 async function zoomTo(
   connection: Connection,
@@ -665,12 +668,15 @@ const MATCHES = [
   { name: "mixed", factions: ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"] },
 ] as const;
 
-/** Reloads the page with the toggle set, and launches a Showcase match. */
+/**
+ * Reloads the page in the default look, or in the classic look of the
+ * developer option, and launches a Showcase match.
+ */
 async function launch(
   connection: Connection,
   url: string,
   factions: readonly string[],
-  toggle: boolean,
+  classic: boolean,
 ): Promise<void> {
   await evaluate(connection, `globalThis.__DIRECTION_REVIEW_OLD__ = true`);
   await connection.send("Page.navigate", { url });
@@ -681,9 +687,9 @@ async function launch(
   await evaluate(
     connection,
     `(() => { for (const key of Object.keys(localStorage)) if (key.startsWith('pulpWars.save.')) localStorage.removeItem(key); ${
-      toggle
-        ? `localStorage.setItem(${JSON.stringify(TOGGLE_KEY)}, JSON.stringify({ recommended: true }));`
-        : `localStorage.removeItem(${JSON.stringify(TOGGLE_KEY)});`
+      classic
+        ? `localStorage.setItem(${JSON.stringify(CLASSIC_LOOK_KEY)}, JSON.stringify({ classic: true }));`
+        : `localStorage.removeItem(${JSON.stringify(CLASSIC_LOOK_KEY)});`
     } globalThis.__DIRECTION_REVIEW_OLD__ = true; })()`,
   );
   await connection.send("Page.reload");
@@ -700,7 +706,7 @@ async function launch(
     `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v?.humanPlayerId && ${BOARD}?.dataset.artSet === 'CHIBI'; })()`,
     900,
   );
-  // The direction art is imported on demand; give its rasters time to settle.
+  // Give the board's rasters time to settle.
   await delay(1500);
 }
 
@@ -764,7 +770,7 @@ async function captures(directory: string, baseUrl: string): Promise<string[]> {
         mobile: viewport.mobile,
       });
       for (const match of MATCHES) {
-        await launch(connection, url.href, match.factions, true);
+        await launch(connection, url.href, match.factions, false);
         for (const step of ["1", "0.75"]) {
           await zoomTo(connection, step, false);
           files.push(
@@ -812,7 +818,7 @@ async function captures(directory: string, baseUrl: string): Promise<string[]> {
         // straight and diagonal Roads, cities with pennants, ships.
         await evaluate(
           connection,
-          `(async () => { const scene = await import('/scripts/art/visual-direction/scene.ts'); const direction = await import('/src/render/canvas/visual-direction-v7.ts'); ${SCENE} = scene.showVisualDirectionSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, { kind: 'DEMO', direction: direction.HUMAN_DEMO_DIRECTION_V7, sampleSet: 'PRODUCTION' }); return true; })()`,
+          `(async () => { const scene = await import('/scripts/art/visual-direction/scene.ts'); const direction = await import('/src/render/canvas/visual-direction-v7.ts'); ${SCENE} = scene.showVisualDirectionSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, { kind: 'DEMO', direction: direction.LIVE_DIRECTION_V7, sampleSet: 'PRODUCTION' }); return true; })()`,
         );
         await waitFor(connection, `${SCENE} !== undefined`);
         for (const step of ["1", "0.75"]) {
@@ -834,8 +840,8 @@ async function captures(directory: string, baseUrl: string): Promise<string[]> {
         );
       }
       if (viewport.name === "desktop") {
-        // The same all-Human match as it is drawn today (toggle off).
-        await launch(connection, url.href, MATCHES[0].factions, false);
+        // The same all-Human match in the classic look (the previous art).
+        await launch(connection, url.href, MATCHES[0].factions, true);
         await zoomTo(connection, "1", false);
         files.push(
           await screenshot(
@@ -904,7 +910,7 @@ async function main(): Promise<void> {
       stopDevServer(server);
     }
     captureNote =
-      "showcase-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi and the developer toggle (Settings > Developer tools > Visual direction) ON; 'human' is every seat Human, 'mixed' is Human, Undead, Goblin and Dinosaur; 'today' is the same all-Human match with the toggle OFF. ingame-farms-*: the DEMO patch of scripts/art/visual-direction/scene.ts drawn by the real board host with the production art.";
+      "showcase-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look (the new visual direction, bead pulp_wars-3tq.6); 'human' is every seat Human, 'mixed' is Human, Undead, Goblin and Dinosaur; 'today' is the same all-Human match with Settings > Developer tools > Classic look (previous art) ON. ingame-farms-*: the DEMO patch of scripts/art/visual-direction/scene.ts drawn by the real board host with the live direction and the production art.";
   }
   const images = await Promise.all(
     outputs.map(async (file) => {

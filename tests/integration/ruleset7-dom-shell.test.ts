@@ -2,6 +2,7 @@
 
 import { readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { LIVE_DIRECTION_V7 } from "../../src/render/canvas/visual-direction-v7";
 import {
   bootstrapRuleset7App,
   Ruleset7BrowserController,
@@ -1095,8 +1096,11 @@ describe("Ruleset 7 DOM shell", () => {
     third.destroy();
   });
 
-  it("keeps the visual-direction experiment off by default and toggles it live and persistently (pulp_wars-3tq.1)", async () => {
-    const key = "pulpWars.ruleset7.boardVisualDirection.v1";
+  it("draws the new visual direction by default and offers a persistent Classic look developer option (pulp_wars-3tq.6)", async () => {
+    const key = "pulpWars.ruleset7.boardClassicLook.v1";
+    const retiredKey = "pulpWars.ruleset7.boardVisualDirection.v1";
+    // Whatever the retired experiment stored never forces the classic look.
+    window.localStorage.setItem(retiredKey, '{"recommended":false}');
     const host = new CapturingBoardHost();
     const first = bootstrapRuleset7App(document, {
       storage: null,
@@ -1105,26 +1109,56 @@ describe("Ruleset 7 DOM shell", () => {
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => first.controller.snapshot().phase === "ACTIVE");
-    // Off by default: the board model carries no direction at all.
-    expect(host.model).not.toBeNull();
-    expect(host.model !== null && "visualDirection" in host.model).toBe(false);
+    // A fresh player gets the new look: plates, pennants, calm chrome, and
+    // the direction's own art, loaded with the rest of the CHIBI set.
+    expect(host.model?.artSet).toBe("CHIBI");
+    expect(host.model?.visualDirection).toEqual(LIVE_DIRECTION_V7);
+    expect(host.model?.visualDirection?.unit.base).toBe("PLATE");
+    expect(host.model?.visualDirection?.chrome).toEqual({
+      hp: "DAMAGED",
+      hpPlacement: "BASE",
+      badge: "NONE",
+      ready: "BASE",
+      roads: "CALM",
+      borders: "SOLID",
+    });
+    expect(
+      host.model?.visualDirectionArt?.variants("UNIT:FIGHTER")[0]?.id,
+    ).toBe("chibi-direction-fighter");
     expect(window.localStorage.getItem(key)).toBeNull();
+    expect(window.localStorage.getItem(retiredKey)).toBeNull();
     openMenuItem("settings");
-    const toggle = requiredInput("v7-visual-direction");
+    expect(document.querySelector("#v7-visual-direction")).toBeNull();
+    const toggle = requiredInput("v7-classic-look");
     expect(toggle.type).toBe("checkbox");
     expect(toggle.checked).toBe(false);
-    expect(toggle.closest("label")?.textContent).toContain(
-      "Human faction demo",
+    expect(toggle.closest("label")?.textContent?.trim()).toBe(
+      "Classic look (previous art)",
     );
+    expect(
+      toggle.closest("details")?.querySelector("summary")?.textContent,
+    ).toBe("Developer tools");
     toggle.click();
-    expect(host.model?.visualDirection?.unit.base).toBe("PLATE");
-    expect(window.localStorage.getItem(key)).toBe('{"recommended":true}');
+    // The classic look carries no direction at all: the board host then
+    // draws exactly the pre-direction frame.
+    expect(host.model !== null && "visualDirection" in host.model).toBe(false);
+    expect(host.model !== null && "visualDirectionArt" in host.model).toBe(
+      false,
+    );
+    expect(window.localStorage.getItem(key)).toBe('{"classic":true}');
     // Presentation only: the shared settings envelope is untouched.
     expect(window.localStorage.getItem("pulpWars.settings.v1")).toBeNull();
-    requiredInput("v7-visual-direction").click();
-    expect(host.model !== null && "visualDirection" in host.model).toBe(false);
-    expect(window.localStorage.getItem(key)).toBe('{"recommended":false}');
-    requiredInput("v7-visual-direction").click();
+    requiredInput("v7-classic-look").click();
+    expect(host.model?.visualDirection).toEqual(LIVE_DIRECTION_V7);
+    expect(window.localStorage.getItem(key)).toBe('{"classic":false}');
+    // The saturation sliders keep working with the new buildings: the model
+    // carries both the direction and the saturation.
+    const building = requiredInput("v7-building-saturation");
+    building.value = "40";
+    building.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(host.model?.saturation).toEqual({ building: 40, city: 100 });
+    expect(host.model?.visualDirection).toEqual(LIVE_DIRECTION_V7);
+    requiredInput("v7-classic-look").click();
     first.destroy();
 
     document.body.innerHTML = '<div id="app"></div>';
@@ -1136,9 +1170,29 @@ describe("Ruleset 7 DOM shell", () => {
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => second.controller.snapshot().phase === "ACTIVE");
-    expect(restoredHost.model?.visualDirection?.unit.base).toBe("PLATE");
+    expect(restoredHost.model).not.toBeNull();
+    expect(
+      restoredHost.model !== null && "visualDirection" in restoredHost.model,
+    ).toBe(false);
     second.destroy();
-    window.localStorage.removeItem(key);
+
+    // The LEGACY art set never carries the direction.
+    window.localStorage.clear();
+    document.body.innerHTML = '<div id="app"></div>';
+    const legacyHost = new CapturingBoardHost();
+    const third = bootstrapRuleset7App(document, {
+      storage: null,
+      boardHost: legacyHost,
+      artSet: "LEGACY",
+    });
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => third.controller.snapshot().phase === "ACTIVE");
+    expect(legacyHost.model?.artSet).toBe("LEGACY");
+    expect(
+      legacyHost.model !== null && "visualDirection" in legacyHost.model,
+    ).toBe(false);
+    third.destroy();
   });
 
   it("starts with defaults when the supplied settings adapter cannot be read", async () => {

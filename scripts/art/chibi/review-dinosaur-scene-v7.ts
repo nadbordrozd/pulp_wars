@@ -13,7 +13,8 @@
  * Dinosaur seats in the four player colours (Coral, Teal, Gold, Violet), so
  * the blue hide is checked under every owner; the optional last three are a
  * Human, an Undead and a Goblin seat for scale. Every second row is at half
- * HP, so the HP bar and the seat badge are drawn beside every sprite.
+ * HP, so the damaged HP bar is drawn on the base plate of every sprite (the
+ * live look of bead pulp_wars-3tq.6: no seat badge, a plate under each unit).
  */
 import type {
   CoordV7,
@@ -23,6 +24,7 @@ import type {
   UnitRoleIdV7,
 } from "../../../src/engine/index";
 import { CanvasBoardHostV7 } from "../../../src/render/canvas/board-host-v7";
+import { liveBoardLookV7 } from "../../../src/render/canvas/live-board-look-v7";
 
 type Tile = PlayerViewV7["board"]["tiles"][number];
 type Unit = PlayerViewV7["units"][number];
@@ -67,7 +69,7 @@ export function chibiDinosaurReviewViewV7(
   const columns = COLUMNS.slice(0, columnCount);
   const rows = ROLES.length + 1;
   const origin = {
-    // Column 1 at the least: the HP bar and seat badge sit left of a sprite.
+    // Column 1 at the least, which keeps the patch off the map's edge.
     x: Math.max(
       1,
       Math.min(
@@ -191,6 +193,8 @@ export function showChibiDinosaurReviewV7(
     presentationPaused: true,
     highContrast: false,
     artSet: "CHIBI",
+    // The look the game draws by default (bead pulp_wars-3tq.6).
+    ...liveBoardLookV7("CHIBI"),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

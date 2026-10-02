@@ -22,6 +22,59 @@ tech-detail views, not spelled out in the HUD or dock. Where later sections
 require specific verbose labels, formula prose, or `+N/turn` wording for
 Ruleset 7, this overlay wins. Ruleset 6 and legacy routes are unchanged.
 
+## Current CHIBI board look (visual direction, October 2026)
+
+This overlay applies to the CHIBI art set of the current Ruleset 7 route
+(bead `pulp_wars-3tq.6`; rules and evidence in
+[the visual direction](../art/VISUAL_DIRECTION_2026-10.md#13-live-default)).
+It is what a player with no stored preference sees. Where a later section
+describes the CHIBI seat badge, the always-on vertical HP bar, the unit
+outline glow as the ready cue, dashed territory borders or black-cased
+Roads, that text now describes the **Classic look** developer option
+([section 11](#11-settings-and-pause)); the LEGACY art set is unchanged.
+
+- **Units stand on a base plate** in their player's colour with a rim in a
+  darker tone of it, about 52 x 18 CSS px at zoom 1, drawn under the sprite.
+  The plate has the seat's shape: round, pointed, square, swallow-tailed for
+  seats 1 to 4, so players differ without relying on colour. A ship (and the
+  embarked transport) has no plate: it keeps its player-coloured sail and
+  stands in a thin round ring in the player colour.
+- **No numbered seat badge** is drawn on units or cities.
+- **HP bar only when damaged:** a short horizontal bar on the plate (dark
+  track; green, amber at two thirds or less, red at one third or less). A
+  unit at full health has no bar. A garrisoned unit's bar is shorter and
+  sits under its reduced sprite. The bar stays inside the cell, above the
+  territory border and the selection outline.
+- **Ready cue on the plate:** a unit that can still act has a bright
+  warm-white rim round its plate (round its ring for a ship). The outline
+  glow is not drawn; the dock still says **Needs action** or **Handled**.
+- **Cities.** A Human city flies a code-drawn swallow-tailed pennant in the
+  player colour from its tower, carrying the seat's shape in cream, or in
+  gold for the capital (which then has no separate crown). An Undead, Goblin
+  or Dinosaur city is not converted: it keeps its own art in its owner
+  recolour and the capital crown, with no seat badge and no pennant.
+  Population pips and the Field Defense badge are unchanged.
+- **Ports and Shipyards** fly a smaller pennant in the territory owner's
+  colour. Other improvements carry no player colour: the shared set (Farm as
+  crop rows, Lumber Camp, Windmill, Sawmill, Forge, Workshop, Market,
+  Monument) and the neutral Village are drawn as authored.
+- **Human units, portraits and City 1 to 3** use the direction's art in the
+  faction's fixed crimson and gold for every player, on the board and in the
+  docks, training cards and technology cards. Undead, Goblin and Dinosaur
+  units and portraits keep their player-coloured garments.
+- **Territory borders** are one thin solid line in the owner colour with a
+  soft dark casing; a border shared by two owners alternates their colours.
+- **Roads** have no black casing. Terrain, resources and Treasure keep their
+  art, drawn at lower contrast.
+- **Unchanged:** Field Defense, the faction badge of a stand-in sprite,
+  Plague and Bitten markers, Grave markers, Egg countdown chips, growth
+  chevrons, landing markers, Stampede lanes, Kaboom! and other previews,
+  selection and target outlines, and every dock, dialog and label.
+- **Loading.** The direction's art loads with the rest of the CHIBI set. A
+  piece is not drawn until its raster is ready (never the previous art
+  first), and a piece whose direction raster fails to load falls back to its
+  classic asset alone.
+
 ## Current Ruleset 7 revision 9 overlay
 
 This overlay applies only to the current Ruleset 7 route. The Ruleset 6
@@ -81,7 +134,9 @@ an Undead seat looks and behaves exactly as in revision 12.
   Boat and Battleship, which share the Human ship art), uses the placeholder:
   the Human sprite of the role plus a bone skull badge on a near-black disc
   (legacy: right of the sprite above the HP bar; CHIBI: the cell's top-left
-  corner), distinct from owner colour. DOM unit art, training buttons,
+  corner), distinct from owner colour. In the default CHIBI look that
+  stand-in is the Human direction sprite (crimson and gold) on the owner's
+  plate. DOM unit art, training buttons,
   recruit help and reward art follow the same rule. An explored Grave is a
   small code-drawn tombstone marker in its tile's bottom-right corner, drawn
   above units (see the
@@ -119,8 +174,9 @@ the two economy texts below.
   disc and a bitten unit a bite of two jaws on a dark red disc; a unit with
   both shows both, stacked. They are code-drawn and share one frame per art
   set: LEGACY left of the sprite between the Field Defense symbol and the seat
-  badge, CHIBI just right of the unit's own HP bar, clear of the Undead badge,
-  Field Defense corner, seat badge, Inspired status and capital crown. The
+  badge, CHIBI in the cell's left strip (just right of the classic look's HP
+  bar; the default look draws no bar there), clear of the Undead badge,
+  Field Defense corner, the base plate, Inspired status and capital crown. The
   markers are named by the subjects `STATUS:PLAGUED` and `STATUS:BITTEN`; a
   later art bead may supply rasters through the renderer's `afflictionArt`
   hook. The map cursor description adds "plagued" and "bitten".
@@ -347,8 +403,9 @@ seat looks as in revision 18 apart from the extra faction option.
   CHIBI without the raster) a code-drawn speckled egg with a painted band in
   a bone nest. A charcoal chip with an owner-colour ring beside it shows the
   countdown number (never smaller than a 10 px number). An Egg shows its HP
-  bar only when damaged, wears its owner's seat badge and never a faction
-  badge. Selecting one opens its dock: "{Unit} Egg", the faction chip,
+  bar only when damaged, wears its owner's seat badge (LEGACY and the Classic
+  look; in the default CHIBI look its nest sits on the owner's plate) and
+  never a faction badge. Selecting one opens its dock: "{Unit} Egg", the faction chip,
   "Hatches in N turns", "N slots", HP and Defense only, the sentence "Hatches
   into a {Unit} in N turns. Cannot move or fight.", and for an own Egg
   (with Administration) **Abandon Egg** with its refund ("Remove this Egg
@@ -387,8 +444,9 @@ seat looks as in revision 18 apart from the extra faction option.
   explaining "A Triceratops cannot Stampede after moving" or "No clear lane:
   needs open ground in a straight line"; a tap shows the reason as a toast.
 - **Growth.** A Big unit wears one upward rank chevron and an Alpha two,
-  cream with a black outline, right of its HP bar in both art sets (the shape
-  carries the meaning, so it holds in high contrast and for every owner
+  cream with a black outline, right of its HP bar in both art sets (in the
+  default CHIBI look, which draws no side bar, at the left end of the plate;
+  the shape carries the meaning, so it holds in high contrast and for every owner
   colour). In CHIBI the sprite is also drawn x1.125 (Big) or x1.25 (Alpha)
   about its feet, capped at a drawn width of 96 CSS px, so the Brontosaurus
   stops at x1.09; overlays do not move. The dock shows "Grows · 1 kill to
@@ -484,7 +542,9 @@ both art sets. Where an older section below disagrees, this overlay wins.
 - **Graves.** An explored Grave is a small tombstone marker (pale headstone
   with a cross, dark outline) in the **bottom-right corner** of its tile, 18
   CSS px on an 80 CSS px tile and scaling with zoom, in both art sets. That
-  corner is free of the seat badge and HP bar (left or below the sprite), the
+  corner is free of the seat badge and HP bar (left or below the sprite; in
+  the default CHIBI look the marker overlaps only the right tip of the base
+  plate and is drawn above it), the
   faction, Field Defense and affliction markers (left and top), and status
   chips and the capital crown (top). On a city tile the CHIBI marker sits
   just left of the population column. Markers are drawn after every unit and
@@ -1137,7 +1197,25 @@ confirmation “Delete current saved match?”, and returns to Hub after success
 There is no Resign rule in the POC; Exit is not elimination.
 
 Settings ends with a collapsed **Developer tools** section. Besides the log and
-debug exports it holds an experiment for map clutter, **Board saturation**: a
+debug exports it holds **Board look** and an experiment for map clutter,
+**Board saturation**.
+
+**Board look** is one checkbox, **Classic look (previous art)**, off by
+default (bead `pulp_wars-3tq.6`). On, the CHIBI board and interface return to
+the look before the [visual direction](#current-chibi-board-look-visual-direction-october-2026):
+player-coloured Human garments and roofs, the previous improvements, the
+numbered seat badge, the vertical HP bar on every unit, the outline glow as
+the ready cue, dashed borders and black-cased Roads; that frame is drawn
+exactly as it was before the direction existed. It is for comparison only
+and has no effect on the LEGACY art set. The board and the docks switch at
+once. The choice is presentation only: it is stored in the browser under
+`pulpWars.ruleset7.boardClassicLook.v1` as `{"classic": true|false}` (outside
+the shared settings envelope), a missing or malformed value is off, and it
+never enters a save, a replay or the engine. The retired experiment key
+`pulpWars.ruleset7.boardVisualDirection.v1` is never read and is removed on
+load, so nothing stored by the experiment can switch the classic look on.
+
+**Board saturation** is a
 “Building saturation” and a “City saturation” slider (0–100% in steps of 5,
 default 100%, each with a live percentage readout) and a “Reset saturation”
 button that returns both to 100%. Building saturation fades improvement
@@ -1145,7 +1223,8 @@ sprites, the Mine drawn as part of its Mined Mountain, and the Field Defense
 badge; City saturation fades city and neutral Village sprites. Units, other
 terrain, resources, Roads, overlays, markers, borders, previews and the DOM
 docks and portraits are never affected. The board redraws while a slider is
-dragged, in both art sets. The values are presentation only: they are stored
+dragged, in both art sets and in both CHIBI looks (the new improvements and
+cities fade like the previous ones; code-drawn pennants keep their colour). The values are presentation only: they are stored
 in the browser under `pulpWars.ruleset7.boardSaturation.v1` (outside the shared
 settings envelope, like the art set), are restored on load with missing or
 invalid values clamped to 0–100 and defaulting to 100%, and never enter a save,

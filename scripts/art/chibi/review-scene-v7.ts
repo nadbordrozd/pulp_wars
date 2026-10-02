@@ -39,6 +39,7 @@ import type {
   UnitRoleIdV7,
 } from "../../../src/engine/index";
 import { CanvasBoardHostV7 } from "../../../src/render/canvas/board-host-v7";
+import { liveBoardLookV7 } from "../../../src/render/canvas/live-board-look-v7";
 
 type Tile = PlayerViewV7["board"]["tiles"][number];
 
@@ -515,7 +516,7 @@ export function chibiReviewSceneViewV7(
                         : naval
                           ? ("NAVAL" as const)
                           : ("LAND" as const),
-                      // The rival's units show a part-filled HP bar.
+                      // The rival's units are damaged: an HP bar on the base.
                       hp: viewerUnit
                         ? template.maxHp
                         : Math.ceil(template.maxHp / 2),
@@ -604,6 +605,8 @@ export function showChibiReviewSceneV7(
     presentationPaused: true,
     highContrast: false,
     artSet: "CHIBI",
+    // The look the game draws by default (bead pulp_wars-3tq.6).
+    ...liveBoardLookV7("CHIBI"),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

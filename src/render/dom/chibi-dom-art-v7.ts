@@ -10,6 +10,7 @@ import {
   browserChibiRasterEnvironmentV7,
   createChibiArtResolverV7,
   resolveChibiWithFallbackV7,
+  type ChibiBoardArtV7,
   type ChibiRasterEnvironmentV7,
 } from "../canvas/chibi-art-resolver-v7";
 
@@ -150,13 +151,38 @@ export function createChibiDomArtV7(input: {
   /** Called when a raster settles; the view redraws. */
   readonly onChange: () => void;
   readonly registry?: ChibiArtRegistryV7;
+  /**
+   * Art resolved before `registry`, subject by subject (the new visual
+   * direction's portraits, cities and improvements). A subject it does not
+   * register, or whose raster failed to load, takes the registry's art, and
+   * only then a faction subject's shared stand-in: an Undead portrait never
+   * becomes the preferred Human one.
+   */
+  readonly preferred?: ChibiArtRegistryV7;
 }): ChibiDomArtV7 {
-  const art = createChibiArtResolverV7({
+  const standard = createChibiArtResolverV7({
     environment: input.environment,
     redraw: input.onChange,
     registry:
       input.registry ?? buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7).registry,
   });
+  const preferred =
+    input.preferred === undefined
+      ? null
+      : createChibiArtResolverV7({
+          environment: input.environment,
+          redraw: input.onChange,
+          registry: input.preferred,
+        });
+  const art: ChibiBoardArtV7 =
+    preferred === null
+      ? standard
+      : {
+          resolve(request) {
+            const first = preferred.resolve(request);
+            return first.kind === "MISSING" ? standard.resolve(request) : first;
+          },
+        };
   const trimmed = new Map<string, TrimmedArt | null>();
   const trim = (
     asset: ChibiArtAssetV7,

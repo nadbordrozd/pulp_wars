@@ -27,10 +27,10 @@ holds the old-versus-new sheets.
 
 **Status:** the user chose this direction on 2026-10-02 (recorded on bead
 `pulp_wars-3tq.4`); bead `pulp_wars-3tq.5` produced the art (batch
-`direction-human`) and bead `pulp_wars-3tq.6` makes it the default. Until
-then the sections further down describe what the game draws by default, and
-the developer toggle draws this one. See
-[VISUAL_DIRECTION_2026-10.md](../VISUAL_DIRECTION_2026-10.md#12-production).
+`direction-human`) and bead `pulp_wars-3tq.6` made it the default look. The
+sections further down describe the previous art, which the game still draws
+with Settings > Developer tools > Classic look. See
+[VISUAL_DIRECTION_2026-10.md](../VISUAL_DIRECTION_2026-10.md#13-live-default).
 
 - **Identity:** a proud high-medieval kingdom of about 1250: knights and
   men-at-arms in heraldry.

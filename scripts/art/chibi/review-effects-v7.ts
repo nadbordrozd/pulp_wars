@@ -24,6 +24,7 @@ import type {
   UnitRoleIdV7,
 } from "../../../src/engine/index";
 import { CanvasBoardHostV7 } from "../../../src/render/canvas/board-host-v7";
+import { liveBoardLookV7 } from "../../../src/render/canvas/live-board-look-v7";
 import type { SupportFeedbackV7 } from "../../../src/render/canvas/support-presentation-v7";
 
 type Seat = "CORAL" | "TEAL" | "GOLD" | "VIOLET" | "UNDEAD";
@@ -332,6 +333,8 @@ export function showChibiEffectsReviewV7(
     presentationPaused: true,
     highContrast: false,
     artSet: "CHIBI",
+    // The look the game draws by default (bead pulp_wars-3tq.6).
+    ...liveBoardLookV7("CHIBI"),
   });
   const pin = (): void =>
     host.pinSupportFeedback(chibiEffectsReviewFeedbackV7(origin, scene));

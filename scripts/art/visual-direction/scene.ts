@@ -710,9 +710,7 @@ export function showVisualDirectionSceneV7(
     ...(options.direction === undefined
       ? {}
       : { visualDirection: options.direction }),
-    ...(samples === undefined
-      ? {}
-      : { visualDirectionSamples: samples.registry }),
+    ...(samples === undefined ? {} : { visualDirectionArt: samples.registry }),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

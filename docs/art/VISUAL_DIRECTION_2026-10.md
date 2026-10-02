@@ -6,9 +6,13 @@ faction before any rollout; that demo is [section 11](#11-human-demo) (bead
 `pulp_wars-3tq.3`), which also changes some of the rules proposed below and
 what the developer toggle draws. The user then chose the direction
 (`pulp_wars-3tq.4`); [section 12](#12-production) records the production art
-(bead `pulp_wars-3tq.5`). Nothing here changes what the game draws by default. The
-[chibi art direction](CHIBI_ART_DIRECTION.md) still governs production art;
-section 6 lists the rules that would change if this direction is approved.
+(bead `pulp_wars-3tq.5`), and [section 13](#13-live-default) records how
+bead `pulp_wars-3tq.6` made the direction the default look of the CHIBI art
+set. Sections 1 to 12 are kept as written at the time: where they say
+"today", "by default" or "the developer toggle", read them as history;
+section 13 is the current behaviour. The
+[chibi art direction](CHIBI_ART_DIRECTION.md) governs production art; its
+section 4a holds the rules this direction changed.
 
 The user's brief: a developed map looks cluttered and slightly unpleasant;
 whole garments and whole roofs in the player colour look weird ("trolls in
@@ -43,10 +47,10 @@ recommend, on the Human faction and three units only.
   owner masks from garments to accents: about one edit call per unit sprite
   and portrait, roughly 120 calls (about US$1.50) for all four factions.
   This study used 4 PixelLab calls.
-- **See it live.** Settings > Developer tools > Visual direction switches a
-  real game to the direction (chibi art set; off by default). Since the
-  Human demo it draws [section 11](#11-human-demo), not the study's
-  recommendation; the study's sheets are still reproduced by
+- **See it live.** The direction is what the game draws by default
+  ([section 13](#13-live-default)); Settings > Developer tools > Classic
+  look (previous art) returns to the look this study started from. The
+  study's sheets are still reproduced by
   `npm run art:visual-direction-review`.
 
 Key comparisons (all under
@@ -810,6 +814,145 @@ Recipes that worked:
 - **Four players who all play Human differ only by plate, pennant and
   border.** The user plans a rule of one player per faction per map later.
 - **Ships, terrain and the other factions** are not converted.
+
+## 13. Live default
+
+**Status:** bead `pulp_wars-3tq.6`, waiting for the user's play test
+(`pulp_wars-3tq.7`). The user's decision (recorded on `pulp_wars-3tq.4`):
+replace the buildings and all Human units in the live game and do the base
+plates; do not replace the other factions' sprites yet; play, then decide.
+
+A player with no stored preference now gets the direction in the CHIBI art
+set. The LEGACY art set is untouched: it is never given a direction.
+
+### What the default look draws
+
+| Piece                                          | Default look                                                                                                    |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Human units and portraits                      | the production art in fixed crimson and gold, for every player                                                  |
+| Every land unit, of every faction, and the Egg | a seat-shaped base plate in the player colour under the feet                                                    |
+| Ships and the embarked transport               | unchanged art with the player-coloured sail, in a thin round ring                                               |
+| Shared improvements, Farm, Village             | the production art, drawn as authored, no player colour                                                         |
+| Port, Shipyard                                 | a small code-drawn pennant in the territory owner's colour                                                      |
+| Human City 1 to 3                              | the production art with a pennant on the tower: seat shape in cream, gold for the capital (no separate crown)   |
+| Seat badge                                     | not drawn, on any unit or city                                                                                  |
+| HP bar                                         | only for a damaged unit: a short bar on the plate, green, amber at two thirds or less, red at one third or less |
+| Ready cue                                      | a bright rim round the plate (or the ship's ring); no outline glow                                              |
+| Territory border                               | one thin solid line with a soft dark casing; a shared border alternates the two colours                         |
+| Roads                                          | no black casing                                                                                                 |
+| Terrain, resources, Treasure, the Mine         | unchanged art, toned by code (contrast 65% around the ground's mean, softened outlines), once per raster        |
+
+### What is not converted
+
+Undead, Goblin and Dinosaur keep their current art until the user decides
+(`pulp_wars-3tq.7`):
+
+- **Units and portraits** keep their player-coloured garments. On the board
+  they stand on a plate, lose the seat badge and show the HP bar only when
+  damaged, like every unit. Nothing Human reaches them: no crimson recolour,
+  no Human portrait in the dock, the training cards or the technology tree.
+- **Cities** keep their faction art, their owner recolour and the classic
+  capital crown, exactly as the classic look draws them, minus the seat
+  badge. They are **not** toned and get **no pennant**. Decided by looking:
+  the fallback pennant on a pole in the cell's top-left corner covers the
+  Field Defense badge (the "+2" palisade of a fortified city), floats beside
+  the art instead of on a tower, and repeats a colour that already fills
+  the roofs; the Goblin and Undead cities also have a flag of their own in
+  the art. The study's toning (85% saturation and contrast, softened
+  outline) is dropped for them too, so that "not converted" means exactly
+  the current sprite.
+- **Faction markers are unchanged:** Egg countdown chips, growth chevrons,
+  Plague and Bitten chips, Grave markers, the faction badge of a stand-in
+  sprite, landing markers, Stampede lanes and Kaboom! previews. One
+  collision was fixed: the damaged HP bar on the plate was drawn in the last
+  five pixels of the cell, where the territory border and the selection
+  outline hid most of it (seen on a damaged Egg and on a selected Guard); it
+  now sits 3 px higher, inside both.
+- **Stand-ins.** A faction unit whose own raster is missing or fails to load
+  is still drawn as the Human sprite of its role with the faction badge;
+  that stand-in is now the crimson Human direction sprite.
+- **Ships, terrain and resources** are not re-created.
+
+### Loading and fallback
+
+- The production art of section 12 is part of the CHIBI set's normal asset
+  loading: `src/render/canvas/live-board-look-v7.ts` builds its registry
+  with the module, and the board host and the interface resolve it before
+  the default art. Nothing is imported on demand any more.
+- **No flash of the previous art.** While a direction raster loads, the
+  piece is not drawn (like any CHIBI piece), and the interface shows its
+  loading placeholder.
+- **Per-piece fallback.** A direction raster that fails to load resolves as
+  missing, and that piece alone is drawn from its classic asset: a Human
+  unit in the faction crimson through its old mask, a building or a Human
+  city in the faction's roof colour and toned, a Human city with the corner
+  pennant (it has no authored anchor), a portrait or a dock sprite in the
+  owner's colour. The rest of the board is unaffected.
+- **No per-frame pixel work.** Toned terrain and fallback copies are built
+  once per source raster and cached with it; direction art is drawn as
+  authored. A frame only issues draw calls.
+
+### The developer option
+
+Settings > Developer tools > **Board look** > "Classic look (previous art)",
+off by default, stored in the browser under
+`pulpWars.ruleset7.boardClassicLook.v1` as `{"classic": true|false}`. On, the
+board is given no direction and the interface resolves the default registry
+alone: the frame is the one drawn before the direction existed (a test
+keeps that exact). The experiment's key
+`pulpWars.ruleset7.boardVisualDirection.v1` is retired: it is never read and
+is removed on load. Its `false` meant "the experiment was not switched on",
+not "I prefer the previous art", so no value of it turns the classic look
+on; someone who had the experiment on, or off, simply gets the default.
+
+The building and city saturation sliders keep working in both looks: the
+direction's rasters go through the same cached desaturated copies.
+
+### Runtime
+
+- `LIVE_DIRECTION_V7` in
+  [`visual-direction-v7.ts`](../../src/render/canvas/visual-direction-v7.ts)
+  is the Human demo's direction with `city.factionCities: "CLASSIC"`.
+  `liveBoardLookV7(artSet, classicLook)` in
+  [`live-board-look-v7.ts`](../../src/render/canvas/live-board-look-v7.ts)
+  returns the two board-host model fields the game passes
+  (`visualDirection`, `visualDirectionArt`), or nothing for LEGACY and the
+  classic look. The CHIBI review scenes under `scripts/art/chibi/` spread
+  the same fields, so review evidence shows what the game draws.
+- `createChibiDomArtV7` takes a `preferred` registry, resolved subject by
+  subject before the default one and before a faction subject's shared
+  stand-in, so an Undead portrait never becomes the Human direction
+  portrait (the experiment's toggle had that leak).
+- `HUMAN_DEMO_DIRECTION_V7`, `RECOMMENDED_DIRECTION_V7` and the sample sets
+  remain for the study's benches only.
+
+### Evidence
+
+`npm run art:chibi-direction-review` now captures the default look
+(`showcase-*`, `ingame-farms-*`) and the classic look
+(`showcase-human-today-desktop-zoom-1.png`).
+
+### Weak spots for the play test
+
+- **Mixed matches look two-speed.** Human cities and units are in fixed
+  colours beside whole-roof and whole-garment player colour on the other
+  three factions, and an unconverted city is bolder than a Human one.
+- **Other factions' cities carry no seat shape.** Their owner is read from
+  the colour and the border alone; the numbered badge is gone.
+- **Four Human players** differ only by plate, pennant and border.
+- **The plate sits at the very bottom of the cell;** a ready unit's bright
+  rim reaches about 2 px into the cell below.
+- **The damaged HP bar overlaps the boots** of a unit by a pixel or two, and
+  on a garrisoned unit it is short (25 px).
+- **Growth chevrons and affliction chips** stay in the left strip, which no
+  longer has a bar beside them; they read, but float a little.
+- **The Grave marker overlaps the right tip of the plate.**
+- **Improvement value pips** are drawn over the lower left of the smaller
+  buildings, as they were over the previous ones.
+- **The ready cue** on the plate is weaker than the old glow; not yet tried
+  in play.
+- **Terrain toning** runs once per terrain raster on first use (a few
+  milliseconds each); it is not baked by the pipeline yet.
 
 ## Sources
 

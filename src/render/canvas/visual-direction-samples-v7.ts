@@ -11,10 +11,10 @@ import {
  * The exploration sample sprites of the visual-direction study (beads
  * pulp_wars-3tq.1 and pulp_wars-3tq.3). They live under art/explorations
  * and are never part of the production chibi manifest. Since bead
- * pulp_wars-3tq.5 the game itself no longer loads this module: the
- * developer toggle draws the production art of
- * src/assets/chibi-direction-art-manifest.ts. The sets below remain for the
- * study's review benches (scripts/art/visual-direction-review.ts).
+ * pulp_wars-3tq.5 the game itself no longer loads this module: it draws the
+ * production art of src/assets/chibi-direction-art-manifest.ts (the default
+ * look since bead pulp_wars-3tq.6). The sets below remain for the study's
+ * review benches (scripts/art/visual-direction-review.ts).
  *
  * - PRODUCTION: that production art, so a bench can draw what the game does.
  * - STUDY: the first study's three Human units in cream and steel whose

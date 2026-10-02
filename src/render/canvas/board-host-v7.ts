@@ -121,12 +121,16 @@ export interface BoardHostModelV7 {
    */
   readonly saturation?: BoardSaturationV7;
   /**
-   * Developer experiment (pulp_wars-3tq.1): a visual direction for the
-   * CHIBI art set. Omitted draws exactly as without it.
+   * The visual direction of the CHIBI art set (pulp_wars-3tq.6: the app
+   * passes the live direction by default). Omitted draws the classic look,
+   * exactly as before the direction existed; the LEGACY set ignores it.
    */
   readonly visualDirection?: BoardVisualDirectionV7;
-  /** Resolves the direction's exploration sample sprites, when loaded. */
-  readonly visualDirectionSamples?: ChibiArtRegistryV7;
+  /**
+   * The direction's own art, resolved before the default art. A piece whose
+   * direction raster fails to load falls back to its default asset.
+   */
+  readonly visualDirectionArt?: ChibiArtRegistryV7;
 }
 
 export interface BoardHostCallbacksV7 {
@@ -997,7 +1001,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     return this.#model?.artSet ?? "LEGACY";
   }
 
-  /** The direction's wrapped art resolver, rebuilt only when it changes. */
+  /**
+   * The direction's wrapped art resolver, rebuilt only when the direction or
+   * its art registry changes (never per frame).
+   */
   #directionRuntime(
     spec: BoardVisualDirectionV7,
     registry: ChibiArtRegistryV7 | undefined,
@@ -1118,7 +1125,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           : {
               direction: this.#directionRuntime(
                 model.visualDirection,
-                model.visualDirectionSamples,
+                model.visualDirectionArt,
               ),
             }),
         previewFocus: this.#hovered ?? this.#focused,

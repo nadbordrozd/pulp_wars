@@ -399,7 +399,9 @@ builds a 9 x 5 roster instead: the batch's land pieces for the viewer and a
 rival, a Fighter per owner beside the capital for scale, then its water
 pieces (docks on Shallow Water, the viewer's ships on Shallow Water and the
 rival's on Deep Water). The roster's rival is drawn as Undead, so the skull
-badge and the HP bar and seat badge are checked on every unit class. The
+badge, the base plate and the damaged HP bar are checked on every unit
+class (the review scenes draw the default look since bead `pulp_wars-3tq.6`).
+The
 captures keep the `ingame-scene-*` names; `index.json` labels each as a
 showcase or a roster.
 
@@ -433,8 +435,8 @@ controller because the setup form offers the faction only from bead
 scene of
 [`review-dinosaur-scene-v7.ts`](../../scripts/art/chibi/review-dinosaur-scene-v7.ts)
 drawn by the real board host: the eight units and the Egg in the four
-player colours, with HP bars and seat badges, beside the other three
-factions) and `dinosaur-index.json`. Its captures start Vite on port 6431
+player colours, on base plates and with the damaged HP bar, beside the other
+three factions) and `dinosaur-index.json`. Its captures start Vite on port 6431
 unless `--port` says otherwise. It does not run the batch review.
 
 The faction city sets (`CITY:UNDEAD:<level>`, `CITY:GOBLIN:<level>`, batches
@@ -491,8 +493,9 @@ of its role), `portraits-old-new-{1x,x4}.png`,
 the Mine), `cities-{1x,x4}.png` (three tiers, with the pennant at its
 recorded anchor), `farm-x4.png` (the tile and a 3 x 3 block),
 `showcase-{human,mixed}-{desktop,phone}-zoom-{1,0.75}.png` (a real Showcase
-match with the developer toggle on: every seat Human, and the four
-factions), `showcase-human-today-desktop-zoom-1.png` (toggle off),
+match in the default look: every seat Human, and the four factions),
+`showcase-human-today-desktop-zoom-1.png` (the same match with the Classic
+look developer option on),
 `showcase-human-{dock,tech}-desktop.png`,
 `ingame-farms-{desktop,phone}-zoom-{1,0.75}.png` (a Farm block over straight
 and diagonal Roads, drawn by the real board host) and `index.json`. Its

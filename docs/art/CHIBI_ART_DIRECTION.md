@@ -78,7 +78,13 @@ them.
 Standard and large units keep their opaque pixels clear of the cell's HP
 bar and seat-badge strips; giants are exempt, because every CHIBI overlay
 (HP bar, seat badge, faction badge) is drawn after all pieces and stays
-legible on top of giant art.
+legible on top of giant art. Those two strips belong to the **Classic look**
+(Settings > Developer tools). The default look since bead `pulp_wars-3tq.6`
+draws no seat badge and no side bar: the player is shown by a base plate
+under the unit's feet and a damaged unit's HP bar lies on that plate (see
+[section 4a](#4a-the-new-owner-colour-rule-october-2026-direction)). The
+clearance rule stays, so the classic look keeps working and the left strip
+stays free for the faction, Field Defense and affliction markers.
 
 **A unit on a settlement centre** (a city or a village, decided in bead
 `pulp_wars-zhn`) is drawn at 0.75 of its normal size in the cell's
@@ -86,8 +92,9 @@ front-right: its canvas bottom stays on the cell's bottom edge and its right
 edge sits at the left edge of the population-pip column. The settlement's
 left side, roofs and upward overflow stay visible, so a garrisoned city
 still reads as a city at zoom 0.75 and 1. The overlay frame does not move
-(HP bar and seat badge in the left strip, pips on the right, crown top
-right). The reduced unit is smoothed unless it still lands on whole device
+(pips on the right; in the classic look the HP bar and seat badge in the
+left strip and the crown top right; in the default look the unit keeps its
+plate, and its damaged HP bar is shorter and lies under the reduced sprite). The reduced unit is smoothed unless it still lands on whole device
 pixels. A unit moving off the settlement is drawn at full size, and the
 legacy art set is unchanged.
 
@@ -108,6 +115,13 @@ Rules for resolution:
   60% the flat-shaded test city reached.
 
 ## 4. Owner colour
+
+**Scope since bead `pulp_wars-3tq.6`:** the rules of this section are current
+behaviour only for art that is not converted to the new direction: the
+Undead, Goblin and Dinosaur units, cities and portraits, the ships, and
+everything the **Classic look** developer option draws. For the Human
+faction and the shared improvements the default game follows
+[section 4a](#4a-the-new-owner-colour-rule-october-2026-direction).
 
 - Every unit, city and owned building has a large, solid owner-colour area:
   tunic, hood, roofs, banners or sails. It must read at a glance at zoom 0.75.
@@ -135,10 +149,11 @@ The user chose a new direction on 2026-10-02 (bead `pulp_wars-3tq.4`; study
 and production notes in
 [VISUAL_DIRECTION_2026-10.md](VISUAL_DIRECTION_2026-10.md)). Bead
 `pulp_wars-3tq.5` produced its art for the Human faction and the shared
-improvements; bead `pulp_wars-3tq.6` makes it the default. Until then the
-rules above describe the default rendering, and these describe the
-direction the developer toggle draws. Where they differ, these win for
-converted art.
+improvements, and bead `pulp_wars-3tq.6` made it the default look of the
+CHIBI art set (see
+[Live default](VISUAL_DIRECTION_2026-10.md#13-live-default)). Where these
+rules and the ones above differ, these win for converted art; the previous
+look stays available as Settings > Developer tools > Classic look.
 
 - **The player is shown by markers, not by garments or roofs:** a base plate
   under each unit (the player colour, with the seat's shape), a pennant
@@ -166,9 +181,16 @@ converted art.
   portraits.
 - **Units stay chibi:** black outline, full saturation, the sizes and anchors
   of section 3. They are the only black-outlined, fully saturated pieces.
+- **Chrome of the default look:** no numbered seat badge; the HP bar only
+  for a damaged unit, a short bar on its plate; the ready cue as a bright
+  rim round the plate; thin solid territory borders; Roads without the black
+  casing.
 - **Not converted yet:** the other three factions, ships, terrain and
-  resources. With the toggle on they are drawn as today (terrain toned by
-  code).
+  resources. Their units and portraits keep the player-coloured garments of
+  section 4 and stand on a plate; their cities keep their own art, owner
+  recolour and capital crown, without a seat badge or a pennant; ships keep
+  the player-coloured sail and stand in a thin ring; terrain is toned by
+  code.
 
 ## 5. Class notes
 

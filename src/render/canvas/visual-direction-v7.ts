@@ -15,12 +15,13 @@ import {
 import { parseHexColourV7 } from "./owner-recolour-v7";
 
 /**
- * Visual-direction experiment (bead pulp_wars-3tq.1, see
- * docs/art/VISUAL_DIRECTION_2026-10.md). Everything here is
- * opt-in: the board draws exactly as before unless a direction is passed to
- * drawBoardV7. A direction changes only presentation of the CHIBI art set:
- * how sprites are toned, what carries the owner colour, and which overlay
- * chrome is drawn. It never registers art and never changes the plan.
+ * The visual direction of the CHIBI art set (beads pulp_wars-3tq.1 to .6,
+ * see docs/art/VISUAL_DIRECTION_2026-10.md). The app passes
+ * LIVE_DIRECTION_V7 by default; without a direction drawBoardV7 draws the
+ * classic look, exactly as before the direction existed. A direction changes
+ * only presentation of the CHIBI art set: which art a subject draws, how
+ * sprites are toned, what carries the owner colour, and which overlay chrome
+ * is drawn. It never changes the plan.
  */
 
 /** How one class of sprite is toned. All fields are whole percent. */
@@ -75,6 +76,16 @@ export interface BoardVisualDirectionV7 {
      * else on a pole at the cell's top-left corner.
      */
     readonly banner: boolean;
+    /**
+     * The cities of a faction whose art is not converted to the direction
+     * (a faction subject such as `CITY:UNDEAD:2`). DIRECTED tones them like
+     * every city and gives them the corner pennant. CLASSIC draws them
+     * exactly as the classic look does, in their owner recolour and with
+     * the capital crown, without a pennant: their art already carries the
+     * player colour, and the corner pennant would cover the Field Defense
+     * badge. The seat badge follows `chrome.badge` either way.
+     */
+    readonly factionCities: "DIRECTED" | "CLASSIC";
   };
   /** Terrain tiles, tall terrain, resources and Treasure. */
   readonly terrain: SpriteToneV7;
@@ -124,6 +135,7 @@ export const BASELINE_DIRECTION_V7: BoardVisualDirectionV7 = {
     accent: false,
     samples: false,
     banner: false,
+    factionCities: "DIRECTED",
   },
   terrain: UNCHANGED_TONE_V7,
   unit: {
@@ -176,6 +188,7 @@ export const RECOMMENDED_DIRECTION_V7: BoardVisualDirectionV7 = {
     accent: false,
     samples: false,
     banner: true,
+    factionCities: "DIRECTED",
   },
   terrain: {
     saturation: 100,
@@ -207,11 +220,12 @@ export const HUMAN_CRIMSON_COLOUR_V7 = "#a8202c";
 
 /**
  * The Human demo (bead pulp_wars-3tq.3, VISUAL_DIRECTION_2026-10.md, "Human
- * demo"): what the developer toggle draws. Buildings, cities and Human units
- * are re-created sprites in fixed faction colours; since bead pulp_wars-3tq.5
- * they are the production art of src/assets/chibi-direction-art-manifest.ts
- * (every Human unit, the shared improvements, City 1-3 and the Village),
- * imported only when the toggle is on. The player is shown by a seat-shaped
+ * demo"), which the experiment's developer toggle drew and the study's
+ * review benches still do; the game draws LIVE_DIRECTION_V7. Buildings,
+ * cities and Human units are re-created sprites in fixed faction colours;
+ * since bead pulp_wars-3tq.5 they are the production art of
+ * src/assets/chibi-direction-art-manifest.ts (every Human unit, the shared
+ * improvements, City 1-3 and the Village). The player is shown by a seat-shaped
  * plate under each unit, a pennant on each city and on the few buildings
  * that have a mast or a ridge for one, and the territory border. A shared
  * piece without direction art (a ship) keeps its player-coloured sail.
@@ -233,6 +247,21 @@ export const HUMAN_DEMO_DIRECTION_V7: BoardVisualDirectionV7 = {
     halo: false,
   },
   chrome: RECOMMENDED_DIRECTION_V7.chrome,
+};
+
+/**
+ * The live default of the CHIBI art set (bead pulp_wars-3tq.6): the Human
+ * demo's rules with the production art. The app passes it to the board
+ * unless the developer option "Classic look (previous art)" is on.
+ *
+ * Undead, Goblin and Dinosaur are not converted: their units keep the
+ * player-coloured garments and stand on a plate, and their cities are drawn
+ * as in the classic look (owner recolour, capital crown) without the seat
+ * badge. Ships keep the player-coloured sail and stand in a thin ring.
+ */
+export const LIVE_DIRECTION_V7: BoardVisualDirectionV7 = {
+  ...HUMAN_DEMO_DIRECTION_V7,
+  city: { ...HUMAN_DEMO_DIRECTION_V7.city, factionCities: "CLASSIC" },
 };
 
 /**
@@ -544,11 +573,17 @@ type Ready = Extract<ChibiResolutionV7, { readonly kind: "READY" }>;
 
 /**
  * Wraps the CHIBI art resolver so the board draws a direction's sprites:
- * owner areas in the faction colour, an optional player-colour accent, the
- * exploration sample units, and toned copies of buildings, cities and
- * terrain. Copies are built once per source raster and setting and released
- * with the source. `samples` resolves the exploration sprites (its registry
- * is never the production one).
+ * the direction's own art where it has some, owner areas in the faction
+ * colour, an optional player-colour accent, and toned copies of buildings,
+ * cities and terrain. Copies are built once per source raster and setting
+ * and released with the source; drawing a frame does no pixel work.
+ *
+ * `samples` resolves the direction's own art by subject: the production
+ * registry of src/assets/chibi-direction-art-manifest.ts in the game, an
+ * exploration set on the study's benches. While such a raster loads the
+ * piece is not drawn (never the previous art first); when it is not
+ * registered or failed to load (MISSING), the piece falls back to the base
+ * resolver's classic asset, recoloured and toned like any unconverted piece.
  */
 export function createDirectedChibiArtV7(input: {
   readonly base: ChibiBoardArtV7;
@@ -740,6 +775,13 @@ export function createDirectedChibiArtV7(input: {
           cacheKey: `${resolved.cacheKey}|halo`,
         };
       }
+      // An unconverted faction's city keeps its classic raster.
+      if (
+        group === "CITY" &&
+        direction.city.factionCities === "CLASSIC" &&
+        !humanPiece(request.subject)
+      )
+        return base.resolve(request);
       const settings = group === "CITY" ? direction.city : direction.building;
       // A re-created sample sprite is drawn as authored: its colours are the
       // faction's already, so it takes neither the tone nor an owner colour.
@@ -1047,6 +1089,12 @@ function seatShapePath(
   }
 }
 
+/**
+ * Top of the HP bar on the base, in world units below the cell centre (the
+ * cell's bottom edge is at 64, the bar is 8 high).
+ */
+export const DIRECTED_BASE_HP_BAR_TOP_V7 = 50;
+
 export interface DirectedChromeHandledV7 {
   readonly badge: boolean;
   readonly hp: boolean;
@@ -1092,7 +1140,17 @@ export function drawDirectedPieceChromeV7(
     return NOTHING_HANDLED;
   context.save();
   context.lineJoin = "round";
-  if (entry.kind === "CITY" && direction.city.banner) {
+  if (
+    entry.kind === "CITY" &&
+    direction.city.banner &&
+    !flagDrawn &&
+    direction.city.factionCities === "CLASSIC" &&
+    entry.artSubject !== undefined &&
+    !humanPiece(entry.artSubject)
+  ) {
+    // An unconverted faction's city: no pennant, the stock capital crown.
+    badge = chrome.badge !== "SQUARE";
+  } else if (entry.kind === "CITY" && direction.city.banner) {
     badge = true;
     crown = entry.capital === true;
     if (entry.ownerColor !== undefined && !flagDrawn) {
@@ -1178,11 +1236,13 @@ export function drawDirectedPieceChromeV7(
           inner * zoom,
         );
       } else {
-        // A short bar under the feet, on the base.
+        // A short bar under the feet, on the base. It stays clear of the
+        // cell's bottom edge, where the territory border and the selection
+        // outline are drawn (bead pulp_wars-3tq.6).
         const width = (garrisoned ? 40 : 54) * zoom;
         const height = 8 * zoom;
         const left = x + (garrisoned ? 20 : 0) * zoom - width / 2;
-        const top = y + 55 * zoom;
+        const top = y + DIRECTED_BASE_HP_BAR_TOP_V7 * zoom;
         context.fillStyle = "#101718";
         context.fillRect(left, top, width, height);
         context.fillStyle =

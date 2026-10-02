@@ -21,6 +21,7 @@
  */
 import type { PlayerViewV7 } from "../../../src/engine/index";
 import { CanvasBoardHostV7 } from "../../../src/render/canvas/board-host-v7";
+import { liveBoardLookV7 } from "../../../src/render/canvas/live-board-look-v7";
 import {
   chibiReviewSceneViewV7,
   type ChibiReviewSceneLayoutV7,
@@ -302,6 +303,8 @@ export function showPlaytest3SceneV7(
     presentationPaused: true,
     highContrast: false,
     artSet: "CHIBI",
+    // The look the game draws by default (bead pulp_wars-3tq.6).
+    ...liveBoardLookV7("CHIBI"),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

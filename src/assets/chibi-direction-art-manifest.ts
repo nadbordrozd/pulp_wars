@@ -14,11 +14,13 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  *
  * The entries use the same subjects as the current art in
  * chibi-art-manifest.ts but live in their own list, so nothing here is a
- * variant of a default subject and the default rendering is unchanged. The
- * visual-direction renderer resolves this registry first (the developer
- * toggle today; bead pulp_wars-3tq.6 makes it the default). Units, cities
- * and portraits have no owner area: `fixedColours` instead of a mask.
- * Ships, the other factions and terrain are not converted yet.
+ * variant of a default subject and the classic look is unchanged. Since
+ * bead pulp_wars-3tq.6 the game loads this registry with the rest of the
+ * CHIBI set and resolves it first, on the board and in the interface
+ * (src/render/canvas/live-board-look-v7.ts); a raster that fails to load
+ * falls back to the default asset of that subject. Units, cities and
+ * portraits have no owner area: `fixedColours` instead of a mask. Ships,
+ * the other factions and terrain are not converted yet.
  */
 export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   {
@@ -298,7 +300,7 @@ export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   },
 ];
 
-/** The registry the visual direction resolves before the default art. */
+/** The registry the live look resolves before the default art. */
 export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
   const built = buildChibiArtRegistryV7(CHIBI_DIRECTION_ART_ASSETS_V7);
   if (built.problems.length > 0) throw new Error(built.problems.join("; "));

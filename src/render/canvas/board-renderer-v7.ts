@@ -1097,8 +1097,10 @@ export function drawBoardV7(input: {
     readonly cache: SpriteSaturationCacheV7;
   };
   /**
-   * Developer experiment (bead pulp_wars-3tq.1): a visual direction for the
-   * CHIBI art set. Omitted, the frame is drawn exactly as before.
+   * The visual direction of the CHIBI art set (beads pulp_wars-3tq.1 to .6;
+   * the game passes the live direction by default). Omitted, the frame is
+   * the classic look, drawn exactly as before the direction existed; the
+   * LEGACY art set ignores it.
    */
   readonly direction?: BoardDirectionRuntimeV7;
 }): void {
