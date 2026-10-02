@@ -27,7 +27,7 @@ describe("ruleset-7 naval persistence schema", () => {
     expect(parsed).toEqual(fixture.state);
     expect(parseMatchSetupV7(fixture.state.setup)).toEqual(fixture.state.setup);
     expect(fixture.state.setup).toMatchObject({
-      rulesetId: "pulp-wars-poc-7r22",
+      rulesetId: "pulp-wars-poc-7r23",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     });
@@ -288,6 +288,8 @@ describe("ruleset-7 naval persistence schema", () => {
       at: fixture.portAt,
       role: "PATROL_BOAT",
       form: "NAVAL",
+      hp: 10,
+      maxHp: 10,
     });
     expect(parseGameStateV7(wrongDomain)).not.toBeNull();
     Object.assign(wrongDomain.units[unitIndex] as object, {

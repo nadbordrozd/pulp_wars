@@ -98,10 +98,10 @@ describe("ruleset-7 technology", () => {
         ];
       }),
     ).toEqual([
-      ["FIGHTER", 2, 10, 4, 4, 1, 1, 1, null, true],
-      ["RAIDER", 4, 10, 4, 2, 2, 1, 1, "SCOUTING", true],
-      ["MARKSMAN", 3, 10, 4, 2, 1, 2, 1, "MARKSMANSHIP", true],
-      ["GUARD", 3, 15, 3, 6, 1, 1, 1, "DRILL", false],
+      ["FIGHTER", 2, 12, 4, 4, 1, 1, 1, null, true],
+      ["RAIDER", 4, 12, 4, 2, 2, 1, 1, "SCOUTING", true],
+      ["MARKSMAN", 3, 12, 4, 2, 1, 2, 1, "MARKSMANSHIP", true],
+      ["GUARD", 3, 17, 3, 6, 1, 1, 1, "DRILL", false],
       ["CAPTAIN", 5, 10, 2, 2, 1, 1, 1, "ADMINISTRATION", true],
       ["CATAPULT", 8, 10, 7, 1, 1, 3, 2, "SAWMILLING", false],
       ["KNIGHT", 9, 10, 6, 2, 3, 1, 1, "CHIVALRY", true],

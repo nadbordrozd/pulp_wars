@@ -1068,7 +1068,7 @@ describe("ruleset-7 revision-19 Egg unit", () => {
         form: "EGG",
         hp: 4,
       });
-      expect(unitAtV7(result.state, { x: 6, y: 7 }).hp).toBe(10);
+      expect(unitAtV7(result.state, { x: 6, y: 7 }).hp).toBe(12);
     }
     // An Egg is never the attacker of an estimate either.
     const state = dino(
@@ -1666,10 +1666,10 @@ describe("ruleset-7 revision-19 hatching", () => {
       form: "LAND",
     });
     // The Windmill healed the Caveman (9 - 2 Plague, then to its maximum:
-    // 12 since pulp_wars-c87.8, was 10) but not the Egg.
+    // 10 again since pulp_wars-0hi.3) but not the Egg.
     expect(
       result.events.find((event) => event.kind === "WINDMILL_HEALING_RESOLVED"),
-    ).toMatchObject({ results: [{ unitId: caveman.id, hpAfter: 12 }] });
+    ).toMatchObject({ results: [{ unitId: caveman.id, hpAfter: 10 }] });
   });
 
   it("does not count an Egg for Muster", () => {

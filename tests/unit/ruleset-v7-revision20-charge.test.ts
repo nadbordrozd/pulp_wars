@@ -589,7 +589,8 @@ describe("ruleset-7 revision-20 Charge! worked examples (section 2.5)", () => {
       moved: 1,
       attack2: 8,
       defense2: 4,
-      damage: 10,
+      // Section 6.3: the Fighter has 12 HP (was 10); the hit still kills.
+      damage: 12,
       retaliation: null,
     },
     {
@@ -664,7 +665,8 @@ describe("ruleset-7 revision-20 Charge! worked examples (section 2.5)", () => {
       moved: 2,
       attack2: 12,
       defense2: 6,
-      damage: 15,
+      // Section 6.3: the Guard has 17 HP (was 15); the hit still kills.
+      damage: 17,
       retaliation: null,
       kills: 3,
     },

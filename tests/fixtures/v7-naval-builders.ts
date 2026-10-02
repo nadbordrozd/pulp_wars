@@ -167,8 +167,8 @@ export function battleshipBombardmentV7(
               role: "GUARD" as const,
               form: "LAND" as const,
               at: hostileCity.at,
-              hp: 15,
-              maxHp: 15,
+              hp: 17,
+              maxHp: 17,
             }
           : unit,
     ),

@@ -600,6 +600,8 @@ describe("ruleset-7 naval economy", () => {
               at: from.at,
               role: "PATROL_BOAT" as const,
               form: "NAVAL" as const,
+              hp: 10,
+              maxHp: 10,
             }
           : unit,
       ),

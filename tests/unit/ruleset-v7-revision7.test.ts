@@ -64,7 +64,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r22");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r23");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V2");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -192,8 +192,8 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
               role: "FIGHTER",
               form: "LAND",
               at: hostileAt,
-              hp: 10,
-              maxHp: 10,
+              hp: 12,
+              maxHp: 12,
             }
           : unitState,
       ),
@@ -338,7 +338,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
           inspired: scenario.reason === "INSPIRED",
         },
         ...(scenario.reason === "INSPIRED" || scenario.reason === "EXPLOSIVES"
-          ? { veteran: true, kills: 3, hp: 15, maxHp: 15 }
+          ? { veteran: true, kills: 3, hp: 17, maxHp: 17 }
           : {}),
       };
       const defender = unit(
@@ -487,7 +487,10 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     const victimSplash = required(combat.preview.splash[0]);
     expect(
       result.state.units.find((unit) => unit.id === victimBase.id)?.hp,
-    ).toBe(victimBase.hp - victimSplash.damage);
+    ).toBe(
+      required(state.units.find((unit) => unit.id === victimBase.id)).hp -
+        victimSplash.damage,
+    );
     const projected = projectEventsV7(
       state,
       result.state,
@@ -1115,8 +1118,8 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       units: ready.units.map((candidate) => ({
         ...candidate,
         role: "GUARD" as const,
-        maxHp: 15,
-        hp: 15,
+        maxHp: 17,
+        hp: 17,
         activation: {
           ...candidate.activation,
           moved: true,

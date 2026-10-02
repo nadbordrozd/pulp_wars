@@ -1738,6 +1738,10 @@ describe("Tractor Beam (section 8.4)", () => {
       at: portAt,
       role: "PATROL_BOAT",
       form: "NAVAL",
+      // The template is a Human Fighter (12 HP since revision 20 section
+      // 6.3); a Patrol Boat has 10.
+      hp: 10,
+      maxHp: 10,
     };
     const units = [...built.state.units, blockader];
     const economy = recomputeLiveEconomyV7(

@@ -578,8 +578,10 @@ describe("ruleset-7 Dinosaur Grow", () => {
     const ankylosaurus = unitAtV7(state, { x: 5, y: 3 });
     const result = attack(state, { x: 4, y: 3 }, { x: 5, y: 3 });
     const preview = combat(result.events);
+    // A Fighter at 1 of 12 HP (10 before revision 20 section 6.3) no longer
+    // scratches the Ankylosaurus.
     expect(preview).toMatchObject({
-      damageToDefender: 1,
+      damageToDefender: 0,
       attackerDies: true,
       defenderDies: false,
     });
@@ -792,9 +794,9 @@ describe("ruleset-7 Dinosaur Grow", () => {
       const promote: CommandV7 = { kind: "PROMOTE", unitId: unit.id };
       expect(offered).toContainEqual(promote);
       const result = applyOkV7(state, state.humanPlayerId, promote);
-      // The Caveman on (6, 3) has 12 HP since pulp_wars-c87.8 (was 10); the
-      // Shaman on (7, 3) has 10. Promotion adds 5.
-      const maxHp = x === 6 ? 17 : 15;
+      // The Caveman on (6, 3) and the Shaman on (7, 3) have 10 HP (the
+      // Caveman again since pulp_wars-0hi.3). Promotion adds 5.
+      const maxHp = 15;
       expect(result.events).toEqual([
         { kind: "UNIT_PROMOTED", unitId: unit.id, maxHp },
       ]);
@@ -837,18 +839,18 @@ describe("ruleset-7 Dinosaur Grow", () => {
     expect(patched(raptor, { kills: 3, maxHp: 16 })).toBeNull();
     expect(patched(raptor, { kills: 3, maxHp: 17, veteran: true })).toBeNull();
     expect(patched(raptor, { kills: 3, maxHp: 20, veteran: true })).toBeNull();
-    // Every other unit keeps the Promotion rule (the Caveman's 12 HP, 10
-    // before pulp_wars-c87.8, plus 5 when veteran).
-    expect(patched(caveman, { kills: 3, maxHp: 12 })).not.toBeNull();
+    // Every other unit keeps the Promotion rule (the Caveman's 10 HP plus 5
+    // when veteran; the Human Raider's 12 plus 5).
+    expect(patched(caveman, { kills: 3, maxHp: 10 })).not.toBeNull();
     expect(
-      patched(caveman, { kills: 3, maxHp: 17, veteran: true }),
+      patched(caveman, { kills: 3, maxHp: 15, veteran: true }),
     ).not.toBeNull();
     expect(patched(caveman, { kills: 1, maxHp: 16 })).toBeNull();
     expect(patched(caveman, { kills: 3, maxHp: 20, veteran: true })).toBeNull();
-    expect(patched(raider, { kills: 1, maxHp: 10 })).not.toBeNull();
-    expect(patched(raider, { kills: 1, maxHp: 14 })).toBeNull();
+    expect(patched(raider, { kills: 1, maxHp: 12 })).not.toBeNull();
+    expect(patched(raider, { kills: 1, maxHp: 16 })).toBeNull();
     expect(
-      patched(raider, { kills: 3, maxHp: 15, veteran: true }),
+      patched(raider, { kills: 3, maxHp: 17, veteran: true }),
     ).not.toBeNull();
   });
 

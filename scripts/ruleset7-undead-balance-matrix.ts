@@ -18,6 +18,13 @@
  * factions (`HUGD`, `DHUG`, `GDHU`, `UGDH`), and the section 15.2 Dinosaur
  * telemetry (`summary.dinosaur`).
  *
+ * Revision 20 balance (`pulp_wars-0hi.3`) adds per-match telemetry to the
+ * detail entries only (`--detail-output`; the summary is unchanged): for
+ * every faction, Promotions with the damage their full heal removed, losses
+ * by role, and accepted commands by kind (`MatrixEntry.promotions`); for
+ * every Dinosaur seat, the damage removed by growth heals by role, T-Rex
+ * attacks, and Rampage chain lengths.
+ *
  * Usage:
  *   npm run balance:ruleset7-undead -- [--seeds 30] [--multi-seeds 4]
  *     [--sizes 11,14] [--maps dry-land,pangea,continents,archipelago,lakes]
@@ -227,6 +234,84 @@ export interface MatrixEntry extends MatrixCell {
   readonly goblin: GoblinMatchStats | null;
   /** `pulp_wars-c87.8` Dinosaur telemetry; null without a Dinosaur seat. */
   readonly dinosaur: DinosaurMatchStats | null;
+  /**
+   * `pulp_wars-0hi.3` Promotions per faction (revision 20 section 8.2);
+   * absent in detail files written before it was added.
+   */
+  readonly promotions?: Partial<Record<FactionIdV7, PromotionStats>>;
+}
+
+/** Promotions of one faction's units in one match (revision 20 section 5). */
+interface PromotionStats {
+  promotions: number;
+  /** Units promoted while wounded, and the damage the Promotion removed. */
+  wounded: number;
+  hpRestored: number;
+  byRole: Partial<Record<UnitRoleIdV7, number>>;
+  /** Units lost other than by elimination, by role (Eggs excluded). */
+  lossesByRole: Partial<Record<UnitRoleIdV7, number>>;
+  /** Accepted commands by kind (which abilities the faction used). */
+  commands: Record<string, number>;
+}
+
+/**
+ * Replays the accepted command log and counts every accepted `PROMOTE` with
+ * the damage its full heal removed (the unit's missing HP just before it).
+ */
+function promotionTelemetry(
+  setup: MatchSetupV7,
+  log: ReturnType<typeof runAiMatchV7>["commandLog"],
+): Partial<Record<FactionIdV7, PromotionStats>> {
+  const created = createPlayableGameV7(setup);
+  if (!created.ok) throw new Error(`CREATE_REJECTED:${created.error.code}`);
+  let state = created.state;
+  const factionOf = new Map<number, FactionIdV7>(
+    state.players.map((player) => [player.id as number, player.faction]),
+  );
+  const totals: Partial<Record<FactionIdV7, PromotionStats>> = {};
+  for (const faction of factionOf.values())
+    totals[faction] ??= {
+      promotions: 0,
+      wounded: 0,
+      hpRestored: 0,
+      byRole: {},
+      lossesByRole: {},
+      commands: {},
+    };
+  for (const record of log) {
+    const command = record.command;
+    if (command.kind === "PROMOTE") {
+      const unit = state.units.find((item) => item.id === command.unitId);
+      const faction = factionOf.get(record.playerId);
+      const stats = faction === undefined ? undefined : totals[faction];
+      if (unit !== undefined && stats !== undefined) {
+        const missing = Math.max(0, unit.maxHp - unit.hp);
+        stats.promotions += 1;
+        stats.wounded += Number(missing > 0);
+        stats.hpRestored += missing;
+        bump(stats.byRole, unit.role);
+      }
+    }
+    const actorFaction = factionOf.get(record.playerId);
+    const actorStats =
+      actorFaction === undefined ? undefined : totals[actorFaction];
+    if (actorStats !== undefined)
+      actorStats.commands[command.kind] =
+        (actorStats.commands[command.kind] ?? 0) + 1;
+    for (const event of record.events) {
+      if (event.kind !== "UNIT_DIED" || event.cause === "ELIMINATION") continue;
+      const dead = state.units.find((item) => item.id === event.unitId);
+      if (dead === undefined || dead.form === "EGG") continue;
+      const faction = factionOf.get(dead.ownerId);
+      const stats = faction === undefined ? undefined : totals[faction];
+      if (stats !== undefined) bump(stats.lossesByRole, dead.role);
+    }
+    const result = applyCommandV7(state, record.playerId, command);
+    if (!result.accepted)
+      throw new Error("Promotion telemetry replay rejected");
+    state = result.state;
+  }
+  return totals;
 }
 
 /**
@@ -681,6 +766,18 @@ interface DinosaurSeatStats {
   researchRound: Record<string, number>;
   /** Round the first Egg of each role was laid in. */
   firstEggRound: RoleCounts;
+  /**
+   * `pulp_wars-0hi.3` (revision 20 section 8.2): damage removed by the full
+   * heal of a growth stage, by role (the +4 maximum HP is not counted).
+   */
+  growthHpRestored?: RoleCounts;
+  /**
+   * Attacks one T-Rex made in one own turn (a Rampage chain), by length:
+   * 1, 2, 3, 4 or more.
+   */
+  tRexChains?: [number, number, number, number];
+  /** Attacks by a land-form T-Rex. */
+  tRexAttacks?: number;
 }
 
 /** Dinosaur telemetry for one match: one entry per Dinosaur seat. */
@@ -751,6 +848,9 @@ function emptyDinosaurSeat(seat: number): DinosaurSeatStats {
     lossesByCause: {},
     researchRound: {},
     firstEggRound: {},
+    growthHpRestored: {},
+    tRexChains: [0, 0, 0, 0],
+    tRexAttacks: 0,
   };
 }
 
@@ -787,6 +887,8 @@ function dinosaurTelemetry(
   >();
   // Triceratops that charged since their owner's last Start Turn.
   const charged = new Map<number, number>();
+  // Attacks each land-form T-Rex has made in its owner's current turn.
+  const rampage = new Map<number, number>();
   for (const record of log) {
     const before = state;
     const units = new Map(
@@ -846,6 +948,25 @@ function dinosaurTelemetry(
         }
       }
       turnCommands = 0;
+      if (actor !== undefined) {
+        for (const attacks of rampage.values()) {
+          const index = Math.min(4, attacks) - 1;
+          const chains = (actor.tRexChains ??= [0, 0, 0, 0]);
+          chains[index] = (chains[index] ?? 0) + 1;
+        }
+      }
+      rampage.clear();
+    }
+    if (command.kind === "ATTACK" && actor !== undefined) {
+      const attacker = units.get(command.unitId);
+      if (
+        attacker !== undefined &&
+        attacker.role === "KNIGHT" &&
+        attacker.form === "LAND"
+      ) {
+        rampage.set(command.unitId, (rampage.get(command.unitId) ?? 0) + 1);
+        actor.tRexAttacks = (actor.tRexAttacks ?? 0) + 1;
+      }
     }
     const result = applyCommandV7(state, record.playerId, command);
     if (!result.accepted) throw new Error("Dinosaur telemetry replay rejected");
@@ -957,8 +1078,29 @@ function dinosaurTelemetry(
       if (event.kind === "UNIT_GREW") {
         const unit = unitOf(event.unitId);
         const seat = unit === undefined ? undefined : seats.get(unit.ownerId);
-        if (unit !== undefined && seat !== undefined)
+        if (unit !== undefined && seat !== undefined) {
           bump(event.stage === 1 ? seat.big : seat.alpha, unit.role);
+          // HP after the exchange: before the command, less the damage of
+          // every exchange of this command the unit took part in.
+          const prior = units.get(event.unitId);
+          if (prior !== undefined) {
+            let hp = prior.hp;
+            for (const other of record.events)
+              if (other.kind === "COMBAT_RESOLVED") {
+                if (other.preview.attackerId === event.unitId)
+                  hp -= other.preview.damageToAttacker;
+                if (other.preview.targetUnitId === event.unitId)
+                  hp -= other.preview.damageToDefender;
+              }
+            // Only the first stage of a command heals damage.
+            const restored =
+              prior.maxHp + 4 === event.maxHp
+                ? Math.max(0, prior.maxHp - Math.max(0, hp))
+                : 0;
+            const record20 = (seat.growthHpRestored ??= {});
+            record20[unit.role] = (record20[unit.role] ?? 0) + restored;
+          }
+        }
       }
       if (event.kind === "UNIT_DIED") {
         const egg = eggs.get(event.unitId);
@@ -1264,7 +1406,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r22",
+    rulesetId: "pulp-wars-poc-7r23",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: cell.seed,
     width: cell.size,
@@ -1342,6 +1484,7 @@ export function runCell(cell: MatrixCell): MatrixEntry {
     dinosaur: (factions as readonly FactionIdV7[]).includes("DINOSAUR")
       ? dinosaurTelemetry(setup, result.commandLog)
       : null,
+    promotions: promotionTelemetry(setup, result.commandLog),
   };
 }
 
@@ -1921,7 +2064,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r22",
+          rulesetId: "pulp-wars-poc-7r23",
           parameters,
           summary,
           games: ordered.map(compactEntry),

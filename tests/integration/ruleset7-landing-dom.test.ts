@@ -111,8 +111,8 @@ describe("Ruleset 7 revision-16 landing preview in the DOM app", () => {
               role: "FIGHTER" as const,
               form: "EMBARKED" as const,
               at: fixture.water[0],
-              hp: 10,
-              maxHp: 10,
+              hp: 12,
+              maxHp: 12,
               activation: READY_ACTIVATION_V7,
             }
           : unit,

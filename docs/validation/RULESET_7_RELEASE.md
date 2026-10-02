@@ -18,8 +18,12 @@ This frozen revision-2 record and corpus remain unchanged.
 
 ## Current release contract (revision 18, Human, Undead and Goblin)
 
-The current runtime is `pulp-wars-poc-7r22` (autosave
-`pulpWars.save.v7r22.current`; `pulp_wars-t6s.2` bumped the identity for
+The current runtime is `pulp-wars-poc-7r23` (autosave
+`pulpWars.save.v7r23.current`; `pulp_wars-0hi.3` bumped the identity for
+the sturdiness numbers of
+[revision 20 section 6.3](../product/RULESET_7_REVISION_20.md#63-tuning-record)
+(Human Fighter, Raider, and Marksman 12 HP, Guard 17, Caveman 10), after
+`pulp_wars-t6s.2` bumped it for
 the [Martian overlay](../product/RULESET_7_MARTIANS.md), which registers the
 Martian faction in the engine (match setup does not offer it yet), after
 `pulp_wars-9s0.4` bumped it for
@@ -30,10 +34,11 @@ the Conqueror, Land Baron, Sea Dog, and Slayer achievements, after
 [revision-19 Dinosaur overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md):
 the Stampede command is removed, the Triceratops has Charge!, and a
 Promotion or growth stage fully heals. `npm run validate:ruleset7-release`
-checks the Martian-revision identity (five factions and trees) and runs the
-Martian suites, the revision-21 achievement suite, and the revision-20
-rules, Charge!, and Industry suites with the Dinosaur suites. Saves and
-replays of `pulp-wars-poc-7r21` and earlier are refused, and startup removes their
+checks the revision-23 identity (five factions and trees) and runs the
+revision-23 sturdiness suite, the Martian suites, the revision-21
+achievement suite, and the revision-20 rules, Charge!, and Industry suites
+with the Dinosaur suites. Saves and replays of `pulp-wars-poc-7r22` and
+earlier are refused, and startup removes their
 autosave keys). The three factions other than the Dinosaurs are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md), into which
 `pulp_wars-0ao.9` folded the

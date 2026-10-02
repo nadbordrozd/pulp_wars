@@ -997,10 +997,10 @@ Attack and Defense are shown in whole units (the code stores half-units).
 
 | Unit        | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                |
 | ----------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------ |
-| Fighter     | start             |    2 |  10 |      2 |       2 |    1 |     1 |     1 | yes               | yes     | Field Defense            |
-| Raider      | Scouting          |    4 |  10 |      2 |       1 |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Escape |
-| Marksman    | Marksmanship      |    3 |  10 |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | —                        |
-| Guard       | Drill             |    3 |  15 |    1.5 |       3 |    1 |     1 |     1 | no                | yes     | Field Defense            |
+| Fighter     | start             |    2 | 12² |      2 |       2 |    1 |     1 |     1 | yes               | yes     | Field Defense            |
+| Raider      | Scouting          |    4 | 12² |      2 |       1 |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Escape |
+| Marksman    | Marksmanship      |    3 | 12² |      2 |       1 |    1 |   1–2 |    1¹ | yes               | yes     | —                        |
+| Guard       | Drill             |    3 | 17² |    1.5 |       3 |    1 |     1 |     1 | no                | yes     | Field Defense            |
 | Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded      |
 | Catapult    | Sawmilling        |    8 |  10 |    3.5 |     0.5 |    1 |   2–3 |     1 | no                | no      | —                        |
 | Knight      | Chivalry          |    9 |  10 |      3 |       1 |    3 |     1 |     1 | yes               | no      | Overrun                  |
@@ -1009,6 +1009,10 @@ Attack and Defense are shown in whole units (the code stores half-units).
 | Battleship  | Naval Engineering |   16 |  25 |      6 |       4 |    2 |   1–3 |     3 | no                | no      | naval; splash            |
 
 ¹ Marksman Sight becomes 2 with Fieldcraft.
+² [Revision 20 section 6.3](RULESET_7_REVISION_20.md#63-tuning-record)
+(`pulp_wars-0hi.3`, `pulp-wars-poc-7r23`): Fighter, Raider, and Marksman 12
+(were 10), Guard 17 (was 15). The Skeleton, Ghoul, Goblin, Wolf Rider, and
+Orc Brute keep their own values.
 
 The table above is the Human (`ORIGINAL`) roster. The Undead (`UNDEAD`)
 roster, by mechanical role (half-unit values `attack2`/`defense2` in

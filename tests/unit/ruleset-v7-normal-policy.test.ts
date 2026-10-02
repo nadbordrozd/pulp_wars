@@ -824,9 +824,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // before the pulp_wars-1mc endgame MOVE priorities above, and
     // 41418b…e607 before the pulp_wars-9s0.1 campaign plan (the pin's
     // comment in scripts/ruleset-v7-late-public-view-contract.ts has the
-    // cause).
+    // cause), and de28fd…a6e4 before the pulp_wars-0hi.3 Human HP (same
+    // comment: two Train Guard candidates and Research Scouting).
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(sliced))).toBe(
-      "de28fd8fb2f5f79a67bd8306bb63787851989f47516b2c95a2a8a9fad347a6e4",
+      "84942ef94b94de86762f71e2fad3323d9cd710107fd485f640d84e7e801ca6a1",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -857,12 +858,16 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // The Martian revision (`pulp_wars-t6s.2`) inserts BEAM_DOWN,
     // MIND_CONTROL, and TRACTOR_BEAM after HATCH, moving every later
     // command-kind ordinal forward by three (was 52d5d2…aa31).
+    // pulp_wars-0hi.3 (was fde9b0…bca8, and 73d039…73b3 with revision-12
+    // ordinals): Research Scouting is the missing-role plan (priority 1060
+    // and value 6, was 1040 and 0) because the Raider has 12 HP (revision 20
+    // section 6.3); every other candidate of this subset is unchanged.
     expect(canonicalHash(revision4Candidates)).toBe(
-      "fde9b067d27434b7552156ca0daec5dfd675cdd477a2195787331a864a8fbca8",
+      "1fc167ea5fabacd6664e9d316e8224d03fdd0aea53ea7027c6bbc2b0561b6276",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
-    ).toBe("73d039490b3dde9e4313af9798da41d3e47584142f1cc82aca7353bf5a8f73b3");
+    ).toBe("363b9af57ddbc715635b17d8a280203e80a44c0f6529d7e50f397c417d17f2cd");
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
   }, 15_000);
@@ -875,7 +880,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r22");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r23");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

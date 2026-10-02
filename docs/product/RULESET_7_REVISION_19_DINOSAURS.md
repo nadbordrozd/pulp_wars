@@ -196,7 +196,7 @@ the Egg's hatch time in owner Start Turns ([section 6.4](#64-hatching));
 
 | Unit         | Role          | Tech              | Cost | Hatch   | Slots |  HP | Attack (`attack2`) | Defense (`defense2`) | Move | Range | Sight | Attack after Move | Capture | Grows | Abilities                      |
 | ------------ | ------------- | ----------------- | ---: | ------- | ----: | --: | -----------------: | -------------------: | ---: | ----: | ----: | ----------------- | ------- | ----- | ------------------------------ |
-| Caveman      | `FIGHTER`     | start             |    2 | trained |     1 |  12 |              2 (4) |                2 (4) |    1 |     1 |     1 | yes               | yes     | no    | no Field Defense               |
+| Caveman      | `FIGHTER`     | start             |    2 | trained |     1 |  10 |              2 (4) |                2 (4) |    1 |     1 |     1 | yes               | yes     | no    | no Field Defense               |
 | Raptor       | `RAIDER`      | Scouting          |    4 | 1       |     1 |  12 |            2.5 (5) |                1 (2) |    2 |     1 |     2 | yes               | yes     | yes   | Pounce (Raiding); no Escape    |
 | Spitter      | `MARKSMAN`    | Marksmanship      |    4 | 1       |     1 |  10 |              2 (4) |                1 (2) |    1 |   1–2 |    1¹ | yes               | yes     | yes   | Acid                           |
 | Ankylosaurus | `GUARD`       | Drill             |    5 | 2       |     1 |  20 |              2 (4) |                3 (6) |    1 |     1 |     1 | no                | yes     | yes   | Armoured; no Field Defense     |
@@ -211,11 +211,14 @@ the Egg's hatch time in owner Start Turns ([section 6.4](#64-hatching));
 
 The table holds the tuned values of `pulp_wars-c87.8`
 ([section 15.4](#154-tuning-record-pulp_wars-c878)): the contract had the
-Caveman at 10 HP and the Triceratops at hatch time 2 and 2 slots.
+Caveman at 10 HP and the Triceratops at hatch time 2 and 2 slots. The
+Caveman is at 10 HP again since `pulp_wars-0hi.3`
+([revision 20 section 6.3](RULESET_7_REVISION_20.md#63-tuning-record); c87.8
+had it at 12).
 
 - **Caveman** has Fighter parity (capture, Pillage with Raiding, Disband,
-  ordinary Promotion) except that it has 12 HP (17 when promoted) and cannot
-  build Field Defense ([section 5.3](#53-wild-no-field-defense)). It is
+  ordinary Promotion) except for its own HP (10; 15 when promoted) and that it
+  cannot build Field Defense ([section 5.3](#53-wild-no-field-defense)). It is
   trained on the city center with `TRAIN`, so a Dinosaur seat can always
   produce a unit from the first turn.
 - **Raptor** has Raider parity for Move 2, Sight 2 (Scouting), Charge

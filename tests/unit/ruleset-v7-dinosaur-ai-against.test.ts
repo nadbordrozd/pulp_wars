@@ -244,17 +244,18 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Armoured", () => {
         candidate: isCandidateV7(state, attack),
       };
     };
-    expect(shot(10)).toEqual({ damage: 3, candidate: true });
-    expect(shot(6)).toEqual({ damage: 2, candidate: true });
-    expect(shot(4)).toEqual({ damage: 1, candidate: false });
+    // Section 6.3: the Marksman has 12 HP (was 10; the shots were 10, 6, 4).
+    expect(shot(12)).toEqual({ damage: 3, candidate: true });
+    expect(shot(7)).toEqual({ damage: 2, candidate: true });
+    expect(shot(5)).toEqual({ damage: 1, candidate: false });
     // The same weak shot at a Human Guard (no armour) is still taken.
     const plain = dinosaurFieldV7(
       ["ORIGINAL", "ORIGINAL"],
-      [own("MARKSMAN", 3, 3, 4), foe("GUARD", 5, 3)],
+      [own("MARKSMAN", 3, 3, 5), foe("GUARD", 5, 3)],
     );
     expect(isCandidateV7(plain, attackV7(plain, from, to))).toBe(true);
     // A final 1-damage hit that kills is taken.
-    const last = human([own("MARKSMAN", 3, 3, 4), foe("GUARD", 5, 3, 1)]);
+    const last = human([own("MARKSMAN", 3, 3, 5), foe("GUARD", 5, 3, 1)]);
     expect(isCandidateV7(last, attackV7(last, from, to))).toBe(true);
   });
 });

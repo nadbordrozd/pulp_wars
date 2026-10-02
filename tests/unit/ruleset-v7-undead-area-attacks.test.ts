@@ -788,8 +788,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
 
   it("round-trips Wails and Lich splash through replay, checkpoints, and save", () => {
     // pulp_wars-9s0.1: with the campaign plan the seed-16 match has no Wail
-    // within 60 rounds; seed 4 has two.
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 4);
+    // within 60 rounds; seed 4 had two. pulp_wars-0hi.3: with the Human core
+    // roles at +2 HP the seed-4 match ends in round 21 with no Wail; seed 8
+    // has two (of seeds 0-23, so do 9, 11, 15, 17, and 23).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 8);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
@@ -940,7 +942,7 @@ describe("ruleset-7 revision-13 Lich splash", () => {
     );
     // Own and out-of-reach units are unaffected; the splash kill counts.
     expect(unitAt(result.state, { x: 4, y: 2 }).hp).toBe(10);
-    expect(unitAt(result.state, { x: 5, y: 3 }).hp).toBe(10);
+    expect(unitAt(result.state, { x: 5, y: 3 }).hp).toBe(12);
     expect(unitAt(result.state, { x: 2, y: 1 }).kills).toBe(1);
     expect(unitAt(result.state, primaryAt).id).toBe(primary.id);
   });
@@ -992,7 +994,7 @@ describe("ruleset-7 revision-13 Lich splash", () => {
       { x: 2, y: 4 },
       { x: 3, y: 3 },
     ])
-      expect(unitAt(result.state, at).hp).toBe(10);
+      expect(unitAt(result.state, at).hp).toBe(12);
   });
 
   it("resolves hidden splash victims canonically and projects them fog-safely", () => {

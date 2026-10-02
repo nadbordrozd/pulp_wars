@@ -157,6 +157,9 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
     // The Martian revision (`pulp_wars-t6s.2`) adds the four empty lists
     // `shields`, `cooling`, `thralls`, and `mindControlCooldowns`; the
     // hashes return once they are removed as well.
+    // Revision 20 section 6.3 (`pulp_wars-0hi.3`) gives the starting Human
+    // Fighter 12 HP (was 10) and changes nothing else in these states; the
+    // hashes return once that is undone as well.
     const pinned = {
       DRY_LAND:
         "82f66f98a5ee995551537573fd5644730860105cd5da95ce14774e1abd2659af",
@@ -194,12 +197,26 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
             (achievement) => ({ achievement, unlocked: false, spent: false }),
           ),
         );
+      const humans = new Set(
+        revision19State.players
+          .filter((player) => player.faction === "ORIGINAL")
+          .map((player) => player.id),
+      );
+      const fighters = revision19State.units.filter(
+        (unit) => humans.has(unit.ownerId) && unit.role === "FIGHTER",
+      );
+      expect(fighters.length).toBeGreaterThan(0);
+      for (const unit of fighters)
+        expect([unit.hp, unit.maxHp]).toEqual([12, 12]);
       const revision18State = {
         ...revision19State,
         players: revision19State.players.map((player) => ({
           ...player,
           achievementEntitlements: player.achievementEntitlements.slice(0, 3),
         })),
+        units: revision19State.units.map((unit) =>
+          fighters.includes(unit) ? { ...unit, hp: 10, maxHp: 10 } : unit,
+        ),
       };
       expect(
         canonicalHash(

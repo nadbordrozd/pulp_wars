@@ -180,7 +180,7 @@ describe("ruleset-7 pure public economy", () => {
                 role: "RAIDER" as const,
                 at: hiddenAt,
                 hp: resource === "GAME" ? 10 : 9,
-                maxHp: 10,
+                maxHp: 12,
               }
             : unit,
         ),

@@ -234,8 +234,8 @@ describe("ruleset-7 revision-16 landing reach", () => {
         role,
         form,
         at: fixture.water[1],
-        hp: 10,
-        maxHp: 10,
+        hp: effectiveRoleRuleV7(role, "ORIGINAL").maxHp,
+        maxHp: effectiveRoleRuleV7(role, "ORIGINAL").maxHp,
       });
       const state = checkedV7({
         ...patched,
@@ -296,8 +296,8 @@ describe("ruleset-7 revision-16 landing reach", () => {
       role: "FIGHTER",
       form: "LAND",
       at: zocAt,
-      hp: 10,
-      maxHp: 10,
+      hp: 12,
+      maxHp: 12,
     });
     expect(
       viewForV7(state, state.humanPlayerId).units.some(

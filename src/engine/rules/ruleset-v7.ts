@@ -725,12 +725,15 @@ const role = (input: EffectiveRoleRuleV7): EffectiveRoleRuleV7 =>
 export const ORIGINAL_ROLE_RULES_V7: Readonly<
   Record<UnitRoleIdV7, EffectiveRoleRuleV7>
 > = deepFreeze({
+  // Revision 20 section 6.3 (`pulp_wars-0hi.3`, identity 7r23): the four core
+  // Human land roles have +2 maximum HP (Fighter, Raider, Marksman 12 from
+  // 10; Guard 17 from 15). No other faction copies these rules.
   FIGHTER: role({
     role: "FIGHTER",
     label: "Fighter",
     tacticalRole: "LINE",
     cost: 2,
-    maxHp: 10,
+    maxHp: 12,
     attack2: 4,
     defense2: 4,
     move: 1,
@@ -746,7 +749,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     label: "Raider",
     tacticalRole: "SKIRMISHER",
     cost: 4,
-    maxHp: 10,
+    maxHp: 12,
     attack2: 4,
     defense2: 2,
     move: 2,
@@ -762,7 +765,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     label: "Marksman",
     tacticalRole: "RANGED",
     cost: 3,
-    maxHp: 10,
+    maxHp: 12,
     attack2: 4,
     defense2: 2,
     move: 1,
@@ -778,7 +781,7 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     label: "Guard",
     tacticalRole: "DEFENDER",
     cost: 3,
-    maxHp: 15,
+    maxHp: 17,
     attack2: 3,
     defense2: 6,
     move: 1,
@@ -1332,15 +1335,16 @@ export const DINOSAUR_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
 export const DINOSAUR_ROLE_RULES_V7: Readonly<
   Record<UnitRoleIdV7, EffectiveRoleRuleV7>
 > = deepFreeze({
-  // `pulp_wars-c87.8`: 12 HP (the contract value was the Fighter's 10).
-  // Revision 20 section 6.1: the Caveman states its own rule (it used to
-  // copy the Human Fighter's), so a Human Fighter change does not move it.
+  // Revision 20 section 6.3 (`pulp_wars-0hi.3`): 10 HP again, the contract
+  // value (`pulp_wars-c87.8` had raised it to 12 while Dinosaurs were weak).
+  // Section 6.1: the Caveman states its own rule (it used to copy the Human
+  // Fighter's), so a Human Fighter change does not move it.
   FIGHTER: role({
     role: "FIGHTER",
     label: "Caveman",
     tacticalRole: "LINE",
     cost: 2,
-    maxHp: 12,
+    maxHp: 10,
     attack2: 4,
     defense2: 4,
     move: 1,

@@ -267,7 +267,7 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
   it.each([1, -1] as const)(
     "rejects full-health bad fortified trades and literal suicide, while retaining a favorable countervariant (%s)",
     (direction) => {
-      const bad = combatState(direction, 10, 15, "FIGHTER", "GUARD", true);
+      const bad = combatState(direction, 12, 17, "FIGHTER", "GUARD", true);
       const badView = viewForV7(bad, bad.humanPlayerId);
       const attack = queryPlayerCommandsV7(badView).find(
         (command) => command.kind === "ATTACK",
@@ -284,7 +284,7 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         ),
       ).toBe(false);
 
-      const suicide = combatState(direction, 1, 15, "FIGHTER", "GUARD", true);
+      const suicide = combatState(direction, 1, 17, "FIGHTER", "GUARD", true);
       const suicideView = viewForV7(suicide, suicide.humanPlayerId);
       const suicideAttack = queryPlayerCommandsV7(suicideView).find(
         (command) => command.kind === "ATTACK",
@@ -307,7 +307,7 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
 
       const favorable = combatState(
         direction,
-        10,
+        12,
         2,
         "FIGHTER",
         "FIGHTER",
@@ -348,7 +348,7 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
       ).toMatchObject({
         attackerDies: true,
         defenderDies: false,
-        damageToDefender: 2,
+        damageToDefender: 1,
         damageToAttacker: 1,
       });
       expect(
@@ -623,7 +623,7 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
   it.each([1, -1] as const)(
     "selects recovery over a low-value wounded attack (%s)",
     (direction) => {
-      const state = combatState(direction, 3, 15, "FIGHTER", "GUARD", true);
+      const state = combatState(direction, 3, 17, "FIGHTER", "GUARD", true);
       const view = viewForV7(state, state.humanPlayerId);
       const decision = chooseNormalCommandV7(view);
       expect(
@@ -965,18 +965,22 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // revision (`pulp_wars-t6s.2`) inserts BEAM_DOWN, MIND_CONTROL, and
         // TRACTOR_BEAM after HATCH, moving every later kind forward by
         // three (was ae8b91…e5c5); the revision-12-ordinal value below is
-        // unchanged.
+        // unchanged. pulp_wars-0hi.3 (was e42f37…e43d): the command is the
+        // same Capture and the same one candidate's score differs, Train
+        // Guard with strategic value 17 (was 15): the Guard's maximum HP
+        // (revision 20 section 6.3).
         expect(canonicalHash(beforeDecision)).toBe(
-          "e42f375e166ab4e1d3601694a3dfc5150de76db678c723ffc9e0f20c6041e43d",
+          "45d48c809fac99dd1e794d008f0ee5d279aa1ad09e9d1839f4eb9c05711ce816",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
         // ordinals (pulp_wars-9s0.1: was 294bac…41a7, for the same Train
-        // priority).
+        // priority; pulp_wars-0hi.3: was ee3a7f…1ed8, for the same Guard
+        // HP).
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(beforeDecision)),
         ).toBe(
-          "ee3a7f046f0b73b577623aa08f03c8eac39223bfd4ffee6a6fab64dbf9aa1ed8",
+          "8e91dae9b708b655b3fc8824790f52ef71e390f779f70a9cfe526385d5df48be",
         );
       }
       expect(inspectNormalTacticalFactsV7(beforeView).roadCorridor).toBeNull();
@@ -1029,14 +1033,17 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // The Martian revision (`pulp_wars-t6s.2`) inserts BEAM_DOWN,
         // MIND_CONTROL, and TRACTOR_BEAM after HATCH, moving every later
         // command-kind ordinal forward by three (was 548fac…c17a).
+        // pulp_wars-0hi.3 (was caaa28…c38a): the same command, and the
+        // same candidate's strategic value is 17 (was 15), the Guard's HP.
         expect(canonicalHash(capturedDecision)).toBe(
-          "caaa289901579aba8b375e90a4881267442615df1876f4813700d0e09a7cc38a",
+          "2d37084ba558b723f362586edf1e316d712c1593a73f5802d3c4248d48e18e6e",
         );
-        // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1).
+        // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
+        // pulp_wars-0hi.3: was 091615…054b).
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(capturedDecision)),
         ).toBe(
-          "091615e1c2e75e26bd70178d3e5badbc40e76cfece8342d63d09dd999f50054b",
+          "22cb83a71dc79ac27013eb5786b3fc1342e03d512640ba561274dfde46ba2bdf",
         );
       }
 
@@ -1201,7 +1208,7 @@ function cityThreatState(direction: 1 | -1, replacement: boolean): GameStateV7 {
     throw new Error("Threat fixture players missing");
   const ready = own.activation;
   const units: UnitStateV7[] = [
-    roleUnit(own, "GUARD", city.at, 15, { ...ready }),
+    roleUnit(own, "GUARD", city.at, 17, { ...ready }),
     roleUnit(
       hostile,
       replacement ? "FIGHTER" : "CATAPULT",
@@ -1213,7 +1220,7 @@ function cityThreatState(direction: 1 | -1, replacement: boolean): GameStateV7 {
       },
     ),
     {
-      ...roleUnit(hostile, "MARKSMAN", marksmanAt, 10, {
+      ...roleUnit(hostile, "MARKSMAN", marksmanAt, 12, {
         ...hostile.activation,
         handled: true,
       }),
@@ -1222,7 +1229,7 @@ function cityThreatState(direction: 1 | -1, replacement: boolean): GameStateV7 {
   ];
   if (replacement)
     units.push({
-      ...roleUnit(own, "GUARD", replacementAt, 15, { ...ready }),
+      ...roleUnit(own, "GUARD", replacementAt, 17, { ...ready }),
       id: unitId(source.nextEntityId + 1),
     });
   return checkedV7({
@@ -1259,8 +1266,8 @@ function zocThreatViews(
   const state = checkedV7({
     ...source,
     units: [
-      roleUnit(own, "GUARD", projectorAt, 15, own.activation),
-      roleUnit(enemy, "RAIDER", hostileAt, 10, enemy.activation),
+      roleUnit(own, "GUARD", projectorAt, 17, own.activation),
+      roleUnit(enemy, "RAIDER", hostileAt, 12, enemy.activation),
     ],
     treasureChests: [],
     board: grassAt(source, [hostileAt, projectorAt, target]),
@@ -1392,11 +1399,11 @@ function rallyState(direction: 1 | -1): GameStateV7 {
     units: [
       roleUnit(own, "CAPTAIN", center, 10, own.activation),
       {
-        ...roleUnit(own, "FIGHTER", friendlyA, 10, own.activation),
+        ...roleUnit(own, "FIGHTER", friendlyA, 12, own.activation),
         id: unitId(source.nextEntityId),
       },
       {
-        ...roleUnit(own, "GUARD", friendlyB, 15, own.activation),
+        ...roleUnit(own, "GUARD", friendlyB, 17, own.activation),
         id: unitId(source.nextEntityId + 1),
       },
       roleUnit(hostile, "FIGHTER", hostileAt, 2, hostile.activation),
@@ -1457,14 +1464,14 @@ function captureLineState(
       ...(withFollowUp
         ? [
             {
-              ...roleUnit(own, "FIGHTER", followUpAt, 10, own.activation),
+              ...roleUnit(own, "FIGHTER", followUpAt, 12, own.activation),
               id: unitId(source.nextEntityId),
             },
           ]
         : []),
       roleUnit(hostile, "FIGHTER", targetCity.at, 7, hostile.activation),
       {
-        ...roleUnit(hostile, "GUARD", reserveAt, 15, {
+        ...roleUnit(hostile, "GUARD", reserveAt, 17, {
           ...hostile.activation,
           handled: true,
         }),
@@ -1514,7 +1521,7 @@ function citySaveState(
         ...roleUnit(own, "KNIGHT", sacrificeAt, 1, own.activation),
         id: unitId(source.nextEntityId),
       },
-      roleUnit(hostile, "FIGHTER", hostileAt, 5, {
+      roleUnit(hostile, "FIGHTER", hostileAt, 6, {
         ...hostile.activation,
         handled: true,
       }),
@@ -1550,14 +1557,14 @@ function tendState(direction: 1 | -1, wounded: boolean): GameStateV7 {
     units: [
       roleUnit(own, "CAPTAIN", captainAt, 10, own.activation),
       {
-        ...roleUnit(own, "GUARD", city.at, wounded ? 7 : 15, own.activation),
+        ...roleUnit(own, "GUARD", city.at, wounded ? 7 : 17, own.activation),
         id: unitId(source.nextEntityId),
       },
       {
-        ...roleUnit(own, "FIGHTER", wingAt, wounded ? 4 : 10, own.activation),
+        ...roleUnit(own, "FIGHTER", wingAt, wounded ? 4 : 12, own.activation),
         id: unitId(source.nextEntityId + 1),
       },
-      roleUnit(hostile, "FIGHTER", hostileAt, 10, {
+      roleUnit(hostile, "FIGHTER", hostileAt, 12, {
         ...hostile.activation,
         handled: true,
       }),
@@ -1693,12 +1700,12 @@ function catapultScreenState(
       ...(reachableScreen
         ? [
             {
-              ...roleUnit(own, "GUARD", guardAt, 15, own.activation),
+              ...roleUnit(own, "GUARD", guardAt, 17, own.activation),
               id: unitId(source.nextEntityId),
             },
           ]
         : []),
-      roleUnit(hostile, "GUARD", targetCity.at, 15, {
+      roleUnit(hostile, "GUARD", targetCity.at, 17, {
         ...hostile.activation,
         handled: true,
       }),
@@ -1733,9 +1740,9 @@ function captureOpeningState(direction: 1 | -1, opening: boolean): GameStateV7 {
     nextEntityId: source.nextEntityId + 1,
     board: grassAt(source, [targetCity.at, raiderAt, reserveAt]),
     units: [
-      roleUnit(own, "RAIDER", raiderAt, 10, own.activation),
+      roleUnit(own, "RAIDER", raiderAt, 12, own.activation),
       {
-        ...roleUnit(hostile, "GUARD", reserveAt, 15, {
+        ...roleUnit(hostile, "GUARD", reserveAt, 17, {
           ...hostile.activation,
           handled: true,
         }),
@@ -1744,7 +1751,7 @@ function captureOpeningState(direction: 1 | -1, opening: boolean): GameStateV7 {
       ...(opening
         ? []
         : [
-            roleUnit(hostile, "GUARD", targetCity.at, 15, {
+            roleUnit(hostile, "GUARD", targetCity.at, 17, {
               ...hostile.activation,
               handled: true,
             }),
@@ -1981,8 +1988,8 @@ function navalCompositionView(
     role: "FIGHTER" as const,
     form: "LAND" as const,
     at: hostileCity.at,
-    hp: 10,
-    maxHp: 10,
+    hp: 12,
+    maxHp: 12,
   };
   const waterKeys = new Set(water.map(coord));
   const navalState = checkedV7({

@@ -787,15 +787,15 @@ describe("Ruleset 7 Canvas interaction", () => {
         {
           ...attacker,
           role: "MARKSMAN",
-          hp: 10,
-          maxHp: 10,
+          hp: 12,
+          maxHp: 12,
           at: { x: 4, y: 4 },
         },
         {
           ...defender,
           role: "GUARD",
           hp: 1,
-          maxHp: 15,
+          maxHp: 17,
           at: { x: 5, y: 4 },
         },
       ],
@@ -842,7 +842,7 @@ describe("Ruleset 7 Canvas interaction", () => {
     expect(new Set(arrowPoints.map((point) => point.y)).size).toBeGreaterThan(
       1,
     );
-    const dyingHealthRatio = 48 / 15 / 5;
+    const dyingHealthRatio = 48 / 17 / 5;
     expect(
       healthRatios.some(
         (ratio) => Math.abs(ratio - dyingHealthRatio) < 0.00001,

@@ -81,8 +81,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r22");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r22.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r23");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r23.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -121,11 +121,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r21 and preserves the r22 save", () => {
+  it("cleans obsolete keys through v7r22 and preserves the r23 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r21.current",
+      "pulpWars.save.v7r22.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(21);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(22);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -138,7 +138,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r19.current", "r19"],
       ["pulpWars.save.v7r20.current", "r20"],
       ["pulpWars.save.v7r21.current", "r21"],
-      [SAVE_STORAGE_KEY_V7, "r22"],
+      ["pulpWars.save.v7r22.current", "r22"],
+      [SAVE_STORAGE_KEY_V7, "r23"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -154,8 +155,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r19.current",
         "pulpWars.save.v7r20.current",
         "pulpWars.save.v7r21.current",
+        "pulpWars.save.v7r22.current",
       ],
-      removedCount: 10,
+      removedCount: 11,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -253,7 +255,11 @@ describe("ruleset-7 per-seat factions", () => {
       [2, "UNDEAD", "UNDEAD_BASELINE_V1", []],
     ]);
     for (const unit of state.units) {
-      expect(unit).toMatchObject({ role: "FIGHTER", hp: 10, maxHp: 10 });
+      // Revision 20 section 6.3: the Human Fighter has 12 HP; the Skeleton
+      // keeps 10.
+      const maxHp =
+        playerOf(state, unit.ownerId).faction === "UNDEAD" ? 10 : 12;
+      expect(unit).toMatchObject({ role: "FIGHTER", hp: maxHp, maxHp });
       expect(unitRoleRuleV7(state, unit).label).toBe(
         playerOf(state, unit.ownerId).faction === "UNDEAD"
           ? "Skeleton"
@@ -345,7 +351,23 @@ describe("ruleset-7 per-seat factions", () => {
         expect(other.treasureChests).toEqual(reference.treasureChests);
         expect(other.random).toEqual(reference.random);
         expect(other.cities).toEqual(reference.cities);
-        expect(other.units).toEqual(reference.units);
+        // Units differ only in the maximum HP of their owner's faction
+        // (revision 20 section 6.3: Human Fighter 12, Skeleton 10).
+        const withoutHp = (unit: UnitStateV7) => ({
+          ...unit,
+          hp: null,
+          maxHp: null,
+        });
+        expect(other.units.map(withoutHp)).toEqual(
+          reference.units.map(withoutHp),
+        );
+        for (const unit of other.units) {
+          const maxHp = effectiveRoleRuleV7(
+            unit.role,
+            playerOf(other, unit.ownerId).faction,
+          ).maxHp;
+          expect([unit.hp, unit.maxHp]).toEqual([maxHp, maxHp]);
+        }
         expect(other.nextEntityId).toBe(reference.nextEntityId);
         expect(other.players.map(withoutFaction)).toEqual(
           reference.players.map(withoutFaction),
@@ -612,7 +634,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
     ).toEqual([1, 1, 1, 1, 2, 4, 4]);
   });
 
-  it("keeps the Human registration at its revision-12 values", () => {
+  it("keeps the Human registration at its revision-12 values apart from the revision-20 HP", () => {
     expect(
       UNIT_ROLE_IDS_V7.map((role) => {
         const rule = effectiveRoleRuleV7(role, "ORIGINAL");
@@ -629,10 +651,12 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         ];
       }),
     ).toEqual([
-      ["Fighter", 2, 10, 4, 4, 1, 1, 1, "ATTACK+CAPTURE"],
-      ["Raider", 4, 10, 4, 2, 2, 1, 1, "ATTACK+CAPTURE+CHARGE+ESCAPE"],
-      ["Marksman", 3, 10, 4, 2, 1, 2, 1, "ATTACK+CAPTURE"],
-      ["Guard", 3, 15, 3, 6, 1, 1, 1, "ATTACK+CAPTURE"],
+      // Revision 20 section 6.3 (`pulp_wars-0hi.3`): Fighter, Raider, and
+      // Marksman 12 HP (were 10), Guard 17 (was 15).
+      ["Fighter", 2, 12, 4, 4, 1, 1, 1, "ATTACK+CAPTURE"],
+      ["Raider", 4, 12, 4, 2, 2, 1, 1, "ATTACK+CAPTURE+CHARGE+ESCAPE"],
+      ["Marksman", 3, 12, 4, 2, 1, 2, 1, "ATTACK+CAPTURE"],
+      ["Guard", 3, 17, 3, 6, 1, 1, 1, "ATTACK+CAPTURE"],
       ["Captain", 5, 10, 2, 2, 1, 1, 1, "ATTACK+RALLY+TEND_WOUNDED"],
       ["Catapult", 8, 10, 7, 1, 1, 3, 2, "ATTACK"],
       ["Knight", 9, 10, 6, 2, 3, 1, 1, "ATTACK+OVERRUN"],
@@ -877,11 +901,13 @@ describe("ruleset-7 Undead training and substitutions", () => {
   });
 
   it("grants the owner's Skeleton for Militia and Abomination for the level-5 reward", () => {
-    for (const [reward, role, maxHp, label] of [
-      ["MILITIA", "FIGHTER", 10, "Skeleton"],
-      ["JUGGERNAUT", "JUGGERNAUT", 40, "Abomination"],
+    for (const [reward, role, label] of [
+      ["MILITIA", "FIGHTER", "Skeleton"],
+      ["JUGGERNAUT", "JUGGERNAUT", "Abomination"],
     ] as const) {
       for (const faction of ["UNDEAD", "ORIGINAL"] as const) {
+        // Skeleton 10, Fighter 12 (revision 20 section 6.3), both 40.
+        const maxHp = effectiveRoleRuleV7(role, faction).maxHp;
         const fixture = rewardState(faction, reward);
         const result = applyCommandV7(
           fixture.state,
@@ -1381,7 +1407,7 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
     );
     const zombie = ownUnit(state, "GUARD");
     const guard = enemyUnitAt(state, { x: 5, y: 5 });
-    expect([zombie.maxHp, guard.maxHp]).toEqual([18, 15]);
+    expect([zombie.maxHp, guard.maxHp]).toEqual([18, 17]);
     const patched = (id: UnitStateV7["id"], patch: Partial<UnitStateV7>) =>
       parseGameStateV7({
         ...state,
@@ -1515,6 +1541,14 @@ describe("ruleset-7 all-Human parity digests", () => {
   // and `attackerShieldDamage: 0`, and the neutral `shieldDamage: 0` of
   // splash entries, all removed before hashing like the earlier neutral
   // fields.
+  // `pulp_wars-0hi.3` (revision 20 section 6.3: Human Fighter, Raider, and
+  // Marksman 12 HP, Guard 17) re-pins the command, event, final state, view,
+  // and command digests of both matches; map and post-generation PRNG
+  // digests are unchanged. Every match with a Human seat changes: the
+  // starting Fighter already has 12 HP, every exchange with a Human unit
+  // resolves on different HP ratios, and the policy values the Human roles
+  // by their HP. Seed 7 is now a conquest in round 22 with 232 commands (was
+  // the 30-round cap with 448); seed 1234 has 386 commands (was 381).
   const BASELINE = [
     {
       seed: 7,
@@ -1523,23 +1557,23 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "RIVAL",
       mapType: "CONTINENTS",
       maxRounds: 30,
-      acceptedCommands: 448,
-      rounds: 31,
-      termination: "ROUND_CAP",
+      acceptedCommands: 232,
+      rounds: 22,
+      termination: "OUTCOME",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "3708fbfeb83fe296ab766414ba271462a48b649c7baa16ca7a2a2d65f860a818",
+        "4881f4041a7e7a43d7714ba1cf09a05998cabac2813ca6ce8287a70358f0de4b",
       eventHash:
-        "bf40cc1c0f5cbf447b6b076e294822b7cad5c375751f64dc0769be1d9c39ffeb",
+        "27a26d17cdcd670818208dd16f9fb65c4da0d5afd0da03e51addf9eb0532bda4",
       normalizedFinalStateHash:
-        "9c292718fa70a3a6b6cd9430c5c879d327eed1dd9933e91a78f8bf5d8a8ae8f8",
+        "f9384561f69ddf23da78784a04893e84ad300e0d6e4546c69250e66c609ac962",
       normalizedHumanViewHash:
-        "b8059d51cf76c4e088e6e272da73db6430696b12f4d2ca6524ee4009509f455e",
+        "8a796286b4d03b9856fa1e2ae73807564c4b7f22e62907e9ff7464260b72a318",
       normalizedHumanCommandsHash:
-        "79550e6a252ba37374e86ee11ce7c0a28abd8519bf01d3612443ab6ca447f597",
+        "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     },
     {
       seed: 1234,
@@ -1548,7 +1582,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "COOPERATIVE",
       mapType: "ARCHIPELAGO",
       maxRounds: 18,
-      acceptedCommands: 381,
+      acceptedCommands: 386,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1556,15 +1590,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "d86a22c9e06ffb9ad65bb72be0617046bb1e730350a333674923081260aadf22",
+        "4071ac288075a99d34786f8b6bc7196e5780518343fda157cb664e8b4d9ab249",
       eventHash:
-        "7936d770488010b78b15b1ae4e5cdfb55fc380ef162a98171746db328d6bb8f4",
+        "35f737de1370d7712000d60136aa6a3110cfa2b29e957dd9be14bf47536e184a",
       normalizedFinalStateHash:
-        "1da937eaabaf2a711cf7ba9842c8b809188bce2b22c0fab47bf99faedd47f0d8",
+        "4d8b26d81699880571635d8a544350289b6b115a3b9d22d2eeac35e6aeaa0666",
       normalizedHumanViewHash:
-        "56872e5f85d5c6009515108580078d698fd2be6a1738cc13175b6dd1c42a811b",
+        "40335d64b5099d426e7b7777dea44ad9bcb30b1d7720b47b06c5a5a7c62bf747",
       normalizedHumanCommandsHash:
-        "bceb83043f4befbf477799afabe31c464aaa702e0eb5df4259c9156560a22381",
+        "a2c1e5f148a2a8f81d100a4d8cd8ceb022b84a5b3d842214b677dbb0ce59c169",
     },
   ] as const;
 

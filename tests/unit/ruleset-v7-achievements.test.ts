@@ -16,6 +16,7 @@ import {
   type PopulationContributionV7,
   type UnitStateV7,
   TECHNOLOGY_IDS_V7,
+  effectiveRoleRuleV7,
 } from "../../src/engine/index";
 import {
   allTechsV7,
@@ -1381,7 +1382,7 @@ function makeUnit(
   role: UnitStateV7["role"],
   at: CoordV7,
 ): UnitStateV7 {
-  const maxHp = role === "GUARD" ? 15 : role === "JUGGERNAUT" ? 40 : 10;
+  const maxHp = effectiveRoleRuleV7(role, "ORIGINAL").maxHp;
   return {
     id: unitId(id),
     ownerId,

@@ -114,8 +114,8 @@ export function isolatedNavalScenarioV7(
             role: "FIGHTER",
             form: "LAND",
             at: subjectAt,
-            hp: 10,
-            maxHp: 10,
+            hp: 12,
+            maxHp: 12,
             kills: 0,
             veteran: false,
             captureEligible: false,
@@ -130,8 +130,8 @@ export function isolatedNavalScenarioV7(
               : defendedTarget
                 ? targetAt
                 : { x: 10, y: targetAt.y },
-            hp: 10,
-            maxHp: 10,
+            hp: visiblePatrolDanger ? 10 : 12,
+            maxHp: visiblePatrolDanger ? 10 : 12,
             kills: 0,
             veteran: false,
             captureEligible: false,

@@ -29,7 +29,7 @@ describe("ruleset-7 naval transport", () => {
       ...fixture.state,
       units: fixture.state.units.map((candidate) =>
         candidate.id === unit.id
-          ? { ...candidate, hp: 7, maxHp: 15, kills: 3, veteran: true }
+          ? { ...candidate, hp: 7, maxHp: 17, kills: 3, veteran: true }
           : candidate,
       ),
     });
@@ -189,6 +189,8 @@ describe("ruleset-7 naval transport", () => {
           ? {
               ...candidate,
               role: "KNIGHT" as const,
+              hp: 10,
+              maxHp: 10,
               activation: {
                 ...candidate.activation,
                 attacked: true,

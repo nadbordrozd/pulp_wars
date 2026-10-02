@@ -353,11 +353,15 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // Conqueror and Land Baron in round 16) and seed 8 ends in round 23
     // with no Lich; seed 4 Pangea trained one and plagued again. With the
     // campaign plan (`pulp_wars-9s0.1`) seed 4 ends in round 18 before any
-    // Lich; seed 16 Pangea trains one and plagues (4 of seeds 0-23 train a
-    // Lich within 40 rounds, as before).
+    // Lich; seed 16 Pangea trained one and plagued (4 of seeds 0-23 trained a
+    // Lich within 40 rounds, as before). With the revision-20 section 6.3
+    // Human HP (`pulp_wars-0hi.3`) every match with a Human seat changes:
+    // seed 16 reaches the 40-round cap without a Lich; seed 8 Pangea trains
+    // one and plagues (3 of seeds 0-23 train a Lich within 40 rounds: 8,
+    // 12, and 15).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 16,
+      seed: 8,
       width: 11,
       height: 11,
       aiCount: 1,

@@ -33,6 +33,14 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * after `HATCH`, so the `-ordinal` tie-break of every candidate whose kind
  * follows `HATCH` moves by three. The command, the candidate count, and the
  * hash with revision-12 ordinals are unchanged.
+ *
+ * `pulp_wars-0hi.3` (revision 20 section 6.3, Human HP): `policyDecisionHash`
+ * was 312823…8c44. The command and the candidate count are unchanged; three
+ * of the 28 candidates score differently, all because a role's maximum HP is
+ * part of its value: the two Train Guard candidates have strategic value 17
+ * (was 15), and Research Scouting is now the missing-role plan (priority
+ * 1060 and value 6, was 1040 and 0), because the Raider's value rose from
+ * 16 to 18.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -40,7 +48,7 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b",
   /** `canonicalHash` of the whole decision (command and candidates). */
   policyDecisionHash:
-    "3128237c8cc70023fb1da17eefc25b89897dcac0830b75143e252a1a23c48c44",
+    "5f54062511f9ac7d8876a135f9c0c6ebaaf89a5a824c4c005a8c7db820432618",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -118,10 +126,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r22",
+    rulesetId: "pulp-wars-poc-7r23",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r22",
+      rulesetId: "pulp-wars-poc-7r23",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     },

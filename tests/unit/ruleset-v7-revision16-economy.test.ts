@@ -203,7 +203,10 @@ describe("ruleset-7 revision-16 income caps", () => {
 describe("ruleset-7 revision-16 income previews", () => {
   it("previews equal Start Turn income in natural play with capped levels and Markets", () => {
     const setup: MatchSetupV7 = {
-      ...setupV7(4, 1),
+      // pulp_wars-0hi.3: with the revision-20 section 6.3 Human HP the
+      // seed-4 match ends in round 36; seed 0 reaches the cap (of seeds 0-7,
+      // so do 2, 5, 6, and 7).
+      ...setupV7(0, 1),
       // A 20 x 20 duel lasts past round 40, with level 5+ cities and Markets.
       width: 20,
       height: 20,

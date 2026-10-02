@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r22 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r22");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r22");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r22.current");
+  it("keeps r18 among the gap-free prior identities after the r23 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r23");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r23");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r23.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 20 },
+        { length: 21 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-5)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 20 },
+        { length: 21 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r22");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r23");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -413,7 +413,7 @@ describe("ruleset-7 Dinosaur roster", () => {
       2,
       null,
       1,
-      12,
+      10,
       4,
       4,
       1,
@@ -1066,7 +1066,7 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
           veteran: false,
         });
         if (faction === "DINOSAUR") {
-          expect([unit.hp, unit.maxHp]).toEqual([12, 12]);
+          expect([unit.hp, unit.maxHp]).toEqual([10, 10]);
           expect(unitRoleRuleV7(state, unit).label).toBe("Caveman");
         }
       });
@@ -1089,9 +1089,9 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
       role: "FIGHTER",
       form: "LAND",
       at: city.at,
-      // pulp_wars-c87.8: Caveman HP 12 (was 10).
-      hp: 12,
-      maxHp: 12,
+      // pulp_wars-0hi.3: Caveman HP 10 (12 between c87.8 and 0hi.3).
+      hp: 10,
+      maxHp: 10,
       homeCityId: city.id,
     });
     expect(caveman.activation).toMatchObject({

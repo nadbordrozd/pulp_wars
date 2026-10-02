@@ -1175,12 +1175,23 @@ function withFactions(
   state: GameStateV7,
   factions: readonly FactionIdV7[],
 ): GameStateV7 {
+  // Each unit takes its new owner's registry maximum HP (the Human core
+  // roles differ from the Undead ones since revision 20 section 6.3).
+  const factionOf = new Map(
+    state.players.map((player) => [player.id, required(factions[player.seat])]),
+  );
   return checkedV7({
     ...state,
     setup: { ...state.setup, factions: [...factions] },
     players: state.players.map((player) => {
       const faction = required(factions[player.seat]);
       return { ...player, faction, factionTreeId: factionTreeIdV7(faction) };
+    }),
+    units: state.units.map((unit) => {
+      const maxHp =
+        effectiveRoleRuleV7(unit.role, required(factionOf.get(unit.ownerId)))
+          .maxHp + (unit.veteran ? 5 : 0);
+      return { ...unit, maxHp, hp: Math.min(unit.hp, maxHp) };
     }),
   });
 }

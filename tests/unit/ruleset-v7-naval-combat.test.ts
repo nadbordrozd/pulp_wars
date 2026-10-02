@@ -211,6 +211,7 @@ describe("ruleset-7 naval combat", () => {
               role: "PATROL_BOAT" as const,
               form: "NAVAL" as const,
               hp: 4,
+              maxHp: 10,
             }
           : candidate,
       ),
@@ -344,7 +345,7 @@ describe("ruleset-7 naval combat", () => {
       ...fixture.state,
       units: fixture.state.units.map((candidate) =>
         candidate.id === unit.id
-          ? { ...candidate, role: "CAPTAIN" as const }
+          ? { ...candidate, role: "CAPTAIN" as const, hp: 10, maxHp: 10 }
           : candidate.id === second.id
             ? {
                 ...candidate,
@@ -354,6 +355,7 @@ describe("ruleset-7 naval combat", () => {
                 role: "PATROL_BOAT" as const,
                 form: "NAVAL" as const,
                 hp: 4,
+                maxHp: 10,
               }
             : candidate,
       ),
@@ -416,6 +418,8 @@ describe("ruleset-7 naval combat", () => {
                   at: target,
                   role: "PATROL_BOAT" as const,
                   form: "NAVAL" as const,
+                  hp: 10,
+                  maxHp: 10,
                 }
               : unit,
         ),

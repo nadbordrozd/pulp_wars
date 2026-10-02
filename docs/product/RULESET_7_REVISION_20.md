@@ -3,9 +3,9 @@
 **Status:** contract (`pulp_wars-0hi.1`), implemented in the engine, the
 Normal AI, and the UI by `pulp_wars-0hi.2`
 ([section 11](#11-implementation-notes-pulp_wars-0hi2) lists where the
-implementation differs from or adds to this text). The Human sturdiness
-numbers of [section 6](#6-human-sturdiness) are not chosen yet
-(`pulp_wars-0hi.3`). It amends
+implementation differs from or adds to this text). `pulp_wars-0hi.3` chose
+the sturdiness numbers of [section 6](#6-human-sturdiness) in a coarse,
+Dry-Land-only pass ([tuning record](#63-tuning-record)). It amends
 [revision 19](RULESET_7_REVISION_19_DINOSAURS.md) (`pulp-wars-poc-7r19`), which
 is itself an overlay over [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (`pulp-wars-poc-7r18`, three factions). `pulp_wars-c87.9` folds revision 19
@@ -13,9 +13,12 @@ is itself an overlay over [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 ([section 8.3](#83-fold-targets)).
 
 **Ruleset ID:** `pulp-wars-poc-7r20` (the running game is
-`pulp-wars-poc-7r21`:
-[revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md) adds four achievements
-and changes nothing else in this document)
+`pulp-wars-poc-7r23`:
+[revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md) (`7r21`) adds four
+achievements and the [Martian overlay](RULESET_7_MARTIANS.md) (`7r22`) a
+fifth faction, and neither changes anything in this document;
+`pulp_wars-0hi.3` (`7r23`) sets the numbers of
+[section 6.3](#63-tuning-record))
 
 **Map-generation revision:** `REGIONAL_BIOMES_NAVAL_V2` (unchanged)
 
@@ -55,8 +58,12 @@ Attack and Defense are in whole units; the code stores half-units (`attack2`,
   now through `pulpWars.save.v7r19.current`, and preserves the Ruleset 6 save,
   settings, the art-set preference, and unrelated storage.
 - The identity changes once, in `pulp_wars-0hi.2`, which also makes every
-  shape change below. `pulp_wars-0hi.3` changes numbers under the same
-  identity (the revision-14, 16, 17, and 19 precedent).
+  shape change below. `pulp_wars-0hi.3` was to change numbers under the same
+  identity (the revision-14, 16, 17, and 19 precedent); because revision 21
+  and the Martian overlay had already moved the running identity on, the
+  root had it bump the identity once more instead, to `pulp-wars-poc-7r23`
+  (save key `pulpWars.save.v7r23.current`, `7r22` appended to
+  `PRIOR_RULESET_7_IDS`, obsolete keys through `v7r22`). No shape changes.
 - **Shape changes** (all listed again in
   [section 7.1](#71-commands-events-errors-and-queries)): the `STAMPEDE`
   command kind, the `STAMPEDE_NOT_LEGAL` error code, the `STAMPEDE`
@@ -190,15 +197,18 @@ Events: `COMBAT_RESOLVED`; `FIELD_DEFENSE_DESTROYED`; death events
 Engine formula ([current rules section 13.2](RULESET_7_CURRENT.md#132-damage)),
 all units at full HP on Grass unless stated; Triceratops 20 HP, Attack 3,
 Defense 2, stage 0. "Ordinary" is what the same attack would do if the
-fortification counted.
+fortification counted. The Human Fighter and Guard have the
+[section 6.3](#63-tuning-record) HP (12 and 17; with 10 and 15 the damage
+and retaliation of every row are the same, a one-tile Charge kills the
+Fighter with 10, and the Alpha kills the Guard with 15).
 
 | Target (HP, Defense)                        | Tiles moved | Attack | Defense used | Damage to target | Retaliation | Outcome                                                   |
 | ------------------------------------------- | ----------: | -----: | -----------: | ---------------: | ----------: | --------------------------------------------------------- |
-| Fighter (10, 2)                             |           0 |      3 |            2 |                8 |           4 | Fighter at 2 HP, pushed; Triceratops follows              |
-| Fighter (10, 2)                             |           1 |      4 |            2 |               10 |           — | Fighter dies; Triceratops advances                        |
-| Guard (15, 3)                               |           0 |      3 |            3 |                7 |           7 | pushed                                                    |
-| Guard (15, 3)                               |           1 |      4 |            3 |               10 |           6 | pushed                                                    |
-| Guard (15, 3)                               |           2 |      5 |            3 |               14 |           5 | Guard at 1 HP, pushed                                     |
+| Fighter (12, 2)                             |           0 |      3 |            2 |                8 |           4 | Fighter at 4 HP, pushed; Triceratops follows              |
+| Fighter (12, 2)                             |           1 |      4 |            2 |               12 |           — | Fighter dies; Triceratops advances                        |
+| Guard (17, 3)                               |           0 |      3 |            3 |                7 |           7 | pushed                                                    |
+| Guard (17, 3)                               |           1 |      4 |            3 |               10 |           6 | pushed                                                    |
+| Guard (17, 3)                               |           2 |      5 |            3 |               14 |           5 | Guard at 3 HP, pushed                                     |
 | Guard on a Walled center with Field Defense |           2 |      5 |    3 (not 6) |               14 |           5 | ordinary: 10 and 15. Field Defense gone; Guard pushed off |
 | Guard on a Walled center with Field Defense |           0 |      3 |    3 (not 6) |                7 |           7 | ordinary: 5 and 18                                        |
 | Guard in a Forest with Field Defense        |           2 |      5 |      3 × 1.5 |               12 |           6 | cover stays; ordinary: 10 and 10                          |
@@ -206,8 +216,8 @@ fortification counted.
 | Orc Brute (15, 2.5)                         |           2 |      5 |          2.5 |               15 |           — | dies                                                      |
 | Juggernaut (40, 4)                          |           2 |      5 |            4 |               13 |           8 | pushed                                                    |
 | Ankylosaurus (20, 3)                        |           2 |      5 |            3 |      13 (14 − 1) |           5 | Armoured; pushed                                          |
-| Guard (15, 3), Triceratops at 10 of 20 HP   |           2 |      5 |            3 |               10 |           7 | pushed                                                    |
-| Guard (15, 3), Alpha Triceratops (28 HP)    |           2 |      6 |            3 |               15 |           — | dies                                                      |
+| Guard (17, 3), Triceratops at 10 of 20 HP   |           2 |      5 |            3 |               10 |           7 | pushed                                                    |
+| Guard (17, 3), Alpha Triceratops (28 HP)    |           2 |      6 |            3 |               17 |           — | dies                                                      |
 
 ### 2.6 Interactions
 
@@ -379,7 +389,8 @@ Explosives destroys Field Defense on its target's tile at range 1, reason
   does not grow, two stages in one command resolve in order, Alpha's +1
   Attack, and the state-parsing rule `maxHp = role maxHp + 4 × stage`.
 - The heal removes damage only. Plague and Bitten stay.
-- Examples: a Fighter at 3 of 10 HP promotes to 15 of 15 (was 8 of 15). A
+- Examples: a Fighter at 3 of 12 HP promotes to 17 of 17 (was 8 of 17; 3
+  of 10 to 15 of 15 before [section 6.3](#63-tuning-record)). A
   T-Rex at 10 of 28 HP whose attack makes its first kill is at 32 of 32 (was
   14 of 32) before it advances and Rampages. An Ankylosaurus at 2 HP whose
   retaliation makes its third kill is at 28 of 28.
@@ -423,6 +434,9 @@ the code, and the tests together.
   Catapult, or Juggernaut-role unit of Humans, Undead, or Goblins; the boats
   (shared by all four factions); T-Rex stats or Rampage; what Charge!
   ignores, destroys, or pushes; Promotion and growth amounts.
+  The "Today" column is the value before `pulp_wars-0hi.3`; the chosen values
+  are in the [tuning record](#63-tuning-record).
+
 - **Derived values follow the registry:** starting and Militia units,
   Raise Dead Skeletons, the Showcase, and risings (an Infect or Bitten
   rising keeps `min(10, Zombie maxHp)`). The Skeleton and the Caveman copy
@@ -451,9 +465,53 @@ Wilson intervals).
 If the bands cannot all be met inside [section 6.1](#61-bounds),
 `pulp_wars-0hi.3` reports the best in-bounds result and asks the root.
 
+**Superseded for `pulp_wars-0hi.3` by the user (2026-10-02):** balance is
+tested on Dry Land only, with small samples, and the goal of this pass is no
+gross imbalance (no faction pairing more lopsided than about 70/30) and no
+blind spot (no faction helpless against a specific enemy tool, no unit
+dominant or dead). The bands above are left for a later fine-tuning pass,
+which the user will call for.
+
 ### 6.3 Tuning record
 
-Empty until `pulp_wars-0hi.3` records the chosen numbers here.
+`pulp_wars-0hi.3`, identity `pulp-wars-poc-7r23`. A coarse pass by the
+user's decision of 2026-10-02 (see the note under
+[section 6.2](#62-targets-from-the-brief)): Dry Land only, 11 x 11 and
+14 x 14, seeds 0-14, both seat orders (about 60 games per faction pairing),
+Normal against Normal, Rival. Water maps were not tested. Evidence and the
+blind-spot review are in the
+[balance report](../validation/RULESET_7_REVISION_20_BALANCE.md).
+
+| Number                    | Before | After | Bound used            |
+| ------------------------- | -----: | ----: | --------------------- |
+| Human Fighter maximum HP  |     10 |    12 | section 6.1, +0 to +3 |
+| Human Raider maximum HP   |     10 |    12 | section 6.1, +0 to +3 |
+| Human Marksman maximum HP |     10 |    12 | section 6.1, +0 to +3 |
+| Human Guard maximum HP    |     15 |    17 | section 6.1, +0 to +3 |
+| Caveman maximum HP        |     12 |    10 | revision 19, 10 ± 2   |
+
+Nothing else changed: no Undead or Goblin number, no Triceratops or T-Rex
+number, and no AI code. The Human Knight keeps 10 HP. Promoted values follow
+(Fighter, Raider, Marksman 17; Guard 22; Caveman 15).
+
+Win rates of decided games on Dry Land (95% Wilson intervals; coarse, about
+60 games each):
+
+| Pairing (first named wins) | Before            | After             |
+| -------------------------- | ----------------- | ----------------- |
+| Human over Undead          | 45.0% [33-58]     | 46.7% [35-59]     |
+| Human over Goblin          | 45.0% [33-58]     | 46.7% [35-59]     |
+| Dinosaur over Human        | **79.7%** [68-88] | 44.1% [32-57]     |
+| Dinosaur over Undead       | 59.6% [47-71]     | 46.7% [35-59]     |
+| Dinosaur over Goblin       | 60.0% [47-71]     | 50.8% [38-63]     |
+| Undead over Goblin         | 60.0% [47-71]     | 60.0% (unchanged) |
+
+The only gross imbalance, Dinosaurs over Humans (90% when the Dinosaur
+moved first), is gone; every pairing is now inside 40-60%. Screening: Human
++2 alone brought it to 62%, Human +2 with the Caveman at 10 to 44%, and
+Human +3 with the Caveman at 10 to 38% (Humans then won 55-57% against
+Undead and Goblins). The +2 set was chosen as the smallest change that
+removes the imbalance and keeps Humans the sturdier faction by number.
 
 ## 7. Commands, events, errors, queries, UI, and AI
 

@@ -112,8 +112,8 @@ describe("ruleset-7 Knight Overrun activation", () => {
           id: unitId(state.nextEntityId),
           role: "FIGHTER" as const,
           at: { x: 1, y: 4 },
-          maxHp: 10,
-          hp: 10,
+          maxHp: 12,
+          hp: 12,
           activation: READY,
         },
       ].sort((left, right) => left.id - right.id),
@@ -714,11 +714,11 @@ describe("ruleset-7 Knight Overrun activation", () => {
         base.humanPlayerId,
         "FIGHTER",
         { x: 3, y: 2 },
-        15,
+        17,
       ),
       veteran: true,
       kills: 3,
-      maxHp: 15,
+      maxHp: 17,
     };
     const captainTwo = makeUnit(
       base,
@@ -1172,8 +1172,9 @@ describe("ruleset-7 Knight Overrun activation", () => {
     expect(
       promoted.accepted &&
         promoted.state.units.find((unit) => unit.id === target.id),
-      // Revision 20 section 5: a Promotion fully heals (was 3 + 5 = 8 HP).
-    ).toMatchObject({ veteran: true, hp: 15, maxHp: 15 });
+      // Revision 20 section 5: a Promotion fully heals (was 3 + 5 = 8 HP);
+      // section 6.3: the Fighter has 12 HP, so 17 when promoted.
+    ).toMatchObject({ veteran: true, hp: 17, maxHp: 17 });
     if (promoted.accepted)
       expect(
         queryUnitStatsV7(promoted.state, target.id)?.stats[0]?.modifiers[0]

@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r22");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r22");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r23");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r23");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r22.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r23.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r22");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r23");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -477,7 +477,7 @@ describe("ruleset-7 revision-20 T-Rex", () => {
 });
 
 describe("ruleset-7 revision-20 role registrations (section 6.1)", () => {
-  it("states the Skeleton's and the Caveman's own rule with unchanged values", () => {
+  it("states the Skeleton's and the Caveman's own rule, independent of the Human Fighter", () => {
     const line = {
       role: "FIGHTER",
       tacticalRole: "LINE",
@@ -492,21 +492,23 @@ describe("ruleset-7 revision-20 role registrations (section 6.1)", () => {
       mayUsePrimaryActionAfterMove: true,
       abilities: ["ATTACK", "CAPTURE"],
     };
+    // Section 6.3 (`pulp_wars-0hi.3`): the Human Fighter has 12 HP.
     expect(effectiveRoleRuleV7("FIGHTER", "ORIGINAL")).toEqual({
       ...line,
       label: "Fighter",
-      maxHp: 10,
+      maxHp: 12,
     });
     expect(effectiveRoleRuleV7("FIGHTER", "UNDEAD")).toEqual({
       ...line,
       label: "Skeleton",
       maxHp: 10,
     });
-    // `pulp_wars-c87.8` tuned the Caveman to 12 HP; revision 20 keeps it.
+    // `pulp_wars-c87.8` tuned the Caveman to 12 HP; `pulp_wars-0hi.3`
+    // returned it to the contract's 10 (section 6.3).
     expect(effectiveRoleRuleV7("FIGHTER", "DINOSAUR")).toEqual({
       ...line,
       label: "Caveman",
-      maxHp: 12,
+      maxHp: 10,
     });
     // Neither registration copies the Human Fighter's rule any more.
     const source = readFileSync(
@@ -516,10 +518,12 @@ describe("ruleset-7 revision-20 role registrations (section 6.1)", () => {
     expect(source).not.toContain("...ORIGINAL_ROLE_RULES_V7.FIGHTER");
   });
 
-  it("changes no Human, Undead, or Goblin unit number in this bead", () => {
+  it("changes no Undead or Goblin unit number, and only the section 6.3 Human HP", () => {
     const hp = (faction: FactionIdV7): readonly number[] =>
       UNIT_ROLE_IDS_V7.map((role) => effectiveRoleRuleV7(role, faction).maxHp);
-    expect(hp("ORIGINAL")).toEqual([10, 10, 10, 15, 10, 10, 10, 40, 10, 25]);
+    // `pulp_wars-0hi.3`: Fighter, Raider, Marksman 12 (were 10), Guard 17
+    // (was 15).
+    expect(hp("ORIGINAL")).toEqual([12, 12, 12, 17, 10, 10, 10, 40, 10, 25]);
     expect(hp("UNDEAD")).toEqual([10, 10, 8, 18, 10, 10, 10, 40, 10, 25]);
     expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40, 10, 25]);
   });
@@ -601,15 +605,15 @@ describe("ruleset-7 revision-20 Promotion fully heals", () => {
     },
   );
 
-  it("matches the spec example: a Fighter at 3 of 10 HP promotes to 15 of 15", () => {
+  it("matches the spec example: a Fighter at 3 of 12 HP promotes to 17 of 17", () => {
     const state = promotable("ORIGINAL", "FIGHTER", 3);
     const result = applyOkV7(state, activeIdV7(state), {
       kind: "PROMOTE",
       unitId: unitAtV7(state, at(4, 3)).id,
     });
     expect(unitAtV7(result.state, at(4, 3))).toMatchObject({
-      hp: 15,
-      maxHp: 15,
+      hp: 17,
+      maxHp: 17,
     });
   });
 
@@ -644,7 +648,7 @@ describe("ruleset-7 revision-20 Promotion fully heals", () => {
       kind: "PROMOTE",
       unitId: fighter.id,
     }).state;
-    expect(unitAtV7(promoted, at(4, 3))).toMatchObject({ hp: 15, maxHp: 15 });
+    expect(unitAtV7(promoted, at(4, 3))).toMatchObject({ hp: 17, maxHp: 17 });
     expect(promoted.bitten).toEqual(afflicted.bitten);
     expect(promoted.plagued).toEqual(afflicted.plagued);
     // A growing unit is never promoted, whatever its kills.

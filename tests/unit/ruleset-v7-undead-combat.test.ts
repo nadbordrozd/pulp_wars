@@ -537,7 +537,8 @@ describe("ruleset-7 revision-13 Lifesteal", () => {
       defenderHeal: 0,
     });
     expect(unitById(result.state, vampire.id).hp).toBe(10);
-    expect(unitById(result.state, target.id).hp).toBe(4);
+    // The Human Fighter has 12 HP (revision 20 section 6.3).
+    expect(unitById(result.state, target.id).hp).toBe(6);
     // There is no separate heal event.
     expect(withoutTail(result.events).map((event) => event.kind)).toEqual([
       "COMBAT_RESOLVED",
