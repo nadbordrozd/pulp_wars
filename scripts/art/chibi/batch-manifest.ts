@@ -368,9 +368,10 @@ export const CHIBI_CLASS_RECIPES: Readonly<
       "create-image-pixen": { ...PIECE_OPTIONS, outline: "selective outline" },
     },
   },
-  // The Farm of the new direction: a flat pattern of crop rows seen from
-  // above. Pixen paints soil between the rows, so an edit erases everything
-  // but the plants; the crop-rows derivation then makes the pattern tile.
+  // The Farm of the new direction: rows of plump crops, each on its own
+  // strip of tilled soil, with transparent gaps between the rows. An edit
+  // thins the soil; the crop-rows derivation then makes the pattern tile.
+  // The accepted recipe (bead pulp_wars-9s0.3) asks for the low view.
   "crop-rows": {
     camera: "crop-pattern",
     style: "crop",
@@ -1063,6 +1064,24 @@ export function batchManifestProblems(
             stamp.at + stamp.width > rows.period
           )
             problems.push(`${label}: a crop stamp must fit inside the period`);
+          else if (
+            (stamp.band !== undefined &&
+              (!Number.isInteger(stamp.band) || stamp.band < 0)) ||
+            stamp.rows?.some(
+              (row) => !Number.isInteger(row) || row < 0 || row >= rows.rows,
+            ) === true
+          )
+            problems.push(
+              `${label}: a crop stamp's band and rows must be row numbers`,
+            );
+        if (
+          rows.rowOffsets !== undefined &&
+          (rows.rowOffsets.length !== rows.rows ||
+            !rows.rowOffsets.every(Number.isInteger))
+        )
+          problems.push(
+            `${label}: rowOffsets needs one whole number for each crop row`,
+          );
         for (const value of [rows.saturation, rows.strawMix])
           if (!(value >= 0 && value <= 1))
             problems.push(`${label}: saturation and strawMix must be 0..1`);

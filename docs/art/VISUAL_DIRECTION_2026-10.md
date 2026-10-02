@@ -717,7 +717,8 @@ Batch [`direction-human`](../../scripts/art/chibi/batches/batch-direction-human.
 `public/assets/chibi/`, registry
 [`chibi-direction-art-manifest.ts`](../../src/assets/chibi-direction-art-manifest.ts)):
 30 assets from 53 recipes, 22 of them imported from the demo's exploration
-runs and 31 new PixelLab calls.
+runs and 31 new PixelLab calls. The Farm was replaced later (two more
+imported recipes, see [the Farm's second pass](#the-farm-second-pass)).
 
 | Asset                     | Recipes tried     | Accepted                   | Notes                                                                                              |
 | ------------------------- | ----------------- | -------------------------- | -------------------------------------------------------------------------------------------------- |
@@ -731,7 +732,7 @@ runs and 31 new PixelLab calls.
 | Sawmill                   | 3                 | `sawmill-c-a-edit-2`       | new subject line; the first two had a dark spoked wheel; a third edit made it a solid saw blade    |
 | Market                    | 2                 | `market-c-a-edit`          | open stall with goods on the counter; the edit names the goods so they survive the slab removal    |
 | Lumber Camp               | 3                 | `lumber-camp-c-a-edit-b`   | pines, log stack, axe in a stump; the first ground edit removed the logs and the axe too           |
-| Farm                      | 3 (imported)      | `farm-field-a-edit-2`      | the demo's ears; the new `crop-rows` derivation makes them tile                                    |
+| Farm                      | 5 (imported)      | `wheat-a-edit`             | sheaves on ridges of soil (second pass); first the demo's ears, `farm-field-a-edit-2`              |
 | City 1                    | 3 (2 imported)    | `city-1-c-a-edit-2`        | the demo's town with a sandstone tower                                                             |
 | City 2                    | 3 (2 imported)    | `city-2-c-a-edit-2`        | the demo's walled town repainted from grey stone to sandstone                                      |
 | City 3                    | 6 (3 imported)    | `city-3-d-a-edit-2`        | a new creation: a keep, a church, houses and four towers inside the wall; then ground, then colour |
@@ -758,12 +759,12 @@ Recipes that worked:
 2. **Improvements** are one shared neutral set in the calm style. The Sawmill
    shows a saw blade and logs, the Market stalls and goods, the Lumber Camp
    pines, logs and an axe.
-3. **The Farm** tiles without a seam: the same two ears repeat every 16 px
-   along a row and the four rows repeat every 20 px, so a block of Farms is
-   one field with even rows across cell boundaries, horizontally and
-   vertically. The 9 px gaps lie on the cell's centre line and edges: a
-   straight Road through the cell shows fully along the rows and as a dashed
-   line across them; a diagonal Road shows through every gap.
+3. **The Farm** tiles without a seam: four rows at a 20 px pitch, each a
+   thin ridge of tilled soil with five plump wheat sheaves 16 px apart, so a
+   block of Farms is one field with even rows across cell boundaries,
+   horizontally and vertically. The 5 px gaps lie on the cell's centre line
+   and edges, and the soil ridge is only 5 px thick: a Road under a Farm
+   shows in every gap and between the sheaves.
 4. **Cities** are one set: pale sandstone, cream plaster with dark oak and
    terracotta-red roofs, growing from four cottages round a tower (80 x 80)
    to a walled town (88 x 80) to a walled city full of buildings (96 x 88).
@@ -807,13 +808,44 @@ Recipes that worked:
 - **The Lumber Camp and the Village are small** (about half a tile wide).
 - **The Raider's cloak is a brighter red** than the Fighter's surcoat.
 - **The Guard's portrait and map sprite show different faces**, as today.
-- **The Farm is very regular:** every row is the same two ears. It is calm
-  and seamless, but less hand-drawn than the demo's Farm.
-- **A Road crossing the rows** is still partly hidden, and a diagonal Road
-  shows only between the rows.
+- **The Farm is regular:** every row is the same five sheaves, moved along
+  the row. It is calm and seamless.
+- **A Road under a Farm** is crossed by the four soil ridges and partly
+  hidden by the sheaves; it reads as a path through the field.
 - **Four players who all play Human differ only by plate, pennant and
   border.** The user plans a rule of one player per faction per map later.
 - **Ships, terrain and the other factions** are not converted.
+
+### The Farm, second pass
+
+Bead `pulp_wars-9s0.3`: the user found the first row Farm (thin orange
+ears, no soil) ugly, though it matched the description. The constraints
+stayed: rows with gaps across the whole tile, a Road visible under it, no
+player colour, calm. Run
+[`art/explorations/farm-rows-2026-10/`](../../art/explorations/farm-rows-2026-10/)
+tried 20 recipes (20 PixelLab calls) with a new class text: big plump
+plants, each row on its own strip of tilled soil.
+
+| Concept                     | Recipes                                | Verdict                                                                                |
+| --------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------- |
+| Golden wheat sheaves        | `wheat-a`, `wheat-b`, `wheat-a-edit`   | **accepted: `wheat-a-edit`**, leaf-shaped sheaves on a thin dark ridge                 |
+| Round pale stooks           | `wheat-pale-a/b`, `wheat-pale-b-edit`  | runner-up: plumper and bolder, but the soil strip stays 9 px thick and hides a Road    |
+| Green vegetables            | `veg-a`, `leafy-a/b`, `leafy-thin-a/b` | runner-up `leafy-b`: lettuces; green on Grass has little contrast and reads as a hedge |
+| Mixed wheat and vegetables  | `mixed-a`, `mixed-b-a/b`               | rejected: two crops and two soil tones in one tile are busy                            |
+| Thin soil from the start    | `wheat-thin-a/b`                       | rejected: pine-cone sheaves, or rows 20 px tall with no gap                            |
+| One row; Pixflux from above | `wheat-row-a`, `veg-row-a`, `*-flux-a` | rejected: an isometric plot on a slab; no gaps, or rows too tall                       |
+
+What worked: Pixen draws four tidy rows on soil strips when the subject
+says so, but the strips are 8 to 11 px thick, which leaves a Road only the
+5 px gaps. An edit ("make each strip of soil much thinner … keep the
+sheaves exactly as they are") thinned the soil to a 5 px ridge. The
+`crop-rows` derivation then stamps the five sheaves of the candidate's top
+row 16 px apart with plain soil between them, on four rows at a 20 px
+pitch, moves each row along itself so the sheaves stand in a brick pattern
+(`rowOffsets`), and calms the colours (saturation 85%, 12% toward pale
+straw). Nothing is drawn by hand.
+
+![The Farm tile and a 3 x 3 block](../../art/pixellab/reviews/chibi-batch-direction-human/farm-x4.png)
 
 ## 13. Live default
 

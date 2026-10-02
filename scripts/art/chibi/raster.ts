@@ -372,6 +372,10 @@ export interface CropRowStamp {
   readonly left: number;
   readonly width: number;
   readonly at: number;
+  /** The candidate's crop row this piece is cut from; default `spec.band`. */
+  readonly band?: number;
+  /** The tile rows (0 = top) this piece is stamped on; default every row. */
+  readonly rows?: readonly number[];
 }
 
 export interface CropRowsSpec {
@@ -382,6 +386,12 @@ export interface CropRowsSpec {
   /** Horizontal period in pixels; it must divide the tile width. */
   readonly period: number;
   readonly stamps: readonly CropRowStamp[];
+  /**
+   * Pixels each tile row is shifted to the right, wrapping round the period
+   * (one entry per row; default no shift), so the plants of neighbouring
+   * rows need not stand in columns.
+   */
+  readonly rowOffsets?: readonly number[];
   /** Colour kept, 0..1 (1 = unchanged). */
   readonly saturation: number;
   /** Mix toward pale straw, 0..1. */
@@ -408,22 +418,25 @@ export function cropBands(
 }
 
 /**
- * The `crop-rows` derivation (the Farm, bead pulp_wars-3tq.5): a full-cell
- * pattern of crop rows that tiles without a seam. Pieces of one crop row of
- * the candidate (`stamps`: an ear, a stalk) are stamped at a horizontal
- * period that divides the tile width, on `rows` rows at an even vertical
- * pitch, so the rows and the gaps between them continue across cell
- * boundaries in both directions; the gaps fall on the cell's centre line
- * and edges, where Roads run. The crop is then calmed (lower saturation,
- * mixed toward pale straw). Whole pixels only.
+ * The `crop-rows` derivation (the Farm, beads pulp_wars-3tq.5 and
+ * pulp_wars-9s0.3): a full-cell pattern of crop rows that tiles without a
+ * seam. Pieces of the candidate's crop rows (`stamps`: a plant with the
+ * strip of soil under it) are stamped at a horizontal period that divides
+ * the tile width, on `rows` rows at an even vertical pitch, so the rows and
+ * the gaps between them continue across cell boundaries in both directions;
+ * the gaps fall on the cell's centre line and edges, where Roads run. A
+ * stamp may name its own source row and the tile rows it goes on, and a
+ * tile row may be shifted along itself (`rowOffsets`), so the rows can
+ * differ. The crop is then calmed (lower saturation, mixed toward pale
+ * straw). Whole pixels only.
  */
 export function cropRowsRaster(
   raster: RgbaRaster,
   size: { readonly width: number; readonly height: number },
   spec: CropRowsSpec,
 ): RgbaRaster {
-  const band = cropBands(raster)[spec.band];
-  if (band === undefined)
+  const bands = cropBands(raster);
+  if (bands[spec.band] === undefined)
     throw new Error(`the candidate has no crop row ${spec.band}`);
   if (
     !Number.isInteger(spec.period) ||
@@ -433,12 +446,15 @@ export function cropRowsRaster(
     throw new Error("the crop period must divide the tile width");
   if (!Number.isInteger(spec.rows) || spec.rows <= 0)
     throw new Error("crop rows must be a positive integer");
-  const bandHeight = band.bottom - band.top + 1;
   const pitch = size.height / spec.rows;
-  if (bandHeight >= pitch)
-    throw new Error("the crop row is taller than the row pitch: no gap left");
   const data = new Uint8Array(size.width * size.height * 4);
   for (const stamp of spec.stamps) {
+    const band = bands[stamp.band ?? spec.band];
+    if (band === undefined)
+      throw new Error(`the candidate has no crop row ${String(stamp.band)}`);
+    const bandHeight = band.bottom - band.top + 1;
+    if (bandHeight >= pitch)
+      throw new Error("the crop row is taller than the row pitch: no gap left");
     if (
       stamp.left < 0 ||
       stamp.left + stamp.width > raster.width ||
@@ -447,6 +463,8 @@ export function cropRowsRaster(
     )
       throw new Error("a crop stamp falls outside the candidate or the period");
     for (let row = 0; row < spec.rows; row += 1) {
+      if (stamp.rows !== undefined && !stamp.rows.includes(row)) continue;
+      const shift = spec.rowOffsets?.[row] ?? 0;
       const top = Math.round(pitch * (row + 0.5) - bandHeight / 2);
       for (let y = 0; y < bandHeight; y += 1)
         for (let x = 0; x < stamp.width; x += 1) {
@@ -462,11 +480,10 @@ export function cropRowsRaster(
               kept + ((PALE_STRAW[channel] ?? 0) - kept) * spec.strawMix,
             );
           });
-          for (
-            let offset = stamp.at + x;
-            offset < size.width;
-            offset += spec.period
-          ) {
+          const first =
+            (((stamp.at + x + shift) % spec.period) + spec.period) %
+            spec.period;
+          for (let offset = first; offset < size.width; offset += spec.period) {
             const target = ((top + y) * size.width + offset) * 4;
             data[target] = calm[0] ?? 0;
             data[target + 1] = calm[1] ?? 0;

@@ -1,0 +1,51 @@
+{
+  "id": "wheat-a",
+  "jobId": "sync-ac839949-dfdc-4c67-8914-6c7328395a92",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "farm-rows",
+    "asset": "chibi-farm-wheat",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-FARM-ROWS",
+    "recipeClass": "crop-field",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 93001,
+    "noBackground": true,
+    "options": {
+      "outline": "selective outline",
+      "detail": "low detail",
+      "view": "low top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/farm-rows-2026-10/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "art/explorations/farm-rows-2026-10/fragments/camera-three-quarter.txt",
+        "text": "Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/farm-rows-2026-10/fragments/class-crop-field.txt + art/explorations/farm-rows-2026-10/fragments/class-crop-field.negative.txt",
+        "text": "Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent.",
+        "negative": "pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/farm-rows-2026-10/subjects.json",
+        "text": "Subject: a small wheat field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip stands one row of five plump round golden wheat sheaves side by side, soft straw gold with a darker gold shadow on the lower right. Crops and soil only."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent. Subject: a small wheat field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip stands one row of five plump round golden wheat sheaves side by side, soft straw gold with a darker gold shadow on the lower right. Crops and soil only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent. Subject: a small wheat field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip stands one row of five plump round golden wheat sheaves side by side, soft straw gold with a darker gold shadow on the lower right. Crops and soil only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow."
+  }
+}

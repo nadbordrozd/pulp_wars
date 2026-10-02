@@ -1,0 +1,1 @@
+pedestal, plinth, disc, platform, isometric block, isometric diamond, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, perspective, horizon

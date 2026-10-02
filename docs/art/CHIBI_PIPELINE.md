@@ -79,7 +79,7 @@ the Human-era owner text they were generated with.
 | `effect`          | Pixen, icon camera, side view                                               | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                   |
 | `calm-building`   | Pixen (selective outline), then optional edit; calm style, no faction layer | **seated**: the calm improvement set of the new direction                                              |
 | `calm-settlement` | as `calm-building`                                                          | **seated**: cities and the Village in the calm style                                                   |
-| `crop-rows`       | Pixen, top-down crop pattern, then edits; no faction layer                  | **crop-rows**: the Farm as a seamless pattern of crop rows                                             |
+| `crop-rows`       | Pixen, crops on strips of soil, then edits; no faction layer                | **crop-rows**: the Farm as a seamless pattern of crop rows                                             |
 
 "Generate at the display size" is enforced: a non-terrain request must
 equal its master canvas. Pixen sizes must be multiples of 4.
@@ -238,7 +238,8 @@ pipeline pieces:
 - **Style per class.** A recipe class may name another style layer:
   `calm-building` and `calm-settlement` use `fragments/style-calm.txt`
   (flat, muted, quiet behind the units) and `crop-rows` uses
-  `style-crop.txt` with the `camera-crop-pattern.txt` camera. The chibi
+  `style-crop.txt` with the `camera-crop-pattern.txt` camera (since bead
+  `pulp_wars-9s0.3`: plump plants on strips of tilled soil). The chibi
   classes still use `style.txt`. The calm classes skip the faction layer:
   the improvements are one neutral set, so `class-calm-building.txt` names
   the materials, and a city names its materials in its subject line. Their
@@ -253,11 +254,14 @@ pipeline pieces:
   bottom-centred window of the master size is cut. The request may be
   larger than the master (a city is generated at 96 x 96), never smaller;
   the art must fit the window.
-- **`crop-rows` derivation** (the Farm): pieces of one crop row of the
-  candidate (`cropRows.stamps`, here two ears) are stamped at a period that
-  divides the tile (16 px) on rows at an even pitch (4 rows, 20 px), then
-  calmed (saturation 80%, 18% toward pale straw). The pattern repeats
-  exactly across cell boundaries in both directions; a test checks it.
+- **`crop-rows` derivation** (the Farm): pieces of the candidate's crop
+  rows (`cropRows.stamps`: here five sheaves and the plain soil between
+  them) are stamped at a period that divides the tile (80 px, a sheaf every
+  16 px) on rows at an even pitch (4 rows, 20 px), then calmed (saturation
+  85%, 12% toward pale straw). A stamp may name its source row (`band`)
+  and its tile rows (`rows`), and `rowOffsets` moves each tile row along
+  itself, wrapping round the period, so rows can differ. The pattern
+  continues across cell boundaries in both directions; a test checks it.
 - `art:validate` re-derives every seated and crop-rows master from its
   recorded candidate and fails if the bytes differ.
 - **`import`** brings a recipe generated in an exploration run into a
@@ -499,7 +503,9 @@ look developer option on),
 `showcase-human-{dock,tech}-desktop.png`,
 `ingame-farms-{desktop,phone}-zoom-{1,0.75}.png` (a Farm block over straight
 and diagonal Roads, drawn by the real board host) and `index.json`. Its
-captures start Vite on port 6471 unless `--port` says otherwise.
+captures start Vite on port 6471 unless `--port` says otherwise. With
+`--farms-only --out DIR` it writes only the four `ingame-farms-*` captures
+into DIR, to try a Farm candidate copied over the master.
 
 ## Dry run
 

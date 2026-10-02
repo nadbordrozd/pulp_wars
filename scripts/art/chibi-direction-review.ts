@@ -3,6 +3,12 @@
  * pulp_wars-3tq.5, batch `direction-human`):
  *
  *   CHROME_PATH=... npm run art:chibi-direction-review -- [--port 6471] [--skip-capture]
+ *   CHROME_PATH=... npm run art:chibi-direction-review -- --farms-only --out DIR
+ *
+ * `--farms-only` writes only the four `ingame-farms-*` captures, into DIR
+ * (default: the review directory), and leaves the sheets and index.json
+ * alone: a quick look at a Farm candidate copied over the master (bead
+ * pulp_wars-9s0.3).
  *
  * It writes art/pixellab/reviews/chibi-batch-direction-human/:
  *
@@ -710,7 +716,11 @@ async function launch(
   await delay(1500);
 }
 
-async function captures(directory: string, baseUrl: string): Promise<string[]> {
+async function captures(
+  directory: string,
+  baseUrl: string,
+  farmsOnly = false,
+): Promise<string[]> {
   const chrome = process.env.CHROME_PATH;
   if (chrome === undefined || chrome === "")
     throw new Error(
@@ -770,8 +780,9 @@ async function captures(directory: string, baseUrl: string): Promise<string[]> {
         mobile: viewport.mobile,
       });
       for (const match of MATCHES) {
+        if (farmsOnly && match.name !== "human") continue;
         await launch(connection, url.href, match.factions, false);
-        for (const step of ["1", "0.75"]) {
+        for (const step of farmsOnly ? [] : ["1", "0.75"]) {
           await zoomTo(connection, step, false);
           files.push(
             await screenshot(
@@ -784,7 +795,7 @@ async function captures(directory: string, baseUrl: string): Promise<string[]> {
           );
         }
         if (match.name !== "human") continue;
-        if (viewport.name === "desktop") {
+        if (viewport.name === "desktop" && !farmsOnly) {
           // The board cursor starts on the capital: Enter selects the unit
           // on it, and its dock shows the new portrait.
           await zoomTo(connection, "1", false);
@@ -839,7 +850,7 @@ async function captures(directory: string, baseUrl: string): Promise<string[]> {
           `(() => { ${SCENE}.host.destroy(); document.querySelector('[data-chibi-review-scene]')?.remove(); delete ${SCENE}; return true; })()`,
         );
       }
-      if (viewport.name === "desktop") {
+      if (viewport.name === "desktop" && !farmsOnly) {
         // The same all-Human match in the classic look (the previous art).
         await launch(connection, url.href, MATCHES[0].factions, true);
         await zoomTo(connection, "1", false);
@@ -898,8 +909,27 @@ function stopDevServer(server: ChildProcess): void {
 
 async function main(): Promise<void> {
   const port = Number(option("--port") ?? "6471");
-  const directory = reviewDirectory(ROOT, BATCH);
+  const farmsOnly = process.argv.includes("--farms-only");
+  const out = option("--out");
+  const directory =
+    farmsOnly && out !== undefined
+      ? path.resolve(ROOT, out)
+      : reviewDirectory(ROOT, BATCH);
   await mkdir(directory, { recursive: true });
+  if (farmsOnly) {
+    const server = await startDevServer(port);
+    try {
+      for (const file of await captures(
+        directory,
+        `http://localhost:${port}/`,
+        true,
+      ))
+        console.log(file);
+    } finally {
+      stopDevServer(server);
+    }
+    return;
+  }
   const outputs = await sheets(directory);
   let captureNote = "skipped (--skip-capture)";
   if (!process.argv.includes("--skip-capture")) {

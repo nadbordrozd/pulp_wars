@@ -1,0 +1,438 @@
+{
+  "schemaVersion": 1,
+  "batch": "farm-rows",
+  "title": "A better-looking row-and-gap Farm: crops on strips of tilled soil (exploration, never registered)",
+  "bead": "pulp_wars-9s0.3",
+  "faction": "TEST-FARM-ROWS",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-farm-wheat",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-farm-veg",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/VEG"
+    },
+    {
+      "id": "chibi-farm-mixed",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/MIXED"
+    },
+    {
+      "id": "chibi-farm-wheat-row",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 40
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/WHEAT_ROW"
+    },
+    {
+      "id": "chibi-farm-veg-row",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 40
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/VEG_ROW"
+    },
+    {
+      "id": "chibi-farm-wheat-flux",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-farm-veg-flux",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "building",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/VEG"
+    },
+    {
+      "id": "chibi-farm-wheat-pale",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/WHEAT_PALE"
+    },
+    {
+      "id": "chibi-farm-leafy",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/LEAFY"
+    },
+    {
+      "id": "chibi-farm-mixed-b",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/MIXED_B"
+    },
+    {
+      "id": "chibi-farm-wheat-thin",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/WHEAT_THIN"
+    },
+    {
+      "id": "chibi-farm-leafy-thin",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-field",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/LEAFY_THIN"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "wheat-a",
+      "asset": "chibi-farm-wheat",
+      "endpoint": "create-image-pixen",
+      "seed": 93001,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "veg-a",
+      "asset": "chibi-farm-veg",
+      "endpoint": "create-image-pixen",
+      "seed": 93011,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "mixed-a",
+      "asset": "chibi-farm-mixed",
+      "endpoint": "create-image-pixen",
+      "seed": 93021,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "wheat-row-a",
+      "asset": "chibi-farm-wheat-row",
+      "endpoint": "create-image-pixen",
+      "seed": 93031,
+      "requestSize": {
+        "width": 80,
+        "height": 40
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "veg-row-a",
+      "asset": "chibi-farm-veg-row",
+      "endpoint": "create-image-pixen",
+      "seed": 93041,
+      "requestSize": {
+        "width": 80,
+        "height": 40
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "wheat-flux-a",
+      "asset": "chibi-farm-wheat-flux",
+      "endpoint": "create-image-pixflux",
+      "seed": 93051,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "view": "high top-down"
+      }
+    },
+    {
+      "id": "veg-flux-a",
+      "asset": "chibi-farm-veg-flux",
+      "endpoint": "create-image-pixflux",
+      "seed": 93061,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "view": "high top-down"
+      }
+    },
+    {
+      "id": "wheat-b",
+      "asset": "chibi-farm-wheat",
+      "endpoint": "create-image-pixen",
+      "seed": 93002,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "wheat-pale-a",
+      "asset": "chibi-farm-wheat-pale",
+      "endpoint": "create-image-pixen",
+      "seed": 93101,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "wheat-pale-b",
+      "asset": "chibi-farm-wheat-pale",
+      "endpoint": "create-image-pixen",
+      "seed": 93102,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "leafy-a",
+      "asset": "chibi-farm-leafy",
+      "endpoint": "create-image-pixen",
+      "seed": 93111,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "leafy-b",
+      "asset": "chibi-farm-leafy",
+      "endpoint": "create-image-pixen",
+      "seed": 93112,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "mixed-b-a",
+      "asset": "chibi-farm-mixed-b",
+      "endpoint": "create-image-pixen",
+      "seed": 93121,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "mixed-b-b",
+      "asset": "chibi-farm-mixed-b",
+      "endpoint": "create-image-pixen",
+      "seed": 93122,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "wheat-thin-a",
+      "asset": "chibi-farm-wheat-thin",
+      "endpoint": "create-image-pixen",
+      "seed": 93201,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "wheat-thin-b",
+      "asset": "chibi-farm-wheat-thin",
+      "endpoint": "create-image-pixen",
+      "seed": 93202,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "leafy-thin-a",
+      "asset": "chibi-farm-leafy-thin",
+      "endpoint": "create-image-pixen",
+      "seed": 93211,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "leafy-thin-b",
+      "asset": "chibi-farm-leafy-thin",
+      "endpoint": "create-image-pixen",
+      "seed": 93212,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      }
+    },
+    {
+      "id": "wheat-pale-b-edit",
+      "asset": "chibi-farm-wheat-pale",
+      "endpoint": "edit-image-pixen",
+      "seed": 93103,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "wheat-pale-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about a third as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the round golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+      "notes": "wheat-pale-b has the nicest plump sheaves, but its soil strips are 11 px thick, so a Road under the Farm shows only in 5 px gaps."
+    },
+    {
+      "id": "wheat-a-edit",
+      "asset": "chibi-farm-wheat",
+      "endpoint": "edit-image-pixen",
+      "seed": 93003,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "wheat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+      "notes": "wheat-a has recognisable sheaves, but its soil strips are 8 px thick, so a Road under the Farm shows only in 5 px gaps."
+    }
+  ]
+}

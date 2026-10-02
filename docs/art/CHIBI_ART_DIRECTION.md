@@ -169,7 +169,7 @@ look stays available as Settings > Developer tools > Classic look.
   canvas), a thin outline in a darker tone of each colour, cream plaster,
   dark oak, pale stone and terracotta roofs, no flag and no player colour in
   the art. The Farm is a full-cell pattern of crop rows with gaps that
-  tiles without a seam. The Village is neutral straw and stone. The Mine
+  tiles without a seam: plump wheat sheaves on thin ridges of tilled soil. The Village is neutral straw and stone. The Mine
   stays part of the Mined Mountain terrain art and is toned with it.
 - **Mask policy.** Converted units, cities and portraits have **no owner
   area and no mask**: their batch sets `fixedFactionColours`, each asset

@@ -1,0 +1,36 @@
+{
+  "id": "wheat-pale-b-edit",
+  "jobId": "41f8a594-726f-452c-ac2c-fd36531f4d1f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "farm-rows",
+    "asset": "chibi-farm-wheat-pale",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-FARM-ROWS",
+    "recipeClass": "crop-field",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 93103,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about a third as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the round golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges."
+      }
+    ],
+    "prompt": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about a third as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the round golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+    "negativePrompt": "",
+    "description": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about a third as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the round golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+    "editInstruction": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about a third as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the round golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+    "source": {
+      "recipe": "wheat-pale-b",
+      "candidate": 0,
+      "sha256": "7ce0af72b463ebf74d2eb9d7b5936d13d18642163d569b43d0b6d74e357dbffd"
+    }
+  }
+}

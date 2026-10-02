@@ -246,19 +246,51 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
     const master = await readRaster(
       path.join(ROOT, "public/assets/chibi/buildings/chibi-direction-farm.png"),
     );
-    // 16 px across (five periods per tile) and 20 px down (four rows).
-    expect(periodMismatch(master, 16, 20)).toBe(0);
     const bands = cropBands(master);
     expect(bands).toHaveLength(4);
     // The gaps between the rows lie on the cell's centre line and edges, so
-    // a Road through the centre shows; a gap is nearly as tall as a row.
+    // a Road through the centre shows.
     const inRow = (y: number): boolean =>
       bands.some((band) => y >= band.top && y <= band.bottom);
-    for (const y of [0, 1, 2, 38, 39, 40, 41, 77, 78, 79])
+    for (const y of [0, 1, 2, 38, 39, 40, 41, 42, 78, 79])
       expect(inRow(y), `row ${y}`).toBe(false);
-    for (const band of bands)
-      expect(band.bottom - band.top + 1).toBeLessThanOrEqual(12);
-    // The wheat starts at the cell's left edge: no margin makes a seam.
+    const opaque = (x: number, y: number): boolean =>
+      (master.data[(y * master.width + x) * 4 + 3] ?? 0) >= 128;
+    const filled = (y: number): number =>
+      Array.from({ length: master.width }, (_, x) => opaque(x, y)).filter(
+        Boolean,
+      ).length;
+    for (const band of bands) {
+      expect(band.bottom - band.top + 1).toBe(15);
+      // The ridge of soil runs unbroken from edge to edge (no margin makes
+      // a seam) and is thin; above it a Road shows between the sheaves.
+      for (let y = band.bottom - 3; y <= band.bottom; y += 1)
+        expect(filled(y), `soil row ${y}`).toBe(80);
+      for (let y = band.top; y <= band.top + 8; y += 1)
+        expect(filled(y), `sheaf row ${y}`).toBeLessThanOrEqual(55);
+    }
+    // Every row is the top row moved along itself, wrapping round the tile:
+    // five sheaves 16 px apart, so the pattern continues across the cell's
+    // left and right edges, and stacked Farms keep the 20 px row pitch.
+    const first = bands[0];
+    const offsets = [0, 24, 32, 56];
+    bands.forEach((band, row) => {
+      let different = 0;
+      for (let y = 0; y < 15; y += 1)
+        for (let x = 0; x < 80; x += 1)
+          for (let channel = 0; channel < 4; channel += 1)
+            if (
+              master.data[(((first?.top ?? 0) + y) * 80 + x) * 4 + channel] !==
+              master.data[
+                ((band.top + y) * 80 + ((x + (offsets[row] ?? 0)) % 80)) * 4 +
+                  channel
+              ]
+            )
+              different += 1;
+      expect(different, `row ${row}`).toBe(0);
+      expect(band.top).toBe(3 + 20 * row);
+    });
+    expect(periodMismatch(master, 80, 80)).toBe(0);
     expect(opaqueBounds(master)?.left).toBe(0);
   });
 });
@@ -432,6 +464,28 @@ describe("pipeline support for the new visual direction (pulp_wars-3tq.5)", asyn
     expect(() => cropRowsRaster(candidate, size, { ...spec, rows: 4 })).toThrow(
       /no gap/,
     );
+    // A stamp may name its source row and its tile rows, and a tile row may
+    // be shifted along itself, wrapping round the period.
+    const varied = cropRowsRaster(candidate, size, {
+      ...spec,
+      stamps: [
+        { left: 1, width: 2, at: 0, rows: [0] },
+        { left: 0, width: 3, at: 0, band: 1, rows: [1] },
+      ],
+      rowOffsets: [3, 2],
+    });
+    expect(picture(varied)).toEqual([
+      "........",
+      "#..##..#",
+      "#..##..#",
+      "........",
+      "........",
+      "........",
+      "#.###.##",
+      "........",
+    ]);
+    expect(varied.data[(8 + 3) * 4]).toBe("a".charCodeAt(0));
+    expect(varied.data[8 * 4]).toBe("b".charCodeAt(0));
   });
 
   it("keeps an imported recipe as the exploration's request, with its receipt", async () => {

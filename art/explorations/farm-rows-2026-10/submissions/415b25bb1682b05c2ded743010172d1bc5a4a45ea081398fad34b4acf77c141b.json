@@ -1,0 +1,36 @@
+{
+  "id": "wheat-a-edit",
+  "jobId": "a005e203-acfb-41b2-9b8f-d00310510dc6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "farm-rows",
+    "asset": "chibi-farm-wheat",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-FARM-ROWS",
+    "recipeClass": "crop-field",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 93003,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges."
+      }
+    ],
+    "prompt": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+    "negativePrompt": "",
+    "description": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+    "editInstruction": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+    "source": {
+      "recipe": "wheat-a",
+      "candidate": 0,
+      "sha256": "7342799bec27bf57e89bb0d2bca8c94107d8b01c81f8804f65b668bf40cd1f5e"
+    }
+  }
+}

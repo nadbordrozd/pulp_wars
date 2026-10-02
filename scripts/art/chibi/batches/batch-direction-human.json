@@ -321,21 +321,87 @@
       "cropRows": {
         "rows": 4,
         "band": 0,
-        "period": 16,
+        "period": 80,
         "stamps": [
           {
-            "left": 2,
-            "width": 7,
+            "left": 44,
+            "width": 3,
             "at": 0
           },
           {
             "left": 9,
-            "width": 7,
-            "at": 8
+            "width": 10,
+            "at": 3
+          },
+          {
+            "left": 44,
+            "width": 3,
+            "at": 13
+          },
+          {
+            "left": 44,
+            "width": 3,
+            "at": 16
+          },
+          {
+            "left": 22,
+            "width": 10,
+            "at": 19
+          },
+          {
+            "left": 44,
+            "width": 3,
+            "at": 29
+          },
+          {
+            "left": 44,
+            "width": 3,
+            "at": 32
+          },
+          {
+            "left": 34,
+            "width": 10,
+            "at": 35
+          },
+          {
+            "left": 44,
+            "width": 3,
+            "at": 45
+          },
+          {
+            "left": 44,
+            "width": 3,
+            "at": 48
+          },
+          {
+            "left": 47,
+            "width": 10,
+            "at": 51
+          },
+          {
+            "left": 44,
+            "width": 3,
+            "at": 61
+          },
+          {
+            "left": 44,
+            "width": 3,
+            "at": 64
+          },
+          {
+            "left": 60,
+            "width": 10,
+            "at": 67
+          },
+          {
+            "left": 44,
+            "width": 3,
+            "at": 77
           }
         ],
-        "saturation": 0.8,
-        "strawMix": 0.18
+        "rowOffsets": [0, 24, 32, 56],
+        "saturation": 0.85,
+        "strawMix": 0.12
       }
     },
     {
@@ -812,6 +878,36 @@
       },
       "editInstruction": "Make every wheat plant fuller and bushier: each one a small round tuft of several pale golden ears, in a lighter warm straw-gold colour with a thin darker straw outline, so that each of the four rows becomes a thick lush band of wheat running from the left edge to the right edge. Keep the four rows where they are and keep the space between the rows completely empty and transparent.",
       "notes": "Imported from the demo run farm/."
+    },
+    {
+      "id": "wheat-a",
+      "asset": "chibi-direction-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 93001,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "view": "low top-down"
+      },
+      "notes": "Imported from the Farm run art/explorations/farm-rows-2026-10 (bead pulp_wars-9s0.3). Four rows of plump wheat sheaves, each on its own strip of tilled soil, with transparent gaps; the soil strips are 8 px thick."
+    },
+    {
+      "id": "wheat-a-edit",
+      "asset": "chibi-direction-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 93003,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "wheat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+      "notes": "Imported from the Farm run art/explorations/farm-rows-2026-10 (bead pulp_wars-9s0.3). The soil thinned to a low ridge, so a Road shows between the sheaves as well as in the gaps."
     },
     {
       "id": "city-1-c-a",

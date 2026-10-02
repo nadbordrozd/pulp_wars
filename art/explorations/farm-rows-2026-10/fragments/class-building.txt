@@ -1,0 +1,1 @@
+Class: farmland for a square tile of a strategy game map seen from above: straight horizontal rows of crops with strips of tilled brown soil, simple chunky shapes, flat colours, no box, no border and no frame.

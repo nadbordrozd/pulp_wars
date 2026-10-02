@@ -1406,9 +1406,9 @@
         "recipe": "farm-field-a-edit-2"
       },
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The demo's lush ears; the crop-rows derivation stamps two ears of its top row at a 16 px period on four rows at a 20 px pitch, so Farms tile without a seam in both directions and the gaps lie on the cell centre and edges.",
+        "notes": "The demo's lush ears; the crop-rows derivation stamps two ears of its top row at a 16 px period on four rows at a 20 px pitch, so Farms tile without a seam in both directions and the gaps lie on the cell centre and edges. Superseded by wheat-a-edit.",
         "reviewedAt": "2026-10-02T08:51:54.864Z"
       }
     },
@@ -3662,6 +3662,151 @@
         "reviewedAt": "2026-10-02T08:55:03.927Z"
       }
     },
+    "wheat-a": {
+      "id": "wheat-a",
+      "asset": "chibi-direction-farm",
+      "jobId": "sync-ac839949-dfdc-4c67-8914-6c7328395a92",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "farm-rows",
+        "asset": "chibi-farm-wheat",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-FARM-ROWS",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 93001,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "art/explorations/farm-rows-2026-10/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "art/explorations/farm-rows-2026-10/fragments/camera-three-quarter.txt",
+            "text": "Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/farm-rows-2026-10/fragments/class-crop-field.txt + art/explorations/farm-rows-2026-10/fragments/class-crop-field.negative.txt",
+            "text": "Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent.",
+            "negative": "pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/farm-rows-2026-10/subjects.json",
+            "text": "Subject: a small wheat field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip stands one row of five plump round golden wheat sheaves side by side, soft straw gold with a darker gold shadow on the lower right. Crops and soil only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent. Subject: a small wheat field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip stands one row of five plump round golden wheat sheaves side by side, soft straw gold with a darker gold shadow on the lower right. Crops and soil only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent. Subject: a small wheat field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip stands one row of five plump round golden wheat sheaves side by side, soft straw gold with a darker gold shadow on the lower right. Crops and soil only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow."
+      },
+      "submittedAt": "2026-10-02T11:35:21.438Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/wheat-a.png",
+      "rawSheetSha256": "7342799bec27bf57e89bb0d2bca8c94107d8b01c81f8804f65b668bf40cd1f5e",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.2564,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-02T11:36:28.840Z",
+      "importedFrom": {
+        "exploration": "art/explorations/farm-rows-2026-10",
+        "batch": "farm-rows",
+        "recipe": "wheat-a"
+      }
+    },
+    "wheat-a-edit": {
+      "id": "wheat-a-edit",
+      "asset": "chibi-direction-farm",
+      "jobId": "a005e203-acfb-41b2-9b8f-d00310510dc6",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "farm-rows",
+        "asset": "chibi-farm-wheat",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-FARM-ROWS",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 93003,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges."
+          }
+        ],
+        "prompt": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+        "negativePrompt": "",
+        "description": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+        "editInstruction": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
+        "source": {
+          "recipe": "wheat-a",
+          "candidate": 0,
+          "sha256": "7342799bec27bf57e89bb0d2bca8c94107d8b01c81f8804f65b668bf40cd1f5e"
+        }
+      },
+      "submittedAt": "2026-10-02T11:59:07.536Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/wheat-a-edit.png",
+      "rawSheetSha256": "95ac52412497dee0ccfea20d22c993b5766f355df9c8517cabc78e8c2ad10e2b",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.2414,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2414,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-02T11:59:50.074Z",
+      "importedFrom": {
+        "exploration": "art/explorations/farm-rows-2026-10",
+        "batch": "farm-rows",
+        "recipe": "wheat-a-edit"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Plump golden wheat sheaves on thin ridges of tilled soil (bead pulp_wars-9s0.3). The crop-rows derivation stamps the five sheaves of the top row 16 px apart on four rows at a 20 px pitch, each row shifted so the sheaves stand in a brick pattern, then calms the colours; Farms tile without a seam, the 5 px gaps lie on the cell centre and edges, and a Road also shows between the sheaves above the 5 px soil ridge.",
+        "reviewedAt": "2026-10-02T12:04:23.784Z"
+      }
+    },
     "windmill-flat-a": {
       "id": "windmill-flat-a",
       "asset": "chibi-direction-windmill",
@@ -4130,13 +4275,13 @@
       "subject": "IMPROVEMENT:FARM",
       "assetClass": "BUILDING",
       "status": "ACCEPTED",
-      "recipe": "farm-field-a-edit-2",
+      "recipe": "wheat-a-edit",
       "candidate": 0,
-      "candidateSha256": "405db7faa53f80e1351c85adf7586c123d23f07483f0cc7e460d8e4b7f210a2c",
+      "candidateSha256": "1f117a7e669b8daf360359adaf2abb062804dd4339545e7110b16df931e983e7",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-direction-farm.png",
-        "sha256": "67310b770ba5717887e618dd5ab40dcbcb0ae1c62eb20a7a56d88be3a0622ba0",
-        "pixelSha256": "a49facd5665c3e02a6f128003c7657d74cd08e823ef93eb1d90797f59074d0bd",
+        "sha256": "27486c005e8c1abb58e34d47c7a422926a8856feefad9eb0ed1b190baf3ce9a4",
+        "pixelSha256": "e9a4cd070f8815eb38f156ac44405d71fa5c3a008ab1dd05b237c4fd2b5203a7",
         "width": 80,
         "height": 80
       },
@@ -4145,21 +4290,87 @@
         "cropRows": {
           "rows": 4,
           "band": 0,
-          "period": 16,
+          "period": 80,
           "stamps": [
             {
-              "left": 2,
-              "width": 7,
+              "left": 44,
+              "width": 3,
               "at": 0
             },
             {
               "left": 9,
-              "width": 7,
-              "at": 8
+              "width": 10,
+              "at": 3
+            },
+            {
+              "left": 44,
+              "width": 3,
+              "at": 13
+            },
+            {
+              "left": 44,
+              "width": 3,
+              "at": 16
+            },
+            {
+              "left": 22,
+              "width": 10,
+              "at": 19
+            },
+            {
+              "left": 44,
+              "width": 3,
+              "at": 29
+            },
+            {
+              "left": 44,
+              "width": 3,
+              "at": 32
+            },
+            {
+              "left": 34,
+              "width": 10,
+              "at": 35
+            },
+            {
+              "left": 44,
+              "width": 3,
+              "at": 45
+            },
+            {
+              "left": 44,
+              "width": 3,
+              "at": 48
+            },
+            {
+              "left": 47,
+              "width": 10,
+              "at": 51
+            },
+            {
+              "left": 44,
+              "width": 3,
+              "at": 61
+            },
+            {
+              "left": 44,
+              "width": 3,
+              "at": 64
+            },
+            {
+              "left": 60,
+              "width": 10,
+              "at": 67
+            },
+            {
+              "left": 44,
+              "width": 3,
+              "at": 77
             }
           ],
-          "saturation": 0.8,
-          "strawMix": 0.18
+          "rowOffsets": [0, 24, 32, 56],
+          "saturation": 0.85,
+          "strawMix": 0.12
         }
       },
       "anchor": {
@@ -4179,8 +4390,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The demo's lush ears; the crop-rows derivation stamps two ears of its top row at a 16 px period on four rows at a 20 px pitch, so Farms tile without a seam in both directions and the gaps lie on the cell centre and edges.",
-      "acceptedAt": "2026-10-02T08:51:54.864Z"
+      "notes": "Plump golden wheat sheaves on thin ridges of tilled soil (bead pulp_wars-9s0.3). The crop-rows derivation stamps the five sheaves of the top row 16 px apart on four rows at a 20 px pitch, each row shifted so the sheaves stand in a brick pattern, then calms the colours; Farms tile without a seam, the 5 px gaps lie on the cell centre and edges, and a Road also shows between the sheaves above the 5 px soil ridge.",
+      "acceptedAt": "2026-10-02T12:04:23.784Z"
     },
     "chibi-direction-fighter": {
       "id": "chibi-direction-fighter",
