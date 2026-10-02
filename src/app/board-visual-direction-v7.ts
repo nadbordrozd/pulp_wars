@@ -21,6 +21,20 @@ export const BOARD_CLASSIC_LOOK_STORAGE_KEY_V7 =
 export const RETIRED_BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7 =
   "pulpWars.ruleset7.boardVisualDirection.v1";
 
+/**
+ * The retired key of the developer setting "Farm crop" (bead
+ * pulp_wars-9s0.6), which stored `{ "crop": ... }` while the user compared
+ * three green Farms. The user chose one (bead pulp_wars-9s0.7), the setting
+ * is gone, and the key is ignored and removed.
+ */
+export const RETIRED_BOARD_FARM_CROP_STORAGE_KEY_V7 =
+  "pulpWars.ruleset7.boardFarmCrop.v1";
+
+const RETIRED_STORAGE_KEYS = [
+  RETIRED_BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7,
+  RETIRED_BOARD_FARM_CROP_STORAGE_KEY_V7,
+];
+
 /** A missing or malformed value is off: the new look is drawn. */
 export function parseStoredBoardClassicLookV7(value: string | null): boolean {
   if (value === null) return false;
@@ -37,17 +51,18 @@ export function parseStoredBoardClassicLookV7(value: string | null): boolean {
 }
 
 /**
- * Reads the preference and drops the retired experiment key. Restricted
+ * Reads the preference and drops the retired developer keys. Restricted
  * storage never prevents the app from mounting.
  */
 export function loadBoardClassicLookV7(
   storage: StorageAdapter | null,
 ): boolean {
-  try {
-    storage?.removeItem(RETIRED_BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7);
-  } catch {
-    // The retired key is never read, so leaving it behind is harmless.
-  }
+  for (const key of RETIRED_STORAGE_KEYS)
+    try {
+      storage?.removeItem(key);
+    } catch {
+      // A retired key is never read, so leaving it behind is harmless.
+    }
   try {
     return parseStoredBoardClassicLookV7(
       storage?.getItem(BOARD_CLASSIC_LOOK_STORAGE_KEY_V7) ?? null,

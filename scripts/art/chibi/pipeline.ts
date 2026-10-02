@@ -1250,6 +1250,71 @@ export async function rejectRecipe(
   context.log(`${recipeId}: REJECTED`);
 }
 
+/**
+ * Retires an accepted asset (bead pulp_wars-9s0.7): one that was removed
+ * from the batch manifest because another replaced it or a comparison ended.
+ * Its master and mask are deleted and its asset record removed, so nothing
+ * registers it; its recipes stay as history. The manifest must already bind
+ * those recipes to an asset it still has: their records follow that binding,
+ * and an ACCEPTED verdict among them becomes REJECTED with the reason.
+ * Receipts and raw sheets are untouched.
+ */
+export async function retireAsset(
+  context: PipelineContext,
+  assetId: string,
+  notes: string,
+): Promise<void> {
+  if (notes.trim().length === 0)
+    throw new Error("A retirement note is required");
+  if (context.manifest.assets.some((asset) => asset.id === assetId))
+    throw new Error(
+      `${assetId}: still in the batch manifest; remove it there first`,
+    );
+  const rebound = await updateRecords(
+    context.layout,
+    context.manifest.batch,
+    async (records) => {
+      const record = records.assets[assetId];
+      if (record === undefined) throw new Error(`${assetId}: no asset record`);
+      if (record.derivation.kind === "ground-composite")
+        throw new Error(`${assetId}: tall terrain cannot be retired this way`);
+      const moved: string[] = [];
+      for (const recipe of Object.values(records.recipes)) {
+        if (recipe.asset !== assetId) continue;
+        const bound = context.manifest.recipes.find(
+          (entry) => entry.id === recipe.id,
+        );
+        if (bound === undefined || bound.asset === assetId)
+          throw new Error(
+            `${recipe.id}: the batch manifest must bind it to a remaining asset`,
+          );
+        records.recipes[recipe.id] = {
+          ...recipe,
+          asset: bound.asset,
+          ...(recipe.review?.verdict === "ACCEPTED"
+            ? {
+                review: {
+                  ...recipe.review,
+                  verdict: "REJECTED",
+                  notes: `${recipe.review.notes} Retired with ${assetId}: ${notes}`,
+                },
+              }
+            : {}),
+        };
+        moved.push(recipe.id);
+      }
+      for (const file of [record.master.path, record.mask?.path])
+        if (file !== undefined)
+          await rm(path.join(context.root, file), { force: true });
+      Reflect.deleteProperty(records.assets, assetId);
+      return moved;
+    },
+  );
+  context.log(
+    `${assetId}: RETIRED (${rebound.length} recipe record(s) kept as history)`,
+  );
+}
+
 const CLASS_DIRECTORY: Readonly<Record<string, string>> = {
   TERRAIN: "terrain",
   TALL_TERRAIN: "terrain",

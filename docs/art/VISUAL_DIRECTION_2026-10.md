@@ -721,8 +721,10 @@ Batch [`direction-human`](../../scripts/art/chibi/batches/batch-direction-human.
 30 assets from 53 recipes, 22 of them imported from the demo's exploration
 runs and 31 new PixelLab calls. The Farm was replaced later (two more
 imported recipes, see [the Farm's second pass](#the-farm-second-pass)) and
-then became three green variants (three more imported recipes, 32 assets,
-see [the third pass](#the-farm-third-pass-three-green-crops-to-compare)).
+then became three green variants for a comparison (three more imported
+recipes, see [the third pass](#the-farm-third-pass-three-green-crops-compared)).
+The user chose the vegetable beds, so the batch is 30 assets again (see
+[the Farm as chosen](#the-farm-as-chosen-vegetable-beds)).
 
 | Asset                     | Recipes tried     | Accepted                   | Notes                                                                                              |
 | ------------------------- | ----------------- | -------------------------- | -------------------------------------------------------------------------------------------------- |
@@ -736,7 +738,7 @@ see [the third pass](#the-farm-third-pass-three-green-crops-to-compare)).
 | Sawmill                   | 3                 | `sawmill-c-a-edit-2`       | new subject line; the first two had a dark spoked wheel; a third edit made it a solid saw blade    |
 | Market                    | 2                 | `market-c-a-edit`          | open stall with goods on the counter; the edit names the goods so they survive the slab removal    |
 | Lumber Camp               | 3                 | `lumber-camp-c-a-edit-b`   | pines, log stack, axe in a stump; the first ground edit removed the logs and the axe too           |
-| Farm (3 variants)         | 8 (imported)      | `leafy-b` and two more     | lettuce, cabbage (`leafy-thin-a`), veggies (`veg-flux-a`); before them wheat, `wheat-a-edit`       |
+| Farm                      | 8 (imported)      | `veg-flux-a`               | vegetable beds; before it wheat (`wheat-a-edit`), lettuce (`leafy-b`), cabbage (`leafy-thin-a`)    |
 | City 1                    | 3 (2 imported)    | `city-1-c-a-edit-2`        | the demo's town with a sandstone tower                                                             |
 | City 2                    | 3 (2 imported)    | `city-2-c-a-edit-2`        | the demo's walled town repainted from grey stone to sandstone                                      |
 | City 3                    | 6 (3 imported)    | `city-3-d-a-edit-2`        | a new creation: a keep, a church, houses and four towers inside the wall; then ground, then colour |
@@ -763,12 +765,11 @@ Recipes that worked:
 2. **Improvements** are one shared neutral set in the calm style. The Sawmill
    shows a saw blade and logs, the Market stalls and goods, the Lumber Camp
    pines, logs and an axe.
-3. **The Farm** tiles without a seam: rows of a crop on strips of tilled
-   soil that run from edge to edge, with gaps on the cell's edges, so a
+3. **The Farm** tiles without a seam: three raised beds of mixed
+   vegetables that run from edge to edge, with gaps between them, so a
    block of Farms is one field, horizontally and vertically, and a Road
-   under a Farm shows in the gaps. Which crop is not fixed yet: three green
-   variants are live at once for the user to compare (see
-   [the third pass](#the-farm-third-pass-three-green-crops-to-compare)).
+   under a Farm shows in the gaps (see
+   [the Farm as chosen](#the-farm-as-chosen-vegetable-beds)).
 4. **Cities** are one set: pale sandstone, cream plaster with dark oak and
    terracotta-red roofs, growing from four cottages round a tower (80 x 80)
    to a walled town (88 x 80) to a walled city full of buildings (96 x 88).
@@ -812,10 +813,11 @@ Recipes that worked:
 - **The Lumber Camp and the Village are small** (about half a tile wide).
 - **The Raider's cloak is a brighter red** than the Fighter's surcoat.
 - **The Guard's portrait and map sprite show different faces**, as today.
-- **The Farm is three crops for now**, one per tile; lettuce and cabbage
-  are alike at a glance.
-- **A Road under a Farm** shows only in the gaps between the rows; under
-  the vegetable beds a Road running east-west is hidden inside the tile.
+- **A Road under a Farm** shows only in the gaps between the beds: whole
+  when it runs east-west, about a sixth of its length when it runs
+  north-south or diagonally.
+- **A Farm with no Farm above or below it** ends in part of a bed at its
+  top and bottom edge.
 - **Four players who all play Human differ only by plate, pennant and
   border.** The user plans a rule of one player per faction per map later.
 - **Ships, terrain and the other factions** are not converted.
@@ -849,21 +851,20 @@ pitch, moves each row along itself so the sheaves stand in a brick pattern
 (`rowOffsets`), and calms the colours (saturation 85%, 12% toward pale
 straw). Nothing is drawn by hand.
 
-The wheat was replaced in the third pass, below; its sheet `farm-x4.png` is
-no longer generated.
+The wheat was replaced in the third pass, below.
 
-### The Farm, third pass: three green crops to compare
+### The Farm, third pass: three green crops compared
 
-**Status: a comparison state, pending the user's choice** (bead
-`pulp_wars-9s0.6`). The user liked every candidate of the second pass more
-than the first Farm, but not the wheat: "too short to look like wheat and
-too yellow to look like anything else. Let's go with the greens instead.
-Use lettuce or cabbage rows or the veg-flux-a veggies randomly so I can
-have a look at all of them."
+Bead `pulp_wars-9s0.6`, **closed by the user's choice below**. The user
+liked every candidate of the second pass more than the first Farm, but not
+the wheat: "too short to look like wheat and too yellow to look like
+anything else. Let's go with the greens instead. Use lettuce or cabbage rows
+or the veg-flux-a veggies randomly so I can have a look at all of them."
 
-The wheat master is retired and three green masters are live at once. All
-three come from recipes of the second pass's run, imported with no new
-PixelLab call; the colours are unchanged (saturation 100%, no straw).
+The wheat master was retired and three green masters were live at once, one
+per tile by the tile's coordinates, with a developer setting "Farm crop" to
+force one. All three came from recipes of the second pass's run, imported
+with no new PixelLab call, colours unchanged (saturation 100%, no straw).
 
 | Variant | Recipe                 | Derivation                                                                                                                                        | Rows and gaps                            |
 | ------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
@@ -871,43 +872,49 @@ PixelLab call; the colours are unchanged (saturation 100%, no straw).
 | Cabbage | `leafy-thin-a` (Pixen) | the five cabbages of one row 16 px apart with plain soil columns between them, brick pattern, two bottom lines of soil dropped                    | 4 rows, 13 px tall, gaps 7 px            |
 | Veggies | `veg-flux-a` (Pixflux) | the three raised beds as drawn (four different plants each); the plants 20 px apart with plain soil columns between them, so a bed spans the cell | 3 beds, 21 to 24 px tall, gaps 4 to 5 px |
 
-The cabbages were rejected in the second pass for density (`veg-a`: seven
-to a row on thick soil). `leafy-thin-a` has five larger heads to a row; its
-rejection was an outline box round each strip, which the derivation never
-stamps, and `trimBottom` thins its soil from 15 to 13 px.
+In that comparison the middle vegetable bed lay on the cell's centre line,
+so a Road running east-west was hidden inside the tile.
 
-**A Road under a Farm.** Lettuce and cabbage leave the cell's centre line
-free, so a Road running east-west shows whole and a Road running
-north-south or diagonally shows in four gaps (about a third of its length).
-The vegetable beds are too tall for four rows, and with three the middle
-bed lies on the centre line: a Road running east-west is hidden inside the
-tile, and one running north-south or diagonally shows in three 4 to 5 px
-gaps (about a sixth of its length). Two beds to a tile would show the Road
-but leave half the tile empty, which no longer looks like the candidate.
+### The Farm as chosen: vegetable beds
 
-**Which tile shows which crop.** The three masters are variants of the one
-Farm subject, and a tile picks its variant from its coordinates alone, with
-the hash terrain and resources already use (`chibiVariantV7`), which for
-three variants is `(x - y) mod 3`. So a tile keeps its crop across frames,
-saves, reloads and clients; a Farm never has the crop of the Farm beside,
-above or below it; and each crop covers a third of any field, so all three
-show up in every game. Nothing in the rules, the state or the PRNG is
-involved. Choosing per connected field or per city was considered and
-dropped: a field changes when a Farm is built or lost (two fields that join
-would have to change crop) and is seen only in part under fog, so a tile
-would not keep its crop and two clients could disagree; and a player with
-one field would see one crop. The mixed field reads as allotments and is
-no busier than a field of one crop. A field of one crop is what the
-developer setting shows: Settings, Developer tools, **Farm crop**: Mixed
-(default), Lettuce, Cabbage or Veggies.
+Bead `pulp_wars-9s0.7`. The user: "let's go with veggies for farms." The
+vegetable beds are now the only Farm, under the stable id
+`chibi-direction-farm`. The lettuce and cabbage masters, the per-tile mix,
+the developer setting "Farm crop" and its stored value are removed; the
+recipes and receipts of all three stay in the batch as history, and
+`art:chibi -- retire` removed the three comparison assets.
 
-Pictures with no tile (the Help, build buttons) show the cabbage, or the
-forced crop; a selected Farm's dock shows the crop of its tile. The LEGACY
-art set and the Classic look are unchanged.
+The plants and the palette are those of the comparison. One thing changed:
+**where the beds stand**. Three beds at a pitch of 80 / 3 px tile without a
+seam wherever they start, so the derivation moves them down half a pitch
+(`phase: 0.5`) and starts with the candidate's third bed. The two shorter
+beds (21 and 22 px) now lie either side of a 5 px gap on the cell's centre
+line (y 37 to 41), and the tallest bed (24 px) straddles the top and bottom
+edges, half in this Farm and half in the next. The other two gaps are 4 px.
 
-![The three crops: tile, a block of each, and a mixed block](../../art/pixellab/reviews/chibi-batch-direction-human/farm-crops.png)
+**A Road under a Farm, before and after.**
 
-![The Farm patch in the game, crops mixed](../../art/pixellab/reviews/chibi-batch-direction-human/ingame-farms-desktop-zoom-1.png)
+| Road        | Before (comparison)               | After                                                            |
+| ----------- | --------------------------------- | ---------------------------------------------------------------- |
+| East-west   | hidden inside the tile            | shows whole: the 4 px line and most of its 7 px edge, in the gap |
+| North-south | three gaps, 13 of 80 px (a sixth) | unchanged: three gaps, 13 of 80 px                               |
+| Diagonal    | about a sixth, in the gaps        | unchanged; the crossing at the cell's centre now shows           |
+
+**What it costs.** A Farm with no Farm above or below it now ends in part
+of a bed: the lower half of a bed at its top edge and leaf tips over a thin
+line of soil at its bottom edge. In a field the beds continue across the
+edge and nothing is cut.
+
+**Tried and not kept: a slit for a Road running north-south.** The beds
+have a plant-free soil column 4 px wide at the cell's centre (x 38 to 41)
+once the third bed is moved 2 px along itself. Leaving that column empty
+shows a north-south Road whole, but it cuts every bed of every Farm in two,
+Road or no Road, and a field reads as a grid of half tiles. The beds stay
+unbroken.
+
+![The Farm: the tile and a 3 x 3 block](../../art/pixellab/reviews/chibi-batch-direction-human/farm-x4.png)
+
+![The Farm patch in the game](../../art/pixellab/reviews/chibi-batch-direction-human/ingame-farms-desktop-zoom-1.png)
 
 ## 13. Live default
 

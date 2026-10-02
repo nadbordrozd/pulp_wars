@@ -2,7 +2,7 @@
   "bead": "pulp_wars-3tq.5",
   "batch": "direction-human",
   "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. The new units, cities and portraits have no owner area: they are drawn as authored for every player.",
-  "captures": "showcase-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look (the new visual direction, bead pulp_wars-3tq.6); 'human' is every seat Human, 'mixed' is Human, Undead, Goblin and Dinosaur; 'today' is the same all-Human match with Settings > Developer tools > Classic look (previous art) ON. ingame-farms-*: the FARMS patch of scripts/art/visual-direction/scene.ts drawn by the real board host with the live direction and the game's own art; the Farm's three crops are mixed by tile coordinates as in play (bead pulp_wars-9s0.6), and ingame-farms-{lettuce,cabbage,veggies}-* force one crop as the developer setting 'Farm crop' does.",
+  "captures": "showcase-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look (the new visual direction, bead pulp_wars-3tq.6); 'human' is every seat Human, 'mixed' is Human, Undead, Goblin and Dinosaur; 'today' is the same all-Human match with Settings > Developer tools > Classic look (previous art) ON. ingame-farms-*: the FARMS patch of scripts/art/visual-direction/scene.ts drawn by the real board host with the live direction and the game's own art; the Farm is the vegetable beds the user chose (bead pulp_wars-9s0.7).",
   "images": [
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/units-old-new-1x.png",
@@ -36,15 +36,15 @@
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/improvements-old-new-1x.png",
-      "width": 552,
+      "width": 344,
       "height": 1568,
-      "sha256": "732f14521aaa2ed6134be528d55dd867ab7673f4dface1e9e8e80cf2175f25be"
+      "sha256": "77fb3210651959bbf9efb968f8b2095a1c94b04f8ae1a42e7aa319b5f08ef271"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/improvements-old-new-x4.png",
-      "width": 1704,
+      "width": 920,
       "height": 5312,
-      "sha256": "9b224925c26543015849c6fb5ed9937b4aa90b994082a8cbe978597e1ae01d91"
+      "sha256": "ddfc47f52731f4bc89e4184ccdc648624e78525fbc386abdd91cae5ad8cde0d4"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/cities-1x.png",
@@ -59,118 +59,100 @@
       "sha256": "e55794508528e1169532b1de8ca08519a82ba0389ed02feb8bcbfcf54958e076"
     },
     {
-      "file": "art/pixellab/reviews/chibi-batch-direction-human/farm-crops.png",
-      "width": 1960,
-      "height": 852,
-      "sha256": "55a491224b8d0dbd797f3918ccdd0ac562d79640a2a37ec5b951f7257d64bd9a"
+      "file": "art/pixellab/reviews/chibi-batch-direction-human/farm-x4.png",
+      "width": 824,
+      "height": 496,
+      "sha256": "5556b8c6b0ea5e3dce9202ddff713a508155c7e94aebba1b5fdba9e0edf3333c"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "7251f1db55880db2c4f2e24cb09c1f55df7e116ba24c3efeaedb0c152b807d5e"
+      "sha256": "1e8efbeb08dc83316e1412a0e344752eac9612dc1648bc1dfde0ed03c06f1a1c"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "f5e92474b5b81d1e5daed7a20b71ad33069e590ef6bd99eab6b6bee61ab49d7f"
+      "sha256": "849b484b348cc6f788ecdd49aeca183c9ac35a13be83dc74305d3cc7aee0b1ce"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-dock-desktop.png",
       "width": 1440,
       "height": 900,
-      "sha256": "342120de87eb716be2f7dd2c2edb8e972347692288e4be8caa25f39109aea2a1"
+      "sha256": "79d058e1ede1f97803d1053ea1731d21555f4b3aa6994eb6ba1f8943c2ab2c3e"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-tech-desktop.png",
       "width": 1440,
       "height": 900,
-      "sha256": "0658c6af57a780b318204f769a4f077e0765e84b76a75e9edf81778e58aea379"
+      "sha256": "3dd3df7099c5e21b44c6f0966f9f37a4acbba57007bacb8c2cd176d9b1898b64"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/ingame-farms-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "06e2ba30ae3ae405753db30099d2ac44922d4cdf86791e9bc8310426023f95ea"
+      "sha256": "358210ed321005408b8a8f4ad30b5489b05aa5862a9c0c5009b28865e177ba7e"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/ingame-farms-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "e5cfd151f0524a7798020a41d48c82d62ca367ed965e194a9d035f2d9a6be575"
-    },
-    {
-      "file": "art/pixellab/reviews/chibi-batch-direction-human/ingame-farms-lettuce-desktop-zoom-1.png",
-      "width": 1440,
-      "height": 900,
-      "sha256": "bc74453626b55ab6d1fa364c8c51c236a52b4e763555ddecd357fa51fc615e29"
-    },
-    {
-      "file": "art/pixellab/reviews/chibi-batch-direction-human/ingame-farms-cabbage-desktop-zoom-1.png",
-      "width": 1440,
-      "height": 900,
-      "sha256": "ca5cf17d1c2acf380aca85bf6cb998ecf58a5fc9a70110391e45e3ff22da6757"
-    },
-    {
-      "file": "art/pixellab/reviews/chibi-batch-direction-human/ingame-farms-veggies-desktop-zoom-1.png",
-      "width": 1440,
-      "height": 900,
-      "sha256": "98b074c070b2c72bccd6143eca8e78ae1722c0c6b6fe65a4f306b38b7e536bf5"
+      "sha256": "659a7a17227311017030ca62688073b896f245215319ccdbc815e393990db807"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-mixed-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "4d36ba2fd4d055bd115770eaa4088560a3a91cbf958ce80d09d25c836b980fbf"
+      "sha256": "405d35e97ab5dfd9806c68ea4505c7fdf1dbe41f8440fa47ce4d21b1ea9c3e5e"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-mixed-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "c169d5ebb2eb81417bdb8b222a40c5f9a7b375d594424f02374b0fc974fc12ae"
+      "sha256": "5f370eeab2a6db311dec979aa94609b57f2056b0434c5b12313abc0f44beeaeb"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-today-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "6df4e0556fe4827a7d6c40f5240b5d93260aeb4f26a44cfee0f7e7ed312dbd5a"
+      "sha256": "830b9163943d852bddd0679d16c1340b31e5e32d48cccc5279dcadc79291e280"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "a5f4bce9daa4559d7649ffbfdf5ab8422382a35616d1e127b63fbcc73806df06"
+      "sha256": "f125c92990a28df34da67f2e123cf3e704e2ce9d1df05225ee6f8592bb29e479"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-human-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "b99bc0ce746fcfe72eb7a14a8081e4ce1fca048c978206420880fe26bfd0a042"
+      "sha256": "a0653de896a67f9c233a8949129ba715cdf01e2fc0291fdd1d1795a60a332615"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/ingame-farms-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "4b3ce40cf09b51a215083537e1ce733b9a3ecc81872a6b75b3699458bc34ce01"
+      "sha256": "3c8adf24f1cd4f18ad8243c6607dbc9a36ba4b631bd6bd6d7e7bcdc7c81bf14c"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/ingame-farms-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "4c56e9e9e4f9a15079573d98f384b42e76dbe8dc116fc324c96dd4637b19573f"
+      "sha256": "9090926f809ea886418da7322285d4963b9d6215256ce264ba366840aed4bd91"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-mixed-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "2238370927075f8dcecc7b6d9ef5d4a4f59082b4fc2a454e6d227fd6280bc295"
+      "sha256": "df5cb969f5119fee4861846141411615d0f030fed48eb724871c267107ca2014"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-direction-human/showcase-mixed-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "7a99a5ca472db98143164b6bcd158df73a6c2351ee00c84990a872304c6d7b9e"
+      "sha256": "a19938a24b1e37fc4f4f3e3cc1192299b8a3fa0fe28f25fdf669d9761f075a3c"
     }
   ]
 }

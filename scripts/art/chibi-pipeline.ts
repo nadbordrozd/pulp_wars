@@ -11,6 +11,9 @@
  *   npm run art:chibi -- import --batch N --from art/explorations/<run>
  *       --ids a,b      (no PixelLab call: copies an exploration recipe's
  *       record, raw sheet and receipt into the batch for review)
+ *   npm run art:chibi -- retire --batch N --asset ID --notes TEXT
+ *       (an accepted asset already removed from the batch manifest: deletes
+ *       its master, mask and asset record; its recipes stay as history)
  *   npm run art:chibi -- registry --batch N
  *   npm run art:chibi -- bodies --batch N      (tall-terrain body layers)
  *   npm run art:chibi -- dry-run --batch 0
@@ -44,6 +47,7 @@ import {
   productionLayout,
   registryEntry,
   rejectRecipe,
+  retireAsset,
   generateRecipe,
   importRecipe,
   writeTallTerrainBodies,
@@ -206,6 +210,13 @@ async function main(): Promise<void> {
     await rejectRecipe(context, required("--id"), required("--notes"));
     return;
   }
+  if (command === "retire") {
+    if (option("--exploration") !== undefined)
+      throw new Error("retire removes an asset from a production batch");
+    const context = await runContext(false);
+    await retireAsset(context, required("--asset"), required("--notes"));
+    return;
+  }
   if (command === "bodies") {
     const context = await runContext(false);
     for (const file of await writeTallTerrainBodies(context))
@@ -226,7 +237,7 @@ async function main(): Promise<void> {
     return;
   }
   console.log(
-    "Usage: chibi-pipeline.ts plan|prompts --batch N [--id R] | generate --batch N --ids a,b | import --batch N --from art/explorations/<run> --ids a,b | accept --batch N --id R --candidate K --notes TEXT --native-pass --enlarged-pass --owners-pass --no-plate-pass --camera-pass | reject --batch N --id R --notes TEXT | registry --batch N | bodies --batch N | dry-run --batch 0; --exploration art/explorations/<run> replaces --batch N except for registry and dry-run",
+    "Usage: chibi-pipeline.ts plan|prompts --batch N [--id R] | generate --batch N --ids a,b | import --batch N --from art/explorations/<run> --ids a,b | accept --batch N --id R --candidate K --notes TEXT --native-pass --enlarged-pass --owners-pass --no-plate-pass --camera-pass | reject --batch N --id R --notes TEXT | retire --batch N --asset ID --notes TEXT | registry --batch N | bodies --batch N | dry-run --batch 0; --exploration art/explorations/<run> replaces --batch N except for registry and dry-run",
   );
 }
 

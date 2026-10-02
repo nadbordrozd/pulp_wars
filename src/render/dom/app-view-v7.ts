@@ -63,19 +63,8 @@ import {
   storeBoardClassicLookV7,
 } from "../../app/board-visual-direction-v7";
 import {
-  loadBoardFarmCropV7,
-  storeBoardFarmCropV7,
-} from "../../app/board-farm-crop-v7";
-import {
-  DEFAULT_FARM_CROP_CHOICE_V7,
-  FARM_CROP_CHOICES_V7,
-  isFarmCropChoiceV7,
-  type FarmCropChoiceV7,
-} from "../../assets/chibi-direction-art-manifest";
-import {
   LIVE_DIRECTION_ART_REGISTRY_V7,
   liveBoardLookV7,
-  liveDirectionArtRegistryV7,
 } from "../canvas/live-board-look-v7";
 import {
   SETTINGS_STORAGE_KEY,
@@ -432,14 +421,6 @@ export class Ruleset7DomAppView {
    * on first use, so the default game never loads the previous portraits.
    */
   #classicChibiDom: ChibiDomArtV7 | null = null;
-  /**
-   * Developer option (pulp_wars-9s0.6): the crop every Farm shows while the
-   * three green Farm variants are compared. Presentation only; "MIXED"
-   * gives each tile the crop of its coordinates.
-   */
-  #farmCrop: FarmCropChoiceV7 = DEFAULT_FARM_CROP_CHOICE_V7;
-  /** Interface art with one forced Farm crop; built on first use. */
-  readonly #farmCropChibiDom = new Map<FarmCropChoiceV7, ChibiDomArtV7>();
   readonly #chibiDomEnvironment: ChibiDomEnvironmentV7 | null;
   #developerToolsOpen = false;
   #pendingFocusAction: string | null = null;
@@ -510,7 +491,6 @@ export class Ruleset7DomAppView {
     }
     this.#boardSaturation = loadBoardSaturationV7(this.#settingsStorage);
     this.#classicLook = loadBoardClassicLookV7(this.#settingsStorage);
-    this.#farmCrop = loadBoardFarmCropV7(this.#settingsStorage);
     this.#snapshot = controller.snapshot();
     this.#document.addEventListener("keydown", this.#onKeyDown);
     this.#root.addEventListener("dragstart", this.#onDragStart);
@@ -687,20 +667,7 @@ export class Ruleset7DomAppView {
     const environment = this.#chibiDomEnvironment;
     if (directed === null || environment === null)
       throw new Error("Interface art requires the CHIBI art set");
-    if (!this.#classicLook) {
-      // A forced Farm crop shows in the docks and the Help as on the board.
-      if (this.#farmCrop === DEFAULT_FARM_CROP_CHOICE_V7) return directed;
-      let forced = this.#farmCropChibiDom.get(this.#farmCrop);
-      if (forced === undefined) {
-        forced = createChibiDomArtV7({
-          environment,
-          onChange: () => this.#queueChibiRender(),
-          preferred: liveDirectionArtRegistryV7(this.#farmCrop),
-        });
-        this.#farmCropChibiDom.set(this.#farmCrop, forced);
-      }
-      return forced;
-    }
+    if (!this.#classicLook) return directed;
     this.#classicChibiDom ??= createChibiDomArtV7({
       environment,
       onChange: () => this.#queueChibiRender(),
@@ -1398,7 +1365,7 @@ export class Ruleset7DomAppView {
       saturation: this.#boardSaturation,
       // The new visual direction is the CHIBI set's default look; the
       // classic look and the LEGACY set carry no direction at all.
-      ...liveBoardLookV7(this.#artSet, this.#classicLook, this.#farmCrop),
+      ...liveBoardLookV7(this.#artSet, this.#classicLook),
       interaction: {
         selection: this.#selection,
         selectedUnitId,
@@ -3444,7 +3411,6 @@ export class Ruleset7DomAppView {
       text(this.#document, "summary", "Developer tools"),
       this.#saturationControls(),
       this.#classicLookControl(),
-      this.#farmCropControl(),
       developerActions,
     );
     section.append(display, game, seed, developer);
@@ -3544,49 +3510,6 @@ export class Ruleset7DomAppView {
       this.#document.createTextNode(" Classic look (previous art)"),
     );
     group.append(label);
-    return group;
-  }
-
-  /**
-   * Developer option (bead pulp_wars-9s0.6): which of the three green Farm
-   * variants the board draws while the user compares them. "Mixed" (the
-   * default) gives every Farm tile the crop of its coordinates; the others
-   * force one crop on every tile. Chibi art set, new look only. It updates
-   * the board and local storage in place, like the other developer options.
-   */
-  #farmCropControl(): HTMLElement {
-    const group = el(this.#document, "fieldset", "v7-saturation-tools");
-    group.append(text(this.#document, "legend", "Farm crop"));
-    const row = el(this.#document, "div", "v7-saturation-row");
-    const label = this.#document.createElement("label");
-    label.htmlFor = "v7-farm-crop";
-    label.textContent = "Farm crop";
-    const select = this.#document.createElement("select");
-    select.id = "v7-farm-crop";
-    const names: Readonly<Record<FarmCropChoiceV7, string>> = {
-      MIXED: "Mixed",
-      LETTUCE: "Lettuce",
-      CABBAGE: "Cabbage",
-      VEGGIES: "Veggies",
-    };
-    for (const choice of FARM_CROP_CHOICES_V7) {
-      const option = this.#document.createElement("option");
-      option.value = choice;
-      option.textContent = names[choice];
-      option.selected = choice === this.#farmCrop;
-      select.append(option);
-    }
-    select.addEventListener("change", () => {
-      if (!isFarmCropChoiceV7(select.value)) return;
-      this.#farmCrop = select.value;
-      if (!storeBoardFarmCropV7(this.#settingsStorage, select.value))
-        this.#error = "Settings could not be saved.";
-      this.#refreshBoard();
-      // The docks and the Help switch their Farm picture with the board.
-      this.#queueChibiRender();
-    });
-    row.append(label, select);
-    group.append(row);
     return group;
   }
 

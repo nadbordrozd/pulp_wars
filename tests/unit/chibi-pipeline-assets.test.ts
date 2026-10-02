@@ -49,6 +49,7 @@ import {
   recordsLockPath,
   registryEntry,
   rejectRecipe,
+  retireAsset,
   sha256,
   tallTerrainLayerPaths,
   validateChibiProduction,
@@ -1035,6 +1036,77 @@ describe("chibi concurrent record writes (pulp_wars-28w)", () => {
       Object.keys(records.recipes).sort((a, b) => a.localeCompare(b)),
     );
     expect(text).toBe(`${JSON.stringify(records, null, 2)}\n`);
+  }, 60_000);
+
+  it("retires an asset removed from the manifest and keeps its recipes as history (pulp_wars-9s0.7)", async () => {
+    const context = await scratch();
+    await generateRecipe(context, "dry-fighter-a");
+    await generateRecipe(context, "dry-marksman-a");
+    const accepted = await acceptRecipe(
+      context,
+      "dry-fighter-a",
+      0,
+      "Fighter.",
+      ALL_PASS,
+    );
+    const files = [accepted.master.path, accepted.mask?.path].map((file) =>
+      path.join(context.root, file ?? "missing"),
+    );
+    for (const file of files) await readFile(file);
+    // An asset the manifest still has is not retired.
+    await expect(
+      retireAsset(context, "chibi-dry-fighter", "Replaced."),
+    ).rejects.toThrow(/still in the batch manifest/);
+    const without = {
+      ...context.manifest,
+      assets: context.manifest.assets.filter(
+        (asset) => asset.id !== "chibi-dry-fighter",
+      ),
+    };
+    // Its recipes must be bound to an asset that remains.
+    await expect(
+      retireAsset(
+        { ...context, manifest: without },
+        "chibi-dry-fighter",
+        "Replaced.",
+      ),
+    ).rejects.toThrow(/bind it to a remaining asset/);
+    const rebound: PipelineContext = {
+      ...context,
+      manifest: {
+        ...without,
+        recipes: without.recipes.map((recipe) =>
+          recipe.id === "dry-fighter-a"
+            ? { ...recipe, asset: "chibi-dry-marksman" }
+            : recipe,
+        ),
+      },
+    };
+    await expect(
+      retireAsset(rebound, "chibi-dry-fighter", " "),
+    ).rejects.toThrow(/note/);
+    const before = (await loadRecords(context.layout, "0")).recipes[
+      "dry-fighter-a"
+    ];
+    await retireAsset(rebound, "chibi-dry-fighter", "Replaced.");
+    const records = await loadRecords(context.layout, "0");
+    expect(records.assets["chibi-dry-fighter"]).toBeUndefined();
+    for (const file of files) await expect(readFile(file)).rejects.toThrow();
+    // The recipe keeps its request, raw sheet and receipt; only its binding
+    // and verdict change.
+    const kept = records.recipes["dry-fighter-a"];
+    expect(kept?.asset).toBe("chibi-dry-marksman");
+    expect(kept?.review?.verdict).toBe("REJECTED");
+    expect(kept?.review?.notes).toBe(
+      "Fighter. Retired with chibi-dry-fighter: Replaced.",
+    );
+    expect(kept?.request).toEqual(before?.request);
+    expect(kept?.rawSheetSha256).toBe(before?.rawSheetSha256);
+    await readFile(path.join(context.root, kept?.rawSheet ?? "missing"));
+    expect(records.recipes["dry-marksman-a"]?.asset).toBe("chibi-dry-marksman");
+    await expect(
+      retireAsset(rebound, "chibi-dry-fighter", "Replaced."),
+    ).rejects.toThrow(/no asset record/);
   }, 60_000);
 
   it("fails loudly when another run generates the same recipe meanwhile", async () => {

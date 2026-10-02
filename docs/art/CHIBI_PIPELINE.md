@@ -79,7 +79,7 @@ the Human-era owner text they were generated with.
 | `effect`          | Pixen, icon camera, side view                                               | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                   |
 | `calm-building`   | Pixen (selective outline), then optional edit; calm style, no faction layer | **seated**: the calm improvement set of the new direction                                              |
 | `calm-settlement` | as `calm-building`                                                          | **seated**: cities and the Village in the calm style                                                   |
-| `crop-rows`       | Pixen or Pixflux, crops on strips of soil, then edits; no faction layer     | **crop-rows**: the Farm as a seamless pattern of crop rows (three crop variants)                       |
+| `crop-rows`       | Pixen or Pixflux, crops on strips of soil, then edits; no faction layer     | **crop-rows**: the Farm as a seamless pattern of crop rows                                             |
 
 "Generate at the display size" is enforced: a non-terrain request must
 equal its master canvas. Pixen sizes must be multiples of 4.
@@ -247,8 +247,8 @@ pipeline pieces:
   the improvements are one neutral set, so `class-calm-building.txt` names
   the materials, and a city names its materials in its subject line. Their
   subject texts are the `<subject>/CALM` keys (for the Farm
-  `IMPROVEMENT:FARM/LETTUCE`, `/CABBAGE` and `/VEGGIES`, and `/ROWS` for
-  the retired wheat).
+  `IMPROVEMENT:FARM/VEGGIES`; `/ROWS`, `/LETTUCE` and `/CABBAGE` belong to
+  the retired wheat, lettuce and cabbage).
 - **Fixed faction colours.** A batch with `"fixedFactionColours": true` may
   declare units, cities and portraits `ownerColour: false`: no owner layer,
   no mask, and `registry` prints `fixedColours: true`. Without the flag
@@ -267,22 +267,27 @@ pipeline pieces:
   itself, wrapping round the period, so rows can differ. The pattern
   continues across cell boundaries in both directions; a test checks it.
   That wheat master was retired by bead `pulp_wars-9s0.6` (the user: too
-  short for wheat, too yellow for anything else). The Farm now has **three
-  green masters, a comparison state until the user picks one**, all
-  imported from `art/explorations/farm-rows-2026-10/` with no new PixelLab
-  call and with their colours unchanged:
-  `chibi-direction-farm-lettuce` (`leafy-b`: a 40 px piece of each of the
-  four rows, every second row moved 7 px), `chibi-direction-farm-cabbage`
-  (`leafy-thin-a`: the five cabbages of one row 16 px apart with plain soil
-  columns between them, brick pattern, `trimBottom: 2`) and
-  `chibi-direction-farm-veggies` (`veg-flux-a`, the class's only Pixflux
-  recipe: the plants of its three raised beds 20 px apart with plain soil
-  columns between them). Two additions serve them: `trimBottom` drops lines
-  from the bottom of every stamped row (thinner soil, wider gaps), and the
-  rows need no longer divide the tile height (three beds stand at a pitch
-  of 80 / 3 px, rounded to whole pixels). The runtime registers all three
-  under `IMPROVEMENT:FARM`; a tile picks one by its coordinates
-  (`chibiVariantV7`), and the developer setting "Farm crop" forces one.
+  short for wheat, too yellow for anything else) for a comparison of three
+  green masters, and bead `pulp_wars-9s0.7` kept the one the user chose:
+  `chibi-direction-farm`, from `veg-flux-a` (the class's only Pixflux
+  recipe, imported from `art/explorations/farm-rows-2026-10/` with no new
+  PixelLab call, colours unchanged). The plants of its three raised beds
+  are stamped 20 px apart with plain soil columns between them. Three
+  options serve it: the rows need not divide the tile height (three beds
+  stand at a pitch of 80 / 3 px, rounded to whole pixels); `phase` moves
+  every row down by a share of the pitch, wrapping round the tile height
+  (0.5 here: a gap, not a bed, lies on the cell's centre line, and one bed
+  straddles the top and bottom edges); and `trimBottom` drops lines from
+  the bottom of every stamped row (unused since the cabbage was retired).
+- **`retire`** removes an accepted asset that is no longer wanted (bead
+  `pulp_wars-9s0.7`: the lettuce and cabbage Farms, and the veggies Farm's
+  old id). First edit the batch manifest: delete the asset and bind its
+  recipes to an asset that stays. Then
+  `npm run art:chibi -- retire --batch N --asset ID --notes TEXT` deletes
+  the master and the mask, removes the asset record, moves the recipe
+  records to their new asset and turns an ACCEPTED verdict among them into
+  REJECTED with the note. Recipes, raw sheets and receipts stay as history,
+  so `art:validate` still passes.
 - `art:validate` re-derives every seated and crop-rows master from its
   recorded candidate and fails if the bytes differ.
 - **`import`** brings a recipe generated in an exploration run into a
@@ -516,8 +521,7 @@ today's sprite beside the new one and the Undead, Goblin and Dinosaur unit
 of its role), `portraits-old-new-{1x,x4}.png`,
 `improvements-old-new-{1x,x4}.png` (the ten improvements, the Village and
 the Mine), `cities-{1x,x4}.png` (three tiers, with the pennant at its
-recorded anchor), `farm-crops.png` (the three Farm crops: each tile, a 3 x 3
-block of it, and a block mixed as the game mixes them),
+recorded anchor), `farm-x4.png` (the Farm tile and a 3 x 3 block of it),
 `showcase-{human,mixed}-{desktop,phone}-zoom-{1,0.75}.png` (a real Showcase
 match in the default look: every seat Human, and the four factions),
 `showcase-human-today-desktop-zoom-1.png` (the same match with the Classic
@@ -525,14 +529,11 @@ look developer option on),
 `showcase-human-{dock,tech}-desktop.png`,
 `ingame-farms-{desktop,phone}-zoom-{1,0.75}.png` (the `FARMS` patch of
 `scripts/art/visual-direction/scene.ts` drawn by the real board host with
-the crops mixed as in play: a 3 x 3 Farm block over Roads, single Farms
-beside cities and buildings, a 5 x 3 field under units),
-`ingame-farms-{lettuce,cabbage,veggies}-desktop-zoom-1.png` (the same patch
-with the developer setting "Farm crop" forcing one crop) and `index.json`.
+the game's own art: a 3 x 3 Farm block over Roads, single Farms beside
+cities and buildings, a 5 x 3 field under units) and `index.json`.
 Its captures start Vite on port 6471 unless `--port` says otherwise. With
-`--farms-only --out DIR` it writes only the `ingame-farms-*` captures into
-DIR, all four crop settings at both viewports and zoom steps (16 files), to
-compare the crops or try a Farm candidate copied over a master.
+`--farms-only --out DIR` it writes only the four `ingame-farms-*` captures
+into DIR, to try a Farm candidate copied over the master.
 
 `npm run art:goblin-direction-study-review` (bead `pulp_wars-3tq.8`) writes
 `art/pixellab/reviews/goblin-direction-study/`, the evidence of the

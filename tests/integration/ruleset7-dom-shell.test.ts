@@ -1198,99 +1198,33 @@ describe("Ruleset 7 DOM shell", () => {
     third.destroy();
   });
 
-  it("offers a persistent Farm crop developer option that forces one of the three Farm crops (pulp_wars-9s0.6)", async () => {
+  it("draws one Farm, has no Farm crop option and drops its stored key (pulp_wars-9s0.7)", async () => {
     const key = "pulpWars.ruleset7.boardFarmCrop.v1";
-    const farmIds = (host: CapturingBoardHost): readonly string[] =>
-      host.model?.visualDirectionArt
-        ?.variants("IMPROVEMENT:FARM")
-        .map((asset) => asset.id) ?? [];
+    window.localStorage.setItem(key, '{"crop":"LETTUCE"}');
     const host = new CapturingBoardHost();
-    const first = bootstrapRuleset7App(document, {
+    const app = bootstrapRuleset7App(document, {
       storage: null,
       boardHost: host,
     });
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
-    await waitUntil(() => first.controller.snapshot().phase === "ACTIVE");
-    // Mixed by default: all three crops are variants of the Farm, and each
-    // tile shows the one its coordinates pick.
-    expect(farmIds(host)).toEqual([
-      "chibi-direction-farm-cabbage",
-      "chibi-direction-farm-lettuce",
-      "chibi-direction-farm-veggies",
-    ]);
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    // The retired comparison setting is never read and is removed on load.
     expect(window.localStorage.getItem(key)).toBeNull();
+    expect(
+      host.model?.visualDirectionArt
+        ?.variants("IMPROVEMENT:FARM")
+        .map((asset) => asset.id),
+    ).toEqual(["chibi-direction-farm"]);
     openMenuItem("settings");
-    const select = requiredSelect("v7-farm-crop");
+    expect(document.getElementById("v7-classic-look")).not.toBeNull();
+    expect(document.getElementById("v7-farm-crop")).toBeNull();
     expect(
-      select.closest("details")?.querySelector("summary")?.textContent,
-    ).toBe("Developer tools");
-    expect(
-      select.closest("fieldset")?.querySelector("legend")?.textContent,
-    ).toBe("Farm crop");
-    expect(
-      document.querySelector('label[for="v7-farm-crop"]')?.textContent,
-    ).toBe("Farm crop");
-    expect(
-      Array.from(select.options).map((option) => [
-        option.value,
-        option.textContent,
-      ]),
-    ).toEqual([
-      ["MIXED", "Mixed"],
-      ["LETTUCE", "Lettuce"],
-      ["CABBAGE", "Cabbage"],
-      ["VEGGIES", "Veggies"],
-    ]);
-    expect(select.value).toBe("MIXED");
-    const state = JSON.stringify(first.controller.snapshot().view);
-    select.value = "VEGGIES";
-    select.dispatchEvent(new Event("change", { bubbles: true }));
-    expect(farmIds(host)).toEqual(["chibi-direction-farm-veggies"]);
-    expect(host.model?.visualDirection).toEqual(LIVE_DIRECTION_V7);
-    expect(window.localStorage.getItem(key)).toBe('{"crop":"VEGGIES"}');
-    // Presentation only: the match and the shared settings are untouched.
-    expect(JSON.stringify(first.controller.snapshot().view)).toBe(state);
-    expect(window.localStorage.getItem("pulpWars.settings.v1")).toBeNull();
-    // The classic look ignores the crop: it carries no direction art.
-    requiredInput("v7-classic-look").click();
-    expect(host.model !== null && "visualDirectionArt" in host.model).toBe(
-      false,
-    );
-    requiredInput("v7-classic-look").click();
-    expect(farmIds(host)).toEqual(["chibi-direction-farm-veggies"]);
-    first.destroy();
-
-    // The choice is restored on the next visit.
-    document.body.innerHTML = '<div id="app"></div>';
-    const restoredHost = new CapturingBoardHost();
-    const second = bootstrapRuleset7App(document, {
-      storage: null,
-      boardHost: restoredHost,
-    });
-    chooseSeed();
-    requiredButton('[data-action="launch"]').click();
-    await waitUntil(() => second.controller.snapshot().phase === "ACTIVE");
-    expect(farmIds(restoredHost)).toEqual(["chibi-direction-farm-veggies"]);
-    openMenuItem("settings");
-    expect(requiredSelect("v7-farm-crop").value).toBe("VEGGIES");
-    second.destroy();
-
-    // The LEGACY art set never carries the direction art, whatever is stored.
-    document.body.innerHTML = '<div id="app"></div>';
-    const legacyHost = new CapturingBoardHost();
-    const third = bootstrapRuleset7App(document, {
-      storage: null,
-      boardHost: legacyHost,
-      artSet: "LEGACY",
-    });
-    chooseSeed();
-    requiredButton('[data-action="launch"]').click();
-    await waitUntil(() => third.controller.snapshot().phase === "ACTIVE");
-    expect(
-      legacyHost.model !== null && "visualDirectionArt" in legacyHost.model,
-    ).toBe(false);
-    third.destroy();
+      Array.from(document.querySelectorAll("legend")).map(
+        (legend) => legend.textContent,
+      ),
+    ).not.toContain("Farm crop");
+    app.destroy();
   });
 
   it("starts with defaults when the supplied settings adapter cannot be read", async () => {

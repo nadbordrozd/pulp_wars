@@ -397,6 +397,13 @@ export interface CropRowsSpec {
    * thinner strip of soil under the plants and a wider gap between rows.
    */
   readonly trimBottom?: number;
+  /**
+   * How far every row is moved down, as a share of the row pitch, 0..1
+   * (default 0), wrapping round the tile height. With an odd number of rows
+   * the middle row lies on the cell's centre line; 0.5 puts a gap there
+   * instead, and one row then straddles the top and bottom edges.
+   */
+  readonly phase?: number;
   /** Colour kept, 0..1 (1 = unchanged). */
   readonly saturation: number;
   /** Mix toward pale straw, 0..1. */
@@ -429,7 +436,8 @@ export function cropBands(
  * strip of soil under it) are stamped at a horizontal period that divides
  * the tile width, on `rows` rows at an even vertical pitch, so the rows and
  * the gaps between them continue across cell boundaries in both directions;
- * the gaps fall on the cell's centre line and edges, where Roads run. A
+ * the gaps fall on the cell's centre line and edges, where Roads run (an
+ * odd number of rows needs `phase` 0.5 for a gap on the centre line). A
  * stamp may name its own source row and the tile rows it goes on, and a
  * tile row may be shifted along itself (`rowOffsets`), so the rows can
  * differ. The crop is then calmed (lower saturation, mixed toward pale
@@ -452,6 +460,9 @@ export function cropRowsRaster(
   if (!Number.isInteger(spec.rows) || spec.rows <= 0)
     throw new Error("crop rows must be a positive integer");
   const pitch = size.height / spec.rows;
+  const phase = spec.phase ?? 0;
+  if (!Number.isFinite(phase) || phase < 0 || phase >= 1)
+    throw new Error("the crop row phase must be at least 0 and below 1");
   const data = new Uint8Array(size.width * size.height * 4);
   for (const stamp of spec.stamps) {
     const band = bands[stamp.band ?? spec.band];
@@ -473,7 +484,7 @@ export function cropRowsRaster(
     for (let row = 0; row < spec.rows; row += 1) {
       if (stamp.rows !== undefined && !stamp.rows.includes(row)) continue;
       const shift = spec.rowOffsets?.[row] ?? 0;
-      const top = Math.round(pitch * (row + 0.5) - bandHeight / 2);
+      const top = Math.round(pitch * (row + 0.5 + phase) - bandHeight / 2);
       for (let y = 0; y < bandHeight; y += 1)
         for (let x = 0; x < stamp.width; x += 1) {
           const source = ((band.top + y) * raster.width + stamp.left + x) * 4;
@@ -492,7 +503,10 @@ export function cropRowsRaster(
             (((stamp.at + x + shift) % spec.period) + spec.period) %
             spec.period;
           for (let offset = first; offset < size.width; offset += spec.period) {
-            const target = ((top + y) * size.width + offset) * 4;
+            // A phased row may run over the bottom edge: it continues at
+            // the top, as it does in the Farm below.
+            const line = (top + y + size.height) % size.height;
+            const target = (line * size.width + offset) * 4;
             data[target] = calm[0] ?? 0;
             data[target + 1] = calm[1] ?? 0;
             data[target + 2] = calm[2] ?? 0;

@@ -104,12 +104,13 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
       "CITY:3",
       "SITE:VILLAGE",
     ];
-    // The Farm has three crops under comparison (bead pulp_wars-9s0.6).
     for (const subject of subjects)
-      expect(registry.variants(subject), subject).toHaveLength(
-        subject === "IMPROVEMENT:FARM" ? 3 : 1,
-      );
-    expect(CHIBI_DIRECTION_ART_ASSETS_V7).toHaveLength(subjects.length + 2);
+      expect(registry.variants(subject), subject).toHaveLength(1);
+    expect(CHIBI_DIRECTION_ART_ASSETS_V7).toHaveLength(subjects.length);
+    // One Farm: the vegetable beds the user chose (bead pulp_wars-9s0.7).
+    expect(
+      registry.variants("IMPROVEMENT:FARM").map((asset) => asset.id),
+    ).toEqual(["chibi-direction-farm"]);
     // Ships are shared by every faction and are not converted; neither are
     // the other factions.
     for (const subject of [
@@ -241,90 +242,71 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
     }
   });
 
-  it("every Farm crop tiles without a seam: rows from edge to edge, gaps on the cell edges", async () => {
-    // Three crops under comparison (bead pulp_wars-9s0.6). Rows: top and
-    // bottom line of each row of crops in the master.
-    const expected = {
-      "chibi-direction-farm-lettuce": [
-        [3, 16],
-        [24, 36],
-        [44, 56],
-        [63, 76],
-      ],
-      "chibi-direction-farm-cabbage": [
-        [4, 16],
-        [24, 36],
-        [44, 56],
-        [64, 76],
-      ],
-      // Three raised beds, kept as the candidate drew them (21 to 24 px).
-      "chibi-direction-farm-veggies": [
-        [2, 23],
-        [28, 51],
-        [56, 76],
-      ],
-    } as const;
+  it("the Farm tiles without a seam, with a gap on the centre line for a Road", async () => {
+    // The vegetable beds the user chose (bead pulp_wars-9s0.7), the only
+    // Farm: the comparison's lettuce and cabbage masters are gone.
     const farms = CHIBI_DIRECTION_ART_ASSETS_V7.filter(
       (asset) => asset.subject === "IMPROVEMENT:FARM",
     );
-    expect(farms.map((asset) => asset.id).sort()).toEqual(
-      Object.keys(expected).sort(),
+    expect(farms.map((asset) => asset.id)).toEqual(["chibi-direction-farm"]);
+    for (const retired of ["lettuce", "cabbage", "veggies"])
+      await expect(
+        readFile(
+          path.join(
+            ROOT,
+            `public/assets/chibi/buildings/chibi-direction-farm-${retired}.png`,
+          ),
+        ),
+      ).rejects.toThrow();
+    const farm = farms[0];
+    if (farm === undefined) throw new Error("no Farm");
+    expect([farm.width, farm.height]).toEqual([80, 80]);
+    const master = await readRaster(
+      path.join(ROOT, `public/assets/chibi/buildings/${farm.id}.png`),
     );
-    for (const farm of farms) {
-      expect([farm.width, farm.height], farm.id).toEqual([80, 80]);
-      const master = await readRaster(
-        path.join(ROOT, `public/assets/chibi/buildings/${farm.id}.png`),
-      );
-      const bands = cropBands(master);
-      expect(
-        bands.map((band) => [band.top, band.bottom]),
-        farm.id,
-      ).toEqual(expected[farm.id as keyof typeof expected]);
-      const opaque = (x: number, y: number): boolean =>
-        (master.data[(y * master.width + x) * 4 + 3] ?? 0) >= 128;
-      const filled = (y: number): number =>
-        Array.from({ length: master.width }, (_, x) => opaque(x, y)).filter(
-          Boolean,
-        ).length;
-      // The strip of soil under each row runs unbroken from edge to edge:
-      // no margin makes a seam between side-by-side Farms.
-      for (const band of bands)
-        for (let y = band.bottom - 2; y <= band.bottom; y += 1)
-          expect(filled(y), `${farm.id} soil row ${y}`).toBe(80);
-      // The top and bottom edges of the cell are a gap, so stacked Farms
-      // keep their rows apart, and every gap is at least 4 px.
-      for (const y of [0, 1, 78, 79])
-        expect(filled(y), `${farm.id} row ${y}`).toBe(0);
-      bands.forEach((band, index) => {
-        const next = bands[index + 1];
-        const gap =
-          next === undefined
-            ? 80 - band.bottom - 1 + (bands[0]?.top ?? 0)
-            : next.top - band.bottom - 1;
-        expect(gap, `${farm.id} gap after row ${index}`).toBeGreaterThanOrEqual(
-          4,
-        );
-      });
-      // Four rows leave the cell's centre line free, where a Road runs; the
-      // three vegetable beds do not (the middle bed lies on it).
-      const centreFree = [38, 39, 40, 41].every((y) => filled(y) === 0);
-      expect(centreFree, farm.id).toBe(bands.length === 4);
-      expect(periodMismatch(master, 80, 80)).toBe(0);
-      expect(opaqueBounds(master)?.left).toBe(0);
-      expect(opaqueBounds(master)?.right).toBe(79);
-      // No player or faction colour: greens and browns only, nothing blue
-      // or violet (the darkest outline is a near-black teal).
-      for (let index = 0; index < master.data.length; index += 4) {
-        if ((master.data[index + 3] ?? 0) < 128) continue;
-        const [r, g, b] = [
-          master.data[index] ?? 0,
-          master.data[index + 1] ?? 0,
-          master.data[index + 2] ?? 0,
-        ];
-        expect(b, `${farm.id} pixel ${index / 4}`).toBeLessThanOrEqual(
-          Math.max(r, g) + 16,
-        );
-      }
+    // Top and bottom line of each run of crop lines. Three raised beds, kept
+    // as the candidate drew them (21 to 24 px), at a pitch of 80 / 3 px and
+    // moved down half a pitch: the first and last run are the two halves of
+    // the bed that straddles the top and bottom edges.
+    const bands = cropBands(master);
+    expect(bands.map((band) => [band.top, band.bottom])).toEqual([
+      [0, 11],
+      [16, 36],
+      [42, 63],
+      [68, 79],
+    ]);
+    const opaque = (x: number, y: number): boolean =>
+      (master.data[(y * master.width + x) * 4 + 3] ?? 0) >= 128;
+    const filled = (y: number): number =>
+      Array.from({ length: master.width }, (_, x) => opaque(x, y)).filter(
+        Boolean,
+      ).length;
+    // The strip of soil under each bed runs unbroken from edge to edge: no
+    // margin makes a seam between side-by-side Farms.
+    for (const band of bands.slice(0, 3))
+      for (let y = band.bottom - 2; y <= band.bottom; y += 1)
+        expect(filled(y), `soil row ${y}`).toBe(80);
+    // The bed on the edge continues in the Farm above and below, and the
+    // tile repeats exactly.
+    expect(filled(79)).toBeGreaterThan(0);
+    expect(filled(0)).toBeGreaterThan(0);
+    expect(periodMismatch(master, 80, 80)).toBe(0);
+    // A gap of 5 px lies on the cell's centre line, where an east-west Road
+    // runs; the other two gaps are 4 px.
+    for (const y of [37, 38, 39, 40, 41, 12, 13, 14, 15, 64, 65, 66, 67])
+      expect(filled(y), `row ${y}`).toBe(0);
+    expect(opaqueBounds(master)?.left).toBe(0);
+    expect(opaqueBounds(master)?.right).toBe(79);
+    // No player or faction colour: greens and browns only, nothing blue or
+    // violet (the darkest outline is a near-black teal).
+    for (let index = 0; index < master.data.length; index += 4) {
+      if ((master.data[index + 3] ?? 0) < 128) continue;
+      const [r, g, b] = [
+        master.data[index] ?? 0,
+        master.data[index + 1] ?? 0,
+        master.data[index + 2] ?? 0,
+      ];
+      expect(b, `pixel ${index / 4}`).toBeLessThanOrEqual(Math.max(r, g) + 16);
     }
   });
 });
@@ -549,11 +531,55 @@ describe("pipeline support for the new visual direction (pulp_wars-3tq.5)", asyn
     expect(() =>
       cropRowsRaster(candidate, size, { ...spec, trimBottom: 2 }),
     ).toThrow(/trimBottom/);
-    // The batch manifest refuses a negative trim and accepts three rows.
+    // phase moves every row down by a share of the pitch, wrapping round
+    // the tile height: half a pitch puts a gap on the centre line of three
+    // rows and one row on the top and bottom edges.
+    expect(
+      picture(
+        cropRowsRaster(
+          candidate,
+          { width: 8, height: 12 },
+          { ...spec, rows: 3, phase: 0.5 },
+        ),
+      ),
+    ).toEqual([
+      "##..##..",
+      "........",
+      "........",
+      "##..##..",
+      "##..##..",
+      "........",
+      "........",
+      "##..##..",
+      "##..##..",
+      "........",
+      "........",
+      "##..##..",
+    ]);
+    expect(() =>
+      cropRowsRaster(candidate, size, { ...spec, phase: 1 }),
+    ).toThrow(/phase/);
+    // The batch manifest refuses a negative trim and a phase outside 0..1,
+    // and accepts three rows.
     const farm = manifest.assets.find(
-      (asset) => asset.id === "chibi-direction-farm-veggies",
+      (asset) => asset.id === "chibi-direction-farm",
     );
     expect(farm?.cropRows?.rows).toBe(3);
+    expect(farm?.cropRows?.phase).toBe(0.5);
+    expect(
+      batchManifestProblems(
+        {
+          ...manifest,
+          assets: manifest.assets.map((asset) =>
+            asset.id === farm?.id && asset.cropRows !== undefined
+              ? { ...asset, cropRows: { ...asset.cropRows, phase: 1.5 } }
+              : asset,
+          ),
+        },
+        fragments,
+        BATCH,
+      ).some((problem) => problem.includes("phase")),
+    ).toBe(true);
     const broken = {
       ...manifest,
       assets: manifest.assets.map((asset) =>

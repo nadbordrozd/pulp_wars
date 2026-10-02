@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   BOARD_CLASSIC_LOOK_STORAGE_KEY_V7,
+  RETIRED_BOARD_FARM_CROP_STORAGE_KEY_V7,
   RETIRED_BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7,
   loadBoardClassicLookV7,
   parseStoredBoardClassicLookV7,
@@ -287,6 +288,17 @@ describe("classic look setting (pulp_wars-3tq.6)", () => {
       RETIRED_BOARD_VISUAL_DIRECTION_STORAGE_KEY_V7,
       '{"recommended":true}',
     );
+    values.set(BOARD_CLASSIC_LOOK_STORAGE_KEY_V7, '{"classic":true}');
+    expect(loadBoardClassicLookV7(storage)).toBe(true);
+    expect([...values.keys()]).toEqual([BOARD_CLASSIC_LOOK_STORAGE_KEY_V7]);
+  });
+
+  it("removes the retired Farm crop key without reading it (pulp_wars-9s0.7)", () => {
+    expect(RETIRED_BOARD_FARM_CROP_STORAGE_KEY_V7).toBe(
+      "pulpWars.ruleset7.boardFarmCrop.v1",
+    );
+    const { values, storage } = memory();
+    values.set(RETIRED_BOARD_FARM_CROP_STORAGE_KEY_V7, '{"crop":"CABBAGE"}');
     values.set(BOARD_CLASSIC_LOOK_STORAGE_KEY_V7, '{"classic":true}');
     expect(loadBoardClassicLookV7(storage)).toBe(true);
     expect([...values.keys()]).toEqual([BOARD_CLASSIC_LOOK_STORAGE_KEY_V7]);

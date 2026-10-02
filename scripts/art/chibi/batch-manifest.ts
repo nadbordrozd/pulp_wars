@@ -1068,6 +1068,11 @@ export function batchManifestProblems(
           (!Number.isInteger(rows.trimBottom) || rows.trimBottom < 0)
         )
           problems.push(`${label}: trimBottom must be a non-negative integer`);
+        if (
+          rows.phase !== undefined &&
+          (!Number.isFinite(rows.phase) || rows.phase < 0 || rows.phase >= 1)
+        )
+          problems.push(`${label}: phase must be at least 0 and below 1`);
         if (rows.stamps.length === 0)
           problems.push(`${label}: cropRows needs at least one stamp`);
         for (const stamp of rows.stamps)

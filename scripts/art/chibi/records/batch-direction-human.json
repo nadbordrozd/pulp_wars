@@ -1192,7 +1192,7 @@
     },
     "farm-field-a": {
       "id": "farm-field-a",
-      "asset": "chibi-direction-farm-lettuce",
+      "asset": "chibi-direction-farm",
       "jobId": "sync-6f4894f8-d953-48da-9a7f-769b36b0d4fb",
       "request": {
         "endpoint": "create-image-pixen",
@@ -1272,7 +1272,7 @@
     },
     "farm-field-a-edit": {
       "id": "farm-field-a-edit",
-      "asset": "chibi-direction-farm-lettuce",
+      "asset": "chibi-direction-farm",
       "jobId": "21b800da-d248-44e5-85f0-60a3bf7ae3f8",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -1343,7 +1343,7 @@
     },
     "farm-field-a-edit-2": {
       "id": "farm-field-a-edit-2",
-      "asset": "chibi-direction-farm-lettuce",
+      "asset": "chibi-direction-farm",
       "jobId": "f063ffde-911d-4823-acf5-b816964ede94",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -1855,7 +1855,7 @@
     },
     "leafy-b": {
       "id": "leafy-b",
-      "asset": "chibi-direction-farm-lettuce",
+      "asset": "chibi-direction-farm",
       "jobId": "sync-2a5ca836-1e6f-4021-a3e5-db33be9f7b2f",
       "request": {
         "endpoint": "create-image-pixen",
@@ -1927,15 +1927,15 @@
         "recipe": "leafy-b"
       },
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "Lettuce rows (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The crop-rows derivation stamps a 40 px piece of each of the candidate's four rows (three lettuces) on four rows at a 20 px pitch, every second row moved 7 px along itself; rows are 13 to 14 px tall, so the 6 to 7 px gaps lie on the cell centre and edges and Farms tile without a seam. Colours unchanged.",
+        "notes": "Lettuce rows (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The crop-rows derivation stamps a 40 px piece of each of the candidate's four rows (three lettuces) on four rows at a 20 px pitch, every second row moved 7 px along itself; rows are 13 to 14 px tall, so the 6 to 7 px gaps lie on the cell centre and edges and Farms tile without a seam. Colours unchanged. Retired with chibi-direction-farm-lettuce: The user chose the veggies Farm (bead pulp_wars-9s0.7); the lettuce variant of the comparison is not used.",
         "reviewedAt": "2026-10-02T12:43:33.995Z"
       }
     },
     "leafy-thin-a": {
       "id": "leafy-thin-a",
-      "asset": "chibi-direction-farm-cabbage",
+      "asset": "chibi-direction-farm",
       "jobId": "sync-bdbb9b7f-af59-4889-87f4-241be7bed3a1",
       "request": {
         "endpoint": "create-image-pixen",
@@ -2007,9 +2007,9 @@
         "recipe": "leafy-thin-a"
       },
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "Cabbage rows (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The crop-rows derivation stamps the five cabbages of the candidate's second row 16 px apart with plain soil columns between them, on four rows at a 20 px pitch in a brick pattern, and drops the two bottom lines of soil (trimBottom 2): rows 13 px tall, 7 px gaps on the cell centre and edges, seamless. Colours unchanged.",
+        "notes": "Cabbage rows (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The crop-rows derivation stamps the five cabbages of the candidate's second row 16 px apart with plain soil columns between them, on four rows at a 20 px pitch in a brick pattern, and drops the two bottom lines of soil (trimBottom 2): rows 13 px tall, 7 px gaps on the cell centre and edges, seamless. Colours unchanged. Retired with chibi-direction-farm-cabbage: The user chose the veggies Farm (bead pulp_wars-9s0.7); the cabbage variant of the comparison is not used.",
         "reviewedAt": "2026-10-02T12:53:50.815Z"
       }
     },
@@ -3611,7 +3611,7 @@
     },
     "veg-flux-a": {
       "id": "veg-flux-a",
-      "asset": "chibi-direction-farm-veggies",
+      "asset": "chibi-direction-farm",
       "jobId": "sync-54e03cea-ab93-4c21-83b6-3dd9b794e1c8",
       "request": {
         "endpoint": "create-image-pixflux",
@@ -3692,8 +3692,8 @@
       "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Mixed vegetable beds (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The Pixflux candidate's three raised beds are kept as drawn; the crop-rows derivation spreads the plants of each bed 20 px apart with plain soil columns between them, so every bed runs from edge to edge and Farms tile without a seam. Three beds 21 to 24 px tall leave 4 to 5 px gaps; the middle bed lies on the cell centre, so a Road running east-west is hidden inside the tile. Colours unchanged.",
-        "reviewedAt": "2026-10-02T12:43:36.093Z"
+        "notes": "Mixed vegetable beds, the Farm the user chose (bead pulp_wars-9s0.7: 'let's go with veggies for farms'). The Pixflux candidate's three raised beds are kept as drawn, colours unchanged; the crop-rows derivation spreads the plants of each bed 20 px apart with plain soil columns between them, so every bed runs from edge to edge. The beds stand at a pitch of 80 / 3 px moved down half a pitch (phase 0.5), in the candidate's order starting with its third bed: the two shorter beds lie either side of a 5 px gap on the cell's centre line (y 37 to 41), where an east-west Road shows, and the tallest bed straddles the top and bottom edges, so Farms still tile without a seam and a single Farm ends in part of a bed at its top and bottom.",
+        "reviewedAt": "2026-10-02T14:03:22.811Z"
       }
     },
     "village-a": {
@@ -3911,7 +3911,7 @@
     },
     "wheat-a": {
       "id": "wheat-a",
-      "asset": "chibi-direction-farm-lettuce",
+      "asset": "chibi-direction-farm",
       "jobId": "sync-ac839949-dfdc-4c67-8914-6c7328395a92",
       "request": {
         "endpoint": "create-image-pixen",
@@ -3985,7 +3985,7 @@
     },
     "wheat-a-edit": {
       "id": "wheat-a-edit",
-      "asset": "chibi-direction-farm-lettuce",
+      "asset": "chibi-direction-farm",
       "jobId": "a005e203-acfb-41b2-9b8f-d00310510dc6",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -4517,208 +4517,8 @@
       "notes": "The walled city full of buildings (keep, church, houses, four cone-roofed towers), repainted to the pale sandstone and terracotta red of City 2: one set across the three tiers, the biggest and richest. No plate, no flag.",
       "acceptedAt": "2026-10-02T08:55:02.820Z"
     },
-    "chibi-direction-farm-cabbage": {
-      "id": "chibi-direction-farm-cabbage",
-      "subject": "IMPROVEMENT:FARM",
-      "assetClass": "BUILDING",
-      "status": "ACCEPTED",
-      "recipe": "leafy-thin-a",
-      "candidate": 0,
-      "candidateSha256": "b64e53dfb046c1a5db3942727ecf9ada549dfbd3d9b16296479fa4bd19d26a3f",
-      "master": {
-        "path": "public/assets/chibi/buildings/chibi-direction-farm-cabbage.png",
-        "sha256": "8403926432461c812eaea9daa63d5326c68d35b4951b8464d3374e1b12ecf571",
-        "pixelSha256": "44963ebe8764cc70130890f8514787275eda9483d702a4c5f3a2f4fa7fa02ae9",
-        "width": 80,
-        "height": 80
-      },
-      "derivation": {
-        "kind": "crop-rows",
-        "cropRows": {
-          "rows": 4,
-          "band": 1,
-          "period": 80,
-          "stamps": [
-            {
-              "left": 5,
-              "width": 14,
-              "at": 0
-            },
-            {
-              "left": 4,
-              "width": 1,
-              "at": 14
-            },
-            {
-              "left": 4,
-              "width": 1,
-              "at": 15
-            },
-            {
-              "left": 19,
-              "width": 14,
-              "at": 16
-            },
-            {
-              "left": 4,
-              "width": 1,
-              "at": 30
-            },
-            {
-              "left": 4,
-              "width": 1,
-              "at": 31
-            },
-            {
-              "left": 33,
-              "width": 15,
-              "at": 32
-            },
-            {
-              "left": 4,
-              "width": 1,
-              "at": 47
-            },
-            {
-              "left": 48,
-              "width": 14,
-              "at": 48
-            },
-            {
-              "left": 4,
-              "width": 1,
-              "at": 62
-            },
-            {
-              "left": 4,
-              "width": 1,
-              "at": 63
-            },
-            {
-              "left": 62,
-              "width": 13,
-              "at": 64
-            },
-            {
-              "left": 4,
-              "width": 1,
-              "at": 77
-            },
-            {
-              "left": 4,
-              "width": 1,
-              "at": 78
-            },
-            {
-              "left": 4,
-              "width": 1,
-              "at": 79
-            }
-          ],
-          "rowOffsets": [0, 8, 0, 8],
-          "trimBottom": 2,
-          "saturation": 1,
-          "strawMix": 0
-        }
-      },
-      "anchor": {
-        "x": 40,
-        "y": 40
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "Cabbage rows (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The crop-rows derivation stamps the five cabbages of the candidate's second row 16 px apart with plain soil columns between them, on four rows at a 20 px pitch in a brick pattern, and drops the two bottom lines of soil (trimBottom 2): rows 13 px tall, 7 px gaps on the cell centre and edges, seamless. Colours unchanged.",
-      "acceptedAt": "2026-10-02T12:53:50.815Z"
-    },
-    "chibi-direction-farm-lettuce": {
-      "id": "chibi-direction-farm-lettuce",
-      "subject": "IMPROVEMENT:FARM",
-      "assetClass": "BUILDING",
-      "status": "ACCEPTED",
-      "recipe": "leafy-b",
-      "candidate": 0,
-      "candidateSha256": "74d2c1ff7ebc83849316f1e0b26b14eebd61ffd0e5e4b2452eada80d2cf9665e",
-      "master": {
-        "path": "public/assets/chibi/buildings/chibi-direction-farm-lettuce.png",
-        "sha256": "9aa32923dc277b2ecf1f2b0884c96effd04427eff6bf5cf634b6a32b6c5175ba",
-        "pixelSha256": "cd8e394eb651a8fff73e4dbfb0190ef48cbdcc7ab633ff8463cd925723b6f397",
-        "width": 80,
-        "height": 80
-      },
-      "derivation": {
-        "kind": "crop-rows",
-        "cropRows": {
-          "rows": 4,
-          "band": 0,
-          "period": 40,
-          "stamps": [
-            {
-              "left": 20,
-              "width": 40,
-              "at": 0,
-              "band": 0,
-              "rows": [0]
-            },
-            {
-              "left": 20,
-              "width": 40,
-              "at": 0,
-              "band": 1,
-              "rows": [1]
-            },
-            {
-              "left": 20,
-              "width": 40,
-              "at": 0,
-              "band": 2,
-              "rows": [2]
-            },
-            {
-              "left": 20,
-              "width": 40,
-              "at": 0,
-              "band": 3,
-              "rows": [3]
-            }
-          ],
-          "rowOffsets": [0, 7, 0, 7],
-          "saturation": 1,
-          "strawMix": 0
-        }
-      },
-      "anchor": {
-        "x": 40,
-        "y": 40
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "Lettuce rows (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The crop-rows derivation stamps a 40 px piece of each of the candidate's four rows (three lettuces) on four rows at a 20 px pitch, every second row moved 7 px along itself; rows are 13 to 14 px tall, so the 6 to 7 px gaps lie on the cell centre and edges and Farms tile without a seam. Colours unchanged.",
-      "acceptedAt": "2026-10-02T12:43:33.995Z"
-    },
-    "chibi-direction-farm-veggies": {
-      "id": "chibi-direction-farm-veggies",
+    "chibi-direction-farm": {
+      "id": "chibi-direction-farm",
       "subject": "IMPROVEMENT:FARM",
       "assetClass": "BUILDING",
       "status": "ACCEPTED",
@@ -4726,9 +4526,9 @@
       "candidate": 0,
       "candidateSha256": "99d23ea79dc1291fbd9d1d03b827b32aabda408c17fb0aa15bbd5adb57a331c4",
       "master": {
-        "path": "public/assets/chibi/buildings/chibi-direction-farm-veggies.png",
-        "sha256": "d101fd635ef313e5f5cbea89fe96e52c77a5a5831e01c1fe756a9d756d23cea6",
-        "pixelSha256": "80cd21e4ccd823a9fc2b71766292ebb575fc7c64d4fa27ccc02d49b83bae283e",
+        "path": "public/assets/chibi/buildings/chibi-direction-farm.png",
+        "sha256": "721796d46a5004fe44863a36e9e44f9990eb83cadbbff8ec32c0149c481e1332",
+        "pixelSha256": "77e592c499ff7e6cf72265c8855eb4394d5e0633ccf9dee391360f24f2406c56",
         "width": 80,
         "height": 80
       },
@@ -4744,416 +4544,417 @@
               "width": 1,
               "at": 0,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 1,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 8,
               "width": 16,
               "at": 2,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 18,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 19,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 20,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 21,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 24,
               "width": 16,
               "at": 22,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 38,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 39,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 40,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 41,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 40,
               "width": 16,
               "at": 42,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 58,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 59,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 60,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 61,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 56,
               "width": 16,
               "at": 62,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 78,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 23,
               "width": 1,
               "at": 79,
               "band": 0,
-              "rows": [0]
+              "rows": [1]
             },
             {
               "left": 25,
               "width": 1,
               "at": 0,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 1,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 8,
               "width": 16,
               "at": 2,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 18,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 19,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 20,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 21,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 24,
               "width": 16,
               "at": 22,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 38,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 39,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 40,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 41,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 40,
               "width": 16,
               "at": 42,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 58,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 59,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 60,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 61,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 56,
               "width": 16,
               "at": 62,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 78,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 25,
               "width": 1,
               "at": 79,
               "band": 1,
-              "rows": [1]
+              "rows": [2]
             },
             {
               "left": 57,
               "width": 1,
               "at": 0,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 1,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 2,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 8,
               "width": 32,
               "at": 3,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 35,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 36,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 37,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 38,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 39,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 40,
               "width": 16,
               "at": 40,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 56,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 57,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 58,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 59,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 60,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 56,
               "width": 16,
               "at": 61,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 77,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 78,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             },
             {
               "left": 57,
               "width": 1,
               "at": 79,
               "band": 2,
-              "rows": [2]
+              "rows": [0]
             }
           ],
           "rowOffsets": [0, 0, 0],
+          "phase": 0.5,
           "saturation": 1,
           "strawMix": 0
         }
@@ -5175,8 +4976,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Mixed vegetable beds (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The Pixflux candidate's three raised beds are kept as drawn; the crop-rows derivation spreads the plants of each bed 20 px apart with plain soil columns between them, so every bed runs from edge to edge and Farms tile without a seam. Three beds 21 to 24 px tall leave 4 to 5 px gaps; the middle bed lies on the cell centre, so a Road running east-west is hidden inside the tile. Colours unchanged.",
-      "acceptedAt": "2026-10-02T12:43:36.093Z"
+      "notes": "Mixed vegetable beds, the Farm the user chose (bead pulp_wars-9s0.7: 'let's go with veggies for farms'). The Pixflux candidate's three raised beds are kept as drawn, colours unchanged; the crop-rows derivation spreads the plants of each bed 20 px apart with plain soil columns between them, so every bed runs from edge to edge. The beds stand at a pitch of 80 / 3 px moved down half a pitch (phase 0.5), in the candidate's order starting with its third bed: the two shorter beds lie either side of a 5 px gap on the cell's centre line (y 37 to 41), where an east-west Road shows, and the tallest bed straddles the top and bottom edges, so Farms still tile without a seam and a single Farm ends in part of a bed at its top and bottom.",
+      "acceptedAt": "2026-10-02T14:03:22.811Z"
     },
     "chibi-direction-fighter": {
       "id": "chibi-direction-fighter",

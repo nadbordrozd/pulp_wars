@@ -38,8 +38,7 @@ import {
   type VisualDirectionSampleSetV7,
 } from "../../../src/render/canvas/visual-direction-samples-v7";
 import type { BoardVisualDirectionV7 } from "../../../src/render/canvas/visual-direction-v7";
-import type { FarmCropChoiceV7 } from "../../../src/assets/chibi-direction-art-manifest";
-import { liveDirectionArtRegistryV7 } from "../../../src/render/canvas/live-board-look-v7";
+import { LIVE_DIRECTION_ART_REGISTRY_V7 } from "../../../src/render/canvas/live-board-look-v7";
 
 type Tile = PlayerViewV7["board"]["tiles"][number];
 type Seat = "A" | "B" | "C" | "D";
@@ -52,7 +51,7 @@ export type VisualDirectionSceneKindV7 =
   /** The Human demo's compact patch (bead pulp_wars-3tq.3), see DEMO. */
   | "DEMO"
   | "DEMO_MARKER"
-  /** The Farm comparison patch (bead pulp_wars-9s0.6), see FARMS. */
+  /** The Farm patch (beads pulp_wars-9s0.6 and .7), see FARMS. */
   | "FARMS"
   /** The running match exactly as it is (an all-Human Showcase). */
   | "LIVE";
@@ -386,8 +385,8 @@ const DEMO: readonly (readonly string[])[] = [
 const DEMO_CAPITAL: CoordV7 = { x: 5, y: 4 };
 
 /**
- * FARMS, 11 x 10 cells around the capital (5,5), for comparing the Farm's
- * crops (bead pulp_wars-9s0.6). Columns 3-7 are what a phone shows at zoom
+ * FARMS, 11 x 10 cells around the capital (5,5), for judging the Farm in
+ * play (beads pulp_wars-9s0.6 and .7). Columns 3-7 are what a phone shows at zoom
  * 1: a 3 x 3 block of Farms over Roads running both ways (rows 1-3), single
  * Farms beside cities and buildings (rows 4-5), and a 5 x 3 field with a
  * unit of every player on its first row and Roads under it (rows 6-8).
@@ -783,11 +782,8 @@ export interface VisualDirectionSceneOptionsV7 {
   readonly samples?: readonly ChibiArtAssetV7[];
   /** A named sample set of visual-direction-samples-v7.ts instead. */
   readonly sampleSet?: VisualDirectionSampleSetV7;
-  /**
-   * The game's own direction art with the developer setting "Farm crop" at
-   * this value ("MIXED" is the game's default), instead of a sample set.
-   */
-  readonly farmCrop?: FarmCropChoiceV7;
+  /** The game's own direction art instead of a sample set. */
+  readonly liveArt?: boolean;
 }
 
 /** Mounts a full-screen CHIBI board host over the page showing the scene. */
@@ -841,8 +837,8 @@ export function showVisualDirectionSceneV7(
     ...(options.direction === undefined
       ? {}
       : { visualDirection: options.direction }),
-    ...(options.farmCrop !== undefined
-      ? { visualDirectionArt: liveDirectionArtRegistryV7(options.farmCrop) }
+    ...(options.liveArt === true
+      ? { visualDirectionArt: LIVE_DIRECTION_ART_REGISTRY_V7 }
       : samples === undefined
         ? {}
         : { visualDirectionArt: samples.registry }),

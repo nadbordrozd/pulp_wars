@@ -5,11 +5,10 @@
  *   CHROME_PATH=... npm run art:chibi-direction-review -- [--port 6471] [--skip-capture]
  *   CHROME_PATH=... npm run art:chibi-direction-review -- --farms-only --out DIR
  *
- * `--farms-only` writes only the `ingame-farms-*` captures, into DIR
- * (default: the review directory), for all four "Farm crop" settings at
- * both viewports and zoom steps (16 files), and leaves the sheets and
- * index.json alone: a comparison of the Farm's crops, or a quick look at a
- * Farm candidate copied over a master (beads pulp_wars-9s0.3 and .6).
+ * `--farms-only` writes only the four `ingame-farms-*` captures, into DIR
+ * (default: the review directory), and leaves the sheets and index.json
+ * alone: a quick look at a Farm candidate copied over the master (beads
+ * pulp_wars-9s0.3, .6 and .7).
  *
  * It writes art/pixellab/reviews/chibi-batch-direction-human/:
  *
@@ -23,9 +22,8 @@
  *                                    the Mine (today and toned)
  *   cities-{1x,x4}.png               City 1-3 old and new, with the pennant
  *                                    drawn at its recorded anchor
- *   farm-crops.png                   the Farm's three crops: each tile at x4,
- *                                    a 3 x 3 block of each and a mixed block
- *                                    at x2 with the cell boundaries marked
+ *   farm-x4.png                      the Farm tile at x4 and a 3 x 3 block of
+ *                                    it at x2 with the cell boundaries marked
  *   showcase-{human,mixed}-{desktop,phone}-zoom-{1,0.75}.png
  *                                    a real Showcase match in the default
  *                                    look (bead pulp_wars-3tq.6): every seat
@@ -39,13 +37,9 @@
  *                                    the FARMS patch of
  *                                    scripts/art/visual-direction/scene.ts
  *                                    drawn by the real board host as the
- *                                    game draws it, crops mixed: a 3 x 3
- *                                    Farm block over Roads, single Farms
- *                                    beside cities and buildings, a field
- *                                    under units
- *   ingame-farms-{lettuce,cabbage,veggies}-desktop-zoom-1.png
- *                                    the same patch with the developer
- *                                    setting "Farm crop" forcing one crop
+ *                                    game draws it: a 3 x 3 Farm block over
+ *                                    Roads, single Farms beside cities and
+ *                                    buildings, a field under units
  *   index.json                       sizes and hashes
  *
  * No PixelLab call is made. Captures start Vite on --port (never 6173).
@@ -99,9 +93,6 @@ const IMPROVEMENTS = [
   ["Port", "port", "water"],
   ["Shipyard", "shipyard", "water"],
 ] as const;
-
-/** The Farm's crops, in the order the comparison shows them. */
-const FARM_CROPS = ["lettuce", "cabbage", "veggies"] as const;
 
 const BACKGROUNDS = {
   grass: "rgb(137,183,91)",
@@ -391,20 +382,11 @@ async function sheets(directory: string): Promise<string[]> {
           label: "today",
           background,
         },
-        // The Farm has three crops under comparison (bead pulp_wars-9s0.6).
-        ...(name === "farm"
-          ? FARM_CROPS.map((crop) => ({
-              image: master(`chibi-direction-farm-${crop}`),
-              label: `new: ${crop}`,
-              background,
-            }))
-          : [
-              {
-                image: master(`chibi-direction-${name}`),
-                label: "new",
-                background,
-              },
-            ]),
+        {
+          image: master(`chibi-direction-${name}`),
+          label: "new",
+          background,
+        },
       ],
     })),
     {
@@ -483,40 +465,21 @@ async function sheets(directory: string): Promise<string[]> {
       ),
     );
 
-  // The Farm's three crops (bead pulp_wars-9s0.6): each tile at x4, under it
-  // a 3 x 3 block of that crop at x2 with the cell boundaries marked, and a
-  // fourth block mixed as the game mixes them, by the tile's coordinates.
+  // The Farm (bead pulp_wars-9s0.7): the tile at x4 and beside it a 3 x 3
+  // block at x2 with the cell boundaries marked, to check the seams.
   const tileScale = 4;
   const blockScale = 2;
   const block = 3 * TILE * blockScale;
-  const column = block + GAP;
-  const crops = await Promise.all(
-    FARM_CROPS.map(async (crop) => {
-      const id = `chibi-direction-farm-${crop}`;
-      const png = await sharp(path.join(ROOT, master(id)))
-        .png()
-        .toBuffer();
-      const enlarged = (factor: number): Promise<Buffer> =>
-        sharp(png)
-          .resize(TILE * factor, TILE * factor, { kernel: "nearest" })
-          .png()
-          .toBuffer();
-      return {
-        crop,
-        id,
-        tile: await enlarged(tileScale),
-        cell: await enlarged(blockScale),
-      };
-    }),
-  );
-  // The runtime's variant order (the manifest lists the Farm assets by id)
-  // and its hash (chibiVariantV7); the manifest itself needs Vite.
-  const variants = [...crops].sort((a, b) => a.id.localeCompare(b.id));
-  const mixedCell = (x: number, y: number): Buffer => {
-    const found = variants[(x * 31 + y * 17) % variants.length];
-    if (found === undefined) throw new Error("a Farm variant has no master");
-    return found.cell;
-  };
+  const farmPng = await sharp(path.join(ROOT, master("chibi-direction-farm")))
+    .png()
+    .toBuffer();
+  const enlarged = (factor: number): Promise<Buffer> =>
+    sharp(farmPng)
+      .resize(TILE * factor, TILE * factor, { kernel: "nearest" })
+      .png()
+      .toBuffer();
+  const farmTile = await enlarged(tileScale);
+  const farmCell = await enlarged(blockScale);
   const ticks: string[] = [];
   for (const edge of [1, 2])
     for (const side of [0, block - 6 * blockScale])
@@ -527,21 +490,10 @@ async function sheets(directory: string): Promise<string[]> {
   const tickLayer = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${block}" height="${block}">${ticks.join("")}</svg>`,
   );
-  const sheetWidth = 4 * column + GAP;
-  const blockTop = LABEL_HEIGHT + TILE * tileScale + GAP + LABEL_HEIGHT;
-  const sheetHeight = blockTop + block + GAP;
-  const titles = [...FARM_CROPS, "mixed: the crop of each tile's coordinates"];
-  const backdrop = [
-    ...titles.map(
-      (title, index) =>
-        `<text x="${GAP + index * column}" y="${LABEL_HEIGHT - 6}" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#f4efe1">${escapeXml(title)}</text><rect x="${GAP + index * column}" y="${blockTop}" width="${block}" height="${block}" fill="${BACKGROUNDS.grass}"/>`,
-    ),
-    ...FARM_CROPS.map(
-      (_, index) =>
-        `<rect x="${GAP + index * column}" y="${LABEL_HEIGHT}" width="${TILE * tileScale}" height="${TILE * tileScale}" fill="${BACKGROUNDS.grass}"/>`,
-    ),
-  ];
-  const farmFile = path.join(directory, "farm-crops.png");
+  const blockLeft = GAP + TILE * tileScale + GAP;
+  const sheetWidth = blockLeft + block + GAP;
+  const sheetHeight = GAP + block + GAP;
+  const farmFile = path.join(directory, "farm-x4.png");
   await sharp({
     create: {
       width: sheetWidth,
@@ -553,30 +505,20 @@ async function sheets(directory: string): Promise<string[]> {
     .composite([
       {
         input: Buffer.from(
-          `<svg xmlns="http://www.w3.org/2000/svg" width="${sheetWidth}" height="${sheetHeight}">${backdrop.join("")}</svg>`,
+          `<svg xmlns="http://www.w3.org/2000/svg" width="${sheetWidth}" height="${sheetHeight}"><rect x="${GAP}" y="${GAP}" width="${TILE * tileScale}" height="${TILE * tileScale}" fill="${BACKGROUNDS.grass}"/><rect x="${blockLeft}" y="${GAP}" width="${block}" height="${block}" fill="${BACKGROUNDS.grass}"/></svg>`,
         ),
         left: 0,
         top: 0,
       },
-      ...crops.map((entry, index) => ({
-        input: entry.tile,
-        left: GAP + index * column,
-        top: LABEL_HEIGHT,
-      })),
-      ...[0, 1, 2, 3].flatMap((index) =>
-        [0, 1, 2].flatMap((y) =>
-          [0, 1, 2].map((x) => ({
-            input: crops[index]?.cell ?? mixedCell(x, y),
-            left: GAP + index * column + x * TILE * blockScale,
-            top: blockTop + y * TILE * blockScale,
-          })),
-        ),
+      { input: farmTile, left: GAP, top: GAP },
+      ...[0, 1, 2].flatMap((y) =>
+        [0, 1, 2].map((x) => ({
+          input: farmCell,
+          left: blockLeft + x * TILE * blockScale,
+          top: GAP + y * TILE * blockScale,
+        })),
       ),
-      ...[0, 1, 2, 3].map((index) => ({
-        input: tickLayer,
-        left: GAP + index * column,
-        top: blockTop,
-      })),
+      { input: tickLayer, left: blockLeft, top: GAP },
     ])
     .png({ compressionLevel: 9 })
     .toFile(farmFile);
@@ -888,42 +830,31 @@ async function captures(
           );
           await pressKey(connection, "Escape");
         }
-        // The Farm patch with the game's own art (bead pulp_wars-9s0.6): a
-        // 3 x 3 Farm block over Roads, single Farms beside cities and
-        // buildings, and a field under units. First as the game mixes the
-        // crops, then with the developer setting "Farm crop" forcing each.
-        for (const crop of ["MIXED", "LETTUCE", "CABBAGE", "VEGGIES"]) {
-          const forced = crop !== "MIXED";
-          const steps =
-            farmsOnly || !forced
-              ? ["1", "0.75"]
-              : viewport.name === "desktop"
-                ? ["1"]
-                : [];
-          if (steps.length === 0) continue;
-          await evaluate(
-            connection,
-            `(async () => { const scene = await import('/scripts/art/visual-direction/scene.ts'); const direction = await import('/src/render/canvas/visual-direction-v7.ts'); ${SCENE} = scene.showVisualDirectionSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, { kind: 'FARMS', direction: direction.LIVE_DIRECTION_V7, farmCrop: ${JSON.stringify(crop)} }); return true; })()`,
-          );
-          await waitFor(connection, `${SCENE} !== undefined`);
-          for (const step of steps) {
-            await zoomTo(connection, step, true);
-            await delay(700);
-            files.push(
-              await screenshot(
-                connection,
-                path.join(
-                  directory,
-                  `ingame-farms-${forced ? `${crop.toLowerCase()}-` : ""}${viewport.name}-zoom-${step}.png`,
-                ),
+        // The Farm patch with the game's own art (beads pulp_wars-9s0.6 and
+        // .7): a 3 x 3 Farm block over Roads, single Farms beside cities and
+        // buildings, and a field under units.
+        await evaluate(
+          connection,
+          `(async () => { const scene = await import('/scripts/art/visual-direction/scene.ts'); const direction = await import('/src/render/canvas/visual-direction-v7.ts'); ${SCENE} = scene.showVisualDirectionSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, { kind: 'FARMS', direction: direction.LIVE_DIRECTION_V7, liveArt: true }); return true; })()`,
+        );
+        await waitFor(connection, `${SCENE} !== undefined`);
+        for (const step of ["1", "0.75"]) {
+          await zoomTo(connection, step, true);
+          await delay(700);
+          files.push(
+            await screenshot(
+              connection,
+              path.join(
+                directory,
+                `ingame-farms-${viewport.name}-zoom-${step}.png`,
               ),
-            );
-          }
-          await evaluate(
-            connection,
-            `(() => { ${SCENE}.host.destroy(); document.querySelector('[data-chibi-review-scene]')?.remove(); delete ${SCENE}; return true; })()`,
+            ),
           );
         }
+        await evaluate(
+          connection,
+          `(() => { ${SCENE}.host.destroy(); document.querySelector('[data-chibi-review-scene]')?.remove(); delete ${SCENE}; return true; })()`,
+        );
       }
       if (viewport.name === "desktop" && !farmsOnly) {
         // The same all-Human match in the classic look (the previous art).
@@ -1015,7 +946,7 @@ async function main(): Promise<void> {
       stopDevServer(server);
     }
     captureNote =
-      "showcase-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look (the new visual direction, bead pulp_wars-3tq.6); 'human' is every seat Human, 'mixed' is Human, Undead, Goblin and Dinosaur; 'today' is the same all-Human match with Settings > Developer tools > Classic look (previous art) ON. ingame-farms-*: the FARMS patch of scripts/art/visual-direction/scene.ts drawn by the real board host with the live direction and the game's own art; the Farm's three crops are mixed by tile coordinates as in play (bead pulp_wars-9s0.6), and ingame-farms-{lettuce,cabbage,veggies}-* force one crop as the developer setting 'Farm crop' does.";
+      "showcase-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look (the new visual direction, bead pulp_wars-3tq.6); 'human' is every seat Human, 'mixed' is Human, Undead, Goblin and Dinosaur; 'today' is the same all-Human match with Settings > Developer tools > Classic look (previous art) ON. ingame-farms-*: the FARMS patch of scripts/art/visual-direction/scene.ts drawn by the real board host with the live direction and the game's own art; the Farm is the vegetable beds the user chose (bead pulp_wars-9s0.7).";
   }
   const images = await Promise.all(
     outputs.map(async (file) => {
