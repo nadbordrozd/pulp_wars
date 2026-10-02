@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-edit-i",
+  "jobId": "3e78229f-b9d3-4bce-bfa2-549d9e0a23c5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 79209,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colour of the wood: the cart's pale golden planks and wheels become a darker, medium warm red-brown like old walnut, with dark brown gaps between the planks; not golden, not near-black. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, the cart and wheel shapes, the little goblin with his green skin, orange cap and match, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colour of the wood: the cart's pale golden planks and wheels become a darker, medium warm red-brown like old walnut, with dark brown gaps between the planks; not golden, not near-black. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, the cart and wheel shapes, the little goblin with his green skin, orange cap and match, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colour of the wood: the cart's pale golden planks and wheels become a darker, medium warm red-brown like old walnut, with dark brown gaps between the planks; not golden, not near-black. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, the cart and wheel shapes, the little goblin with his green skin, orange cap and match, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only the colour of the wood: the cart's pale golden planks and wheels become a darker, medium warm red-brown like old walnut, with dark brown gaps between the planks; not golden, not near-black. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, the cart and wheel shapes, the little goblin with his green skin, orange cap and match, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "fireworks-cart-edit-h",
+      "candidate": 0,
+      "sha256": "a2aa810ad114ad1cd831130cb941502ce3b8974454fc7d39f4211f4b80ddf25d"
+    }
+  }
+}

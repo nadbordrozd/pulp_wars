@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-edit-f",
+  "jobId": "03aab650-917d-476a-b48f-05e9b07f5156",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 79206,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the cart shorter: the wooden cart becomes a short two-wheeled hand cart, only as long as the bundle of rockets is wide, with one big wheel, and the little goblin stands right against it. The whole image becomes clearly narrower and stays centred. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, plank wood, the goblin's green skin and orange cap, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Make the cart shorter: the wooden cart becomes a short two-wheeled hand cart, only as long as the bundle of rockets is wide, with one big wheel, and the little goblin stands right against it. The whole image becomes clearly narrower and stays centred. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, plank wood, the goblin's green skin and orange cap, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the cart shorter: the wooden cart becomes a short two-wheeled hand cart, only as long as the bundle of rockets is wide, with one big wheel, and the little goblin stands right against it. The whole image becomes clearly narrower and stays centred. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, plank wood, the goblin's green skin and orange cap, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Make the cart shorter: the wooden cart becomes a short two-wheeled hand cart, only as long as the bundle of rockets is wide, with one big wheel, and the little goblin stands right against it. The whole image becomes clearly narrower and stays centred. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, plank wood, the goblin's green skin and orange cap, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "fireworks-cart-edit-c",
+      "candidate": 0,
+      "sha256": "3e2df2c9a57f8a7ab279a6aca1572d4408c3b2d0090dba1f63e9fbd5a6cdfe8c"
+    }
+  }
+}

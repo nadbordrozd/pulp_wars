@@ -1,0 +1,36 @@
+{
+  "id": "bomb-chucker-leather-edit-c",
+  "jobId": "d0ff1112-8be3-497c-bb75-ef3a1f274390",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79103,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change his clothes and skin: take off the dark leather tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and one orange-brown leather strap across the chest to the satchel. His skin a deeper, darker true goblin green, not yellow. Keep the rusted pot helmet and goggles, the face, ears, the raised bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style the same."
+      }
+    ],
+    "prompt": "Change his clothes and skin: take off the dark leather tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and one orange-brown leather strap across the chest to the satchel. His skin a deeper, darker true goblin green, not yellow. Keep the rusted pot helmet and goggles, the face, ears, the raised bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style the same.",
+    "negativePrompt": "",
+    "description": "Change his clothes and skin: take off the dark leather tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and one orange-brown leather strap across the chest to the satchel. His skin a deeper, darker true goblin green, not yellow. Keep the rusted pot helmet and goggles, the face, ears, the raised bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style the same.",
+    "editInstruction": "Change his clothes and skin: take off the dark leather tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and one orange-brown leather strap across the chest to the satchel. His skin a deeper, darker true goblin green, not yellow. Keep the rusted pot helmet and goggles, the face, ears, the raised bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style the same.",
+    "source": {
+      "recipe": "bomb-chucker-scrap-edit-e",
+      "candidate": 0,
+      "sha256": "7422665bee1e0434dbb03c3b82a6a3883129db1ee5e6de737c77f31570943f6c"
+    }
+  }
+}

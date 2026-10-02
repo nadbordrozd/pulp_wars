@@ -1,6 +1,7 @@
 /**
  * Cuts the Goblin direction study's sample sprites out of its PixelLab
- * candidates (bead pulp_wars-3tq.8): the chosen candidate of each recipe in
+ * candidates (beads pulp_wars-3tq.8, pass 1, and pulp_wars-3tq.10, pass 2):
+ * the chosen candidate of each recipe in
  * art/explorations/goblin-direction-2026-10/raw becomes a master under
  * assets/, and samples.json lists them as chibi assets for the study's
  * review bench. Nothing is registered as production art, and no PixelLab
@@ -9,7 +10,10 @@
  *   npx tsx scripts/art/goblin-direction/samples.ts
  *
  * The samples wear fixed faction colours: no owner area and no mask
- * (`fixedColours`), like the Human direction units.
+ * (`fixedColours`), like the Human direction units. Pass 1 samples are
+ * `chibi-study-*` (near-black leather, a striped black rocket); pass 2
+ * samples are `chibi-study2-*` (orange-brown leather loincloths, a fireworks
+ * cart).
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -35,7 +39,11 @@ interface SampleSpec {
   readonly note: string;
 }
 
-/** The reviewed choice per unit, and the alternatives the review shows. */
+/** The pass of a sample, from its id. */
+export const goblinStudyPass = (id: string): 1 | 2 =>
+  id.startsWith("chibi-study2-") ? 2 : 1;
+
+/** The reviewed choice per unit and pass, and the alternatives shown. */
 export const GOBLIN_STUDY_SAMPLES: readonly SampleSpec[] = [
   {
     id: "chibi-study-goblin",
@@ -127,6 +135,121 @@ export const GOBLIN_STUDY_SAMPLES: readonly SampleSpec[] = [
     role: "alternative",
     note: "scrap-iron rocket with spiral stripes",
   },
+  // Pass 2 (bead pulp_wars-3tq.10).
+  {
+    id: "chibi-study2-goblin",
+    subject: "UNIT:GOBLIN:FIGHTER",
+    assetClass: "STANDARD_UNIT",
+    recipe: "goblin-leather-edit-k",
+    candidate: 0,
+    width: 56,
+    height: 80,
+    role: "chosen",
+    note: "leather cap, crossed straps, loincloth; no stripe",
+  },
+  {
+    id: "chibi-study2-bomb-chucker",
+    subject: "UNIT:GOBLIN:MARKSMAN",
+    assetClass: "STANDARD_UNIT",
+    recipe: "bomb-chucker-leather-edit-f",
+    candidate: 0,
+    width: 56,
+    height: 80,
+    role: "chosen",
+    note: "leather flying cap, straps, loincloth; striped bomb",
+  },
+  {
+    id: "chibi-study2-fireworks-cart",
+    subject: "UNIT:GOBLIN:CATAPULT",
+    assetClass: "LARGE_UNIT",
+    recipe: "fireworks-cart-edit-h",
+    candidate: 0,
+    width: 72,
+    height: 88,
+    anchor: { x: 34, y: 48 },
+    role: "chosen",
+    note: "five paper rockets on a pale plank cart, crew riding",
+  },
+  {
+    id: "chibi-study2-goblin-green",
+    subject: "UNIT:GOBLIN:FIGHTER",
+    assetClass: "STANDARD_UNIT",
+    recipe: "goblin-leather-edit-j",
+    candidate: 0,
+    width: 56,
+    height: 80,
+    role: "alternative",
+    note: "leaf green skin; headband, one strap; no stripe",
+  },
+  {
+    id: "chibi-study2-goblin-striped",
+    subject: "UNIT:GOBLIN:FIGHTER",
+    assetClass: "STANDARD_UNIT",
+    recipe: "goblin-leather-edit-m",
+    candidate: 0,
+    width: 56,
+    height: 80,
+    role: "alternative",
+    note: "the leaf green Goblin with one hazard-striped shoulder pad",
+  },
+  {
+    id: "chibi-study2-bomb-chucker-helmet",
+    subject: "UNIT:GOBLIN:MARKSMAN",
+    assetClass: "STANDARD_UNIT",
+    recipe: "bomb-chucker-leather-edit-e",
+    candidate: 0,
+    width: 56,
+    height: 80,
+    role: "alternative",
+    note: "the rusted pot helmet of pass 1",
+  },
+  {
+    id: "chibi-study2-bomb-chucker-bright",
+    subject: "UNIT:GOBLIN:MARKSMAN",
+    assetClass: "STANDARD_UNIT",
+    recipe: "bomb-chucker-leather-edit-k",
+    candidate: 0,
+    width: 56,
+    height: 80,
+    role: "alternative",
+    note: "leather cap, a brighter yellow-green skin",
+  },
+  {
+    id: "chibi-study2-fireworks-cart-dark",
+    subject: "UNIT:GOBLIN:CATAPULT",
+    assetClass: "LARGE_UNIT",
+    recipe: "fireworks-cart-edit-g",
+    candidate: 0,
+    width: 72,
+    height: 88,
+    anchor: { x: 34, y: 48 },
+    role: "alternative",
+    note: "the same cart in near-black brown planks",
+  },
+  {
+    id: "chibi-study2-fireworks-cart-walnut",
+    subject: "UNIT:GOBLIN:CATAPULT",
+    assetClass: "LARGE_UNIT",
+    recipe: "fireworks-cart-edit-i",
+    candidate: 0,
+    width: 72,
+    height: 88,
+    anchor: { x: 34, y: 48 },
+    role: "alternative",
+    note: "red-brown planks, a sparkler fuse",
+  },
+  {
+    id: "chibi-study2-fireworks-cart-ground",
+    subject: "UNIT:GOBLIN:CATAPULT",
+    assetClass: "LARGE_UNIT",
+    recipe: "fireworks-cart-edit-c",
+    candidate: 0,
+    width: 72,
+    height: 88,
+    anchor: { x: 34, y: 48 },
+    role: "alternative",
+    note: "dark planks, crew beside the cart (60 px wide)",
+  },
 ];
 
 async function png(
@@ -175,6 +298,7 @@ async function main(): Promise<void> {
       ...(sample.anchor === undefined ? {} : { anchor: sample.anchor }),
       url: `/${GOBLIN_STUDY_RUN}/assets/${sample.id}.png`,
       fixedColours: true,
+      pass: goblinStudyPass(sample.id),
       role: sample.role,
       recipe: sample.recipe,
       candidate: sample.candidate,
@@ -185,8 +309,8 @@ async function main(): Promise<void> {
     path.join(ROOT, GOBLIN_STUDY_RUN, "samples.json"),
     `${JSON.stringify(
       {
-        bead: "pulp_wars-3tq.8",
-        note: "Exploration sample sprites of the Goblin direction study. The URLs are served by the Vite dev server from the repository root; nothing here is registered as production art.",
+        bead: "pulp_wars-3tq.10",
+        note: "Exploration sample sprites of the Goblin direction study, pass 1 (bead pulp_wars-3tq.8, chibi-study-*) and pass 2 (bead pulp_wars-3tq.10, chibi-study2-*). The URLs are served by the Vite dev server from the repository root; nothing here is registered as production art.",
         assets,
       },
       null,

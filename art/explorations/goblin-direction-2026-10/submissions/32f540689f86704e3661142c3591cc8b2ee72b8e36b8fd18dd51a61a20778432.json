@@ -1,0 +1,36 @@
+{
+  "id": "goblin-leather-edit-h",
+  "jobId": "3ffba6fd-b7b0-4b55-bf1b-056fc57b6d5c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79008,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a little lighter and greener, a medium leaf green with a slightly darker green shadow tone, less brown and less olive. Keep the same shapes. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a little lighter and greener, a medium leaf green with a slightly darker green shadow tone, less brown and less olive. Keep the same shapes. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a little lighter and greener, a medium leaf green with a slightly darker green shadow tone, less brown and less olive. Keep the same shapes. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a little lighter and greener, a medium leaf green with a slightly darker green shadow tone, less brown and less olive. Keep the same shapes. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "goblin-leather-edit-f",
+      "candidate": 0,
+      "sha256": "47cc152ac60ea23cbb5676f1d4b3e7343bf3d0bfd0f390427659126ab0f29dc3"
+    }
+  }
+}

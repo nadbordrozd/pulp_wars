@@ -1,0 +1,36 @@
+{
+  "id": "goblin-leather-edit-f",
+  "jobId": "d4e5da96-9758-4d7f-a02c-63c138179b51",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79006,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his skin colour: the face, ears, chest, belly, arms, hands, legs and feet become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face and body are clearly visible; not black, not yellow. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his skin colour: the face, ears, chest, belly, arms, hands, legs and feet become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face and body are clearly visible; not black, not yellow. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his skin colour: the face, ears, chest, belly, arms, hands, legs and feet become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face and body are clearly visible; not black, not yellow. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only his skin colour: the face, ears, chest, belly, arms, hands, legs and feet become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face and body are clearly visible; not black, not yellow. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "goblin-leather-edit-a",
+      "candidate": 0,
+      "sha256": "80c0f29d6d864373ea1b10b329474c5901cd40d00e91fedbd4342f8be8a7baf0"
+    }
+  }
+}

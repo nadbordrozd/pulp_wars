@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-edit-d",
+  "jobId": "9f7f1634-8aaa-43a8-88b3-0967aee4378d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 79204,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make it narrower and more compact: the wooden cart becomes a short small two-wheeled hand cart, about three quarters as long, and the bundle of five rockets stands more upright and closer together over the middle of the cart. The little goblin's face, ears and hands become medium true green skin and he sits close against the cart. Keep the rocket colours, cream cones, sticks, rope, the goblin's orange cap, thick black outline and art style, centred on a transparent background."
+      }
+    ],
+    "prompt": "Make it narrower and more compact: the wooden cart becomes a short small two-wheeled hand cart, about three quarters as long, and the bundle of five rockets stands more upright and closer together over the middle of the cart. The little goblin's face, ears and hands become medium true green skin and he sits close against the cart. Keep the rocket colours, cream cones, sticks, rope, the goblin's orange cap, thick black outline and art style, centred on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make it narrower and more compact: the wooden cart becomes a short small two-wheeled hand cart, about three quarters as long, and the bundle of five rockets stands more upright and closer together over the middle of the cart. The little goblin's face, ears and hands become medium true green skin and he sits close against the cart. Keep the rocket colours, cream cones, sticks, rope, the goblin's orange cap, thick black outline and art style, centred on a transparent background.",
+    "editInstruction": "Make it narrower and more compact: the wooden cart becomes a short small two-wheeled hand cart, about three quarters as long, and the bundle of five rockets stands more upright and closer together over the middle of the cart. The little goblin's face, ears and hands become medium true green skin and he sits close against the cart. Keep the rocket colours, cream cones, sticks, rope, the goblin's orange cap, thick black outline and art style, centred on a transparent background.",
+    "source": {
+      "recipe": "fireworks-cart-edit-a",
+      "candidate": 0,
+      "sha256": "b0e7654312bc90157d4a8ea985fe23124e0e279d11c039351f4dc281e9c9fa3a"
+    }
+  }
+}

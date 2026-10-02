@@ -1,0 +1,36 @@
+{
+  "id": "goblin-leather-edit-k",
+  "jobId": "fbb78a62-4c3d-45ff-b4e5-865f3d9694b0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79011,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes clearly lighter, a mid-tone leaf green, with the shadow tone only a little darker than the light tone, so the arms and legs are not dark; not yellow, not pale. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes clearly lighter, a mid-tone leaf green, with the shadow tone only a little darker than the light tone, so the arms and legs are not dark; not yellow, not pale. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes clearly lighter, a mid-tone leaf green, with the shadow tone only a little darker than the light tone, so the arms and legs are not dark; not yellow, not pale. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes clearly lighter, a mid-tone leaf green, with the shadow tone only a little darker than the light tone, so the arms and legs are not dark; not yellow, not pale. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "goblin-leather-edit-g",
+      "candidate": 0,
+      "sha256": "9058fd6387b000f5c99225fc82a02b8e7de7cbe52fdc009c1e95afea0cbe2885"
+    }
+  }
+}

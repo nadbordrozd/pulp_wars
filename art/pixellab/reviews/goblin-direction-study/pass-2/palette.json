@@ -1,0 +1,114 @@
+{
+  "bead": "pulp_wars-3tq.10",
+  "note": "Measured on the three chosen pass 2 sprites pooled: share of opaque pixels and the three commonest colours of each role. The fuse spark and the orange rocket paper are the same orange as the leather and are counted with it.",
+  "roles": {
+    "cream": {
+      "label": "paper cones, teeth",
+      "share": "2.4%",
+      "colours": [
+        "#fee182",
+        "#fef1b7",
+        "#ffffff"
+      ]
+    },
+    "yellow": {
+      "label": "yellow: bomb stripe, rocket paper",
+      "share": "1.5%",
+      "colours": [
+        "#fbc208",
+        "#ffc100",
+        "#ffbe00"
+      ]
+    },
+    "wood": {
+      "label": "planks, sticks, rope",
+      "share": "10.6%",
+      "colours": [
+        "#ac700f",
+        "#fbba55",
+        "#ce9435"
+      ]
+    },
+    "leather": {
+      "label": "orange-brown leather (also spark, orange paper)",
+      "share": "6.2%",
+      "colours": [
+        "#ca4d02",
+        "#e66607",
+        "#fc5600"
+      ]
+    },
+    "leatherShadow": {
+      "label": "leather shadow",
+      "share": "11.1%",
+      "colours": [
+        "#7e2602",
+        "#953605",
+        "#552105"
+      ]
+    },
+    "skin": {
+      "label": "skin",
+      "share": "5.6%",
+      "colours": [
+        "#929f2f",
+        "#8e9a35",
+        "#8b9632"
+      ]
+    },
+    "skinShadow": {
+      "label": "skin shadow",
+      "share": "11%",
+      "colours": [
+        "#4b560f",
+        "#4f5a11",
+        "#313a05"
+      ]
+    },
+    "metal": {
+      "label": "gunmetal",
+      "share": "3.5%",
+      "colours": [
+        "#687a8e",
+        "#909fb5",
+        "#3a4759"
+      ]
+    },
+    "paperRed": {
+      "label": "red rocket paper",
+      "share": "1.3%",
+      "colours": [
+        "#e00c02",
+        "#810110",
+        "#9f0e05"
+      ]
+    },
+    "paperBlue": {
+      "label": "blue rocket paper",
+      "share": "1.9%",
+      "colours": [
+        "#075c93",
+        "#012d5b",
+        "#1e8cca"
+      ]
+    },
+    "paperGreen": {
+      "label": "green rocket paper",
+      "share": "1.3%",
+      "colours": [
+        "#27781c",
+        "#154d11",
+        "#26711a"
+      ]
+    },
+    "dark": {
+      "label": "near-black (bomb, belt, gaps)",
+      "share": "12%",
+      "colours": [
+        "#151b1e",
+        "#2b2f36",
+        "#350e01"
+      ]
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "goblin-leather-edit-m",
+  "jobId": "a2c5208b-4db7-4003-bcfb-647dcc635b02",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79013,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one thing: a small black iron shoulder pad with three bold hazard yellow diagonal stripes and a rusty rim on his shoulder, where the chest strap meets it. Do not touch his head, skin or ears. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the green skin, belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one thing: a small black iron shoulder pad with three bold hazard yellow diagonal stripes and a rusty rim on his shoulder, where the chest strap meets it. Do not touch his head, skin or ears. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the green skin, belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one thing: a small black iron shoulder pad with three bold hazard yellow diagonal stripes and a rusty rim on his shoulder, where the chest strap meets it. Do not touch his head, skin or ears. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the green skin, belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Add only one thing: a small black iron shoulder pad with three bold hazard yellow diagonal stripes and a rusty rim on his shoulder, where the chest strap meets it. Do not touch his head, skin or ears. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the green skin, belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "goblin-leather-edit-j",
+      "candidate": 0,
+      "sha256": "13bd4507d2071de380734a6a2536236eeeb9b77ef2d2c46b27fb488dd091289a"
+    }
+  }
+}

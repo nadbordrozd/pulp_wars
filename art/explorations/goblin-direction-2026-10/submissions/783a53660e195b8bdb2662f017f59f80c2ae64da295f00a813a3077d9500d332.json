@@ -1,0 +1,36 @@
+{
+  "id": "goblin-leather-edit-a",
+  "jobId": "8e753784-4187-4e34-b5a6-f4dcdad59c26",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79001,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change his clothes and skin: take off the brown tunic so his chest, belly, arms and legs are bare skin; he wears only a short orange-brown leather loincloth and one orange-brown leather strap across the chest; the striped headband becomes a plain orange-brown leather headband; orange-brown leather wrist wraps. His skin a deeper, darker true goblin green. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change his clothes and skin: take off the brown tunic so his chest, belly, arms and legs are bare skin; he wears only a short orange-brown leather loincloth and one orange-brown leather strap across the chest; the striped headband becomes a plain orange-brown leather headband; orange-brown leather wrist wraps. His skin a deeper, darker true goblin green. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change his clothes and skin: take off the brown tunic so his chest, belly, arms and legs are bare skin; he wears only a short orange-brown leather loincloth and one orange-brown leather strap across the chest; the striped headband becomes a plain orange-brown leather headband; orange-brown leather wrist wraps. His skin a deeper, darker true goblin green. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change his clothes and skin: take off the brown tunic so his chest, belly, arms and legs are bare skin; he wears only a short orange-brown leather loincloth and one orange-brown leather strap across the chest; the striped headband becomes a plain orange-brown leather headband; orange-brown leather wrist wraps. His skin a deeper, darker true goblin green. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "goblin-scrap-edit-b",
+      "candidate": 0,
+      "sha256": "a10aeebf4e36729fd3cb677634749c700086c6b8f75f7bae4f675f9cf4722c59"
+    }
+  }
+}

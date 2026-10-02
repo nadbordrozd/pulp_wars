@@ -1,0 +1,36 @@
+{
+  "id": "bomb-chucker-leather-edit-k",
+  "jobId": "124e22ac-2ffe-4af2-8baa-bc4ddc719d40",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the hue of his skin: the face, ears, chest, belly, arms and legs turn from olive to a fresh frog green, a clear mid-tone green like a green apple leaf, with a slightly darker green shadow; the same brightness as now, not darker, not yellow. Keep everything else exactly the same: the orange-brown leather cap and goggles, straps and loincloth, the bomb with its yellow stripes and spark, the satchel, gloves, boots, pose, proportions, black outline and art style."
+      }
+    ],
+    "prompt": "Change only the hue of his skin: the face, ears, chest, belly, arms and legs turn from olive to a fresh frog green, a clear mid-tone green like a green apple leaf, with a slightly darker green shadow; the same brightness as now, not darker, not yellow. Keep everything else exactly the same: the orange-brown leather cap and goggles, straps and loincloth, the bomb with its yellow stripes and spark, the satchel, gloves, boots, pose, proportions, black outline and art style.",
+    "negativePrompt": "",
+    "description": "Change only the hue of his skin: the face, ears, chest, belly, arms and legs turn from olive to a fresh frog green, a clear mid-tone green like a green apple leaf, with a slightly darker green shadow; the same brightness as now, not darker, not yellow. Keep everything else exactly the same: the orange-brown leather cap and goggles, straps and loincloth, the bomb with its yellow stripes and spark, the satchel, gloves, boots, pose, proportions, black outline and art style.",
+    "editInstruction": "Change only the hue of his skin: the face, ears, chest, belly, arms and legs turn from olive to a fresh frog green, a clear mid-tone green like a green apple leaf, with a slightly darker green shadow; the same brightness as now, not darker, not yellow. Keep everything else exactly the same: the orange-brown leather cap and goggles, straps and loincloth, the bomb with its yellow stripes and spark, the satchel, gloves, boots, pose, proportions, black outline and art style.",
+    "source": {
+      "recipe": "bomb-chucker-leather-edit-f",
+      "candidate": 0,
+      "sha256": "1ffdf151941d5f0d6185f901e5e06f6e65f35d1bda35c98e26afbbb0b2fca550"
+    }
+  }
+}

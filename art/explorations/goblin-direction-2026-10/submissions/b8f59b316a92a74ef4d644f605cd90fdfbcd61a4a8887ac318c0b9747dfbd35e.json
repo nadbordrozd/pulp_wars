@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-edit-c",
+  "jobId": "fb890f0d-b1aa-4e9b-9674-1b852d9566e1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 79203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only small things: the little goblin's face, ears and hands become medium true green skin; each paper rocket gets one small star or stripe of another colour and a short curly cream fuse at its tail, and one fuse is lit with a small red-orange spark. Keep everything else the same: the five rockets, their colours and cream cones, the sticks, rope, wooden cart, wheels, the goblin's orange cap, proportions, thick black outline and art style."
+      }
+    ],
+    "prompt": "Change only small things: the little goblin's face, ears and hands become medium true green skin; each paper rocket gets one small star or stripe of another colour and a short curly cream fuse at its tail, and one fuse is lit with a small red-orange spark. Keep everything else the same: the five rockets, their colours and cream cones, the sticks, rope, wooden cart, wheels, the goblin's orange cap, proportions, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Change only small things: the little goblin's face, ears and hands become medium true green skin; each paper rocket gets one small star or stripe of another colour and a short curly cream fuse at its tail, and one fuse is lit with a small red-orange spark. Keep everything else the same: the five rockets, their colours and cream cones, the sticks, rope, wooden cart, wheels, the goblin's orange cap, proportions, thick black outline and art style.",
+    "editInstruction": "Change only small things: the little goblin's face, ears and hands become medium true green skin; each paper rocket gets one small star or stripe of another colour and a short curly cream fuse at its tail, and one fuse is lit with a small red-orange spark. Keep everything else the same: the five rockets, their colours and cream cones, the sticks, rope, wooden cart, wheels, the goblin's orange cap, proportions, thick black outline and art style.",
+    "source": {
+      "recipe": "fireworks-cart-edit-a",
+      "candidate": 0,
+      "sha256": "b0e7654312bc90157d4a8ea985fe23124e0e279d11c039351f4dc281e9c9fa3a"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "goblin-leather-edit-e",
+  "jobId": "71af4525-2590-425d-8ca2-184c3fa237de",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79005,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two colours. His skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a deeper, somewhat darker, true goblin green like moss, with a darker green shadow; not yellow, not black. His leather cap, crossed straps and loincloth become a browner, duller orange-brown saddle leather, shaded dark brown, not bright orange and not red. Keep everything else exactly the same: belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style."
+      }
+    ],
+    "prompt": "Change only two colours. His skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a deeper, somewhat darker, true goblin green like moss, with a darker green shadow; not yellow, not black. His leather cap, crossed straps and loincloth become a browner, duller orange-brown saddle leather, shaded dark brown, not bright orange and not red. Keep everything else exactly the same: belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Change only two colours. His skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a deeper, somewhat darker, true goblin green like moss, with a darker green shadow; not yellow, not black. His leather cap, crossed straps and loincloth become a browner, duller orange-brown saddle leather, shaded dark brown, not bright orange and not red. Keep everything else exactly the same: belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style.",
+    "editInstruction": "Change only two colours. His skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a deeper, somewhat darker, true goblin green like moss, with a darker green shadow; not yellow, not black. His leather cap, crossed straps and loincloth become a browner, duller orange-brown saddle leather, shaded dark brown, not bright orange and not red. Keep everything else exactly the same: belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style.",
+    "source": {
+      "recipe": "goblin-leather-edit-b",
+      "candidate": 0,
+      "sha256": "28af82d3880bca6ac4c4eba207dc80e1d5ee257afaa563951f61d52e979530da"
+    }
+  }
+}

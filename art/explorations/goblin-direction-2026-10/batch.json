@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "batch": "goblin-direction-study",
-  "title": "Goblin visual-direction study: Goblin, Bomb Chucker and Rocket Cart as scrapyard raiders in fixed faction colours (exploration, never registered)",
+  "title": "Goblin visual-direction study: Goblin, Bomb Chucker and Rocket Cart in fixed faction colours; pass 1 scrapyard raiders in near-black leather, pass 2 orange-brown leather loincloths and a fireworks cart (exploration, never registered)",
   "bead": "pulp_wars-3tq.8",
   "faction": "TEST-GOBLIN-SCRAPYARD",
   "dryRun": false,
@@ -32,6 +32,22 @@
     {
       "id": "chibi-study-rocket-cart",
       "subject": "UNIT:GOBLIN:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-study-fireworks-cart",
+      "subject": "UNIT:GOBLIN:CATAPULT",
+      "subjectKey": "UNIT:GOBLIN:CATAPULT/FIREWORKS",
       "assetClass": "LARGE_UNIT",
       "recipeClass": "unit",
       "canvas": {
@@ -394,6 +410,562 @@
       },
       "editInstruction": "Change only two things: the dark leather flying cap becomes a dented rusted iron pot helmet with bolts, keeping the goggles on its front, and his skin (face, both ears, hands, feet) becomes a much brighter, lighter yellow-olive green. Keep everything else exactly the same: the dark leather clothes and patch, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
       "notes": "A with the pot helmet and the Goblin's skin."
+    },
+    {
+      "id": "goblin-leather-edit-a",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-scrap-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change his clothes and skin: take off the brown tunic so his chest, belly, arms and legs are bare skin; he wears only a short orange-brown leather loincloth and one orange-brown leather strap across the chest; the striped headband becomes a plain orange-brown leather headband; orange-brown leather wrist wraps. His skin a deeper, darker true goblin green. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Pass 2, A: from the pass-1 brown hide Goblin; loincloth and one strap, plain leather headband, no stripe, darker green skin."
+    },
+    {
+      "id": "goblin-leather-edit-b",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "goblin-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change his clothes and skin: the red bandana becomes a small orange-brown leather cap; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a harness of two crossed orange-brown leather straps on the chest. His skin a slightly deeper, darker true goblin green, not yellow. Keep the face, ears, dagger, belt, wrist bands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Pass 2, B: from the live Goblin; leather cap, loincloth and crossed harness, no stripe."
+    },
+    {
+      "id": "goblin-leather-edit-c",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79003,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-scrap-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change his clothes and skin: the brown tunic becomes a short sleeveless orange-brown leather vest open over a bare green chest and belly, and an orange-brown leather loincloth, with bare green arms and legs; the striped headband becomes a plain orange-brown leather headband; one small rusted iron shoulder plate. His skin a deeper, darker true goblin green. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Pass 2, C: a little more clothing (open vest and loincloth) with one rusted shoulder plate as the scrap accent, no stripe."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-a",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change his clothes and skin: the dark flying cap becomes an orange-brown leather flying cap, keeping the goggles; take off the dark tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and one orange-brown leather strap across the chest to the satchel. His skin a deeper, darker true goblin green. Keep the face, ears, the raised bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style the same.",
+      "notes": "Pass 2, A: from the pass-1 leather-cap Bomb Chucker; orange-brown cap, loincloth and satchel strap, the bomb keeps its hazard band."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-b",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "bomb-chucker-b-edit-4",
+        "candidate": 0
+      },
+      "editInstruction": "Change his clothes and skin: the red flying cap becomes an orange-brown leather flying cap, keeping the iron goggles; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a chest strap. The black bomb gets one band of hazard yellow and black stripes and a small red-orange spark. His skin a slightly darker true goblin green. Keep the face, ears, satchel, pose, proportions, black outline and art style the same.",
+      "notes": "Pass 2, B: from the live Bomb Chucker; leather cap, loincloth and harness, one hazard band on the bomb."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-c",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-scrap-edit-e",
+        "candidate": 0
+      },
+      "editInstruction": "Change his clothes and skin: take off the dark leather tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and one orange-brown leather strap across the chest to the satchel. His skin a deeper, darker true goblin green, not yellow. Keep the rusted pot helmet and goggles, the face, ears, the raised bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style the same.",
+      "notes": "Pass 2, C: from the pass-1 chosen Bomb Chucker; keeps the rusted pot helmet, loincloth and strap."
+    },
+    {
+      "id": "fireworks-cart-edit-a",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-scrap-edit-e",
+        "candidate": 0
+      },
+      "editInstruction": "Replace the one big black rocket with a tight bundle of five small fireworks rockets of different sizes on thin wooden sticks, standing up in the cart and leaning forward, tied with pale rope: paper tubes in grubby red, orange, yellow, one blue and one green, each with a cream paper cone tip and a short fuse, one fuse lit with a spark. The little goblin gets green skin and an orange-brown leather cap. Keep the wooden cart, wheels, goblin, black outline and art style.",
+      "notes": "Pass 2, A: from the pass-1 chosen cart; the single rocket becomes an upright bundle of five paper rockets."
+    },
+    {
+      "id": "fireworks-cart-edit-b",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "rocket-cart-e-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a fireworks cart: replace the one big red rocket with a rack of five fireworks rockets of different sizes on thin wooden sticks, pointing up: paper tubes in grubby red, orange, yellow, one blue and one green, each with a cream paper cone tip and a fuse, one fuse lit with a small spark. The cart becomes rickety weathered brown planks with wooden wheels. The goblin wears an orange-brown leather cap. Keep the size, the goblin, black outline and art style.",
+      "notes": "Pass 2, B: from the live Rocket Cart; a rack of five paper rockets on a plank cart."
+    },
+    {
+      "id": "fireworks-cart-a",
+      "asset": "chibi-study-fireworks-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 79211,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "negativeAddendum": "missile, steel missile, tail fins, warhead, jet engine, catapult arm, bucket, horse, smoke trail, explosion, one single giant rocket",
+      "notes": "Pass 2: fresh creation of the fireworks cart from the pass-2 faction layer."
+    },
+    {
+      "id": "fireworks-cart-b",
+      "asset": "chibi-study-fireworks-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 79212,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The cart is short and tall rather than long: the bundle of rockets stands almost upright and the whole thing is no wider than a soldier and a half.",
+      "negativeAddendum": "missile, steel missile, tail fins, warhead, jet engine, catapult arm, bucket, horse, smoke trail, explosion, one single giant rocket, long wagon",
+      "notes": "Pass 2: fresh creation, asked to be short and tall so it sits over its base plate."
+    },
+    {
+      "id": "goblin-leather-edit-d",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79004,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his skin colour: the face, ears, chest, belly, arms, hands, legs and feet become a deeper, somewhat darker, true goblin green like moss, with a darker green shadow tone; clearly green, not yellow, not olive and not black. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: B kept the live olive skin (#a6b538); this deepens the skin only."
+    },
+    {
+      "id": "goblin-leather-edit-e",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79005,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two colours. His skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a deeper, somewhat darker, true goblin green like moss, with a darker green shadow; not yellow, not black. His leather cap, crossed straps and loincloth become a browner, duller orange-brown saddle leather, shaded dark brown, not bright orange and not red. Keep everything else exactly the same: belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style.",
+      "notes": "Pass 2: B with deeper skin and a browner leather (B's leather is a bright orange, #e26015)."
+    },
+    {
+      "id": "goblin-leather-edit-f",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79006,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his skin colour: the face, ears, chest, belly, arms, hands, legs and feet become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face and body are clearly visible; not black, not yellow. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: A's skin came out almost black (#46480c, #202604); this lifts it to a medium green. The headband variant."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-d",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79104,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two colours. His skin (face, ears, chest, belly, arms, legs) becomes a deeper, somewhat darker, true goblin green like moss, with a darker green shadow; not yellow, not black. His leather cap, straps and loincloth become a browner, duller orange-brown saddle leather, shaded dark brown, not bright orange and not red. Keep everything else the same: the goggles, the bomb with its stripes and spark, gloves, boots, satchel, pose, proportions, thick black outline and art style.",
+      "notes": "Pass 2: B with deeper skin and a browner leather (B's cap is red-orange, #d74a00 shaded #811601)."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-e",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79105,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his skin colour: the face, ears, chest, belly, arms and legs become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face is clearly visible; not black, not yellow. Keep everything else the same: the rusted pot helmet and goggles, the orange-brown leather straps and loincloth, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: C's face is lost in a dark olive (#53520d); this lifts the skin. The pot-helmet variant."
+    },
+    {
+      "id": "fireworks-cart-edit-c",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79203,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only small things: the little goblin's face, ears and hands become medium true green skin; each paper rocket gets one small star or stripe of another colour and a short curly cream fuse at its tail, and one fuse is lit with a small red-orange spark. Keep everything else the same: the five rockets, their colours and cream cones, the sticks, rope, wooden cart, wheels, the goblin's orange cap, proportions, thick black outline and art style.",
+      "notes": "Pass 2: A is the right idea; the crew goblin's skin is ochre and the plain tubes look like coloured pencils."
+    },
+    {
+      "id": "fireworks-cart-edit-d",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79204,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make it narrower and more compact: the wooden cart becomes a short small two-wheeled hand cart, about three quarters as long, and the bundle of five rockets stands more upright and closer together over the middle of the cart. The little goblin's face, ears and hands become medium true green skin and he sits close against the cart. Keep the rocket colours, cream cones, sticks, rope, the goblin's orange cap, thick black outline and art style, centred on a transparent background.",
+      "notes": "Pass 2: A is 60 px wide over a 52 px plate; this asks for a shorter cart and a tighter bundle."
+    },
+    {
+      "id": "goblin-leather-edit-g",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79007,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes one shade darker and greener, a medium leaf green with a slightly darker green shadow tone. Keep the skin shading simple and the same shapes. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: 'deeper, darker' overshot to emerald with black-green shadows (edit-d); this asks for one shade only."
+    },
+    {
+      "id": "goblin-leather-edit-h",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79008,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-f",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a little lighter and greener, a medium leaf green with a slightly darker green shadow tone, less brown and less olive. Keep the same shapes. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: F's skin is a dark olive (#737e27, hue 67); this asks for a little lighter and greener. The headband variant."
+    },
+    {
+      "id": "goblin-leather-edit-i",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79009,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-d",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the darkest parts of his skin: the very dark green arms, hands, legs, feet and ear shadows become the same medium green as his face and chest, with only a slightly darker green shadow tone, so his whole body is clearly one medium leaf green. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: D has the truest green (#426900) but black-green limbs (#00290f); this lifts the shadows."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-f",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79106,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-e",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the helmet: the rusted iron pot helmet becomes a snug orange-brown leather flying cap with a stitched seam and ear flaps, the same size, keeping the goggles on its front. Do not touch his face, skin or ears. Keep everything else exactly the same: the orange-brown leather straps and loincloth, the bomb with its yellow stripes and spark, the satchel, gloves, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: E with a leather cap instead of the pot helmet, so the orange-brown leather carries the figure."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-g",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79107,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, legs) becomes one shade darker and greener, a medium leaf green with a slightly darker green shadow tone; and the red-orange leather hood, straps and loincloth become a browner orange-brown saddle leather, not red. Keep everything else exactly the same: the goggles, the bomb with its yellow stripes and spark, gloves, boots, satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: B again, asking for one shade of skin only (edit-d went dark and lost the face)."
+    },
+    {
+      "id": "fireworks-cart-edit-e",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79205,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Move only the little goblin: he no longer crouches on the ground at the right of the cart; he sits on the cart itself, in front of the rockets, holding a small lit match, so nothing sticks out to the right of the cart and the whole image is narrower. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, wooden cart, wheels, the goblin's green skin and orange cap, thick black outline and art style.",
+      "notes": "Pass 2: the cart is 60 px wide over a 52 px plate; the crew goblin beside it is the widest part."
+    },
+    {
+      "id": "fireworks-cart-edit-f",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79206,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Make the cart shorter: the wooden cart becomes a short two-wheeled hand cart, only as long as the bundle of rockets is wide, with one big wheel, and the little goblin stands right against it. The whole image becomes clearly narrower and stays centred. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, plank wood, the goblin's green skin and orange cap, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: a second way to make the cart narrower: a shorter cart."
+    },
+    {
+      "id": "goblin-leather-edit-j",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79010,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-f",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a little greener and less brown, the green of a fresh pea pod, keeping the same darkness and the same shading shapes; not lighter, not darker, not yellow. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: F is the right darkness but olive (hue 67); H went back to the pale live skin. This asks for the hue only."
+    },
+    {
+      "id": "goblin-leather-edit-k",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79011,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-g",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes clearly lighter, a mid-tone leaf green, with the shadow tone only a little darker than the light tone, so the arms and legs are not dark; not yellow, not pale. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: G is a true green (#4b6707) but a lot darker than asked, with near-black limbs; this lifts it to a mid-tone."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-h",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79108,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-f",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, legs) becomes a little darker and greener, the green of a fresh pea pod, with a slightly darker green shadow; a mid-tone, not dark, not black, not yellow, the face stays clearly visible. Keep everything else exactly the same: the orange-brown leather cap and goggles, straps and loincloth, the bomb with its yellow stripes and spark, the satchel, gloves, boots, pose, proportions, thick black outline and art style.",
+      "notes": "Pass 2: F (leather cap) has skin #929f2f; a small step towards the Goblin's darker green."
+    },
+    {
+      "id": "fireworks-cart-edit-g",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79207,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-e",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the right edge: remove the goblin's outstretched arm with the torch and the plank sticking out at the lower right, so nothing reaches past the cart's right side; the goblin instead holds a small lit match up in front of his chest, and his skin becomes a mid-tone olive leaf green. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, wooden cart, wheels, orange cap, thick black outline and art style.",
+      "notes": "Pass 2: E puts the goblin on the cart, but his torch arm makes it 62 px wide; this tucks it in."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-i",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79109,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-f",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, legs) becomes a little darker and greener, the green of a fresh pea pod, with a slightly darker green shadow; a mid-tone, not dark, not black, not yellow, the face stays clearly visible. Keep everything else exactly the same: the orange-brown leather cap and goggles, straps and loincloth, the bomb with its yellow stripes and spark, the satchel, gloves, boots, pose, proportions, thick black outline and art style.",
+      "notes": "Pass 2: the instruction of edit-h again (its job failed at PixelLab) with a new seed."
+    },
+    {
+      "id": "goblin-leather-edit-l",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79012,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-k",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes a little greener and less brown, the green of a fresh pea pod, keeping the same darkness and the same shading shapes; not lighter, not darker, not yellow. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: K (cap and crossed straps, olive #8e9a35) in the pea green that worked on J."
+    },
+    {
+      "id": "goblin-leather-edit-m",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79013,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-j",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: a small black iron shoulder pad with three bold hazard yellow diagonal stripes and a rusty rim on his shoulder, where the chest strap meets it. Do not touch his head, skin or ears. Keep everything else exactly the same: the orange-brown leather headband, chest strap, wrist wraps and loincloth, the green skin, belt, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: J with the pass-1 striped shoulder pad, to compare a Goblin with and without a hazard stripe."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-j",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79110,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-e",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, legs) becomes a little darker and greener, the green of a fresh pea pod, with a slightly darker green shadow; a mid-tone, not dark, not black, not yellow, the face stays clearly visible. Keep everything else exactly the same: the rusted pot helmet and goggles, the leather straps and loincloth, the bomb with its yellow stripes and spark, the satchel, gloves, boots, pose, proportions, thick black outline and art style.",
+      "notes": "Pass 2: E (pot helmet) in the pea green, as the helmet alternative."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-k",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79111,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-f",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the hue of his skin: the face, ears, chest, belly, arms and legs turn from olive to a fresh frog green, a clear mid-tone green like a green apple leaf, with a slightly darker green shadow; the same brightness as now, not darker, not yellow. Keep everything else exactly the same: the orange-brown leather cap and goggles, straps and loincloth, the bomb with its yellow stripes and spark, the satchel, gloves, boots, pose, proportions, black outline and art style.",
+      "notes": "Pass 2: a third try at the Goblin's truer green on the Bomb Chucker: edit-i went dark olive and edit-j did not change."
+    },
+    {
+      "id": "fireworks-cart-edit-h",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79208,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-g",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the wood: the cart's planks and wheels become a lighter, weathered mid brown with warm orange-brown highlights and dark brown gaps between the planks, not near-black. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, the cart and wheel shapes, the little goblin with his green skin, orange cap and match, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: G's planks are near-black brown (#35130a, #220b0a); the user asked for less dark."
+    },
+    {
+      "id": "fireworks-cart-edit-i",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79209,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-h",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the wood: the cart's pale golden planks and wheels become a darker, medium warm red-brown like old walnut, with dark brown gaps between the planks; not golden, not near-black. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, the cart and wheel shapes, the little goblin with his green skin, orange cap and match, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Pass 2: H's wood came out honey gold (#ce9435, #f6af4a), the colour of the Human Catapult and near the Gold plate; this asks for a mid brown between G and H."
     }
   ]
 }

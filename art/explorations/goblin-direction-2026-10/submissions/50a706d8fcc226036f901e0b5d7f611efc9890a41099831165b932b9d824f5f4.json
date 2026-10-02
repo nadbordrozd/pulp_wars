@@ -1,0 +1,37 @@
+{
+  "id": "bomb-chucker-leather-edit-b",
+  "jobId": "5cf44efb-b90d-4a15-ba6e-f6e63f859ed4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change his clothes and skin: the red flying cap becomes an orange-brown leather flying cap, keeping the iron goggles; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a chest strap. The black bomb gets one band of hazard yellow and black stripes and a small red-orange spark. His skin a slightly darker true goblin green. Keep the face, ears, satchel, pose, proportions, black outline and art style the same."
+      }
+    ],
+    "prompt": "Change his clothes and skin: the red flying cap becomes an orange-brown leather flying cap, keeping the iron goggles; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a chest strap. The black bomb gets one band of hazard yellow and black stripes and a small red-orange spark. His skin a slightly darker true goblin green. Keep the face, ears, satchel, pose, proportions, black outline and art style the same.",
+    "negativePrompt": "",
+    "description": "Change his clothes and skin: the red flying cap becomes an orange-brown leather flying cap, keeping the iron goggles; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a chest strap. The black bomb gets one band of hazard yellow and black stripes and a small red-orange spark. His skin a slightly darker true goblin green. Keep the face, ears, satchel, pose, proportions, black outline and art style the same.",
+    "editInstruction": "Change his clothes and skin: the red flying cap becomes an orange-brown leather flying cap, keeping the iron goggles; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a chest strap. The black bomb gets one band of hazard yellow and black stripes and a small red-orange spark. His skin a slightly darker true goblin green. Keep the face, ears, satchel, pose, proportions, black outline and art style the same.",
+    "source": {
+      "batch": "goblin",
+      "recipe": "bomb-chucker-b-edit-4",
+      "candidate": 0,
+      "sha256": "b9667782368236b4e5bc2a15f5555e684eb987d488979d2a9ff058cdefe95df7"
+    }
+  }
+}

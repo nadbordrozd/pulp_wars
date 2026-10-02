@@ -1,0 +1,36 @@
+{
+  "id": "bomb-chucker-leather-edit-d",
+  "jobId": "c4e4c5a3-85a4-4fa5-96f4-bb3cd501a983",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79104,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two colours. His skin (face, ears, chest, belly, arms, legs) becomes a deeper, somewhat darker, true goblin green like moss, with a darker green shadow; not yellow, not black. His leather cap, straps and loincloth become a browner, duller orange-brown saddle leather, shaded dark brown, not bright orange and not red. Keep everything else the same: the goggles, the bomb with its stripes and spark, gloves, boots, satchel, pose, proportions, thick black outline and art style."
+      }
+    ],
+    "prompt": "Change only two colours. His skin (face, ears, chest, belly, arms, legs) becomes a deeper, somewhat darker, true goblin green like moss, with a darker green shadow; not yellow, not black. His leather cap, straps and loincloth become a browner, duller orange-brown saddle leather, shaded dark brown, not bright orange and not red. Keep everything else the same: the goggles, the bomb with its stripes and spark, gloves, boots, satchel, pose, proportions, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Change only two colours. His skin (face, ears, chest, belly, arms, legs) becomes a deeper, somewhat darker, true goblin green like moss, with a darker green shadow; not yellow, not black. His leather cap, straps and loincloth become a browner, duller orange-brown saddle leather, shaded dark brown, not bright orange and not red. Keep everything else the same: the goggles, the bomb with its stripes and spark, gloves, boots, satchel, pose, proportions, thick black outline and art style.",
+    "editInstruction": "Change only two colours. His skin (face, ears, chest, belly, arms, legs) becomes a deeper, somewhat darker, true goblin green like moss, with a darker green shadow; not yellow, not black. His leather cap, straps and loincloth become a browner, duller orange-brown saddle leather, shaded dark brown, not bright orange and not red. Keep everything else the same: the goggles, the bomb with its stripes and spark, gloves, boots, satchel, pose, proportions, thick black outline and art style.",
+    "source": {
+      "recipe": "bomb-chucker-leather-edit-b",
+      "candidate": 0,
+      "sha256": "9dbc3d1cdf91ed5b07e00f8b75377ad75abf5de27e779ce204740db19674a6b3"
+    }
+  }
+}

@@ -1,11 +1,21 @@
 /**
- * Review evidence of the Goblin direction study (bead pulp_wars-3tq.8,
- * docs/art/VISUAL_DIRECTION_2026-10.md, "Goblin study"):
+ * Review evidence of the Goblin direction study (docs/art/
+ * VISUAL_DIRECTION_2026-10.md, "Goblin study"): pass 1 (bead
+ * pulp_wars-3tq.8, near-black leather and a striped black rocket) and pass 2
+ * (bead pulp_wars-3tq.10, orange-brown leather loincloths and a fireworks
+ * cart).
  *
- *   npm run art:goblin-direction-study-review -- [--port 6481]
+ *   npm run art:goblin-direction-study-review -- [--pass 1|2] [--port 6481]
  *       [--skip-capture] [--captures DIR] [--out DIR]
  *
- * Writes to art/pixellab/reviews/goblin-direction-study/:
+ * `--pass 2` (the default) writes to
+ * art/pixellab/reviews/goblin-direction-study/pass-2/ and compares TODAY,
+ * PASS 1 and PASS 2 (and the Human direction units): the chosen sheet has a
+ * column for each, the before-after scenes have three panels, and
+ * readability.json adds the orange-brown leather against the Coral and Gold
+ * plates and Human crimson, the cart's pale planks against Human gold, and
+ * the cart's width against its base plate. `--pass 1` rewrites the pass 1
+ * evidence in art/pixellab/reviews/goblin-direction-study/ as before:
  *
  *   candidates-x3.png       every candidate of the exploration run on Grass
  *                           at x3 and 1:1, with its verdict
@@ -68,8 +78,17 @@ function option(name: string): string | undefined {
   return value === undefined || value.startsWith("--") ? undefined : value;
 }
 
+/** Which pass of the study the evidence is for. */
+const PASS: 1 | 2 = option("--pass") === "1" ? 1 : 2;
+const BEAD = PASS === 1 ? "pulp_wars-3tq.8" : "pulp_wars-3tq.10";
+/** Pass 2 recipes carry seeds from 79000 up. */
+const PASS_2_FIRST_SEED = 79_000;
+
 const OUT = path.resolve(
-  option("--out") ?? "art/pixellab/reviews/goblin-direction-study",
+  option("--out") ??
+    (PASS === 1
+      ? "art/pixellab/reviews/goblin-direction-study"
+      : "art/pixellab/reviews/goblin-direction-study/pass-2"),
 );
 const CAPTURES = path.resolve(
   option("--captures") ?? path.join(tmpdir(), "pulp-wars-goblin-direction"),
@@ -77,12 +96,16 @@ const CAPTURES = path.resolve(
 
 type Rgb = readonly [number, number, number];
 
-/** The study's units: today's asset, the study asset, the Human asset. */
+/**
+ * The study's units: today's asset, the study asset of pass 1 (`study`) and
+ * of pass 2 (`study2`), and the Human asset.
+ */
 const UNITS = [
   {
     name: "Goblin",
     today: "chibi-goblin-goblin",
     study: "chibi-study-goblin",
+    study2: "chibi-study2-goblin",
     human: "chibi-direction-fighter",
     humanName: "Fighter",
   },
@@ -90,6 +113,7 @@ const UNITS = [
     name: "Bomb Chucker",
     today: "chibi-goblin-bomb-chucker",
     study: "chibi-study-bomb-chucker",
+    study2: "chibi-study2-bomb-chucker",
     human: "chibi-direction-marksman",
     humanName: "Marksman",
   },
@@ -97,10 +121,15 @@ const UNITS = [
     name: "Rocket Cart",
     today: "chibi-goblin-rocket-cart",
     study: "chibi-study-rocket-cart",
+    study2: "chibi-study2-fireworks-cart",
     human: "chibi-direction-catapult",
     humanName: "Catapult",
   },
 ] as const;
+
+/** The chosen sample of a unit in the pass under review. */
+const chosenId = (unit: (typeof UNITS)[number]): string =>
+  PASS === 1 ? unit.study : unit.study2;
 
 const OWNERS = Object.entries(RULESET7_PLAYER_COLORS) as [string, string][];
 const title = (text: string): string =>
@@ -115,6 +144,7 @@ interface Sample {
   readonly anchor?: { readonly x: number; readonly y: number };
   readonly url: string;
   readonly fixedColours: true;
+  readonly pass: 1 | 2;
   readonly role: "chosen" | "alternative";
   readonly recipe: string;
   readonly candidate: number;
@@ -290,7 +320,7 @@ async function candidatesSheet(all: readonly Sample[]): Promise<void> {
     await readFile(path.join(ROOT, RUN, "batch.json"), "utf8"),
   ) as {
     assets: { id: string }[];
-    recipes: { id: string; asset: string; endpoint: string }[];
+    recipes: { id: string; asset: string; endpoint: string; seed: number }[];
   };
   const records = JSON.parse(
     await readFile(path.join(ROOT, RUN, "records.json"), "utf8"),
@@ -313,11 +343,15 @@ async function candidatesSheet(all: readonly Sample[]): Promise<void> {
   const headings: { readonly text: string; readonly row: number }[] = [];
   let row = 0;
   for (const asset of manifest.assets) {
+    const recipes = manifest.recipes.filter(
+      (entry) =>
+        entry.asset === asset.id &&
+        entry.seed >= PASS_2_FIRST_SEED === (PASS === 2),
+    );
+    if (recipes.length === 0) continue;
     headings.push({ text: asset.id, row });
     let column = 0;
-    for (const recipe of manifest.recipes.filter(
-      (entry) => entry.asset === asset.id,
-    )) {
+    for (const recipe of recipes) {
       const record = records.recipes[recipe.id];
       if (record?.rawSheet === undefined || record.candidateSize === undefined)
         continue;
@@ -396,7 +430,9 @@ async function chosenSheet(all: readonly Sample[], scale: number) {
   );
   const columns = [
     ...OWNERS.map(([name]) => `today, ${title(name)}`),
-    "study (every player)",
+    ...(PASS === 1
+      ? ["study (every player)"]
+      : ["pass 1 (every player)", "PASS 2 (every player)"]),
     "Human, new direction",
   ];
   const cellW = 88 * scale;
@@ -432,6 +468,7 @@ async function chosenSheet(all: readonly Sample[], scale: number) {
     const pieces: RgbaRaster[] = [
       ...OWNERS.map(([, colour]) => recoloured(today, mask, colour)),
       await readRaster(sampleFile(unit.study)),
+      ...(PASS === 1 ? [] : [await readRaster(sampleFile(unit.study2))]),
     ];
     for (const [index, piece] of pieces.entries())
       blit(
@@ -471,7 +508,7 @@ async function alternativesSheet(all: readonly Sample[]): Promise<void> {
       .filter(
         (sample) =>
           sample.subject ===
-          all.find((entry) => entry.id === unit.study)?.subject,
+          all.find((entry) => entry.id === chosenId(unit))?.subject,
       )
       .sort((left, right) =>
         left.role === right.role ? 0 : left.role === "chosen" ? -1 : 1,
@@ -647,9 +684,10 @@ interface BandMeasure {
 /** Share of opaque pixels and the commonest colours of each palette role. */
 function measureBands(
   rasters: readonly RgbaRaster[],
+  bands: typeof BANDS = BANDS,
 ): Record<string, BandMeasure> {
   const counts = new Map<string, Map<string, number>>(
-    BANDS.map((band) => [band.id, new Map<string, number>()]),
+    bands.map((band) => [band.id, new Map<string, number>()]),
   );
   let opaque = 0;
   for (const raster of rasters)
@@ -666,13 +704,13 @@ function measureBands(
         saturation: s,
         value: v,
       } = rgbToHsv(rgb[0], rgb[1], rgb[2]);
-      const band = BANDS.find((entry) => entry.test(h, s, v));
+      const band = bands.find((entry) => entry.test(h, s, v));
       if (band === undefined) continue;
       const colours = counts.get(band.id);
       colours?.set(hexOf(rgb), (colours.get(hexOf(rgb)) ?? 0) + 1);
     }
   return Object.fromEntries(
-    BANDS.map((band) => {
+    bands.map((band) => {
       const colours = [...(counts.get(band.id) ?? [])].sort(
         (left, right) => right[1] - left[1] || left[0].localeCompare(right[0]),
       );
@@ -736,8 +774,390 @@ function pair(aName: string, a: Rgb, bName: string, b: Rgb): Pair {
   };
 }
 
+interface SwatchRow {
+  readonly label: string;
+  readonly colours: readonly string[];
+}
+
+/** Rows of labelled colour swatches. */
+async function writeSwatches(rows: readonly SwatchRow[]): Promise<void> {
+  const swatch = 72;
+  const labelW = 380;
+  const rowH = swatch + GAP;
+  const canvas = blank(
+    labelW + 4 * (swatch + 96) + GAP,
+    GAP + rows.length * rowH,
+    PAPER,
+  );
+  const labels: Label[] = [];
+  for (const [index, row] of rows.entries()) {
+    const top = GAP + index * rowH;
+    labels.push({ text: row.label, left: GAP, top: top + swatch / 2 - 10 });
+    for (const [column, hex] of row.colours.slice(0, 4).entries()) {
+      const left = labelW + column * (swatch + 96);
+      fill(canvas, left, top, swatch, swatch, rgbOf(hex));
+      labels.push({
+        text: hex,
+        left: left + swatch + 6,
+        top: top + swatch / 2 - 10,
+        size: 13,
+      });
+    }
+  }
+  await writeSheet(path.join(OUT, "palette.png"), canvas, labels);
+}
+
+/** The roles of the pass 2 palette, tested in this order. */
+const BANDS_2: typeof BANDS = [
+  {
+    id: "cream",
+    label: "paper cones, teeth",
+    test: (_h, s, v) => s < 0.55 && v > 0.9,
+  },
+  {
+    id: "yellow",
+    label: "yellow: bomb stripe, rocket paper",
+    test: (h, s, v) => h >= 40 && h < 56 && s > 0.85 && v > 0.75,
+  },
+  {
+    id: "wood",
+    label: "planks, sticks, rope",
+    test: (h, s, v) => h >= 22 && h < 46 && s >= 0.45 && s <= 0.92 && v >= 0.5,
+  },
+  {
+    id: "leather",
+    label: "orange-brown leather (also spark, orange paper)",
+    test: (h, s, v) => h >= 8 && h < 32 && s > 0.9 && v >= 0.7,
+  },
+  {
+    id: "leatherShadow",
+    label: "leather shadow",
+    test: (h, s, v) => h >= 5 && h < 32 && s > 0.85 && v >= 0.3 && v < 0.7,
+  },
+  {
+    id: "skin",
+    label: "skin",
+    test: (h, s, v) => h >= 48 && h <= 100 && s > 0.45 && v > 0.55,
+  },
+  {
+    id: "skinShadow",
+    label: "skin shadow",
+    test: (h, s, v) => h >= 48 && h <= 100 && s > 0.45 && v > 0.2,
+  },
+  {
+    id: "metal",
+    label: "gunmetal",
+    test: (h, s, v) => s < 0.45 && v >= 0.3 && h > 150 && h < 260,
+  },
+  {
+    id: "paperRed",
+    label: "red rocket paper",
+    test: (h, s, v) => (h < 8 || h > 345) && s > 0.8 && v > 0.5,
+  },
+  {
+    id: "paperBlue",
+    label: "blue rocket paper",
+    test: (h, s, v) => h >= 190 && h <= 225 && s > 0.8 && v > 0.3,
+  },
+  {
+    id: "paperGreen",
+    label: "green rocket paper",
+    test: (h, s, v) => h > 100 && h <= 145 && s > 0.5 && v > 0.25,
+  },
+  {
+    id: "dark",
+    label: "near-black (bomb, belt, gaps)",
+    test: (_h, _s, v) => v > 0.06 && v < 0.3,
+  },
+];
+
+/** The saturated red of the Human direction units (their crimson cloth). */
+const HUMAN_RED: typeof BANDS = [
+  {
+    id: "crimson",
+    label: "Human crimson",
+    test: (h, s, v) => (h < 10 || h > 340) && s > 0.7 && v > 0.45,
+  },
+];
+
+/** The first base plate of the live look is 52 px wide (radius 26). */
+const PLATE_WIDTH = 52;
+
+function opaqueWidth(raster: RgbaRaster): {
+  left: number;
+  right: number;
+  width: number;
+} {
+  let left = raster.width;
+  let right = -1;
+  for (let y = 0; y < raster.height; y += 1)
+    for (let x = 0; x < raster.width; x += 1) {
+      if ((raster.data[(y * raster.width + x) * 4 + 3] ?? 0) < 128) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+    }
+  return { left, right, width: right - left + 1 };
+}
+
+/** Palette and readability of pass 2, beside pass 1 and today's sprites. */
+async function paletteAndReadabilityPass2(
+  all: readonly Sample[],
+): Promise<void> {
+  const chosen = all.filter(
+    (sample) => sample.pass === 2 && sample.role === "chosen",
+  );
+  const rasterOf = (id: string): Promise<RgbaRaster> =>
+    readRaster(sampleFile(id));
+  const rasters = await Promise.all(
+    chosen.map((sample) => rasterOf(sample.id)),
+  );
+  const pooled = measureBands(rasters, BANDS_2);
+  const bandsOf = async (id: string) =>
+    measureBands([await rasterOf(id)], BANDS_2);
+  const first = (band: string, source = pooled): Rgb =>
+    rgbOf(source[band]?.colours[0]?.hex ?? "#000000");
+
+  const grassTiles = await Promise.all(
+    [1, 2, 3].map((index) =>
+      readRaster(
+        path.join(ROOT, `public/assets/chibi/terrain/chibi-grass-${index}.png`),
+      ),
+    ),
+  );
+  const grass = meanColour({
+    width: TILE * 3,
+    height: TILE,
+    data: Uint8Array.from(grassTiles.flatMap((tile) => [...tile.data])),
+  });
+  const goblin = await bandsOf(UNITS[0].study2);
+  const bombChucker = await bandsOf(UNITS[1].study2);
+  const cart = await bandsOf(UNITS[2].study2);
+  const greenGoblin = await bandsOf("chibi-study2-goblin-green");
+  const brightChucker = await bandsOf("chibi-study2-bomb-chucker-bright");
+  const pass1Goblin = measureBands([await rasterOf(UNITS[0].study)]);
+  const todayGoblin = measureBands([
+    await readRaster(unitFile(UNITS[0].today)),
+  ]);
+  const humans = await Promise.all(
+    UNITS.map((unit) => readRaster(unitFile(unit.human))),
+  );
+  const humanGold = first("hazard", measureBands(humans));
+  const humanCrimson = first("crimson", measureBands(humans, HUMAN_RED));
+  const player = Object.fromEntries(
+    OWNERS.map(([name, hex]) => [name, rgbOf(hex)]),
+  ) as Record<string, Rgb>;
+  const gold = player.GOLD as Rgb;
+  const coral = player.CORAL as Rgb;
+  const leather = first("leather");
+  const leatherShadow = first("leatherShadow");
+  const yellow = first("yellow");
+  const wood = first("wood", cart);
+
+  const plates: Pair[] = [];
+  for (const [index, [aName, aHex]] of OWNERS.entries())
+    for (const [bName, bHex] of OWNERS.slice(index + 1))
+      plates.push(
+        pair(
+          `${title(aName)} plate`,
+          rgbOf(aHex),
+          `${title(bName)} plate`,
+          rgbOf(bHex),
+        ),
+      );
+
+  const carts: Record<string, unknown> = {};
+  for (const [label, file] of [
+    ["today", unitFile(UNITS[2].today)],
+    ["pass 1", sampleFile(UNITS[2].study)],
+    ...all
+      .filter(
+        (sample) => sample.pass === 2 && sample.assetClass === "LARGE_UNIT",
+      )
+      .map((sample) => [
+        `pass 2 ${sample.role} (${sample.recipe})`,
+        sampleFile(sample.id),
+      ]),
+  ] as [string, string][]) {
+    const bounds = opaqueWidth(await readRaster(file));
+    // The plate is centred on the anchor column (x = 34).
+    const plateLeft = 34 - PLATE_WIDTH / 2;
+    carts[label] = {
+      width: bounds.width,
+      overhangLeft: Math.max(0, plateLeft - bounds.left),
+      overhangRight: Math.max(0, bounds.right + 1 - (plateLeft + PLATE_WIDTH)),
+    };
+  }
+
+  const chosenBands: readonly [string, Record<string, BandMeasure>][] = [
+    [UNITS[0].study2, goblin],
+    [UNITS[1].study2, bombChucker],
+    [UNITS[2].study2, cart],
+  ];
+  const share = (source: Record<string, BandMeasure>, band: string): string =>
+    `${round1((source[band]?.share ?? 0) * 100)}%`;
+  const readability = {
+    bead: BEAD,
+    note: "deltaE is CIE76 in L*a*b* (about 2 is just noticeable, 10 is clear at a glance, 20 and more are different colours); contrast is the WCAG luminance ratio (1 to 21). The deuteranopia and protanopia columns repeat deltaE after the Machado 2009 simulation.",
+    grassMean: hexOf(grass),
+    skinAgainstGrass: [
+      pair("pass 2 Goblin skin", first("skin", goblin), "Grass", grass),
+      pair(
+        "pass 2 Bomb Chucker skin",
+        first("skin", bombChucker),
+        "Grass",
+        grass,
+      ),
+      pair("pass 2 skin shadow", first("skinShadow", goblin), "Grass", grass),
+      pair(
+        "pass 2 alternative leaf-green Goblin skin",
+        first("skin", greenGoblin),
+        "Grass",
+        grass,
+      ),
+      pair(
+        "pass 2 alternative bright Bomb Chucker skin",
+        first("skin", brightChucker),
+        "Grass",
+        grass,
+      ),
+      pair("pass 1 Goblin skin", first("skin", pass1Goblin), "Grass", grass),
+      pair("today's Goblin skin", first("skin", todayGoblin), "Grass", grass),
+    ],
+    skinConsistency: [
+      pair(
+        "pass 2 Goblin skin",
+        first("skin", goblin),
+        "pass 2 Bomb Chucker skin",
+        first("skin", bombChucker),
+      ),
+      pair(
+        "pass 2 Goblin skin",
+        first("skin", goblin),
+        "pass 2 cart crew skin",
+        first("skin", cart),
+      ),
+      pair(
+        "pass 2 Goblin skin",
+        first("skin", goblin),
+        "today's Goblin skin",
+        first("skin", todayGoblin),
+      ),
+      pair(
+        "pass 2 Goblin skin",
+        first("skin", goblin),
+        "pass 1 Goblin skin",
+        first("skin", pass1Goblin),
+      ),
+    ],
+    clothesAgainstGrass: [
+      pair("orange-brown leather", leather, "Grass", grass),
+      pair("leather shadow", leatherShadow, "Grass", grass),
+      pair("cart planks", wood, "Grass", grass),
+      pair("pass 1 leather", first("leather", pass1Goblin), "Grass", grass),
+      pair("Coral garment (today)", coral, "Grass", grass),
+    ],
+    leatherAgainstPlayersAndHumans: [
+      pair("orange-brown leather", leather, "Coral plate", coral),
+      pair("orange-brown leather", leather, "Gold plate", gold),
+      pair("orange-brown leather", leather, "Human crimson", humanCrimson),
+      pair("leather shadow", leatherShadow, "Coral plate", coral),
+      pair("leather shadow", leatherShadow, "Human crimson", humanCrimson),
+    ],
+    yellow: [
+      pair("bomb stripe and rocket yellow", yellow, "Human gold", humanGold),
+      pair("bomb stripe and rocket yellow", yellow, "Gold player", gold),
+      pair("cart planks", wood, "Human gold", humanGold),
+      pair("cart planks", wood, "Gold player", gold),
+      pair("pass 2 Goblin skin", first("skin", goblin), "Gold player", gold),
+      pair(
+        "pass 2 Bomb Chucker skin",
+        first("skin", bombChucker),
+        "Gold player",
+        gold,
+      ),
+    ],
+    shareOfSprite: {
+      note: "Share of each chosen sprite's opaque pixels per role. In pass 1 the near-black leather was 35% of the three sprites pooled.",
+      ...Object.fromEntries(
+        chosenBands.map(([id, bands]) => [
+          id,
+          {
+            skin: `${round1(((bands.skin?.share ?? 0) + (bands.skinShadow?.share ?? 0)) * 100)}%`,
+            leather: `${round1(((bands.leather?.share ?? 0) + (bands.leatherShadow?.share ?? 0)) * 100)}%`,
+            wood: share(bands, "wood"),
+            yellow: share(bands, "yellow"),
+            nearBlack: share(bands, "dark"),
+          },
+        ]),
+      ),
+    },
+    cartWidthAgainstPlate: {
+      note: `Opaque width of the Rocket Cart sprite in pixels against its ${PLATE_WIDTH} px base plate, which is centred on the anchor column (x = 34); overhang is the part of the sprite beyond each end of the plate.`,
+      plateWidth: PLATE_WIDTH,
+      ...carts,
+    },
+    plates,
+    platesAgainstGrass: OWNERS.map(([name, hex]) =>
+      pair(`${title(name)} plate`, rgbOf(hex), "Grass", grass),
+    ),
+  };
+  await writeFile(
+    path.join(OUT, "readability.json"),
+    `${JSON.stringify(readability, null, 2)}\n`,
+  );
+  console.log(
+    `wrote ${path.relative(ROOT, path.join(OUT, "readability.json"))}`,
+  );
+
+  const palette = {
+    bead: BEAD,
+    note: "Measured on the three chosen pass 2 sprites pooled: share of opaque pixels and the three commonest colours of each role. The fuse spark and the orange rocket paper are the same orange as the leather and are counted with it.",
+    roles: Object.fromEntries(
+      BANDS_2.map((band) => [
+        band.id,
+        {
+          label: band.label,
+          share: `${round1((pooled[band.id]?.share ?? 0) * 100)}%`,
+          colours: pooled[band.id]?.colours.map((colour) => colour.hex) ?? [],
+        },
+      ]),
+    ),
+  };
+  await writeFile(
+    path.join(OUT, "palette.json"),
+    `${JSON.stringify(palette, null, 2)}\n`,
+  );
+  const hexes = (source: Record<string, BandMeasure>, band: string) =>
+    source[band]?.colours.map((colour) => colour.hex) ?? [];
+  await writeSwatches([
+    ...BANDS_2.map((band) => ({
+      label: `${band.label} (${palette.roles[band.id]?.share ?? ""})`,
+      colours: palette.roles[band.id]?.colours ?? [],
+    })),
+    {
+      label: "alternative leaf-green skin",
+      colours: hexes(greenGoblin, "skin"),
+    },
+    { label: "pass 1 skin", colours: hexes(pass1Goblin, "skin") },
+    { label: "pass 1 leather", colours: hexes(pass1Goblin, "leather") },
+    { label: "today's Goblin skin", colours: hexes(todayGoblin, "skin") },
+    { label: "Grass (mean)", colours: [hexOf(grass)] },
+    { label: "Human gold", colours: hexes(measureBands(humans), "hazard") },
+    {
+      label: "Human crimson",
+      colours: hexes(measureBands(humans, HUMAN_RED), "crimson"),
+    },
+    {
+      label: "players: Coral, Teal, Gold, Violet",
+      colours: OWNERS.map(([, hex]) => hex),
+    },
+  ]);
+}
+
 async function paletteAndReadability(all: readonly Sample[]): Promise<void> {
-  const chosen = all.filter((sample) => sample.role === "chosen");
+  const chosen = all.filter(
+    (sample) => sample.pass === 1 && sample.role === "chosen",
+  );
   const rasters = await Promise.all(
     chosen.map((sample) => readRaster(sampleFile(sample.id))),
   );
@@ -791,7 +1211,7 @@ async function paletteAndReadability(all: readonly Sample[]): Promise<void> {
       );
 
   const readability = {
-    bead: "pulp_wars-3tq.8",
+    bead: BEAD,
     note: "deltaE is CIE76 in L*a*b* (about 2 is just noticeable, 10 is clear at a glance, 20 and more are different colours); contrast is the WCAG luminance ratio (1 to 21). The deuteranopia and protanopia columns repeat deltaE after the Machado 2009 simulation.",
     grassMean: hexOf(grass),
     skinAgainstGrass: [
@@ -863,7 +1283,7 @@ async function paletteAndReadability(all: readonly Sample[]): Promise<void> {
   );
 
   const palette = {
-    bead: "pulp_wars-3tq.8",
+    bead: BEAD,
     note: "Measured on the three chosen study sprites pooled: share of opaque pixels and the three commonest colours of each role.",
     roles: Object.fromEntries(
       BANDS.map((band) => [
@@ -1067,7 +1487,28 @@ const VIEWPORTS = [
 const ZOOMS = ["1", "0.75"] as const;
 const SCENES = ["FOUR", "MIXED"] as const;
 type SceneKind = (typeof SCENES)[number];
-type Variant = "today" | "study" | "plain" | "marker";
+type Variant = "today" | "study" | "pass1" | "pass2" | "plain" | "marker";
+
+/** The study panels beside TODAY: one in pass 1, both passes in pass 2. */
+const STUDY_VARIANTS: readonly {
+  readonly variant: Variant;
+  readonly pass: 1 | 2;
+  readonly label: string;
+}[] =
+  PASS === 1
+    ? [{ variant: "study", pass: 1, label: "Study: fixed scrapyard colours" }]
+    : [
+        {
+          variant: "pass1",
+          pass: 1,
+          label: "Pass 1: near-black leather, striped rocket",
+        },
+        {
+          variant: "pass2",
+          pass: 2,
+          label: "PASS 2: orange-brown leather, fireworks cart",
+        },
+      ];
 
 const captureFile = (
   scene: SceneKind,
@@ -1089,18 +1530,19 @@ async function captureAll(
   const chrome = process.env.CHROME_PATH;
   if (chrome === undefined || chrome === "")
     throw new Error("Set CHROME_PATH to a Chrome binary (or --skip-capture)");
-  const chosen = all
-    .filter((sample) => sample.role === "chosen")
-    .map(({ id, subject, assetClass, width, height, anchor, url }) => ({
-      id,
-      subject,
-      assetClass,
-      width,
-      height,
-      ...(anchor === undefined ? {} : { anchor }),
-      url,
-      fixedColours: true,
-    }));
+  const chosenOf = (pass: 1 | 2) =>
+    all
+      .filter((sample) => sample.role === "chosen" && sample.pass === pass)
+      .map(({ id, subject, assetClass, width, height, anchor, url }) => ({
+        id,
+        subject,
+        assetClass,
+        width,
+        height,
+        ...(anchor === undefined ? {} : { anchor }),
+        url,
+        fixedColours: true,
+      }));
   const debugPort = 10_600 + (process.pid % 80);
   const profile = await mkdtemp(path.join(tmpdir(), "pulp-wars-goblin-"));
   const url = new URL(baseUrl);
@@ -1179,13 +1621,16 @@ async function captureAll(
         { scene: "FOUR", variant: "marker" },
         ...SCENES.flatMap((scene) => [
           { scene, variant: "today" as const },
-          { scene, variant: "study" as const },
+          ...STUDY_VARIANTS.map(({ variant }) => ({ scene, variant })),
         ]),
       ];
       for (const job of jobs) {
+        const study = STUDY_VARIANTS.find(
+          (entry) => entry.variant === job.variant,
+        );
         const options = {
           kind: job.scene,
-          ...(job.variant === "study" ? { samples: chosen } : {}),
+          ...(study === undefined ? {} : { samples: chosenOf(study.pass) }),
           ...(job.variant === "marker" ? { marker: true } : {}),
         };
         await evaluate(
@@ -1425,12 +1870,15 @@ async function compose(): Promise<void> {
       };
       for (const scene of SCENES) {
         const panels: Panel[] = [];
-        for (const variant of ["today", "study"] as const)
+        for (const { variant, label } of [
+          {
+            variant: "today" as Variant,
+            label: `Today (${scene === "FOUR" ? "four Goblin players" : "Goblin against Human"})`,
+          },
+          ...STUDY_VARIANTS,
+        ])
           panels.push({
-            label:
-              variant === "today"
-                ? `Today (${scene === "FOUR" ? "four Goblin players" : "Goblin against Human"})`
-                : "Study: fixed scrapyard colours",
+            label,
             raster: crop(
               await loadRaster(
                 captureFile(scene, variant, viewport.name, zoom),
@@ -1444,12 +1892,17 @@ async function compose(): Promise<void> {
             `before-after-${scene.toLowerCase()}-${viewport.name}-zoom-${zoom}.png`,
           ),
           panels,
-          2,
+          panels.length,
         );
       }
       // The same unit of four players: the three Grass rows, columns 1-5.
       const study = await loadRaster(
-        captureFile("FOUR", "study", viewport.name, zoom),
+        captureFile(
+          "FOUR",
+          STUDY_VARIANTS[STUDY_VARIANTS.length - 1]?.variant ?? "study",
+          viewport.name,
+          zoom,
+        ),
       );
       const strip = crop(study, {
         left: centre.x - 2.5 * cell,
@@ -1478,7 +1931,7 @@ async function compose(): Promise<void> {
 async function writeIndex(): Promise<void> {
   const files = [];
   for (const name of (await readdir(OUT)).sort()) {
-    if (name === "index.json") continue;
+    if (name === "index.json" || !/\.(png|json)$/.test(name)) continue;
     const bytes = await readFile(path.join(OUT, name));
     const size = name.endsWith(".png")
       ? await sharp(bytes).metadata()
@@ -1493,7 +1946,7 @@ async function writeIndex(): Promise<void> {
     path.join(OUT, "index.json"),
     `${JSON.stringify(
       {
-        bead: "pulp_wars-3tq.8",
+        bead: BEAD,
         note: "Review evidence of the Goblin direction study. The before-after and same-unit images are drawn by the real board host with the look the game draws by default; nothing here is registered as production art.",
         files,
       },
@@ -1510,8 +1963,9 @@ async function main(): Promise<void> {
   await candidatesSheet(all);
   await chosenSheet(all, 1);
   await chosenSheet(all, 4);
-  await alternativesSheet(all);
-  await paletteAndReadability(all);
+  await alternativesSheet(all.filter((sample) => sample.pass === PASS));
+  if (PASS === 1) await paletteAndReadability(all);
+  else await paletteAndReadabilityPass2(all);
   if (!process.argv.includes("--skip-capture")) {
     const port = Number(option("--port") ?? 6481);
     const server = await startDevServer(port);

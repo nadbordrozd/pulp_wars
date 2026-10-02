@@ -1065,6 +1065,11 @@ game draws the Goblins exactly as before, no sprite is registered, and
 [GOBLIN.md](factions/GOBLIN.md) is unchanged. Bead `pulp_wars-3tq.9`
 converts the roster after the review.
 
+**Pass 2** (bead `pulp_wars-3tq.10`) follows the user's review of this
+first pass: darker skin, orange-brown leather loincloths instead of the
+dark clothing, and a fireworks cart. It is the [last subsection](#pass-2);
+the text up to there describes pass 1.
+
 ![Four Goblin players: today's sprites and the study's, drawn by the game's board](../../art/pixellab/reviews/goblin-direction-study/before-after-four-desktop-zoom-1.png)
 
 ### The look
@@ -1254,6 +1259,219 @@ Order: the fragment and the batch scaffold; Orc Brute, Wolf Rider and Troll
 as the next sample (they settle the two other skin tones); then the rest,
 the portraits, and the cities with their renderer change last. Until then
 a Goblin player keeps today's sprites on plates, as now.
+
+### Pass 2
+
+**Status:** bead `pulp_wars-3tq.10`, waiting for the user's review. Still a
+study: nothing is live and nothing is registered. The user's feedback on
+the first pass: "let's make the skin a bit darker but reduce the dark
+clothing. try orange-brown leather loincloths and such. for the cart let's
+try a fireworks cart look rather than a missile."
+
+![Today, pass 1, pass 2 and the Human unit of the same role](../../art/pixellab/reviews/goblin-direction-study/pass-2/chosen-x4.png)
+
+#### What changed
+
+- **Skin:** from the yellow of pass 1 (`#bcbb17`, hue 57°) to an olive
+  green a step darker than today's (`#8e9a35` and `#929f2f`, hue 67°;
+  today's is `#a8b941`), with a much darker shadow (`#4b560f`). The Goblin
+  and the Bomb Chucker differ by 4.8, which is not visible.
+- **Clothes:** the near-black leather (35% of the pass 1 sprites) is gone.
+  Both figures wear an orange-brown leather cap, crossed chest straps and a
+  loincloth, and show bare skin on the chest, arms and legs: skin is 33% of
+  the Goblin and 23% of the Bomb Chucker. Near-black is left in the belt,
+  the wrist bands, gloves and boots, and the bomb.
+- **Hazard stripe:** only on the Bomb Chucker's bomb. The chosen Goblin has
+  none; `goblin-leather-edit-m` in the alternatives shows a Goblin with the
+  pass 1 striped shoulder pad, to compare.
+- **Rocket Cart:** a fireworks cart. A roped bundle of five paper rockets
+  on sticks (red, orange, yellow, blue, green, with cream cones, a star or
+  patch on each wrapper and one lit fuse) on a rickety cart of pale planks,
+  with the crew goblin riding in the cart and holding a match.
+- **Principles:** unchanged. Fixed colours, no owner area, the same
+  canvases and anchors, the same outline, camera and light.
+
+| Role                           | Colours (measured on the three sprites) | Share of the sprites | Used for                                                   |
+| ------------------------------ | --------------------------------------- | -------------------- | ---------------------------------------------------------- |
+| Skin                           | `#929f2f`, `#8e9a35`; shadow `#4b560f`  | 17%                  | Goblin skin: olive green, hue about 67° (Grass is 90°)     |
+| Orange-brown leather           | `#ca4d02`, `#e66607`; shadow `#7e2602`  | 17%                  | caps, straps, loincloths, the satchel; also the fuse spark |
+| Planks, sticks, rope           | `#ac700f`, `#ce9435`, `#fbba55`         | 11%                  | the cart (24% of that sprite), rocket sticks, rope         |
+| Near-black                     | `#151b1e`, `#2b2f36`, `#350e01`         | 12%                  | the bomb, belts, gloves and boots, gaps between planks     |
+| Gunmetal                       | `#687a8e`, `#909fb5`, `#3a4759`         | 3.5%                 | the dagger, goggles, buckles                               |
+| Yellow                         | `#fbc208`, `#ffc100`                    | 1.5%                 | the bomb's hazard band; one yellow rocket                  |
+| Rocket paper: red, blue, green | `#e00c02`, `#075c93`, `#27781c`         | 4.5%                 | the fireworks only                                         |
+| Paper cream                    | `#fee182`, `#fef1b7`                    | 2.4%                 | rocket cones, teeth                                        |
+
+`npm run art:goblin-direction-study-review` now writes the pass 2 evidence
+(`--pass 1` rewrites the pass 1 evidence unchanged). The table is measured
+by it (`pass-2/palette.png`, `pass-2/palette.json`).
+
+- **Goblin** (`goblin-leather-edit-k`, candidate 0): leather cap, crossed
+  straps, loincloth, today's belt and wrist bands, no stripe.
+- **Bomb Chucker** (`bomb-chucker-leather-edit-f`, candidate 0): a leather
+  flying cap with the goggles, crossed straps to the satchel, loincloth;
+  the bomb keeps one hazard band and a small spark.
+- **Rocket Cart** (`fireworks-cart-edit-h`, candidate 0): the fireworks
+  cart on pale planks.
+
+![The chosen sprites and the alternatives kept](../../art/pixellab/reviews/goblin-direction-study/pass-2/alternatives-x4.png)
+
+Alternatives kept for the review: a truer leaf-green Goblin with a
+headband (`goblin-leather-edit-j`, skin `#67952d`, hue 87°) and the same
+with a striped shoulder pad (`-m`); the Bomb Chucker with the rusted pot
+helmet of pass 1 (`bomb-chucker-leather-edit-e`) and with a brighter skin
+(`-k`); the cart in near-black planks (`fireworks-cart-edit-g`), in
+red-brown planks (`-i`) and with the crew beside it (`-c`).
+
+#### How it was made
+
+The same run,
+[`art/explorations/goblin-direction-2026-10/`](../../art/explorations/goblin-direction-2026-10/),
+extended: 35 new recipes (seeds from 79001), 35 PixelLab calls, 66
+candidates; the pass 1 recipes, records and receipts are unchanged. One job
+failed at PixelLab (`bomb-chucker-leather-edit-h`) and stays recorded as
+submitted. `faction.md` now carries the pass 2 fragment (the pass 1 text is
+kept in it as history) and `subjects.json` a `UNIT:GOBLIN:CATAPULT/FIREWORKS`
+subject for the two fresh creations. `samples.ts` cuts the pass 2 samples as
+`chibi-study2-*` beside the pass 1 `chibi-study-*`.
+
+![Every pass 2 candidate with its verdict](../../art/pixellab/reviews/goblin-direction-study/pass-2/candidates-x3.png)
+
+| Question                | Tried                                                                                                            | Finding                                                                                                                                                                                                                                                    |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wardrobe                | loincloth and one strap (`goblin-…-a`); cap and crossed straps (`-b`); open vest and shoulder plate (`-c`)       | "Take off the tunic so his chest, belly, arms and legs are bare skin; he wears only …" redraws the body well from either the live sprite or a pass 1 one. The vest read as armour again.                                                                   |
+| How dark is the skin?   | "deeper, darker" (`-a`, `-d`); "one shade darker" (`-g`); "a little lighter" (`-h`); "clearly lighter" (`-k`)    | PixelLab has two answers: nearly black (`#46480c`, `#00290f`) or today's pale olive (`#a8ba47`). The chosen tone came from lifting a too-dark result ("a mid-tone … the shadow only a little darker than the light tone"), not from darkening a light one. |
+| Olive or true green?    | "moss", "leaf green" (emerald with black limbs); "the green of a fresh pea pod … the same darkness" (`-j`)       | The pea-pod wording gave a clean leaf green (`#67952d`) on one Goblin and did nothing on the other Goblin and on the Bomb Chucker (three tries). The olive tone is the one all three figures reach.                                                        |
+| Helmet or cap?          | leather flying cap (`bomb-chucker-…-f`); rusted pot helmet (`-e`); red hood (`-b`)                               | The cap carries the orange-brown leather and matches the Goblin's; the pot helmet is the darkest thing left on the figure. Both are in the alternatives.                                                                                                   |
+| Fireworks: edit or new? | edits of the pass 1 cart (`fireworks-cart-edit-a`) and of the live cart (`-b`); two fresh creations (`-a`, `-b`) | The edit of the pass 1 cart kept the chibi cart and replaced the rocket with a bundle. The fresh creations drew a big realistic goblin beside a small cart, and a cart of dynamite: not the roster's style.                                                |
+| Pencils or fireworks?   | plain tubes (`-edit-a`, `-b`); a star or patch on each wrapper and a lit fuse (`-edit-c`)                        | Plain coloured tubes with cream cones are coloured pencils. A second colour on each wrapper, the rope and one spark make them fireworks.                                                                                                                   |
+| A narrower cart         | "shorter cart" (`-edit-d`, `-f`); the crew on the cart (`-edit-e`, `-g`)                                         | Asking for a shorter cart changed nothing (twice). Moving the crew goblin from the ground onto the cart took the sprite from 60 to 58 px; pass 1 and today's are 65.                                                                                       |
+| Plank colour            | near-black brown (`-edit-g`); pale (`-edit-h`); red-brown (`-edit-i`)                                            | The pale planks are the least dark and lift the cart off the Grass; they are also the colour nearest to the Human Catapult.                                                                                                                                |
+
+Prompt notes added to those of pass 1:
+
+- **Ask for bare skin by body part** ("his chest, belly, arms and legs are
+  bare skin") and name each remaining garment.
+- **Change the skin alone**, in an edit of its own. Skin and leather in one
+  edit gave a grey, muddy figure.
+- **Never say "deeper" or "darker" for skin.** Say what the shadow tone
+  should be relative to the light tone.
+- **"Change only the colour of the wood"** recolours a vehicle cleanly;
+  "like old walnut" gives red-brown, "weathered mid brown with orange-brown
+  highlights" gives a pale honey.
+
+#### Readability
+
+`pass-2/readability.json`, same measures as pass 1.
+
+| Check                                         | Result                                                                                                                                                                                                                                     |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Skin against Grass (`#89b75b`)                | 17 (Goblin) and 18 (Bomb Chucker): the same as today's 18, and half of pass 1's 34. Under simulated deuteranopia 12 and 14. The skin's shadow tone is 39 with a contrast of 3.4. The outline and the shadow do the separating, as today.   |
+| The leaf-green alternative against Grass      | 14: a truer green is nearer to the Grass in hue; it is darker than the Grass (contrast 1.5), which keeps it apart.                                                                                                                         |
+| Clothes against Grass                         | Leather 83 (contrast 2.0), its shadow 79 (4.2), planks 53. Pass 1's leather had a contrast of 6.2: the figures are lighter and the silhouette is weaker than in pass 1, though stronger than today's Coral or Teal garment (contrast 1.3). |
+| Orange-brown leather against the Coral plate  | 32 (27 under deuteranopia): different colours, but the nearest pair in the study. A Coral player's Goblin is an orange figure on a coral plate.                                                                                            |
+| Orange-brown leather against the Gold plate   | 51.                                                                                                                                                                                                                                        |
+| Orange-brown leather against Human crimson    | 37 for the lit tone; the leather's shadow (`#7e2602`) is 22 from the crimson (`#980322`), and 8 under deuteranopia. Told apart by amount, by the green skin beside it, and by the Humans' steel and gold.                                  |
+| Yellow against Human gold and the Gold plate  | 8 and 20: as in pass 1, the same yellow as the Human gold. It is 0% of the Goblin, 2% of the Bomb Chucker and 2.2% of the cart (one rocket).                                                                                               |
+| Pale planks against Human gold and Gold plate | 36 and 28: browner and darker than both.                                                                                                                                                                                                   |
+| Skin against the Gold plate                   | 30 (Goblin) and 29 (Bomb Chucker), up from 22 and 17 in pass 1: the Gold player's Goblin is no longer yellow on gold.                                                                                                                      |
+| Four Goblin players by plate only             | Unchanged: the plates differ by 61 to 110 and are the only cue.                                                                                                                                                                            |
+| The cart against its plate                    | 58 px over a 52 px plate: 3 px beyond each end. Pass 1 and today's cart are 65 px (5 and 8 px beyond). The plate's tips and front edge show; see the scenes.                                                                               |
+| Skin from unit to unit                        | Goblin to Bomb Chucker 4.8. The cart's tiny crew goblin is a brighter green (`#5da923`, 28 away): it is 1.4% of the sprite.                                                                                                                |
+
+![Four Goblin players: today, pass 1 and pass 2, drawn by the game's board](../../art/pixellab/reviews/goblin-direction-study/pass-2/before-after-four-desktop-zoom-1.png)
+
+![Goblin against Human at zoom 0.75](../../art/pixellab/reviews/goblin-direction-study/pass-2/before-after-mixed-desktop-zoom-0.75.png)
+
+![The four Goblin players' units, as seen and under simulated colour blindness](../../art/pixellab/reviews/goblin-direction-study/pass-2/same-unit-desktop-zoom-1.png)
+
+Evidence in
+[`art/pixellab/reviews/goblin-direction-study/pass-2/`](../../art/pixellab/reviews/goblin-direction-study/pass-2/):
+`candidates-x3.png`, `chosen-{1x,x4}.png` (today in four colours, pass 1,
+pass 2, Human), `alternatives-x4.png`, `palette.{png,json}`,
+`readability.json`,
+`before-after-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png` (three
+panels: today, pass 1, pass 2), `same-unit-{desktop,phone}-zoom-{1,0.75}.png`
+and `index.json`. The pass 1 files stay one directory up.
+
+#### Findings
+
+- **The lighter look works as a faction.** Green skin, orange leather and
+  a little black read as "goblin raiders" at zoom 0.75, and the three
+  units belong together: the same cap, the same straps, the same skin.
+- **It is calmer and friendlier than pass 1, and less contrasty.** On
+  Grass the figures are mid-tones on a mid-tone; pass 1's black figures
+  stood out more. On Forest and Mountain the difference is small.
+- **The fireworks cart is the strongest sprite of the study.** It is the
+  only Goblin unit with red, blue and green on it, so it reads as the
+  siege unit at once, and it cannot be mistaken for the Human Catapult.
+- **The faction now has no signature accent on its basic unit.** With the
+  stripe gone from the Goblin, the faction mark is the skin and the
+  leather; the hazard stripe is a mark of "things that explode".
+- **Against Humans** the two factions still separate at once: crimson,
+  gold and steel against green skin and orange leather. The Bomb Chucker's
+  orange cap beside the Marksman's crimson hood is the nearest pair.
+
+#### Weak spots
+
+- **The leather is more orange than brown** (`#ca4d02`, `#e66607`). An
+  edit asking for "browner saddle leather" together with the skin failed;
+  a leather-only edit was not tried. It is the colour nearest to the Coral
+  plate.
+- **The skin is olive, not a true green**, and no nearer to separable from
+  the Grass than today's. The leaf-green alternative could not be
+  reproduced on the Bomb Chucker.
+- **The cart's crew goblin is small, dark and a different green**, and is
+  hard to see inside the cart at zoom 0.75.
+- **The cart is still 6 px wider than its plate.** No edit made the cart
+  itself shorter.
+- **The pale planks are near the Human Catapult's wood.** The dark and the
+  red-brown carts are in the alternatives.
+- **The rockets' cones still look a little like pencil tips** at ×4; at
+  1:1 they read as fireworks.
+- **Portraits, cities and the interface are not touched.**
+
+#### Open questions for the user
+
+1. Skin: the olive green chosen (`#8e9a35`), or the truer leaf green of
+   the alternative (`#67952d`), which would need more tries per unit?
+2. Leather: is this orange right, or should it be browner (less like the
+   Coral plate)?
+3. Is the Goblin right with no stripe, or should it keep a small striped
+   pad (`goblin-leather-edit-m`)?
+4. Bomb Chucker: leather flying cap (chosen) or the rusted pot helmet?
+5. Cart planks: pale (chosen), red-brown or near-black?
+6. Is losing some contrast on Grass, compared with pass 1, acceptable?
+7. Still open from pass 1: wide units cover their plate. Accept it, or
+   give large units a wider plate?
+
+#### Recommendation for the rest of the roster, in this look
+
+As in pass 1, one production batch (`direction-goblin`,
+`fixedFactionColours`, every asset `ownerColour: false`) of edits of the
+accepted `goblin`, `5-goblin` and `cities-goblin` assets, importing the
+three chosen recipes with `art:chibi -- import`, after a new
+`factions/GOBLIN.md` fragment with the pass 2 palette. The lighter look
+costs more than pass 1 did: taking a tunic off redraws the body, and the
+skin tone needs its own edit. Expect about 3 edits per unit (wardrobe,
+skin, repair), 1.5 per portrait and 2 per city: roughly 45 to 60 PixelLab
+calls.
+
+| Piece                 | Plan in this look                                                                                                   | Predicted difficulty                                                                                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wolf Rider            | bare-chested rider in a leather cap and loincloth; the red saddle blanket becomes orange-brown hide                 | Low to medium. Easier than in pass 1: the grey wolf, green rider and orange blanket are three tones, so they no longer merge.                                                                  |
+| Orc Brute             | darker, greyer green skin; leather harness and loincloth; a plank shield with a rusted iron rim, no red skull       | Medium. More bare skin makes the Orc's skin tone the main difference from a Goblin: fix the Orc green first, on this unit.                                                                     |
+| Orc Warboss (Captain) | grey-green skin; the red cape becomes an orange-brown hide cape; rusted shoulder plates; tin megaphone unchanged    | Medium. An orange-brown cape is a third of the sprite and the largest leather area in the faction: check it against the Coral plate.                                                           |
+| Scrap Buggy           | a plank and rusted-panel body, a bundle of fireworks or a string of bangers on the back; driver as the Bomb Chucker | High. Today the whole body is the owner colour; the edit must invent a material without redrawing the car. Planks worked on the cart ("change only the colour of the wood").                   |
+| Troll                 | grey-blue stone skin; the red smock becomes an orange-brown hide loincloth and one shoulder strap                   | Medium to high. Taking the smock off redraws most of a large body; expect a wardrobe edit and a skin edit, and check the proportions against today's.                                          |
+| Portraits (8)         | edits of the `5-goblin` busts: cap or headband, bare shoulders, a strap                                             | Low to medium. A bust shows mostly skin and cap, so the skin tone must be held to one value across all eight.                                                                                  |
+| Cities 1 to 3         | red roofs and tents become orange-brown hide and pale planks; a rack of fireworks on the tier 3 tower               | Medium to high. Needs the renderer decision of pass 1 (a code-drawn pennant with recorded anchors, `factionCities` no longer `"CLASSIC"` for Goblins). Hide roofs must stay off the Coral hue. |
+| Kaboom! and WAAAGH!   | the bomb icon gets the hazard band; fireworks could mark WAAAGH!                                                    | Low.                                                                                                                                                                                           |
+
+Order: decide the leather and skin questions above first, since every
+later edit copies them; then the fragment and the batch scaffold; Orc
+Brute, Wolf Rider and Troll as the next sample; then the rest, the
+portraits, and the cities with their renderer change last.
 
 ## Sources
 

@@ -1,0 +1,36 @@
+{
+  "id": "bomb-chucker-leather-edit-g",
+  "jobId": "2a645798-f456-4c7b-abe3-a441d61924b6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79107,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A small colour change only: his skin (face, ears, chest, belly, arms, legs) becomes one shade darker and greener, a medium leaf green with a slightly darker green shadow tone; and the red-orange leather hood, straps and loincloth become a browner orange-brown saddle leather, not red. Keep everything else exactly the same: the goggles, the bomb with its yellow stripes and spark, gloves, boots, satchel, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "A small colour change only: his skin (face, ears, chest, belly, arms, legs) becomes one shade darker and greener, a medium leaf green with a slightly darker green shadow tone; and the red-orange leather hood, straps and loincloth become a browner orange-brown saddle leather, not red. Keep everything else exactly the same: the goggles, the bomb with its yellow stripes and spark, gloves, boots, satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "A small colour change only: his skin (face, ears, chest, belly, arms, legs) becomes one shade darker and greener, a medium leaf green with a slightly darker green shadow tone; and the red-orange leather hood, straps and loincloth become a browner orange-brown saddle leather, not red. Keep everything else exactly the same: the goggles, the bomb with its yellow stripes and spark, gloves, boots, satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, legs) becomes one shade darker and greener, a medium leaf green with a slightly darker green shadow tone; and the red-orange leather hood, straps and loincloth become a browner orange-brown saddle leather, not red. Keep everything else exactly the same: the goggles, the bomb with its yellow stripes and spark, gloves, boots, satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "bomb-chucker-leather-edit-b",
+      "candidate": 0,
+      "sha256": "9dbc3d1cdf91ed5b07e00f8b75377ad75abf5de27e779ce204740db19674a6b3"
+    }
+  }
+}

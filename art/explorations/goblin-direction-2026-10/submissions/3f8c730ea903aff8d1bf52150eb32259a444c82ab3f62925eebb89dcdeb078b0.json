@@ -1,0 +1,37 @@
+{
+  "id": "goblin-leather-edit-b",
+  "jobId": "8f018f82-537e-4b49-abc1-5b835f644be1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change his clothes and skin: the red bandana becomes a small orange-brown leather cap; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a harness of two crossed orange-brown leather straps on the chest. His skin a slightly deeper, darker true goblin green, not yellow. Keep the face, ears, dagger, belt, wrist bands, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change his clothes and skin: the red bandana becomes a small orange-brown leather cap; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a harness of two crossed orange-brown leather straps on the chest. His skin a slightly deeper, darker true goblin green, not yellow. Keep the face, ears, dagger, belt, wrist bands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change his clothes and skin: the red bandana becomes a small orange-brown leather cap; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a harness of two crossed orange-brown leather straps on the chest. His skin a slightly deeper, darker true goblin green, not yellow. Keep the face, ears, dagger, belt, wrist bands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change his clothes and skin: the red bandana becomes a small orange-brown leather cap; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a harness of two crossed orange-brown leather straps on the chest. His skin a slightly deeper, darker true goblin green, not yellow. Keep the face, ears, dagger, belt, wrist bands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "goblin",
+      "recipe": "goblin-a-edit-2",
+      "candidate": 0,
+      "sha256": "078acc2a1db50bde70d5b203e0f55a238908e4e0103095aae1d38bfaed59fd13"
+    }
+  }
+}

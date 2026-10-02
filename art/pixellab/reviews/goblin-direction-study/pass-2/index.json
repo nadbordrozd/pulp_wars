@@ -1,0 +1,116 @@
+{
+  "bead": "pulp_wars-3tq.10",
+  "note": "Review evidence of the Goblin direction study. The before-after and same-unit images are drawn by the real board host with the look the game draws by default; nothing here is registered as production art.",
+  "files": [
+    {
+      "file": "alternatives-x4.png",
+      "sha256": "d45b455e32b4df32e38c1a1fe78b494324d36928bc43dd6e04f693caa35434ca",
+      "width": 1438,
+      "height": 1404
+    },
+    {
+      "file": "before-after-four-desktop-zoom-0.75.png",
+      "sha256": "62dc735413b6b9ae48c86c2a04b3f51455b5ccc486295dc3a4ec475fcaf140b3",
+      "width": 1398,
+      "height": 519
+    },
+    {
+      "file": "before-after-four-desktop-zoom-1.png",
+      "sha256": "c44a88b78b8a55ba0cdcb9a1fed6dd02d90c902f35d788fef1877a61197b0613",
+      "width": 1848,
+      "height": 674
+    },
+    {
+      "file": "before-after-four-phone-zoom-0.75.png",
+      "sha256": "4c770a5e8e2682213e84fcc491014037b82c4298627dbff34bf6c31521c8f015",
+      "width": 3558,
+      "height": 1449
+    },
+    {
+      "file": "before-after-four-phone-zoom-1.png",
+      "sha256": "8710385e4ffb8856937cbb3a4a8142a6808090c80fb34f2d221ccd17d03f4064",
+      "width": 3558,
+      "height": 1914
+    },
+    {
+      "file": "before-after-mixed-desktop-zoom-0.75.png",
+      "sha256": "d0e7b0e1536a6bf8be3c859a5ac59163fff9ab6f3e0875bd0e53de8d4ceff27a",
+      "width": 1398,
+      "height": 519
+    },
+    {
+      "file": "before-after-mixed-desktop-zoom-1.png",
+      "sha256": "4403cb14bb92b4bb30cc740caad322f3fb9e75663e00647d239626d98641e7ff",
+      "width": 1848,
+      "height": 674
+    },
+    {
+      "file": "before-after-mixed-phone-zoom-0.75.png",
+      "sha256": "48b765377ee82d4c71138d48a335b927e5492a7bd64e10d2c278c9efaa939b6a",
+      "width": 3558,
+      "height": 1449
+    },
+    {
+      "file": "before-after-mixed-phone-zoom-1.png",
+      "sha256": "43eb08259a28c9de5154006f8a96b3002b5010cba144f3c1cb0dca6a24278809",
+      "width": 3558,
+      "height": 1914
+    },
+    {
+      "file": "candidates-x3.png",
+      "sha256": "f20f705891349ef5fc337c627ec436d41f5c1bc91050f80b0cc1cbfd0865f3eb",
+      "width": 2202,
+      "height": 4712
+    },
+    {
+      "file": "chosen-1x.png",
+      "sha256": "3146951244a92e7b6e30202e7d6473cf4aad7f4af0707e49abda3c2f5dfb06a3",
+      "width": 814,
+      "height": 358
+    },
+    {
+      "file": "chosen-x4.png",
+      "sha256": "a182eafd02b7e961dbde9499cbc20e4f2c0479911511cc8c93c616813c9c926d",
+      "width": 2662,
+      "height": 1294
+    },
+    {
+      "file": "palette.json",
+      "sha256": "b03bf669f9c50c6e458768d449161a937bb3db50e2d63281e554267cf014bfe0"
+    },
+    {
+      "file": "palette.png",
+      "sha256": "ffb6dd5b8e2dc34ff02e19db3c0fa538c78e262db603e6b46d9e7b082ca57ab4",
+      "width": 1058,
+      "height": 1566
+    },
+    {
+      "file": "readability.json",
+      "sha256": "0172b5ea89a6a1f822070f721fb8877dfa03bfeb5b8f0ed744db3f71980fefb3"
+    },
+    {
+      "file": "same-unit-desktop-zoom-0.75.png",
+      "sha256": "e7112d385e88e9571c947531e567e7703f6a635dac6d84814beca28a082c9bab",
+      "width": 948,
+      "height": 261
+    },
+    {
+      "file": "same-unit-desktop-zoom-1.png",
+      "sha256": "c03efaebde704e624cd244a925f6b72b3ebdb96185ed88e08d9e00f43fa5df46",
+      "width": 1248,
+      "height": 330
+    },
+    {
+      "file": "same-unit-phone-zoom-0.75.png",
+      "sha256": "680e754839fc518253ad21ab909a8e6698d4e9d1d01f10c4772ce505852269ed",
+      "width": 2748,
+      "height": 675
+    },
+    {
+      "file": "same-unit-phone-zoom-1.png",
+      "sha256": "a5f2b44a2c20367062b659e5e9bc044ab7f9377fa2653881df78209702e4e152",
+      "width": 3558,
+      "height": 882
+    }
+  ]
+}

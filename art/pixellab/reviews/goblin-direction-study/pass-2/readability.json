@@ -1,0 +1,373 @@
+{
+  "bead": "pulp_wars-3tq.10",
+  "note": "deltaE is CIE76 in L*a*b* (about 2 is just noticeable, 10 is clear at a glance, 20 and more are different colours); contrast is the WCAG luminance ratio (1 to 21). The deuteranopia and protanopia columns repeat deltaE after the Machado 2009 simulation.",
+  "grassMean": "#89b75b",
+  "skinAgainstGrass": [
+    {
+      "a": "pass 2 Goblin skin #8e9a35",
+      "b": "Grass #89b75b",
+      "deltaE": 17.4,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 11.7,
+      "protanopiaDeltaE": 12.4
+    },
+    {
+      "a": "pass 2 Bomb Chucker skin #929f2f",
+      "b": "Grass #89b75b",
+      "deltaE": 18.3,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 13.9,
+      "protanopiaDeltaE": 15.3
+    },
+    {
+      "a": "pass 2 skin shadow #4b560f",
+      "b": "Grass #89b75b",
+      "deltaE": 39,
+      "contrast": 3.4,
+      "deuteranopiaDeltaE": 34.6,
+      "protanopiaDeltaE": 36.3
+    },
+    {
+      "a": "pass 2 alternative leaf-green Goblin skin #67952d",
+      "b": "Grass #89b75b",
+      "deltaE": 14.2,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 13.9,
+      "protanopiaDeltaE": 15.3
+    },
+    {
+      "a": "pass 2 alternative bright Bomb Chucker skin #a1af24",
+      "b": "Grass #89b75b",
+      "deltaE": 23.8,
+      "contrast": 1,
+      "deuteranopiaDeltaE": 21.5,
+      "protanopiaDeltaE": 23.5
+    },
+    {
+      "a": "pass 1 Goblin skin #bcbb17",
+      "b": "Grass #89b75b",
+      "deltaE": 34.1,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 30.1,
+      "protanopiaDeltaE": 27.7
+    },
+    {
+      "a": "today's Goblin skin #a8b941",
+      "b": "Grass #89b75b",
+      "deltaE": 17.8,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 16.1,
+      "protanopiaDeltaE": 16.1
+    }
+  ],
+  "skinConsistency": [
+    {
+      "a": "pass 2 Goblin skin #8e9a35",
+      "b": "pass 2 Bomb Chucker skin #929f2f",
+      "deltaE": 4.8,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 3.9,
+      "protanopiaDeltaE": 5.7
+    },
+    {
+      "a": "pass 2 Goblin skin #8e9a35",
+      "b": "pass 2 cart crew skin #5da923",
+      "deltaE": 28.1,
+      "contrast": 1,
+      "deuteranopiaDeltaE": 4.4,
+      "protanopiaDeltaE": 12.6
+    },
+    {
+      "a": "pass 2 Goblin skin #8e9a35",
+      "b": "today's Goblin skin #a8b941",
+      "deltaE": 13.6,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 12.8,
+      "protanopiaDeltaE": 14
+    },
+    {
+      "a": "pass 2 Goblin skin #8e9a35",
+      "b": "pass 1 Goblin skin #bcbb17",
+      "deltaE": 25.8,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 24.5,
+      "protanopiaDeltaE": 23.4
+    }
+  ],
+  "clothesAgainstGrass": [
+    {
+      "a": "orange-brown leather #ca4d02",
+      "b": "Grass #89b75b",
+      "deltaE": 82.6,
+      "contrast": 2,
+      "deuteranopiaDeltaE": 25.2,
+      "protanopiaDeltaE": 28.3
+    },
+    {
+      "a": "leather shadow #7e2602",
+      "b": "Grass #89b75b",
+      "deltaE": 78.9,
+      "contrast": 4.2,
+      "deuteranopiaDeltaE": 36.6,
+      "protanopiaDeltaE": 49.3
+    },
+    {
+      "a": "cart planks #ac700f",
+      "b": "Grass #89b75b",
+      "deltaE": 52.9,
+      "contrast": 1.8,
+      "deuteranopiaDeltaE": 22.4,
+      "protanopiaDeltaE": 22.6
+    },
+    {
+      "a": "pass 1 leather #2e2925",
+      "b": "Grass #89b75b",
+      "deltaE": 72.5,
+      "contrast": 6.2,
+      "deuteranopiaDeltaE": 62.4,
+      "protanopiaDeltaE": 69.8
+    },
+    {
+      "a": "Coral garment (today) #f06762",
+      "b": "Grass #89b75b",
+      "deltaE": 84.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 5.5,
+      "protanopiaDeltaE": 33.3
+    }
+  ],
+  "leatherAgainstPlayersAndHumans": [
+    {
+      "a": "orange-brown leather #ca4d02",
+      "b": "Coral plate #f06762",
+      "deltaE": 32.3,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 26.6,
+      "protanopiaDeltaE": 32.7
+    },
+    {
+      "a": "orange-brown leather #ca4d02",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 50.9,
+      "contrast": 2.4,
+      "deuteranopiaDeltaE": 24.5,
+      "protanopiaDeltaE": 36.1
+    },
+    {
+      "a": "orange-brown leather #ca4d02",
+      "b": "Human crimson #980322",
+      "deltaE": 36.8,
+      "contrast": 1.9,
+      "deuteranopiaDeltaE": 31,
+      "protanopiaDeltaE": 39.3
+    },
+    {
+      "a": "leather shadow #7e2602",
+      "b": "Coral plate #f06762",
+      "deltaE": 37.1,
+      "contrast": 3.2,
+      "deuteranopiaDeltaE": 33.3,
+      "protanopiaDeltaE": 33.4
+    },
+    {
+      "a": "leather shadow #7e2602",
+      "b": "Human crimson #980322",
+      "deltaE": 21.9,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 8.2,
+      "protanopiaDeltaE": 17.6
+    }
+  ],
+  "yellow": [
+    {
+      "a": "bomb stripe and rocket yellow #fbc208",
+      "b": "Human gold #fbc231",
+      "deltaE": 8,
+      "contrast": 1,
+      "deuteranopiaDeltaE": 6.4,
+      "protanopiaDeltaE": 1.2
+    },
+    {
+      "a": "bomb stripe and rocket yellow #fbc208",
+      "b": "Gold player #e2b63f",
+      "deltaE": 19.8,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 18.2,
+      "protanopiaDeltaE": 13.8
+    },
+    {
+      "a": "cart planks #ac700f",
+      "b": "Human gold #fbc231",
+      "deltaE": 35.5,
+      "contrast": 2.5,
+      "deuteranopiaDeltaE": 34.2,
+      "protanopiaDeltaE": 38.1
+    },
+    {
+      "a": "cart planks #ac700f",
+      "b": "Gold player #e2b63f",
+      "deltaE": 27.9,
+      "contrast": 2.2,
+      "deuteranopiaDeltaE": 24.2,
+      "protanopiaDeltaE": 27.5
+    },
+    {
+      "a": "pass 2 Goblin skin #8e9a35",
+      "b": "Gold player #e2b63f",
+      "deltaE": 30.3,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 22.1,
+      "protanopiaDeltaE": 17.2
+    },
+    {
+      "a": "pass 2 Bomb Chucker skin #929f2f",
+      "b": "Gold player #e2b63f",
+      "deltaE": 28.7,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 18.7,
+      "protanopiaDeltaE": 12.7
+    }
+  ],
+  "shareOfSprite": {
+    "note": "Share of each chosen sprite's opaque pixels per role. In pass 1 the near-black leather was 35% of the three sprites pooled.",
+    "chibi-study2-goblin": {
+      "skin": "33.2%",
+      "leather": "15.9%",
+      "wood": "1.2%",
+      "yellow": "0%",
+      "nearBlack": "6.3%"
+    },
+    "chibi-study2-bomb-chucker": {
+      "skin": "22.5%",
+      "leather": "26.4%",
+      "wood": "0.5%",
+      "yellow": "2%",
+      "nearBlack": "19.7%"
+    },
+    "chibi-study2-fireworks-cart": {
+      "skin": "1.4%",
+      "leather": "12.5%",
+      "wood": "23.5%",
+      "yellow": "2.2%",
+      "nearBlack": "11.1%"
+    }
+  },
+  "cartWidthAgainstPlate": {
+    "note": "Opaque width of the Rocket Cart sprite in pixels against its 52 px base plate, which is centred on the anchor column (x = 34); overhang is the part of the sprite beyond each end of the plate.",
+    "plateWidth": 52,
+    "today": {
+      "width": 65,
+      "overhangLeft": 5,
+      "overhangRight": 8
+    },
+    "pass 1": {
+      "width": 65,
+      "overhangLeft": 5,
+      "overhangRight": 8
+    },
+    "pass 2 chosen (fireworks-cart-edit-h)": {
+      "width": 58,
+      "overhangLeft": 3,
+      "overhangRight": 3
+    },
+    "pass 2 alternative (fireworks-cart-edit-g)": {
+      "width": 58,
+      "overhangLeft": 3,
+      "overhangRight": 3
+    },
+    "pass 2 alternative (fireworks-cart-edit-i)": {
+      "width": 58,
+      "overhangLeft": 2,
+      "overhangRight": 4
+    },
+    "pass 2 alternative (fireworks-cart-edit-c)": {
+      "width": 60,
+      "overhangLeft": 3,
+      "overhangRight": 5
+    }
+  },
+  "plates": [
+    {
+      "a": "Coral plate #f06762",
+      "b": "Teal plate #28b7a4",
+      "deltaE": 98.1,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 39.3,
+      "protanopiaDeltaE": 21.3
+    },
+    {
+      "a": "Coral plate #f06762",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 61,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 30.4,
+      "protanopiaDeltaE": 51.9
+    },
+    {
+      "a": "Coral plate #f06762",
+      "b": "Violet plate #a277d2",
+      "deltaE": 72.5,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 75.5,
+      "protanopiaDeltaE": 62.8
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 78.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 68.1,
+      "protanopiaDeltaE": 61.8
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Violet plate #a277d2",
+      "deltaE": 85.9,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 36.6,
+      "protanopiaDeltaE": 50.7
+    },
+    {
+      "a": "Gold plate #e2b63f",
+      "b": "Violet plate #a277d2",
+      "deltaE": 110.2,
+      "contrast": 1.8,
+      "deuteranopiaDeltaE": 104.6,
+      "protanopiaDeltaE": 111.8
+    }
+  ],
+  "platesAgainstGrass": [
+    {
+      "a": "Coral plate #f06762",
+      "b": "Grass #89b75b",
+      "deltaE": 84.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 5.5,
+      "protanopiaDeltaE": 33.3
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Grass #89b75b",
+      "deltaE": 43.5,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 43.3,
+      "protanopiaDeltaE": 42.7
+    },
+    {
+      "a": "Gold plate #e2b63f",
+      "b": "Grass #89b75b",
+      "deltaE": 41.9,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 25.4,
+      "protanopiaDeltaE": 19.3
+    },
+    {
+      "a": "Violet plate #a277d2",
+      "b": "Grass #89b75b",
+      "deltaE": 106.1,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 79.8,
+      "protanopiaDeltaE": 92.6
+    }
+  ]
+}
