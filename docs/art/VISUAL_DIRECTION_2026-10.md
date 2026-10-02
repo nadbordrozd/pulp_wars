@@ -14,9 +14,22 @@ section 13 is the current behaviour.
 [Section 14](#14-goblin-study) is a study of the Goblin faction in the same
 direction (bead `pulp_wars-3tq.8`), and
 [section 16](#16-goblin-production) is the Goblin production art that
-followed it and is live in the default look (bead `pulp_wars-3tq.9`). The
-[chibi art direction](CHIBI_ART_DIRECTION.md) governs production art; its
-section 4a holds the rules this direction changed.
+followed it and is live in the default look (bead `pulp_wars-3tq.9`).
+[Section 15](#15-undead-study) and [section 17](#17-undead-production) are
+the Undead study and production (beads `pulp_wars-3tq.11` and
+`pulp_wars-3tq.12`), and [section 18](#18-dinosaur-study) and
+[section 19](#19-dinosaur-production) the Dinosaur study and production
+(beads `pulp_wars-3tq.14` and `pulp_wars-3tq.13`).
+
+**All four factions are converted** (since bead `pulp_wars-3tq.13`): every
+land unit, portrait and city of the Humans, Goblins, Undead and Dinosaurs
+is drawn in fixed faction colours in the default look, and the player is
+read from the plate, the pennant and the border. Only the shared ships
+still carry a player-coloured part, the sail. Where an earlier section says
+a faction is "not converted", read it as history.
+
+The [chibi art direction](CHIBI_ART_DIRECTION.md) governs production art;
+its section 4a holds the rules this direction changed.
 
 The user's brief: a developed map looks cluttered and slightly unpleasant;
 whole garments and whole roofs in the player colour look weird ("trolls in
@@ -2360,7 +2373,11 @@ list).
 
 ## 18. Dinosaur study
 
-**Status:** bead `pulp_wars-3tq.14`, waiting for the user's review. The
+**Status:** bead `pulp_wars-3tq.14`. The user reviewed it on 2026-10-02 and
+chose variant F with a pattern per species;
+[section 19](#19-dinosaur-production) is the production that followed, and
+it is live. This section is kept as written at the time of the study: its
+"nothing is live" and "today" describe the game before section 19. The
 user accepted the proposed look in principle ("fine. show me a demo with a
 few variants. remember dinos can have patterns on their bodies. e.g. tiger
 stripes or sth."). This is a study on three units in six variants.
@@ -2764,6 +2781,328 @@ Evidence in
 `scene-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png`,
 `shore-{desktop,phone}-zoom-{1,0.75}.png`,
 `same-unit-{desktop,phone}-zoom-{1,0.75}.png` and `index.json`.
+
+## 19. Dinosaur production
+
+**Status:** bead `pulp_wars-3tq.13`. The user reviewed the Dinosaur study
+(section 18) on 2026-10-02: "go with F, pattern per species, keep accent
+like it is, do spotted fur on the caveman." This section is that work: the
+whole Dinosaur roster, the Egg, the portraits, three command icons and the
+cities in the new direction, **live in the default look**. It replaces what
+sections 12, 13, 16 and 17 say about the Dinosaurs ("not converted"). It is
+the fourth and last faction: **all four factions are now converted**, and
+only the shared ships still carry a player-coloured part. The Classic look
+and the LEGACY art set are unchanged.
+
+![Every Dinosaur unit: today in the key colour and for a Teal player, new on Grass, Forest, Mountain and beside Shallow and Deep Water, and the Human, Undead and Goblin unit of the role](../../art/pixellab/reviews/chibi-batch-direction-dinosaur/units-old-new-x4.png)
+
+### Decisions
+
+The first five are the user's; the rest were left to this bead ("you are
+free to make the remaining decisions") and are recorded in
+[DINOSAUR.md](factions/DINOSAUR.md#decisions) so they can be overruled.
+
+| Question               | Decision                                                                                                                                                    | By        |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| Hide                   | variant F: deep blue (`#205794` lit, `#164271` shade), a navy back, a cream belly, jaws and claws (`#eddba1`)                                               | user      |
+| Accent                 | the red-orange PixelLab draws (`#fe6d00` to `#fe7500`), not remapped to amber                                                                               | user      |
+| Patterns               | one per species, not one for the faction                                                                                                                    | user      |
+| Cavemen                | spotted fur                                                                                                                                                 | user      |
+| Player colour          | none on any sprite: plate, pennant and border                                                                                                               | user      |
+| Raptor                 | the study's F, unchanged: orange tiger stripes on the back and tail                                                                                         | root      |
+| T-Rex                  | the study's F, unchanged: orange brow crest and spines, stripes on the tail and neck                                                                        | root      |
+| Brontosaurus           | big solid orange blotches along the neck, back, flank and tail                                                                                              | root      |
+| Ankylosaurus           | navy plates in bands, a cream spike rim, an orange tail club; no orange spike tips (the edit drew none, and the club carries the accent)                    | this bead |
+| Spitter                | a navy frill with six orange ray stripes and an orange rim; no throat sac (the sprite has none)                                                             | this bead |
+| Triceratops            | a navy frill field (not the hide's blue) with a thick orange rim and two solid orange eye-spots; **no navy bands on the body**                              | this bead |
+| Accent step            | none: the hue as generated is 21° to 29° on the eight units, so no pin was needed                                                                           | this bead |
+| Fur                    | a dull tawny (`#a2804b`), darker than the skin, with bold dark brown spots; a tooth necklace on the Caveman                                                 | this bead |
+| Skin                   | the study's light golden tan (`#fee598`)                                                                                                                    | this bead |
+| Shaman                 | a cream beast-skull hood with three orange feathers, heavy orange war paint, a tawny spotted robe one step lighter than the Caveman's pelt, the drum        | this bead |
+| Egg                    | cream with orange speckles in a straw and bone nest; no band, no cloth; **on a plate as wide as a large unit's**                                            | this bead |
+| Command icons          | Lay Egg and Hatch follow the new Egg, Stampede the new Triceratops; War Drums unchanged                                                                     | this bead |
+| Cities                 | converted by edits of the classic camps on the same canvases: dull tawny spotted tents, orange feather tips, the banner cloth removed, a code-drawn pennant | this bead |
+| Growth                 | scale and chevrons as before; no Alpha-only raster                                                                                                          | this bead |
+| Markers, effects, cues | unchanged: none carried a player colour, and cream, white and grey read on blue and orange                                                                  | this bead |
+| Boats                  | unchanged: the shared ships with the player-coloured sail and ring                                                                                          | brief     |
+| Wide units             | accepted as they are; no wider plate for large units                                                                                                        | this bead |
+
+### What was made
+
+Batch
+[`direction-dinosaur`](../../scripts/art/chibi/batches/batch-direction-dinosaur.json)
+(faction `DINOSAUR`, `fixedFactionColours`, every unit, portrait and city
+`ownerColour: false`): 23 assets from 53 recipes, 9 of them imported from
+the study's run with `art:chibi -- import` and 44 new PixelLab calls. One
+call (`portrait-dinosaur-shaman-robe-edit`) was submitted when the network
+failed and stays recorded as submitted with its receipt; its retry has a new
+recipe id. Every recipe is an `edit-image-pixen` edit of the accepted
+classic sprite (batches `dinosaur`, `5-dinosaur`, `cities-dinosaur`) or of
+an earlier step, so canvas, anchor, overflow and feet are unchanged.
+
+| Asset           | Recipes tried  | Accepted                                 | Notes                                                                                                  |
+| --------------- | -------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Raptor          | 3 (imported)   | `raptor-deep-stripes-b`                  | the study's F, byte for byte                                                                           |
+| T-Rex           | 4 (imported)   | `t-rex-deep-stripes-a`                   | the study's F, byte for byte                                                                           |
+| Caveman         | 5 (2 imported) | `caveman-pelt-edit-a`                    | the study's spotted Caveman, then the pelt: orange at first, then recoloured to a dull tawny           |
+| Spitter         | 2              | `spitter-hide-edit-a`                    | frill and poncho in one edit, the hide in a second                                                     |
+| Triceratops     | 4              | `triceratops-face-edit-a`                | frill and blanket; two hide edits; then the face and the frill field                                   |
+| Shaman          | 4              | `shaman-skin-edit-a`                     | robe (orange), robe recoloured, then skin and war paint                                                |
+| Ankylosaurus    | 3              | `ankylosaurus-hide-edit-b`               | blanket off and plates; two hide edits                                                                 |
+| Brontosaurus    | 3              | `brontosaurus-spots-edit-a`, candidate 1 | garments off, hide, blotches: the plan's three edits, with no repair                                   |
+| Egg             | 1              | `egg-primal-edit-a`                      | first edit                                                                                             |
+| 8 portraits     | 12             | first edit, or its repair                | Caveman and Brontosaurus: one repair; Shaman: three (one interrupted, one that turned the beard brown) |
+| 3 command icons | 3              | first edit                               |                                                                                                        |
+| City 1          | 3              | `dinosaur-city-1-roof-edit-b`            | the hut's red roof stayed; the repair made it a fourth tent, in orange; a second repair dulled it      |
+| City 2          | 3              | `dinosaur-city-2-tent-edit-b`            | the duller tents; the first try added three rocks under the fence                                      |
+| City 3          | 2              | `dinosaur-city-3-tent-edit-a`            |                                                                                                        |
+
+The first sample was the Spitter, the Triceratops and the Shaman (the two
+frills and the robe, where section 18 expected the rules to fit worst),
+with the imported Raptor, T-Rex and Caveman beside them; the rest followed
+once those passed.
+
+Recipes that worked, beyond those of the study:
+
+- **A frill is described as a field with marks:** "becomes a dark navy blue
+  frill … with a thin bright orange rim … and six thick orange ray stripes
+  from the head out to the rim like spokes, navy between them" gave the
+  Spitter's sun frill on the first try; "two big solid orange eye-spots on
+  it, each a filled blot with no ring" gave the Triceratops's.
+- **Garments and frill in one edit, the hide in the next.** The order of
+  section 18 held: an edit that removes a blanket ignores hide hex values.
+- **A hide that will not move takes the colour of something beside it:**
+  "Recolour only the bright light blue hide … to the frill's own deep blue"
+  moved the Triceratops's body, and "to a deep blue, colour `#205794` …
+  clearly darker and less bright than now" the Ankylosaurus's head, where
+  "a deeper, clearer blue, `#2b5a9a`" had done nothing.
+- **A part that stays lighter needs its own edit.** The Triceratops's face
+  kept today's light blue through two hide edits; one edit that named "the
+  bright light blue face" fixed it.
+- **Tawny fur cannot be asked for directly.** "Deep ochre fur, `#b9802f`"
+  came back a saturated orange (the accent's colour) on the Caveman, the
+  Shaman, both portraits and the city tents; "dull sandy brown, `#a67c3d`,
+  not orange and not yellow" from the pale study pelt changed nothing. What
+  worked every time was the two together: let the first edit draw orange,
+  then "Recolour only the bright orange fur …: it becomes a dull sandy
+  brown fur like a lion's pelt, `#a67c3d` with `#6e4f26` shadows, not orange
+  and not yellow; its dark brown spots stay."
+- **"Add nothing: no rocks, no ground and no shadow"** keeps a city edit
+  inside its footprint.
+- **Say what colour a beard stays.** "Keep the beard" let it turn brown;
+  "the big beard stays charcoal black, not brown" kept it.
+- **What did not work:** navy bands on the Triceratops's body (none were
+  drawn), orange tips on the Ankylosaurus's spikes (none), and a single edit
+  for both a tent colour and a leftover red roof.
+
+### The palette, measured
+
+Measured on the accepted masters (`palette.json`, `readability.json`).
+
+| Role         | Colours                                                                 | Share                                   |
+| ------------ | ----------------------------------------------------------------------- | --------------------------------------- |
+| Hide, lit    | `#205794` (T-Rex); `#30608f` (Brontosaurus), `#2f5595` (Spitter)        | 23% of the six dinosaurs                |
+| Hide, shade  | `#164271` (Raptor); `#052d67` (Triceratops)                             | (counted with the hide)                 |
+| Navy         | `#050949`, `#042651`, `#12173b`, `#2c2f5c`                              | 27% of the six dinosaurs                |
+| Cream        | `#eddba1`, `#f7dda3`, `#fdeea4`                                         | 8% of the six dinosaurs                 |
+| Red-orange   | lit `#fe7500`; `#f35600`, `#fb5000`; shade `#a82f00`                    | 14% of the dinosaurs, 5% of the cavemen |
+| Tawny fur    | `#a2804b`, `#b48a5c` (Caveman); `#c2924b`, `#90723f` (Shaman)           | 23% of the two cavemen                  |
+| Fur spots    | `#7c593b`, `#371800`                                                    |                                         |
+| Caveman skin | `#fee598`, shade `#e59f4a`                                              |                                         |
+| Egg          | shell `#fff3cf`, `#f5cb7f`; speckles `#fd8a00`, `#cf6501`               |                                         |
+| City tents   | `#a9732e` (City 1), `#b68750` (City 2), `#95632a` to `#c4924d` (City 3) |                                         |
+
+![The palette beside the player plates, the water, the Goblin fireworks and the other factions' colours](../../art/pixellab/reviews/chibi-batch-direction-dinosaur/palette.png)
+
+**The accent, as drawn.** The mean hue of the accent pixels is 27° on the
+Caveman and the Raptor, 29° on the Spitter, 23° on the Ankylosaurus, 21° on
+the Shaman, 24° on the Triceratops and the T-Rex and 26° on the
+Brontosaurus; the Egg's speckles are 32°. That is one colour to the eye, so
+no accent preset was added and every master is its recorded candidate, byte
+for byte (a test checks both).
+
+**The pattern per species:**
+
+| Species      | Pattern                                                                           | Accent share |
+| ------------ | --------------------------------------------------------------------------------- | ------------ |
+| Raptor       | orange tiger stripes on the back and tail, a tall orange feather crest            | 23%          |
+| T-Rex        | an orange brow crest and back spines; fat stripes on the tail and behind the neck | 9%           |
+| Brontosaurus | big solid orange blotches on the neck, back, flank and tail                       | 16%          |
+| Ankylosaurus | navy plates in bands under a cream spike rim; an orange tail club                 | 9%           |
+| Spitter      | a navy frill with orange rays and rim; a plain body                               | 12%          |
+| Triceratops  | a navy frill with an orange rim and two eye-spots; a plain body                   | 14%          |
+| Caveman      | a tawny pelt with dark brown spots; orange war paint                              | 1%           |
+| Shaman       | a tawny spotted robe; three orange feathers and heavy war paint                   | 9%           |
+
+No sprite has an owner area. Pixels in the owner key's hue band are 0% of
+sixteen assets and 0.2% to 1.6% of seven (the Raptor's gums, the Spitter's
+eye, a few pixels on the Ankylosaurus, a tongue or an eye in three
+portraits, the maroon spots of City 1's tents); a classic owned sprite has
+15% or more. A test holds every master under 2%.
+
+### Readability
+
+`readability.json` (CIE76 colour difference: about 10 is clear at a glance,
+20 and more are different colours; the WCAG luminance contrast in
+brackets).
+
+| Check                               | Result                                                                                                                                                                                                                     |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hide against Grass                  | 94 (3.2); the shade 91 (4.4). Against Forest 82.                                                                                                                                                                           |
+| Hide against Shallow Water          | 57 (4.4); the shade 61 (6.1): clearer than the classic blue (38).                                                                                                                                                          |
+| Hide against Deep Water             | **17 (1.5)**; the shade 22. As the study said, a blue hide is the colour of Deep Water. A land unit never stands on it; beside it the black outline, the navy back (51 from Deep Water) and the cream belly hold the unit. |
+| Hide against Mountain               | 42 (2.6). Cream against the light rock: 38, at equal brightness (1.0).                                                                                                                                                     |
+| Hide against the plates             | Teal 67, Violet 37.                                                                                                                                                                                                        |
+| Accent against the Coral plate      | 39 (lit tone 44), at equal brightness (1.1): a crest above a Coral plate is separated by the body between them.                                                                                                            |
+| Accent against the Gold plate       | 57 (lit tone 46).                                                                                                                                                                                                          |
+| Accent against Goblin fireworks     | **orange 15, red 19**, yellow 56: the Rocket Cart's rockets and a dinosaur's stripes are one colour family. Goblin leather 49.                                                                                             |
+| Accent on its hide                  | 121 from the hide (2.2), 123 from navy (5.4): the frill rays and the Triceratops's eye-spots, on navy, are the strongest marks of the roster.                                                                              |
+| Caveman fur against his skin        | **37 (2.9)**; the pelt's mean 45. The study's spotted pelt was 3.5 from the skin.                                                                                                                                          |
+| Caveman fur against Goblin leather  | 21 (1.6): lighter and yellower than leather, and spotted.                                                                                                                                                                  |
+| Fur and skin against the Gold plate | Caveman fur 36, his skin 28, **the Shaman's robe 24**.                                                                                                                                                                     |
+| War paint against skin              | 74 (2.7).                                                                                                                                                                                                                  |
+| Unit width against the plate        | Caveman 52, Spitter 53, Ankylosaurus 49, Shaman 53 on a 52 px plate. Raptor 67, Triceratops 67, T-Rex 60 on a 57 px plate (their feet are 35, 45 and 41 px). Brontosaurus 74 on 68 (feet 44). As the classic sprites.      |
+
+Seen at native size and at zoom 0.75 (`units-old-new-1x.png`,
+`units-zoom-0.75.png`, the scenes): every pattern reads. The Raptor is
+plainly striped; the Spitter's frill is a navy and orange sun; the
+Brontosaurus's blotches and the Triceratops's eye-spots are the first thing
+seen; the T-Rex's stripes and the Ankylosaurus's club are small but clear.
+The Caveman's pelt is a darker shape on a light figure.
+
+![Four Dinosaur players: the eight units on Grass, Forest and Mountain, a city of each tier with a garrison, Eggs with countdowns, Big and Alpha units, and the shore](../../art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-four-desktop-zoom-1.png)
+
+![Dinosaur against Human, Undead and Goblin, unit by unit, at zoom 0.75](../../art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-mixed-desktop-zoom-0.75.png)
+
+![A Showcase match with all four converted factions](../../art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-desktop-zoom-1.png)
+
+### What is live
+
+| Piece                                             | Default look                                                                                                         |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Dinosaur land units (all eight)                   | the production sprite in fixed colours, on the player's plate                                                        |
+| Egg                                               | the production Egg, the same for every player, on a plate as wide as a large unit's; the countdown chip is unchanged |
+| Portraits (Lay Egg cards, Hatch, technology tree) | the production portrait, drawn as authored                                                                           |
+| Selection dock, technology cards, Help            | the production unit sprite; the Egg's dock shows the production Egg                                                  |
+| Lay Egg, Hatch, Stampede icons                    | the production icons                                                                                                 |
+| Dinosaur City 1 to 3                              | the production camp with a pennant: seat shape in cream, gold for the capital, no crown                              |
+| Growth (Big, Alpha)                               | unchanged: the same raster drawn at x1.125 and x1.25, with one or two chevrons                                       |
+| Charge!, Acid and Armoured previews, the cues     | unchanged                                                                                                            |
+| War Drums icon, the Dinosaur badge of a stand-in  | unchanged                                                                                                            |
+| Ships and the embarked transport                  | unchanged (shared art, player-coloured sail)                                                                         |
+| Showcase                                          | a Dinosaur seat draws all of the above                                                                               |
+| Setup screen                                      | unchanged: it has no faction art, only a select                                                                      |
+| Classic look, LEGACY                              | unchanged: the classic Dinosaur art in the owner's colour; LEGACY's code-drawn Egg with its owner band               |
+
+A direction raster that fails to load falls back to the classic asset of
+that piece alone.
+
+### Runtime
+
+- [`chibi-direction-dinosaur-art-manifest.ts`](../../src/assets/chibi-direction-dinosaur-art-manifest.ts)
+  lists the 23 Dinosaur entries; `chibiDirectionArtRegistryV7` adds them, so
+  the board and the interface resolve them first. Units, the Egg, portraits
+  and icons needed no other change: they are subjects the directed resolver
+  already asks for.
+- **Cities** use the mechanism of sections 16 and 17: a faction city asks
+  the direction's art first. The pennant anchors are the
+  `chibi-direction-dinosaur-city-*` entries of `DIRECTION_FLAG_ANCHORS_V7`:
+  a short pole over the totem's skull, the top of City 2's own bare pole,
+  and a pole on the right shoulder of City 3's rib-cage.
+- **The Egg's plate** is the one rendering change.
+  `drawDirectedUnitBaseV7` gave the 48 px Egg a plate of 31 px, which its
+  nest (the full 48 px of the canvas) hid completely; with the owner's band
+  and cloth gone, the only owner cue left was the thin ring of the countdown
+  chip. An Egg now gets a plate of 58 master px
+  (`DIRECTION_EGG_PLATE_RADIUS_SHARE_V7`), about a large unit's, whose ends
+  show 5 px beside the nest in the seat's shape. The
+  Classic look and LEGACY draw no plate and are unchanged.
+- No new field of the direction: the Dinosaurs have no magic colour to
+  switch.
+
+With this bead the "not registered" list of the default look is the ships
+alone: a test walks every owned `UNIT:`, `PORTRAIT:` and `CITY:` subject of
+the classic registry and finds only `UNIT:PATROL_BOAT`, `UNIT:BATTLESHIP`,
+`UNIT:EMBARKED_TRANSPORT` and the two ship portraits without a fixed-colour
+asset.
+
+### Markers and effects
+
+Checked in the captures of `npm run review:ruleset7-dinosaur-ui` (CHIBI,
+desktop and phone) and in scene `FOUR`:
+
+- **Egg countdown:** the cream number on its charcoal chip with the
+  owner-coloured ring sits at the Egg's upper right, clear of the cream
+  shell; it was not touched.
+- **Growth:** the chevrons are cream with a black outline, left of the
+  sprite, and read on the deep blue as they did on the classic blue. The
+  scaled sprites keep their patterns: the marks are several pixels wide.
+- **Charge!:** the preview is the attack preview's chip ("Deal 13 · take
+  8", "Charge +2", "Pushes back; Triceratops follows") and the dashed
+  target outline; the cream star flash and the pale dust puffs of the hit
+  are lighter than every new sprite.
+- **Egg laid, hatch, Egg destroyed:** a bounce of the new sprite; a black
+  crack and cream shell chips on the cream shell; the Shaman's cream rings.
+- **Acid and Armoured:** the cream acid blob and its pale puffs; the
+  previews' chips. Unchanged.
+- **War Drums:** cream rings, and the classic drum icon, which has no hide
+  and no player colour.
+
+### Evidence
+
+`npm run art:chibi-dinosaur-direction-review` writes
+[`art/pixellab/reviews/chibi-batch-direction-dinosaur/`](../../art/pixellab/reviews/chibi-batch-direction-dinosaur/)
+(see [the pipeline document](CHIBI_PIPELINE.md#review-evidence) for the
+list). `npm run art:chibi-dinosaur-review` and
+`npm run art:chibi-direction-review` were run again: their in-game captures
+show the live look, with all four converted factions in the mixed Showcase.
+
+![City 1 to 3: today, new, new with the pennant, and the Human, Goblin and Undead city](../../art/pixellab/reviews/chibi-batch-direction-dinosaur/cities-x4.png)
+
+![The portraits and command icons, today and new, beside the map sprite and the other factions' busts](../../art/pixellab/reviews/chibi-batch-direction-dinosaur/portraits-old-new-x4.png)
+
+![The Egg: today in the key colour and for two players, and new](../../art/pixellab/reviews/chibi-batch-direction-dinosaur/egg-old-new-x4.png)
+
+### Weak spots left
+
+- **Two dinosaurs are dark at native size.** The Triceratops is 45% navy
+  and its hide (`#052d67`) is darker than F's; the Ankylosaurus is a navy
+  dome. Both read as "blue-black with orange" rather than blue. Their
+  silhouettes, cream horns and spikes and the orange marks carry them.
+- **The hides are not one colour.** `#164271` (Raptor) to `#30608f`
+  (Brontosaurus); the Spitter is a slightly greyer blue. Hide colour drifts
+  per edit, as section 18 found.
+- **The Raptor is a quarter orange** (23%), the largest accent share in the
+  game; the T-Rex beside it has 9%. Both predators are striped.
+- **The Brontosaurus's blotches read as polka dots,** about fourteen of
+  them, some on the legs. Section 18 predicted it for solid spots; they are
+  bold, friendly and unmistakable, and not a leopard.
+- **The accent is the Goblin fireworks' orange** (15 apart) and close to
+  the Coral plate (39, at equal brightness).
+- **Blue hide is the colour of Deep Water** (17), as before.
+- **Leftover reds:** the Raptor's gums, the Spitter's red eye and pink
+  cheeks, a tongue or an eye in three portraits.
+- **The Shaman:** his raised hand is still pinkish; the war paint covers
+  most of his face; his robe is 24 from the Gold plate.
+- **The Caveman lost his headband** on the map sprite (his portrait has a
+  bone-white one), and his pelt is a greyish tawny.
+- **Portraits do not carry the patterns.** The Triceratops's portrait has a
+  deep blue frill with a thin rim and no eye-spots (the unit's is navy with
+  eye-spots); the Spitter's rays are thin lines; the Ankylosaurus's head is
+  a paler slate. The Stampede icon's head is nearly black.
+- **City 1 changed shape:** its bone hut became a fourth tent, and its
+  tents are a warmer tan than City 2's and 3's. The pennants fly in the top
+  of the tall classic canvases, in the cell to the north, as the Goblin
+  ones do.
+- **The Egg's plate shows only at its two ends,** beside the nest; the
+  countdown ring and the border help.
+- **The garrison covers most of a city,** as for every faction.
+- **Four Dinosaur players** differ only by plate, pennant and border.
+- **Review evidence of other commands** that happens to show a Dinosaur
+  (`art:chibi-faction-cities-review`, `art:chibi-goblin-review`,
+  `art:chibi-playtest3-review`, the study reviews) was not regenerated. The
+  Dinosaur study's review keeps its own registry, so its "today" panels
+  still draw the classic sprites.
 
 The Martian faction's production art in this direction (bead
 `pulp_wars-t6s.6`, not live yet) is described in

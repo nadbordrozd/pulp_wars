@@ -1,0 +1,36 @@
+{
+  "id": "caveman-primal-edit-a",
+  "jobId": "24aeabf7-9b35-4c21-abc6-8b64c06d03d5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-caveman",
+    "subject": "UNIT:DINOSAUR:FIGHTER",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83301,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his fur pelt: the pale tawny fur becomes a deeper ochre fur, colour #b9802f with #7a4d1c shadows, clearly darker than his skin, with big bold solid dark brown spots, colour #3a1a08, and a dark brown trim line along its edges. Add a necklace of big cream teeth. Do not redraw anything. Keep the light golden skin, the orange war paint, the face, hair, beard, headband, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his fur pelt: the pale tawny fur becomes a deeper ochre fur, colour #b9802f with #7a4d1c shadows, clearly darker than his skin, with big bold solid dark brown spots, colour #3a1a08, and a dark brown trim line along its edges. Add a necklace of big cream teeth. Do not redraw anything. Keep the light golden skin, the orange war paint, the face, hair, beard, headband, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his fur pelt: the pale tawny fur becomes a deeper ochre fur, colour #b9802f with #7a4d1c shadows, clearly darker than his skin, with big bold solid dark brown spots, colour #3a1a08, and a dark brown trim line along its edges. Add a necklace of big cream teeth. Do not redraw anything. Keep the light golden skin, the orange war paint, the face, hair, beard, headband, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only his fur pelt: the pale tawny fur becomes a deeper ochre fur, colour #b9802f with #7a4d1c shadows, clearly darker than his skin, with big bold solid dark brown spots, colour #3a1a08, and a dark brown trim line along its edges. Add a necklace of big cream teeth. Do not redraw anything. Keep the light golden skin, the orange war paint, the face, hair, beard, headband, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "caveman-spots-skin-b",
+      "candidate": 0,
+      "sha256": "f4a6e222bc9ee4b76df4540614bbe6cf9e1722bb3c8b59f256afb717fcb0f1f9"
+    }
+  }
+}

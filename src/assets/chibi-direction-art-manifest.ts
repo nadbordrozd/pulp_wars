@@ -4,6 +4,7 @@ import {
   type ChibiArtRegistryV7,
 } from "./chibi-art-v7";
 import { chibiArtUrl } from "./chibi-art-manifest";
+import { CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7 } from "./chibi-direction-dinosaur-art-manifest";
 import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "./chibi-direction-undead-art-manifest";
 
 /**
@@ -20,9 +21,9 @@ import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "./chibi-direction-undead-a
  * CHIBI set and resolves it first, on the board and in the interface
  * (src/render/canvas/live-board-look-v7.ts); a raster that fails to load
  * falls back to the default asset of that subject. Units, cities and
- * portraits have no owner area: `fixedColours` instead of a mask. Ships,
- * the Undead and Dinosaur factions and terrain are not converted yet; the
- * Goblins are (the list below this one).
+ * portraits have no owner area: `fixedColours` instead of a mask. Ships
+ * and terrain are not converted; the Goblins (the list below this one),
+ * the Undead and the Dinosaurs (their own modules) are.
  */
 export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   {
@@ -533,6 +534,8 @@ export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
     ...CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7,
     // --- Undead (pulp_wars-3tq.12) ---
     ...CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7,
+    // --- Dinosaur (pulp_wars-3tq.13) ---
+    ...CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7,
   ]);
   if (built.problems.length > 0) throw new Error(built.problems.join("; "));
   return built.registry;

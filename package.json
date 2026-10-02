@@ -72,6 +72,7 @@
     "art:dinosaur-direction-study-review": "tsx scripts/art/dinosaur-direction-review.ts",
     "art:chibi-undead-direction-review": "tsx scripts/art/chibi-undead-direction-review.ts",
     "art:chibi-martian-direction-review": "tsx scripts/art/chibi-martian-direction-review.ts",
+    "art:chibi-dinosaur-direction-review": "tsx scripts/art/chibi-dinosaur-direction-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "diagnose:mountain-live": "tsx scripts/browser-smoke-v6.ts --mountain-live",
     "smoke:browser": "tsx scripts/browser-smoke-v7.ts",

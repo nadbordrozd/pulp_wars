@@ -1,0 +1,36 @@
+{
+  "id": "triceratops-face-edit-a",
+  "jobId": "e0a26715-85b4-4760-ac18-e0cd98c6699c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-triceratops",
+    "subject": "UNIT:DINOSAUR:CATAPULT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 83104,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only two things: the bright light blue face becomes deep blue like the body, colour #205794 with #164271 shadows; and the blue field of the round neck frill becomes dark navy, colour #0f1a4a, so the face stands out in front of it. Do not redraw anything. Keep the frill's orange rim and its two orange eye-spots, the cream horns, beak, cheek and belly, the eyes, the body, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only two things: the bright light blue face becomes deep blue like the body, colour #205794 with #164271 shadows; and the blue field of the round neck frill becomes dark navy, colour #0f1a4a, so the face stands out in front of it. Do not redraw anything. Keep the frill's orange rim and its two orange eye-spots, the cream horns, beak, cheek and belly, the eyes, the body, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only two things: the bright light blue face becomes deep blue like the body, colour #205794 with #164271 shadows; and the blue field of the round neck frill becomes dark navy, colour #0f1a4a, so the face stands out in front of it. Do not redraw anything. Keep the frill's orange rim and its two orange eye-spots, the cream horns, beak, cheek and belly, the eyes, the body, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only two things: the bright light blue face becomes deep blue like the body, colour #205794 with #164271 shadows; and the blue field of the round neck frill becomes dark navy, colour #0f1a4a, so the face stands out in front of it. Do not redraw anything. Keep the frill's orange rim and its two orange eye-spots, the cream horns, beak, cheek and belly, the eyes, the body, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "triceratops-bands-edit-a",
+      "candidate": 0,
+      "sha256": "50ded0bb026a649debdc9f92872c056a62c1ba440f167208f8a812275240e239"
+    }
+  }
+}

@@ -1,0 +1,1159 @@
+{
+  "schemaVersion": 1,
+  "batch": "direction-dinosaur",
+  "title": "New visual direction: Dinosaur units, the Egg, portraits and City 1-3 in deep blue hide, navy, cream, tawny spotted fur and one red-orange accent, with a pattern per species",
+  "bead": "pulp_wars-3tq.13",
+  "faction": "DINOSAUR",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-dinosaur-caveman",
+      "subject": "UNIT:DINOSAUR:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:DINOSAUR:FIGHTER/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-dinosaur-raptor",
+      "subject": "UNIT:DINOSAUR:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:DINOSAUR:RAIDER/PRIMAL",
+      "anchor": {
+        "x": 34,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-direction-dinosaur-spitter",
+      "subject": "UNIT:DINOSAUR:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:DINOSAUR:MARKSMAN/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-dinosaur-ankylosaurus",
+      "subject": "UNIT:DINOSAUR:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:DINOSAUR:GUARD/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-dinosaur-shaman",
+      "subject": "UNIT:DINOSAUR:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:DINOSAUR:CAPTAIN/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-dinosaur-triceratops",
+      "subject": "UNIT:DINOSAUR:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:DINOSAUR:CATAPULT/PRIMAL",
+      "anchor": {
+        "x": 34,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-direction-dinosaur-t-rex",
+      "subject": "UNIT:DINOSAUR:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:DINOSAUR:KNIGHT/PRIMAL",
+      "anchor": {
+        "x": 30,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-direction-dinosaur-brontosaurus",
+      "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:DINOSAUR:JUGGERNAUT/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-dinosaur-egg",
+      "subject": "UNIT:DINOSAUR:EGG",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:DINOSAUR:EGG/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-portrait-dinosaur-caveman",
+      "subject": "PORTRAIT:DINOSAUR:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:DINOSAUR:FIGHTER/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-portrait-dinosaur-raptor",
+      "subject": "PORTRAIT:DINOSAUR:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:DINOSAUR:RAIDER/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-portrait-dinosaur-spitter",
+      "subject": "PORTRAIT:DINOSAUR:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:DINOSAUR:MARKSMAN/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-portrait-dinosaur-ankylosaurus",
+      "subject": "PORTRAIT:DINOSAUR:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:DINOSAUR:GUARD/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-portrait-dinosaur-shaman",
+      "subject": "PORTRAIT:DINOSAUR:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:DINOSAUR:CAPTAIN/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-portrait-dinosaur-triceratops",
+      "subject": "PORTRAIT:DINOSAUR:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:DINOSAUR:CATAPULT/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-portrait-dinosaur-t-rex",
+      "subject": "PORTRAIT:DINOSAUR:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:DINOSAUR:KNIGHT/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-portrait-dinosaur-brontosaurus",
+      "subject": "PORTRAIT:DINOSAUR:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:DINOSAUR:JUGGERNAUT/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-icon-action-lay-egg",
+      "subject": "ICON:ACTION:LAY_EGG",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "subjectKey": "ICON:ACTION:LAY_EGG/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-icon-action-hatch",
+      "subject": "ICON:ACTION:HATCH",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "subjectKey": "ICON:ACTION:HATCH/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-icon-action-stampede",
+      "subject": "ICON:ACTION:STAMPEDE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "subjectKey": "ICON:ACTION:STAMPEDE/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-dinosaur-city-1",
+      "subject": "CITY:DINOSAUR:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:DINOSAUR:1/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-dinosaur-city-2",
+      "subject": "CITY:DINOSAUR:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 100
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:DINOSAUR:2/PRIMAL"
+    },
+    {
+      "id": "chibi-direction-dinosaur-city-3",
+      "subject": "CITY:DINOSAUR:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 104
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:DINOSAUR:3/PRIMAL"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "raptor-base-a",
+      "asset": "chibi-direction-dinosaur-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81001,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "raptor-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the red parts: the red feather crest becomes a bright amber-orange feather crest, colour #f08c1e with #b85c0a shadows; take off the red blanket and its grey cord so the back, sides and thighs are bare smooth blue hide with a cream belly. Nothing red is left. Keep the head, eyes, teeth, arms, legs, claws, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/dinosaur-direction-2026-10/."
+    },
+    {
+      "id": "raptor-hide-c",
+      "asset": "chibi-direction-dinosaur-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81005,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-base-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the blue hide: the light sky blue becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, and dark navy #1a2748 only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/dinosaur-direction-2026-10/."
+    },
+    {
+      "id": "raptor-deep-stripes-b",
+      "asset": "chibi-direction-dinosaur-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 81020,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "raptor-hide-c",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: five bold bright amber-orange tiger stripes, colour #f08c1e, across the back and three across the straight tail, each a thick tapering wedge running down from the spine, wide apart. No stripes on the head, belly or legs. The feather crest stays exactly as it is and the tail keeps its straight shape. Do not redraw anything. Keep the cream belly, the eyes, teeth, claws, legs, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/dinosaur-direction-2026-10/."
+    },
+    {
+      "id": "t-rex-base-b",
+      "asset": "chibi-direction-dinosaur-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "t-rex-b-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the red cape, the red scarf and the red ankle bands, leaving bare hide. The hide becomes plain slate blue, colour #4f73a6, darker navy #26375c along the back and tail top; the belly, throat and lower jaw warm cream. Add a short crest of bright amber-orange #f08c1e spikes over the brow and down the neck. Nothing red is left. Keep the head, eyes, teeth, arms, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/dinosaur-direction-2026-10/."
+    },
+    {
+      "id": "t-rex-hide-a",
+      "asset": "chibi-direction-dinosaur-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81103,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-base-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright blue hide: it becomes a duller slate blue, colour #4f73a6 on the lit side, with dark navy #26375c shading along the back, tail and far legs. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/dinosaur-direction-2026-10/."
+    },
+    {
+      "id": "t-rex-hide-d",
+      "asset": "chibi-direction-dinosaur-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81106,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the dull slate hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright; the dark navy along the back, tail and far leg stays. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/dinosaur-direction-2026-10/."
+    },
+    {
+      "id": "t-rex-deep-stripes-a",
+      "asset": "chibi-direction-dinosaur-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 81119,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "t-rex-hide-d",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: five very thick bright amber-orange tiger stripes, colour #f08c1e: three down the back and flank and two across the tail. Each stripe is a fat solid wedge at least four pixels wide, with wide plain blue hide between them; no thin lines. The head, belly, arms and both legs stay plain blue. Do not redraw anything. Keep the crest, the cream belly, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/dinosaur-direction-2026-10/."
+    },
+    {
+      "id": "caveman-fur-spots-a",
+      "asset": "chibi-direction-dinosaur-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 81201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "caveman-b-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes: the red fur tunic becomes a tawny tan fur pelt, colour #c99652 with #8a5f2e shadows, with a few big dark brown spots like a leopard pelt; the red headband becomes a cream bone-white band; the red wrist wrap becomes tan hide. Nothing red is left. Keep the face, hair, beard, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/dinosaur-direction-2026-10/."
+    },
+    {
+      "id": "caveman-spots-skin-b",
+      "asset": "chibi-direction-dinosaur-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 81205,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-fur-spots-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin (face, nose, ears, arms, hands, legs and feet): it becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows, clearly lighter than brown. Add war paint: two short bright amber-orange #f08c1e stripes on each cheek and one amber-orange band round his upper arm. Do not redraw anything. Keep the hair, beard, spotted fur, bone club, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from the study run art/explorations/dinosaur-direction-2026-10/."
+    },
+    {
+      "id": "spitter-primal-edit-a",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "endpoint": "edit-image-pixen",
+      "seed": 83001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "spitter-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Take off the red poncho so its chest, belly and back are bare smooth blue hide with a warm cream belly. The round red neck frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and six thick orange ray stripes from the head out to the rim like spokes, navy between them. Nothing red is left. Keep the head, eyes, crests, mouth, spit blob, arms, legs, tail, pose, proportions, thick black outline and art style the same, on a transparent background.",
+      "notes": "Spitter step 1: poncho off; a navy frill with orange ray stripes and rim, not a solid accent disc."
+    },
+    {
+      "id": "triceratops-primal-edit-a",
+      "asset": "chibi-direction-dinosaur-triceratops",
+      "endpoint": "edit-image-pixen",
+      "seed": 83101,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "triceratops-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Take off the red blanket and its straps so the back and flanks are bare smooth blue hide with a cream belly. The big red neck frill becomes a deep blue frill, colour #205794, with a thick bright orange rim, colour #fe6d00, and two big solid orange eye-spots on it, each a filled blot with no ring. Horns, beak and frill studs stay cream. Nothing red or brown is left. Keep the head, eyes, legs, tail, pose, proportions, thick black outline and art style the same, on a transparent background.",
+      "notes": "Triceratops step 1: blanket off; a blue frill with an orange rim and two eye-spots."
+    },
+    {
+      "id": "shaman-primal-edit-a",
+      "asset": "chibi-direction-dinosaur-shaman",
+      "endpoint": "edit-image-pixen",
+      "seed": 83201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "shaman-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes: the long red robe becomes a deep ochre fur robe, colour #b9802f with #7a4d1c shadows, with big bold solid dark brown spots like a leopard pelt, colour #3a1a08, and a dark brown trim line along its edges; the three red feathers become bright orange feathers, colour #fe6d00. Nothing red is left. Keep the beast skull hood, face, beard, drum, drumstick, necklace, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Shaman step 1: spotted ochre fur robe, orange feathers."
+    },
+    {
+      "id": "caveman-primal-edit-a",
+      "asset": "chibi-direction-dinosaur-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 83301,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-spots-skin-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his fur pelt: the pale tawny fur becomes a deeper ochre fur, colour #b9802f with #7a4d1c shadows, clearly darker than his skin, with big bold solid dark brown spots, colour #3a1a08, and a dark brown trim line along its edges. Add a necklace of big cream teeth. Do not redraw anything. Keep the light golden skin, the orange war paint, the face, hair, beard, headband, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "The study's spotted Caveman with the pelt deepened so it reads against the skin (the study measured 3.5 between them), a dark trim and a tooth necklace."
+    },
+    {
+      "id": "ankylosaurus-primal-edit-a",
+      "asset": "chibi-direction-dinosaur-ankylosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 83401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "ankylosaurus-a-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Take off the red blanket and its cord so the whole dome is bare bony armour plates. The dome plates become dark navy blue, colour #16204f, in clear chunky bands; the big red ball of the tail club becomes a bright orange bone club, colour #fe6d00; three of the cream spikes get bright orange tips. Nothing red is left. Keep the head, eyes, cheek horns, cream spikes, legs, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Ankylosaurus step 1: blanket off, navy plates, an orange tail club."
+    },
+    {
+      "id": "brontosaurus-primal-edit-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 83501,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "brontosaurus-h-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Take off the red neck bands, the grey collar and the red blanket with its cord, so the long neck, back and flanks are bare smooth blue hide with a cream belly and throat. Nothing red is left. Keep the head, eyes, smile, the long neck, legs, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Brontosaurus step 1: neck bands, collar and blanket off."
+    },
+    {
+      "id": "egg-primal-edit-a",
+      "asset": "chibi-direction-dinosaur-egg",
+      "endpoint": "edit-image-pixen",
+      "seed": 83901,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "egg-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red painted band round the egg is removed, leaving plain warm cream shell; the grey-blue speckles become big bold solid bright orange speckles, colour #fe6d00; the red cloth of the nest becomes a nest of pale cream bones and dry tan straw. Nothing red and nothing blue is left. Keep the egg's shape and size, the nest's shape, the thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The Egg: cream with orange speckles, no painted band, a bone and straw nest."
+    },
+    {
+      "id": "portrait-dinosaur-caveman-primal-edit",
+      "asset": "chibi-direction-portrait-dinosaur-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 84001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "portrait-dinosaur-caveman-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red headband becomes a bone-white band; the red fur tunic becomes deep ochre fur, colour #b9802f with #7a4d1c shadows, with big bold solid dark brown spots; his skin becomes a light golden tan, colour #dba673; add two short bright orange war paint stripes, colour #fe6d00, on his cheek. Do not redraw anything. Keep the face, hair, beard, grin, bone club, pose, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-dinosaur-raptor-primal-edit",
+      "asset": "chibi-direction-portrait-dinosaur-raptor",
+      "endpoint": "edit-image-pixen",
+      "seed": 84101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "portrait-dinosaur-raptor-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red feather crest becomes a bright orange feather crest, colour #fe6d00; the red collar is removed, leaving bare hide; the blue hide becomes deep blue, colour #205794 with #164271 shadows, with two thick bright orange stripes on the back of the neck; the throat and teeth stay cream. Nothing red is left. Do not redraw anything. Keep the head, eye, grin, claw, pose, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-dinosaur-spitter-primal-edit",
+      "asset": "chibi-direction-portrait-dinosaur-spitter",
+      "endpoint": "edit-image-pixen",
+      "seed": 84201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "portrait-dinosaur-spitter-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red neck frill becomes a dark navy blue frill, colour #1a2a5a, with a bright orange rim, colour #fe6d00, and thick orange ray stripes like spokes; the blue head becomes deep blue, colour #205794 with #164271 shadows; the throat stays cream. Nothing red is left. Do not redraw anything. Keep the head, eyes, crests, mouth, pose, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-dinosaur-ankylosaurus-primal-edit",
+      "asset": "chibi-direction-portrait-dinosaur-ankylosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 84301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "portrait-dinosaur-ankylosaurus-c",
+        "candidate": 0
+      },
+      "editInstruction": "Take off the red blanket so the whole dome is bare plates: the dome plates become dark navy blue, colour #16204f; the red ball of the tail club becomes bright orange, colour #fe6d00; the head and legs become deep blue, colour #205794; the spikes stay cream. Nothing red is left. Keep the head, eyes, spikes, legs, pose, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-dinosaur-shaman-primal-edit",
+      "asset": "chibi-direction-portrait-dinosaur-shaman",
+      "endpoint": "edit-image-pixen",
+      "seed": 84401,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "portrait-dinosaur-shaman-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red feathers become bright orange feathers, colour #fe6d00; the red robe becomes deep ochre fur, colour #b9802f with #7a4d1c shadows, with big bold solid dark brown spots; his skin becomes a light golden tan, colour #dba673. Nothing red is left. Do not redraw anything. Keep the skull hood, face, beard, drumstick, pose, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-dinosaur-triceratops-primal-edit",
+      "asset": "chibi-direction-portrait-dinosaur-triceratops",
+      "endpoint": "edit-image-pixen",
+      "seed": 84501,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "portrait-dinosaur-triceratops-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red neck frill becomes a deep blue frill, colour #205794, with a thick bright orange rim, colour #fe6d00; the face becomes the same deep blue with #164271 shadows; the horns, beak and frill studs stay cream. Nothing red is left. Do not redraw anything. Keep the head, eyes, horns, pose, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-dinosaur-t-rex-primal-edit",
+      "asset": "chibi-direction-portrait-dinosaur-t-rex",
+      "endpoint": "edit-image-pixen",
+      "seed": 84601,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "portrait-dinosaur-t-rex-b",
+        "candidate": 0
+      },
+      "editInstruction": "Take off the red collar and cape so the neck and chest are bare hide with a cream throat; the hide becomes deep blue, colour #205794 with #164271 shadows; add a short crest of bright orange spikes, colour #fe6d00, over the brow and down the back of the neck. Nothing red is left. Keep the head, eyes, jaws, teeth, the tiny arm, pose, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-dinosaur-brontosaurus-primal-edit",
+      "asset": "chibi-direction-portrait-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 84701,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "portrait-dinosaur-brontosaurus-c",
+        "candidate": 0
+      },
+      "editInstruction": "Take off the three red neck bands so the neck is bare hide: deep blue, colour #205794 with #164271 shadows, with a cream throat; add three big solid bright orange blotches, colour #fe6d00, down the back of the neck, each a filled blot with no ring. Nothing red is left. Keep the head, eyes, smile, neck, pose, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "dinosaur-city-1-primal-edit-a",
+      "asset": "chibi-direction-dinosaur-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 85001,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "cities-dinosaur",
+        "recipe": "dinosaur-city-1-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours and the flag: the red hide tents become tawny ochre hide tents, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the red banner flag cloth is removed but its pole stays as a bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep every tent, the bone totem, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "dinosaur-city-2-primal-edit-a",
+      "asset": "chibi-direction-dinosaur-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 85101,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "batch": "cities-dinosaur",
+        "recipe": "dinosaur-city-2-d-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours and the flag: the red hide tents become tawny ochre hide tents, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the red banner flag cloth is removed but its pole stays as a bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep every tent, the bone totem, the fence, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "dinosaur-city-3-primal-edit-a",
+      "asset": "chibi-direction-dinosaur-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 85201,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "batch": "cities-dinosaur",
+        "recipe": "dinosaur-city-3-a-edit-4",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours and the flag: the red hide awnings and the small red tents become tawny ochre hide, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the small flag is removed, leaving its bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep the giant rib-cage, the skull, the huts, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "caveman-primal-edit-b",
+      "asset": "chibi-direction-dinosaur-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 83302,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-spots-skin-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his fur pelt: the pale tawny fur becomes a darker dull sandy brown fur, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, clearly darker than his skin; its spots stay big solid dark brown blots; a dark brown trim line runs along its edges. Do not redraw anything. Keep the light golden skin, the orange war paint, the black hair and black beard, the headband, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "primal-edit-a drew the pelt a saturated orange (the accent's colour), turned the hair brown and dropped the headband."
+    },
+    {
+      "id": "shaman-primal-edit-b",
+      "asset": "chibi-direction-dinosaur-shaman",
+      "endpoint": "edit-image-pixen",
+      "seed": 83202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "dinosaur",
+        "recipe": "shaman-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes: the long red robe becomes a dull sandy brown fur robe, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, with big bold solid dark brown spots and a dark brown trim line along its edges; the three red feathers become bright orange feathers, colour #fe6d00. Nothing red is left. Keep the beast skull hood, face, beard, drum, drumstick, necklace, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "primal-edit-a drew the robe a saturated orange: the whole Shaman read as an accent area."
+    },
+    {
+      "id": "shaman-robe-edit-a",
+      "asset": "chibi-direction-dinosaur-shaman",
+      "endpoint": "edit-image-pixen",
+      "seed": 83203,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "shaman-primal-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the orange fur robe: the bright orange becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the beast skull hood, the face, beard, drum, drumstick, necklace, feet, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "The same repair as a recolour of primal-edit-a, which has the spots and the orange feathers already."
+    },
+    {
+      "id": "spitter-hide-edit-a",
+      "asset": "chibi-direction-dinosaur-spitter",
+      "endpoint": "edit-image-pixen",
+      "seed": 83002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "spitter-primal-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the dull slate blue hide of the head, body, arms, legs and tail: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright. Do not redraw anything. Keep the navy frill with its orange rim and orange ray stripes, the cream belly, crests, teeth and claws, the eyes, cheeks, mouth, spit blob, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Spitter step 2: the hide alone, with the wording of the study's t-rex-hide-d."
+    },
+    {
+      "id": "triceratops-hide-edit-a",
+      "asset": "chibi-direction-dinosaur-triceratops",
+      "endpoint": "edit-image-pixen",
+      "seed": 83102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "triceratops-primal-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the light blue hide of the face, body, legs and tail: it becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, with dark navy #1a2748 along the top of the back. Do not redraw anything. Keep the deep blue frill with its orange rim and two orange eye-spots, the cream horns, beak, studs and belly, the eyes, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Triceratops step 2: the hide alone, with the wording of the study's raptor-hide-c (a light blue source)."
+    },
+    {
+      "id": "caveman-pelt-edit-a",
+      "asset": "chibi-direction-dinosaur-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 83303,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "caveman-primal-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only two things: the bright orange fur pelt becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, and its dark brown spots stay; the brown hair and beard become charcoal black. Do not redraw anything. Keep the light golden skin, the orange war paint on the cheeks, the tooth necklace, the bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "primal-edit-b left the pelt as pale as the skin. Recolouring the orange pelt of primal-edit-a is the route that gave the Shaman a deeper tawny (shaman-robe-edit-a)."
+    },
+    {
+      "id": "shaman-skin-edit-a",
+      "asset": "chibi-direction-dinosaur-shaman",
+      "endpoint": "edit-image-pixen",
+      "seed": 83204,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "shaman-robe-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin (face, nose, hands and feet): the pink skin becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows. Add war paint: two short bright orange #fe6d00 stripes on each cheek. Do not redraw anything. Keep the beard, the beast skull hood, the orange feathers, the spotted fur robe, drum, drumstick, necklace, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Shaman step 2: the Caveman's skin tone and war paint."
+    },
+    {
+      "id": "triceratops-bands-edit-a",
+      "asset": "chibi-direction-dinosaur-triceratops",
+      "endpoint": "edit-image-pixen",
+      "seed": 83103,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "triceratops-hide-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright light blue hide of the face, body, legs and tail to the frill's own deep blue, colour #205794 with #164271 shadows; and add three wide dark navy bands, colour #0f1a4a, across the back and one across the tail, each a fat solid band. Do not redraw anything. Keep the frill with its orange rim and two orange eye-spots, the cream horns, beak, studs and belly, the eyes, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "hide-edit-a barely moved the light blue body. Ask for the frill's own blue, with the species' navy bands."
+    },
+    {
+      "id": "ankylosaurus-hide-edit-a",
+      "asset": "chibi-direction-dinosaur-ankylosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 83402,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "ankylosaurus-primal-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright blue hide of the head, legs and tail: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright. Do not redraw anything. Keep the dark navy dome plates, the cream spikes and cheek horns, the bright orange tail club, the cream belly, the eyes, smile, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Ankylosaurus step 2: the hide alone."
+    },
+    {
+      "id": "brontosaurus-hide-edit-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 83502,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brontosaurus-primal-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the dull teal-grey hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not teal, with dark navy #0f1a4a along the top of the back and tail. Do not redraw anything. Keep the cream belly and throat, the head, eyes, smile, the long neck, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Brontosaurus step 2: the hide alone."
+    },
+    {
+      "id": "triceratops-face-edit-a",
+      "asset": "chibi-direction-dinosaur-triceratops",
+      "endpoint": "edit-image-pixen",
+      "seed": 83104,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "triceratops-bands-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only two things: the bright light blue face becomes deep blue like the body, colour #205794 with #164271 shadows; and the blue field of the round neck frill becomes dark navy, colour #0f1a4a, so the face stands out in front of it. Do not redraw anything. Keep the frill's orange rim and its two orange eye-spots, the cream horns, beak, cheek and belly, the eyes, the body, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "bands-edit-a turned the body deep blue but left the face today's light blue and drew no bands. A navy frill field lets a deep blue face read in front of it."
+    },
+    {
+      "id": "ankylosaurus-hide-edit-b",
+      "asset": "chibi-direction-dinosaur-ankylosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 83403,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "ankylosaurus-hide-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright light blue hide of the head, legs and tail to a deep blue, colour #205794 with #164271 shadows, clearly darker and less bright than now. Do not redraw anything. Keep the dark navy dome plates, the cream spikes and cheek horns, the bright orange tail club, the cream belly, the eyes, smile, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "hide-edit-a left the head bright cobalt. The wording that moved the Triceratops' body."
+    },
+    {
+      "id": "brontosaurus-spots-edit-a",
+      "asset": "chibi-direction-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 83503,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brontosaurus-hide-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only a pattern on the hide: nine big solid bright orange blotches, colour #fe6d00, each a filled round blot bigger than its eye, with no ring and no hole: three down the back of the long neck, four along the back and upper flank, two on the base of the tail, wide apart. The head, belly, throat and legs stay plain. Do not redraw anything. Keep the cream belly and throat, the eyes, smile, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+      "notes": "Brontosaurus step 3: big solid blotches along the neck and back."
+    },
+    {
+      "id": "portrait-dinosaur-caveman-pelt-edit",
+      "asset": "chibi-direction-portrait-dinosaur-caveman",
+      "endpoint": "edit-image-pixen",
+      "seed": 84002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-dinosaur-caveman-primal-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright orange fur pelt: it becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the light golden skin, the orange war paint on the cheek, the bone-white headband, the black hair and beard, the grin, bone club, pose, black outline and style exactly the same, on a transparent background.",
+      "notes": "The first edit drew the pelt a saturated orange, as on the unit."
+    },
+    {
+      "id": "portrait-dinosaur-shaman-robe-edit",
+      "asset": "chibi-direction-portrait-dinosaur-shaman",
+      "endpoint": "edit-image-pixen",
+      "seed": 84402,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-dinosaur-shaman-primal-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright orange fur robe: it becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the cream skull hood, the light golden skin, the beard, drumstick, pose, black outline and style exactly the same, on a transparent background.",
+      "notes": "The first edit drew the robe a saturated orange, as on the unit."
+    },
+    {
+      "id": "portrait-dinosaur-brontosaurus-hide-edit",
+      "asset": "chibi-direction-portrait-dinosaur-brontosaurus",
+      "endpoint": "edit-image-pixen",
+      "seed": 84702,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-dinosaur-brontosaurus-primal-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the dull teal-grey hide of the head and neck: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not teal. Do not redraw anything. Keep the bright orange blotches, the cream throat and belly stripes, the eyes, smile, pose, black outline and style exactly the same, on a transparent background.",
+      "notes": "The first edit kept the teal-grey hide."
+    },
+    {
+      "id": "dinosaur-city-1-roof-edit-a",
+      "asset": "chibi-direction-dinosaur-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 85002,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "dinosaur-city-1-primal-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the red roof of the small hut on the right: it becomes tawny ochre hide like the tents, colour #b9802f with #7a4d1c shadows, with one big dark brown spot. No red is left. Do not redraw anything. Keep the tents, their orange feathers, the bone totem, the tusks, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+      "notes": "primal-edit-a left the hut's roof red (and removed the flag with its pole)."
+    },
+    {
+      "id": "dinosaur-city-2-tent-edit-a",
+      "asset": "chibi-direction-dinosaur-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 85102,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "dinosaur-city-2-primal-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the orange-ochre hide of the tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the small bright orange feathers on the tent tips, the bone totem, the bare pole, the fence, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+      "notes": "Trial: duller tents, so the city recedes and the orange stays the units' accent."
+    },
+    {
+      "id": "icon-action-lay-egg-primal-edit",
+      "asset": "chibi-direction-icon-action-lay-egg",
+      "endpoint": "edit-image-pixen",
+      "seed": 86001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "icon-action-lay-egg-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the speckles: the pale grey-blue speckles on the egg become big bold solid bright orange speckles, colour #fe6d00. Nothing blue is left. Do not redraw anything. Keep the cream egg, the bone nest, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The Lay Egg icon shows the Egg of the new look."
+    },
+    {
+      "id": "icon-action-hatch-primal-edit",
+      "asset": "chibi-direction-icon-action-hatch",
+      "endpoint": "edit-image-pixen",
+      "seed": 86101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "icon-action-hatch-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the grey-blue speckles on the eggshell become bold solid bright orange speckles, colour #fe6d00; the baby's grey-blue snout becomes deep blue, colour #205794 with #164271 shadows. Do not redraw anything. Keep the cream shell, the crack, the eyes, the flying chips, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The Hatch icon shows the Egg and the hide of the new look."
+    },
+    {
+      "id": "icon-action-stampede-primal-edit",
+      "asset": "chibi-direction-icon-action-stampede",
+      "endpoint": "edit-image-pixen",
+      "seed": 86201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-dinosaur",
+        "recipe": "icon-action-stampede-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the dusty blue face becomes deep blue, colour #205794 with #164271 shadows; the neck frill becomes dark navy, colour #0f1a4a, with a thick bright orange rim, colour #fe6d00, in place of its cream rim. Do not redraw anything. Keep the cream horns and beak, the eye, the dust puffs, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The Stampede icon shows the Triceratops of the new look."
+    },
+    {
+      "id": "portrait-dinosaur-shaman-robe-edit-b",
+      "asset": "chibi-direction-portrait-dinosaur-shaman",
+      "endpoint": "edit-image-pixen",
+      "seed": 84403,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-dinosaur-shaman-primal-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright orange fur robe: it becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the cream skull hood, the light golden skin, the beard, drumstick, pose, black outline and style exactly the same, on a transparent background.",
+      "notes": "Retry of portrait-dinosaur-shaman-robe-edit, whose job was submitted when the network failed; that recipe stays recorded as submitted with its receipt."
+    },
+    {
+      "id": "dinosaur-city-2-tent-edit-b",
+      "asset": "chibi-direction-dinosaur-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 85103,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "dinosaur-city-2-primal-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the orange-ochre hide of the tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Add nothing: no rocks, no ground and no shadow under the fence. Do not redraw anything. Keep the orange feathers on the tent tips, the bone totem, the bare pole, the fence, the two standing stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+      "notes": "tent-edit-a got the dull tawny tents but added three grey rocks under the fence, outside the classic footprint."
+    },
+    {
+      "id": "dinosaur-city-3-tent-edit-a",
+      "asset": "chibi-direction-dinosaur-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 85202,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "recipe": "dinosaur-city-3-primal-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the orange-ochre hide of the awnings and the small tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Add nothing: no rocks, no ground and no shadow. Do not redraw anything. Keep the orange feathers, the giant cream rib-cage, the horned skull, the dark huts, the standing stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+      "notes": "The same duller tawny for City 3, so the three tiers share a tent colour."
+    },
+    {
+      "id": "portrait-dinosaur-shaman-robe-edit-c",
+      "asset": "chibi-direction-portrait-dinosaur-shaman",
+      "endpoint": "edit-image-pixen",
+      "seed": 84404,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-dinosaur-shaman-primal-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the bright orange fur robe at the bottom of the image: it becomes a dull sandy brown fur, colour #a67c3d with #6e4f26 shadows, not orange; its dark brown spots stay. The big beard stays charcoal black, not brown. Do not redraw anything. Keep the bright orange feathers, the cream skull hood, the light golden skin, the eyes, drumstick, pose, black outline and style exactly the same, on a transparent background.",
+      "notes": "robe-edit-b turned the charcoal beard brown in both candidates."
+    },
+    {
+      "id": "dinosaur-city-1-roof-edit-b",
+      "asset": "chibi-direction-dinosaur-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 85003,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "dinosaur-city-1-roof-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the one bright orange tent on the right: its orange hide becomes the same dull tawny brown hide as the other three tents, colour #a67c3d with #6e4f26 shadows, not orange; its dark brown spots stay. Add nothing. Do not redraw anything. Keep the other tents, the small orange feathers on the tent tips, the bone totem, the tusks, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+      "notes": "roof-edit-a turned the red hut into a fourth tent, in bright orange: an accent-coloured roof."
+    }
+  ]
+}

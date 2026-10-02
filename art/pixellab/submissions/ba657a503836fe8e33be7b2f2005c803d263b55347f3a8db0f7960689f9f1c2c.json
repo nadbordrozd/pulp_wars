@@ -1,0 +1,37 @@
+{
+  "id": "spitter-primal-edit-a",
+  "jobId": "c3d73c7b-c941-4abf-bc14-bf18cadcc03a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-spitter",
+    "subject": "UNIT:DINOSAUR:MARKSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83001,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Take off the red poncho so its chest, belly and back are bare smooth blue hide with a warm cream belly. The round red neck frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and six thick orange ray stripes from the head out to the rim like spokes, navy between them. Nothing red is left. Keep the head, eyes, crests, mouth, spit blob, arms, legs, tail, pose, proportions, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Take off the red poncho so its chest, belly and back are bare smooth blue hide with a warm cream belly. The round red neck frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and six thick orange ray stripes from the head out to the rim like spokes, navy between them. Nothing red is left. Keep the head, eyes, crests, mouth, spit blob, arms, legs, tail, pose, proportions, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Take off the red poncho so its chest, belly and back are bare smooth blue hide with a warm cream belly. The round red neck frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and six thick orange ray stripes from the head out to the rim like spokes, navy between them. Nothing red is left. Keep the head, eyes, crests, mouth, spit blob, arms, legs, tail, pose, proportions, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Take off the red poncho so its chest, belly and back are bare smooth blue hide with a warm cream belly. The round red neck frill becomes a dark navy blue frill, colour #1a2a5a, with a thin bright orange rim, colour #fe6d00, and six thick orange ray stripes from the head out to the rim like spokes, navy between them. Nothing red is left. Keep the head, eyes, crests, mouth, spit blob, arms, legs, tail, pose, proportions, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "batch": "dinosaur",
+      "recipe": "spitter-a-edit",
+      "candidate": 0,
+      "sha256": "87d26ee0549d3f1493978608947ca93652c78afea15a60b08d8687391f96833c"
+    }
+  }
+}

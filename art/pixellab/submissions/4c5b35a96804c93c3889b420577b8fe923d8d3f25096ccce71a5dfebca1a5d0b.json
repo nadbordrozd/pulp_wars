@@ -1,0 +1,36 @@
+{
+  "id": "ankylosaurus-hide-edit-b",
+  "jobId": "5b27b536-d26f-45d9-9c3f-e830a5affe3f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-ankylosaurus",
+    "subject": "UNIT:DINOSAUR:GUARD",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83403,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the bright light blue hide of the head, legs and tail to a deep blue, colour #205794 with #164271 shadows, clearly darker and less bright than now. Do not redraw anything. Keep the dark navy dome plates, the cream spikes and cheek horns, the bright orange tail club, the cream belly, the eyes, smile, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the bright light blue hide of the head, legs and tail to a deep blue, colour #205794 with #164271 shadows, clearly darker and less bright than now. Do not redraw anything. Keep the dark navy dome plates, the cream spikes and cheek horns, the bright orange tail club, the cream belly, the eyes, smile, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the bright light blue hide of the head, legs and tail to a deep blue, colour #205794 with #164271 shadows, clearly darker and less bright than now. Do not redraw anything. Keep the dark navy dome plates, the cream spikes and cheek horns, the bright orange tail club, the cream belly, the eyes, smile, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the bright light blue hide of the head, legs and tail to a deep blue, colour #205794 with #164271 shadows, clearly darker and less bright than now. Do not redraw anything. Keep the dark navy dome plates, the cream spikes and cheek horns, the bright orange tail club, the cream belly, the eyes, smile, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "ankylosaurus-hide-edit-a",
+      "candidate": 0,
+      "sha256": "fab97bfee40504f481e299aca91ff8e4635699fac5dc9f01d3ce1af8680ba76f"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "brontosaurus-hide-edit-a",
+  "jobId": "24a118ea-64b3-44e5-b585-905b8c0e6d9b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-brontosaurus",
+    "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 83502,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the dull teal-grey hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not teal, with dark navy #0f1a4a along the top of the back and tail. Do not redraw anything. Keep the cream belly and throat, the head, eyes, smile, the long neck, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the dull teal-grey hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not teal, with dark navy #0f1a4a along the top of the back and tail. Do not redraw anything. Keep the cream belly and throat, the head, eyes, smile, the long neck, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the dull teal-grey hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not teal, with dark navy #0f1a4a along the top of the back and tail. Do not redraw anything. Keep the cream belly and throat, the head, eyes, smile, the long neck, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the dull teal-grey hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not teal, with dark navy #0f1a4a along the top of the back and tail. Do not redraw anything. Keep the cream belly and throat, the head, eyes, smile, the long neck, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "brontosaurus-primal-edit-a",
+      "candidate": 0,
+      "sha256": "695229ee446061786ef45bc3a07a2ba65d33eda3c56b6fad564aed4a155c26a2"
+    }
+  }
+}

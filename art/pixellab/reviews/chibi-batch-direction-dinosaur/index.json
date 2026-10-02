@@ -1,0 +1,200 @@
+{
+  "bead": "pulp_wars-3tq.13",
+  "batch": "direction-dinosaur",
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. The new units, the Egg, cities and portraits have no owner area: they are drawn as authored for every player.",
+  "captures": "showcase-dinosaur-*: a Showcase match (16 x 16) launched from the setup form with ?art=chibi in the default look, with a Dinosaur viewer against Human, Undead and Goblin (all four converted factions); 'four' has four Dinosaur seats; 'classic' is the mixed match with Settings > Developer tools > Classic look (previous art) ON. scene-*: the scenes of scripts/art/chibi/review-dinosaur-direction-scene-v7.ts drawn by the real board host with the look the game draws.",
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/units-old-new-1x.png",
+      "width": 1176,
+      "height": 1080,
+      "sha256": "0ba8e7a09d3e44ed523cfcbf985b8f41e0767d9bcac722b4f29155ba6a3df099"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/units-old-new-x4.png",
+      "width": 4056,
+      "height": 3672,
+      "sha256": "94bc936a27691aac1916941c7303dd4e9fe84c0b3d3d79344ba6317ce1cf05c5"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/units-zoom-0.75.png",
+      "width": 882,
+      "height": 810,
+      "sha256": "3dad757a526053aa3890c1b2cad09f0a64fdd6ba151fdc4b74fad9631959de4a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/portraits-old-new-1x.png",
+      "width": 760,
+      "height": 1616,
+      "sha256": "8f93a0dd714c043c1b4e5cf21202f3a87b7b0c869c3b42a783aeb231eeec36ba"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/portraits-old-new-x4.png",
+      "width": 2488,
+      "height": 5504,
+      "sha256": "33349c02ca3c803a001e7cb74faab0aa713642b0f820c7e991815d9ae8d2e5f4"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/cities-1x.png",
+      "width": 920,
+      "height": 422,
+      "sha256": "201cf938cb7bb36fecf393e0be948ebbf3dad713abfa4abc2db9dd26eb538913"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/cities-x4.png",
+      "width": 3104,
+      "height": 1430,
+      "sha256": "a24e8a6e67498312ea2d4b458485ecf3290db8819788dd26a981d8314d87b6e4"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/egg-old-new-1x.png",
+      "width": 424,
+      "height": 228,
+      "sha256": "eecffe11f2e7f381506cac21a25bcf67242a3e7cac30c2e76fa05a2cb779f5f3"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/egg-old-new-x4.png",
+      "width": 1192,
+      "height": 732,
+      "sha256": "12341d0dafd464b0f7327fab7baf5d8f70d7a5eb8544c1361d41b61a1a94f1b2"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/palette.png",
+      "width": 760,
+      "height": 500,
+      "sha256": "3d17d4be007e823fe8098f04e133e669219116e7c8b5390c3203646f9b81286c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9a39438676079b7c890a29acea68801ba2ce5effbb78614425142a873124969a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7e3c6686e6f75b9c11b1ce5cebd470fb71d89e2a9198d06bb7061a1a9f0a7008"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-dock-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "534257f403d0715c8f7e57056e9140204e0eb38cd5ea5cf3e45cc45cb7764e6b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-lay-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "df7f6e72c197b16af18a9c05e3630bd34489b49dbaebfa6f27bb34b8cfd1f26f"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-tech-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "bf1a52c3e85811458601914c32bc51ce0b92599137361ae498c2dafb13c0995c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-help-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "4148eb7d5912e64f504cd5670517fd6798d6c2f1a8c1f74fd1bcb3514b942a7e"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-four-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "dd5bf27d6461256284af585f829eeaa93ecb28f3c317fc974ada07f1fad0031c"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-four-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e593475ec845257c568210da8fe28f89109fddb3b6b6f09f12ffb6d349cf5693"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-mixed-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "42ce8e04fd75522e8e16275fb9acf660d9e10f9fc2eefd7491b0cd0e837baef6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-mixed-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ab5a910f844c5970b468ab9a30ecfa2f4a9de45dd1e383b8b463db0da7655975"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-four-classic-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "effd6e0b7ebc7b012a5e933bf780dcbc74d0de9c56ad9bcc8fd26a37fc3701a3"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-four-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "872389a244ca6ddbeef966ca597164eb1ded10cb885457227b58699215139ab6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-four-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3fba46f76ba0e154ef6fd3ea3270bf363132a25ab8c03ab520e7c0dd175708c6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-classic-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "98ada68a2ecf8915344e9a352ea8b5025a56db62cf7e2514f1023db46373f00e"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "c916037b3ca69ba1bf00e958cd12b0c83dd3ecbf2c4bceb2361661c9c14070cb"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "ead154c12f663cba1d95910267258b49e607b53d116769e2d04d78dc7de2cfbc"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-four-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "473af8611259f48dc931af572939843a7b3bc8ceeb81e9ebfcd885073db80249"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-four-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "543e2d9b3db853840f8abe63cd4ec48861d118a666cbf651a9feacd4fbe3a3ee"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-mixed-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "84b366cc70176c0d71882d1bb7f64b9e4cce09988dbc635d1bd74eb369a85492"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/scene-mixed-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "cc9203c4b2014a34f3b5412e5b636b55058e2836b3df787a903a3d06d32cb7f4"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-four-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "2a6acddd0ba832ece66c4250c5a18fb88cdd77260917d5c425490d6b9e1e1457"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-dinosaur/showcase-dinosaur-four-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "64d730a8333571977929339aece50030443d1da9154b73f54b51947024f25adb"
+    }
+  ]
+}

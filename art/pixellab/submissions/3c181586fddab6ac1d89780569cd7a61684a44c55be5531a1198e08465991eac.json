@@ -1,0 +1,36 @@
+{
+  "id": "caveman-primal-edit-b",
+  "jobId": "d331f7b6-24df-4bb7-89c9-36d0c11da058",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-caveman",
+    "subject": "UNIT:DINOSAUR:FIGHTER",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his fur pelt: the pale tawny fur becomes a darker dull sandy brown fur, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, clearly darker than his skin; its spots stay big solid dark brown blots; a dark brown trim line runs along its edges. Do not redraw anything. Keep the light golden skin, the orange war paint, the black hair and black beard, the headband, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his fur pelt: the pale tawny fur becomes a darker dull sandy brown fur, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, clearly darker than his skin; its spots stay big solid dark brown blots; a dark brown trim line runs along its edges. Do not redraw anything. Keep the light golden skin, the orange war paint, the black hair and black beard, the headband, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his fur pelt: the pale tawny fur becomes a darker dull sandy brown fur, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, clearly darker than his skin; its spots stay big solid dark brown blots; a dark brown trim line runs along its edges. Do not redraw anything. Keep the light golden skin, the orange war paint, the black hair and black beard, the headband, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only his fur pelt: the pale tawny fur becomes a darker dull sandy brown fur, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, clearly darker than his skin; its spots stay big solid dark brown blots; a dark brown trim line runs along its edges. Do not redraw anything. Keep the light golden skin, the orange war paint, the black hair and black beard, the headband, bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "caveman-spots-skin-b",
+      "candidate": 0,
+      "sha256": "f4a6e222bc9ee4b76df4540614bbe6cf9e1722bb3c8b59f256afb717fcb0f1f9"
+    }
+  }
+}

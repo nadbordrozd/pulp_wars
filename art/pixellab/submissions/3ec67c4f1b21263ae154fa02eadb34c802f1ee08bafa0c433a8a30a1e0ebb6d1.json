@@ -1,0 +1,37 @@
+{
+  "id": "brontosaurus-primal-edit-a",
+  "jobId": "3472e8c1-eeb1-4fc3-81f2-74caf9a0548a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-brontosaurus",
+    "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 83501,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Take off the red neck bands, the grey collar and the red blanket with its cord, so the long neck, back and flanks are bare smooth blue hide with a cream belly and throat. Nothing red is left. Keep the head, eyes, smile, the long neck, legs, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Take off the red neck bands, the grey collar and the red blanket with its cord, so the long neck, back and flanks are bare smooth blue hide with a cream belly and throat. Nothing red is left. Keep the head, eyes, smile, the long neck, legs, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Take off the red neck bands, the grey collar and the red blanket with its cord, so the long neck, back and flanks are bare smooth blue hide with a cream belly and throat. Nothing red is left. Keep the head, eyes, smile, the long neck, legs, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Take off the red neck bands, the grey collar and the red blanket with its cord, so the long neck, back and flanks are bare smooth blue hide with a cream belly and throat. Nothing red is left. Keep the head, eyes, smile, the long neck, legs, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "dinosaur",
+      "recipe": "brontosaurus-h-edit",
+      "candidate": 0,
+      "sha256": "b65b29594abef44f6e13cd7c4d8ca6752eb9a4e5a193ca6c2eac976c627bdb56"
+    }
+  }
+}

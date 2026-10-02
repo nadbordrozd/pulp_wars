@@ -29,6 +29,11 @@ import {
   GOBLIN_SHOWCASE_V7,
   goblinShowcaseFixtureV7,
 } from "../fixtures/v7-goblin-ui";
+import {
+  DINOSAUR_SHOWCASE_V7,
+  dinosaurCityFixtureV7,
+  dinosaurShowcaseFixtureV7,
+} from "../fixtures/v7-dinosaur-ui";
 
 /**
  * Rasters settle at once; every master reads back as an opaque 4 x 6 block
@@ -579,5 +584,121 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     noBomb.select(GOBLIN_SHOWCASE_V7.kaboom);
     expect(bomb()).not.toBeNull();
     noBomb.app.destroy();
+  });
+
+  it("draws the Dinosaur direction art by default: units, Eggs, lay cards and the city, the classic art in the Classic look, and falls back per piece (pulp_wars-3tq.13)", () => {
+    const KEY = "data:image/test;216,38,44";
+    const RECOLOURED = "data:image/test;240,103,98";
+    const identity = (): HTMLImageElement | null =>
+      document.querySelector<HTMLImageElement>(".v7-identity-art img");
+    const assetIds = (selector: string): (string | undefined)[] =>
+      [...document.querySelectorAll<HTMLImageElement>(selector)].map(
+        (image) => image.dataset.chibiAssetId,
+      );
+    // A Dinosaur unit shows the direction's sprite as authored: fixed
+    // colours, so the master is used and nothing is recoloured to the owner.
+    const dinosaur = mount(dinosaurShowcaseFixtureV7(), "CHIBI");
+    for (const [at, id] of [
+      [
+        DINOSAUR_SHOWCASE_V7.triceratops,
+        "chibi-direction-dinosaur-triceratops",
+      ],
+      [DINOSAUR_SHOWCASE_V7.laneCaveman, "chibi-direction-dinosaur-caveman"],
+      [DINOSAUR_SHOWCASE_V7.shaman, "chibi-direction-dinosaur-shaman"],
+      [DINOSAUR_SHOWCASE_V7.bigRaptor, "chibi-direction-dinosaur-raptor"],
+      [DINOSAUR_SHOWCASE_V7.alphaTRex, "chibi-direction-dinosaur-t-rex"],
+      [DINOSAUR_SHOWCASE_V7.spitter, "chibi-direction-dinosaur-spitter"],
+      [
+        DINOSAUR_SHOWCASE_V7.ankylosaurus,
+        "chibi-direction-dinosaur-ankylosaurus",
+      ],
+      [
+        DINOSAUR_SHOWCASE_V7.brontosaurus,
+        "chibi-direction-dinosaur-brontosaurus",
+      ],
+      // An Egg's dock: the new Egg, whatever unit is inside.
+      [DINOSAUR_SHOWCASE_V7.tRexEgg, "chibi-direction-dinosaur-egg"],
+      [DINOSAUR_SHOWCASE_V7.damagedEgg, "chibi-direction-dinosaur-egg"],
+    ] as const) {
+      dinosaur.select(at);
+      expect(identity()?.dataset.chibiAssetId, id).toBe(id);
+      expect(identity()?.getAttribute("src"), id).toBe(KEY);
+      // Its own faction art: no stand-in badge, and no code-drawn Egg.
+      expect(
+        document.querySelector(".v7-identity-art .v7-dinosaur-badge"),
+        id,
+      ).toBeNull();
+      expect(document.querySelector(".v7-egg-figure"), id).toBeNull();
+    }
+    // The Human rival keeps the Human direction art.
+    dinosaur.select(DINOSAUR_SHOWCASE_V7.pushTarget);
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-direction-juggernaut");
+    dinosaur.app.destroy();
+
+    // The city dock and its Lay Egg cards: the Dinosaur camp and portraits.
+    const city = mount(dinosaurCityFixtureV7(), "CHIBI");
+    city.selectCapital();
+    const cityArt = assetIds(".v7-action-card img, .v7-selection-dock img");
+    expect(cityArt).toContain("chibi-direction-dinosaur-city-1");
+    expect(cityArt).not.toContain("chibi-dinosaur-city-1");
+    const directed = cityArt.filter(
+      (id) =>
+        id?.startsWith("chibi-direction-") === true && /portrait|city/.test(id),
+    );
+    expect(directed.length).toBeGreaterThan(1);
+    expect(directed.every((id) => id?.includes("dinosaur") === true)).toBe(
+      true,
+    );
+    expect(
+      cityArt.filter((id) => id?.startsWith("chibi-portrait-") === true),
+    ).toEqual([]);
+    city.app.destroy();
+
+    // A Dinosaur direction raster that fails to load falls back to the
+    // classic Dinosaur asset of that piece, in the owner's colour.
+    const failing = mount(
+      dinosaurShowcaseFixtureV7(),
+      "CHIBI",
+      environment("chibi-direction-dinosaur-shaman."),
+    );
+    failing.select(DINOSAUR_SHOWCASE_V7.shaman);
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-dinosaur-shaman");
+    expect(identity()?.getAttribute("src")).toBe(RECOLOURED);
+    failing.select(DINOSAUR_SHOWCASE_V7.spitter);
+    expect(identity()?.dataset.chibiAssetId).toBe(
+      "chibi-direction-dinosaur-spitter",
+    );
+    failing.app.destroy();
+
+    // The classic look keeps the classic Dinosaur art, in the owner's
+    // colour; LEGACY has no chibi art at all.
+    const classicStorage = {
+      getItem: (key: string) =>
+        key === "pulpWars.ruleset7.boardClassicLook.v1"
+          ? '{"classic":true}'
+          : null,
+      setItem: () => undefined,
+      removeItem: () => undefined,
+    };
+    const classic = mount(
+      dinosaurShowcaseFixtureV7(),
+      "CHIBI",
+      environment(),
+      undefined,
+      classicStorage,
+    );
+    classic.select(DINOSAUR_SHOWCASE_V7.alphaTRex);
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-dinosaur-t-rex");
+    expect(identity()?.getAttribute("src")).toBe(RECOLOURED);
+    classic.select(DINOSAUR_SHOWCASE_V7.tRexEgg);
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-dinosaur-egg");
+    expect(identity()?.getAttribute("src")).toBe(RECOLOURED);
+    classic.app.destroy();
+    const legacy = mount(dinosaurShowcaseFixtureV7(), "LEGACY");
+    legacy.select(DINOSAUR_SHOWCASE_V7.tRexEgg);
+    expect(document.body.innerHTML).not.toContain("chibi-direction-dinosaur");
+    expect(document.body.innerHTML).not.toContain("v7-chibi-art");
+    expect(document.querySelector(".v7-egg-figure")).not.toBeNull();
+    legacy.app.destroy();
   });
 });

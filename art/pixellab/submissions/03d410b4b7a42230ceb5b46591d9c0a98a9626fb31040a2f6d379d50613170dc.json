@@ -1,0 +1,36 @@
+{
+  "id": "spitter-hide-edit-a",
+  "jobId": "94d1e890-2b6b-4eef-9ac3-f883eb9e5fc4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-spitter",
+    "subject": "UNIT:DINOSAUR:MARKSMAN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the dull slate blue hide of the head, body, arms, legs and tail: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright. Do not redraw anything. Keep the navy frill with its orange rim and orange ray stripes, the cream belly, crests, teeth and claws, the eyes, cheeks, mouth, spit blob, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the dull slate blue hide of the head, body, arms, legs and tail: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright. Do not redraw anything. Keep the navy frill with its orange rim and orange ray stripes, the cream belly, crests, teeth and claws, the eyes, cheeks, mouth, spit blob, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the dull slate blue hide of the head, body, arms, legs and tail: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright. Do not redraw anything. Keep the navy frill with its orange rim and orange ray stripes, the cream belly, crests, teeth and claws, the eyes, cheeks, mouth, spit blob, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the dull slate blue hide of the head, body, arms, legs and tail: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright. Do not redraw anything. Keep the navy frill with its orange rim and orange ray stripes, the cream belly, crests, teeth and claws, the eyes, cheeks, mouth, spit blob, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "spitter-primal-edit-a",
+      "candidate": 0,
+      "sha256": "7fd0944909876bf9dd4ea019f931719fa67b92d0f965959efe7c8cb84afd9ba4"
+    }
+  }
+}

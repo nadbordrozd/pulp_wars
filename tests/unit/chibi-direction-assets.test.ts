@@ -112,20 +112,25 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
     expect(
       registry.variants("IMPROVEMENT:FARM").map((asset) => asset.id),
     ).toEqual(["chibi-direction-farm"]);
-    // Ships are shared by every faction and are not converted; neither are
-    // the Dinosaurs. The Goblins have their own list since bead
-    // pulp_wars-3tq.9 (tested below), and the Undead since bead
-    // pulp_wars-3tq.12, in a module of their own that the registry adds.
+    // Ships are shared by every faction and are the only units not
+    // converted. The Goblins have their own list since bead
+    // pulp_wars-3tq.9 (tested below), the Undead since bead
+    // pulp_wars-3tq.12 and the Dinosaurs since bead pulp_wars-3tq.13, each
+    // in a module of their own that the registry adds.
     for (const subject of [
       "UNIT:PATROL_BOAT",
       "UNIT:BATTLESHIP",
       "UNIT:EMBARKED_TRANSPORT",
-      "UNIT:DINOSAUR:FIGHTER",
-      "CITY:DINOSAUR:1",
-      "PORTRAIT:DINOSAUR:FIGHTER",
     ] as const)
       expect(registry.variants(subject), subject).toHaveLength(0);
-    for (const subject of ["UNIT:UNDEAD:FIGHTER", "CITY:UNDEAD:1"] as const) {
+    for (const subject of [
+      "UNIT:UNDEAD:FIGHTER",
+      "CITY:UNDEAD:1",
+      "UNIT:DINOSAUR:FIGHTER",
+      "UNIT:DINOSAUR:EGG",
+      "CITY:DINOSAUR:1",
+      "PORTRAIT:DINOSAUR:FIGHTER",
+    ] as const) {
       expect(registry.variants(subject), subject).toHaveLength(1);
       expect(
         CHIBI_DIRECTION_ART_ASSETS_V7.some(
@@ -230,12 +235,13 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
 
   it("records a pennant anchor inside the art of City 1-3, the Port and the Shipyard only", () => {
     // The Human and shared pieces of this batch; a converted faction's
-    // cities (Goblin, Undead) have anchors and tests of their own.
+    // cities (Goblin, Undead, Dinosaur) have anchors and tests of their own.
     const anchored = Object.keys(DIRECTION_FLAG_ANCHORS_V7).filter(
       (id) =>
         id.startsWith("chibi-direction-") &&
         !id.startsWith("chibi-direction-goblin-") &&
-        !id.startsWith("chibi-direction-undead-"),
+        !id.startsWith("chibi-direction-undead-") &&
+        !id.startsWith("chibi-direction-dinosaur-"),
     );
     expect(anchored.sort()).toEqual([
       "chibi-direction-city-1",

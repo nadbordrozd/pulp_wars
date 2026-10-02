@@ -1,0 +1,36 @@
+{
+  "id": "shaman-robe-edit-a",
+  "jobId": "91a89719-1dc7-4de1-bda7-f3ce9775aa67",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-shaman",
+    "subject": "UNIT:DINOSAUR:CAPTAIN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange fur robe: the bright orange becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the beast skull hood, the face, beard, drum, drumstick, necklace, feet, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the orange fur robe: the bright orange becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the beast skull hood, the face, beard, drum, drumstick, necklace, feet, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange fur robe: the bright orange becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the beast skull hood, the face, beard, drum, drumstick, necklace, feet, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the orange fur robe: the bright orange becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the beast skull hood, the face, beard, drum, drumstick, necklace, feet, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "shaman-primal-edit-a",
+      "candidate": 0,
+      "sha256": "f3ad9c6dafdfd650e473625f5ba6d22dc8b9b8b9cdc0e7b61284d3183365ae82"
+    }
+  }
+}

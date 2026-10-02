@@ -1,0 +1,37 @@
+{
+  "id": "portrait-dinosaur-ankylosaurus-primal-edit",
+  "jobId": "53f81510-792b-456f-9169-50dd29118965",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-portrait-dinosaur-ankylosaurus",
+    "subject": "PORTRAIT:DINOSAUR:GUARD",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 84301,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Take off the red blanket so the whole dome is bare plates: the dome plates become dark navy blue, colour #16204f; the red ball of the tail club becomes bright orange, colour #fe6d00; the head and legs become deep blue, colour #205794; the spikes stay cream. Nothing red is left. Keep the head, eyes, spikes, legs, pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Take off the red blanket so the whole dome is bare plates: the dome plates become dark navy blue, colour #16204f; the red ball of the tail club becomes bright orange, colour #fe6d00; the head and legs become deep blue, colour #205794; the spikes stay cream. Nothing red is left. Keep the head, eyes, spikes, legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Take off the red blanket so the whole dome is bare plates: the dome plates become dark navy blue, colour #16204f; the red ball of the tail club becomes bright orange, colour #fe6d00; the head and legs become deep blue, colour #205794; the spikes stay cream. Nothing red is left. Keep the head, eyes, spikes, legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Take off the red blanket so the whole dome is bare plates: the dome plates become dark navy blue, colour #16204f; the red ball of the tail club becomes bright orange, colour #fe6d00; the head and legs become deep blue, colour #205794; the spikes stay cream. Nothing red is left. Keep the head, eyes, spikes, legs, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-dinosaur",
+      "recipe": "portrait-dinosaur-ankylosaurus-c",
+      "candidate": 0,
+      "sha256": "78824e4ba170a8d46bd53aaba4e72b39df1611ee6d3bf9aa129bde1d0f1814af"
+    }
+  }
+}

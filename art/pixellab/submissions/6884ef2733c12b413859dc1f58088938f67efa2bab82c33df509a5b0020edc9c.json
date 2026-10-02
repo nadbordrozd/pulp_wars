@@ -1,0 +1,37 @@
+{
+  "id": "raptor-base-a",
+  "jobId": "686a8192-a41b-4eda-a68e-06770fd43307",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-raptor",
+    "subject": "UNIT:DINOSAUR:RAIDER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81001,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the red parts: the red feather crest becomes a bright amber-orange feather crest, colour #f08c1e with #b85c0a shadows; take off the red blanket and its grey cord so the back, sides and thighs are bare smooth blue hide with a cream belly. Nothing red is left. Keep the head, eyes, teeth, arms, legs, claws, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the red parts: the red feather crest becomes a bright amber-orange feather crest, colour #f08c1e with #b85c0a shadows; take off the red blanket and its grey cord so the back, sides and thighs are bare smooth blue hide with a cream belly. Nothing red is left. Keep the head, eyes, teeth, arms, legs, claws, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the red parts: the red feather crest becomes a bright amber-orange feather crest, colour #f08c1e with #b85c0a shadows; take off the red blanket and its grey cord so the back, sides and thighs are bare smooth blue hide with a cream belly. Nothing red is left. Keep the head, eyes, teeth, arms, legs, claws, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the red parts: the red feather crest becomes a bright amber-orange feather crest, colour #f08c1e with #b85c0a shadows; take off the red blanket and its grey cord so the back, sides and thighs are bare smooth blue hide with a cream belly. Nothing red is left. Keep the head, eyes, teeth, arms, legs, claws, tail, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "dinosaur",
+      "recipe": "raptor-a-edit",
+      "candidate": 0,
+      "sha256": "0bea55d64d2d600fc33c16869196f37507a891e7bfbd7873878abd089de0e73c"
+    }
+  }
+}

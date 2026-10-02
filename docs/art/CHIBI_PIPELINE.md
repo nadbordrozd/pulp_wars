@@ -369,6 +369,39 @@ Its cities use the `calm-settlement` class with the subject keys
 chains on the accepted `undead` and `5-undead` candidates, with seven study
 recipes brought in by `import`.
 
+### The Dinosaur production batch (bead `pulp_wars-3tq.13`)
+
+Batch `direction-dinosaur` holds the
+[Dinosaur production art](VISUAL_DIRECTION_2026-10.md#19-dinosaur-production):
+faction `DINOSAUR`, `fixedFactionColours`, 23 assets (8 units, the Egg, 8
+portraits, 3 command icons, City 1 to 3), every unit, portrait and city
+`ownerColour: false`. It added no pipeline piece:
+
+- **Every recipe is an `edit-image-pixen` edit** of an accepted classic
+  candidate (batches `dinosaur`, `5-dinosaur`, `cities-dinosaur`) or of an
+  earlier step. Nine were imported from
+  `art/explorations/dinosaur-direction-2026-10`: the whole chains of the
+  study's variant F for the Raptor and the T-Rex, whose last steps are the
+  accepted sprites, and the two steps of its spotted Caveman.
+- **No accent step.** The user kept the red-orange PixelLab draws, and its
+  hue is steady from sprite to sprite (21° to 29° on the units), so no
+  asset names an `accent` preset: every master is its recorded candidate
+  (`as-is`), which a test checks byte for byte.
+- **The Egg** keeps the classic arrangement: a `STANDARD_UNIT` of 48 x 48
+  made with the `icon` recipe class, here unowned.
+- **Subject texts** are the `<subject>/PRIMAL` keys of
+  `scripts/art/chibi/subjects/DINOSAUR.json`. An edit sends only its
+  instruction, so they document the look; the manifest still requires them.
+- **Cities use the `settlement` class** with the classic canvases (as-is),
+  like the Goblin camps: the edits keep each camp's footprint.
+- **An interrupted job.** One job was submitted when the network failed
+  (`portrait-dinosaur-shaman-robe-edit`). As for a job that fails at
+  PixelLab, its recipe stays recorded as submitted with its receipt, and
+  the retry has a new recipe id; the pipeline has no resume for a job
+  whose polling was cut off.
+- The prompt notes are in the
+  [production section](VISUAL_DIRECTION_2026-10.md#what-was-made-2).
+
 ## Terrain palettes and variants
 
 - **Forced palette:** a Pixflux recipe may name a checked-in PNG in
@@ -530,15 +563,20 @@ existing command icons on the dock panel and a light page),
 `egg-{1x,x4}.png` (the Egg beside the Caveman and the Raptor),
 `showcase-{desktop,phone}-zoom-{1,0.75}.png`, `showcase-dock-desktop.png`
 and `showcase-tech-desktop.png` (a Showcase match with a Dinosaur viewer
-against a Human, an Undead and a Goblin seat, launched through the
-controller because the setup form offers the faction only from bead
-`pulp_wars-c87.4`), `ingame-roster-{desktop,phone}-zoom-{1,0.75}.png` (the
+against a Human, an Undead and a Goblin seat, launched from the setup
+form), `ingame-roster-{desktop,phone}-zoom-{1,0.75}.png` (the
 scene of
 [`review-dinosaur-scene-v7.ts`](../../scripts/art/chibi/review-dinosaur-scene-v7.ts)
 drawn by the real board host: the eight units and the Egg in the four
 player colours, on base plates and with the damaged HP bar, beside the other
 three factions) and `dinosaur-index.json`. Its captures start Vite on port 6431
-unless `--port` says otherwise. It does not run the batch review.
+unless `--port` says otherwise. It does not run the batch review. Since bead
+`pulp_wars-3tq.13` the default look draws the Dinosaur production art, so
+the `showcase-*` and `ingame-roster-*` captures show it, and the faction
+sheets have a "Live" column (the production piece, the same for every
+player) before the classic piece in the key colour and the four player
+colours; the Human, Undead and Goblin columns stay the classic sprites in
+Coral.
 
 The faction city sets (`CITY:UNDEAD:<level>`, `CITY:GOBLIN:<level>`, batches
 `cities-undead` and `cities-goblin`, bead `pulp_wars-6gd.6`) have their own
@@ -666,6 +704,38 @@ drawn by the real board host: four Undead players, Undead against Human,
 and the Raise Dead and Wail previews and the ability cues pinned
 mid-animation) and `index.json`. Its captures start Vite on port 6501
 unless `--port` says otherwise.
+
+`npm run art:chibi-dinosaur-direction-review` (bead `pulp_wars-3tq.13`)
+writes `art/pixellab/reviews/chibi-batch-direction-dinosaur/`:
+`units-old-new-{1x,x4}.png` and `units-zoom-0.75.png` (every Dinosaur unit:
+today's sprite in the key colour and for a Teal player, the new one on
+Grass, Forest, Mountain and beside Shallow and Deep Water, and the Human,
+Undead and Goblin unit of its role), `portraits-old-new-{1x,x4}.png` (the
+eight portraits beside the map sprite and the other factions' busts, and
+the command icons), `cities-{1x,x4}.png` (City 1-3: today in the key colour
+and for a Teal player, new, new with the pennant at its recorded anchor,
+and the Human, Goblin and Undead city), `egg-old-new-{1x,x4}.png` (the Egg
+today and new, beside the Caveman), `palette.{png,json}` and
+`readability.json` (measured on the masters),
+`showcase-dinosaur-{desktop,phone}-zoom-{1,0.75}.png` (a Showcase match
+with a Dinosaur viewer against Human, Undead and Goblin: the four converted
+factions), `showcase-dinosaur-four-{desktop,phone}-zoom-{1,0.75}.png` (four
+Dinosaur seats), `showcase-dinosaur-classic-desktop-zoom-1.png` (the mixed
+match with the Classic look on),
+`showcase-dinosaur-{dock,lay,tech,help}-desktop.png`,
+`scene-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png` and
+`scene-four-classic-desktop-zoom-1.png` (the scenes of
+[`review-dinosaur-direction-scene-v7.ts`](../../scripts/art/chibi/review-dinosaur-direction-scene-v7.ts)
+drawn by the real board host: four Dinosaur players with the eight units on
+Grass, Forest and Mountain, a city of each tier with a garrison, Eggs with
+countdowns, Big and Alpha units and a row on the shore; and Dinosaur
+against Human, Undead and Goblin, unit by unit) and `index.json`. Its
+captures start Vite on port 6508 unless `--port` says otherwise;
+`--dinosaur-only` is accepted and changes nothing. The Charge!, Hatch, Acid
+and Armoured previews and cues on the new sprites are captured by
+`npm run review:ruleset7-dinosaur-ui`. **Do not edit files of the worktree
+while a capture runs:** the dev server reloads the page and the run waits
+for ever.
 
 ## Dry run
 

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-dinosaur-brontosaurus-hide-edit",
+  "jobId": "5ee0e6d4-d1da-4642-8f33-53eb4ed784be",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-portrait-dinosaur-brontosaurus",
+    "subject": "PORTRAIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 84702,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the dull teal-grey hide of the head and neck: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not teal. Do not redraw anything. Keep the bright orange blotches, the cream throat and belly stripes, the eyes, smile, pose, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the dull teal-grey hide of the head and neck: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not teal. Do not redraw anything. Keep the bright orange blotches, the cream throat and belly stripes, the eyes, smile, pose, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the dull teal-grey hide of the head and neck: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not teal. Do not redraw anything. Keep the bright orange blotches, the cream throat and belly stripes, the eyes, smile, pose, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the dull teal-grey hide of the head and neck: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not teal. Do not redraw anything. Keep the bright orange blotches, the cream throat and belly stripes, the eyes, smile, pose, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-dinosaur-brontosaurus-primal-edit",
+      "candidate": 0,
+      "sha256": "29ef6f06ca0065d082dd482378c7f0b70581148085b943c90ae73633fa964e0a"
+    }
+  }
+}

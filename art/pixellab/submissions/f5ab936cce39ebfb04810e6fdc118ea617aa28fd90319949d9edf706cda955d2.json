@@ -1,0 +1,36 @@
+{
+  "id": "triceratops-bands-edit-a",
+  "jobId": "eff1e56f-5c01-46ed-8997-9da736ea0b20",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-triceratops",
+    "subject": "UNIT:DINOSAUR:CATAPULT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 83103,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the bright light blue hide of the face, body, legs and tail to the frill's own deep blue, colour #205794 with #164271 shadows; and add three wide dark navy bands, colour #0f1a4a, across the back and one across the tail, each a fat solid band. Do not redraw anything. Keep the frill with its orange rim and two orange eye-spots, the cream horns, beak, studs and belly, the eyes, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the bright light blue hide of the face, body, legs and tail to the frill's own deep blue, colour #205794 with #164271 shadows; and add three wide dark navy bands, colour #0f1a4a, across the back and one across the tail, each a fat solid band. Do not redraw anything. Keep the frill with its orange rim and two orange eye-spots, the cream horns, beak, studs and belly, the eyes, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the bright light blue hide of the face, body, legs and tail to the frill's own deep blue, colour #205794 with #164271 shadows; and add three wide dark navy bands, colour #0f1a4a, across the back and one across the tail, each a fat solid band. Do not redraw anything. Keep the frill with its orange rim and two orange eye-spots, the cream horns, beak, studs and belly, the eyes, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the bright light blue hide of the face, body, legs and tail to the frill's own deep blue, colour #205794 with #164271 shadows; and add three wide dark navy bands, colour #0f1a4a, across the back and one across the tail, each a fat solid band. Do not redraw anything. Keep the frill with its orange rim and two orange eye-spots, the cream horns, beak, studs and belly, the eyes, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "triceratops-hide-edit-a",
+      "candidate": 0,
+      "sha256": "3d129da333f2c11084d446e9b7b8af85708ab6b3fab8b180180c699c9d6d0ddb"
+    }
+  }
+}

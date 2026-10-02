@@ -1,0 +1,37 @@
+{
+  "id": "portrait-dinosaur-brontosaurus-primal-edit",
+  "jobId": "bc7c8320-46f9-46bf-a9b8-2468df26f4a1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-portrait-dinosaur-brontosaurus",
+    "subject": "PORTRAIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 84701,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Take off the three red neck bands so the neck is bare hide: deep blue, colour #205794 with #164271 shadows, with a cream throat; add three big solid bright orange blotches, colour #fe6d00, down the back of the neck, each a filled blot with no ring. Nothing red is left. Keep the head, eyes, smile, neck, pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Take off the three red neck bands so the neck is bare hide: deep blue, colour #205794 with #164271 shadows, with a cream throat; add three big solid bright orange blotches, colour #fe6d00, down the back of the neck, each a filled blot with no ring. Nothing red is left. Keep the head, eyes, smile, neck, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Take off the three red neck bands so the neck is bare hide: deep blue, colour #205794 with #164271 shadows, with a cream throat; add three big solid bright orange blotches, colour #fe6d00, down the back of the neck, each a filled blot with no ring. Nothing red is left. Keep the head, eyes, smile, neck, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Take off the three red neck bands so the neck is bare hide: deep blue, colour #205794 with #164271 shadows, with a cream throat; add three big solid bright orange blotches, colour #fe6d00, down the back of the neck, each a filled blot with no ring. Nothing red is left. Keep the head, eyes, smile, neck, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-dinosaur",
+      "recipe": "portrait-dinosaur-brontosaurus-c",
+      "candidate": 0,
+      "sha256": "ecc2b3c5f45d3aaac552b766194a74e4c623f2b28489d146d809d5d5cdfece92"
+    }
+  }
+}

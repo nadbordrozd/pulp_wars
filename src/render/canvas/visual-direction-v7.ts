@@ -267,10 +267,13 @@ export const HUMAN_DEMO_DIRECTION_V7: BoardVisualDirectionV7 = {
  * demo's rules with the production art. The app passes it to the board
  * unless the developer option "Classic look (previous art)" is on.
  *
- * The Dinosaurs are not converted: their units keep the
- * player-coloured garments and stand on a plate, and their cities are drawn
- * as in the classic look (owner recolour, capital crown) without the seat
- * badge. Goblins are converted since bead pulp_wars-3tq.9: their units,
+ * A faction without direction art keeps its units' player-coloured
+ * garments on a plate, and its cities are drawn as in the classic look
+ * (owner recolour, capital crown) without the seat badge; since bead
+ * pulp_wars-3tq.13 (the Dinosaurs, by the same mechanism as below, with
+ * the Egg) no faction is left in that state, and it remains the fallback
+ * of a raster that fails to load.
+ * Goblins are converted since bead pulp_wars-3tq.9: their units,
  * portraits and cities resolve from the direction art registry in fixed
  * faction colours, and their cities fly the pennant. Ships keep the
  * player-coloured sail and stand in a thin ring.
@@ -334,6 +337,14 @@ export const DIRECTION_FLAG_ANCHORS_V7: Readonly<
   "chibi-direction-goblin-city-1": { x: 62, y: 10, pole: 0 },
   "chibi-direction-goblin-city-2": { x: 48.5, y: 0, pole: 6 },
   "chibi-direction-goblin-city-3": { x: 50, y: 5, pole: 0 },
+  // --- Dinosaur (bead pulp_wars-3tq.13, batch `direction-dinosaur`) ---
+  // A pole over the skull of the bone totem; the top of the camp's own
+  // bare pole; a pole on the right shoulder of the giant rib-cage, where
+  // the pennant clears the bones.
+  "chibi-direction-dinosaur-city-1": { x: 30.5, y: 0, pole: 6 },
+  "chibi-direction-dinosaur-city-2": { x: 66.5, y: 11, pole: 0 },
+  "chibi-direction-dinosaur-city-3": { x: 68.5, y: 0, pole: 12 },
+  // --- end Dinosaur ---
 };
 
 const clampPercent = (value: unknown, low: number, high: number): number =>
@@ -873,6 +884,14 @@ export interface DirectedRectV7 {
 }
 
 /**
+ * The half-width of an Egg's base plate as a share of its sprite's width:
+ * 29 of 48 master pixels, about the plate of a large unit (57 px), so
+ * that 5 px of plate show on each side of the 48 px nest (bead
+ * pulp_wars-3tq.13).
+ */
+export const DIRECTION_EGG_PLATE_RADIUS_SHARE_V7 = 29 / 48;
+
+/**
  * The base under a unit's feet: a flat ellipse in the player colour (DISC)
  * or its outline alone (RING), centred on the sprite's bottom edge. A ready
  * unit's base has a bright rim when the direction moves the ready cue there.
@@ -889,9 +908,18 @@ export function drawDirectedUnitBaseV7(
   const scale = sprite.height / 80;
   const centreX = sprite.x + sprite.width / 2;
   const afloat = directionUnitAfloatV7(entry.artSubject);
+  // --- Dinosaur (bead pulp_wars-3tq.13) ---
+  // The Egg's 48 px sprite is a nest that fills its canvas, wider than the
+  // 31 px plate its height would give it, so that plate would be hidden. It
+  // stands on a 58 px plate (about a large unit's), whose ends show beside
+  // the nest: the shell carries no player colour.
+  const egg = entry.kind === "UNIT" && entry.egg !== undefined;
+  // --- end Dinosaur ---
   const radiusX = afloat
     ? sprite.width * 0.44
-    : Math.min(sprite.width * 0.5, (style === "PLATE" ? 26 : 30) * scale);
+    : egg
+      ? sprite.width * DIRECTION_EGG_PLATE_RADIUS_SHARE_V7
+      : Math.min(sprite.width * 0.5, (style === "PLATE" ? 26 : 30) * scale);
   const radiusY = radiusX * (afloat ? 0.3 : style === "PLATE" ? 0.34 : 0.36);
   // The feet stand about 5 master pixels above the canvas bottom.
   const centreY = sprite.y + sprite.height - radiusY - 1 * scale;

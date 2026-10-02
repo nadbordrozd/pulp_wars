@@ -150,12 +150,13 @@ describe("Undead interface art in the new direction (pulp_wars-3tq.12)", () => {
         failing: "chibi-direction-portrait-undead-vampire.",
       }),
     ).toMatchObject({ id: "chibi-direction-portrait-undead-zombie" });
-    // Other factions' portraits never become Undead: the Dinosaurs keep
-    // their owner-coloured art, the Goblins and the Humans their own
+    // Other factions' portraits never become Undead: the Dinosaurs (since
+    // bead pulp_wars-3tq.13), the Goblins and the Humans keep their own
     // direction art.
     expect(resolve("PORTRAIT:DINOSAUR:FIGHTER")).toMatchObject({
+      id: "chibi-direction-portrait-dinosaur-caveman",
       factionArt: true,
-      url: RECOLOURED,
+      url: KEY,
     });
     expect(resolve("PORTRAIT:GOBLIN:FIGHTER")).toMatchObject({
       id: "chibi-direction-portrait-goblin-goblin",

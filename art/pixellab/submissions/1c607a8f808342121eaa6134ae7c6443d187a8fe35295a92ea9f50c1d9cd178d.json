@@ -1,0 +1,36 @@
+{
+  "id": "ankylosaurus-hide-edit-a",
+  "jobId": "c154ee6e-e473-4cdd-895c-0ff610196031",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-ankylosaurus",
+    "subject": "UNIT:DINOSAUR:GUARD",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83402,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the bright blue hide of the head, legs and tail: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright. Do not redraw anything. Keep the dark navy dome plates, the cream spikes and cheek horns, the bright orange tail club, the cream belly, the eyes, smile, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the bright blue hide of the head, legs and tail: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright. Do not redraw anything. Keep the dark navy dome plates, the cream spikes and cheek horns, the bright orange tail club, the cream belly, the eyes, smile, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the bright blue hide of the head, legs and tail: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright. Do not redraw anything. Keep the dark navy dome plates, the cream spikes and cheek horns, the bright orange tail club, the cream belly, the eyes, smile, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the bright blue hide of the head, legs and tail: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright. Do not redraw anything. Keep the dark navy dome plates, the cream spikes and cheek horns, the bright orange tail club, the cream belly, the eyes, smile, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "ankylosaurus-primal-edit-a",
+      "candidate": 0,
+      "sha256": "f8bdc2760d661b582d09b3964d5362b3808e41d9bfdedda28f820b6aafb60a90"
+    }
+  }
+}

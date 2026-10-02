@@ -301,8 +301,9 @@ async function writeGrid(
 
 /**
  * Master path of the accepted art of each subject, later batches winning; a
- * faction's own direction batch (`direction-undead`, bead pulp_wars-3tq.12)
- * wins over its classic batches, since that is what the default look draws.
+ * faction's own direction batch (`direction-undead`, bead pulp_wars-3tq.12;
+ * `direction-dinosaur`, bead pulp_wars-3tq.13) wins over its classic
+ * batches, since that is what the default look draws.
  */
 async function acceptedMasters(): Promise<Map<string, string>> {
   const masters = new Map<string, string>();
@@ -688,7 +689,10 @@ async function goblinSheets(directory: string): Promise<string[]> {
             : [
                 {
                   image: file,
-                  label: `${faction[0]}${faction.slice(1).toLowerCase()} (key red)`,
+                  // A converted faction's own direction batch wins in
+                  // `acceptedMasters` (Undead, and Dinosaur since bead
+                  // pulp_wars-3tq.13).
+                  label: `${faction[0]}${faction.slice(1).toLowerCase()} ${file.includes("/chibi-direction-") ? "(new)" : "(key red)"}`,
                   background: "grass" as const,
                 },
               ];

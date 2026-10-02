@@ -160,6 +160,26 @@ Human subjects, with the badge. Prompts and recipes:
 `npm run art:chibi-dinosaur-review` into
 `art/pixellab/reviews/chibi-batch-dinosaur/`.
 
+**Dinosaur direction art (bead `pulp_wars-3tq.13`).** The default look
+resolves a second set first, batch `direction-dinosaur`, registered in
+[`chibi-direction-dinosaur-art-manifest.ts`](../../src/assets/chibi-direction-dinosaur-art-manifest.ts):
+`chibi-direction-dinosaur-<unit>` for the eight `UNIT:DINOSAUR:<ROLE>`
+subjects (the canvases and anchors of the classic sprites, `fixedColours`,
+no mask), `chibi-direction-dinosaur-egg` for `UNIT:DINOSAUR:EGG` (48 x 48,
+anchor `24, 8`, `fixedColours`),
+`chibi-direction-portrait-dinosaur-<unit>` for `PORTRAIT:DINOSAUR:<ROLE>`
+(48 x 48, `fixedColours`), and `chibi-direction-icon-action-<name>` for
+`ICON:ACTION:LAY_EGG`, `ICON:ACTION:HATCH` and `ICON:ACTION:STAMPEDE`
+(48 x 48). The classic assets above stay registered: the Classic look draws
+them, and a direction raster that fails to load falls back to them.
+`ICON:ACTION:DINOSAUR:RALLY` (War Drums) has no direction art. With this
+batch every `UNIT:`, `PORTRAIT:` and `CITY:` subject of the four factions
+has a fixed-colour asset in the default look; the ships (`UNIT:PATROL_BOAT`,
+`UNIT:BATTLESHIP`, `UNIT:EMBARKED_TRANSPORT` and their two portraits) are
+the only masked ones left. Review evidence:
+`npm run art:chibi-dinosaur-direction-review` into
+`art/pixellab/reviews/chibi-batch-direction-dinosaur/`.
+
 ## Map overlays drawn in code (no raster today)
 
 | Overlay                                                   | Drawn by                                         | Plan batch     | Notes                                                                                 |
@@ -331,6 +351,19 @@ the owner is shown by a code-drawn pennant at the asset's entry in
 | `CITY:UNDEAD:2` | `chibi-direction-undead-city-2` | `direction-undead` | 88 x 88 | default | 4 / 8              | none | 44.5, 0, 6                  |
 | `CITY:UNDEAD:3` | `chibi-direction-undead-city-3` | `direction-undead` | 96 x 88 | default | 8 / 8              | none | 44.5, 6, 11                 |
 
+**Dinosaur direction cities (bead `pulp_wars-3tq.13`).** The default look
+draws these instead of the three `cities-dinosaur` rasters, which remain
+for the Classic look and as the fallback. They are edits of the classic
+camps on the same canvases, with no mask (`fixedColours`); the owner is
+shown by a code-drawn pennant at the asset's entry in
+`DIRECTION_FLAG_ANCHORS_V7`.
+
+| Art subject       | Asset                             | Batch                | Canvas   | Anchor  | Overflow side / up | Mask | Pennant anchor (x, y, pole) |
+| ----------------- | --------------------------------- | -------------------- | -------- | ------- | ------------------ | ---- | --------------------------- |
+| `CITY:DINOSAUR:1` | `chibi-direction-dinosaur-city-1` | `direction-dinosaur` | 88 x 96  | default | 4 / 16             | none | 30.5, 0, 6                  |
+| `CITY:DINOSAUR:2` | `chibi-direction-dinosaur-city-2` | `direction-dinosaur` | 96 x 100 | default | 8 / 20             | none | 66.5, 11, 0                 |
+| `CITY:DINOSAUR:3` | `chibi-direction-dinosaur-city-3` | `direction-dinosaur` | 96 x 104 | default | 8 / 24             | none | 68.5, 0, 12                 |
+
 ## New visual direction: batch `direction-human` (bead `pulp_wars-3tq.5`)
 
 Production art of the [new direction](VISUAL_DIRECTION_2026-10.md#12-production).
@@ -365,8 +398,9 @@ anchors are master pixels from the top-left corner
 **Not in the batch:** the Patrol Boat, the Battleship and the embarked
 transport (shared by every faction; unchanged), the Mine (part of the Mined
 Mountain terrain art; toned by code with the terrain), terrain, resources,
-and everything Undead, Goblin and Dinosaur (the Goblins have their own
-batch, below).
+and everything Undead, Goblin and Dinosaur (each has a batch of its own:
+`direction-goblin` below, `direction-undead` and `direction-dinosaur`
+above).
 
 ## New visual direction: batch `direction-goblin` (bead `pulp_wars-3tq.9`)
 

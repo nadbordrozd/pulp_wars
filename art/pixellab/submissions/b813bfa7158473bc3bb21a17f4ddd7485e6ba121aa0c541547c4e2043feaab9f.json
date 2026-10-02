@@ -1,0 +1,37 @@
+{
+  "id": "triceratops-primal-edit-a",
+  "jobId": "a21cdce3-fecd-488c-87a7-819e661519f9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-triceratops",
+    "subject": "UNIT:DINOSAUR:CATAPULT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 83101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Take off the red blanket and its straps so the back and flanks are bare smooth blue hide with a cream belly. The big red neck frill becomes a deep blue frill, colour #205794, with a thick bright orange rim, colour #fe6d00, and two big solid orange eye-spots on it, each a filled blot with no ring. Horns, beak and frill studs stay cream. Nothing red or brown is left. Keep the head, eyes, legs, tail, pose, proportions, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Take off the red blanket and its straps so the back and flanks are bare smooth blue hide with a cream belly. The big red neck frill becomes a deep blue frill, colour #205794, with a thick bright orange rim, colour #fe6d00, and two big solid orange eye-spots on it, each a filled blot with no ring. Horns, beak and frill studs stay cream. Nothing red or brown is left. Keep the head, eyes, legs, tail, pose, proportions, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Take off the red blanket and its straps so the back and flanks are bare smooth blue hide with a cream belly. The big red neck frill becomes a deep blue frill, colour #205794, with a thick bright orange rim, colour #fe6d00, and two big solid orange eye-spots on it, each a filled blot with no ring. Horns, beak and frill studs stay cream. Nothing red or brown is left. Keep the head, eyes, legs, tail, pose, proportions, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Take off the red blanket and its straps so the back and flanks are bare smooth blue hide with a cream belly. The big red neck frill becomes a deep blue frill, colour #205794, with a thick bright orange rim, colour #fe6d00, and two big solid orange eye-spots on it, each a filled blot with no ring. Horns, beak and frill studs stay cream. Nothing red or brown is left. Keep the head, eyes, legs, tail, pose, proportions, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "batch": "dinosaur",
+      "recipe": "triceratops-b-edit",
+      "candidate": 0,
+      "sha256": "f0448193b95f3fa228adf0a2fe75f4200632491f90d4db5eb8b26fa69e191d3e"
+    }
+  }
+}

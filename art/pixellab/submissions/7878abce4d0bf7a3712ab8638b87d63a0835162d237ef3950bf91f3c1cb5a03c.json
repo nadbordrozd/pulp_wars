@@ -1,0 +1,36 @@
+{
+  "id": "caveman-pelt-edit-a",
+  "jobId": "0b237f27-3f9c-441b-b077-3d63a542602f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-caveman",
+    "subject": "UNIT:DINOSAUR:FIGHTER",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only two things: the bright orange fur pelt becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, and its dark brown spots stay; the brown hair and beard become charcoal black. Do not redraw anything. Keep the light golden skin, the orange war paint on the cheeks, the tooth necklace, the bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only two things: the bright orange fur pelt becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, and its dark brown spots stay; the brown hair and beard become charcoal black. Do not redraw anything. Keep the light golden skin, the orange war paint on the cheeks, the tooth necklace, the bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only two things: the bright orange fur pelt becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, and its dark brown spots stay; the brown hair and beard become charcoal black. Do not redraw anything. Keep the light golden skin, the orange war paint on the cheeks, the tooth necklace, the bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only two things: the bright orange fur pelt becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, and its dark brown spots stay; the brown hair and beard become charcoal black. Do not redraw anything. Keep the light golden skin, the orange war paint on the cheeks, the tooth necklace, the bone club, belt, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "caveman-primal-edit-a",
+      "candidate": 0,
+      "sha256": "500e7bbd131ab3a57661ec08ab2b5087685346993e19b0f55dd2ac72c2ffe412"
+    }
+  }
+}

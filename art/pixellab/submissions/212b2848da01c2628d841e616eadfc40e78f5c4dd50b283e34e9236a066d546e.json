@@ -1,0 +1,36 @@
+{
+  "id": "portrait-dinosaur-shaman-robe-edit-b",
+  "jobId": "3e772d4b-d0fd-4f69-9bfd-f3bb58945660",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-portrait-dinosaur-shaman",
+    "subject": "PORTRAIT:DINOSAUR:CAPTAIN",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 84403,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the bright orange fur robe: it becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the cream skull hood, the light golden skin, the beard, drumstick, pose, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the bright orange fur robe: it becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the cream skull hood, the light golden skin, the beard, drumstick, pose, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the bright orange fur robe: it becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the cream skull hood, the light golden skin, the beard, drumstick, pose, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the bright orange fur robe: it becomes a dull sandy brown fur like a lion's pelt, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the bright orange feathers, the cream skull hood, the light golden skin, the beard, drumstick, pose, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-dinosaur-shaman-primal-edit",
+      "candidate": 0,
+      "sha256": "40562b29f8aff5c33ab49392a09d8c039a0d8b05a5cc99f0d4ae02e440a16922"
+    }
+  }
+}

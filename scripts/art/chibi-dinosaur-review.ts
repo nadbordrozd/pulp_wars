@@ -1,5 +1,11 @@
 /**
- * Dinosaur art review evidence (bead pulp_wars-c87.7):
+ * Dinosaur art review evidence (bead pulp_wars-c87.7). Since bead
+ * pulp_wars-3tq.13 the live look draws the Dinosaur production art of batch
+ * `direction-dinosaur`, so every in-game capture here shows it, and the
+ * faction sheets put the live piece (the "Live" column: fixed colours, the
+ * same for every player) before the classic, masked piece in the key colour
+ * and the four player colours. The Human, Undead and Goblin columns stay
+ * the classic sprites in Coral: this command reviews the classic batches.
  *
  *   npm run art:chibi-dinosaur-review -- [--port 6431] [--skip-capture]
  *
@@ -24,8 +30,8 @@
  *                             and player colours beside the Caveman and the
  *                             Raptor, with its mask at x4
  *   showcase-*.png            a Showcase match (16 x 16, a Dinosaur viewer
- *                             against a Human, an Undead and a Goblin seat)
- *                             with ?art=chibi: the board at zoom 1 and 0.75
+ *                             against a Human, an Undead and a Goblin seat,
+ *                             launched from the setup form) with ?art=chibi: the board at zoom 1 and 0.75
  *                             on desktop and phone, and on desktop a unit
  *                             dock and the technology tree
  *   ingame-roster-*.png       the scene of
@@ -65,6 +71,8 @@ const ROOT = process.cwd();
 const BATCH = "dinosaur";
 const PORTRAIT_BATCH = "5-dinosaur";
 const CITY_BATCH = "cities-dinosaur";
+/** The live look's Dinosaur art (bead pulp_wars-3tq.13). */
+const LIVE_BATCH = "direction-dinosaur";
 const TILE = 80;
 
 /** Role, Dinosaur name, and the Human, Undead and Goblin asset names. */
@@ -314,11 +322,14 @@ interface FactionRow {
   /** Human, Undead and Goblin pieces, shown in Coral. */
   readonly others: readonly Piece[];
   readonly dinosaur: Piece;
+  /** The live look's piece of batch `direction-dinosaur`, as authored. */
+  readonly live: { readonly master: RgbaRaster; readonly anchor: Point };
 }
 
 /**
- * One row per subject: the other factions in Coral, then the Dinosaur piece
- * in the key colour and the four player colours, and its mask at x4.
+ * One row per subject: the other factions in Coral, the live Dinosaur
+ * piece, then the classic Dinosaur piece in the key colour and the four
+ * player colours, and its mask at x4.
  */
 async function factionSheet(
   file: string,
@@ -330,6 +341,7 @@ async function factionSheet(
 ): Promise<Canvas> {
   const columns = [
     ...otherNames,
+    "Live",
     "Key",
     ...OWNER_NAMES,
     ...(k > 1 ? ["Mask"] : []),
@@ -359,6 +371,7 @@ async function factionSheet(
         recoloured(other.master, other.mask, coral),
         other.anchor,
       ]),
+      [entry.live.master, entry.live.anchor],
       [entry.dinosaur.master, entry.dinosaur.anchor],
       ...OWNERS.map(([, colour]): [RgbaRaster, Point] => [
         recoloured(entry.dinosaur.master, entry.dinosaur.mask, colour),
@@ -430,6 +443,21 @@ async function sheets(directory: string): Promise<string[]> {
   const cities = (
     await loadRecords(productionLayout(ROOT, CITY_BATCH), CITY_BATCH)
   ).assets;
+  const liveRecords = (
+    await loadRecords(productionLayout(ROOT, LIVE_BATCH), LIVE_BATCH)
+  ).assets;
+  /** An accepted fixed-colour piece of the live look, on its anchor. */
+  const livePiece = async (
+    id: string,
+    anchor: Point | undefined,
+  ): Promise<FactionRow["live"]> => {
+    const record = accepted(liveRecords, id);
+    const master = await readRaster(path.join(ROOT, record.master.path));
+    return {
+      master,
+      anchor: anchor ?? { x: master.width / 2, y: master.height - TILE / 2 },
+    };
+  };
   const manifest = await loadBatchManifest(ROOT, BATCH);
   const portraitManifest = await loadBatchManifest(ROOT, PORTRAIT_BATCH);
   const grass = await readRaster(
@@ -471,6 +499,10 @@ async function sheets(directory: string): Promise<string[]> {
         ),
       ),
       dinosaur,
+      live: await livePiece(
+        unitSpec.id.replace("chibi-dinosaur-", "chibi-direction-dinosaur-"),
+        anchors.get(unitSpec.id),
+      ),
     });
     portraitRows.push({
       label: `${name} portrait (owner ${coverage(bust)}, mask ${bust.mask?.source ?? "?"})`,
@@ -484,6 +516,13 @@ async function sheets(directory: string): Promise<string[]> {
         ),
       ),
       dinosaur: await piece(bust.master.path, bust.mask?.path ?? "", centre),
+      live: await livePiece(
+        portraitSpec.id.replace(
+          "chibi-portrait-dinosaur-",
+          "chibi-direction-portrait-dinosaur-",
+        ),
+        centre,
+      ),
     });
   }
   const settlement = (id: string) =>
@@ -508,6 +547,10 @@ async function sheets(directory: string): Promise<string[]> {
         record.mask?.path ?? "",
         undefined,
       ),
+      live: await livePiece(
+        `chibi-direction-dinosaur-city-${level}`,
+        undefined,
+      ),
     });
   }
   const egg = accepted(units, "chibi-dinosaur-egg");
@@ -520,6 +563,7 @@ async function sheets(directory: string): Promise<string[]> {
       label: `Egg (UNIT:DINOSAUR:EGG, ${egg.master.width} x ${egg.master.height}, owner ${coverage(egg)}) beside the Caveman and the Raptor`,
       others: [caveman, raptor],
       dinosaur: await piece(egg.master.path, egg.mask?.path ?? "", undefined),
+      live: await livePiece("chibi-direction-dinosaur-egg", undefined),
     },
   ];
   const icon = async (name: string): Promise<readonly [string, RgbaRaster]> => [
@@ -564,7 +608,7 @@ async function sheets(directory: string): Promise<string[]> {
     const unitsFile = path.join(directory, `faction-units-${suffix}.png`);
     const unitSheet = await factionSheet(
       unitsFile,
-      `Dinosaur units at ${scale} (Human, Undead, Goblin: Coral)`,
+      `Dinosaur units at ${scale} (Human, Undead, Goblin: classic, Coral; Live: the default look; then the classic sprite per player)`,
       unitRows,
       k,
       unitCell,
@@ -593,7 +637,7 @@ async function sheets(directory: string): Promise<string[]> {
     );
     await factionSheet(
       portraitsFile,
-      `Dinosaur portraits at ${scale} (Human, Undead, Goblin: Coral)`,
+      `Dinosaur portraits at ${scale} (Human, Undead, Goblin: classic, Coral; Live: the default look; then the classic bust per player)`,
       portraitRows,
       k,
       dock,
@@ -601,7 +645,7 @@ async function sheets(directory: string): Promise<string[]> {
     const citiesFile = path.join(directory, `cities-${suffix}.png`);
     await factionSheet(
       citiesFile,
-      `City 1-3 of the four factions at ${scale} (Human, Undead, Goblin: Coral)`,
+      `City 1-3 of the four factions at ${scale} (Human, Undead, Goblin: classic, Coral; Live: the default look)`,
       cityRows,
       k,
       cityCell,
@@ -609,7 +653,7 @@ async function sheets(directory: string): Promise<string[]> {
     const eggFile = path.join(directory, `egg-${suffix}.png`);
     await factionSheet(
       eggFile,
-      `The Egg at ${scale} (the Caveman and the Raptor in Coral for scale)`,
+      `The Egg at ${scale} (the classic Caveman and Raptor in Coral for scale; Live: the default look)`,
       eggRows,
       k,
       unitCell,
@@ -773,23 +817,12 @@ async function zoomTo(
 }
 
 /**
- * The Showcase setup: a Dinosaur viewer against a Human, an Undead and a
- * Goblin seat. The setup form does not offer the Dinosaur faction until the
- * UI bead (pulp_wars-c87.4), so the match is launched through the controller.
+ * The Showcase seats: a Dinosaur viewer against a Human, an Undead and a
+ * Goblin seat, chosen on the setup form (it offers the Dinosaurs
+ * since bead pulp_wars-c87.4). The match used to be launched through the
+ * controller with a hard-coded ruleset id, which every rules revision broke.
  */
-const SHOWCASE_SETUP = {
-  rulesetId: "pulp-wars-poc-7r19",
-  seed: 0,
-  width: 16,
-  height: 16,
-  aiCount: 3,
-  aiDifficulty: "NORMAL",
-  aiMode: "RIVAL",
-  humanColor: "CORAL",
-  factions: ["DINOSAUR", "ORIGINAL", "UNDEAD", "GOBLIN"],
-  mapType: "SHOWCASE",
-  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
-} as const;
+const SHOWCASE_FACTIONS = ["DINOSAUR", "ORIGINAL", "UNDEAD", "GOBLIN"] as const;
 
 async function captures(directory: string, baseUrl: string): Promise<string[]> {
   const chrome = process.env.CHROME_PATH;
@@ -865,14 +898,10 @@ async function captures(directory: string, baseUrl: string): Promise<string[]> {
         connection,
         `globalThis.__DINOSAUR_REVIEW_OLD__ !== true && document.readyState === 'complete' && document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
       );
-      const launched = await evaluate<{ ok: boolean; diagnostic?: string }>(
+      await evaluate(
         connection,
-        `globalThis.__PULP_WARS_APP__.controller.launch(${JSON.stringify(SHOWCASE_SETUP)}, { replaceStoredMatch: true }).then((result) => ({ ok: result.ok, diagnostic: result.ok ? undefined : result.diagnostic }))`,
+        `(() => { const change = (element, value) => { element.value = value; element.dispatchEvent(new Event('change', { bubbles: true })); }; change(document.querySelector('#v7-ai-count'), '3'); change(document.querySelector('#v7-map-type'), 'SHOWCASE'); ${JSON.stringify(SHOWCASE_FACTIONS)}.forEach((faction, seat) => change(document.querySelector('#v7-faction-' + seat), faction)); document.querySelector('[data-action="launch"]').click(); return true; })()`,
       );
-      if (!launched.ok)
-        throw new Error(
-          `Showcase launch failed: ${launched.diagnostic ?? "unknown"}`,
-        );
       await waitFor(
         connection,
         `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v?.humanPlayerId && v?.viewer.faction === 'DINOSAUR' && ${BOARD}?.dataset.artSet === 'CHIBI'; })()`,
@@ -1002,7 +1031,7 @@ async function main(): Promise<void> {
       stopDevServer(server);
     }
     captureNote =
-      "showcase-*: a Showcase match (16 x 16) with a Dinosaur viewer (seat 0) against a Human, an Undead and a Goblin seat, launched through the controller and captured from the running game with ?art=chibi. ingame-roster-*: the synthetic scene of scripts/art/chibi/review-dinosaur-scene-v7.ts drawn by the real board host.";
+      "showcase-*: a Showcase match (16 x 16) with a Dinosaur viewer (seat 0) against a Human, an Undead and a Goblin seat, launched from the setup form and captured from the running game with ?art=chibi in the default look (the Dinosaur production art of bead pulp_wars-3tq.13). ingame-roster-*: the synthetic scene of scripts/art/chibi/review-dinosaur-scene-v7.ts drawn by the real board host.";
   }
   const images = await Promise.all(
     outputs.map(async (file) => {

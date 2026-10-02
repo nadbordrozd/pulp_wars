@@ -1,0 +1,110 @@
+{
+  "bead": "pulp_wars-3tq.13",
+  "swatches": [
+    {
+      "role": "Hide, lit and shade",
+      "colours": [
+        "#205794",
+        "#164271",
+        "#30608f",
+        "#2f5595"
+      ],
+      "share": "23.4% of the six dinosaurs (mean)"
+    },
+    {
+      "role": "Navy (back, plates, frills)",
+      "colours": [
+        "#050949",
+        "#12173b",
+        "#042651",
+        "#2c2f5c"
+      ],
+      "share": "27% of the six dinosaurs (mean)"
+    },
+    {
+      "role": "Cream (belly, jaws, claws, bone)",
+      "colours": [
+        "#eddba1",
+        "#f7dda3",
+        "#fdeea4"
+      ],
+      "share": "8.3% of the six dinosaurs (mean)"
+    },
+    {
+      "role": "Red-orange accent",
+      "colours": [
+        "#fe7500",
+        "#f35600",
+        "#fb5000",
+        "#a82f00"
+      ],
+      "share": "13.7% of the six dinosaurs, 4.7% of the cavemen"
+    },
+    {
+      "role": "Tawny fur and its spots",
+      "colours": [
+        "#a2804b",
+        "#c2924b",
+        "#7c593b",
+        "#371800"
+      ],
+      "share": "22.8% of the two cavemen (mean)"
+    },
+    {
+      "role": "Caveman skin",
+      "colours": [
+        "#fee598",
+        "#e59f4a"
+      ],
+      "share": null
+    },
+    {
+      "role": "Egg shell and speckles",
+      "colours": [
+        "#fff3cf",
+        "#f5cb7f",
+        "#fd8a00",
+        "#cf6501"
+      ],
+      "share": null
+    },
+    {
+      "role": "Player plates",
+      "colours": [
+        "#f06762",
+        "#28b7a4",
+        "#e2b63f",
+        "#a277d2"
+      ],
+      "share": null
+    },
+    {
+      "role": "Shallow and Deep Water, Grass",
+      "colours": [
+        "#8fd3dc",
+        "#4277a5",
+        "#89b75b"
+      ],
+      "share": null
+    },
+    {
+      "role": "Goblin leather and fireworks",
+      "colours": [
+        "#955627",
+        "#e86e0c",
+        "#e00c02",
+        "#fec100"
+      ],
+      "share": null
+    },
+    {
+      "role": "Human crimson and gold, Undead violet",
+      "colours": [
+        "#b0282e",
+        "#e2b63f",
+        "#a221ee"
+      ],
+      "share": null
+    }
+  ]
+}

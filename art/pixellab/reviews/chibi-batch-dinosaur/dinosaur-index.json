@@ -12,37 +12,37 @@
     "VIOLET": "#a277d2"
   },
   "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
-  "captures": "showcase-*: a Showcase match (16 x 16) with a Dinosaur viewer (seat 0) against a Human, an Undead and a Goblin seat, launched through the controller and captured from the running game with ?art=chibi. ingame-roster-*: the synthetic scene of scripts/art/chibi/review-dinosaur-scene-v7.ts drawn by the real board host.",
+  "captures": "showcase-*: a Showcase match (16 x 16) with a Dinosaur viewer (seat 0) against a Human, an Undead and a Goblin seat, launched from the setup form and captured from the running game with ?art=chibi in the default look (the Dinosaur production art of bead pulp_wars-3tq.13). ingame-roster-*: the synthetic scene of scripts/art/chibi/review-dinosaur-scene-v7.ts drawn by the real board host.",
   "images": [
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/faction-units-1x.png",
-      "width": 886,
+      "width": 996,
       "height": 1164,
-      "sha256": "d2c5c3700fe6b46cc88166617ed6a75bc0d30a27e81c168d98706958109ef2fc"
+      "sha256": "6e21ee7bc11b6d0523b24ca7ec662572a536ab42953f8391bd1df21b4e0a287b"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/faction-units-zoom-0.75.png",
-      "width": 665,
-      "height": 841,
-      "sha256": "10e130d880e728a5fe31bca0a0e6e1aae3b59d9730703b2c08e3a4a51e0d5996"
+      "width": 747,
+      "height": 840,
+      "sha256": "ff27877232be0fadccd47a5517d2e63ef6e7b23bcd814041b963b41b1d93a877"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/faction-portraits-1x.png",
-      "width": 630,
+      "width": 708,
       "height": 844,
-      "sha256": "1c6f036a731f1766d44b40eca7d854103a424a1f857391e0d91f17ad8561ce9f"
+      "sha256": "fd6300c7298ff60141b1000b9de9adf1821a4b0fccb70be14ed83e8b6a59346d"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/cities-1x.png",
-      "width": 950,
+      "width": 1068,
       "height": 500,
-      "sha256": "fcd456136aabe7bf3f52ab787c5e4fcbce578a339cae1fbcee7fc0870a673eca"
+      "sha256": "1e6cc24d973ceef90bb54e8ffe31bb04f2e6572ccb16ec735319d65bd010e0e6"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/egg-1x.png",
-      "width": 776,
+      "width": 886,
       "height": 184,
-      "sha256": "2153bbde1213badb1712e328dbe5e2845263cb9b11dad834b12d717037cd650e"
+      "sha256": "d9b01bcdf1e97da994c31eb7a5c457066351b74433a1ecc4afb99e2b76a782b1"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/icons-1x.png",
@@ -52,27 +52,27 @@
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/faction-units-x4.png",
-      "width": 3804,
+      "width": 4226,
       "height": 3852,
-      "sha256": "5c6b22258ea0ab72307da3417ce6f577ab0a8b53c5b10e112c566253da22401e"
+      "sha256": "7156ef4bf58a0fd68379e2485e7d41e446aca793f54514a60fa5ce1b63586d3d"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/faction-portraits-x4.png",
-      "width": 2652,
+      "width": 2946,
       "height": 2572,
-      "sha256": "a0a49e229e6d2fedc9b315c3f0d434587c81cbfe978af192c97af6792c588526"
+      "sha256": "f288b585883ed4f22843e2c8cbe4ee18ecd83f12e4f43a53dedbdb0d700118e1"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/cities-x4.png",
-      "width": 4092,
+      "width": 4546,
       "height": 1616,
-      "sha256": "fb6e0cf9be7f80f3a39a62c77155a7b676fe594020dd26db423df40052b52f12"
+      "sha256": "741e87bdb1eaf747d37fbf22ae3544cfe83fafb91c7ff68ecd7b25106980a163"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/egg-x4.png",
-      "width": 3382,
+      "width": 3804,
       "height": 520,
-      "sha256": "7292b7a37711dbe8b8cb8b11929e403398013feaa073feca9537961559dc174b"
+      "sha256": "f9505c454c7ad9a000d2924297bdc81ca0cfa576ebca0a6a11a6998811d93d59"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/icons-x4.png",
@@ -84,61 +84,61 @@
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/showcase-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "ae9ea745deec51108d34a235c1156a7fed2515e79c9637168e37deedb937177a"
+      "sha256": "9a39438676079b7c890a29acea68801ba2ce5effbb78614425142a873124969a"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/showcase-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "c13fed85d4b03c8b8729166196a3bf62170fcb62dee0c2148d39ac100ef4ded8"
+      "sha256": "7e3c6686e6f75b9c11b1ce5cebd470fb71d89e2a9198d06bb7061a1a9f0a7008"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/showcase-dock-desktop.png",
       "width": 1440,
       "height": 900,
-      "sha256": "4dede6ce7a963d49897f7cd315712d298e9de81390bad434f262af40f578c9a9"
+      "sha256": "534257f403d0715c8f7e57056e9140204e0eb38cd5ea5cf3e45cc45cb7764e6b"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/showcase-tech-desktop.png",
       "width": 1440,
       "height": 900,
-      "sha256": "6e44f6979135e727f46e05962019199b1416e32d44dd0965193c68a0142570df"
+      "sha256": "bf1a52c3e85811458601914c32bc51ce0b92599137361ae498c2dafb13c0995c"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/ingame-roster-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "c9b3b32645d782c6db20bf876473d2917c52b3076e34ea3095bd6a7d451d14c7"
+      "sha256": "286de3b48bfab2c737af5f597edad71b872d0e8e490e0efa48dd243147b536cf"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/ingame-roster-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "d8f4b09f8b69f6bccc7c33611684c5a2bcd08418c83d635f85c4a853af43deb2"
+      "sha256": "0e041f51609731d37c3e7e65ae72b746b7b25987bf9d840b014b19baecfd63eb"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/showcase-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "0ce54d26ce57e9db7a22e14c89625be41db98802112bf476fa9be1992ca422e2"
+      "sha256": "c916037b3ca69ba1bf00e958cd12b0c83dd3ecbf2c4bceb2361661c9c14070cb"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/showcase-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "b12352e85ce2e4a50fd4a92c3faf363453640c89535c973e1cf1ab725d3e2409"
+      "sha256": "ead154c12f663cba1d95910267258b49e607b53d116769e2d04d78dc7de2cfbc"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/ingame-roster-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "bdc8607d5a56deab4dc4f86c887ad73750b03b36ba1bf6a106dff46eb873fc7c"
+      "sha256": "becbe3941e6f26e67404111f5d231b32d0e269e0daefe24972339213408306fc"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-dinosaur/ingame-roster-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "65411ec81fd69b23e836bd0edf030a8f191bffce249b5727997a7d65171ef778"
+      "sha256": "4cff13a31e6163a5cfa3dbc0a7f3455e218c5ac53b9ad3b0acde4a29e0c4df1f"
     }
   ]
 }

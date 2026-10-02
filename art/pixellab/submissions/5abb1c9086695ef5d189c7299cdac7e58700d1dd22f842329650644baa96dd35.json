@@ -1,0 +1,37 @@
+{
+  "id": "icon-action-lay-egg-primal-edit",
+  "jobId": "a28b6af8-bfc0-4d80-9c94-f9560df3cfc9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-icon-action-lay-egg",
+    "subject": "ICON:ACTION:LAY_EGG",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 86001,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the speckles: the pale grey-blue speckles on the egg become big bold solid bright orange speckles, colour #fe6d00. Nothing blue is left. Do not redraw anything. Keep the cream egg, the bone nest, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the speckles: the pale grey-blue speckles on the egg become big bold solid bright orange speckles, colour #fe6d00. Nothing blue is left. Do not redraw anything. Keep the cream egg, the bone nest, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the speckles: the pale grey-blue speckles on the egg become big bold solid bright orange speckles, colour #fe6d00. Nothing blue is left. Do not redraw anything. Keep the cream egg, the bone nest, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the speckles: the pale grey-blue speckles on the egg become big bold solid bright orange speckles, colour #fe6d00. Nothing blue is left. Do not redraw anything. Keep the cream egg, the bone nest, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-dinosaur",
+      "recipe": "icon-action-lay-egg-a-edit",
+      "candidate": 0,
+      "sha256": "bb4f3284ecb488b57d90272ad711821c6940de0116ad96d828d7d4bde0d6541b"
+    }
+  }
+}

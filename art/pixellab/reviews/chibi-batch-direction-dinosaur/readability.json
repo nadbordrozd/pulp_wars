@@ -1,0 +1,563 @@
+{
+  "bead": "pulp_wars-3tq.13",
+  "note": "deltaE is CIE76 in L*a*b* (about 2 is just noticeable, 10 is clear at a glance, 20 and more are different colours); contrast is the WCAG luminance ratio (1 to 21). Terrain colours are those the direction studies measured on the untoned rasters. Materials are classified by colour on the accepted masters: cream holds the belly, jaws, claws and bone, and on the two cavemen their light golden skin. The plate width is that of drawDirectedUnitBaseV7.",
+  "accent": {
+    "note": "The red-orange PixelLab draws, kept as generated: no accent step in the pipeline. The mean hue of the accent pixels per sprite:",
+    "hueDegreesPerUnit": {
+      "Caveman": 27,
+      "Raptor": 27,
+      "Spitter": 29,
+      "Ankylosaurus": 23,
+      "Shaman": 21,
+      "Triceratops": 24,
+      "T-Rex": 24,
+      "Brontosaurus": 26
+    },
+    "pairs": [
+      {
+        "a": "accent #f35600",
+        "b": "Coral plate #f06762",
+        "deltaE": 38.9,
+        "contrast": 1.1
+      },
+      {
+        "a": "accent #f35600",
+        "b": "Gold plate #e2b63f",
+        "deltaE": 56.8,
+        "contrast": 1.8
+      },
+      {
+        "a": "accent, lit #fe7500",
+        "b": "Coral plate #f06762",
+        "deltaE": 43.6,
+        "contrast": 1.1
+      },
+      {
+        "a": "accent, lit #fe7500",
+        "b": "Gold plate #e2b63f",
+        "deltaE": 46,
+        "contrast": 1.4
+      },
+      {
+        "a": "accent #f35600",
+        "b": "Teal plate #28b7a4",
+        "deltaE": 120.3,
+        "contrast": 1.4
+      },
+      {
+        "a": "accent #f35600",
+        "b": "Violet plate #a277d2",
+        "deltaE": 111.1,
+        "contrast": 1
+      },
+      {
+        "a": "accent #f35600",
+        "b": "Goblin fireworks orange #e86e0c",
+        "deltaE": 15.1,
+        "contrast": 1.1
+      },
+      {
+        "a": "accent #f35600",
+        "b": "Goblin fireworks red #e00c02",
+        "deltaE": 19.1,
+        "contrast": 1.5
+      },
+      {
+        "a": "accent #f35600",
+        "b": "Goblin fireworks yellow #fec100",
+        "deltaE": 56.3,
+        "contrast": 2.1
+      },
+      {
+        "a": "accent #f35600",
+        "b": "Goblin leather #955627",
+        "deltaE": 49,
+        "contrast": 1.7
+      },
+      {
+        "a": "accent #f35600",
+        "b": "Grass #89b75b",
+        "deltaE": 93.3,
+        "contrast": 1.5
+      },
+      {
+        "a": "accent #f35600",
+        "b": "hide, lit #205794",
+        "deltaE": 120.9,
+        "contrast": 2.2
+      },
+      {
+        "a": "accent #f35600",
+        "b": "navy #050949",
+        "deltaE": 123,
+        "contrast": 5.4
+      }
+    ]
+  },
+  "hide": {
+    "perDinosaur": [
+      {
+        "unit": "raptor",
+        "commonest": "#164271",
+        "mean": "#1b4879",
+        "accentHueDegrees": 27
+      },
+      {
+        "unit": "spitter",
+        "commonest": "#2f5595",
+        "mean": "#345996",
+        "accentHueDegrees": 29
+      },
+      {
+        "unit": "ankylosaurus",
+        "commonest": "#2c2f5c",
+        "mean": "#304372",
+        "accentHueDegrees": 23
+      },
+      {
+        "unit": "triceratops",
+        "commonest": "#052d67",
+        "mean": "#073678",
+        "accentHueDegrees": 24
+      },
+      {
+        "unit": "t-rex",
+        "commonest": "#205794",
+        "mean": "#205693",
+        "accentHueDegrees": 24
+      },
+      {
+        "unit": "brontosaurus",
+        "commonest": "#30608f",
+        "mean": "#2c5a89",
+        "accentHueDegrees": 26
+      }
+    ],
+    "pairs": [
+      {
+        "a": "hide, lit #205794",
+        "b": "Grass #89b75b",
+        "deltaE": 93.8,
+        "contrast": 3.2
+      },
+      {
+        "a": "hide, lit #205794",
+        "b": "Forest (mean) #769a51",
+        "deltaE": 82.1,
+        "contrast": 2.3
+      },
+      {
+        "a": "hide, lit #205794",
+        "b": "Shallow Water #8fd3dc",
+        "deltaE": 57,
+        "contrast": 4.4
+      },
+      {
+        "a": "hide, lit #205794",
+        "b": "Deep Water #4277a5",
+        "deltaE": 16.7,
+        "contrast": 1.5
+      },
+      {
+        "a": "hide, lit #205794",
+        "b": "Mountain (mean) #929ca9",
+        "deltaE": 41.5,
+        "contrast": 2.6
+      },
+      {
+        "a": "hide, shade #164271",
+        "b": "Grass #89b75b",
+        "deltaE": 90.9,
+        "contrast": 4.4
+      },
+      {
+        "a": "hide, shade #164271",
+        "b": "Shallow Water #8fd3dc",
+        "deltaE": 61,
+        "contrast": 6.1
+      },
+      {
+        "a": "hide, shade #164271",
+        "b": "Deep Water #4277a5",
+        "deltaE": 21.9,
+        "contrast": 2.2
+      },
+      {
+        "a": "navy #050949",
+        "b": "Deep Water #4277a5",
+        "deltaE": 51.4,
+        "contrast": 3.9
+      },
+      {
+        "a": "navy #050949",
+        "b": "Forest (dark tones) #2d3a37",
+        "deltaE": 52.7,
+        "contrast": 1.6
+      },
+      {
+        "a": "hide, lit #205794",
+        "b": "Teal plate #28b7a4",
+        "deltaE": 66.6,
+        "contrast": 2.9
+      },
+      {
+        "a": "hide, lit #205794",
+        "b": "Violet plate #a277d2",
+        "deltaE": 36.8,
+        "contrast": 2.1
+      },
+      {
+        "a": "hide, lit #205794",
+        "b": "navy #050949",
+        "deltaE": 36.3,
+        "contrast": 2.5
+      }
+    ]
+  },
+  "cream": [
+    {
+      "a": "cream #eddba1",
+      "b": "Grass #89b75b",
+      "deltaE": 35.7,
+      "contrast": 1.7
+    },
+    {
+      "a": "cream #eddba1",
+      "b": "Mountain (mean) #929ca9",
+      "deltaE": 45.5,
+      "contrast": 2
+    },
+    {
+      "a": "cream #eddba1",
+      "b": "Mountain (light rock) #d1dbe8",
+      "deltaE": 38.4,
+      "contrast": 1
+    },
+    {
+      "a": "cream #eddba1",
+      "b": "hide, lit #205794",
+      "deltaE": 86.5,
+      "contrast": 5.3
+    }
+  ],
+  "caveman": [
+    {
+      "a": "Caveman fur #a2804b",
+      "b": "Caveman skin #fee598",
+      "deltaE": 37.3,
+      "contrast": 2.9
+    },
+    {
+      "a": "Caveman fur (mean) #957046",
+      "b": "Caveman skin #fee598",
+      "deltaE": 44.5,
+      "contrast": 3.6
+    },
+    {
+      "a": "Caveman fur #a2804b",
+      "b": "Goblin leather #955627",
+      "deltaE": 20.5,
+      "contrast": 1.6
+    },
+    {
+      "a": "Caveman fur #a2804b",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 36.3,
+      "contrast": 1.9
+    },
+    {
+      "a": "Caveman fur #a2804b",
+      "b": "Grass #89b75b",
+      "deltaE": 40.7,
+      "contrast": 1.6
+    },
+    {
+      "a": "Caveman skin #fee598",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 28.1,
+      "contrast": 1.5
+    },
+    {
+      "a": "Caveman skin #fee598",
+      "b": "Grass #89b75b",
+      "deltaE": 36.6,
+      "contrast": 1.9
+    },
+    {
+      "a": "Shaman fur #c2924b",
+      "b": "Caveman skin #fee598",
+      "deltaE": 30.4,
+      "contrast": 2.2
+    },
+    {
+      "a": "Shaman fur #c2924b",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 23.9,
+      "contrast": 1.5
+    },
+    {
+      "a": "war paint #f35600",
+      "b": "Caveman skin #fee598",
+      "deltaE": 73.6,
+      "contrast": 2.7
+    }
+  ],
+  "units": {
+    "Caveman": {
+      "master": "public/assets/chibi/units/chibi-direction-dinosaur-caveman.png",
+      "recipe": "caveman-pelt-edit-a (candidate 0)",
+      "opaquePixels": 2078,
+      "sharePercent": {
+        "hide": 0,
+        "navy": 0,
+        "cream": 23.4,
+        "accent": 0.9,
+        "fur": 20.7
+      },
+      "commonest": {
+        "hide": null,
+        "navy": null,
+        "cream": "#fee598",
+        "accent": "#f46d01",
+        "fur": "#a2804b"
+      },
+      "mean": {
+        "hide": null,
+        "navy": null,
+        "cream": "#f4d084",
+        "accent": "#f16b01",
+        "fur": "#957046"
+      },
+      "accentHueDegrees": 27,
+      "widthPx": 52,
+      "feetWidthPx": 32,
+      "plateWidthPx": 52,
+      "widerThanPlate": false,
+      "feetWiderThanPlate": false
+    },
+    "Raptor": {
+      "master": "public/assets/chibi/units/chibi-direction-dinosaur-raptor.png",
+      "recipe": "raptor-deep-stripes-b (candidate 0)",
+      "opaquePixels": 2800,
+      "sharePercent": {
+        "hide": 20,
+        "navy": 14.2,
+        "cream": 7.2,
+        "accent": 23.1,
+        "fur": 9
+      },
+      "commonest": {
+        "hide": "#164271",
+        "navy": "#042651",
+        "cream": "#f7dda3",
+        "accent": "#f35600",
+        "fur": "#c6a167"
+      },
+      "mean": {
+        "hide": "#1b4879",
+        "navy": "#052650",
+        "cream": "#f8e3b5",
+        "accent": "#ec6900",
+        "fur": "#c5a167"
+      },
+      "accentHueDegrees": 27,
+      "widthPx": 67,
+      "feetWidthPx": 35,
+      "plateWidthPx": 57,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    },
+    "Spitter": {
+      "master": "public/assets/chibi/units/chibi-direction-dinosaur-spitter.png",
+      "recipe": "spitter-hide-edit-a (candidate 0)",
+      "opaquePixels": 2991,
+      "sharePercent": {
+        "hide": 26,
+        "navy": 30.9,
+        "cream": 6.4,
+        "accent": 12.2,
+        "fur": 8.7
+      },
+      "commonest": {
+        "hide": "#2f5595",
+        "navy": "#113156",
+        "cream": "#f7deb3",
+        "accent": "#fd7a00",
+        "fur": "#d1af82"
+      },
+      "mean": {
+        "hide": "#345996",
+        "navy": "#09214d",
+        "cream": "#f4dcb5",
+        "accent": "#fc7a00",
+        "fur": "#ae8c62"
+      },
+      "accentHueDegrees": 29,
+      "widthPx": 53,
+      "feetWidthPx": 31,
+      "plateWidthPx": 52,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    },
+    "Ankylosaurus": {
+      "master": "public/assets/chibi/units/chibi-direction-dinosaur-ankylosaurus.png",
+      "recipe": "ankylosaurus-hide-edit-b (candidate 0)",
+      "opaquePixels": 2101,
+      "sharePercent": {
+        "hide": 19.8,
+        "navy": 26.5,
+        "cream": 7.4,
+        "accent": 8.7,
+        "fur": 5.6
+      },
+      "commonest": {
+        "hide": "#2c2f5c",
+        "navy": "#0c1641",
+        "cream": "#fbe9bc",
+        "accent": "#f96601",
+        "fur": "#c1a36e"
+      },
+      "mean": {
+        "hide": "#304372",
+        "navy": "#0e163b",
+        "cream": "#f3d5a2",
+        "accent": "#ed5c03",
+        "fur": "#ae9162"
+      },
+      "accentHueDegrees": 23,
+      "widthPx": 49,
+      "feetWidthPx": 42,
+      "plateWidthPx": 52,
+      "widerThanPlate": false,
+      "feetWiderThanPlate": false
+    },
+    "Shaman": {
+      "master": "public/assets/chibi/units/chibi-direction-dinosaur-shaman.png",
+      "recipe": "shaman-skin-edit-a (candidate 0)",
+      "opaquePixels": 2454,
+      "sharePercent": {
+        "hide": 0,
+        "navy": 0,
+        "cream": 11.4,
+        "accent": 8.5,
+        "fur": 24.9
+      },
+      "commonest": {
+        "hide": null,
+        "navy": null,
+        "cream": "#efd8a8",
+        "accent": "#ff9100",
+        "fur": "#c2924b"
+      },
+      "mean": {
+        "hide": null,
+        "navy": null,
+        "cream": "#f1d5a2",
+        "accent": "#f25703",
+        "fur": "#ae894d"
+      },
+      "accentHueDegrees": 21,
+      "widthPx": 53,
+      "feetWidthPx": 32,
+      "plateWidthPx": 52,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    },
+    "Triceratops": {
+      "master": "public/assets/chibi/units/chibi-direction-dinosaur-triceratops.png",
+      "recipe": "triceratops-face-edit-a (candidate 0)",
+      "opaquePixels": 2962,
+      "sharePercent": {
+        "hide": 12.2,
+        "navy": 45.3,
+        "cream": 10,
+        "accent": 13.7,
+        "fur": 3.8
+      },
+      "commonest": {
+        "hide": "#052d67",
+        "navy": "#12173b",
+        "cream": "#f3c279",
+        "accent": "#fb5000",
+        "fur": "#c97c3e"
+      },
+      "mean": {
+        "hide": "#073678",
+        "navy": "#09163c",
+        "cream": "#f6ce8b",
+        "accent": "#fb6300",
+        "fur": "#c97c3e"
+      },
+      "accentHueDegrees": 24,
+      "widthPx": 67,
+      "feetWidthPx": 45,
+      "plateWidthPx": 57,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    },
+    "T-Rex": {
+      "master": "public/assets/chibi/units/chibi-direction-dinosaur-t-rex.png",
+      "recipe": "t-rex-deep-stripes-a (candidate 0)",
+      "opaquePixels": 2685,
+      "sharePercent": {
+        "hide": 27.5,
+        "navy": 28.8,
+        "cream": 9.3,
+        "accent": 8.6,
+        "fur": 0
+      },
+      "commonest": {
+        "hide": "#205794",
+        "navy": "#050949",
+        "cream": "#eddba1",
+        "accent": "#f77c00",
+        "fur": null
+      },
+      "mean": {
+        "hide": "#205693",
+        "navy": "#03063e",
+        "cream": "#eddba1",
+        "accent": "#da5701",
+        "fur": null
+      },
+      "accentHueDegrees": 24,
+      "widthPx": 60,
+      "feetWidthPx": 41,
+      "plateWidthPx": 57,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    },
+    "Brontosaurus": {
+      "master": "public/assets/chibi/units/chibi-direction-dinosaur-brontosaurus.png",
+      "recipe": "brontosaurus-spots-edit-a (candidate 1)",
+      "opaquePixels": 2711,
+      "sharePercent": {
+        "hide": 34.9,
+        "navy": 16.4,
+        "cream": 9.7,
+        "accent": 15.7,
+        "fur": 7.5
+      },
+      "commonest": {
+        "hide": "#30608f",
+        "navy": "#011e4d",
+        "cream": "#fdeea4",
+        "accent": "#fb760b",
+        "fur": "#c19e57"
+      },
+      "mean": {
+        "hide": "#2c5a89",
+        "navy": "#021e4b",
+        "cream": "#fceca2",
+        "accent": "#f26f08",
+        "fur": "#c09e57"
+      },
+      "accentHueDegrees": 26,
+      "widthPx": 74,
+      "feetWidthPx": 44,
+      "plateWidthPx": 68,
+      "widerThanPlate": true,
+      "feetWiderThanPlate": false
+    }
+  }
+}

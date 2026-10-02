@@ -1,0 +1,36 @@
+{
+  "id": "t-rex-hide-d",
+  "jobId": "7156a7b9-0417-46f4-882c-d872d2732624",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-t-rex",
+    "subject": "UNIT:DINOSAUR:KNIGHT",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81106,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the dull slate hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright; the dark navy along the back, tail and far leg stays. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the dull slate hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright; the dark navy along the back, tail and far leg stays. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the dull slate hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright; the dark navy along the back, tail and far leg stays. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the dull slate hide: it becomes a deeper, clearer blue, colour #2b5a9a on the lit side with #17325f shadows, a saturated mid-dark blue, not grey and not bright; the dark navy along the back, tail and far leg stays. Do not redraw anything. Keep the amber-orange crest and back spikes, the cream belly, throat and lower jaw, the eyes, teeth, claws, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "t-rex-hide-a",
+      "candidate": 0,
+      "sha256": "3b1af70f53529f9ce1a3cab21e7c1862512f8eaa25e5da7982a2e49aa6d941fe"
+    }
+  }
+}

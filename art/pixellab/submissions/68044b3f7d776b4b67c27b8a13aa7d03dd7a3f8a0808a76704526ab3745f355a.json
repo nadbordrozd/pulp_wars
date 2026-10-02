@@ -1,0 +1,36 @@
+{
+  "id": "brontosaurus-spots-edit-a",
+  "jobId": "585a48ef-ca2d-4c6f-b24b-238ba07b640e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-brontosaurus",
+    "subject": "UNIT:DINOSAUR:JUGGERNAUT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 83503,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only a pattern on the hide: nine big solid bright orange blotches, colour #fe6d00, each a filled round blot bigger than its eye, with no ring and no hole: three down the back of the long neck, four along the back and upper flank, two on the base of the tail, wide apart. The head, belly, throat and legs stay plain. Do not redraw anything. Keep the cream belly and throat, the eyes, smile, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only a pattern on the hide: nine big solid bright orange blotches, colour #fe6d00, each a filled round blot bigger than its eye, with no ring and no hole: three down the back of the long neck, four along the back and upper flank, two on the base of the tail, wide apart. The head, belly, throat and legs stay plain. Do not redraw anything. Keep the cream belly and throat, the eyes, smile, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only a pattern on the hide: nine big solid bright orange blotches, colour #fe6d00, each a filled round blot bigger than its eye, with no ring and no hole: three down the back of the long neck, four along the back and upper flank, two on the base of the tail, wide apart. The head, belly, throat and legs stay plain. Do not redraw anything. Keep the cream belly and throat, the eyes, smile, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Add only a pattern on the hide: nine big solid bright orange blotches, colour #fe6d00, each a filled round blot bigger than its eye, with no ring and no hole: three down the back of the long neck, four along the back and upper flank, two on the base of the tail, wide apart. The head, belly, throat and legs stay plain. Do not redraw anything. Keep the cream belly and throat, the eyes, smile, legs, tail, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "brontosaurus-hide-edit-a",
+      "candidate": 0,
+      "sha256": "e5ee728c1474b78ac1f9679a21678f6c4f1e93aa3523cb71c9f07544e4235afb"
+    }
+  }
+}

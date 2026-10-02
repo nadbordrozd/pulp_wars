@@ -1,0 +1,37 @@
+{
+  "id": "shaman-primal-edit-b",
+  "jobId": "256e6779-e661-45d8-8399-78778b14be63",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-shaman",
+    "subject": "UNIT:DINOSAUR:CAPTAIN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his clothes: the long red robe becomes a dull sandy brown fur robe, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, with big bold solid dark brown spots and a dark brown trim line along its edges; the three red feathers become bright orange feathers, colour #fe6d00. Nothing red is left. Keep the beast skull hood, face, beard, drum, drumstick, necklace, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his clothes: the long red robe becomes a dull sandy brown fur robe, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, with big bold solid dark brown spots and a dark brown trim line along its edges; the three red feathers become bright orange feathers, colour #fe6d00. Nothing red is left. Keep the beast skull hood, face, beard, drum, drumstick, necklace, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his clothes: the long red robe becomes a dull sandy brown fur robe, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, with big bold solid dark brown spots and a dark brown trim line along its edges; the three red feathers become bright orange feathers, colour #fe6d00. Nothing red is left. Keep the beast skull hood, face, beard, drum, drumstick, necklace, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only his clothes: the long red robe becomes a dull sandy brown fur robe, colour #a67c3d with #6e4f26 shadows, not orange and not yellow, with big bold solid dark brown spots and a dark brown trim line along its edges; the three red feathers become bright orange feathers, colour #fe6d00. Nothing red is left. Keep the beast skull hood, face, beard, drum, drumstick, necklace, feet, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "dinosaur",
+      "recipe": "shaman-a-edit-2",
+      "candidate": 0,
+      "sha256": "d898e960a866c6c2b664c4e6997a83acc18eff185ce4fee1ac84d74bc2f3254f"
+    }
+  }
+}

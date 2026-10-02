@@ -1,0 +1,36 @@
+{
+  "id": "dinosaur-city-3-tent-edit-a",
+  "jobId": "888c92a3-4e8b-4b5a-b983-b99c7235f37c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-city-3",
+    "subject": "CITY:DINOSAUR:3",
+    "faction": "DINOSAUR",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 104
+    },
+    "seed": 85202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange-ochre hide of the awnings and the small tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Add nothing: no rocks, no ground and no shadow. Do not redraw anything. Keep the orange feathers, the giant cream rib-cage, the horned skull, the dark huts, the standing stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the orange-ochre hide of the awnings and the small tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Add nothing: no rocks, no ground and no shadow. Do not redraw anything. Keep the orange feathers, the giant cream rib-cage, the horned skull, the dark huts, the standing stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange-ochre hide of the awnings and the small tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Add nothing: no rocks, no ground and no shadow. Do not redraw anything. Keep the orange feathers, the giant cream rib-cage, the horned skull, the dark huts, the standing stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the orange-ochre hide of the awnings and the small tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Add nothing: no rocks, no ground and no shadow. Do not redraw anything. Keep the orange feathers, the giant cream rib-cage, the horned skull, the dark huts, the standing stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "dinosaur-city-3-primal-edit-a",
+      "candidate": 0,
+      "sha256": "6f6e1fa00da31f2ed0e38d3f41eace45dfb5cc6a2ff0def144aa5903f2f06aeb"
+    }
+  }
+}

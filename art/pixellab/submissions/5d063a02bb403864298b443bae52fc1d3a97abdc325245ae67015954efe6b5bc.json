@@ -1,0 +1,37 @@
+{
+  "id": "dinosaur-city-3-primal-edit-a",
+  "jobId": "fdbd7a86-e538-4b45-94da-a2e0cc571fae",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-city-3",
+    "subject": "CITY:DINOSAUR:3",
+    "faction": "DINOSAUR",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 104
+    },
+    "seed": 85201,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours and the flag: the red hide awnings and the small red tents become tawny ochre hide, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the small flag is removed, leaving its bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep the giant rib-cage, the skull, the huts, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours and the flag: the red hide awnings and the small red tents become tawny ochre hide, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the small flag is removed, leaving its bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep the giant rib-cage, the skull, the huts, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours and the flag: the red hide awnings and the small red tents become tawny ochre hide, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the small flag is removed, leaving its bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep the giant rib-cage, the skull, the huts, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours and the flag: the red hide awnings and the small red tents become tawny ochre hide, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the small flag is removed, leaving its bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep the giant rib-cage, the skull, the huts, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "cities-dinosaur",
+      "recipe": "dinosaur-city-3-a-edit-4",
+      "candidate": 0,
+      "sha256": "63d1884aa0a2ca3a0abee0b80b00387ee982fea6a62fc2e093a50f9b807ffc16"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "dinosaur-city-2-primal-edit-a",
+  "jobId": "105df44f-e748-4b9d-bfc4-ef4818545b62",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-city-2",
+    "subject": "CITY:DINOSAUR:2",
+    "faction": "DINOSAUR",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 100
+    },
+    "seed": 85101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours and the flag: the red hide tents become tawny ochre hide tents, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the red banner flag cloth is removed but its pole stays as a bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep every tent, the bone totem, the fence, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours and the flag: the red hide tents become tawny ochre hide tents, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the red banner flag cloth is removed but its pole stays as a bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep every tent, the bone totem, the fence, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours and the flag: the red hide tents become tawny ochre hide tents, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the red banner flag cloth is removed but its pole stays as a bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep every tent, the bone totem, the fence, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours and the flag: the red hide tents become tawny ochre hide tents, colour #b9802f with #7a4d1c shadows, with a few big dark brown spots; the red banner flag cloth is removed but its pole stays as a bare pole; small bright orange feathers, colour #fe6d00, sit on the tent tips. No red is left. Keep every tent, the bone totem, the fence, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "cities-dinosaur",
+      "recipe": "dinosaur-city-2-d-edit",
+      "candidate": 0,
+      "sha256": "283b2a00c0d605401d034021e5d84fe6ac096b3e1b6ba631be2874fe65b6f6e3"
+    }
+  }
+}

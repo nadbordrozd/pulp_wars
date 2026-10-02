@@ -1,0 +1,36 @@
+{
+  "id": "shaman-skin-edit-a",
+  "jobId": "c3eb713c-dcd0-4c42-8ac2-411496908c18",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-shaman",
+    "subject": "UNIT:DINOSAUR:CAPTAIN",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83204,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin (face, nose, hands and feet): the pink skin becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows. Add war paint: two short bright orange #fe6d00 stripes on each cheek. Do not redraw anything. Keep the beard, the beast skull hood, the orange feathers, the spotted fur robe, drum, drumstick, necklace, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin (face, nose, hands and feet): the pink skin becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows. Add war paint: two short bright orange #fe6d00 stripes on each cheek. Do not redraw anything. Keep the beard, the beast skull hood, the orange feathers, the spotted fur robe, drum, drumstick, necklace, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin (face, nose, hands and feet): the pink skin becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows. Add war paint: two short bright orange #fe6d00 stripes on each cheek. Do not redraw anything. Keep the beard, the beast skull hood, the orange feathers, the spotted fur robe, drum, drumstick, necklace, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only his skin (face, nose, hands and feet): the pink skin becomes lightly sun-tanned skin, a light golden tan, colour #dba673 with #b47a4c shadows. Add war paint: two short bright orange #fe6d00 stripes on each cheek. Do not redraw anything. Keep the beard, the beast skull hood, the orange feathers, the spotted fur robe, drum, drumstick, necklace, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "shaman-robe-edit-a",
+      "candidate": 0,
+      "sha256": "c9073ce73b8e08fb9fd99aecce5ac7332604a99decaf7e24fea9fba4ebbf6901"
+    }
+  }
+}

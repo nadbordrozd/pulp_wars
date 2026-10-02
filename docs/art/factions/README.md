@@ -64,7 +64,9 @@ brown shading, red-brown`.
 
 **Converted factions.** A faction converted to the
 [new direction](../VISUAL_DIRECTION_2026-10.md) (Human in bead
-`pulp_wars-3tq.5`, Goblin in bead `pulp_wars-3tq.9`) has fixed colours and
+`pulp_wars-3tq.5`, Goblin in bead `pulp_wars-3tq.9`, Undead in bead
+`pulp_wars-3tq.12`, Dinosaur in bead `pulp_wars-3tq.13`: all four) has fixed
+colours and
 no owner mask, so the rules above that protect the red key colour do not
 bind it: its fragment may use brown, rust and wood, and its negative
 fragment drops the red-brown drift words. The limit on large areas close to

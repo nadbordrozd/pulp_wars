@@ -1,0 +1,37 @@
+{
+  "id": "portrait-dinosaur-t-rex-primal-edit",
+  "jobId": "f12c3b18-7254-4bfa-82ed-3d280ece2a87",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-portrait-dinosaur-t-rex",
+    "subject": "PORTRAIT:DINOSAUR:KNIGHT",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 84601,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Take off the red collar and cape so the neck and chest are bare hide with a cream throat; the hide becomes deep blue, colour #205794 with #164271 shadows; add a short crest of bright orange spikes, colour #fe6d00, over the brow and down the back of the neck. Nothing red is left. Keep the head, eyes, jaws, teeth, the tiny arm, pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Take off the red collar and cape so the neck and chest are bare hide with a cream throat; the hide becomes deep blue, colour #205794 with #164271 shadows; add a short crest of bright orange spikes, colour #fe6d00, over the brow and down the back of the neck. Nothing red is left. Keep the head, eyes, jaws, teeth, the tiny arm, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Take off the red collar and cape so the neck and chest are bare hide with a cream throat; the hide becomes deep blue, colour #205794 with #164271 shadows; add a short crest of bright orange spikes, colour #fe6d00, over the brow and down the back of the neck. Nothing red is left. Keep the head, eyes, jaws, teeth, the tiny arm, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Take off the red collar and cape so the neck and chest are bare hide with a cream throat; the hide becomes deep blue, colour #205794 with #164271 shadows; add a short crest of bright orange spikes, colour #fe6d00, over the brow and down the back of the neck. Nothing red is left. Keep the head, eyes, jaws, teeth, the tiny arm, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-dinosaur",
+      "recipe": "portrait-dinosaur-t-rex-b",
+      "candidate": 0,
+      "sha256": "fe2a398bfe82878d761c625634cb5c660e15c1bfc19cdbd4a0aebc6ec5f7d6f6"
+    }
+  }
+}

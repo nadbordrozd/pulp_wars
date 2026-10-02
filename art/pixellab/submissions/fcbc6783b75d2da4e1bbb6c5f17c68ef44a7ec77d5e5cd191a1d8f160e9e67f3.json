@@ -1,0 +1,37 @@
+{
+  "id": "portrait-dinosaur-shaman-primal-edit",
+  "jobId": "450188b7-ad85-475c-8da1-d446e657c429",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-portrait-dinosaur-shaman",
+    "subject": "PORTRAIT:DINOSAUR:CAPTAIN",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 84401,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: the red feathers become bright orange feathers, colour #fe6d00; the red robe becomes deep ochre fur, colour #b9802f with #7a4d1c shadows, with big bold solid dark brown spots; his skin becomes a light golden tan, colour #dba673. Nothing red is left. Do not redraw anything. Keep the skull hood, face, beard, drumstick, pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours: the red feathers become bright orange feathers, colour #fe6d00; the red robe becomes deep ochre fur, colour #b9802f with #7a4d1c shadows, with big bold solid dark brown spots; his skin becomes a light golden tan, colour #dba673. Nothing red is left. Do not redraw anything. Keep the skull hood, face, beard, drumstick, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours: the red feathers become bright orange feathers, colour #fe6d00; the red robe becomes deep ochre fur, colour #b9802f with #7a4d1c shadows, with big bold solid dark brown spots; his skin becomes a light golden tan, colour #dba673. Nothing red is left. Do not redraw anything. Keep the skull hood, face, beard, drumstick, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours: the red feathers become bright orange feathers, colour #fe6d00; the red robe becomes deep ochre fur, colour #b9802f with #7a4d1c shadows, with big bold solid dark brown spots; his skin becomes a light golden tan, colour #dba673. Nothing red is left. Do not redraw anything. Keep the skull hood, face, beard, drumstick, pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-dinosaur",
+      "recipe": "portrait-dinosaur-shaman-a",
+      "candidate": 0,
+      "sha256": "b52d5bc7546429fcac0e4a2ab330cb64b8e07681aebb143f216ea2f8f10f34fd"
+    }
+  }
+}

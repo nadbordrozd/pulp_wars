@@ -1,0 +1,36 @@
+{
+  "id": "dinosaur-city-2-tent-edit-a",
+  "jobId": "637c0455-de08-4ecd-9732-923337d1c31a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-city-2",
+    "subject": "CITY:DINOSAUR:2",
+    "faction": "DINOSAUR",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 100
+    },
+    "seed": 85102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange-ochre hide of the tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the small bright orange feathers on the tent tips, the bone totem, the bare pole, the fence, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the orange-ochre hide of the tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the small bright orange feathers on the tent tips, the bone totem, the bare pole, the fence, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange-ochre hide of the tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the small bright orange feathers on the tent tips, the bone totem, the bare pole, the fence, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the orange-ochre hide of the tents: it becomes a dull sandy brown hide, colour #a67c3d with #6e4f26 shadows, not orange and not yellow; its dark brown spots stay. Do not redraw anything. Keep the small bright orange feathers on the tent tips, the bone totem, the bare pole, the fence, the stones, each shape and place, the size, black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "dinosaur-city-2-primal-edit-a",
+      "candidate": 0,
+      "sha256": "b9d34230abc99825c6e0a8b5f09eb394c21fc160768bc2c4bc2ba1a98faf8d82"
+    }
+  }
+}

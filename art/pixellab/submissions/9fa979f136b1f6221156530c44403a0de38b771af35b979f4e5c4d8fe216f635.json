@@ -1,0 +1,37 @@
+{
+  "id": "ankylosaurus-primal-edit-a",
+  "jobId": "2a79fd52-1222-491f-8802-714fe0edd850",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-ankylosaurus",
+    "subject": "UNIT:DINOSAUR:GUARD",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 83401,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Take off the red blanket and its cord so the whole dome is bare bony armour plates. The dome plates become dark navy blue, colour #16204f, in clear chunky bands; the big red ball of the tail club becomes a bright orange bone club, colour #fe6d00; three of the cream spikes get bright orange tips. Nothing red is left. Keep the head, eyes, cheek horns, cream spikes, legs, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Take off the red blanket and its cord so the whole dome is bare bony armour plates. The dome plates become dark navy blue, colour #16204f, in clear chunky bands; the big red ball of the tail club becomes a bright orange bone club, colour #fe6d00; three of the cream spikes get bright orange tips. Nothing red is left. Keep the head, eyes, cheek horns, cream spikes, legs, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Take off the red blanket and its cord so the whole dome is bare bony armour plates. The dome plates become dark navy blue, colour #16204f, in clear chunky bands; the big red ball of the tail club becomes a bright orange bone club, colour #fe6d00; three of the cream spikes get bright orange tips. Nothing red is left. Keep the head, eyes, cheek horns, cream spikes, legs, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Take off the red blanket and its cord so the whole dome is bare bony armour plates. The dome plates become dark navy blue, colour #16204f, in clear chunky bands; the big red ball of the tail club becomes a bright orange bone club, colour #fe6d00; three of the cream spikes get bright orange tips. Nothing red is left. Keep the head, eyes, cheek horns, cream spikes, legs, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "dinosaur",
+      "recipe": "ankylosaurus-a-edit-b",
+      "candidate": 0,
+      "sha256": "ac297fa08f9bed57c9b84f8a726a8df580ddbe1e2cdb3ec425adf64a90759b53"
+    }
+  }
+}

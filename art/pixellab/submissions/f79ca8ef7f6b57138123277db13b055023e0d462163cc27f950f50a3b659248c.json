@@ -1,0 +1,37 @@
+{
+  "id": "icon-action-hatch-primal-edit",
+  "jobId": "4117590e-57b3-44a8-8e9e-2d94ef1586f7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-icon-action-hatch",
+    "subject": "ICON:ACTION:HATCH",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 86101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: the grey-blue speckles on the eggshell become bold solid bright orange speckles, colour #fe6d00; the baby's grey-blue snout becomes deep blue, colour #205794 with #164271 shadows. Do not redraw anything. Keep the cream shell, the crack, the eyes, the flying chips, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours: the grey-blue speckles on the eggshell become bold solid bright orange speckles, colour #fe6d00; the baby's grey-blue snout becomes deep blue, colour #205794 with #164271 shadows. Do not redraw anything. Keep the cream shell, the crack, the eyes, the flying chips, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours: the grey-blue speckles on the eggshell become bold solid bright orange speckles, colour #fe6d00; the baby's grey-blue snout becomes deep blue, colour #205794 with #164271 shadows. Do not redraw anything. Keep the cream shell, the crack, the eyes, the flying chips, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours: the grey-blue speckles on the eggshell become bold solid bright orange speckles, colour #fe6d00; the baby's grey-blue snout becomes deep blue, colour #205794 with #164271 shadows. Do not redraw anything. Keep the cream shell, the crack, the eyes, the flying chips, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-dinosaur",
+      "recipe": "icon-action-hatch-a",
+      "candidate": 0,
+      "sha256": "f44fb83d9dded7d965d2bdaac56dc85768ba351b86389a8993294c4d8ff9d429"
+    }
+  }
+}

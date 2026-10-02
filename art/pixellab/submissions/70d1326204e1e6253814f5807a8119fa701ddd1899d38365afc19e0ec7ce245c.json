@@ -1,0 +1,36 @@
+{
+  "id": "raptor-hide-c",
+  "jobId": "0a6a7491-53b3-4dc4-92c3-dcd0ae3e00c5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "dinosaur-direction-study",
+    "asset": "chibi-study-dino-raptor",
+    "subject": "UNIT:DINOSAUR:RAIDER",
+    "faction": "TEST-DINOSAUR-PRIMAL",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 81005,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the blue hide: the light sky blue becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, and dark navy #1a2748 only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the blue hide: the light sky blue becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, and dark navy #1a2748 only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the blue hide: the light sky blue becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, and dark navy #1a2748 only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the blue hide: the light sky blue becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, and dark navy #1a2748 only along the top of the back and tail. Do not redraw anything. Keep the amber-orange crest, the cream belly, throat and claws, the eyes, teeth, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "raptor-base-a",
+      "candidate": 0,
+      "sha256": "96398f29cad7cae3ead00695b08b4dc876e0a894370c3f591ec41937f52a1bdb"
+    }
+  }
+}

@@ -80,9 +80,26 @@ Roads, that text now describes the **Classic look** developer option
   spirit wisp effects are violet, with violet rings; the Raise Dead target
   preview is violet like the Wail radius. Plague and Bitten markers, the
   cure sparkle and Grave markers are unchanged. A raster that fails to load
-  falls back to the classic Undead asset of that piece. Dinosaur art is
-  not converted. See
+  falls back to the classic Undead asset of that piece. See
   [the Undead production section](../art/VISUAL_DIRECTION_2026-10.md#17-undead-production).
+- **Dinosaur (bead `pulp_wars-3tq.13`).** The Dinosaurs are converted too,
+  the last of the four factions, which replaces what the bullets above say
+  about them: every Dinosaur land unit, its portrait, the Egg and the Lay
+  Egg, Hatch and Stampede icons use the direction's art in fixed colours
+  (deep blue hide with a navy back and a cream belly, tawny spotted fur on
+  the cavemen, one red-orange accent, and a body pattern per species) for
+  every player, on the board and in the docks, Lay Egg cards, technology
+  cards and Help. An Egg is cream with orange speckles and carries no player
+  colour: it stands on a plate as wide as a large unit's, in its owner's seat
+  shape and colour, and its countdown chip keeps the owner-coloured ring. A
+  Dinosaur city is the bone-and-hide camp with tawny tents and flies the
+  same code-drawn pennant as a Human city (seat shape in cream, gold for the
+  capital, no separate crown). The growth chevrons and scale, the Charge!,
+  Acid and Armoured previews, the dust, flash, shell and ring cues and the
+  War Drums icon are unchanged. A raster that fails to load falls back to
+  the classic Dinosaur asset of that piece. Only the shared ships still
+  carry a player-coloured part (the sail). See
+  [the Dinosaur production section](../art/VISUAL_DIRECTION_2026-10.md#19-dinosaur-production).
 - **Territory borders** are one thin solid line in the owner colour with a
   soft dark casing; a border shared by two owners alternates their colours.
 - **Roads** have no black casing. Terrain, resources and Treasure keep their
@@ -426,10 +443,13 @@ seat looks as in revision 18 apart from the extra faction option.
   required**, so the player always sees where the Egg goes. Escape, Cancel,
   or selecting anything else leaves the picking with the city still
   selected.
-- **Eggs on the board.** Every visible Egg of any owner is drawn in its
-  owner's colour: CHIBI uses the `UNIT:DINOSAUR:EGG` sprite, LEGACY (and
-  CHIBI without the raster) a code-drawn speckled egg with a painted band in
-  a bone nest. A charcoal chip with an owner-colour ring beside it shows the
+- **Eggs on the board.** Every visible Egg of any owner shows its owner:
+  the default CHIBI look draws the `UNIT:DINOSAUR:EGG` sprite of the new
+  direction (cream with orange speckles, the same for every player; bead
+  `pulp_wars-3tq.13`) on a plate in the owner's colour; the Classic look
+  draws the classic sprite with its band and nest cloth in the owner's
+  colour, and LEGACY (and CHIBI without a raster) a code-drawn speckled egg
+  with a painted band in a bone nest. A charcoal chip with an owner-colour ring beside it shows the
   countdown number (never smaller than a 10 px number). An Egg shows its HP
   bar only when damaged, wears its owner's seat badge (LEGACY and the Classic
   look; in the default CHIBI look its nest sits on the owner's plate) and

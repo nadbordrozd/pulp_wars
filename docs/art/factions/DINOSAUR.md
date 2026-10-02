@@ -1,108 +1,135 @@
 # Faction fragment: DINOSAUR
 
-**Status:** approved by the root on 2026-10-01 (bead `pulp_wars-c87.6`),
-under the user's delegation of art judgement for epic `pulp_wars-c87` (see
-[Decisions](#decisions-approved-2026-10-01)). Written from
-[FACTION_TEMPLATE.md](FACTION_TEMPLATE.md) under the rules in the
-[README](README.md) and the precedent of [UNDEAD.md](UNDEAD.md) and
-[GOBLIN.md](GOBLIN.md). The art was generated and registered in bead
-`pulp_wars-c87.7`: see [Sprite findings](#sprite-findings-bead-pulp_wars-c877).
+**Status:** rewritten for the
+[new visual direction](../VISUAL_DIRECTION_2026-10.md#19-dinosaur-production)
+in bead `pulp_wars-3tq.13`. The user reviewed the
+[study](../VISUAL_DIRECTION_2026-10.md#18-dinosaur-study) on 2026-10-02: "go
+with F, pattern per species, keep accent like it is, do spotted fur on the
+caveman." The first version of this document (approved 2026-10-01, bead
+`pulp_wars-c87.6`) described dusty blue beasts under owner-coloured blankets,
+frills and tunics in the key red; that art is still in the game as the
+[Classic look](#the-classic-look).
 
-The file is named after the runtime faction id `DINOSAUR`: the pipeline reads
-layer 3 from `docs/art/factions/<faction>.md` for a batch manifest whose
-`faction` is `DINOSAUR`, so edit the two `text` blocks under **Prompt
-fragment** and **Negative fragment** here and nowhere else. The sprite bead
-(`pulp_wars-c87.7`) copies the approved subject lines below into
-`scripts/art/chibi/subjects/DINOSAUR.json`; it may still tune a line there
-when the sample shows it needs it, within the rules of this document.
+The art pipeline reads the two `text` blocks under **Prompt fragment** and
+**Negative fragment** below as layer 3 of every Dinosaur prompt, so edit
+them here and nowhere else. Recipes that were already generated keep the
+request stored in their record (see the
+[pipeline](../CHIBI_PIPELINE.md#fragment-changes-and-historical-records)).
 
-The roster and rules come from the root design brief in the notes of bead
-`pulp_wars-c87.1`, which becomes the revision-19 Dinosaur spec. Patrol Boat,
-Battleship and the embarked transport reuse the Human art.
+The roster and rules come from the revision-19 Dinosaur spec (the design
+brief of bead `pulp_wars-c87.1`). Patrol Boat, Battleship and the embarked
+transport reuse the Human art.
 
 ## Identity
 
-A pulp "lost world": cheerful cavemen and their big friendly dinosaurs, drawn
-as the same chunky board-game pieces as the other three factions. Bone,
-rawhide and black volcanic stone; huge heads, goofy grins, round eyes. A toy
-box of dinosaurs, never a nature documentary: nothing realistic, scaly-scary
-or gory. The faction theme is few, big bodies: eggs that hatch on the board
-and beasts that grow as they win.
+A pulp "lost world": cheerful cavemen and their big friendly dinosaurs,
+drawn as the same chunky board-game pieces as the other three factions.
+Huge heads, goofy grins, round eyes. A toy box of dinosaurs, never a nature
+documentary: nothing realistic, scaly-scary or gory. The faction theme is
+few, big bodies: eggs that hatch on the board and beasts that grow as they
+win.
+
+The faction wears **fixed colours**: deep blue hide with a navy back, a warm
+cream belly, jaws and claws, tawny spotted fur on the two cavemen, and
+exactly one hot accent, a red-orange. Each species has a body pattern of its
+own. No sprite has an owner area or a mask. The player is read from the
+seat-shaped plate under a unit or an Egg, the pennant on a city and the
+territory border.
 
 ## Prompt fragment
 
-55 words. It names only a mood, materials, surfaces, colours and small
-motifs: no figure (not "dinosaur", "caveman" or "egg"), no skin or hide
-colour, no fur and no place (no cave, camp or volcano). Dinosaur skin, fur
-and eggs belong in the subject lines, because layer 3 also reaches cities,
-portraits and icons, and Pixen draws every noun it is given: "fur" here
-would make furry dinosaurs, and "scales" scaly tents.
+It names only a mood, materials, surfaces, colours and small motifs: no
+figure and no place or building. Every recipe of batch `direction-dinosaur`
+is an edit, which sends only its instruction; this fragment is for a fresh
+creation if one is ever needed.
 
 ```text
 Faction: cheerful prehistoric lost-world storybook, playful and never scary.
-Everything is made of chunky pale cream bone, pale cream rawhide and dark
-basalt stone, lashed with charcoal grey cord, with knotted lashings, small
-cream teeth and chipped flint edges as details; bone and rawhide are shaded
-with cool grey, stone with darker blue-grey, never brown.
+Their fixed colours: deep blue hide shaded dark navy, with warm cream
+bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots;
+dark basalt stone; and exactly one hot accent colour, a bright red-orange,
+only on feathers, crests, frill markings, body patterns and war paint.
 ```
 
 ## Negative fragment
 
-Metal, wheels and wood keep the stone-age era: every handle, pole, frame and
-club is bone or stone, and wood drifts brown. Green skin vanishes on the
-grass and belongs to the Goblins; lava, fire and orange sit on the key red,
-Coral and Gold. Realism and gore words keep the tone friendly. `skull` and
-`bones` are **not** excluded, unlike in the Goblin fragment: bone is this
-faction's material. It ends with the red-brown drift words for a bone and
-leather faction, plus the brown words hide and fur invite.
+Metal and wheels keep the stone-age era. Red cloth is excluded because the
+classic sprites wore it and red is the Human faction's colour; green skin
+belongs to the Goblins and purple to the Undead. The last terms are the
+study's findings on patterns: thin lines and many small marks are noise at
+the size the game is played, and a frill must not become a solid accent
+area.
 
 ```text
-metal, iron, steel, armour plates, sword, wheels, wood, timber, planks, logs,
-straw, bricks, lava, fire, flames, orange glow, green skin, green scales,
-lime green, teal, purple, realistic reptile, scary, blood, gore, brown fur,
-brown hide, brown leather, tan, leopard spots, bronze, copper, rust, dark
-brown shading, red-brown, maroon
+metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red
+cloth, red cape, red blanket, red feathers, green skin, green scales, lime
+green, teal, purple, realistic reptile, scary, blood, gore, fine scales,
+many small spots, thin stripes, solid orange frill, orange fur
 ```
 
 ## Palette
 
-- **Owner colour:** only the shared key colour `#d8262c`, always on
-  something **worn or painted**, never on a whole skin: blankets strapped
-  over a back, cloth bands and collars, feather crests, a howdah banner, the
-  cavemen's tunics and robes, and the two **frills** (Spitter, Triceratops),
-  which are the faction's painted shields. A red-skinned dinosaur would stay
-  under the 15% mask minimum, as red-plated robots and red orcs did. Every
-  owner area is asked for as "plain bright red", flat and without pattern:
-  patterned garments came back with dark spots that no owner recolours.
-- **Hide and leather are pale, not brown.** Rawhide is pale cream, the same
-  ramp as bone; cords, straps, hair and fur are charcoal grey. There is no
-  tan, no brown and no "natural leather" anywhere. This is the allowed
-  neutral: cream for surfaces, charcoal for lines.
-- **Secondary colours (three):**
+Measured on the accepted masters
+([`palette.json`](../../../art/pixellab/reviews/chibi-batch-direction-dinosaur/palette.json)
+and
+[`readability.json`](../../../art/pixellab/reviews/chibi-batch-direction-dinosaur/readability.json)).
 
-| Colour                            | Approximate values                                                                                                               | Used for                                                                            | Why it is safe                                                                                                                                                                                                                                                                                                                                                                                               |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Dusty blue hide (one ramp)        | small beasts `#5b82b8` / `#3c5c8e`; big beasts `#4a6ea4` / `#2f4a78`; Brontosaurus `#7f9cc4` / `#56739c`; navy stripes `#2b3f66` | all dinosaur skin, egg speckles                                                     | Hue about 215°, in the widest gap between the player colours (Teal 172°, Violet 268°) and opposite the warm ones. It is far from grass `#8ab85c` and Goblin olive (66–90°), and clearly more saturated than Undead slate `#7f8ca0` and Goblin gunmetal `#6d7684`. It is mid-dark, so all four bright owner colours stand out on it. Nothing else on land is blue; the black outline separates it from water. |
-| Bone and rawhide cream (one ramp) | `#efe6c8`, shaded cool grey `#a6abb5`                                                                                            | bellies, teeth, claws, horns, spikes, clubs, eggshell, tents, drums, the skull hood | Pale and nearly unsaturated, far lighter than Gold and Coral, as for Goblin cream and Undead ivory. Shaded cool grey so it never drifts to tan or Gold.                                                                                                                                                                                                                                                      |
-| Basalt charcoal (one ramp)        | dark `#33363d`, mid `#5b616c`, light `#8e96a3`                                                                                   | volcanic stone, flint, cords and straps, cavemen's hair and beards                  | A neutral blue-grey, off every player colour and clearly not red or brown; small or dark areas only.                                                                                                                                                                                                                                                                                                         |
+| Role            | Colours                                                         | Share                                   | Used for                                                                                   |
+| --------------- | --------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Hide, lit       | `#205794` (T-Rex); `#30608f`, `#2f5595`                         | 23% of the six dinosaurs                | heads, flanks, limbs                                                                       |
+| Hide, shade     | `#164271` (Raptor)                                              | (counted with the hide)                 | the shaded side                                                                            |
+| Navy            | `#050949`, `#042651`, `#12173b`, `#2c2f5c`                      | 27% of the six dinosaurs                | the back, the tail top and far legs; the Ankylosaurus's plates; both frills                |
+| Cream           | `#eddba1`, `#f7dda3`, `#fdeea4`                                 | 8% of the six dinosaurs                 | belly, throat, lower jaw, teeth, claws, horns, spikes, bone clubs, the skull               |
+| **Red-orange**  | lit `#fe7500`; `#f35600`, `#fb5000`; shade `#a82f00`            | 14% of the dinosaurs, 5% of the cavemen | crests, spines, stripes, blotches, frill rays and rims, the tail club, feathers, war paint |
+| Tawny fur       | `#a2804b`, `#b48a5c` (Caveman); `#c2924b`, `#90723f` (Shaman)   | 23% of the two cavemen                  | the pelt and the robe                                                                      |
+| Fur spots, trim | `#7c593b`, `#371800`                                            |                                         | bold solid dark brown spots on the fur                                                     |
+| Caveman skin    | `#fee598`, shade `#e59f4a`                                      |                                         | a light golden tan                                                                         |
+| Egg             | shell `#fff3cf`, shade `#f5cb7f`; speckles `#fd8a00`, `#cf6501` |                                         | the Egg and the Lay Egg and Hatch icons                                                    |
 
-Light peach skin on the two cavemen is a small accent (face, arms, feet),
-like the Human faces; it is not a faction colour. Black is the shared
-outline and pupils.
+Rules:
 
-**Why blue, and not the alternatives.** Green lizards vanish on the grass
-and read as Goblins. Warm tan or sand is the brown drift itself and
-disappears under a Gold owner's blanket. Ochre with stripes sits on Gold
-`#e2b63f`. Purple-grey sits on Violet `#a277d2`. Plain slate is already the
-Undead skin and the Goblin wolf. A clear dusty blue is the one free hue, and
-gives the faction a tell at zoom 0.75 as green heads do for the Goblins:
-**blue beasts with cream bellies**. The sample review must check a Teal and
-a Violet owner at zoom 0.75; if blue skin reads as ownership there, deepen
-it towards navy before trying another hue.
+- **Blue is the faction's tell.** A dinosaur is a deep blue body with a
+  cream belly; the deep blue of the study's variant F still reads as blue at
+  native size, where its slate read as near-black.
+- **One accent, as PixelLab draws it.** The red-orange is kept as generated
+  (the user: "keep accent like it is"): there is **no accent step** in the
+  pipeline for this faction and no remap to amber. Its mean hue is 21° to
+  29° on the eight units (`readability.json`); a test holds every sprite
+  between 18° and 34°.
+- **The accent is a pattern or a part, never a whole sprite.** It is 9% to
+  23% of a dinosaur (the striped Raptor is the most) and 9% or less of a
+  caveman. Neither frill is a solid orange disc.
+- **Fur is duller and darker than skin.** The Caveman's pelt differs from
+  his skin by 37 (CIE76; the study's spotted pelt differed by 3.5), and
+  from the Gold plate by 36. "Ochre" and hex values came back as a saturated
+  orange, which made the pelt an accent area; the accepted fur is that
+  orange recoloured to "a dull sandy brown … not orange and not yellow".
+- **No red, no green, no purple.** A few key-red pixels remain as a tongue,
+  an eye or the Raptor's gums (under 2% of any sprite).
 
-**Volcanic and jungle hints** come from materials, not colours: black basalt
-stone for the volcanic side, feather crests and striped hides for the
-jungle. No lava (red, orange) and no green fronds (grass, a fourth colour).
+## A pattern per species
+
+The user asked for one pattern per species, not one for the faction. Each is
+bold enough to read at native size and at zoom 0.75 (fat solid marks; no
+thin lines and no ring-shaped spots).
+
+| Species      | Pattern                                                                                    | Accent share |
+| ------------ | ------------------------------------------------------------------------------------------ | ------------ |
+| Raptor       | orange tiger stripes, fat wedges from the spine, on the back and tail; a tall orange crest | 23%          |
+| T-Rex        | an orange brow crest and back spines; fat orange stripes on the tail and behind the neck   | 9%           |
+| Brontosaurus | big solid orange blotches along the neck, back, flank and tail                             | 16%          |
+| Ankylosaurus | navy armour plates in bands under a cream spike rim; an orange tail club                   | 9%           |
+| Spitter      | a navy frill with orange ray stripes and an orange rim, like a sun; the body is plain      | 12%          |
+| Triceratops  | a navy frill with a thick orange rim and two solid orange eye-spots; the body is plain     | 14%          |
+| Caveman      | a tawny pelt with bold dark brown spots, a tooth necklace, orange war paint on the cheeks  | 1%           |
+| Shaman       | a tawny spotted robe, a cream beast-skull hood with three orange feathers, heavy war paint | 9%           |
+
+The Triceratops has no navy bands on its body (the root's default): navy on
+deep blue differs by 36 and reads as "a darker animal", as the study's
+variant C showed, and the edit that asked for them drew none. Its frill
+field is navy, not the hide's blue, so the deep blue face reads in front of
+it. The two predators share stripes, as the root's default says; their
+silhouettes and the Raptor's crest tell them apart.
 
 ## Silhouette language
 
@@ -115,387 +142,97 @@ This guides the subject lines; it is not sent to PixelLab.
   T-Rex a head on legs, the Brontosaurus a neck.
 - **Friendly heads.** Big round eyes with black pupils, a grin or a sleepy
   smile, chunky cream teeth. No slit pupils, no snarl, no drool.
-- **Smooth skin.** No fur and no scale texture; feathers only as the red
-  crest. A few navy stripes on the Raptor's tail are the only skin pattern.
-- **Teeth and claws are the weapons.** The unit class fragment asks for "one
-  oversized signature weapon or tool"; every dinosaur recipe carries the
-  `promptAddendum` `Its teeth, horns and claws are its only weapons; it holds
-nothing and carries no rider.`
-- **Against the Humans:** no helmets, steel, shields, horses or banners on
-  poles in the hand. **Against the Undead:** bone is a prop, never a body;
-  the only skull is the Shaman's hood, with a bearded peach face under it.
-  **Against the Goblins:** nothing green, no ears, no scrap iron, no bombs.
-- **"Small" is posture.** The Ankylosaurus shares the Guard's standard
-  canvas; it fills the width and reaches a soldier's shoulders, with its
-  tail club raised to head height (see [Decisions](#decisions-approved-2026-10-01)).
+- **Smooth skin.** No fur and no scale texture on a dinosaur; feathers only
+  as the Raptor's crest and the Shaman's headdress.
+- **Nothing worn by a dinosaur.** The blankets, capes, scarves, ponchos,
+  collars and bands of the classic sprites are gone; teeth, horns and claws
+  are the weapons.
+- **Against the Humans:** no helmets, steel, shields or horses. **Against
+  the Undead:** bone is a prop, never a body; the only skull is the Shaman's
+  hood, with a bearded golden face under it. **Against the Goblins:** nothing
+  green, no ears, no scrap iron; the Caveman's fur is lighter than Goblin
+  leather (by 21) and spotted.
 - **Settlements:** a bone-and-hide camp that grows under a giant rib-cage
   arch (see [Cities](#cities)); the neutral village stays shared.
 
-## Subject lines
+## Roster
 
-Approved lines for `scripts/art/chibi/subjects/DINOSAUR.json`, written like the Human,
-Undead and Goblin lines. Units are keyed `UNIT:DINOSAUR:<ROLE>`, which the
-renderer should ask for first and replace with the Human sprite plus a
-faction badge while no raster is usable. Canvases follow the
-[asset inventory](../CHIBI_ASSET_INVENTORY.md): standard 56 x 80, large
-72 x 88, reward 88 x 104.
+Batch
+[`direction-dinosaur`](../../../scripts/art/chibi/batches/batch-direction-dinosaur.json).
+Every unit is an `edit-image-pixen` chain on its accepted classic sprite, so
+the canvas, the anchor and the footprint are unchanged. The subject lines
+(keys `UNIT:DINOSAUR:<ROLE>/PRIMAL` and `PORTRAIT:DINOSAUR:<ROLE>/PRIMAL` in
+[`subjects/DINOSAUR.json`](../../../scripts/art/chibi/subjects/DINOSAUR.json))
+describe the result, for a fresh creation if one is ever needed; the keys
+without `/PRIMAL` are the classic lines.
 
-Lessons from [GOBLIN.md](GOBLIN.md#sprite-findings-bead-pulp_wars-0ao8)
-applied up front: every owner area is "plain bright red"; every strap, cord
-and handle has a named charcoal or cream colour; each line ends with a
-"clearly …, not …" clause; low owner area has a named fix per unit; brown
-that still appears is removed with a single-focus edit ("recolour the brown
-… charcoal grey; change nothing else"), never a broad one.
+| Unit (role)                 | Canvas   | Accepted recipe                          | What it shows                                                                                                 |
+| --------------------------- | -------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Caveman (`FIGHTER`)         | 56 x 80  | `caveman-pelt-edit-a`                    | golden skin, black hair and beard, a tawny spotted pelt, a tooth necklace, orange war paint, a bone club      |
+| Raptor (`RAIDER`)           | 72 x 88  | `raptor-deep-stripes-b` (the study's F)  | deep blue, navy back, cream belly, an orange feather crest, orange tiger stripes on the back and tail         |
+| Spitter (`MARKSMAN`)        | 56 x 80  | `spitter-hide-edit-a`                    | deep blue, cream belly, a navy frill with orange rays and rim, two cream crests                               |
+| Ankylosaurus (`GUARD`)      | 56 x 80  | `ankylosaurus-hide-edit-b`               | a dome of navy plates with a cream spike rim, a deep blue head and legs, an orange tail club                  |
+| Shaman (`CAPTAIN`)          | 56 x 80  | `shaman-skin-edit-a`                     | a cream beast-skull hood with three orange feathers, golden skin with war paint, a tawny spotted robe, a drum |
+| Triceratops (`CATAPULT`)    | 72 x 88  | `triceratops-face-edit-a`                | deep blue face and body, a navy frill with an orange rim and two eye-spots, cream horns and beak              |
+| T-Rex (`KNIGHT`)            | 72 x 88  | `t-rex-deep-stripes-a` (the study's F)   | deep blue, cream jaw and belly, orange brow and back spines, orange stripes on the tail                       |
+| Brontosaurus (`JUGGERNAUT`) | 88 x 104 | `brontosaurus-spots-edit-a`, candidate 1 | deep blue, cream throat and belly, big orange blotches on the neck, back, flank and tail                      |
+| Patrol Boat, Battleship     | Human    | (unchanged)                              | shared ships with the player-coloured sail                                                                    |
 
-**Caveman** (`FIGHTER`, standard unit 56 x 80):
-
-```text
-Subject: Caveman, a chunky cute friendly caveman with a huge round head about
-half of the figure's height and a tiny sturdy body: light peach skin, a big
-wild mane of charcoal black hair, a bushy charcoal black beard, thick
-eyebrows and a big goofy grin, a bright red headband, a big plain bright red
-fur tunic over one shoulder covering the chest, belly and legs down to the
-knees, a charcoal grey cord belt with one cream tooth, a huge chunky cream
-bone club with two round knobs raised in the right hand, bare peach arms and
-big bare peach feet; simple shapes and very few details; clearly a caveman
-with a giant bone, not a soldier.
-```
-
-`negativeAddendum`: `shield, helmet, sword, spear, bow, quiver, wooden club,
-stone club, armour`. Low owner area: lengthen the tunic to the shins.
-
-**Raptor** (`RAIDER`, large unit 72 x 88):
-
-```text
-Subject: Raptor, a chunky cute lean running raptor dinosaur, wide and low,
-filling the whole width of the image: a big long-snouted head with big round
-friendly eyes and a toothy grin of small cream teeth, a slim body leaning
-forward on two strong hind legs, each foot with one big raised cream sickle
-claw, two small clawed arms tucked at the chest, and a long stiff tail held
-straight out behind; smooth dusty blue skin shaded darker navy blue, a few
-dark navy stripes on the tail and a pale cream belly and throat; a tall
-crest of bright red feathers from the top of the head down the back of the
-neck, and a big plain bright red blanket strapped over its back with a
-charcoal grey cord, hanging down both sides to the knees; simple shapes and
-very few details; the feet are the lowest thing in the image; clearly a fast
-two-legged runner, not a horse or a wolf.
-```
-
-`negativeAddendum`: `rider, saddle, reins, horse, wolf, wings, fur, sword,
-spear`. Low owner area: add a fan of red feathers at the tail tip.
-
-**Spitter** (`MARKSMAN`, standard unit 56 x 80):
-
-```text
-Subject: Spitter, a chunky cute small upright spitting dinosaur with a huge
-round head about half of the figure's height and a short sturdy body on two
-legs, the head and frill filling the whole width of the image: a wide round
-neck frill spread open like a fan all round the head, the frill plain flat
-bright red with a thin cream rim, dusty blue skin shaded darker navy blue
-with a pale cream belly, two small cream crests on top of the head, big
-round eyes, puffed cheeks and a pursed mouth spitting one small pale cream
-blob forward, small clawed arms, a plain bright red cloth poncho over the
-chest, belly and back down to the knees, a short tail, cream claws on the
-feet; simple shapes and very few details; clearly a frilled spitter, not an
-archer.
-```
-
-`negativeAddendum`: `bow, quiver, arrows, green spit, slime, umbrella, wings,
-rider, sword`. If the red frill spreads onto the head, a single-focus edit
-recolours the head dusty blue.
-
-**Ankylosaurus** (`GUARD`, standard unit 56 x 80):
-
-```text
-Subject: Ankylosaurus, a chunky cute armoured dinosaur, a low round dome on
-four short stubby legs, as tall as a soldier's shoulders and filling the
-whole width of the image: a big blunt head held low at the front with big
-round sleepy eyes, a small smile and two short cream cheek horns, a high
-round domed back of dusty blue bony plates shaded darker navy blue with a
-rim of chunky cream spikes all round its edge, a thick tail raised high
-behind it ending in a huge round cream bone club, a pale cream belly; a big
-plain bright red blanket lies over the middle of the dome between the spikes
-and hangs down both sides to the ground, tied with a charcoal grey cord;
-simple shapes and very few details; the feet are the lowest thing in the
-image; clearly a living armoured dome with a tail club, not a turtle and not
-a shield soldier.
-```
-
-`negativeAddendum`: `turtle, tortoise, shield, spear, rider, green shell,
-wheels`. Low owner area: paint the tail club's ball plain bright red.
-
-**Shaman** (`CAPTAIN`, standard unit 56 x 80). A whole skull mask would read
-as the Undead Skeleton at zoom 0.75, so the skull is a hood above a bearded
-face, and the drum (the War Drums ability) is the signature item:
-
-```text
-Subject: Shaman, a chunky cute old cave shaman with a huge round head about
-half of the figure's height and a tiny sturdy body: light peach skin, a bushy
-charcoal black beard and big friendly eyes, wearing the top half of a big
-cream long-snouted beast skull as a hood, its toothy upper jaw sticking
-forward over his brow like a cap peak, three tall bright red feathers
-standing up behind the skull, a long plain bright red robe from the
-shoulders down to the feet, a big round drum of pale cream rawhide on a dark
-basalt grey frame hanging at his belly, a chunky cream bone drumstick raised
-high in the right hand, a cream tooth necklace, bare peach feet; simple
-shapes and very few details; clearly a drummer in a beast-skull hood, not a
-skeleton and not a standard bearer.
-```
-
-`negativeAddendum`: `banner, flag, staff, megaphone, skeleton body, bone
-arms, shield, sword, wooden drum, war bonnet`.
-
-**Triceratops** (`CATAPULT`, large unit 72 x 88):
-
-```text
-Subject: Triceratops, a chunky cute stocky horned dinosaur on four thick
-legs, clearly bigger than a soldier, filling the whole width of the image: a
-huge head lowered to charge, about half of its whole length, with two long
-cream brow horns pointing forward, one short cream nose horn and a cream
-beak, small determined friendly eyes, and a big round bony neck frill
-standing up behind the head, the frill plain flat bright red with a rim of
-small cream studs; a heavy barrel body with dusty blue skin shaded darker
-navy blue and a pale cream belly, a short thick tail; a plain bright red
-blanket strapped over its back with a charcoal grey cord, hanging down both
-sides; simple shapes and very few details; the feet are the lowest thing in
-the image; clearly a charging three-horned beast, not a catapult and not a
-rhinoceros.
-```
-
-`negativeAddendum`: `rider, howdah, catapult, wheels, rhinoceros, wings,
-spikes on the back`.
-
-**T-Rex** (`KNIGHT`, large unit 72 x 88):
-
-```text
-Subject: T-Rex, a chunky cute big tyrannosaur standing upright on two thick
-legs, clearly bigger than a soldier: an enormous boxy head about half of its
-whole height with huge open jaws, a row of big chunky cream teeth, big round
-friendly eyes and a goofy grin, two tiny arms with two claws each held at
-the chest, a fat body and a thick tail resting behind; dusty blue skin
-shaded darker navy blue with a pale cream lower jaw and belly; a wide plain
-bright red cloth collar round the neck, a big plain bright red blanket
-strapped over the back and hips with a charcoal grey cord, hanging down both
-sides to the knees, and two plain bright red cloth bands round the tail; big
-three-toed feet with cream claws; simple shapes and very few details; the
-feet are the lowest thing in the image; clearly a giant-jawed tyrant lizard
-with tiny arms, not a dragon and not a knight.
-```
-
-`negativeAddendum`: `rider, saddle, wings, dragon, horns, back spikes,
-frill, sword, lance, horse`. Low owner area: widen the collar into a bib
-over the chest.
-
-**Brontosaurus** (`JUGGERNAUT`, reward unit 88 x 104):
-
-```text
-Subject: Brontosaurus, a chunky cute giant long-necked dinosaur seen from
-the side, much wider and taller than a normal soldier: one huge round barrel
-body standing on four thick pillar legs, and one very long thick neck that
-rises straight up from the front of the body to the top of the image and
-ends in the animal's only head, a big round smooth head without horns, with
-big sleepy friendly eyes and a gentle smile; a long thick tail behind; clear
-cornflower blue skin shaded darker slate blue with a pale cream belly and
-throat; three broad plain bright red cloth bands round the neck and a huge
-plain bright red blanket draped over the whole back, hanging down both
-flanks to the knees and tied under the belly with a charcoal grey cord;
-simple shapes and very few details; the feet are the lowest thing in the
-image; clearly a gentle long-necked giant, not a dragon and not an elephant.
-```
-
-`negativeAddendum`: `rider, person, elephant, trunk, wings, dragon, tower,
-howdah, saddle, flag, pole`. The head must reach the top of the canvas, so
-the neck stands well above the tile (the accepted head starts 9 px from the
-top). This line was tuned in bead `pulp_wars-c87.7`: the approved line had a
-howdah with a banner and "a small round head", which drew a wooden saddle
-and a second head on the chest (see
-[Sprite findings](#sprite-findings-bead-pulp_wars-c877)).
+Each unit has a 48 x 48 portrait (`chibi-direction-portrait-dinosaur-<unit>`)
+edited from its classic portrait. A body pattern does not fit a bust: the
+portraits carry the hide, the crest, frill or feathers, and at most a few
+marks on the neck.
 
 ### Egg
 
-One sprite for every Egg, whatever will hatch: the dock and tooltip name the
-unit inside and the turns left. It is owned and masked like a unit and
-bottom-centred on its tile, but small: **48 x 48**, about 60% of the tile
-width, so it never looks like a unit. Its subject is `UNIT:DINOSAUR:EGG`, unless the engine spec (bead `pulp_wars-c87.1`) names the Egg differently,
-with the `icon` recipe class (an item sprite, owned and masked, as for the
-Rocket Cart portrait): the unit class would give it a face and feet.
+`UNIT:DINOSAUR:EGG` is one 48 x 48 sprite for every unit's Egg
+(`chibi-direction-dinosaur-egg`, recipe `egg-primal-edit-a`): a warm cream
+shell with bold orange speckles in a nest of straw and bone. The painted
+band and the nest cloth, which carried the owner's colour, are gone. The
+owner is shown by:
 
-```text
-Subject: one big chunky egg standing upright in a small round nest: a pale
-cream eggshell with a few big dusty blue speckles and one broad plain bright
-red painted band round its middle, sitting in a low nest ring of pale cream
-bones lined with a plain bright red cloth whose folds hang over the rim all
-round; nothing else in the image.
-```
+- the **plate** under the nest: the Egg stands on a plate about as wide
+  as a large unit's (58 master px, `DIRECTION_EGG_PLATE_RADIUS_SHARE_V7`),
+  in the seat's shape and colour, whose ends show on both sides of the nest
+  (the nest fills the 48 px canvas, and the 31 px plate that the sprite's
+  height would give it is hidden under it);
+- the **ring of the countdown chip**, in the owner's colour, as before;
+- the territory border of the city it was laid beside.
 
-`negativeAddendum`: `face, eyes, crack, hatching, baby, bird, chicken, straw,
-twigs, brown nest, grass, feet`. Until the raster exists, and always in
-LEGACY, the Egg is code-drawn: a cream ellipse with three blue-grey speckles,
-an owner-colour band and a black outline.
-
-### Portraits
-
-`PORTRAIT:DINOSAUR:<ROLE>`, 48 x 48, owned and masked, the portrait class.
-Each repeats its unit's head, owner item and tell. A bust hides the blanket,
-so each line names what is red in the bust. Goblin portraits came back
-pointing the opposite way to the map piece and no wording turned them: accept
-either direction, but the same one for all eight.
-
-```text
-Subject: Caveman portrait, head and shoulders of a chunky cute friendly
-caveman: a huge round head with light peach skin, a big wild mane of
-charcoal black hair, a bushy charcoal black beard and a big goofy grin, a
-bright red headband, a plain bright red fur tunic over one shoulder, and a
-huge chunky cream bone club raised beside the head.
-
-Subject: Raptor portrait, head and neck of a chunky cute raptor dinosaur: a
-big long-snouted dusty blue head with a pale cream throat, big round
-friendly eyes and a toothy grin of small cream teeth, a tall crest of bright
-red feathers along the top of the head and neck, a plain bright red cloth
-collar at the base of the neck, and one big cream sickle claw raised beside
-the jaw; no rider.
-
-Subject: Spitter portrait, head and neck of a chunky cute frilled spitting
-dinosaur: a round dusty blue head with two small cream crests, big round
-eyes, puffed cheeks and a pursed mouth, framed by a wide round neck frill
-spread open like a fan, the frill plain flat bright red with a thin cream
-rim, a pale cream throat.
-
-Subject: Ankylosaurus portrait, a chunky cute armoured dinosaur shown whole
-and small: a big blunt dusty blue head with sleepy eyes and two cream cheek
-horns, a round dome of dusty blue plates rimmed with chunky cream spikes, a
-plain bright red blanket over the middle of the dome, and a huge round cream
-tail club raised behind.
-
-Subject: Shaman portrait, head and shoulders of a chunky cute old cave
-shaman: light peach skin, a bushy charcoal black beard and big friendly
-eyes under the top half of a big cream long-snouted beast skull worn as a
-hood, three tall bright red feathers behind it, plain bright red robe
-shoulders and a cream bone drumstick raised beside the head.
-
-Subject: Triceratops portrait, the head of a chunky cute horned dinosaur
-seen from the front-right: two long cream brow horns, one short cream nose
-horn, a cream beak and small friendly eyes on a dusty blue face, with a big
-round neck frill standing up behind it, the frill plain flat bright red with
-a rim of small cream studs.
-
-Subject: T-Rex portrait, the head of a chunky cute big tyrannosaur: an
-enormous boxy dusty blue head with huge open jaws, a row of big chunky cream
-teeth, a pale cream lower jaw, big round friendly eyes and a goofy grin, a
-wide plain bright red cloth collar round the neck and one tiny two-clawed
-arm waving below.
-
-Subject: Brontosaurus portrait, the head and long neck of a chunky cute
-gentle long-necked dinosaur: a small round pale dusty blue head with big
-sleepy eyes and a gentle smile on top of a thick neck rising from the bottom
-of the image, a pale cream throat, and three broad plain bright red cloth
-bands round the neck.
-```
-
-Dinosaur portraits add `negativeAddendum`: `rider, person, wings, fur`.
+The countdown number is cream on a charcoal chip and is unchanged.
 
 ### Command icons
 
-`ICON`, 48 x 48, unowned item sprites, so none uses red. Goblin shout lines
-drifted to orange and gold: every line asks for pale cream marks and each
-recipe adds `orange, gold, yellow, red, brown, hand, person` to its
-`negativeAddendum`. Expect a single-focus recolour edit.
+Lay Egg and Hatch show the new Egg (orange speckles; the hatchling's snout
+is deep blue), and Stampede the new Triceratops (a navy head in a frill with
+an orange rim): `chibi-direction-icon-action-{lay-egg,hatch,stampede}`. None
+of the classic icons carried a player colour; these three are converted so
+the interface shows the same Egg and hide as the board. War Drums (a rawhide
+drum on a basalt frame) has neither and is unchanged.
 
-| Command   | Subject                      | Used by                                 |
-| --------- | ---------------------------- | --------------------------------------- |
-| Lay Egg   | `ICON:ACTION:LAY_EGG`        | city: lay an Egg                        |
-| Hatch     | `ICON:ACTION:HATCH`          | Shaman                                  |
-| Stampede  | `ICON:ACTION:STAMPEDE`       | Triceratops                             |
-| War Drums | `ICON:ACTION:DINOSAUR:RALLY` | Shaman (the Dinosaur Rally, as WAAAGH!) |
+## Cities
 
-```text
-Subject: one big chunky pale cream egg with a few big dusty blue speckles,
-standing upright in a low round nest ring of pale cream bones; nothing else
-in the image.
+The camps keep their classic shapes, canvases and footprints: each is an
+edit of the accepted classic city (the `settlement` class, as for the
+Goblins). The red tent hides, awnings and banner flags are gone: the tents
+are dull tawny hide with a few dark brown spots and small orange feathers on
+their tips, and the banner cloth is removed. The owner's pennant is drawn in
+code at a recorded anchor (`DIRECTION_FLAG_ANCHORS_V7`), with the seat
+shape, gold for the capital.
 
-Subject: one big chunky pale cream egg with dusty blue speckles splitting
-open along a bold black zigzag crack, the top of the shell lifting like a
-lid, a small round dusty blue baby snout with two big round eyes peeking
-out, and three small cream shell chips flying off; nothing else in the image.
+| Level | Asset                             | Canvas   | What it shows                                                                    | Pennant                                    |
+| ----- | --------------------------------- | -------- | -------------------------------------------------------------------------------- | ------------------------------------------ |
+| 1     | `chibi-direction-dinosaur-city-1` | 88 x 96  | four tawny spotted tents round a bone totem with a horned skull                  | on a short pole over the totem's skull     |
+| 2     | `chibi-direction-dinosaur-city-2` | 96 x 100 | five tawny tents, the skull totem, a tusk fence, two basalt standing stones      | at the top of the camp's own bare pole     |
+| 3     | `chibi-direction-dinosaur-city-3` | 96 x 104 | the giant rib-cage and horned skull over tawny awnings and tents, a basalt tower | on a pole at the rib-cage's right shoulder |
 
-Subject: the lowered head of a charging horned beast seen from the side,
-facing right: two long cream brow horns and one short cream nose horn
-pointing right, a dusty blue face and a round dusty blue neck frill with a
-cream rim, and three round pale cream dust puffs trailing behind on the
-left; nothing else in the image.
-
-Subject: one big round drum, a pale cream rawhide drumhead on a dark basalt
-grey frame lashed with charcoal grey cord, with two chunky cream bone
-drumsticks crossed above it and three short jagged pale cream beat lines
-bursting upward; nothing else in the image.
-```
-
-The Shaman's Tend Wounded keeps the shared icon. Pounce, Rampage, Acid,
-Armoured and Push are passive or already have a glyph: no new icon. The
-Nesting unlock can show the Lay Egg icon.
-
-### Cities
-
-The Dinosaurs have their own city set, like the other factions:
-`CITY:DINOSAUR:1..3` on the Human canvases (88 x 96, 96 x 100, 96 x 104),
-the default bottom-centre anchor, the same overflow and an owner mask each,
-resolved by the city owner's faction with the Human `CITY:<level>` as the
-fallback. The neutral village stays shared.
-
-- **Look:** cone tents of hide stretched over crossed tusks, a bone totem
-  with a banner, standing stones of black basalt, and at level 3 one giant
-  rib-cage arching over the whole camp. No wood, no bricks, no fire.
-- **Owner colour** on tent hides, awnings and banners, each "one plain flat
-  solid bright red surface with no pattern": tile and patch patterns
-  speckled the Undead and Goblin masks.
-- **No castle words.** "Fortress", "keep", "wall" and "watchtower" drew a
-  grey stone castle with 9–13% owner area for the Goblins, so "stronghold"
-  is not in the lines: the level 3 camp is big through the rib arch and the
-  count of tents.
-- **No volcano with lava.** Lava is red and orange and would enter the
-  mask. The volcanic hint is the basalt; City 3 may add one small dark
-  basalt cone with a pale grey smoke plume at the back if a sample holds it.
-- **Expect a slab** under every text-to-image camp, and one ground-removal
-  edit each.
-
-```text
-Subject: a small level-1 bone-and-hide camp: one tall totem pole of stacked
-cream bones topped with a small horned beast skull and a big plain bright
-red banner flag, and three chunky cone tents of plain flat solid bright red
-hide stretched over crossed cream tusks pressed around its foot, and one
-small dark basalt standing stone; wide and chunky, filling the whole width
-of the image. Buildings only.
-
-Subject: a medium level-2 bone-and-hide camp, clearly bigger than a small
-camp, with no castle and no wall: five chunky cone tents of plain flat solid
-bright red hide over crossed cream tusks in two sizes, crowded together, one
-tall totem pole of stacked cream bones with a horned beast skull and a big
-plain bright red banner flag, two dark basalt standing stones, and a low
-fence of curved cream tusks along the front with an open gap; wide and
-chunky, filling the whole width of the image. Buildings only.
-
-Subject: a large level-3 bone-and-hide camp, the biggest settlement, with no
-castle: one giant cream rib-cage arching high over the whole camp like a row
-of huge curved ribs, a huge horned cream beast skull over the open front
-gate, big plain flat solid bright red hide awnings stretched between the
-ribs, eight chunky cone tents of plain bright red hide in different sizes
-underneath, two tall bone totem poles with big plain bright red banner
-flags, and a ring of dark basalt standing stones; wide and chunky, filling
-the whole image. Buildings only.
-```
-
-City recipes add `negativeAddendum`: `caveman, person, character, dinosaur,
-animal, skeleton, castle, keep, battlements, brick, wooden hut, campfire,
-lava`. The City 2 line was tuned in bead `pulp_wars-c87.7`: the approved
-"dark basalt rock with a round cave mouth hung with a plain bright red hide
-curtain" drew a monster face with red teeth inside a crenellated wall, so
-the cave is replaced by two standing stones and the tents are "crowded
-together" with "no wall".
+The neutral village (`SITE:VILLAGE`) is the shared one.
 
 ## Growth display
 
-"Big" (1 kill) and "Alpha" (3 kills) need no extra rasters. Use a marker as
-the cue that always reads, and a modest sprite scale as flavour.
+"Big" (1 kill) and "Alpha" (3 kills) need no extra rasters, in the new look
+as before. A marker is the cue that always reads, and a modest sprite scale
+is flavour.
 
 - **Marker (required, both art sets).** A vector rank chevron in the slot of
   the Veteran `◆` (right of the HP bar; grown dinosaurs never promote, so the
@@ -520,22 +257,31 @@ the cue that always reads, and a modest sprite scale as flavour.
   a settlement centre.
 - Smoothing follows the garrison rule: off when the scaled sprite lands on
   whole device pixels, on otherwise. Never bake a second raster.
-- Overlays (HP bar, seat badge, markers) are drawn after the pieces and do
-  not move, as for giants.
+- Overlays (HP bar, markers) are drawn after the pieces and do not move, as
+  for giants.
 - On growing, the sprite pulses to x1.2 of its new size and settles over
   300 ms; reduced motion shows the new size and marker at once.
 
+The patterns hold when scaled: the stripes, blotches and frill marks are
+several pixels wide, so a sprite drawn at x1.125 or x1.25 with smoothing
+keeps them. The study's suggestion of an Alpha-only raster with a second
+mark was not taken up (see
+[Decisions](#decisions)).
+
 ## Effects
 
-All code-native first, unowned, and limited to white, cream `#efe6c8`, light
-grey `#aeb6c2`, basalt grey `#5b616c` and charcoal `#33363d`. No red, orange,
+All code-native, unowned, and limited to white, cream `#efe6c8`, light grey
+`#aeb6c2`, basalt grey `#5b616c` and charcoal `#33363d`. No red, orange,
 gold, green, cyan or purple, so no cue reads as a player colour; dust is
-never tan. Reduced motion freezes each cue at its midpoint.
+never tan. Reduced motion freezes each cue at its midpoint. **They are
+unchanged in the new look:** none carried a player colour, and pale cream
+and grey read against deep blue, navy and orange better than against the
+classic red blankets.
 
 | Cue            | Look                                                                                           | Animation                                                                                         |
 | -------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Stampede run   | round pale cream-grey dust puffs, one per lane tile, behind the Triceratops                    | the sprite slides along the lane at about 90 ms a tile; each puff swells and fades over 250 ms    |
-| Stampede hit   | a small spiky cream star flash and two dust puffs on the target                                | the target slides one tile when pushed (120 ms), then the Triceratops steps into the vacated tile |
+| Charge run     | round pale cream-grey dust puffs, one per lane tile, behind the charging unit                  | the sprite slides along the lane at about 90 ms a tile; each puff swells and fades over 250 ms    |
+| Charge hit     | a small spiky cream star flash and two dust puffs on the target                                | the target slides one tile when pushed (120 ms), then the attacker steps into the vacated tile    |
 | Egg laid       | the Egg sprite                                                                                 | pops in with one small bounce (150 ms)                                                            |
 | Hatch          | a black zigzag crack across the shell, then six cream shell chips                              | the Egg wobbles twice (200 ms), cracks, the chips fly up and fade, the unit grows from x0.6 to x1 |
 | Shaman's Hatch | two cream rings spreading from the Shaman's drum                                               | the rings reach the Egg, then the Hatch cue plays                                                 |
@@ -543,192 +289,81 @@ never tan. Reduced motion freezes each cue at its midpoint.
 | War Drums      | cream concentric rings from the Shaman                                                         | the existing Rally cue                                                                            |
 | Acid spit      | one pale cream blob with a charcoal outline; three small pale puffs on the target, never green | the blob arcs from the Spitter like the Bomb Chucker's bomb                                       |
 
-A raster, if one follows, is a palette-mapped `effect` recipe without the
-faction layer (see the
-[pipeline](../CHIBI_PIPELINE.md#status-markers-and-effects)) on a checked-in
-`dinosaur-dust` palette of the five colours above. The class-effect negative
-fragment lists `fire` and `explosion`, so subjects describe puffs, chips and
-rings.
-
-## Roster notes
-
-"Human", "Undead" and "Goblin" name the same role's unit that the silhouette
-must read apart from.
-
-| Role or building            | Canvas    | Owner colour on                                | Distinguishing silhouette                                                                                                                                |
-| --------------------------- | --------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Caveman (`FIGHTER`)         | 56 x 80   | one-shoulder fur tunic to the knees, headband  | wild hair and beard, giant bone club raised, bare limbs, no shield (Human: helm, sword, shield; Undead: skull and shield; Goblin: sideways ears, dagger) |
-| Raptor (`RAIDER`)           | 72 x 88   | back blanket both sides, feather crest         | riderless two-legged runner, sickle claws, long level tail (Human: rider on a pony; Undead: Ghoul on all fours; Goblin: wolf with a rider)               |
-| Spitter (`MARKSMAN`)        | 56 x 80   | painted round frill, poncho                    | round fan frill behind the head, puffed cheeks, spit blob (Human: hood and longbow; Undead: floating Banshee; Goblin: raised bomb)                       |
-| Ankylosaurus (`GUARD`)      | 56 x 80   | blanket over the dome to the ground            | low spiked dome, tail club raised to head height (Human: tower shield and spear; Undead: Zombie with arms out; Goblin: orc with a round shield)          |
-| Shaman (`CAPTAIN`)          | 56 x 80   | long robe, three feathers                      | beast-skull hood with a jutting jaw, round drum, drumstick up (Human: banner; Undead: skull staff; Goblin: megaphone and horns)                          |
-| Triceratops (`CATAPULT`)    | 72 x 88   | painted frill, back blanket                    | lowered head, three horns forward, round frill upright (Human: catapult arm; Undead: robed Lich; Goblin: rocket at 45°)                                  |
-| T-Rex (`KNIGHT`)            | 72 x 88   | collar, blanket over back and hips, tail bands | upright, huge boxy jaws, tiny arms, thick tail (Human: knight on a horse; Undead: caped Vampire; Goblin: low buggy)                                      |
-| Brontosaurus (`JUGGERNAUT`) | 88 x 104  | neck bands, back blanket                       | long neck to the top of the canvas, barrel body on four legs (Human: hammer brute; Undead: stitched Abomination; Goblin: hunched Troll)                  |
-| Egg                         | 48 x 48   | painted band, nest cloth                       | speckled egg in a bone nest, clearly smaller than any unit                                                                                               |
-| Patrol Boat, Battleship     | Human art | Human art                                      | reused unchanged                                                                                                                                         |
-| City 1–3                    | as Human  | tent hides, awnings, banners                   | bone-and-hide camp, totem, basalt stones, rib-cage arch at level 3 (Human: stone town; Undead: necropolis; Goblin: scrap camp)                           |
-| Village                     | Human art | none (unowned)                                 | shared Human art                                                                                                                                         |
-
-## Decisions (approved 2026-10-01)
-
-The root approved this document and decided its open points:
-
-- **Painted frills are allowed.** The Spitter's and Triceratops's frills are
-  owner-colour paint: skin, but never the whole skin, and the only large
-  flat area a standing Spitter has. Each also wears cloth.
-- **The Ankylosaurus may move to the large canvas** (72 x 88) if the sample
-  reads too small beside the Caveman: a low quadruped cannot fill 90% of the
-  tile height as the chibi direction asks of standard units. The sprite bead
-  then updates the [asset inventory](../CHIBI_ASSET_INVENTORY.md); it does
-  not stretch the body.
-- **Growth** reads through the chevron marker, with the optional sprite
-  scale, as in [Growth display](#growth-display).
-- **The Egg's subject key is `UNIT:DINOSAUR:EGG`** unless the engine spec
-  (bead `pulp_wars-c87.1`) names the Egg differently; the sprite bead
-  follows the spec.
-
-Notes for the sprite bead (`pulp_wars-c87.7`):
-
-- **Pipeline support.** `SUBJECT_PATTERN` in
-  `scripts/art/chibi/batch-manifest.ts` accepts only `UNDEAD` and `GOBLIN`
-  faction subjects today; the bead adds `DINOSAUR` for units, portraits,
-  cities and the Rally icon, and the Egg's subject and recipe class.
-- **Sample:** Caveman, Raptor and Brontosaurus (three body plans and three
-  canvases), then City 1; compare with the other three factions at 1:1, x4
-  and zoom 0.75 under all four owner colours.
-- **Jungle and volcano** are only hinted (see [Palette](#palette)): green
-  fronds and lava both break the colour rules.
-
-## Sprite findings (bead `pulp_wars-c87.7`)
-
-Batch `dinosaur` (`scripts/art/chibi/batches/batch-dinosaur.json`) holds the
-eight units and the Egg, batch `5-dinosaur` the eight portraits and the four
-command icons, and batch `cities-dinosaur` City 1-3. Every request, seed,
-addendum, edit and verdict is in those manifests and their records: 84
-PixelLab calls (43, 29 and 12), 60 rejected candidates. The sample was the
-Caveman, the Raptor and the Brontosaurus, then City 1.
-
-- **"Dusty blue" comes back slate grey.** Every first dinosaur had the grey
-  skin of the Undead and of the Goblin wolf. Naming the hue by hex in an
-  addendum got a blue-grey at best, and brought weapons with it (below). A
-  single-focus edit of a good grey candidate works every time: "recolour the
-  grey skin to a clear cornflower blue with darker navy blue shading ...
-  change nothing else" (`raptor-a-edit`, `spitter-a-edit`, `t-rex-b-edit`).
-  The accepted blues differ a little by unit (the Raptor is the lightest,
-  the Brontosaurus the darkest), inside the one hide ramp.
-- **The unit class asks for "one oversized signature weapon or tool"**, and
-  the dinosaur addendum ("its teeth, horns and claws are its only weapons")
-  does not win against it: seeds drew a cannon on a Raptor's back, battle
-  axes, a sword on a pole and an axe blade for a tail. The accepted dinosaurs
-  are weaponless first candidates fixed by edits, not retries.
-- **Quadrupeds stand up.** With the default south-east view the
-  Brontosaurus and the Triceratops stood on two legs with arms. The recipe
-  options `"view": "side", "direction": "east"` and the addendum "it stands
-  on all four legs with its body level ... it has no arms and no hands" gave
-  level four-legged bodies (`brontosaurus-g` to `-i`, `triceratops-b`).
-- **A long neck with "a small round head" grows a second head.** The chibi
-  class wants a big head, so four Brontosaurus candidates had a small head
-  on the neck and a big one on the chest. The tuned line ends the neck "in
-  the animal's only head, a big round smooth head without horns". The
-  howdah and banner drew a brown wooden saddle and were dropped: the owner
-  area is the neck bands and a blanket over the whole back.
-- **Brown still drifts in** on boots, leg bands, straps and the Ankylosaurus's
-  head and legs (tan). Single-focus recolour edits fixed them. An edit that
-  asked for a brown belly strap to become charcoal turned the whole
-  Triceratops charcoal (`triceratops-b-edit-2`); the accepted Triceratops
-  keeps one thin brown strap.
-- **Orange-pink skin shading is red-brown to the mask QA.** The Caveman's
-  bare arms and legs put 8.1% of his pixels in the red-brown band; an edit
-  to "a very pale cream-beige skin tone with light grey-beige shading" fixed
-  it, and the Shaman and the portraits ask for pale skin up front.
-- **Low owner area, and the fixes that held:** the Ankylosaurus has a wide
-  blanket strip and the fallback red tail-club ball (an edit that widened
-  the blanket alone made a hood over the whole dome and hid the shell); the
-  Shaman has red sleeves and a longer robe; the T-Rex has a blanket down its
-  back, added by a second edit after "widen the scarf into a bib" did
-  nothing.
-- **Anchors:** the Raptor's tail tip and the Triceratops's tail reached the
-  seat-badge strip, and the T-Rex's blanket hem the HP bar; their anchors
-  move 2, 2 and 6 px right (`34, 48`, `34, 48` and `30, 48`).
-- **The Ankylosaurus stays on the standard canvas.** It is 65 px tall with
-  its tail club raised and fills the width, so the allowed move to the large
-  canvas was not needed.
-- **The Egg** is an owned item sprite of the icon recipe class on a 48 x 48
-  `STANDARD_UNIT` canvas, bottom-centred like a unit (the pipeline's icon
-  class now also makes `STANDARD_UNIT` assets). The first candidate's band
-  was a grey strap with red squares; one edit made it a plain red painted
-  band.
-- **Portraits.** The Ankylosaurus uses the icon class and is shown whole,
-  like the Human Catapult and the Rocket Cart: the portrait class drew a
-  small upright horned beast twice. It faces left; the other seven face
-  right. The Raptor's recolour edit turned half of its crest orange, so its
-  slate-blue first candidate is accepted. Naming "horn" in a negative
-  addendum drew a nose horn on the Brontosaurus (Pixen has no negative
-  field); the accepted recipe does not name it.
-- **Icons.** Lay Egg and War Drums each needed one recolour edit (a brown
-  strap across the egg; red-brown drumsticks). The first Stampede was green
-  and red-orange and three edits did not clear it; a fresh seed that asks
-  for "a big head only" in blue is accepted.
-- **Cities.** Every text-to-image camp stood on a slab; one ground-removal
-  edit each fixed that. City 2's fence came back brown wood and City 3's
-  hut, arch bands and poles too: recolour edits cleared all but the City 3
-  hut walls, which stay dark brown (an edit that made them cream hide also
-  removed the red roof and dropped the owner area to 16.6%).
-
-Accepted owner areas: Caveman 22.8%, Raptor 22.1%, Spitter 31.5%,
-Ankylosaurus 20.1%, Shaman 22.7%, Triceratops 32.4%, T-Rex 26.2%,
-Brontosaurus 21.0%, Egg 39.3%; portraits 17.8-29.4%; City 1 34.3%, City 2
-37.1%, City 3 23.5%. Every mask is automatic and passes QA.
-
-| Asset        | Accepted recipe         | Calls | Rejected |
-| ------------ | ----------------------- | ----- | -------- |
-| Caveman      | `caveman-b-edit-2`      | 6     | 5        |
-| Raptor       | `raptor-a-edit`         | 4     | 3        |
-| Spitter      | `spitter-a-edit`        | 3     | 2        |
-| Ankylosaurus | `ankylosaurus-a-edit-b` | 4     | 3        |
-| Shaman       | `shaman-a-edit-2`       | 4     | 3        |
-| Triceratops  | `triceratops-b-edit`    | 5     | 4        |
-| T-Rex        | `t-rex-b-edit-2`        | 4     | 3        |
-| Brontosaurus | `brontosaurus-h-edit`   | 10    | 9        |
-| Egg          | `egg-a-edit`            | 3     | 2        |
-| Portraits    | eight recipes           | 18    | 10       |
-| Icons        | four recipes            | 11    | 7        |
-| City 1-3     | three recipes           | 12    | 9        |
-
-**Known leftovers,** for the root's visual review: the Caveman is slighter
-than the other Fighters and frowns rather than grins; the Spitter grins
-instead of spitting (the spit blob is an effect); the Brontosaurus has two
-red neck bands and a charcoal collar instead of three bands; the Triceratops
-has no back blanket (its frill alone is 32.4%); the City 3 hut walls are
-dark brown.
+The Charge!, Acid and Armoured previews are chips and outlines shared with
+the other factions' previews and are unchanged.
 
 **LEGACY and missing rasters.** A Dinosaur unit or portrait shown with Human
 art wears the Dinosaur badge: a dusty-blue three-toed footprint on a
-charcoal disc with a cream rim, in the Undead badge's corner
-(`drawDinosaurBadgeV7`, and the `dinosaur` glyph of `ui-icons-v7.ts` in the
-DOM). The Egg has no Human counterpart and never wears it; in LEGACY the UI
-bead (`pulp_wars-c87.4`) draws the code-native Egg.
+charcoal disc with a cream rim (`drawDinosaurBadgeV7`, and the `dinosaur`
+glyph of `ui-icons-v7.ts` in the DOM). The Egg has no Human counterpart and
+never wears it; in LEGACY the board and the dock draw a code-native Egg with
+a band in the owner's colour.
 
-Review evidence: `npm run art:chibi-dinosaur-review` writes
-[`art/pixellab/reviews/chibi-batch-dinosaur/`](../../../art/pixellab/reviews/chibi-batch-dinosaur/)
+## What is live
+
+The default look of the CHIBI art set draws all of the above for a Dinosaur
+player: units and Eggs on the board, the selection dock, portraits on the
+Lay Egg cards, the Hatch card and the technology tree, the three command
+icons, Help and the cities. A raster that fails to load falls back to the
+classic asset of that piece. After this bead every land unit, portrait and
+city of the four factions has fixed colours; only the shared ships keep an
+owner-coloured sail.
+
+Review evidence: `npm run art:chibi-dinosaur-direction-review` writes
+[`art/pixellab/reviews/chibi-batch-direction-dinosaur/`](../../../art/pixellab/reviews/chibi-batch-direction-dinosaur/)
 (see the [pipeline](../CHIBI_PIPELINE.md#review-evidence)).
 
-## Checks for the sprite bead
+### The Classic look
 
-- [x] The prompt fragment names no figure and no building.
-- [x] Every material has a non-red, non-brown shading colour.
-- [x] Every unit line puts red on something worn or painted that covers
-      20–40%, never on the whole skin.
-- [x] Feet, hands, cords, frames and clubs have non-brown colours.
-- [x] Every city line ends "Buildings only." and fills the width, with
-      figure words in the recipe's `negativeAddendum`.
-- [x] The sample (Caveman, Raptor, Brontosaurus, City 1) passes mask QA and
-      reads apart from the other three factions at zoom 0.75.
-- [x] The blue hide reads on grass and under the Teal and Violet owners at
-      zoom 1 and 0.75 (`faction-units-zoom-0.75.png`, `ingame-roster-*`).
-- [x] No dinosaur holds a weapon or wears armour; no accepted unit has tan
-      or green skin.
-- [x] The whole roster, its portraits, the Egg and City 1-3 pass mask QA;
-      every standard and large unit clears the HP bar and seat-badge strips
-      (the giant Brontosaurus is exempt).
+The developer option "Classic look (previous art)" and the LEGACY art set
+are unchanged. The Classic look draws the first Dinosaur art (batches
+`dinosaur`, `5-dinosaur`, `cities-dinosaur`): dusty blue beasts and
+peach-skinned cavemen with blankets, capes, frills, tunics, tents and
+banners in the owner's colour through a mask, and the Egg with a painted
+band. Their records keep the prompt fragment they were generated with
+(pale cream bone and rawhide, basalt, charcoal cord, "never brown", the key
+colour `#d8262c` on something worn or painted). That fragment is no longer
+the faction's: a new classic-style asset would need it restored in an
+exploration run. `npm run art:chibi-dinosaur-review` still reviews those
+batches, with the live piece beside each.
+
+## Decisions
+
+Approved on 2026-10-01 and still in force:
+
+1. **One body plan per unit, no riders,** and friendly heads.
+2. **The Ankylosaurus stays on the standard canvas** (56 x 80).
+3. **Growth** reads through the chevron marker, with the sprite scale, as
+   in [Growth display](#growth-display).
+4. **The Egg's subject is `UNIT:DINOSAUR:EGG`:** one sprite for every unit's
+   Egg.
+5. **Effects** are code-native and unowned.
+
+The user's, on 2026-10-02:
+
+6. **Variant F:** deep blue hide, navy back, cream belly, jaws and claws.
+7. **The accent stays as PixelLab draws it,** a red-orange; no amber remap.
+8. **One pattern per species.**
+9. **Spotted fur on the Caveman** (and the Shaman).
+10. **Fixed faction colours:** no owner area and no mask anywhere.
+
+Decided in bead `pulp_wars-3tq.13` (each is described in the
+[production section](../VISUAL_DIRECTION_2026-10.md#19-dinosaur-production)):
+
+11. **The patterns** of the table above; the Triceratops has no body bands.
+12. **Both frills are navy** with orange marks, never orange discs.
+13. **No accent step:** the hue is consistent enough as generated (21° to
+    29°).
+14. **Fur:** a dull tawny, reached by recolouring the orange that PixelLab
+    draws for "ochre"; bold dark brown spots; a tooth necklace on the
+    Caveman.
+15. **Shaman:** heavy orange war paint and three orange feathers mark him
+    as the leader; his robe is one step lighter than the Caveman's pelt.
+16. **Egg:** cream with orange speckles in a straw and bone nest, on a
+    plate as wide as a large unit's.
+17. **Icons:** Lay Egg, Hatch and Stampede follow the new Egg and hide; War
+    Drums is unchanged.
+18. **Cities:** converted by edits of the classic camps (same canvases),
+    with dull tawny tents, orange feather tips and a code-drawn pennant.
+19. **Effects, previews and the growth display** are unchanged; no
+    Alpha-only raster.

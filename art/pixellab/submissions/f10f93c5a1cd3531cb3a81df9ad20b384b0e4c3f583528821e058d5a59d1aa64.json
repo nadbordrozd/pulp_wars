@@ -1,0 +1,36 @@
+{
+  "id": "triceratops-hide-edit-a",
+  "jobId": "288dc711-ebcd-434c-b1dc-418256fdeff2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dinosaur",
+    "asset": "chibi-direction-dinosaur-triceratops",
+    "subject": "UNIT:DINOSAUR:CATAPULT",
+    "faction": "DINOSAUR",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 83102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the light blue hide of the face, body, legs and tail: it becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, with dark navy #1a2748 along the top of the back. Do not redraw anything. Keep the deep blue frill with its orange rim and two orange eye-spots, the cream horns, beak, studs and belly, the eyes, pose, proportions, black outline and style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the light blue hide of the face, body, legs and tail: it becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, with dark navy #1a2748 along the top of the back. Do not redraw anything. Keep the deep blue frill with its orange rim and two orange eye-spots, the cream horns, beak, studs and belly, the eyes, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the light blue hide of the face, body, legs and tail: it becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, with dark navy #1a2748 along the top of the back. Do not redraw anything. Keep the deep blue frill with its orange rim and two orange eye-spots, the cream horns, beak, studs and belly, the eyes, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the light blue hide of the face, body, legs and tail: it becomes a clear mid slate blue, colour #4a78b8 on the lit side with #2c4470 shadows, not grey and not pale, with dark navy #1a2748 along the top of the back. Do not redraw anything. Keep the deep blue frill with its orange rim and two orange eye-spots, the cream horns, beak, studs and belly, the eyes, pose, proportions, black outline and style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "triceratops-primal-edit-a",
+      "candidate": 0,
+      "sha256": "a1e17d6d085a506402d765ed64c151bc3823eee0c43532e73235f99d60112cea"
+    }
+  }
+}

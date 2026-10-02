@@ -118,10 +118,10 @@ Rules for resolution:
 
 **Scope since bead `pulp_wars-3tq.6`:** the rules of this section are current
 behaviour only for art that is not converted to the new direction: the
-Undead and Dinosaur units, cities and portraits, the ships, and everything
-the **Classic look** developer option draws. For the Human faction, the
-Goblin faction (since bead `pulp_wars-3tq.9`) and the shared improvements
-the default game follows
+ships, and everything the **Classic look** developer option draws. For the
+Human faction, the Goblin faction (since bead `pulp_wars-3tq.9`), the Undead
+faction (bead `pulp_wars-3tq.12`), the Dinosaur faction (bead
+`pulp_wars-3tq.13`) and the shared improvements the default game follows
 [section 4a](#4a-the-new-owner-colour-rule-october-2026-direction).
 
 - Every unit, city and owned building has a large, solid owner-colour area:
@@ -178,22 +178,26 @@ look stays available as Settings > Developer tools > Classic look.
   carries `fixedColours: true` instead of `ownerMaskUrl` (a registry entry
   must have exactly one of the two). The key colour, mask extraction and
   mask QA are unchanged for everything not converted: ships (shared, sail in
-  the player colour), and the Undead and Dinosaur units, cities and
-  portraits. The Goblins are converted (batch `direction-goblin`, bead
-  `pulp_wars-3tq.9`): olive, moss and dark green skins, brown leather, rust
-  and gunmetal scrap, on the classic canvases and anchors.
+  the player colour). The Goblins are converted (batch `direction-goblin`,
+  bead `pulp_wars-3tq.9`): olive, moss and dark green skins, brown leather,
+  rust and gunmetal scrap, on the classic canvases and anchors. So are the
+  Undead (batch `direction-undead`, bead `pulp_wars-3tq.12`: pale bone, dark
+  cloth, one violet accent) and the Dinosaurs (batch `direction-dinosaur`,
+  bead `pulp_wars-3tq.13`: deep blue hide, cream, tawny spotted fur, one
+  red-orange accent and a pattern per species).
 - **Units stay chibi:** black outline, full saturation, the sizes and anchors
   of section 3. They are the only black-outlined, fully saturated pieces.
 - **Chrome of the default look:** no numbered seat badge; the HP bar only
   for a damaged unit, a short bar on its plate; the ready cue as a bright
   rim round the plate; thin solid territory borders; Roads without the black
   casing.
-- **Not converted yet:** Undead and Dinosaur, ships, terrain and
-  resources. Their units and portraits keep the player-coloured garments of
-  section 4 and stand on a plate; their cities keep their own art, owner
-  recolour and capital crown, without a seat badge or a pennant; ships keep
-  the player-coloured sail and stand in a thin ring; terrain is toned by
-  code.
+- **Not converted:** ships, terrain and resources. All four factions' land
+  units, portraits and cities are converted (the Dinosaurs last, in bead
+  `pulp_wars-3tq.13`). Ships keep the player-coloured sail and stand in a
+  thin ring; terrain is toned by code. A unit, portrait or city whose
+  direction raster fails to load falls back to its classic art: the
+  player-coloured garment of section 4 on a plate, or the classic city with
+  its owner recolour and capital crown, without a seat badge or a pennant.
 
 ## 5. Class notes
 
