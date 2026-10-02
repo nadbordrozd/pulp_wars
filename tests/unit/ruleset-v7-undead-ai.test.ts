@@ -548,6 +548,10 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
       // (its old command log had three post-landing actions). This Dry Land
       // match has no landings and Wails three times.
       { factions: ["UNDEAD", "ORIGINAL"], seed: 0, mapType: "DRY_LAND" },
+      // pulp_wars-9s0.4: with the revision-21 achievements every match
+      // changes after its first new unlock and none of the cases above
+      // reaches a Devour; this one Devours twice.
+      { factions: ["UNDEAD", "ORIGINAL"], seed: 8, mapType: "PANGEA" },
     ];
     const used: Record<string, number> = {
       RAISE_DEAD: 0,

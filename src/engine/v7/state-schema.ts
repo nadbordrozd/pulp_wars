@@ -11,6 +11,7 @@ import {
   growthStageForKillsV7,
   roleMechanicsV7,
 } from "../rules/ruleset-v7";
+import { ACHIEVEMENT_REQUIRED_TECH_V7 } from "./achievements";
 import { isEggActivationV7 } from "./eggs";
 import {
   ACHIEVEMENT_IDS_V7,
@@ -411,17 +412,16 @@ function parsePlayer(input: unknown): PlayerStateV7 | null {
     explored === null ||
     spoils === null ||
     achievementEntitlements === null ||
-    achievementEntitlements.some(
-      (entitlement) =>
+    achievementEntitlements.some((entitlement) => {
+      // Revision 21: an achievement without an enabling technology (`null`)
+      // may be unlocked whatever is researched.
+      const required = ACHIEVEMENT_REQUIRED_TECH_V7[entitlement.achievement];
+      return (
         entitlement.unlocked &&
-        !researched.includes(
-          entitlement.achievement === "EXPLORER"
-            ? "SCOUTING"
-            : entitlement.achievement === "ENGINEER"
-              ? "ENGINEERING"
-              : "DRILL",
-        ),
-    ) ||
+        required !== null &&
+        !researched.includes(required)
+      );
+    }) ||
     researched.some((tech) => {
       const required = PREREQUISITE[tech];
       return required !== undefined && !researched.includes(required);

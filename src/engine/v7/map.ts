@@ -8,6 +8,7 @@ import {
   factionTreeV7,
 } from "../rules/ruleset-v7";
 import { placeTreasureChestsV6 } from "../v6/map";
+import { initialAchievementEntitlementsV7 } from "./achievements";
 import { parseMatchSetupV7 } from "./setup";
 import {
   createShowcaseEntitiesV7,
@@ -2017,11 +2018,7 @@ function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
       researchedTechs: tree.startingTechIds,
       explored: [],
       spoilsClaimedCityIds: [],
-      achievementEntitlements: [
-        { achievement: "EXPLORER", unlocked: false, spent: false },
-        { achievement: "ENGINEER", unlocked: false, spent: false },
-        { achievement: "MUSTER", unlocked: false, spent: false },
-      ],
+      achievementEntitlements: initialAchievementEntitlementsV7(),
       originalCapitalCityId: cityId(seat * 2 + 1),
     };
   });

@@ -33,6 +33,7 @@ import {
   queryLandingPreviewV7,
   unitCapacitySlotsV7,
   UNIT_ROLE_IDS_V7,
+  ACHIEVEMENT_REQUIRED_TECH_V7,
   CITY_LEVEL_INCOME_CAP_V7,
   MARKET_INCOME_CAP_V7,
   cityLevelIncomeV7,
@@ -162,6 +163,13 @@ import {
   technologyNameV7,
   type KaboomPreviewTextV7,
 } from "../goblin-presentation-v7";
+import {
+  ACHIEVEMENT_GOALS_V7,
+  ACHIEVEMENT_HELP_TIP_V7,
+  achievementNameV7,
+  achievementProgressCountsV7,
+  listedAchievementIdsV7,
+} from "../achievement-presentation-v7";
 import {
   ABANDON_EGG_LABEL_V7,
   CHARGE_LABEL_V7,
@@ -2390,7 +2398,11 @@ export class Ruleset7DomAppView {
               "ui-status-achievement-source-current-owner",
               this.#highContrast ? "HIGH_CONTRAST" : "DARK",
             ),
-            text(this.#document, "span", `${title(monumentSource)} monument`),
+            text(
+              this.#document,
+              "span",
+              `${achievementNameV7(monumentSource)} monument`,
+            ),
           );
           details.append(source);
         }
@@ -2834,6 +2846,8 @@ export class Ruleset7DomAppView {
           ]),
       // Revision 20: a Promotion fully heals (every faction).
       PROMOTION_HELP_TIP_V7,
+      // Revision 21: what achievements are for.
+      ACHIEVEMENT_HELP_TIP_V7,
       "Capture every enemy city to win.",
       "Move a land unit onto your port to put it to sea.",
       ...(view !== null && view.setup.mapType !== "DRY_LAND"
@@ -3060,7 +3074,7 @@ export class Ruleset7DomAppView {
       const entry = el(this.#document, "li", "v7-tech-achievement-note");
       entry.append(
         uiIconV7(this.#document, "trophy"),
-        `${title(achievement)} achievement`,
+        `${achievementNameV7(achievement)} achievement`,
       );
       unlocks.append(entry);
     }
@@ -3230,7 +3244,15 @@ export class Ruleset7DomAppView {
   #achievements(view: PlayerViewV7): HTMLElement {
     const section = el(this.#document, "div", "v7-info-screen");
     section.append(text(this.#document, "h2", "Achievements"));
-    for (const achievement of ["EXPLORER", "ENGINEER", "MUSTER"] as const) {
+    section.append(
+      text(
+        this.#document,
+        "p",
+        "Each achievement earns a free Monument: +3 population, one per city.",
+        "v7-screen-lede",
+      ),
+    );
+    for (const achievement of listedAchievementIdsV7(view.setup.mapType)) {
       const entitlement = view.viewer.achievementEntitlements.find(
         (entry) => entry.achievement === achievement,
       );
@@ -3238,33 +3260,16 @@ export class Ruleset7DomAppView {
         (entry) => entry.achievement === achievement,
       );
       const card = el(this.#document, "section", "v7-achievement");
-      const current =
-        progress?.achievement === "EXPLORER"
-          ? progress.currentExploredTiles
-          : progress?.achievement === "ENGINEER"
-            ? progress.currentMaximumOutput
-            : progress?.achievement === "MUSTER"
-              ? progress.currentDistinctTrainableRoles
-              : 0;
-      const required =
-        progress?.achievement === "EXPLORER"
-          ? progress.requiredExploredTiles
-          : progress?.achievement === "ENGINEER"
-            ? progress.requiredOutput
-            : progress?.achievement === "MUSTER"
-              ? progress.requiredDistinctTrainableRoles
-              : achievement === "EXPLORER"
-                ? 100
-                : achievement === "ENGINEER"
-                  ? 6
-                  : 4;
-      const tech =
-        achievement === "EXPLORER"
-          ? "SCOUTING"
-          : achievement === "ENGINEER"
-            ? "ENGINEERING"
-            : "DRILL";
-      const researched = view.viewer.researchedTechs.includes(tech);
+      card.dataset.achievement = achievement;
+      const { current, required } =
+        progress === undefined
+          ? { current: 0, required: 1 }
+          : achievementProgressCountsV7(progress);
+      // Revision 21: an achievement without an enabling technology is
+      // available from the start.
+      const tech = ACHIEVEMENT_REQUIRED_TECH_V7[achievement];
+      const researched =
+        tech === null || view.viewer.researchedTechs.includes(tech);
       const state = entitlement?.spent
         ? "spent"
         : entitlement?.unlocked
@@ -3298,15 +3303,11 @@ export class Ruleset7DomAppView {
       meter.setAttribute("aria-valuenow", String(Math.min(current, required)));
       card.append(
         symbols,
-        text(this.#document, "h3", title(achievement)),
+        text(this.#document, "h3", achievementNameV7(achievement)),
         text(
           this.#document,
           "p",
-          achievement === "EXPLORER"
-            ? "Explore 100 tiles."
-            : achievement === "ENGINEER"
-              ? "Get one building to 6 population."
-              : "Field 4 different unit types.",
+          ACHIEVEMENT_GOALS_V7[achievement],
           "v7-achievement-goal",
         ),
         meter,
@@ -3319,7 +3320,7 @@ export class Ruleset7DomAppView {
               ? "Done! Build your monument."
               : state === "available"
                 ? `${current} / ${required}`
-                : `Needs ${title(tech)}`,
+                : `Needs ${title(tech ?? "")}`,
           "v7-achievement-status",
         ),
       );
@@ -3679,14 +3680,18 @@ export class Ruleset7DomAppView {
     modal.setAttribute("aria-modal", "true");
     modal.setAttribute(
       "aria-label",
-      `${title(achievement ?? "ACHIEVEMENT")} achievement complete`,
+      `${achievement === undefined ? "Achievement" : achievementNameV7(achievement)} achievement complete`,
     );
     if (achievement === undefined) return modal;
     const badge = el(this.#document, "div", "v7-achievement-badge");
     badge.append(uiIconV7(this.#document, "trophy"));
     modal.append(
       badge,
-      text(this.#document, "h2", `${title(achievement)} achievement complete`),
+      text(
+        this.#document,
+        "h2",
+        `${achievementNameV7(achievement)} achievement complete`,
+      ),
       text(
         this.#document,
         "p",
@@ -4835,7 +4840,7 @@ function appendTechNode(
   const achievement = techAchievementV7(layout.node.id);
   if (achievement !== null) {
     const badge = el(documentRoot, "span", "v7-tech-achievement");
-    badge.title = `${title(achievement)} achievement`;
+    badge.title = `${achievementNameV7(achievement)} achievement`;
     badge.append(uiIconV7(documentRoot, "trophy"));
     card.append(badge);
   }
@@ -5035,7 +5040,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r20",
+    rulesetId: "pulp-wars-poc-7r21",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -5513,7 +5518,7 @@ export function specialBoundaryNoticeV7(
       event.kind === "ACHIEVEMENT_UNLOCKED" && event.playerId === viewerId,
   );
   return achievement?.kind === "ACHIEVEMENT_UNLOCKED"
-    ? `${title(achievement.achievement)} achievement unlocked`
+    ? `${achievementNameV7(achievement.achievement)} achievement unlocked`
     : null;
 }
 /**

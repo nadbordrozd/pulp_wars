@@ -81,8 +81,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r20");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r20.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r21");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r21.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -117,11 +117,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r19 and preserves the r20 save", () => {
+  it("cleans obsolete keys through v7r20 and preserves the r21 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r19.current",
+      "pulpWars.save.v7r20.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(19);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(20);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -132,7 +132,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r17.current", "r17"],
       ["pulpWars.save.v7r18.current", "r18"],
       ["pulpWars.save.v7r19.current", "r19"],
-      [SAVE_STORAGE_KEY_V7, "r20"],
+      ["pulpWars.save.v7r20.current", "r20"],
+      [SAVE_STORAGE_KEY_V7, "r21"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -146,8 +147,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r17.current",
         "pulpWars.save.v7r18.current",
         "pulpWars.save.v7r19.current",
+        "pulpWars.save.v7r20.current",
       ],
-      removedCount: 8,
+      removedCount: 9,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1468,7 +1470,7 @@ describe("ruleset-7 all-Human parity digests", () => {
   // digests exactly. Map and post-generation PRNG digests are unchanged;
   // seed 7 now ends by conquest in round 25 with 264 commands (was the
   // 30-round cap with 331) and seed 1234 has 357 commands (was 359).
-  // Revision 19 (`pulp_wars-c87.2`, identity `pulp-wars-poc-7r20`) reproduces
+  // Revision 19 (`pulp_wars-c87.2`, identity `pulp-wars-poc-7r19`) reproduces
   // every digest below unchanged: its only all-Human differences are the
   // empty `eggs` list of the state and the view and the neutral
   // combat-preview fields `stampede: 0`, `acid: false`,
@@ -1478,6 +1480,17 @@ describe("ruleset-7 all-Human parity digests", () => {
   // reproduces every digest: `stampede: 0` is replaced by the neutral
   // `runUp: 0` and `fortificationIgnored: 0`, removed the same way, and
   // neither match promotes a wounded unit (a Promotion now fully heals).
+  // Revision 21 (`pulp_wars-9s0.4`, identity `pulp-wars-poc-7r21`) re-pins
+  // the command, event, final state, view, and command digests of both
+  // matches; map and post-generation PRNG digests are unchanged. Cause: the
+  // four new achievements. Each match was compared command by command with
+  // the 7r20 tree (93b7823): commands, events, and the state without the
+  // four new entitlements are identical until a seat unlocks Sea Dog (seed
+  // 7: command 147, round 15, after 146 identical commands; seed 1234:
+  // command 234, round 13, after 233), and its Monument changes the match
+  // from there. Seed 7 now reaches the 30-round cap with 339 commands (was a
+  // conquest in round 25 with 264); seed 1234 still has 357 commands. The
+  // four new entitlements and progress entries are removed before hashing.
   const BASELINE = [
     {
       seed: 7,
@@ -1486,23 +1499,23 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "RIVAL",
       mapType: "CONTINENTS",
       maxRounds: 30,
-      acceptedCommands: 264,
-      rounds: 25,
-      termination: "OUTCOME",
+      acceptedCommands: 339,
+      rounds: 31,
+      termination: "ROUND_CAP",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "7eebd47f229007b97350816c8f2f232d2167535f5f2e360d2caa48422a86c736",
+        "05237774fce947cd78c119c41c26fb64e04d66ed9d7a6611fa8ceae7ba0e9137",
       eventHash:
-        "e79c83cb5bd0515eac0e4c5dfd6888b95a9d69ddfe2e56fa2ded3798478df6fd",
+        "47db04c8e10fe796aa15518f372b68bd0392ad37895dfc459d8f61031d260e42",
       normalizedFinalStateHash:
-        "afa9b7745e359acd4ac71cb9429428f8fb93b9054a21fee5ba2cbe7d648ee57a",
+        "4a0927584daf07065d559b4ffef5597a8d420192eb93ae87409caee349294f9f",
       normalizedHumanViewHash:
-        "e6edbcfeca58cfed1bb29e456edee3d7c5502ea1a97534434e2988f794cd7185",
+        "72c02dfd294532bef4d65feb443dfda0a4851fd277e1703df5bc965dc759431e",
       normalizedHumanCommandsHash:
-        "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "6bdddab95413e1339c1eb72974cc3f485c69a8391d89c5f580930aa053d0b649",
     },
     {
       seed: 1234,
@@ -1519,15 +1532,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "76584aa756bb7b94de16bf5d06600e6f79588e7f103ad252885d1b0b27d5514b",
+        "5057997bab943f4403eb2405e209a51cdfd100c072695da9d29723bc78bfed2a",
       eventHash:
-        "e310eb22c69c2acb4655e79bf59f867f22d59fe8dba8f298064f858a27918626",
+        "a2d441a9df9b3070ae00070b82449ba38e98df9eccb0779300aefef5fffa1a0c",
       normalizedFinalStateHash:
-        "2cd90a12322bb04d2aa5711e1790f2acd392adf4bba06168d8fc69b707c92af8",
+        "6555e8b8bbdc0b231457550b1df79abd95975a5efd14dc882c51de47ab675a8b",
       normalizedHumanViewHash:
-        "005b555397fc6d9797f84437534084880a1466a7f33760319599c1ce01dd18d0",
+        "d63367700fb25cf057e3b4fe8d491e96efa07d28be6d1b2cfefcda676aa0dbda",
       normalizedHumanCommandsHash:
-        "e31de2ad1956dd34c6450c0e83a263262d934cedacfaaec76b51d3a504f2a18b",
+        "4cd6ac9be62ab9064575c2b31ed78bda3941cba1e7cb9bea04e30899c524de57",
     },
   ] as const;
 
@@ -1668,9 +1681,38 @@ describe("ruleset-7 all-Human parity digests", () => {
         void _plagued;
         void _bitten;
         expect(eggs).toEqual([]);
-        return JSON.parse(
+        const neutral = JSON.parse(
           JSON.stringify(rest).replaceAll(RULESET_7_ID, "IDENTITY"),
-        ) as unknown;
+        ) as {
+          players: { achievementEntitlements?: unknown[] }[];
+          viewer?: { achievementEntitlements: unknown[] };
+          achievementProgress?: unknown[];
+        };
+        // Revision 21 appends four entitlements (and, in a view, four
+        // progress entries) after the revision-5 three; they are removed
+        // before hashing.
+        const trimmed = <T extends { achievementEntitlements?: unknown[] }>(
+          player: T,
+        ): T =>
+          player.achievementEntitlements === undefined
+            ? player
+            : {
+                ...player,
+                achievementEntitlements: player.achievementEntitlements.slice(
+                  0,
+                  3,
+                ),
+              };
+        return {
+          ...neutral,
+          players: neutral.players.map(trimmed),
+          ...(neutral.viewer === undefined
+            ? {}
+            : { viewer: trimmed(neutral.viewer) }),
+          ...(neutral.achievementProgress === undefined
+            ? {}
+            : { achievementProgress: neutral.achievementProgress.slice(0, 3) }),
+        };
       };
       expect({
         acceptedCommands: result.acceptedCommands,

@@ -489,6 +489,42 @@ seat looks as in revision 18 apart from the extra faction option.
   (the setup, a Showcase with a Dinosaur seat, and the Dinosaur UI fixtures)
   in both art sets at desktop and phone widths (dev server only).
 
+## Current Ruleset 7 revision 21 achievements overlay
+
+Rules: [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md)
+(bead `pulp_wars-9s0.4`). The Achievements screen, the completion notice,
+and the Monument action keep their revision-5 behaviour; this overlay lists
+what changed.
+
+- **Seven achievements.** The Achievements screen (menu) lists Explorer,
+  Engineer, Muster, Conqueror, Land Baron, Sea Dog, and Slayer, in that
+  order. Under the heading one line says "Each achievement earns a free
+  Monument: +3 population, one per city."
+- **Card.** State symbol, name, one-line goal, progress meter, status. The
+  goals of the new four are "Capture an enemy city.", "Own 5 cities at
+  once.", "Own 3 warships at once.", and "Get 5 kills with one unit." The
+  status is "{current} / {required}" while the achievement is open, "Done!
+  Build your monument." when complete, and "Monument built" when spent.
+  Explorer, Engineer, and Muster read "Needs {technology}" until their
+  technology is researched; the new four need no technology and show their
+  count from the first turn. The meter is clamped at the requirement.
+- **Dry Land.** A Dry Land match has no ships, so the Sea Dog card is
+  omitted there (six cards).
+- **Completion notice.** "{Name} achievement complete", with the display
+  name ("Land Baron", "Sea Dog"), then "You can now build a monument on one
+  of your tiles." Notices queue in event order and wait for a mandatory
+  city reward.
+- **Monument.** Each unlocked, unspent entitlement offers its own "Monument"
+  action on an eligible tile (`command-build_monument-{id}`). A built
+  Monument's source chip reads "{Name} monument".
+- **Technology tree.** The trophy badge stays on Scouting, Engineering, and
+  Drill only.
+- **Help.** One tip explains achievements: "Achievements (see the menu)
+  each earn a free Monument: +3 population, one per city. Conquer, expand,
+  sail, and keep your killers alive."
+- **No new art.** The cards use the existing drawn state symbols and the
+  notice the existing trophy icon.
+
 ## Current Ruleset 7 playtest round 3 interface overlay
 
 This overlay (`pulp_wars-6gd.4`) applies to the current Ruleset 7 route in

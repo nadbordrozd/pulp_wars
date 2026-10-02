@@ -1433,7 +1433,8 @@
   grid-template-columns: auto minmax(0, 1fr);
   gap: 0.2rem 0.8rem;
   align-items: center;
-  padding: 0.8rem;
+  /* Revision 21: seven cards fit a 900px-high window without scrolling. */
+  padding: 0.55rem 0.8rem;
   border: 1px solid var(--v7-edge);
   border-radius: 14px;
   background: rgb(255 255 255 / 5%);

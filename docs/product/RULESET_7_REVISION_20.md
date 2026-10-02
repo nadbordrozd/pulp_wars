@@ -12,7 +12,10 @@ is itself an overlay over [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 **as amended by this document** into the current rules
 ([section 8.3](#83-fold-targets)).
 
-**Ruleset ID:** `pulp-wars-poc-7r20`
+**Ruleset ID:** `pulp-wars-poc-7r20` (the running game is
+`pulp-wars-poc-7r21`:
+[revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md) adds four achievements
+and changes nothing else in this document)
 
 **Map-generation revision:** `REGIONAL_BIOMES_NAVAL_V2` (unchanged)
 

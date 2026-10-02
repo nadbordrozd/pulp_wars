@@ -238,6 +238,12 @@ describe("ruleset-7 achievements and Monuments", () => {
             { achievement: "EXPLORER", unlocked: false, spent: false },
             { achievement: "ENGINEER", unlocked: false, spent: false },
             { achievement: "MUSTER", unlocked: false, spent: false },
+            // Revision 21 appends four more (their rules are covered by
+            // ruleset-v7-revision21-achievements.test.ts).
+            { achievement: "CONQUEROR", unlocked: false, spent: false },
+            { achievement: "LAND_BARON", unlocked: false, spent: false },
+            { achievement: "SEA_DOG", unlocked: false, spent: false },
+            { achievement: "SLAYER", unlocked: false, spent: false },
           ]),
       ),
     ).toBe(true);
@@ -292,7 +298,8 @@ describe("ruleset-7 achievements and Monuments", () => {
   it("unlocks Engineer only from a final individual qualifying output of six", () => {
     const { state, forgeAt } = engineerBuildState();
     const before = viewForV7(state, state.humanPlayerId);
-    expect(before.achievementProgress).toEqual([
+    // Revision 21 appends four entries after the revision-5 three.
+    expect(before.achievementProgress.slice(0, 3)).toEqual([
       {
         achievement: "EXPLORER",
         currentExploredTiles: state.players[0]?.explored.length,
@@ -668,9 +675,22 @@ describe("ruleset-7 achievements and Monuments", () => {
       unitId: capturingUnit.id,
     });
     if (!captured.accepted) throw new Error(captured.error.code);
+    // Revision 21: capturing another player's city unlocks the captor's
+    // Conqueror; no entitlement is spent and no other one changes.
     expect(captured.state.players[0]?.achievementEntitlements.slice(1)).toEqual(
-      beforeEntitlements.slice(1),
+      beforeEntitlements
+        .slice(1)
+        .map((entitlement) =>
+          entitlement.achievement === "CONQUEROR"
+            ? { ...entitlement, unlocked: true }
+            : entitlement,
+        ),
     );
+    expect(
+      captured.state.players[0]?.achievementEntitlements.every(
+        (entitlement) => !entitlement.spent,
+      ),
+    ).toBe(true);
     expect(populationAt(captured.state, monumentAt)).toMatchObject({
       cityId: targetCityId,
       amount: 3,

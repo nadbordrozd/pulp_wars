@@ -152,6 +152,8 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
     // `pulp-wars-poc-7r18`), before SHOWCASE existed. Revision 19
     // (`pulp_wars-c87.2`) changes these states only through the identity and
     // the empty `eggs` list, so the same hashes return once both are undone.
+    // Revision 21 (`pulp_wars-9s0.4`) adds four locked entitlements to every
+    // player and nothing else; the hashes return once they are removed too.
     const pinned = {
       DRY_LAND:
         "82f66f98a5ee995551537573fd5644730860105cd5da95ce14774e1abd2659af",
@@ -168,8 +170,21 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         showcaseSetup(THREE, { mapType: mapType as MatchSetupV7["mapType"] }),
       );
       if (!created.ok) throw new Error(`${mapType} rejected`);
-      const { eggs, ...revision18State } = created.state;
+      const { eggs, ...revision19State } = created.state;
       expect(eggs).toEqual([]);
+      for (const player of revision19State.players)
+        expect(player.achievementEntitlements.slice(3)).toEqual(
+          ["CONQUEROR", "LAND_BARON", "SEA_DOG", "SLAYER"].map(
+            (achievement) => ({ achievement, unlocked: false, spent: false }),
+          ),
+        );
+      const revision18State = {
+        ...revision19State,
+        players: revision19State.players.map((player) => ({
+          ...player,
+          achievementEntitlements: player.achievementEntitlements.slice(0, 3),
+        })),
+      };
       expect(
         canonicalHash(
           JSON.parse(
@@ -599,6 +614,11 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
         { achievement: "EXPLORER", unlocked: false, spent: false },
         { achievement: "ENGINEER", unlocked: false, spent: false },
         { achievement: "MUSTER", unlocked: false, spent: false },
+        // Revision 21.
+        { achievement: "CONQUEROR", unlocked: false, spent: false },
+        { achievement: "LAND_BARON", unlocked: false, spent: false },
+        { achievement: "SEA_DOG", unlocked: false, spent: false },
+        { achievement: "SLAYER", unlocked: false, spent: false },
       ]);
       // Every unit of every seat is visible to every seat.
       expect(viewForV7(state, player.id).units).toHaveLength(30);
@@ -610,18 +630,21 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
 
   it("unlocks Explorer and Muster, not Engineer, at each seat's first evaluation", () => {
     const created = playableShowcase(["UNDEAD", "GOBLIN", "ORIGINAL"]);
+    // Explorer, Engineer, Muster, then the revision-21 Conqueror, Land Baron,
+    // Sea Dog, and Slayer: three cities and two ships complete none of them.
     const unlocked = (state: GameStateV7, seat: number) =>
       state.players[seat]?.achievementEntitlements.map(
         (entry) => entry.unlocked,
       );
+    const NONE = [false, false, false, false];
     expect(
       created.events.filter((event) => event.kind === "ACHIEVEMENT_UNLOCKED"),
     ).toEqual([
       { kind: "ACHIEVEMENT_UNLOCKED", playerId: 1, achievement: "EXPLORER" },
       { kind: "ACHIEVEMENT_UNLOCKED", playerId: 1, achievement: "MUSTER" },
     ]);
-    expect(unlocked(created.state, 0)).toEqual([true, false, true]);
-    expect(unlocked(created.state, 1)).toEqual([false, false, false]);
+    expect(unlocked(created.state, 0)).toEqual([true, false, true, ...NONE]);
+    expect(unlocked(created.state, 1)).toEqual([false, false, false, ...NONE]);
     let state = created.state;
     for (const seat of [1, 2]) {
       const ended = applyCommandV7(
@@ -631,7 +654,7 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       );
       if (!ended.accepted) throw new Error("END_TURN rejected");
       state = ended.state;
-      expect(unlocked(state, seat)).toEqual([true, false, true]);
+      expect(unlocked(state, seat)).toEqual([true, false, true, ...NONE]);
     }
     // Nothing is left to research for any faction.
     for (const player of state.players) {

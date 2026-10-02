@@ -371,8 +371,11 @@ describe("Ruleset 7 DOM shell", () => {
     openMenuItem("achievements");
     expect(document.body.textContent).toContain("Engineer");
     expect(document.body.textContent).toContain("Muster");
-    expect(document.querySelectorAll(".v7-achievement")).toHaveLength(3);
-    expect(document.querySelectorAll(".v7-achievement-meter")).toHaveLength(3);
+    // Revision 21: seven achievements on a naval map (the new four are
+    // covered by ruleset7-achievements-dom.test.ts).
+    expect(document.body.textContent).toContain("Land Baron");
+    expect(document.querySelectorAll(".v7-achievement")).toHaveLength(7);
+    expect(document.querySelectorAll(".v7-achievement-meter")).toHaveLength(7);
     requiredButton('[data-action="close-overlay"]').click();
     openMenuItem("leaderboard");
     expect(document.querySelectorAll(".v7-leaderboard-row")).toHaveLength(

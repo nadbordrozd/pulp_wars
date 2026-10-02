@@ -348,10 +348,13 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // the Undead seat never reaches a Lich; seed 5 Pangea still did until the
     // revision-16 economy numbers, and seed 4 Pangea did with them. Under the
     // revision-18 movement rules seed 4 no longer reaches a Lich within 40
-    // rounds; seed 8 Pangea does.
+    // rounds; seed 8 Pangea did. With the revision-21 achievements
+    // (`pulp_wars-9s0.4`) a match changes once a seat unlocks one (seed 8:
+    // Conqueror and Land Baron in round 16) and seed 8 ends in round 23
+    // with no Lich; seed 4 Pangea trains one and plagues again.
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 8,
+      seed: 4,
       width: 11,
       height: 11,
       aiCount: 1,

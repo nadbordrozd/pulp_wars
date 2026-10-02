@@ -1,6 +1,12 @@
 import { deepFreeze } from "../model/freeze";
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
+  REVISION_21_ACHIEVEMENT_IDS_V7,
+  REVISION_21_ACHIEVEMENT_REQUIRED_V7,
+  revision21AchievementCountsV7,
+  type Revision21AchievementIdV7,
+} from "./achievements";
+import {
   arePlayersAlliedV7,
   combinedNetworkCityIdsV7,
   combinedNetworkRoadKeysV7,
@@ -169,6 +175,12 @@ export type AchievementProgressV7 =
       readonly achievement: "MUSTER";
       readonly currentDistinctTrainableRoles: number;
       readonly requiredDistinctTrainableRoles: 4;
+    }
+  // Revision 21: Conqueror, Land Baron, Sea Dog, and Slayer share one shape.
+  | {
+      readonly achievement: Revision21AchievementIdV7;
+      readonly current: number;
+      readonly required: number;
     };
 
 export type PublicPopulationContributionV7 =
@@ -841,6 +853,7 @@ export function achievementProgressV7(
         : maximum,
     0,
   );
+  const revision21Counts = revision21AchievementCountsV7(state, playerId);
   // Revision 19 section 9.7: an Egg does not count until it hatches.
   const roles = new Set(
     state.units.flatMap((unit) =>
@@ -866,6 +879,11 @@ export function achievementProgressV7(
       currentDistinctTrainableRoles: roles.size,
       requiredDistinctTrainableRoles: 4,
     },
+    ...REVISION_21_ACHIEVEMENT_IDS_V7.map((achievement) => ({
+      achievement,
+      current: revision21Counts[achievement],
+      required: REVISION_21_ACHIEVEMENT_REQUIRED_V7[achievement],
+    })),
   ];
 }
 

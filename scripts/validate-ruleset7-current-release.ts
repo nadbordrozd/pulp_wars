@@ -21,8 +21,8 @@ const archive = JSON.parse(
 if (archive.rulesetId !== "pulp-wars-poc-7r2")
   throw new Error("Archived revision-2 release corpus identity changed");
 if (
-  RULESET_7_ID !== "pulp-wars-poc-7r20" ||
-  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r20.current" ||
+  RULESET_7_ID !== "pulp-wars-poc-7r21" ||
+  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r21.current" ||
   parseMatchSetupV7({
     rulesetId: RULESET_7_ID,
     seed: 0,
@@ -77,6 +77,7 @@ const result = spawnSync(
     "tests/unit/ruleset-v7-revision20-rules.test.ts",
     "tests/unit/ruleset-v7-revision20-charge.test.ts",
     "tests/unit/ruleset-v7-revision20-industry.test.ts",
+    "tests/unit/ruleset-v7-revision21-achievements.test.ts",
     "tests/unit/ruleset-v7-dinosaur-form-audit.test.ts",
     "tests/unit/ruleset-v7-dinosaur-ai-basics.test.ts",
     "tests/unit/ruleset-v7-save.test.ts",
@@ -89,7 +90,7 @@ const result = spawnSync(
   { cwd: root, stdio: "inherit" },
 );
 if (result.status !== 0)
-  throw new Error("Current revision-20 release contract tests failed");
+  throw new Error("Current revision-21 release contract tests failed");
 process.stdout.write(
-  "ruleset-7 current release PASS: revision-20 identity, the Triceratops Charge! (run-up, ignored fortification, Push and follow) with exact public previews, the T-Rex cost and hatch time, Nesting's city slot and Wallbreaker, and the full heal of a Promotion and of a growth stage; the revision-19 Dinosaur faction core (registration, roster, capacity slots, Grow, Wild, Acid, Armoured, substitutions, Showcase) and Eggs (LAY_EGG, hatching, Shaman Hatch, Nesting, destruction, capture, Abandon Egg); revision-18 movement and Showcase; the revision-17 Goblin faction core (registration, roster, the starting Goblin, substitutions, Warrens, Gang Up, Plunder, WAAAGH!, Troll regeneration, the Field Defense restriction); revision-16a orthogonal Shallow Water with the 25% Shallow minimum, capital growth floor and CAPITAL_GROWTH, Normal AI growth-first opening; revision-16b 2-tile boats (Patrol Boat and embarked Move 2, DISEMBARK spends one point) and the landing preview; revision-15 three-turn Plague with first-turn spread, Zombie 18 HP; revision-14 Plague, Bitten, unanswered Vampire, Lich Attack 3, village table, and income caps; revision-13 faction registration (Human and Undead rosters), revision-12 rules (free opening research, Fertile Ground mask, Raider Escape), roster, economy, naval, logistics, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
+  "ruleset-7 current release PASS: revision-21 identity and the Conqueror, Land Baron, Sea Dog, and Slayer achievements; the revision-20 Triceratops Charge! (run-up, ignored fortification, Push and follow) with exact public previews, the T-Rex cost and hatch time, Nesting's city slot and Wallbreaker, and the full heal of a Promotion and of a growth stage; the revision-19 Dinosaur faction core (registration, roster, capacity slots, Grow, Wild, Acid, Armoured, substitutions, Showcase) and Eggs (LAY_EGG, hatching, Shaman Hatch, Nesting, destruction, capture, Abandon Egg); revision-18 movement and Showcase; the revision-17 Goblin faction core (registration, roster, the starting Goblin, substitutions, Warrens, Gang Up, Plunder, WAAAGH!, Troll regeneration, the Field Defense restriction); revision-16a orthogonal Shallow Water with the 25% Shallow minimum, capital growth floor and CAPITAL_GROWTH, Normal AI growth-first opening; revision-16b 2-tile boats (Patrol Boat and embarked Move 2, DISEMBARK spends one point) and the landing preview; revision-15 three-turn Plague with first-turn spread, Zombie 18 HP; revision-14 Plague, Bitten, unanswered Vampire, Lich Attack 3, village table, and income caps; revision-13 faction registration (Human and Undead rosters), revision-12 rules (free opening research, Fertile Ground mask, Raider Escape), roster, economy, naval, logistics, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
 );

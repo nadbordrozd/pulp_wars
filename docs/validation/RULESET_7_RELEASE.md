@@ -18,15 +18,19 @@ This frozen revision-2 record and corpus remain unchanged.
 
 ## Current release contract (revision 18, Human, Undead and Goblin)
 
-The current runtime is `pulp-wars-poc-7r20` (autosave
-`pulpWars.save.v7r20.current`; `pulp_wars-0hi.2` bumped the identity for
+The current runtime is `pulp-wars-poc-7r21` (autosave
+`pulpWars.save.v7r21.current`; `pulp_wars-9s0.4` bumped the identity for
+[revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md), which adds
+the Conqueror, Land Baron, Sea Dog, and Slayer achievements, after
+`pulp_wars-0hi.2` bumped it for
 [revision 20](../product/RULESET_7_REVISION_20.md), which amends the
 [revision-19 Dinosaur overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md):
 the Stampede command is removed, the Triceratops has Charge!, and a
 Promotion or growth stage fully heals. `npm run validate:ruleset7-release`
-checks the revision-20 identity and runs the revision-20 rules, Charge!,
-and Industry suites with the Dinosaur suites. Saves and replays of
-`pulp-wars-poc-7r19` and earlier are refused, and startup removes their
+checks the revision-21 identity and runs the revision-21 achievement suite
+and the revision-20 rules, Charge!, and Industry suites with the Dinosaur
+suites. Saves and replays of
+`pulp-wars-poc-7r20` and earlier are refused, and startup removes their
 autosave keys). The three factions other than the Dinosaurs are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md), into which
 `pulp_wars-0ao.9` folded the

@@ -42,6 +42,7 @@ import {
 import { PLAGUE_DURATION_TURNS_V7 } from "../engine/v7/afflictions";
 import { spatialContributionAtV7 } from "../engine/v7/spatial-economy";
 import {
+  ACHIEVEMENT_IDS_V7,
   COMMAND_KIND_ORDER_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
   FACTION_IDS_V7,
@@ -50,6 +51,7 @@ import {
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  type AchievementIdV7,
   type AiCountV7,
   type BoardSizeV7,
   type FactionIdV7,
@@ -87,7 +89,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r20";
+  readonly rulesetId: "pulp-wars-poc-7r21";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -138,14 +140,11 @@ export interface HeadlessMetricsV7 {
     maximumOvercapacity: number;
   };
   readonly achievements: {
-    readonly progressMaximum: Record<
-      "EXPLORER" | "ENGINEER" | "MUSTER",
-      number
-    >;
-    readonly unlockRound: Record<
-      "EXPLORER" | "ENGINEER" | "MUSTER",
-      number | null
-    >;
+    /** Revision 21: every achievement, the four new ones included. */
+    readonly progressMaximum: Record<AchievementIdV7, number>;
+    readonly unlockRound: Record<AchievementIdV7, number | null>;
+    /** Revision 21: seats that unlocked each achievement during the match. */
+    readonly unlockedSeats: Record<AchievementIdV7, number>;
     monumentPlacements: number;
     monumentTransfers: number;
     monumentLosses: number;
@@ -767,7 +766,7 @@ export async function runAiBatchV7(
             Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r20",
+              rulesetId: "pulp-wars-poc-7r21",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -871,7 +870,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r20",
+    rulesetId: "pulp-wars-poc-7r21",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -924,8 +923,11 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       maximumOvercapacity: 0,
     },
     achievements: {
-      progressMaximum: { EXPLORER: 0, ENGINEER: 0, MUSTER: 0 },
-      unlockRound: { EXPLORER: null, ENGINEER: null, MUSTER: null },
+      progressMaximum: zeroRecord(ACHIEVEMENT_IDS_V7),
+      unlockRound: Object.fromEntries(
+        ACHIEVEMENT_IDS_V7.map((achievement) => [achievement, null]),
+      ) as Record<AchievementIdV7, number | null>,
+      unlockedSeats: zeroRecord(ACHIEVEMENT_IDS_V7),
       monumentPlacements: 0,
       monumentTransfers: 0,
       monumentLosses: 0,
@@ -1476,8 +1478,10 @@ function recordEventsV7(
         (telemetry.healingSinceCatapultShot.get(event.unitId) ?? 0) +
           event.amount,
       );
-    if (event.kind === "ACHIEVEMENT_UNLOCKED")
+    if (event.kind === "ACHIEVEMENT_UNLOCKED") {
       metrics.achievements.unlockRound[event.achievement] ??= after.round;
+      metrics.achievements.unlockedSeats[event.achievement] += 1;
+    }
     if (event.kind === "MONUMENT_BUILT") {
       metrics.achievements.monumentPlacements += 1;
       metrics.achievements.monumentPopulation += event.populationAdded;
@@ -1523,7 +1527,9 @@ function recordSnapshotV7(
           ? progress.currentExploredTiles
           : progress.achievement === "ENGINEER"
             ? progress.currentMaximumOutput
-            : progress.currentDistinctTrainableRoles,
+            : progress.achievement === "MUSTER"
+              ? progress.currentDistinctTrainableRoles
+              : progress.current,
       );
   }
   if (turnBoundary) {

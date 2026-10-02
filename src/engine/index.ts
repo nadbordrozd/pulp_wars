@@ -47,6 +47,7 @@ export * from "./v6/types";
 export * from "./v6/unit-stats";
 export * from "./v6/view";
 export * from "./v7/commands";
+export * from "./v7/achievements";
 export * from "./v7/afflictions";
 export * from "./v7/artifacts";
 export * from "./v7/combat";

@@ -2,9 +2,9 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r20` (autosave
-`pulpWars.save.v7r20.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r19.current`), whose rules for the three factions
+The current client runs `pulp-wars-poc-7r21` (autosave
+`pulpWars.save.v7r21.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r20.current`), whose rules for the three factions
 the setup screen offers, Human, Undead, and Goblin, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The engine also
 registers the Dinosaur faction of the
@@ -22,7 +22,12 @@ client only through `queryCombatPreviewV7` (`runUp`, `fortificationIgnored`,
 status, `dinosaur.runUpBonus` and `runUpMaximum`), and the `UNIT_PUSHED`
 and `UNIT_MOVED` events of the attack. The same revision adds Wallbreaker,
 the Nesting city slot, and the full heal of a Promotion or growth stage;
-the client reads each from the registry and the public previews. The
+the client reads each from the registry and the public previews.
+[Revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md)
+(`pulp_wars-9s0.4`) adds four achievements (Conqueror, Land Baron, Sea Dog,
+Slayer): the client reads their progress from
+`PlayerViewV7.achievementProgress` and their display names and goals from
+`src/render/achievement-presentation-v7.ts`. The
 current-rules document
 folds in the
 [revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md)

@@ -27,6 +27,13 @@ import {
 } from "../rules/ruleset-v7";
 import { hasExactKeysV7 } from "./schema";
 import {
+  ACHIEVEMENT_REQUIRED_TECH_V7,
+  LAND_BARON_CITIES_V7,
+  SEA_DOG_SHIPS_V7,
+  SLAYER_KILLS_V7,
+  revision21AchievementCountsV7,
+} from "./achievements";
+import {
   hasAcceptedStateCertificateV7,
   registerAcceptedStateCertificateV7,
 } from "./accepted-state-certificate";
@@ -97,6 +104,7 @@ import { wailResultEntriesV7, wailTargetsV7 } from "./wail";
 import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
 import {
   TECHNOLOGY_IDS_V7,
+  type AchievementIdV7,
   type CityStateV7,
   type CoordV7,
   type GameStateV7,
@@ -3930,6 +3938,8 @@ function applyCapture(
         pendingChoices: choices,
       },
       actor,
+      // Revision 21 Conqueror: this CAPTURE took another player's city.
+      formerOwner !== null,
     );
     players = achievements.state.players;
     events.push(...achievements.events);
@@ -4834,6 +4844,7 @@ function resolveCityCenterSpawnV7(
 function evaluateAchievementsV7(
   state: GameStateV7,
   playerId: PlayerId,
+  capturedHostileCity = false,
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   const player = state.players.find((candidate) => candidate.id === playerId);
   if (player?.status !== "ACTIVE") return { state, events: [] };
@@ -4861,22 +4872,28 @@ function evaluateAchievementsV7(
         : [],
     ),
   );
-  const qualifies = {
+  // Revision 21: Land Baron, Sea Dog, and Slayer are read from the state;
+  // Conqueror has no stored counter and completes only in the accepted
+  // CAPTURE of a city owned by another player (`capturedHostileCity`).
+  const counts = revision21AchievementCountsV7(state, playerId);
+  const qualifies: Readonly<Record<AchievementIdV7, boolean>> = {
     EXPLORER: player.explored.length >= 100,
     ENGINEER: engineer,
     MUSTER: trainableRoles.size >= 4,
-  } as const;
-  const requiredTech = {
-    EXPLORER: "SCOUTING",
-    ENGINEER: "ENGINEERING",
-    MUSTER: "DRILL",
-  } as const;
-  const unlocked = player.achievementEntitlements.filter(
-    (entitlement) =>
+    CONQUEROR: capturedHostileCity,
+    LAND_BARON: counts.LAND_BARON >= LAND_BARON_CITIES_V7,
+    SEA_DOG: counts.SEA_DOG >= SEA_DOG_SHIPS_V7,
+    SLAYER: counts.SLAYER >= SLAYER_KILLS_V7,
+  };
+  const unlocked = player.achievementEntitlements.filter((entitlement) => {
+    const requiredTech = ACHIEVEMENT_REQUIRED_TECH_V7[entitlement.achievement];
+    return (
       !entitlement.unlocked &&
-      player.researchedTechs.includes(requiredTech[entitlement.achievement]) &&
-      qualifies[entitlement.achievement],
-  );
+      (requiredTech === null ||
+        player.researchedTechs.includes(requiredTech)) &&
+      qualifies[entitlement.achievement]
+    );
+  });
   if (unlocked.length === 0) return { state, events: [] };
   const unlockedIds = new Set(unlocked.map((item) => item.achievement));
   return {
