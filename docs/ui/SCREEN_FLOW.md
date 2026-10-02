@@ -56,7 +56,8 @@ Roads, that text now describes the **Classic look** developer option
   Population pips and the Field Defense badge are unchanged.
 - **Ports and Shipyards** fly a smaller pennant in the territory owner's
   colour. Other improvements carry no player colour: the shared set (Farm as
-  crop rows, Lumber Camp, Windmill, Sawmill, Forge, Workshop, Market,
+  rows of a green crop, for now one of three per tile, see
+  [Farm crop](#11-settings-and-pause); Lumber Camp, Windmill, Sawmill, Forge, Workshop, Market,
   Monument) and the neutral Village are drawn as authored.
 - **Human units, portraits and City 1 to 3** use the direction's art in the
   faction's fixed crimson and gold for every player, on the board and in the
@@ -1200,8 +1201,8 @@ confirmation “Delete current saved match?”, and returns to Hub after success
 There is no Resign rule in the POC; Exit is not elimination.
 
 Settings ends with a collapsed **Developer tools** section. Besides the log and
-debug exports it holds **Board look** and an experiment for map clutter,
-**Board saturation**.
+debug exports it holds **Board look**, **Farm crop** and an experiment for
+map clutter, **Board saturation**.
 
 **Board look** is one checkbox, **Classic look (previous art)**, off by
 default (bead `pulp_wars-3tq.6`). On, the CHIBI board and interface return to
@@ -1217,6 +1218,23 @@ the shared settings envelope), a missing or malformed value is off, and it
 never enters a save, a replay or the engine. The retired experiment key
 `pulpWars.ruleset7.boardVisualDirection.v1` is never read and is removed on
 load, so nothing stored by the experiment can switch the classic look on.
+
+**Farm crop** is one drop-down: **Mixed** (default), **Lettuce**,
+**Cabbage**, **Veggies** (bead `pulp_wars-9s0.6`). It is a comparison state:
+the user is choosing between three green Farms, and this option goes away
+once one is chosen. With Mixed every Farm tile of the CHIBI board's new look
+shows one of the three crops, picked from the tile's coordinates alone
+(`(x - y) mod 3`: cabbage, lettuce, veggies), so a tile keeps its crop across
+frames, saves, reloads and clients, a Farm never has the crop of the Farm
+beside, above or below it, and each crop covers a third of any field. The
+other values draw that crop on every Farm. A selected Farm's dock shows the
+crop of its tile; pictures with no tile (Help, build buttons) show the
+Cabbage, or the forced crop. The crop is never a rule or an identity: every
+Farm is the same improvement. The choice is stored in the browser under
+`pulpWars.ruleset7.boardFarmCrop.v1` as `{"crop": "MIXED"|"LETTUCE"|"CABBAGE"|"VEGGIES"}`
+(outside the shared settings envelope); a missing or unknown value is Mixed,
+and it never enters a save, a replay or the engine. It has no effect on the
+Classic look or the LEGACY art set.
 
 **Board saturation** is a
 “Building saturation” and a “City saturation” slider (0–100% in steps of 5,

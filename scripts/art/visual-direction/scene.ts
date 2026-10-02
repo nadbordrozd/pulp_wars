@@ -38,6 +38,8 @@ import {
   type VisualDirectionSampleSetV7,
 } from "../../../src/render/canvas/visual-direction-samples-v7";
 import type { BoardVisualDirectionV7 } from "../../../src/render/canvas/visual-direction-v7";
+import type { FarmCropChoiceV7 } from "../../../src/assets/chibi-direction-art-manifest";
+import { liveDirectionArtRegistryV7 } from "../../../src/render/canvas/live-board-look-v7";
 
 type Tile = PlayerViewV7["board"]["tiles"][number];
 type Seat = "A" | "B" | "C" | "D";
@@ -50,6 +52,8 @@ export type VisualDirectionSceneKindV7 =
   /** The Human demo's compact patch (bead pulp_wars-3tq.3), see DEMO. */
   | "DEMO"
   | "DEMO_MARKER"
+  /** The Farm comparison patch (bead pulp_wars-9s0.6), see FARMS. */
+  | "FARMS"
   /** The running match exactly as it is (an all-Human Showcase). */
   | "LIVE";
 
@@ -380,6 +384,124 @@ const DEMO: readonly (readonly string[])[] = [
   ],
 ];
 const DEMO_CAPITAL: CoordV7 = { x: 5, y: 4 };
+
+/**
+ * FARMS, 11 x 10 cells around the capital (5,5), for comparing the Farm's
+ * crops (bead pulp_wars-9s0.6). Columns 3-7 are what a phone shows at zoom
+ * 1: a 3 x 3 block of Farms over Roads running both ways (rows 1-3), single
+ * Farms beside cities and buildings (rows 4-5), and a 5 x 3 field with a
+ * unit of every player on its first row and Roads under it (rows 6-8).
+ * Further single Farms, with and without a unit, stand left and right.
+ */
+const FARMS: readonly (readonly string[])[] = [
+  ["gA", "gA", "gA", "gA", "gA", "gA/road", "gA", "gA", "gA", "gA", "g-"],
+  [
+    "gA",
+    "gA/farm",
+    "gA",
+    "gA",
+    "gA/farm",
+    "gA/farm/road",
+    "gA/farm",
+    "gA",
+    "gA/mill",
+    "gA/farm",
+    "g-",
+  ],
+  [
+    "gA",
+    "gA",
+    "gA/saw",
+    "gA/road",
+    "gA/farm/road",
+    "gA/farm/road",
+    "gA/farm/road",
+    "gA/road",
+    "gA",
+    "gA/farm",
+    "g-",
+  ],
+  [
+    "gA",
+    "gA/farm/F:A:100",
+    "gA",
+    "gA",
+    "gA/farm",
+    "gA/farm/road",
+    "gA/farm",
+    "gA",
+    "gA/farm/K:B:100",
+    "gA",
+    "g-",
+  ],
+  [
+    "fA/lumber",
+    "gA/farm",
+    "gA/market",
+    "gA/farm",
+    "gA/forge",
+    "gA/road",
+    "gA/farm",
+    "gB/city1",
+    "gB/farm",
+    "gB",
+    "g-",
+  ],
+  [
+    "gA",
+    "gA",
+    "gA/farm",
+    "gA/mill",
+    "gA/farm",
+    "gA/city3*",
+    "gA/farm",
+    "gA/shop",
+    "gA/farm",
+    "gA",
+    "g-",
+  ],
+  [
+    "gA",
+    "gA",
+    "gA",
+    "gA/farm/F:A:100",
+    "gA/farm/M:B:100",
+    "gA/farm/road/K:C:100",
+    "gA/farm/F:D:70",
+    "gA/farm",
+    "gA",
+    "gA",
+    "g-",
+  ],
+  [
+    "gA",
+    "gA",
+    "gA/road",
+    "gA/farm/road",
+    "gA/farm/road",
+    "gA/farm/road",
+    "gA/farm/road",
+    "gA/farm/road",
+    "gA/road",
+    "gA",
+    "g-",
+  ],
+  [
+    "gA",
+    "gA",
+    "gA",
+    "gA/farm",
+    "gA/farm",
+    "gA/farm/road",
+    "gA/farm",
+    "gA/farm",
+    "gA",
+    "gA",
+    "g-",
+  ],
+  ["g-", "g-", "g-", "g-", "g-", "g-/road", "g-", "g-", "g-", "g-", "g-"],
+];
+const FARMS_CAPITAL: CoordV7 = { x: 5, y: 5 };
 const SEATS: readonly Seat[] = ["A", "B", "C", "D"];
 const COLOURS = ["CORAL", "TEAL", "GOLD", "VIOLET"] as const;
 
@@ -467,8 +589,9 @@ export function visualDirectionSceneViewV7(
   if (kind === "LIVE")
     return { view: live, capitalAt: { x: 0, y: 0 }, commands: [] };
   const demo = kind === "DEMO" || kind === "DEMO_MARKER";
-  const LAYOUT = demo ? DEMO : BUSY;
-  const CAPITAL_AT = demo ? DEMO_CAPITAL : CAPITAL;
+  const LAYOUT = kind === "FARMS" ? FARMS : demo ? DEMO : BUSY;
+  const CAPITAL_AT =
+    kind === "FARMS" ? FARMS_CAPITAL : demo ? DEMO_CAPITAL : CAPITAL;
   const rows = LAYOUT.length;
   const columns = LAYOUT[0]?.length ?? 0;
   if (live.board.width < columns || live.board.height < rows)
@@ -563,7 +686,10 @@ export function visualDirectionSceneViewV7(
           isCapital: cell.city.capital,
         });
       if (
-        (kind !== "BUSY" && kind !== "DEMO" && kind !== "DEMO_MARKER") ||
+        (kind !== "BUSY" &&
+          kind !== "DEMO" &&
+          kind !== "DEMO_MARKER" &&
+          kind !== "FARMS") ||
         cell.unit === null
       )
         return;
@@ -657,6 +783,11 @@ export interface VisualDirectionSceneOptionsV7 {
   readonly samples?: readonly ChibiArtAssetV7[];
   /** A named sample set of visual-direction-samples-v7.ts instead. */
   readonly sampleSet?: VisualDirectionSampleSetV7;
+  /**
+   * The game's own direction art with the developer setting "Farm crop" at
+   * this value ("MIXED" is the game's default), instead of a sample set.
+   */
+  readonly farmCrop?: FarmCropChoiceV7;
 }
 
 /** Mounts a full-screen CHIBI board host over the page showing the scene. */
@@ -710,7 +841,11 @@ export function showVisualDirectionSceneV7(
     ...(options.direction === undefined
       ? {}
       : { visualDirection: options.direction }),
-    ...(samples === undefined ? {} : { visualDirectionArt: samples.registry }),
+    ...(options.farmCrop !== undefined
+      ? { visualDirectionArt: liveDirectionArtRegistryV7(options.farmCrop) }
+      : samples === undefined
+        ? {}
+        : { visualDirectionArt: samples.registry }),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

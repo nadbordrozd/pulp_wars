@@ -392,6 +392,11 @@ export interface CropRowsSpec {
    * rows need not stand in columns.
    */
   readonly rowOffsets?: readonly number[];
+  /**
+   * Lines dropped from the bottom of every stamped crop row (default 0): a
+   * thinner strip of soil under the plants and a wider gap between rows.
+   */
+  readonly trimBottom?: number;
   /** Colour kept, 0..1 (1 = unchanged). */
   readonly saturation: number;
   /** Mix toward pale straw, 0..1. */
@@ -452,7 +457,10 @@ export function cropRowsRaster(
     const band = bands[stamp.band ?? spec.band];
     if (band === undefined)
       throw new Error(`the candidate has no crop row ${String(stamp.band)}`);
-    const bandHeight = band.bottom - band.top + 1;
+    const trim = spec.trimBottom ?? 0;
+    const bandHeight = band.bottom - band.top + 1 - trim;
+    if (!Number.isInteger(trim) || trim < 0 || bandHeight <= 0)
+      throw new Error("trimBottom must leave a part of the crop row");
     if (bandHeight >= pitch)
       throw new Error("the crop row is taller than the row pitch: no gap left");
     if (

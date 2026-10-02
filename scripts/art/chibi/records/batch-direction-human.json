@@ -1192,7 +1192,7 @@
     },
     "farm-field-a": {
       "id": "farm-field-a",
-      "asset": "chibi-direction-farm",
+      "asset": "chibi-direction-farm-lettuce",
       "jobId": "sync-6f4894f8-d953-48da-9a7f-769b36b0d4fb",
       "request": {
         "endpoint": "create-image-pixen",
@@ -1272,7 +1272,7 @@
     },
     "farm-field-a-edit": {
       "id": "farm-field-a-edit",
-      "asset": "chibi-direction-farm",
+      "asset": "chibi-direction-farm-lettuce",
       "jobId": "21b800da-d248-44e5-85f0-60a3bf7ae3f8",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -1343,7 +1343,7 @@
     },
     "farm-field-a-edit-2": {
       "id": "farm-field-a-edit-2",
-      "asset": "chibi-direction-farm",
+      "asset": "chibi-direction-farm-lettuce",
       "jobId": "f063ffde-911d-4823-acf5-b816964ede94",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -1851,6 +1851,166 @@
         "candidate": 0,
         "notes": "Style anchor, re-accepted from the Human demo: crowned great helm, crimson caparison with a gold trim, lance pennant; white horse and lance kept. No owner area.",
         "reviewedAt": "2026-10-02T08:51:26.484Z"
+      }
+    },
+    "leafy-b": {
+      "id": "leafy-b",
+      "asset": "chibi-direction-farm-lettuce",
+      "jobId": "sync-2a5ca836-1e6f-4021-a3e5-db33be9f7b2f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "farm-rows",
+        "asset": "chibi-farm-leafy",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-FARM-ROWS",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 93112,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "art/explorations/farm-rows-2026-10/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "art/explorations/farm-rows-2026-10/fragments/camera-three-quarter.txt",
+            "text": "Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/farm-rows-2026-10/fragments/class-crop-field.txt + art/explorations/farm-rows-2026-10/fragments/class-crop-field.negative.txt",
+            "text": "Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent.",
+            "negative": "pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/farm-rows-2026-10/subjects.json",
+            "text": "Subject: a small vegetable field: four straight horizontal strips of tilled soft tan-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of five round bushy leafy lettuce plants side by side, fresh soft green with a lighter yellow-green highlight on the upper left and a darker green shadow on the lower right. Crops and soil only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent. Subject: a small vegetable field: four straight horizontal strips of tilled soft tan-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of five round bushy leafy lettuce plants side by side, fresh soft green with a lighter yellow-green highlight on the upper left and a darker green shadow on the lower right. Crops and soil only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent. Subject: a small vegetable field: four straight horizontal strips of tilled soft tan-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of five round bushy leafy lettuce plants side by side, fresh soft green with a lighter yellow-green highlight on the upper left and a darker green shadow on the lower right. Crops and soil only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow."
+      },
+      "submittedAt": "2026-10-02T11:48:18.042Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/leafy-b.png",
+      "rawSheetSha256": "74d2c1ff7ebc83849316f1e0b26b14eebd61ffd0e5e4b2452eada80d2cf9665e",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.5276,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-02T11:49:13.072Z",
+      "importedFrom": {
+        "exploration": "art/explorations/farm-rows-2026-10",
+        "batch": "farm-rows",
+        "recipe": "leafy-b"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Lettuce rows (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The crop-rows derivation stamps a 40 px piece of each of the candidate's four rows (three lettuces) on four rows at a 20 px pitch, every second row moved 7 px along itself; rows are 13 to 14 px tall, so the 6 to 7 px gaps lie on the cell centre and edges and Farms tile without a seam. Colours unchanged.",
+        "reviewedAt": "2026-10-02T12:43:33.995Z"
+      }
+    },
+    "leafy-thin-a": {
+      "id": "leafy-thin-a",
+      "asset": "chibi-direction-farm-cabbage",
+      "jobId": "sync-bdbb9b7f-af59-4889-87f4-241be7bed3a1",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "farm-rows",
+        "asset": "chibi-farm-leafy-thin",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-FARM-ROWS",
+        "recipeClass": "crop-field",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 93211,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "art/explorations/farm-rows-2026-10/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "art/explorations/farm-rows-2026-10/fragments/camera-three-quarter.txt",
+            "text": "Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/farm-rows-2026-10/fragments/class-crop-field.txt + art/explorations/farm-rows-2026-10/fragments/class-crop-field.negative.txt",
+            "text": "Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent.",
+            "negative": "pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/farm-rows-2026-10/subjects.json",
+            "text": "Subject: a small vegetable field: four thin low ridges of tilled soft tan-brown soil, one above the other, each a narrow line only a few pixels tall running from the left edge to the right edge of the image, with wide empty transparent gaps between the ridges, the gaps wider than the ridges; on each ridge grows one row of five round bushy leafy lettuce plants side by side, fresh soft green with a lighter yellow-green highlight on the upper left and a darker green shadow on the lower right, each plant much taller than the thin ridge of soil it grows on. Crops and soil only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent. Subject: a small vegetable field: four thin low ridges of tilled soft tan-brown soil, one above the other, each a narrow line only a few pixels tall running from the left edge to the right edge of the image, with wide empty transparent gaps between the ridges, the gaps wider than the ridges; on each ridge grows one row of five round bushy leafy lettuce plants side by side, fresh soft green with a lighter yellow-green highlight on the upper left and a darker green shadow on the lower right, each plant much taller than the thin ridge of soil it grows on. Crops and soil only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: crops for a square farm tile of a strategy game map: big plump simple plants growing in straight horizontal rows, each row on its own long narrow strip of tilled brown soil; a dark brown outline (never black), no box, no border and no frame. Everything that is not a plant or its strip of soil is empty and transparent. Subject: a small vegetable field: four thin low ridges of tilled soft tan-brown soil, one above the other, each a narrow line only a few pixels tall running from the left edge to the right edge of the image, with wide empty transparent gaps between the ridges, the gaps wider than the ridges; on each ridge grows one row of five round bushy leafy lettuce plants side by side, fresh soft green with a lighter yellow-green highlight on the upper left and a darker green shadow on the lower right, each plant much taller than the thin ridge of soil it grows on. Crops and soil only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow."
+      },
+      "submittedAt": "2026-10-02T11:56:26.869Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/leafy-thin-a.png",
+      "rawSheetSha256": "b64e53dfb046c1a5db3942727ecf9ada549dfbd3d9b16296479fa4bd19d26a3f",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.8135,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-02T11:57:13.715Z",
+      "importedFrom": {
+        "exploration": "art/explorations/farm-rows-2026-10",
+        "batch": "farm-rows",
+        "recipe": "leafy-thin-a"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Cabbage rows (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The crop-rows derivation stamps the five cabbages of the candidate's second row 16 px apart with plain soil columns between them, on four rows at a 20 px pitch in a brick pattern, and drops the two bottom lines of soil (trimBottom 2): rows 13 px tall, 7 px gaps on the cell centre and edges, seamless. Colours unchanged.",
+        "reviewedAt": "2026-10-02T12:53:50.815Z"
       }
     },
     "lumber-camp-c-a": {
@@ -3449,6 +3609,93 @@
         "reviewedAt": "2026-10-02T08:51:45.724Z"
       }
     },
+    "veg-flux-a": {
+      "id": "veg-flux-a",
+      "asset": "chibi-direction-farm-veggies",
+      "jobId": "sync-54e03cea-ab93-4c21-83b6-3dd9b794e1c8",
+      "request": {
+        "endpoint": "create-image-pixflux",
+        "model": "create-image-pixflux",
+        "batch": "farm-rows",
+        "asset": "chibi-farm-veg-flux",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-FARM-ROWS",
+        "recipeClass": "building",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 93061,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "shading": "flat shading",
+          "detail": "low detail",
+          "view": "high top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "art/explorations/farm-rows-2026-10/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "art/explorations/farm-rows-2026-10/fragments/camera-three-quarter.txt",
+            "text": "Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/farm-rows-2026-10/faction.md#prompt-fragment + art/explorations/farm-rows-2026-10/faction.md#negative-fragment",
+            "text": "Faction: none. Crops are the same for every faction.",
+            "negative": "people, building"
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/farm-rows-2026-10/fragments/class-building.txt + art/explorations/farm-rows-2026-10/fragments/class-building.negative.txt",
+            "text": "Class: farmland for a square tile of a strategy game map seen from above: straight horizontal rows of crops with strips of tilled brown soil, simple chunky shapes, flat colours, no box, no border and no frame.",
+            "negative": "pedestal, plinth, disc, platform, isometric block, isometric diamond, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, perspective, horizon"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/farm-rows-2026-10/subjects.json",
+            "text": "Subject: a small vegetable field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of six round leafy green cabbages side by side, soft mid green with a lighter green highlight on the upper left and a darker green shadow. Crops and soil only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Faction: none. Crops are the same for every faction. Class: farmland for a square tile of a strategy game map seen from above: straight horizontal rows of crops with strips of tilled brown soil, simple chunky shapes, flat colours, no box, no border and no frame. Subject: a small vegetable field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of six round leafy green cabbages side by side, soft mid green with a lighter green highlight on the upper left and a darker green shadow. Crops and soil only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, people, building, pedestal, plinth, disc, platform, isometric block, isometric diamond, house, barn, fence, character, farmer, animal, unit, scarecrow, perspective, horizon",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Faction: none. Crops are the same for every faction. Class: farmland for a square tile of a strategy game map seen from above: straight horizontal rows of crops with strips of tilled brown soil, simple chunky shapes, flat colours, no box, no border and no frame. Subject: a small vegetable field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of six round leafy green cabbages side by side, soft mid green with a lighter green highlight on the upper left and a darker green shadow. Crops and soil only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, people, building, pedestal, plinth, disc, platform, isometric block, isometric diamond, house, barn, fence, character, farmer, animal, unit, scarecrow, perspective, horizon."
+      },
+      "submittedAt": "2026-10-02T11:40:31.286Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/veg-flux-a.png",
+      "rawSheetSha256": "99d23ea79dc1291fbd9d1d03b827b32aabda408c17fb0aa15bbd5adb57a331c4",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.5288,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-02T11:40:58.100Z",
+      "importedFrom": {
+        "exploration": "art/explorations/farm-rows-2026-10",
+        "batch": "farm-rows",
+        "recipe": "veg-flux-a"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Mixed vegetable beds (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The Pixflux candidate's three raised beds are kept as drawn; the crop-rows derivation spreads the plants of each bed 20 px apart with plain soil columns between them, so every bed runs from edge to edge and Farms tile without a seam. Three beds 21 to 24 px tall leave 4 to 5 px gaps; the middle bed lies on the cell centre, so a Road running east-west is hidden inside the tile. Colours unchanged.",
+        "reviewedAt": "2026-10-02T12:43:36.093Z"
+      }
+    },
     "village-a": {
       "id": "village-a",
       "asset": "chibi-direction-village",
@@ -3664,7 +3911,7 @@
     },
     "wheat-a": {
       "id": "wheat-a",
-      "asset": "chibi-direction-farm",
+      "asset": "chibi-direction-farm-lettuce",
       "jobId": "sync-ac839949-dfdc-4c67-8914-6c7328395a92",
       "request": {
         "endpoint": "create-image-pixen",
@@ -3738,7 +3985,7 @@
     },
     "wheat-a-edit": {
       "id": "wheat-a-edit",
-      "asset": "chibi-direction-farm",
+      "asset": "chibi-direction-farm-lettuce",
       "jobId": "a005e203-acfb-41b2-9b8f-d00310510dc6",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -3801,9 +4048,9 @@
         "recipe": "wheat-a-edit"
       },
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "Plump golden wheat sheaves on thin ridges of tilled soil (bead pulp_wars-9s0.3). The crop-rows derivation stamps the five sheaves of the top row 16 px apart on four rows at a 20 px pitch, each row shifted so the sheaves stand in a brick pattern, then calms the colours; Farms tile without a seam, the 5 px gaps lie on the cell centre and edges, and a Road also shows between the sheaves above the 5 px soil ridge.",
+        "notes": "Plump golden wheat sheaves on thin ridges of tilled soil (bead pulp_wars-9s0.3). The crop-rows derivation stamps the five sheaves of the top row 16 px apart on four rows at a 20 px pitch, each row shifted so the sheaves stand in a brick pattern, then calms the colours; Farms tile without a seam, the 5 px gaps lie on the cell centre and edges, and a Road also shows between the sheaves above the 5 px soil ridge. Superseded by leafy-b.",
         "reviewedAt": "2026-10-02T12:04:23.784Z"
       }
     },
@@ -4270,18 +4517,18 @@
       "notes": "The walled city full of buildings (keep, church, houses, four cone-roofed towers), repainted to the pale sandstone and terracotta red of City 2: one set across the three tiers, the biggest and richest. No plate, no flag.",
       "acceptedAt": "2026-10-02T08:55:02.820Z"
     },
-    "chibi-direction-farm": {
-      "id": "chibi-direction-farm",
+    "chibi-direction-farm-cabbage": {
+      "id": "chibi-direction-farm-cabbage",
       "subject": "IMPROVEMENT:FARM",
       "assetClass": "BUILDING",
       "status": "ACCEPTED",
-      "recipe": "wheat-a-edit",
+      "recipe": "leafy-thin-a",
       "candidate": 0,
-      "candidateSha256": "1f117a7e669b8daf360359adaf2abb062804dd4339545e7110b16df931e983e7",
+      "candidateSha256": "b64e53dfb046c1a5db3942727ecf9ada549dfbd3d9b16296479fa4bd19d26a3f",
       "master": {
-        "path": "public/assets/chibi/buildings/chibi-direction-farm.png",
-        "sha256": "27486c005e8c1abb58e34d47c7a422926a8856feefad9eb0ed1b190baf3ce9a4",
-        "pixelSha256": "e9a4cd070f8815eb38f156ac44405d71fa5c3a008ab1dd05b237c4fd2b5203a7",
+        "path": "public/assets/chibi/buildings/chibi-direction-farm-cabbage.png",
+        "sha256": "8403926432461c812eaea9daa63d5326c68d35b4951b8464d3374e1b12ecf571",
+        "pixelSha256": "44963ebe8764cc70130890f8514787275eda9483d702a4c5f3a2f4fa7fa02ae9",
         "width": 80,
         "height": 80
       },
@@ -4289,88 +4536,89 @@
         "kind": "crop-rows",
         "cropRows": {
           "rows": 4,
-          "band": 0,
+          "band": 1,
           "period": 80,
           "stamps": [
             {
-              "left": 44,
-              "width": 3,
+              "left": 5,
+              "width": 14,
               "at": 0
             },
             {
-              "left": 9,
-              "width": 10,
-              "at": 3
+              "left": 4,
+              "width": 1,
+              "at": 14
             },
             {
-              "left": 44,
-              "width": 3,
-              "at": 13
+              "left": 4,
+              "width": 1,
+              "at": 15
             },
             {
-              "left": 44,
-              "width": 3,
+              "left": 19,
+              "width": 14,
               "at": 16
             },
             {
-              "left": 22,
-              "width": 10,
-              "at": 19
+              "left": 4,
+              "width": 1,
+              "at": 30
             },
             {
-              "left": 44,
-              "width": 3,
-              "at": 29
+              "left": 4,
+              "width": 1,
+              "at": 31
             },
             {
-              "left": 44,
-              "width": 3,
+              "left": 33,
+              "width": 15,
               "at": 32
             },
             {
-              "left": 34,
-              "width": 10,
-              "at": 35
+              "left": 4,
+              "width": 1,
+              "at": 47
             },
             {
-              "left": 44,
-              "width": 3,
-              "at": 45
-            },
-            {
-              "left": 44,
-              "width": 3,
+              "left": 48,
+              "width": 14,
               "at": 48
             },
             {
-              "left": 47,
-              "width": 10,
-              "at": 51
+              "left": 4,
+              "width": 1,
+              "at": 62
             },
             {
-              "left": 44,
-              "width": 3,
-              "at": 61
+              "left": 4,
+              "width": 1,
+              "at": 63
             },
             {
-              "left": 44,
-              "width": 3,
+              "left": 62,
+              "width": 13,
               "at": 64
             },
             {
-              "left": 60,
-              "width": 10,
-              "at": 67
+              "left": 4,
+              "width": 1,
+              "at": 77
             },
             {
-              "left": 44,
-              "width": 3,
-              "at": 77
+              "left": 4,
+              "width": 1,
+              "at": 78
+            },
+            {
+              "left": 4,
+              "width": 1,
+              "at": 79
             }
           ],
-          "rowOffsets": [0, 24, 32, 56],
-          "saturation": 0.85,
-          "strawMix": 0.12
+          "rowOffsets": [0, 8, 0, 8],
+          "trimBottom": 2,
+          "saturation": 1,
+          "strawMix": 0
         }
       },
       "anchor": {
@@ -4390,8 +4638,545 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Plump golden wheat sheaves on thin ridges of tilled soil (bead pulp_wars-9s0.3). The crop-rows derivation stamps the five sheaves of the top row 16 px apart on four rows at a 20 px pitch, each row shifted so the sheaves stand in a brick pattern, then calms the colours; Farms tile without a seam, the 5 px gaps lie on the cell centre and edges, and a Road also shows between the sheaves above the 5 px soil ridge.",
-      "acceptedAt": "2026-10-02T12:04:23.784Z"
+      "notes": "Cabbage rows (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The crop-rows derivation stamps the five cabbages of the candidate's second row 16 px apart with plain soil columns between them, on four rows at a 20 px pitch in a brick pattern, and drops the two bottom lines of soil (trimBottom 2): rows 13 px tall, 7 px gaps on the cell centre and edges, seamless. Colours unchanged.",
+      "acceptedAt": "2026-10-02T12:53:50.815Z"
+    },
+    "chibi-direction-farm-lettuce": {
+      "id": "chibi-direction-farm-lettuce",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "leafy-b",
+      "candidate": 0,
+      "candidateSha256": "74d2c1ff7ebc83849316f1e0b26b14eebd61ffd0e5e4b2452eada80d2cf9665e",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-direction-farm-lettuce.png",
+        "sha256": "9aa32923dc277b2ecf1f2b0884c96effd04427eff6bf5cf634b6a32b6c5175ba",
+        "pixelSha256": "cd8e394eb651a8fff73e4dbfb0190ef48cbdcc7ab633ff8463cd925723b6f397",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "crop-rows",
+        "cropRows": {
+          "rows": 4,
+          "band": 0,
+          "period": 40,
+          "stamps": [
+            {
+              "left": 20,
+              "width": 40,
+              "at": 0,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 20,
+              "width": 40,
+              "at": 0,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 20,
+              "width": 40,
+              "at": 0,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 20,
+              "width": 40,
+              "at": 0,
+              "band": 3,
+              "rows": [3]
+            }
+          ],
+          "rowOffsets": [0, 7, 0, 7],
+          "saturation": 1,
+          "strawMix": 0
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Lettuce rows (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The crop-rows derivation stamps a 40 px piece of each of the candidate's four rows (three lettuces) on four rows at a 20 px pitch, every second row moved 7 px along itself; rows are 13 to 14 px tall, so the 6 to 7 px gaps lie on the cell centre and edges and Farms tile without a seam. Colours unchanged.",
+      "acceptedAt": "2026-10-02T12:43:33.995Z"
+    },
+    "chibi-direction-farm-veggies": {
+      "id": "chibi-direction-farm-veggies",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "veg-flux-a",
+      "candidate": 0,
+      "candidateSha256": "99d23ea79dc1291fbd9d1d03b827b32aabda408c17fb0aa15bbd5adb57a331c4",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-direction-farm-veggies.png",
+        "sha256": "d101fd635ef313e5f5cbea89fe96e52c77a5a5831e01c1fe756a9d756d23cea6",
+        "pixelSha256": "80cd21e4ccd823a9fc2b71766292ebb575fc7c64d4fa27ccc02d49b83bae283e",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "crop-rows",
+        "cropRows": {
+          "rows": 3,
+          "band": 0,
+          "period": 80,
+          "stamps": [
+            {
+              "left": 23,
+              "width": 1,
+              "at": 0,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 1,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 8,
+              "width": 16,
+              "at": 2,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 18,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 19,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 20,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 21,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 24,
+              "width": 16,
+              "at": 22,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 38,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 39,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 40,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 41,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 40,
+              "width": 16,
+              "at": 42,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 58,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 59,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 60,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 61,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 56,
+              "width": 16,
+              "at": 62,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 78,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 23,
+              "width": 1,
+              "at": 79,
+              "band": 0,
+              "rows": [0]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 0,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 1,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 8,
+              "width": 16,
+              "at": 2,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 18,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 19,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 20,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 21,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 24,
+              "width": 16,
+              "at": 22,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 38,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 39,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 40,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 41,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 40,
+              "width": 16,
+              "at": 42,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 58,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 59,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 60,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 61,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 56,
+              "width": 16,
+              "at": 62,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 78,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 25,
+              "width": 1,
+              "at": 79,
+              "band": 1,
+              "rows": [1]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 0,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 1,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 2,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 8,
+              "width": 32,
+              "at": 3,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 35,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 36,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 37,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 38,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 39,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 40,
+              "width": 16,
+              "at": 40,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 56,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 57,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 58,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 59,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 60,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 56,
+              "width": 16,
+              "at": 61,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 77,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 78,
+              "band": 2,
+              "rows": [2]
+            },
+            {
+              "left": 57,
+              "width": 1,
+              "at": 79,
+              "band": 2,
+              "rows": [2]
+            }
+          ],
+          "rowOffsets": [0, 0, 0],
+          "saturation": 1,
+          "strawMix": 0
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Mixed vegetable beds (bead pulp_wars-9s0.6, one of three green Farm variants the user compares in play). The Pixflux candidate's three raised beds are kept as drawn; the crop-rows derivation spreads the plants of each bed 20 px apart with plain soil columns between them, so every bed runs from edge to edge and Farms tile without a seam. Three beds 21 to 24 px tall leave 4 to 5 px gaps; the middle bed lies on the cell centre, so a Road running east-west is hidden inside the tile. Colours unchanged.",
+      "acceptedAt": "2026-10-02T12:43:36.093Z"
     },
     "chibi-direction-fighter": {
       "id": "chibi-direction-fighter",

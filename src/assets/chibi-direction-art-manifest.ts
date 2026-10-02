@@ -183,13 +183,31 @@ export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     ),
     fixedColours: true,
   },
+  // Three green Farm variants under one subject (bead pulp_wars-9s0.6): a
+  // tile picks one by its coordinates, see FARM_CROP_ASSET_IDS_V7.
   {
-    id: "chibi-direction-farm",
+    id: "chibi-direction-farm-cabbage",
     subject: "IMPROVEMENT:FARM",
     assetClass: "BUILDING",
     width: 80,
     height: 80,
-    url: chibiArtUrl("assets/chibi/buildings/chibi-direction-farm.png"),
+    url: chibiArtUrl("assets/chibi/buildings/chibi-direction-farm-cabbage.png"),
+  },
+  {
+    id: "chibi-direction-farm-lettuce",
+    subject: "IMPROVEMENT:FARM",
+    assetClass: "BUILDING",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/buildings/chibi-direction-farm-lettuce.png"),
+  },
+  {
+    id: "chibi-direction-farm-veggies",
+    subject: "IMPROVEMENT:FARM",
+    assetClass: "BUILDING",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/buildings/chibi-direction-farm-veggies.png"),
   },
   {
     id: "chibi-direction-forge",
@@ -300,9 +318,57 @@ export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   },
 ];
 
-/** The registry the live look resolves before the default art. */
-export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
-  const built = buildChibiArtRegistryV7(CHIBI_DIRECTION_ART_ASSETS_V7);
+/**
+ * The Farm's crop (bead pulp_wars-9s0.6). The user compares three green
+ * Farms in play before choosing one: every Farm tile shows one of them,
+ * picked from the tile's coordinates alone by the registry's variant hash
+ * (chibiVariantV7, as terrain and resources do), so a tile keeps its crop
+ * across frames, saves, reloads and clients. It is presentation only: no
+ * rule, state or identity depends on it. With three variants the hash is
+ * (x - y) mod 3: the crops run in diagonals, a Farm never has the crop of
+ * the Farm beside, above or below it, and each crop covers a third of any
+ * field. The developer setting "Farm crop" forces one crop on every tile.
+ */
+export const FARM_CROPS_V7 = ["CABBAGE", "LETTUCE", "VEGGIES"] as const;
+export type FarmCropV7 = (typeof FARM_CROPS_V7)[number];
+/** "MIXED" is the default: each tile shows the crop of its coordinates. */
+export type FarmCropChoiceV7 = "MIXED" | FarmCropV7;
+export const DEFAULT_FARM_CROP_CHOICE_V7: FarmCropChoiceV7 = "MIXED";
+export const FARM_CROP_CHOICES_V7: readonly FarmCropChoiceV7[] = [
+  "MIXED",
+  "LETTUCE",
+  "CABBAGE",
+  "VEGGIES",
+];
+
+export const FARM_CROP_ASSET_IDS_V7: Readonly<Record<FarmCropV7, string>> = {
+  CABBAGE: "chibi-direction-farm-cabbage",
+  LETTUCE: "chibi-direction-farm-lettuce",
+  VEGGIES: "chibi-direction-farm-veggies",
+};
+
+export function isFarmCropChoiceV7(value: unknown): value is FarmCropChoiceV7 {
+  return FARM_CROP_CHOICES_V7.some((choice) => choice === value);
+}
+
+/**
+ * The registry the live look resolves before the default art. A forced
+ * `farmCrop` leaves the Farm subject that one variant, so the board, the
+ * docks and the Help all draw it.
+ */
+export function chibiDirectionArtRegistryV7(
+  farmCrop: FarmCropChoiceV7 = DEFAULT_FARM_CROP_CHOICE_V7,
+): ChibiArtRegistryV7 {
+  const forced =
+    farmCrop === "MIXED" ? undefined : FARM_CROP_ASSET_IDS_V7[farmCrop];
+  const built = buildChibiArtRegistryV7(
+    CHIBI_DIRECTION_ART_ASSETS_V7.filter(
+      (asset) =>
+        forced === undefined ||
+        asset.subject !== "IMPROVEMENT:FARM" ||
+        asset.id === forced,
+    ),
+  );
   if (built.problems.length > 0) throw new Error(built.problems.join("; "));
   return built.registry;
 }

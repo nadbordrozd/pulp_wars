@@ -1,0 +1,58 @@
+{
+  "id": "veg-flux-a",
+  "jobId": "sync-54e03cea-ab93-4c21-83b6-3dd9b794e1c8",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "farm-rows",
+    "asset": "chibi-farm-veg-flux",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-FARM-ROWS",
+    "recipeClass": "building",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 93061,
+    "noBackground": true,
+    "options": {
+      "outline": "selective outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/farm-rows-2026-10/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "art/explorations/farm-rows-2026-10/fragments/camera-three-quarter.txt",
+        "text": "Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/farm-rows-2026-10/faction.md#prompt-fragment + art/explorations/farm-rows-2026-10/faction.md#negative-fragment",
+        "text": "Faction: none. Crops are the same for every faction.",
+        "negative": "people, building"
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/farm-rows-2026-10/fragments/class-building.txt + art/explorations/farm-rows-2026-10/fragments/class-building.negative.txt",
+        "text": "Class: farmland for a square tile of a strategy game map seen from above: straight horizontal rows of crops with strips of tilled brown soil, simple chunky shapes, flat colours, no box, no border and no frame.",
+        "negative": "pedestal, plinth, disc, platform, isometric block, isometric diamond, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, perspective, horizon"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/farm-rows-2026-10/subjects.json",
+        "text": "Subject: a small vegetable field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of six round leafy green cabbages side by side, soft mid green with a lighter green highlight on the upper left and a darker green shadow. Crops and soil only."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Faction: none. Crops are the same for every faction. Class: farmland for a square tile of a strategy game map seen from above: straight horizontal rows of crops with strips of tilled brown soil, simple chunky shapes, flat colours, no box, no border and no frame. Subject: a small vegetable field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of six round leafy green cabbages side by side, soft mid green with a lighter green highlight on the upper left and a darker green shadow. Crops and soil only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, people, building, pedestal, plinth, disc, platform, isometric block, isometric diamond, house, barn, fence, character, farmer, animal, unit, scarecrow, perspective, horizon",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a vegetable garden on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Faction: none. Crops are the same for every faction. Class: farmland for a square tile of a strategy game map seen from above: straight horizontal rows of crops with strips of tilled brown soil, simple chunky shapes, flat colours, no box, no border and no frame. Subject: a small vegetable field: four straight horizontal strips of tilled warm-brown soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of six round leafy green cabbages side by side, soft mid green with a lighter green highlight on the upper left and a darker green shadow. Crops and soil only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, people, building, pedestal, plinth, disc, platform, isometric block, isometric diamond, house, barn, fence, character, farmer, animal, unit, scarecrow, perspective, horizon."
+  }
+}

@@ -371,19 +371,27 @@ export const CHIBI_CLASS_RECIPES: Readonly<
   // The Farm of the new direction: rows of plump crops, each on its own
   // strip of tilled soil, with transparent gaps between the rows. An edit
   // thins the soil; the crop-rows derivation then makes the pattern tile.
-  // The accepted recipe (bead pulp_wars-9s0.3) asks for the low view.
+  // The wheat recipe (bead pulp_wars-9s0.3) asks for the low view. Pixflux
+  // is allowed since bead pulp_wars-9s0.6: its vegetable beds are taller
+  // (three to a tile) and are one of the three green Farm variants.
   "crop-rows": {
     camera: "crop-pattern",
     style: "crop",
     factionLayer: false,
     assetClasses: ["BUILDING"],
-    generators: ["create-image-pixen"],
+    generators: ["create-image-pixen", "create-image-pixflux"],
     editPass: true,
     noBackground: true,
     derivation: "crop-rows",
     options: {
       "create-image-pixen": {
         outline: "selective outline",
+        detail: "low detail",
+        view: "high top-down",
+      },
+      "create-image-pixflux": {
+        outline: "selective outline",
+        shading: "flat shading",
         detail: "low detail",
         view: "high top-down",
       },
@@ -1047,12 +1055,19 @@ export function batchManifestProblems(
           asset.canvas.width % rows.period !== 0
         )
           problems.push(`${label}: the crop period must divide the tile width`);
+        // The rows need not divide the tile height: three beds stand at a
+        // pitch of 80 / 3 px, rounded to whole pixels by the derivation.
         if (
           !Number.isInteger(rows.rows) ||
           rows.rows <= 0 ||
-          asset.canvas.height % rows.rows !== 0
+          rows.rows > asset.canvas.height
         )
-          problems.push(`${label}: the crop rows must divide the tile height`);
+          problems.push(`${label}: the crop rows must fit the tile height`);
+        if (
+          rows.trimBottom !== undefined &&
+          (!Number.isInteger(rows.trimBottom) || rows.trimBottom < 0)
+        )
+          problems.push(`${label}: trimBottom must be a non-negative integer`);
         if (rows.stamps.length === 0)
           problems.push(`${label}: cropRows needs at least one stamp`);
         for (const stamp of rows.stamps)

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "batch": "direction-human",
-  "title": "New visual direction: Human units and portraits in fixed crimson and gold, the shared calm improvement set, the row Farm, Human City 1-3 and the Village",
+  "title": "New visual direction: Human units and portraits in fixed crimson and gold, the shared calm improvement set, the row Farm in three green crops, Human City 1-3 and the Village",
   "bead": "pulp_wars-3tq.5",
   "faction": "ORIGINAL",
   "dryRun": false,
@@ -308,7 +308,7 @@
       "subjectKey": "IMPROVEMENT:LUMBER_CAMP/CALM"
     },
     {
-      "id": "chibi-direction-farm",
+      "id": "chibi-direction-farm-lettuce",
       "subject": "IMPROVEMENT:FARM",
       "assetClass": "BUILDING",
       "recipeClass": "crop-rows",
@@ -317,91 +317,577 @@
         "height": 80
       },
       "ownerColour": false,
-      "subjectKey": "IMPROVEMENT:FARM/ROWS",
+      "subjectKey": "IMPROVEMENT:FARM/LETTUCE",
       "cropRows": {
         "rows": 4,
+        "band": 0,
+        "period": 40,
+        "stamps": [
+          {
+            "left": 20,
+            "width": 40,
+            "at": 0,
+            "band": 0,
+            "rows": [0]
+          },
+          {
+            "left": 20,
+            "width": 40,
+            "at": 0,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 20,
+            "width": 40,
+            "at": 0,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 20,
+            "width": 40,
+            "at": 0,
+            "band": 3,
+            "rows": [3]
+          }
+        ],
+        "rowOffsets": [0, 7, 0, 7],
+        "saturation": 1,
+        "strawMix": 0
+      }
+    },
+    {
+      "id": "chibi-direction-farm-cabbage",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-rows",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/CABBAGE",
+      "cropRows": {
+        "rows": 4,
+        "band": 1,
+        "period": 80,
+        "stamps": [
+          {
+            "left": 5,
+            "width": 14,
+            "at": 0
+          },
+          {
+            "left": 4,
+            "width": 1,
+            "at": 14
+          },
+          {
+            "left": 4,
+            "width": 1,
+            "at": 15
+          },
+          {
+            "left": 19,
+            "width": 14,
+            "at": 16
+          },
+          {
+            "left": 4,
+            "width": 1,
+            "at": 30
+          },
+          {
+            "left": 4,
+            "width": 1,
+            "at": 31
+          },
+          {
+            "left": 33,
+            "width": 15,
+            "at": 32
+          },
+          {
+            "left": 4,
+            "width": 1,
+            "at": 47
+          },
+          {
+            "left": 48,
+            "width": 14,
+            "at": 48
+          },
+          {
+            "left": 4,
+            "width": 1,
+            "at": 62
+          },
+          {
+            "left": 4,
+            "width": 1,
+            "at": 63
+          },
+          {
+            "left": 62,
+            "width": 13,
+            "at": 64
+          },
+          {
+            "left": 4,
+            "width": 1,
+            "at": 77
+          },
+          {
+            "left": 4,
+            "width": 1,
+            "at": 78
+          },
+          {
+            "left": 4,
+            "width": 1,
+            "at": 79
+          }
+        ],
+        "rowOffsets": [0, 8, 0, 8],
+        "trimBottom": 2,
+        "saturation": 1,
+        "strawMix": 0
+      }
+    },
+    {
+      "id": "chibi-direction-farm-veggies",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-rows",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/VEGGIES",
+      "cropRows": {
+        "rows": 3,
         "band": 0,
         "period": 80,
         "stamps": [
           {
-            "left": 44,
-            "width": 3,
-            "at": 0
+            "left": 23,
+            "width": 1,
+            "at": 0,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 9,
-            "width": 10,
-            "at": 3
+            "left": 23,
+            "width": 1,
+            "at": 1,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 44,
-            "width": 3,
-            "at": 13
+            "left": 8,
+            "width": 16,
+            "at": 2,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 44,
-            "width": 3,
-            "at": 16
+            "left": 23,
+            "width": 1,
+            "at": 18,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 22,
-            "width": 10,
-            "at": 19
+            "left": 23,
+            "width": 1,
+            "at": 19,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 44,
-            "width": 3,
-            "at": 29
+            "left": 23,
+            "width": 1,
+            "at": 20,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 44,
-            "width": 3,
-            "at": 32
+            "left": 23,
+            "width": 1,
+            "at": 21,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 34,
-            "width": 10,
-            "at": 35
+            "left": 24,
+            "width": 16,
+            "at": 22,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 44,
-            "width": 3,
-            "at": 45
+            "left": 23,
+            "width": 1,
+            "at": 38,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 44,
-            "width": 3,
-            "at": 48
+            "left": 23,
+            "width": 1,
+            "at": 39,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 47,
-            "width": 10,
-            "at": 51
+            "left": 23,
+            "width": 1,
+            "at": 40,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 44,
-            "width": 3,
-            "at": 61
+            "left": 23,
+            "width": 1,
+            "at": 41,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 44,
-            "width": 3,
-            "at": 64
+            "left": 40,
+            "width": 16,
+            "at": 42,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 60,
-            "width": 10,
-            "at": 67
+            "left": 23,
+            "width": 1,
+            "at": 58,
+            "band": 0,
+            "rows": [0]
           },
           {
-            "left": 44,
-            "width": 3,
-            "at": 77
+            "left": 23,
+            "width": 1,
+            "at": 59,
+            "band": 0,
+            "rows": [0]
+          },
+          {
+            "left": 23,
+            "width": 1,
+            "at": 60,
+            "band": 0,
+            "rows": [0]
+          },
+          {
+            "left": 23,
+            "width": 1,
+            "at": 61,
+            "band": 0,
+            "rows": [0]
+          },
+          {
+            "left": 56,
+            "width": 16,
+            "at": 62,
+            "band": 0,
+            "rows": [0]
+          },
+          {
+            "left": 23,
+            "width": 1,
+            "at": 78,
+            "band": 0,
+            "rows": [0]
+          },
+          {
+            "left": 23,
+            "width": 1,
+            "at": 79,
+            "band": 0,
+            "rows": [0]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 0,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 1,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 8,
+            "width": 16,
+            "at": 2,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 18,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 19,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 20,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 21,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 24,
+            "width": 16,
+            "at": 22,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 38,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 39,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 40,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 41,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 40,
+            "width": 16,
+            "at": 42,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 58,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 59,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 60,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 61,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 56,
+            "width": 16,
+            "at": 62,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 78,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 25,
+            "width": 1,
+            "at": 79,
+            "band": 1,
+            "rows": [1]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 0,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 1,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 2,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 8,
+            "width": 32,
+            "at": 3,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 35,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 36,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 37,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 38,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 39,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 40,
+            "width": 16,
+            "at": 40,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 56,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 57,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 58,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 59,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 60,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 56,
+            "width": 16,
+            "at": 61,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 77,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 78,
+            "band": 2,
+            "rows": [2]
+          },
+          {
+            "left": 57,
+            "width": 1,
+            "at": 79,
+            "band": 2,
+            "rows": [2]
           }
         ],
-        "rowOffsets": [0, 24, 32, 56],
-        "saturation": 0.85,
-        "strawMix": 0.12
+        "rowOffsets": [0, 0, 0],
+        "saturation": 1,
+        "strawMix": 0
       }
     },
     {
@@ -835,7 +1321,7 @@
     },
     {
       "id": "farm-field-a",
-      "asset": "chibi-direction-farm",
+      "asset": "chibi-direction-farm-lettuce",
       "endpoint": "create-image-pixen",
       "seed": 75001,
       "requestSize": {
@@ -849,7 +1335,7 @@
     },
     {
       "id": "farm-field-a-edit",
-      "asset": "chibi-direction-farm",
+      "asset": "chibi-direction-farm-lettuce",
       "endpoint": "edit-image-pixen",
       "seed": 75002,
       "requestSize": {
@@ -865,7 +1351,7 @@
     },
     {
       "id": "farm-field-a-edit-2",
-      "asset": "chibi-direction-farm",
+      "asset": "chibi-direction-farm-lettuce",
       "endpoint": "edit-image-pixen",
       "seed": 75003,
       "requestSize": {
@@ -881,7 +1367,7 @@
     },
     {
       "id": "wheat-a",
-      "asset": "chibi-direction-farm",
+      "asset": "chibi-direction-farm-lettuce",
       "endpoint": "create-image-pixen",
       "seed": 93001,
       "requestSize": {
@@ -895,7 +1381,7 @@
     },
     {
       "id": "wheat-a-edit",
-      "asset": "chibi-direction-farm",
+      "asset": "chibi-direction-farm-lettuce",
       "endpoint": "edit-image-pixen",
       "seed": 93003,
       "requestSize": {
@@ -908,6 +1394,51 @@
       },
       "editInstruction": "Make each of the four strips of brown soil much thinner: only a thin low ridge of soil under the plants, about half as tall as now, so that the empty transparent gaps between the four rows become much wider. Keep the golden wheat sheaves exactly as they are, the same size, colours, outline and art style, standing on the thin ridges.",
       "notes": "Imported from the Farm run art/explorations/farm-rows-2026-10 (bead pulp_wars-9s0.3). The soil thinned to a low ridge, so a Road shows between the sheaves as well as in the gaps."
+    },
+    {
+      "id": "leafy-b",
+      "asset": "chibi-direction-farm-lettuce",
+      "endpoint": "create-image-pixen",
+      "seed": 93112,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      },
+      "notes": "Imported from the Farm run art/explorations/farm-rows-2026-10 (bead pulp_wars-9s0.6). Four rows of pale round lettuces on thin strips of red-brown soil, rows 13 to 14 px tall."
+    },
+    {
+      "id": "leafy-thin-a",
+      "asset": "chibi-direction-farm-cabbage",
+      "endpoint": "create-image-pixen",
+      "seed": 93211,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "outline": "selective outline"
+      },
+      "notes": "Imported from the Farm run art/explorations/farm-rows-2026-10 (bead pulp_wars-9s0.6). Four rows of five dark green cabbages with pale hearts on strips of dark soil."
+    },
+    {
+      "id": "veg-flux-a",
+      "asset": "chibi-direction-farm-veggies",
+      "endpoint": "create-image-pixflux",
+      "seed": 93061,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null,
+        "view": "high top-down"
+      },
+      "notes": "Imported from the Farm run art/explorations/farm-rows-2026-10 (bead pulp_wars-9s0.6). Three raised beds of pale soil, 21 to 24 px tall, each with four different leafy vegetables."
     },
     {
       "id": "city-1-c-a",
