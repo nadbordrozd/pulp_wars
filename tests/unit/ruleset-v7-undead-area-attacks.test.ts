@@ -180,6 +180,7 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
       fortificationLevel: 0,
       damage: 2,
       dies: false,
+      shieldDamage: 0,
     });
     expect(byAt({ x: 3, y: 4 })).toMatchObject({
       defense2: 4,
@@ -255,6 +256,7 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
           fortificationLevel: 0,
           damage: 0,
           dies: false,
+          shieldDamage: 0,
           leavesGrave: false,
           bittenRises: false,
         },
@@ -270,7 +272,13 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
       unitId: banshee.id,
       at: banshee.at,
       results: [
-        { unitId: juggernaut.id, at: juggernaut.at, damage: 0, dies: false },
+        {
+          unitId: juggernaut.id,
+          at: juggernaut.at,
+          damage: 0,
+          dies: false,
+          shieldDamage: 0,
+        },
       ],
     });
     expect(unitAt(result.state, { x: 3, y: 3 }).hp).toBe(juggernaut.hp);
@@ -415,6 +423,7 @@ describe("ruleset-7 revision-13 Wail: resolution", () => {
         at,
         damage,
         dies,
+        shieldDamage: 0,
       })),
     ).toEqual(wail.results);
     expect(
@@ -645,9 +654,27 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
       unitId: 3,
       at: { x: 2, y: 2 },
       results: [
-        { unitId: 5, at: { x: 1, y: 1 }, damage: 0, dies: false },
-        { unitId: 4, at: { x: 3, y: 1 }, damage: 2, dies: true },
-        { unitId: 6, at: { x: 3, y: 1 }, damage: 1, dies: false },
+        {
+          unitId: 5,
+          at: { x: 1, y: 1 },
+          damage: 0,
+          dies: false,
+          shieldDamage: 0,
+        },
+        {
+          unitId: 4,
+          at: { x: 3, y: 1 },
+          damage: 2,
+          dies: true,
+          shieldDamage: 0,
+        },
+        {
+          unitId: 6,
+          at: { x: 3, y: 1 },
+          damage: 1,
+          dies: false,
+          shieldDamage: 0,
+        },
       ],
     };
     expect(parseEventV7(valid)).toEqual({ ok: true, value: valid });
@@ -661,11 +688,27 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
       { ...valid, results: [...valid.results].reverse() },
       {
         ...valid,
-        results: [{ unitId: 5, at: { x: 1, y: 1 }, damage: 0, dies: true }],
+        results: [
+          {
+            unitId: 5,
+            at: { x: 1, y: 1 },
+            damage: 0,
+            dies: true,
+            shieldDamage: 0,
+          },
+        ],
       },
       {
         ...valid,
-        results: [{ unitId: 5, at: { x: 1, y: 1 }, damage: -1, dies: false }],
+        results: [
+          {
+            unitId: 5,
+            at: { x: 1, y: 1 },
+            damage: -1,
+            dies: false,
+            shieldDamage: 0,
+          },
+        ],
       },
       { kind: "UNIT_DIED", unitId: 4, cause: "SCREAM" },
     ])
@@ -868,8 +911,15 @@ describe("ruleset-7 revision-13 Lich splash", () => {
         at: splashed.at,
         damage: splashDamage,
         dies: false,
+        shieldDamage: 0,
       },
-      { unitId: victim.id, at: victim.at, damage: 1, dies: true },
+      {
+        unitId: victim.id,
+        at: victim.at,
+        damage: 1,
+        dies: true,
+        shieldDamage: 0,
+      },
     ]);
     expect(preview.advances).toBe(false);
     const result = apply(state, state.humanPlayerId, {
@@ -983,6 +1033,7 @@ describe("ruleset-7 revision-13 Lich splash", () => {
       at: hiddenAt,
       damage: 1,
       dies: true,
+      shieldDamage: 0,
     };
     expect(combat.preview.splash).toEqual([hiddenEntry]);
     expect(result.events).toContainEqual({

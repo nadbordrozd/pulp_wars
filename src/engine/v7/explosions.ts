@@ -7,12 +7,15 @@ import {
 import { biteOfV7, recordBittenRisingV7 } from "./afflictions";
 import type { CombatSplashEntryV7, DomainEventV7 } from "./events";
 import { recordCombatDeathV7 } from "./graves";
+import { absorbHitV7, collapseThrallsV7, withShieldsV7 } from "./martian";
 import { exhaustedActivationV7 } from "./plague";
 import type {
   BittenStatusV7,
   BoardStateV7,
   CoordV7,
   GameStateV7,
+  ShieldStatusV7,
+  ThrallStatusV7,
   UnitRoleIdV7,
   UnitStateV7,
 } from "./types";
@@ -126,11 +129,27 @@ export interface ExplosionChainInputV7<U extends BlastUnitV7> {
    * exploders that just left it.
    */
   readonly maxExplosions?: number | undefined;
+  /**
+   * The Martian revision section 5.3: the Shields when the chain starts
+   * (unit ID to Shield). Blast damage is taken from a Shield first, and a
+   * Shield stripped by one explosion is gone for the next.
+   */
+  readonly shields?: ReadonlyMap<UnitId, number> | undefined;
+  /**
+   * The Martian revision section 8.3: called after each death is recorded
+   * with the units on the board; returns the IDs of the Thralls that
+   * collapse with it (they leave the board at once and are hit by no later
+   * explosion).
+   */
+  readonly onCollapse?:
+    ((units: readonly U[], victim: U) => readonly UnitId[]) | undefined;
 }
 
 export interface ExplosionChainResultV7<U extends BlastUnitV7> {
   readonly units: readonly U[];
   readonly explosions: readonly ExplosionV7[];
+  /** The Shields after the chain (only units that still have one). */
+  readonly shields: ReadonlyMap<UnitId, number>;
 }
 
 /**
@@ -164,6 +183,7 @@ export function resolveExplosionChainV7<U extends BlastUnitV7>(
   const exploded = new Set<UnitId>();
   const destroyed = new Set<string>();
   const explosions: ExplosionV7[] = [];
+  const shields = new Map<UnitId, number>(input.shields ?? []);
   let units: U[] = input.units.filter((unit) => unit.hp > 0);
   let wave: { readonly unit: U; readonly cause: ExplosionCauseV7 }[] = [];
   for (const item of [...input.initial].sort(
@@ -189,15 +209,20 @@ export function resolveExplosionChainV7<U extends BlastUnitV7>(
         .sort(compareUnitsByTile);
       const results: CombatSplashEntryV7[] = hits.map((unit) => {
         // Revision 19: an Armoured unit takes 1 less from the fixed damage.
-        const applied = Math.min(
-          armouredDamageV7(input.roster, unit, damage),
+        // The Martian revision: the blast is taken from the Shield first.
+        const hit = absorbHitV7(
+          shields.get(unit.id) ?? 0,
           unit.hp,
+          armouredDamageV7(input.roster, unit, damage),
         );
+        if (hit.shieldDamage > 0)
+          shields.set(unit.id, (shields.get(unit.id) ?? 0) - hit.shieldDamage);
         return {
           unitId: unit.id,
           at: { x: unit.at.x, y: unit.at.y },
-          damage: applied,
-          dies: applied >= unit.hp,
+          damage: hit.hpDamage,
+          dies: hit.hpDamage >= unit.hp,
+          shieldDamage: hit.shieldDamage,
         };
       });
       const fieldDefenseDestroyed = blastAreaV7(
@@ -232,8 +257,14 @@ export function resolveExplosionChainV7<U extends BlastUnitV7>(
       for (const [index, entry] of results.entries()) {
         if (!entry.dies) continue;
         const victim = hits[index] as U;
+        shields.delete(victim.id);
         const rising = input.onDeath(victim, explosion);
         if (rising !== null) units = [...units, rising];
+        const collapsed = input.onCollapse?.(units, victim) ?? [];
+        if (collapsed.length > 0) {
+          units = units.filter((unit) => !collapsed.includes(unit.id));
+          for (const id of collapsed) shields.delete(id);
+        }
         if (
           isExplodingUnitV7(input.roster, victim) &&
           !exploded.has(victim.id)
@@ -245,7 +276,9 @@ export function resolveExplosionChainV7<U extends BlastUnitV7>(
     }
     wave = next.sort((left, right) => left.unit.id - right.unit.id);
   }
-  return { units, explosions };
+  for (const [unitId, shield] of [...shields])
+    if (shield <= 0) shields.delete(unitId);
+  return { units, explosions, shields };
 }
 
 /** The working canonical facts a command's chain reads and changes. */
@@ -255,6 +288,9 @@ export interface StateChainWorkV7 {
   readonly graves: readonly CoordV7[];
   readonly nextEntityId: number;
   readonly bitten: readonly BittenStatusV7[];
+  /** The Martian revision: the Shields and Thralls the chain reads. */
+  readonly shields: readonly ShieldStatusV7[];
+  readonly thralls: readonly ThrallStatusV7[];
 }
 
 export interface StateChainResultV7 extends StateChainWorkV7 {
@@ -291,6 +327,7 @@ export function resolveStateExplosionChainV7(
   let current: readonly UnitStateV7[] = work.units;
   const risings: UnitStateV7[] = [];
   const credits: CreditedDeathV7[] = [];
+  let thralls = work.thralls;
   const tileIndex = (at: CoordV7): number => at.y * board.width + at.x;
   const chain = resolveExplosionChainV7<UnitStateV7>({
     roster: lookup,
@@ -300,6 +337,23 @@ export function resolveStateExplosionChainV7(
     initial,
     fieldDefense: (at) => board.tiles[tileIndex(at)]?.fieldDefense === true,
     maxExplosions,
+    shields:
+      work.shields.length === 0
+        ? undefined
+        : new Map(work.shields.map((entry) => [entry.unitId, entry.shield])),
+    // The Martian revision section 8.3: a Brain killed by a blast takes its
+    // Thralls with it at once (`UNIT_DIED` cause `BRAIN_LOST`).
+    onCollapse:
+      work.thralls.length === 0
+        ? undefined
+        : (units) => {
+            const collapse = collapseThrallsV7(units, thralls, events);
+            thralls = collapse.thralls;
+            const gone = collapse.collapsed.map((unit) => unit.id);
+            if (gone.length > 0)
+              current = current.filter((unit) => !gone.includes(unit.id));
+            return gone;
+          },
     onExplosion: (explosion) => {
       events.push({
         kind: "EXPLOSION_RESOLVED",
@@ -376,6 +430,19 @@ export function resolveStateExplosionChainV7(
     graves,
     nextEntityId,
     bitten: work.bitten,
+    shields:
+      work.shields.length === 0
+        ? work.shields
+        : withShieldsV7(
+            work.shields,
+            new Map(
+              work.shields.map((entry) => [
+                entry.unitId,
+                chain.shields.get(entry.unitId) ?? 0,
+              ]),
+            ),
+          ),
+    thralls,
     risings,
     credits,
     explosions: chain.explosions,

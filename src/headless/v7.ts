@@ -11,11 +11,15 @@ import { canonicalHash, canonicalJson } from "../engine/replay/canonical";
 import {
   ORIGINAL_BASELINE_V5_TREE,
   TECHNOLOGY_BRANCH_IDS_V7,
+  unitFliesV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
+import { attackHasPierceV7 } from "../engine/v7/combat";
 import type { CommandV7 } from "../engine/v7/commands";
+import { pierceTileV7 } from "../engine/v7/martian";
 import {
   arePlayersAlliedV7,
+  arePlayersHostileV7,
   assignedUnitCountV7,
   cityUnitCapacityV7,
   marketCoinsV7,
@@ -89,7 +93,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r21";
+  readonly rulesetId: "pulp-wars-poc-7r22";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -172,6 +176,8 @@ export interface HeadlessMetricsV7 {
    */
   readonly factionRoles: Record<FactionIdV7, FactionRoleMetricsV7>;
   readonly undead: UndeadMetricsV7;
+  /** The Martian revision: Shield, ray, and ability telemetry. */
+  readonly martian: MartianMetricsV7;
   readonly knightOverrun: {
     chainsStarted: number;
     attacks: number;
@@ -302,6 +308,62 @@ export interface UndeadMetricsV7 {
   bittenRemaining: number;
   /** Revision 14: attacks that drew no retaliation (Vampire). */
   unansweredAttacks: number;
+}
+
+/**
+ * The Martian revision (docs/product/RULESET_7_MARTIANS.md section 16.2):
+ * match totals of every Martian mechanic, read from the canonical events.
+ * All zero in a match without a Martian seat. The per-seat telemetry of the
+ * balance matrix replays the accepted command log and reads the same events.
+ */
+export interface MartianMetricsV7 {
+  /** Shield damage absorbed, by the source of the hit. */
+  readonly shieldAbsorbed: {
+    attack: number;
+    retaliation: number;
+    splash: number;
+    wail: number;
+    blast: number;
+  };
+  /** Hits (of any source) a Shield absorbed completely (0 HP damage). */
+  hitsFullyAbsorbed: number;
+  /** `SHIELDS_RECHARGED` events and the Shield entries they changed. */
+  rechargeEvents: number;
+  rechargedShields: number;
+  /** Recharges at End Turn (Force Fields), a subset of the above. */
+  endTurnRechargeEvents: number;
+  /** Heat rays by power, their HP damage, and their kills. */
+  raysFull: number;
+  raysHalf: number;
+  rayDamage: number;
+  rayKills: number;
+  /** Half-power rays by reason. */
+  raysHalfMoved: number;
+  raysHalfCooling: number;
+  /** Rays that ignored fortification levels (the Disintegrator). */
+  raysIgnoringFortification: number;
+  /** Pierce hits on hostile and on own or allied units, damage, kills. */
+  pierceHitsHostile: number;
+  pierceHitsFriendly: number;
+  pierceDamage: number;
+  pierceKills: number;
+  beamDowns: number;
+  readonly beamDownPassengers: Record<UnitRoleIdV7, number>;
+  mindControls: number;
+  readonly mindControlTargets: Record<UnitRoleIdV7, number>;
+  mindControlTargetHp: number;
+  thrallsCollapsed: number;
+  thrallsMaximum: number;
+  thrallCaptures: number;
+  tractorBeamsOwn: number;
+  tractorBeamsHostile: number;
+  /** Pulls that moved a unit off a city center. */
+  tractorBeamsOffCenter: number;
+  psychicCommands: number;
+  /** Machines that embarked on a water tile without a Port. */
+  selfLaunches: number;
+  /** Flyer Moves that passed over a unit of another player. */
+  flyoverMoves: number;
 }
 
 export interface AiMatchOptionsV7 {
@@ -766,7 +828,7 @@ export async function runAiBatchV7(
             Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r21",
+              rulesetId: "pulp-wars-poc-7r22",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -870,7 +932,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r21",
+    rulesetId: "pulp-wars-poc-7r22",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1016,6 +1078,44 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       bittenRemaining: 0,
       unansweredAttacks: 0,
     },
+    martian: {
+      shieldAbsorbed: {
+        attack: 0,
+        retaliation: 0,
+        splash: 0,
+        wail: 0,
+        blast: 0,
+      },
+      hitsFullyAbsorbed: 0,
+      rechargeEvents: 0,
+      rechargedShields: 0,
+      endTurnRechargeEvents: 0,
+      raysFull: 0,
+      raysHalf: 0,
+      rayDamage: 0,
+      rayKills: 0,
+      raysHalfMoved: 0,
+      raysHalfCooling: 0,
+      raysIgnoringFortification: 0,
+      pierceHitsHostile: 0,
+      pierceHitsFriendly: 0,
+      pierceDamage: 0,
+      pierceKills: 0,
+      beamDowns: 0,
+      beamDownPassengers: zeroRecord(UNIT_ROLE_IDS_V7),
+      mindControls: 0,
+      mindControlTargets: zeroRecord(UNIT_ROLE_IDS_V7),
+      mindControlTargetHp: 0,
+      thrallsCollapsed: 0,
+      thrallsMaximum: state.thralls.length,
+      thrallCaptures: 0,
+      tractorBeamsOwn: 0,
+      tractorBeamsHostile: 0,
+      tractorBeamsOffCenter: 0,
+      psychicCommands: 0,
+      selfLaunches: 0,
+      flyoverMoves: 0,
+    },
     knightOverrun: {
       chainsStarted: 0,
       attacks: 0,
@@ -1113,6 +1213,7 @@ function recordCommandAndEventsV7(
       metrics.undead.centerRisingCaptures += 1;
   }
   recordEventsV7(before, after, events, metrics, telemetry);
+  recordMartianV7(before, after, actorId, command, events, metrics);
   if (command.kind === "END_TURN") {
     for (const [unitId, chain] of telemetry.knightOverrunChains) {
       const unit = before.units.find((candidate) => candidate.id === unitId);
@@ -1742,6 +1843,168 @@ function recordMonumentOwnershipChange(
   ).length;
   if (count > 0 && beforeOwner !== afterOwner)
     metrics.achievements.monumentTransfers += count;
+}
+
+/**
+ * The Martian revision telemetry (section 16.2) of one accepted command,
+ * from its canonical events and the states around it.
+ */
+function recordMartianV7(
+  before: GameStateV7,
+  after: GameStateV7,
+  actorId: PlayerId,
+  command: CommandV7,
+  events: readonly DomainEventV7[],
+  metrics: HeadlessMetricsV7,
+): void {
+  const martian = metrics.martian;
+  martian.thrallsMaximum = Math.max(
+    martian.thrallsMaximum,
+    after.thralls.length,
+  );
+  const absorbed = (
+    source: keyof MartianMetricsV7["shieldAbsorbed"],
+    shieldDamage: number,
+    hpDamage: number,
+  ): void => {
+    martian.shieldAbsorbed[source] += shieldDamage;
+    if (shieldDamage > 0 && hpDamage === 0) martian.hitsFullyAbsorbed += 1;
+  };
+  const actorUnit =
+    "unitId" in command
+      ? before.units.find((unit) => unit.id === command.unitId)
+      : undefined;
+  if (
+    command.kind === "CAPTURE" &&
+    before.thralls.some((entry) => entry.unitId === command.unitId)
+  )
+    martian.thrallCaptures += 1;
+  if (
+    command.kind === "RALLY" &&
+    actorUnit !== undefined &&
+    ownerFaction(before, actorUnit.ownerId) === "MARTIAN"
+  )
+    martian.psychicCommands += 1;
+  if (
+    command.kind === "MOVE" &&
+    actorUnit !== undefined &&
+    unitFliesV7(before, actorUnit)
+  ) {
+    const moved = events.find((event) => event.kind === "UNIT_MOVED");
+    if (
+      moved?.kind === "UNIT_MOVED" &&
+      moved.path
+        .slice(0, -1)
+        .some((at) =>
+          before.units.some(
+            (unit) => unit.ownerId !== actorId && same(unit.at, at),
+          ),
+        )
+    )
+      martian.flyoverMoves += 1;
+  }
+  let turnEnded = false;
+  for (const event of events) {
+    if (event.kind === "TURN_ENDED") turnEnded = true;
+    if (event.kind === "SHIELDS_RECHARGED") {
+      martian.rechargeEvents += 1;
+      martian.rechargedShields += event.results.length;
+      if (command.kind === "END_TURN" && !turnEnded)
+        martian.endTurnRechargeEvents += 1;
+    }
+    if (event.kind === "COMBAT_RESOLVED") {
+      const preview = event.preview;
+      absorbed(
+        "attack",
+        preview.defenderShieldDamage,
+        preview.damageToDefender,
+      );
+      if (preview.retaliation)
+        absorbed(
+          "retaliation",
+          preview.attackerShieldDamage,
+          preview.damageToAttacker,
+        );
+      const attacker = before.units.find(
+        (unit) => unit.id === preview.attackerId,
+      );
+      const target = before.units.find(
+        (unit) => unit.id === preview.targetUnitId,
+      );
+      const pierceAt =
+        attacker !== undefined &&
+        target !== undefined &&
+        attackHasPierceV7(unitRoleRuleV7(before, attacker), attacker)
+          ? pierceTileV7(attacker.at, target.at)
+          : null;
+      for (const entry of preview.splash) {
+        absorbed("splash", entry.shieldDamage, entry.damage);
+        if (pierceAt === null || !same(entry.at, pierceAt)) continue;
+        const victim = before.units.find((unit) => unit.id === entry.unitId);
+        if (
+          victim !== undefined &&
+          arePlayersHostileV7(before, actorId, victim.ownerId)
+        )
+          martian.pierceHitsHostile += 1;
+        else martian.pierceHitsFriendly += 1;
+        martian.pierceDamage += entry.damage;
+        martian.pierceKills += Number(entry.dies);
+      }
+      if (preview.rayPower !== "NONE") {
+        if (preview.rayPower === "FULL") martian.raysFull += 1;
+        else {
+          martian.raysHalf += 1;
+          if (
+            before.cooling.some(
+              (entry) =>
+                entry.unitId === preview.attackerId && !entry.firedThisTurn,
+            )
+          )
+            martian.raysHalfCooling += 1;
+          else martian.raysHalfMoved += 1;
+        }
+        martian.rayDamage += preview.damageToDefender;
+        martian.rayKills += Number(preview.defenderDies);
+        if (preview.fortificationIgnored > 0)
+          martian.raysIgnoringFortification += 1;
+      }
+    }
+    if (event.kind === "WAIL_RESOLVED")
+      for (const entry of event.results)
+        absorbed("wail", entry.shieldDamage, entry.damage);
+    if (event.kind === "EXPLOSION_RESOLVED")
+      for (const entry of event.results)
+        absorbed("blast", entry.shieldDamage, entry.damage);
+    if (event.kind === "UNIT_BEAMED") {
+      martian.beamDowns += 1;
+      const passenger = before.units.find(
+        (unit) => unit.id === event.passengerUnitId,
+      );
+      if (passenger !== undefined)
+        martian.beamDownPassengers[passenger.role] += 1;
+    }
+    if (event.kind === "UNIT_MIND_CONTROLLED") {
+      martian.mindControls += 1;
+      martian.mindControlTargets[event.targetRole] += 1;
+      martian.mindControlTargetHp += event.hp;
+    }
+    if (event.kind === "UNIT_DIED" && event.cause === "BRAIN_LOST")
+      martian.thrallsCollapsed += 1;
+    if (event.kind === "UNIT_PULLED") {
+      const target = before.units.find(
+        (unit) => unit.id === event.targetUnitId,
+      );
+      if (target?.ownerId === actorId) martian.tractorBeamsOwn += 1;
+      else martian.tractorBeamsHostile += 1;
+      if (before.cities.some((city) => same(city.at, event.from)))
+        martian.tractorBeamsOffCenter += 1;
+    }
+    if (event.kind === "UNIT_EMBARKED") {
+      const tile = before.board.tiles.find((item) => same(item.at, event.to));
+      if (tile?.improvement !== "PORT" && tile?.improvement !== "SHIPYARD")
+        martian.selfLaunches += 1;
+    }
+  }
 }
 
 function ownerFaction(state: GameStateV7, playerId: PlayerId): FactionIdV7 {

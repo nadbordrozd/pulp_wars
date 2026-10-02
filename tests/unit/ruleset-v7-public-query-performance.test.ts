@@ -73,9 +73,12 @@ describe("ruleset-7 late public query performance", () => {
     // ordinals once more, and revision 19 inserts STAMPEDE and HATCH after
     // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision 20
     // removes STAMPEDE, moving every kind after KABOOM back by one (was
-    // 879cad…92fc); the revision-12-ordinal value below is unchanged.
+    // 879cad…92fc). The Martian revision (`pulp_wars-t6s.2`) inserts
+    // BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM after HATCH, moving every
+    // later kind forward by three (was 5097a1…935b); the revision-12-ordinal
+    // value below is unchanged.
     expect(canonicalHash(ready)).toBe(
-      "5097a191b402f8288cd34600c09c5fd345de4986c3458c2a9a7b10860b31935b",
+      "1872493ff10097dff7d04d160d1186630d47417fc73b67f6fd4066ec6a2493ea",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

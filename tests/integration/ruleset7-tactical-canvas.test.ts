@@ -271,7 +271,13 @@ describe("Ruleset 7 tactical Canvas presentation", () => {
         {
           kind: "COMBAT_SPLASH_DAMAGE",
           splash: [
-            { unitId: victim.id, at: victim.at, damage: 3, dies: false },
+            {
+              unitId: victim.id,
+              at: victim.at,
+              damage: 3,
+              dies: false,
+              shieldDamage: 0,
+            },
           ],
         },
       ],

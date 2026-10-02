@@ -285,8 +285,12 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // same Move to (7, 9); two other Moves of that unit, to (7, 7) and
     // (7, 8), are no longer candidates: they were closer to its objective in
     // a straight line but not along the land route the unit now follows.
+    // The Martian revision (`pulp_wars-t6s.2`) inserts BEAM_DOWN,
+    // MIND_CONTROL, and TRACTOR_BEAM after HATCH, moving every later kind
+    // forward by three (was 1a5ed7…d668); the revision-12-ordinal value
+    // below is unchanged.
     expect(canonicalHash(basicChoice)).toBe(
-      "1a5ed79fe161c6e687dbe047db7507ee74674d709cd7ed50b39a439ddd92d668",
+      "4bb1e3ce64aa72e534a03ffaa38576c77a1a2de1156a37dc42b7ea499457d3fc",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -810,6 +814,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // ordinals once more, and revision 19 inserts STAMPEDE and HATCH after
     // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision 20
     // removes STAMPEDE, moving every kind after KABOOM back by one; the
+    // Martian revision inserts three kinds after HATCH; the
     // revision-12-ordinal value below is unchanged.
     expect(canonicalHash(sliced)).toBe(
       RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION.policyDecisionHash,
@@ -849,8 +854,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision 20
     // removes STAMPEDE, moving every kind after KABOOM back by one (was
     // d30570…bcea); the revision-12-ordinal value below is unchanged.
+    // The Martian revision (`pulp_wars-t6s.2`) inserts BEAM_DOWN,
+    // MIND_CONTROL, and TRACTOR_BEAM after HATCH, moving every later
+    // command-kind ordinal forward by three (was 52d5d2…aa31).
     expect(canonicalHash(revision4Candidates)).toBe(
-      "52d5d28bfeb83ef81195c497875379c35201270f10da2698922055785cc5aa31",
+      "fde9b067d27434b7552156ca0daec5dfd675cdd477a2195787331a864a8fbca8",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -867,7 +875,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r21");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r22");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

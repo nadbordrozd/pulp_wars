@@ -4,9 +4,18 @@ import { nextBounded } from "../random/random";
 import type { JsonValue } from "../replay/canonical";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
+  MIND_CONTROL_COOLDOWN_TURNS_V7,
+  MIND_CONTROL_HP_V7,
+  MIND_CONTROL_RANGE_V7,
+  MIND_CONTROL_THRALL_LIMIT_V7,
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
+  TRACTOR_BEAM_RANGE_V7,
+  canEnterTerrainV7,
   effectiveRoleRuleV7,
+  flyerMayStandOnSiteV7,
+  unitFliesV7,
+  unitMovementModeV7,
   EMBARKED_LANDING_MAX_SPENT_V7,
   embarkedMovementSpentV7,
   factionRulesV7,
@@ -58,7 +67,12 @@ import {
   type CityEconomyChangeV7,
 } from "./economy";
 import type { DomainEventV7 } from "./events";
-import { calculateCombatPreviewV7, pushedDestinationV7 } from "./combat";
+import {
+  calculateCombatPreviewV7,
+  displacementDestinationLegalV7,
+  pushedDestinationV7,
+  tractorBeamTargetTechnologyV7,
+} from "./combat";
 import {
   eggActivationV7,
   hatchEggV7,
@@ -97,6 +111,20 @@ import {
   createInitialMapStateV7,
   type CreateInitialMapStateResultV7,
 } from "./map";
+import {
+  collapseThrallsV7,
+  coolingStepV7,
+  isThrallV7,
+  mindControlCooldownStepV7,
+  prunedMartianV7,
+  rechargeShieldsAtEndTurnV7,
+  rechargeShieldsV7,
+  thrallsOfBrainV7,
+  tractorBeamDestinationV7,
+  withFiredRayV7,
+  withFullShieldsV7,
+  withShieldDamageV7,
+} from "./martian";
 import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { parseGameStateV7 } from "./state-schema";
@@ -177,7 +205,14 @@ export type RuleErrorCodeV7 =
   // Revision 19: an illegal Hatch (`EMBARKED`, `NO_EGG`, `LAID_THIS_TURN`)
   // and a unit command other than Disband naming an Egg.
   | "HATCH_NOT_LEGAL"
-  | "UNIT_IS_EGG";
+  | "UNIT_IS_EGG"
+  // The Martian revision: an illegal Beam Down (`EMBARKED`, `MOVED`,
+  // `NO_PASSENGER`), Mind Control (`EMBARKED`, `COOLDOWN`, `THRALL_LIMIT`,
+  // `TARGET_IMMUNE`, `OUT_OF_RANGE`, `TARGET_HEALTHY`), or Tractor Beam
+  // (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, `BLOCKED`).
+  | "BEAM_DOWN_NOT_LEGAL"
+  | "MIND_CONTROL_NOT_LEGAL"
+  | "TRACTOR_BEAM_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -259,9 +294,13 @@ export function createPlayableGameFromMapStateV7(
   if (player === undefined)
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   try {
+    // The Martian revision section 5.2: the first Start Turn recharges
+    // Shields under the Force Field rule like any Start Turn (a Showcase).
     const started = startTurnEconomyV7(
       resetTurnUnits(created.state, player.id),
       player,
+      true,
+      (next) => rechargeShieldsV7(next, player.id),
     );
     const achievements = evaluateAchievementsV7(started.state, player.id);
     return {
@@ -282,19 +321,30 @@ export function applyCommandV7(
 ): ApplyCommandResultV7 {
   const result = applyCommandCoreV7(stateInput, actor, input);
   if (!result.accepted) return result;
-  const naval = navalFactsMayChangeV7(input)
+  const navalMayChange = navalFactsMayChangeV7(stateInput, input);
+  const naval = navalMayChange
     ? navalTransitionEventsV7(stateInput, result.state)
     : [];
   // Revision 14 section 3.5: a Lich that left the board cures its Plague.
   const cleared = plagueClearedEventsV7(stateInput, result.state);
-  if (!navalFactsMayChangeV7(input) && cleared.length === 0) return result;
+  if (!navalMayChange && cleared.length === 0) return result;
   return {
     ...result,
     events: [...result.events, ...naval, ...cleared],
   };
 }
 
-function navalFactsMayChangeV7(command: CommandV7): boolean {
+function navalFactsMayChangeV7(
+  state: GameStateV7,
+  command: CommandV7,
+): boolean {
+  // The Martian revision section 10.7: a Mind Control or a Tractor Beam can
+  // lift a blockade, and so can a Disband of a Brain whose embarked Thrall
+  // was a blockader (only a state with Thralls can be affected).
+  if (command.kind === "MIND_CONTROL" || command.kind === "TRACTOR_BEAM")
+    return true;
+  if (command.kind === "DISBAND")
+    return Array.isArray(state.thralls) && state.thralls.length > 0;
   if (command.kind === "RESEARCH")
     return (
       command.tech === "ROADS" ||
@@ -438,6 +488,12 @@ function applyCommandCoreV7(
     return applyLayEgg(stateInput, state, actor, command);
   if (command.kind === "HATCH")
     return applyHatch(stateInput, state, actor, command);
+  if (command.kind === "BEAM_DOWN")
+    return applyBeamDown(stateInput, state, actor, command);
+  if (command.kind === "MIND_CONTROL")
+    return applyMindControl(stateInput, state, actor, command);
+  if (command.kind === "TRACTOR_BEAM")
+    return applyTractorBeam(stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -1480,6 +1536,10 @@ function applyDisembark(
   const territoryOwner = state.cities.find(
     (city) => city.id === tile?.territoryCityId,
   )?.ownerId;
+  // The Martian revision: the landing tile goes through the shared
+  // `canEnterTerrainV7` with the unit's land-form movement mode (a machine
+  // lands on a Mountain without Engineering).
+  const landingMode = unitMovementModeV7(state, unit);
   if (
     unit.form !== "EMBARKED" ||
     unit.activation.handled ||
@@ -1487,9 +1547,13 @@ function applyDisembark(
     embarkedMovementSpentV7(unit.activation) > EMBARKED_LANDING_MAX_SPENT_V7 ||
     chebyshev(unit.at, command.at) !== 1 ||
     tile === undefined ||
-    tile.biome === null ||
-    (tile.terrain === "MOUNTAIN" &&
-      !player.researchedTechs.includes("ENGINEERING")) ||
+    !canEnterTerrainV7({
+      terrain: tile.terrain,
+      movementMode: landingMode,
+      afloat: false,
+      engineering: player.researchedTechs.includes("ENGINEERING"),
+      navigation: player.researchedTechs.includes("NAVIGATION"),
+    }) ||
     (territoryOwner !== undefined &&
       territoryOwner !== actor &&
       arePlayersAlliedV7(state, actor, territoryOwner)) ||
@@ -1498,6 +1562,19 @@ function applyDisembark(
     )
   )
     return rejected(original, "MOVEMENT_ILLEGAL");
+  // The Martian revision section 7.2: a flyer cannot land on a neutral
+  // village center or on the center of a city it does not own.
+  if (
+    landingMode === "FLY" &&
+    !flyerMayStandOnSiteV7(
+      tile.site,
+      state.cities.find((city) => same(city.at, command.at))?.ownerId ?? null,
+      actor,
+    )
+  )
+    return rejected(original, "MOVEMENT_ILLEGAL", {
+      reason: "SETTLEMENT_FORBIDDEN",
+    });
   if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
     return rejected(original, "INTEGER_OVERFLOW");
   try {
@@ -1547,8 +1624,11 @@ function applyDisembark(
       players = setExplored(players, actor, spawnedSight.explored);
       treasure.extraRevealed.push(...spawnedSight.revealed);
     }
+    // The Martian revision: a flyer is not on the ground and never
+    // destroys Field Defense by entering a tile.
     const occupiesHostileDefense =
       tile.fieldDefense &&
+      landingMode !== "FLY" &&
       territoryOwner !== undefined &&
       territoryOwner !== actor &&
       arePlayersHostileV7(state, actor, territoryOwner);
@@ -1566,6 +1646,11 @@ function applyDisembark(
       commandIndex: nextSafe(state.commandIndex),
       players,
       units: movedUnits,
+      shields: withFullShieldsV7(
+        state,
+        state.shields,
+        treasure?.spawnedUnit == null ? [] : [treasure.spawnedUnit],
+      ),
       cities: economy.cities,
       populationContributions: economy.populationContributions,
       random: treasure?.random ?? state.random,
@@ -1691,6 +1776,8 @@ function applyTrain(
           : candidate,
       ),
       units: spawn.units,
+      // The Martian revision: a trained unit starts with its full Shield.
+      shields: withFullShieldsV7(state, state.shields, [trained]),
     };
     const achievements = evaluateAchievementsV7(staged, actor);
     return accepted(checked(achievements.state), [
@@ -1911,6 +1998,437 @@ function applyHatch(
   }
 }
 
+/**
+ * The Martian revision `BEAM_DOWN` (section 8.1): a primary action of a
+ * Saucer that has not moved this turn. It moves one own land-form, one-slot,
+ * non-flying unit that stands on or next to an own city center to a tile
+ * next to the Saucer. The legality checks run in the section's fixed order;
+ * the first failure is the (atomic) rejection.
+ */
+function applyBeamDown(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "BEAM_DOWN" }>,
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const saucer = actorCheck.unit;
+  if (!unitRoleRuleV7(state, saucer).abilities.includes("BEAM_DOWN"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: saucer.role });
+  if (saucer.activation.overrunActive || primaryUsed(saucer))
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: saucer.id });
+  if (saucer.form !== "LAND")
+    return rejected(original, "BEAM_DOWN_NOT_LEGAL", { reason: "EMBARKED" });
+  if (saucer.activation.moved)
+    return rejected(original, "BEAM_DOWN_NOT_LEGAL", { reason: "MOVED" });
+  const passenger = state.units.find(
+    (unit) =>
+      unit.id === command.passengerUnitId &&
+      unit.id !== saucer.id &&
+      unit.hp > 0 &&
+      unit.ownerId === actor &&
+      unit.form === "LAND" &&
+      unitCapacitySlotsV7(state, unit) === 1 &&
+      unitMovementModeV7(state, unit) !== "FLY" &&
+      state.cities.some(
+        (city) => city.ownerId === actor && chebyshev(city.at, unit.at) <= 1,
+      ),
+  );
+  if (passenger === undefined)
+    return rejected(original, "BEAM_DOWN_NOT_LEGAL", {
+      reason: "NO_PASSENGER",
+    });
+  const player = requirePlayer(state, actor);
+  const tile = tileAtV7(state.board, command.to);
+  const territoryOwner =
+    tile === undefined
+      ? undefined
+      : state.cities.find((city) => city.id === tile.territoryCityId)?.ownerId;
+  // A Rift (pulp_wars-9s0.5) is never a Beam Down destination: every
+  // passenger is a non-flyer, and `canEnterTerrainV7` keeps them off it.
+  if (
+    tile === undefined ||
+    chebyshev(saucer.at, command.to) !== 1 ||
+    tile.site !== null ||
+    !canEnterTerrainV7({
+      terrain: tile.terrain,
+      movementMode: unitMovementModeV7(state, passenger),
+      afloat: false,
+      engineering: player.researchedTechs.includes("ENGINEERING"),
+      navigation: player.researchedTechs.includes("NAVIGATION"),
+    }) ||
+    state.units.some((unit) => unit.hp > 0 && same(unit.at, command.to)) ||
+    state.treasureChests.some((chest) => same(chest, command.to)) ||
+    (territoryOwner !== undefined &&
+      arePlayersAlliedV7(state, actor, territoryOwner))
+  )
+    return rejected(original, "INVALID_TILE", { action: "BEAM_DOWN" });
+  try {
+    const from = passenger.at;
+    const to = { x: command.to.x, y: command.to.y };
+    // The disembarkation rule: Field Defense in hostile territory is
+    // destroyed by the unit that lands on it.
+    const occupiesHostileDefense =
+      tile.fieldDefense &&
+      territoryOwner !== undefined &&
+      arePlayersHostileV7(state, actor, territoryOwner);
+    const board = occupiesHostileDefense
+      ? replaceTile(state, to, { ...tile, fieldDefense: false })
+      : state.board;
+    const units = state.units.map((unit) =>
+      unit.id === passenger.id
+        ? {
+            ...unit,
+            at: to,
+            captureEligible: false,
+            activation: exhaustedActivation(),
+          }
+        : unit.id === saucer.id
+          ? {
+              ...unit,
+              activation: {
+                ...unit.activation,
+                specialActed: true,
+                handled: true,
+              },
+            }
+          : unit,
+    );
+    const beamed = requireValue(units.find((unit) => unit.id === passenger.id));
+    const sightState = { ...state, board, units } as GameStateV7;
+    const reveal = revealRadius(
+      sightState,
+      actor,
+      to,
+      unitSightRadiusAtV7(sightState, beamed),
+    );
+    const events: DomainEventV7[] = [
+      {
+        kind: "UNIT_BEAMED",
+        playerId: actor,
+        unitId: saucer.id,
+        passengerUnitId: passenger.id,
+        from,
+        to,
+      },
+    ];
+    if (occupiesHostileDefense)
+      events.push({
+        kind: "FIELD_DEFENSE_DESTROYED",
+        at: to,
+        reason: "OCCUPATION",
+      });
+    if (reveal.revealed.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: reveal.revealed,
+      });
+    const staged = graveActionTail(
+      {
+        ...state,
+        board,
+        commandIndex: nextSafe(state.commandIndex),
+        players: setExplored(state.players, actor, reveal.explored),
+        units,
+      },
+      actor,
+      events,
+    );
+    return accepted(checked(staged), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * The Martian revision `MIND_CONTROL` (section 8.2): a primary action of a
+ * Brain. A visible hostile land-form one-slot unit with at most
+ * `MIND_CONTROL_HP_V7` HP within `MIND_CONTROL_RANGE_V7`, not on a
+ * settlement site, leaves the board as a removal (not a death), and a
+ * Thrall with its HP appears on its tile under a new entity ID.
+ */
+function applyMindControl(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "MIND_CONTROL" }>,
+): ApplyCommandResultV7 {
+  if (
+    state.commandIndex === Number.MAX_SAFE_INTEGER ||
+    state.nextEntityId >= Number.MAX_SAFE_INTEGER
+  )
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const brain = actorCheck.unit;
+  if (!unitRoleRuleV7(state, brain).abilities.includes("MIND_CONTROL"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: brain.role });
+  if (brain.activation.overrunActive || primaryUsed(brain))
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: brain.id });
+  if (brain.form !== "LAND")
+    return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: "EMBARKED" });
+  if (state.mindControlCooldowns.some((entry) => entry.unitId === brain.id))
+    return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: "COOLDOWN" });
+  if (
+    thrallsOfBrainV7(state.thralls, brain.id).length >=
+    MIND_CONTROL_THRALL_LIMIT_V7
+  )
+    return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
+      reason: "THRALL_LIMIT",
+    });
+  const target = state.units.find(
+    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
+  );
+  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
+    return rejected(original, "TARGET_NOT_FOUND", {
+      targetUnitId: command.targetUnitId,
+    });
+  if (!arePlayersHostileV7(state, actor, target.ownerId))
+    return rejected(original, "TARGET_ALLIED");
+  // A unit on a Rift (pulp_wars-9s0.5) is immune as well: the Thrall could
+  // not stand there.
+  if (
+    target.form !== "LAND" ||
+    target.role === "JUGGERNAUT" ||
+    unitCapacitySlotsV7(state, target) !== 1 ||
+    tileAtV7(state.board, target.at)?.site !== null
+  )
+    return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
+      reason: "TARGET_IMMUNE",
+    });
+  if (chebyshev(brain.at, target.at) > MIND_CONTROL_RANGE_V7)
+    return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
+      reason: "OUT_OF_RANGE",
+    });
+  if (target.hp > MIND_CONTROL_HP_V7)
+    return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
+      reason: "TARGET_HEALTHY",
+    });
+  try {
+    const allocation = allocateUnitId(state.nextEntityId);
+    const rule = effectiveRoleRuleV7(
+      "FIGHTER",
+      requirePlayer(state, actor).faction,
+    );
+    const thrall: UnitStateV7 = {
+      id: allocation.id,
+      ownerId: actor,
+      homeCityId: null,
+      role: "FIGHTER",
+      form: "LAND",
+      at: { x: target.at.x, y: target.at.y },
+      hp: Math.min(target.hp, rule.maxHp),
+      maxHp: rule.maxHp,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation: exhaustedActivation(),
+    };
+    const events: DomainEventV7[] = [
+      {
+        kind: "UNIT_MIND_CONTROLLED",
+        playerId: actor,
+        unitId: brain.id,
+        targetUnitId: target.id,
+        targetOwnerId: target.ownerId,
+        targetRole: target.role,
+        thrallUnitId: thrall.id,
+        at: thrall.at,
+        hp: thrall.hp,
+      },
+    ];
+    const thralls = [
+      ...state.thralls.filter((entry) => entry.unitId !== target.id),
+      { unitId: thrall.id, brainUnitId: brain.id },
+    ].sort((left, right) => left.unitId - right.unitId);
+    // The target is removed, not killed: no UNIT_DIED, Grave, rising, blast,
+    // credit, growth, or Plunder. When it was a Brain, its Thralls collapse.
+    const units = [
+      ...collapseThrallsV7(
+        [
+          ...state.units
+            .filter((unit) => unit.id !== target.id)
+            .map((unit) =>
+              unit.id === brain.id
+                ? {
+                    ...unit,
+                    activation: {
+                      ...unit.activation,
+                      specialActed: true,
+                      handled: true,
+                    },
+                  }
+                : unit,
+            ),
+          thrall,
+        ],
+        thralls,
+        events,
+      ).units,
+    ].sort((left, right) => left.id - right.id);
+    const sightState = { ...state, units } as GameStateV7;
+    const reveal = revealRadius(
+      sightState,
+      actor,
+      thrall.at,
+      unitSightRadiusAtV7(sightState, thrall),
+    );
+    if (reveal.revealed.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: reveal.revealed,
+      });
+    const staged = graveActionTail(
+      {
+        ...state,
+        nextEntityId: allocation.nextEntityId,
+        commandIndex: nextSafe(state.commandIndex),
+        players: setExplored(state.players, actor, reveal.explored),
+        units,
+        thralls,
+        mindControlCooldowns: [
+          ...state.mindControlCooldowns,
+          { unitId: brain.id, turnsRemaining: MIND_CONTROL_COOLDOWN_TURNS_V7 },
+        ].sort((left, right) => left.unitId - right.unitId),
+      },
+      actor,
+      events,
+    );
+    return accepted(checked(staged), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * The Martian revision `TRACTOR_BEAM` (section 8.4): a primary action of a
+ * Mothership, the mirror of Push. A visible own or hostile unit exactly
+ * `TRACTOR_BEAM_RANGE_V7` tiles away (not an Egg, a `JUGGERNAUT`-role unit,
+ * or a two-slot unit) is pulled one tile toward the Mothership when the
+ * destination passes the Push conditions and holds no treasure chest. It
+ * deals no damage and changes nothing on either tile.
+ */
+function applyTractorBeam(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "TRACTOR_BEAM" }>,
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const mothership = actorCheck.unit;
+  if (!unitRoleRuleV7(state, mothership).abilities.includes("TRACTOR_BEAM"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: mothership.role });
+  if (mothership.activation.overrunActive || primaryUsed(mothership))
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: mothership.id });
+  if (mothership.form !== "LAND")
+    return rejected(original, "TRACTOR_BEAM_NOT_LEGAL", { reason: "EMBARKED" });
+  const target = state.units.find(
+    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
+  );
+  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
+    return rejected(original, "TARGET_NOT_FOUND", {
+      targetUnitId: command.targetUnitId,
+    });
+  if (arePlayersAlliedV7(state, actor, target.ownerId))
+    return rejected(original, "TARGET_ALLIED");
+  if (
+    target.form === "EGG" ||
+    target.role === "JUGGERNAUT" ||
+    unitCapacitySlotsV7(state, target) !== 1
+  )
+    return rejected(original, "TRACTOR_BEAM_NOT_LEGAL", {
+      reason: "TARGET_IMMUNE",
+    });
+  if (chebyshev(mothership.at, target.at) !== TRACTOR_BEAM_RANGE_V7)
+    return rejected(original, "TRACTOR_BEAM_NOT_LEGAL", {
+      reason: "OUT_OF_RANGE",
+    });
+  const to = tractorBeamDestinationV7(mothership.at, target.at);
+  if (
+    !displacementDestinationLegalV7(
+      state,
+      target,
+      to,
+      tractorBeamTargetTechnologyV7(
+        target.ownerId === actor,
+        requirePlayer(state, actor).researchedTechs,
+        tileAtV7(state.board, target.at)?.terrain,
+      ),
+    ) ||
+    state.treasureChests.some((chest) => same(chest, to))
+  )
+    return rejected(original, "TRACTOR_BEAM_NOT_LEGAL", { reason: "BLOCKED" });
+  try {
+    const from = target.at;
+    const units = state.units.map((unit) =>
+      unit.id === target.id
+        ? { ...unit, at: to, captureEligible: false }
+        : unit.id === mothership.id
+          ? {
+              ...unit,
+              activation: {
+                ...unit.activation,
+                specialActed: true,
+                handled: true,
+              },
+            }
+          : unit,
+    );
+    const events: DomainEventV7[] = [
+      {
+        kind: "UNIT_PULLED",
+        sourceUnitId: mothership.id,
+        targetUnitId: target.id,
+        from,
+        to,
+      },
+    ];
+    let players = state.players;
+    // An own target reveals its sight from the destination.
+    if (target.ownerId === actor) {
+      const pulled = requireValue(units.find((unit) => unit.id === target.id));
+      const sightState = { ...state, units } as GameStateV7;
+      const reveal = revealRadius(
+        sightState,
+        actor,
+        to,
+        unitSightRadiusAtV7(sightState, pulled),
+      );
+      players = setExplored(players, actor, reveal.explored);
+      if (reveal.revealed.length > 0)
+        events.push({
+          kind: "TILES_REVEALED",
+          playerId: actor,
+          tiles: reveal.revealed,
+        });
+    }
+    const staged = graveActionTail(
+      {
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        players,
+        units,
+      },
+      actor,
+      events,
+    );
+    return accepted(checked(staged), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
 function applyLandGrant(
   original: GameStateV7,
   state: GameStateV7,
@@ -2043,6 +2561,7 @@ function applyReward(
     const board = state.board;
     let cities: readonly CityStateV7[] = state.cities;
     let units = state.units;
+    let shields = state.shields;
     let contributions = state.populationContributions;
     const choices: readonly PendingChoiceV7[] = state.pendingChoices.slice(1);
     const events: DomainEventV7[] = [
@@ -2152,6 +2671,8 @@ function applyReward(
       );
       players = spawn.players;
       units = spawn.units;
+      // The Martian revision: a reward unit arrives at its full Shield.
+      shields = withFullShieldsV7(state, shields, [created]);
       events.push({
         kind: "UNIT_REWARD_GRANTED",
         playerId: actor,
@@ -2172,7 +2693,7 @@ function applyReward(
         militiaSize === 2
           ? rewardDisplacementCellV7(
               { ...state, players, cities, units },
-              actor,
+              created,
               city.at,
             )
           : null;
@@ -2185,6 +2706,7 @@ function applyReward(
           at: secondAt,
         };
         units = [...units, companion];
+        shields = withFullShieldsV7(state, shields, [companion]);
         events.push({
           kind: "UNIT_REWARD_GRANTED",
           playerId: actor,
@@ -2217,6 +2739,7 @@ function applyReward(
         board,
         cities,
         units,
+        shields,
         populationContributions: contributions,
         pendingChoices: choices,
       },
@@ -2269,6 +2792,16 @@ function applyMove(
         city.id === destinationTile.territoryCityId && city.ownerId === actor,
     ) &&
     isActivePortV7(state, validation.destination, actor);
+  // The Martian revision section 7.3: a land-form walker or flyer whose
+  // Move ends (or is stopped or interrupted) on a water tile self-launches:
+  // it embarks there with the ordinary result of embarking. No Port needed.
+  const movementMode =
+    unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
+  const selfLaunches =
+    movementMode !== "GROUND" &&
+    validation.traversedPath.length > 0 &&
+    destinationTile?.biome === null;
+  const embarks = autoEmbarks || selfLaunches;
   try {
     const treasure = resolveTreasure(
       state,
@@ -2283,9 +2816,9 @@ function applyMove(
         ? {
             ...candidate,
             at: validation.destination,
-            form: autoEmbarks ? ("EMBARKED" as const) : candidate.form,
+            form: embarks ? ("EMBARKED" as const) : candidate.form,
             captureEligible: false,
-            activation: autoEmbarks
+            activation: embarks
               ? {
                   ...exhaustedActivation(),
                   movedPathLength: validation.traversedPath.length,
@@ -2323,9 +2856,12 @@ function applyMove(
       treasure.extraRevealed.push(...sight.revealed);
     }
     const events: DomainEventV7[] = [];
+    // The Martian revision: a flyer never destroys Field Defense by
+    // entering a tile (it is not on the ground).
     const occupiesHostileDefense =
       unit.form === "LAND" &&
-      !autoEmbarks &&
+      !embarks &&
+      movementMode !== "FLY" &&
       destinationTile?.fieldDefense === true &&
       destinationTile.territoryCityId !== null &&
       state.cities.some(
@@ -2353,7 +2889,7 @@ function applyMove(
         unitId: unit.id,
         path: validation.traversedPath,
       });
-    if (autoEmbarks)
+    if (embarks)
       events.push({
         kind: "UNIT_EMBARKED",
         playerId: actor,
@@ -2382,6 +2918,11 @@ function applyMove(
       commandIndex: nextSafe(state.commandIndex),
       players,
       units,
+      shields: withFullShieldsV7(
+        state,
+        state.shields,
+        treasure?.spawnedUnit == null ? [] : [treasure.spawnedUnit],
+      ),
       random: treasure?.random ?? state.random,
       nextEntityId: treasure?.nextEntityId ?? state.nextEntityId,
       treasureChests: treasure?.treasureChests ?? state.treasureChests,
@@ -2531,15 +3072,22 @@ function treasureKnightPlacement(
         a.id - b.id,
     );
   const player = requirePlayer(state, actor);
+  // The Martian revision: the treasure unit's own movement mode decides
+  // (a Saucer may be placed on a Mountain), through `canEnterTerrainV7`.
+  const movementMode = unitMovementModeV7(state, { ownerId: actor, role });
   for (const city of cities)
     for (const candidate of adjacentCoords(state, at)) {
       const tile = tileAtV7(state.board, candidate);
       if (
         tile === undefined ||
-        tile.biome === null ||
         tile.site !== null ||
-        (tile.terrain === "MOUNTAIN" &&
-          !player.researchedTechs.includes("ENGINEERING")) ||
+        !canEnterTerrainV7({
+          terrain: tile.terrain,
+          movementMode,
+          afloat: false,
+          engineering: player.researchedTechs.includes("ENGINEERING"),
+          navigation: player.researchedTechs.includes("NAVIGATION"),
+        }) ||
         state.units.some((unit) => unit.hp > 0 && same(unit.at, candidate)) ||
         state.treasureChests.some((chest) => same(chest, candidate))
       )
@@ -2607,12 +3155,22 @@ function applyAttack(
       defender.id,
     );
     const destinationTile = tileAtV7(state.board, defender.at);
+    // The advance enters the defender's tile through the shared
+    // `canEnterTerrainV7` (a striding Colossus needs no Engineering).
     const canAdvance =
       calculated.advances &&
       isExplored(requirePlayer(state, actor), defender.at) &&
       destinationTile !== undefined &&
       (destinationTile.terrain !== "MOUNTAIN" ||
-        requirePlayer(state, actor).researchedTechs.includes("ENGINEERING"));
+        canEnterTerrainV7({
+          terrain: destinationTile.terrain,
+          movementMode: unitMovementModeV7(state, attacker),
+          afloat: false,
+          engineering: requirePlayer(state, actor).researchedTechs.includes(
+            "ENGINEERING",
+          ),
+          navigation: false,
+        }));
     const preview =
       canAdvance === calculated.advances
         ? calculated
@@ -2813,6 +3371,26 @@ function applyAttack(
         );
     if (preview.attackerInfected) infect(defender, attacker, "RETALIATION");
     else if (preview.attackerDies) died(attacker, "RETALIATION");
+    // The Martian revision section 8.3: the Thralls of a Brain that just
+    // left the board collapse right after its death events and before the
+    // advance, the Push, and any chain.
+    units = [...collapseThrallsV7(units, state.thralls, events).units];
+    // Sections 5.3 and 6.2: the Shields the exchange spent, and the Cooling
+    // a full-power ray starts.
+    const shields = withShieldDamageV7(
+      state.shields,
+      new Map([
+        [defender.id, preview.defenderShieldDamage],
+        [attacker.id, preview.attackerShieldDamage],
+        ...preview.splash.map(
+          (entry) => [entry.unitId, entry.shieldDamage] as const,
+        ),
+      ]),
+    );
+    const cooling =
+      preview.coolingApplied && !preview.attackerDies
+        ? withFiredRayV7(state.cooling, attacker.id)
+        : state.cooling;
     // Revision 14 sections 3.1 and 4.1: Plague and bites on the survivors.
     const plagued = withPlaguedV7(
       state.plagued,
@@ -2868,7 +3446,15 @@ function applyAttack(
       initialExplosions.push({ unit: attacker, cause: "DEATH" });
     const chain = resolveStateExplosionChainV7(
       state,
-      { units, board, graves, nextEntityId, bitten },
+      {
+        units,
+        board,
+        graves,
+        nextEntityId,
+        bitten,
+        shields,
+        thralls: state.thralls,
+      },
       initialExplosions,
       events,
     );
@@ -3004,6 +3590,8 @@ function applyAttack(
         graves,
         plagued,
         bitten,
+        shields: chain.shields,
+        cooling,
         populationContributions: economy.populationContributions,
       },
       actor,
@@ -3437,12 +4025,14 @@ function applyPromote(
   const unit = actorCheck.unit;
   if (unit.activation.overrunActive)
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
-  // Revision 19: a Dinosaur unit grows instead and is never promoted.
+  // Revision 19: a Dinosaur unit grows instead and is never promoted. The
+  // Martian revision section 8.3: a Thrall is never promoted.
   if (
     unit.form === "EMBARKED" ||
     unit.veteran ||
     unit.kills < PROMOTION_KILLS_V7 ||
-    unitGrowsV7(state, unit)
+    unitGrowsV7(state, unit) ||
+    isThrallV7(state.thralls, unit.id)
   )
     return rejected(original, "PROMOTION_NOT_ELIGIBLE", { unitId });
   // Revision 20 section 5: a promotion fully heals (`hp` is the new maximum).
@@ -3513,7 +4103,12 @@ function applyPillage(
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
   const { unit } = actorCheck;
-  if (unit.form !== "LAND" || unit.role === "JUGGERNAUT")
+  // The Martian revision section 7.2: a flyer cannot Pillage.
+  if (
+    unit.form !== "LAND" ||
+    unit.role === "JUGGERNAUT" ||
+    unitFliesV7(state, unit)
+  )
     return rejected(original, "PILLAGE_INVALID_TARGET");
   if (primaryUsed(unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
@@ -3693,6 +4288,9 @@ function applyDisband(
     return rejected(original, "UNIT_ROLE_INVALID", {
       role: actorCheck.unit.role,
     });
+  // The Martian revision section 8.3: a Thrall cannot Disband.
+  if (isThrallV7(state.thralls, unitId))
+    return rejected(original, "DISBAND_NOT_LEGAL", { reason: "THRALL" });
   if (!egg && primaryUsed(actorCheck.unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   // Revision 14 sections 3.6 and 4.5: afflicted units cannot Disband.
@@ -3704,7 +4302,22 @@ function applyDisband(
   try {
     const coins = player.coins + refund;
     if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
-    const units = state.units.filter((item) => item.id !== unitId);
+    const events: DomainEventV7[] = [
+      {
+        kind: "UNIT_DISBANDED",
+        playerId: actor,
+        unitId,
+        role: actorCheck.unit.role,
+        coinDelta: refund,
+      },
+    ];
+    // The Martian revision section 8.3: disbanding a Brain collapses its
+    // Thralls.
+    const units = collapseThrallsV7(
+      state.units.filter((item) => item.id !== unitId),
+      state.thralls,
+      events,
+    ).units;
     const afterRemoval = {
       ...state,
       units,
@@ -3716,15 +4329,7 @@ function applyDisband(
         item.id === actor ? { ...item, coins } : item,
       ),
     });
-    return accepted(next, [
-      {
-        kind: "UNIT_DISBANDED",
-        playerId: actor,
-        unitId,
-        role: actorCheck.unit.role,
-        coinDelta: refund,
-      },
-    ]);
+    return accepted(next, events);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -3837,7 +4442,10 @@ function applyCapture(
         item.id === unit.id
           ? {
               ...item,
-              homeCityId: captured.id,
+              // The Martian revision section 8.3: a Thrall stays homeless.
+              homeCityId: isThrallV7(state.thralls, item.id)
+                ? null
+                : captured.id,
               captureEligible: false,
               activation: { ...item.activation, captured: true, handled: true },
             }
@@ -4001,7 +4609,7 @@ function applyEndTurn(
   try {
     const current = requirePlayer(state, actor);
     const recovery = recoverIdleUnits(state, current);
-    const expired: GameStateV7 = {
+    const expiredUnits: GameStateV7 = {
       ...recovery.state,
       units: recovery.state.units.map((unit) =>
         unit.ownerId === actor
@@ -4018,6 +4626,12 @@ function applyEndTurn(
           : unit,
       ),
     };
+    // The Martian revision: the Cooling step (section 6.2), then the Force
+    // Fields recharge (section 5.5), after idle recovery and the expiry of
+    // Inspired and Overrun and before the income preview.
+    const cooled = coolingStepV7(expiredUnits, actor);
+    const fields = rechargeShieldsAtEndTurnV7(cooled, actor);
+    const expired = fields.state;
     const preview = playerIncomeV7(expired, actor);
     const nextIndex = nextActiveSeat(state);
     if (nextIndex === null) return rejected(original, "INVALID_STATE");
@@ -4037,12 +4651,26 @@ function applyEndTurn(
     );
     // Revision 19 section 6.4: the hatch step runs after Plague and any
     // chain it started, and before Windmill healing.
-    const started = startTurnEconomyV7(advanced, nextPlayer, false, (next) => {
+    // The Martian revision section 5.2: Mind Control cooldowns, then the
+    // Shield recharge, run after the reset and before Plague.
+    const started = startTurnEconomyV7(advanced, nextPlayer, false, (reset) => {
+      const recharge = rechargeShieldsV7(
+        mindControlCooldownStepV7(reset, nextPlayer.id),
+        nextPlayer.id,
+      );
+      const next = recharge.state;
       const plague = resolveStartTurnPlagueAndChainV7(next, nextPlayer.id);
       const hatch = resolveStartTurnHatchV7(plague.state, nextPlayer.id);
-      return hatch.events.length === 0 && hatch.state === plague.state
-        ? plague
-        : { state: hatch.state, events: [...plague.events, ...hatch.events] };
+      const afflicted =
+        hatch.events.length === 0 && hatch.state === plague.state
+          ? plague
+          : { state: hatch.state, events: [...plague.events, ...hatch.events] };
+      return recharge.events.length === 0
+        ? afflicted
+        : {
+            state: afflicted.state,
+            events: [...recharge.events, ...afflicted.events],
+          };
     });
     const turnStarted = started.events[0];
     if (turnStarted === undefined) throw new RangeError("INVALID_STATE");
@@ -4058,6 +4686,7 @@ function applyEndTurn(
       }),
       [
         ...recovery.events,
+        ...fields.events,
         {
           kind: "INCOME_PREVIEWED",
           playerId: actor,
@@ -4194,6 +4823,9 @@ function applyWail(
       risings.push(rising);
       units = [...units, rising];
     }
+    // The Martian revision: a Brain killed by the Wail takes its Thralls
+    // with it, and the Wail strips the Shields it hit (section 5.3).
+    units = [...collapseThrallsV7(units, state.thralls, events).units];
     // Revision 17 section 6.7: Wail kills of exploding units set off a chain,
     // then its Plunder (never for the Undead Banshee's owner).
     const chain = resolveStateExplosionChainV7(
@@ -4204,6 +4836,13 @@ function applyWail(
         graves,
         nextEntityId,
         bitten: state.bitten,
+        shields: withShieldDamageV7(
+          state.shields,
+          new Map(
+            targets.map((entry) => [entry.unitId, entry.shieldDamage] as const),
+          ),
+        ),
+        thralls: state.thralls,
       },
       targets.flatMap((entry) => {
         const victim = requireValue(
@@ -4259,6 +4898,7 @@ function applyWail(
         cities: economy.cities,
         units,
         graves,
+        shields: chain.shields,
         populationContributions: economy.populationContributions,
       },
       actor,
@@ -4325,7 +4965,15 @@ function applyKaboom(
     }
     const chain = resolveStateExplosionChainV7(
       state,
-      { units, board: state.board, graves, nextEntityId, bitten: state.bitten },
+      {
+        units,
+        board: state.board,
+        graves,
+        nextEntityId,
+        bitten: state.bitten,
+        shields: state.shields,
+        thralls: state.thralls,
+      },
       [{ unit: exploder, cause: "KABOOM" }],
       events,
     );
@@ -4373,6 +5021,7 @@ function applyKaboom(
         cities: economy.cities,
         units,
         graves,
+        shields: chain.shields,
         populationContributions: economy.populationContributions,
       },
       actor,
@@ -4417,6 +5066,8 @@ function resolveStartTurnPlagueAndChainV7(
       graves: after.graves,
       nextEntityId: after.nextEntityId,
       bitten: after.bitten,
+      shields: after.shields,
+      thralls: after.thralls,
     },
     initial,
     events,
@@ -4459,6 +5110,7 @@ function resolveStartTurnPlagueAndChainV7(
       units: chain.units,
       graves: chain.graves,
       nextEntityId: chain.nextEntityId,
+      shields: chain.shields,
       cities: economy.cities,
       populationContributions: economy.populationContributions,
     },
@@ -4745,23 +5397,42 @@ function settleCityRewardsV7(
 
 /**
  * The reward displacement rule: the first cell adjacent to `center` in (y, x)
- * order that is land, enterable by `ownerId` (Mountain needs Engineering),
- * has no treasure chest and no unit, and is not an ally's territory.
+ * order that is land, enterable by `unit` (the shared `canEnterTerrainV7`:
+ * a Mountain needs its owner's Engineering unless it strides or flies), has
+ * no treasure chest and no unit, and is not an ally's territory. The Martian
+ * revision: a flyer is never displaced onto a settlement center it cannot
+ * stand on.
  */
 function rewardDisplacementCellV7(
   state: GameStateV7,
-  ownerId: PlayerId,
+  unit: Pick<UnitStateV7, "ownerId" | "role">,
   center: CoordV7,
 ): CoordV7 | null {
+  const ownerId = unit.ownerId;
   const owner = requirePlayer(state, ownerId);
+  const movementMode = unitMovementModeV7(state, unit);
   return (
     adjacentCoords(state, center).find((at) => {
       const tile = tileAtV7(state.board, at);
       if (tile === undefined || tile.biome === null) return false;
       if (state.treasureChests.some((chest) => same(chest, at))) return false;
       if (
-        tile.terrain === "MOUNTAIN" &&
-        !owner.researchedTechs.includes("ENGINEERING")
+        !canEnterTerrainV7({
+          terrain: tile.terrain,
+          movementMode,
+          afloat: false,
+          engineering: owner.researchedTechs.includes("ENGINEERING"),
+          navigation: owner.researchedTechs.includes("NAVIGATION"),
+        })
+      )
+        return false;
+      if (
+        movementMode === "FLY" &&
+        !flyerMayStandOnSiteV7(
+          tile.site,
+          state.cities.find((city) => same(city.at, at))?.ownerId ?? null,
+          ownerId,
+        )
       )
         return false;
       const territoryOwner = state.cities.find(
@@ -4794,7 +5465,7 @@ function resolveCityCenterSpawnV7(
   const destination =
     occupant === undefined
       ? null
-      : rewardDisplacementCellV7(state, occupant.ownerId, city.at);
+      : rewardDisplacementCellV7(state, occupant, city.at);
   const displaced =
     occupant === undefined || destination === null
       ? null
@@ -4815,6 +5486,10 @@ function resolveCityCenterSpawnV7(
       from: city.at,
       to: destination,
     });
+  // The Martian revision section 8.3: a Brain removed by displacement takes
+  // its Thralls with it.
+  if (occupant !== undefined && displaced === null)
+    units = [...collapseThrallsV7(units, state.thralls, events).units];
   const revealedByPlayer = new Map<PlayerId, CoordV7[]>();
   for (const unit of [spawned, ...(displaced === null ? [] : [displaced])]) {
     const visibleState = { ...state, players, units } as GameStateV7;
@@ -5091,8 +5766,12 @@ function isExplored(player: PlayerStateV7, at: CoordV7): boolean {
 function checked(state: GameStateV7): GameStateV7 {
   checkedOutputValidationCountV7 += 1;
   // Revision 14: drop afflictions of departed units, sources, and biters.
-  // Revision 19: drop the countdowns of Eggs that left the board.
-  const result = parseGameStateV7(prunedEggsV7(prunedAfflictionsV7(state)));
+  // Revision 19: drop the countdowns of Eggs that left the board. The
+  // Martian revision: drop the Shield, Cooling, Thrall, and cooldown entries
+  // of units that left the board.
+  const result = parseGameStateV7(
+    prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state))),
+  );
   if (result === null) throw new RangeError("INVALID_STATE");
   return result;
 }

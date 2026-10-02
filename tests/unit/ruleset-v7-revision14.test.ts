@@ -102,10 +102,10 @@ interface ArenaOptions {
 }
 
 describe("ruleset-7 revision-14 identity and roster", () => {
-  it("keeps rejecting r13 after the r21 identity and cleans the r13 through r20 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r21");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r21.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-8)).toEqual([
+  it("keeps rejecting r13 after the r22 identity and cleans the r13 through r21 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r22");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r22.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-9)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -114,6 +114,7 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "pulpWars.save.v7r18.current",
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
+      "pulpWars.save.v7r21.current",
     ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(
@@ -165,7 +166,9 @@ describe("ruleset-7 revision-14 identity and roster", () => {
     expect(at("PLAGUE_EXPIRED")).toBe(at("TURN_STARTED") + 3);
     expect(at("WINDMILL_HEALING_RESOLVED")).toBe(at("TURN_STARTED") + 4);
     expect(at("UNIT_INFECTED")).toBe(at("UNIT_DIED") + 1);
-    expect(at("GRAVE_CREATED")).toBe(at("UNIT_DIED") + 2);
+    // The Martian revision inserts UNIT_MIND_CONTROLLED after UNIT_INFECTED.
+    expect(at("UNIT_MIND_CONTROLLED")).toBe(at("UNIT_DIED") + 2);
+    expect(at("GRAVE_CREATED")).toBe(at("UNIT_DIED") + 3);
     expect(at("BITTEN_UNIT_RISEN")).toBe(at("GRAVE_CREATED") + 1);
     expect(at("PLAGUE_CLEARED")).toBe(at("GRAVE_CREATED") + 2);
   });

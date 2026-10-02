@@ -4,10 +4,13 @@ import {
   EMBARKED_MOVE_V7,
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
+  MIND_CONTROL_THRALL_LIMIT_V7,
   PROMOTION_HP_V7,
   RUN_UP_MAXIMUM_TILES_V7,
   attackIsChargeV7,
+  attackIsRayV7,
   chargeRunUpAttack2V7,
+  halfPowerAttack2V7,
   technologyCapabilitiesV7,
   unitAlphaAttack2V7,
   unitGrowthStageV7,
@@ -15,11 +18,20 @@ import {
   unitRoleRuleV7,
 } from "../rules/ruleset-v7";
 import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
+import {
+  isCoolingV7,
+  isThrallV7,
+  shieldOfV7,
+  thrallsOfBrainV7,
+  unitShieldMaximumV7,
+} from "./martian";
 import { tileAtV7 } from "./spatial-economy";
 import type { GameStateV7, UnitStateV7 } from "./types";
 
 export const UNIT_STAT_IDS_V7 = Object.freeze([
   "HP",
+  // The Martian revision: present exactly for a unit with a Shield maximum.
+  "SHIELD",
   "ATTACK",
   "DEFENSE",
   "MOVE",
@@ -35,6 +47,10 @@ export type UnitStatModifierSourceV7 =
   | "CHARGE"
   // Revision 20: the Charge! run-up of a Triceratops that moved this turn.
   | "RUN_UP"
+  // The Martian revision: a heat ray at half power (moved or Cooling), and
+  // the Shield a Force Field added above the unit's own maximum.
+  | "HALF_POWER"
+  | "FORCE_FIELD"
   | "INSPIRED"
   | "CITY_WALLS"
   | "CITY_FORTIFICATION"
@@ -97,6 +113,31 @@ export interface PublicDinosaurMechanicsV7 {
     readonly hatchesAs: UnitStateV7["role"];
   } | null;
 }
+/**
+ * The Martian revision (section 11): the Martian mechanics of a unit owned
+ * by a Martian seat. `rayPower` is what an `ATTACK` made now would be (null
+ * for a unit without a heat ray or afloat); `cooling` is whether its next
+ * ray is halved by Cooling; `thrall` names the Brain of a Thrall (null in a
+ * view that cannot see it); `mindControl` is a Brain's cooldown entry
+ * (`cooldown`: the remaining `turnsRemaining`, or null when ready), the
+ * Thralls it controls, and the limit.
+ */
+export interface PublicMartianMechanicsV7 {
+  readonly shield: number;
+  readonly shieldMaximum: number;
+  readonly capacitySlots: number;
+  readonly movementMode: "GROUND" | "STRIDE" | "FLY";
+  readonly rayPower: "FULL" | "HALF" | null;
+  readonly cooling: boolean;
+  readonly pierce: boolean;
+  readonly forceField: boolean;
+  readonly thrall: { readonly brainUnitId: UnitStateV7["id"] | null } | null;
+  readonly mindControl: {
+    readonly cooldown: number | null;
+    readonly thralls: number;
+    readonly thrallLimit: number;
+  } | null;
+}
 export interface PublicUnitStatsV7 {
   readonly unitId: UnitStateV7["id"];
   readonly minimumRange: number;
@@ -108,6 +149,8 @@ export interface PublicUnitStatsV7 {
   readonly goblin?: PublicGoblinMechanicsV7;
   /** Revision 19: present exactly for units owned by a Dinosaur seat. */
   readonly dinosaur?: PublicDinosaurMechanicsV7;
+  /** The Martian revision: present exactly for units of a Martian seat. */
+  readonly martian?: PublicMartianMechanicsV7;
 }
 
 export function publicUnitStatsV7(
@@ -130,6 +173,22 @@ export function publicUnitStatsV7(
   // Revision 19: Dinosaurs label Rally as War Drums, Overrun as Rampage, and
   // Charge as Pounce.
   const dinosaur = owner.faction === "DINOSAUR";
+  // The Martian revision: Martians label Rally as Psychic Command and Charge
+  // as Strafe; a Thrall is a `FIGHTER`-role unit labelled "Thrall".
+  const martian = owner.faction === "MARTIAN";
+  const thrall = isThrallV7(state.thralls, unit.id);
+  const shieldMaximum = unitShieldMaximumV7(state, unit);
+  const shield = shieldOfV7(state.shields, unit.id);
+  const cooling = isCoolingV7(state.cooling, unit.id);
+  // Section 6.1: half power while Cooling, or (during its owner's turn,
+  // before the Start Turn reset) after it moved this turn.
+  const rayPower: "FULL" | "HALF" | null = !attackIsRayV7(state, unit)
+    ? null
+    : cooling ||
+        (state.turnOrder[state.activeSeatIndex] === unit.ownerId &&
+          unit.activation.moved)
+      ? "HALF"
+      : "FULL";
   const mechanics = unitRoleMechanicsV7(state, unit);
   const growthStage = unitGrowthStageV7(state, unit);
   const alpha = embarked ? 0 : unitAlphaAttack2V7(state, unit);
@@ -178,7 +237,13 @@ export function publicUnitStatsV7(
   const sight = embarked
     ? 1
     : Math.max(role.sightRadius, capabilities.roleSightRadius[unit.role] ?? 0);
-  const labelText = embarked ? "Embarked transport" : role.label;
+  const labelText = embarked
+    ? "Embarked transport"
+    : thrall
+      ? "Thrall"
+      : role.label;
+  const halfPower2 =
+    rayPower === "HALF" ? role.attack2 - halfPowerAttack2V7(role.attack2) : 0;
   return {
     unitId: unit.id,
     minimumRange: embarked ? 0 : role.minimumRange,
@@ -207,12 +272,46 @@ export function publicUnitStatsV7(
             ]
           : [],
       ),
+      // The Martian revision: the Shield row follows the HP row.
+      ...(shieldMaximum > 0
+        ? [
+            stat(
+              "SHIELD",
+              "Shield",
+              shield,
+              base(labelText, "Shield", shieldMaximum),
+              shield > shieldMaximum
+                ? [
+                    modifier(
+                      shield - shieldMaximum,
+                      "FORCE_FIELD",
+                      "Force Field",
+                      "A unit that recharges next to a Shield Projector recharges to a higher Shield.",
+                    ),
+                  ]
+                : [],
+            ),
+          ]
+        : []),
       stat(
         "ATTACK",
         "Attack",
         null,
         base(labelText, "Attack", embarked ? 0 : role.attack2, 2),
         [
+          ...(halfPower2 > 0
+            ? [
+                modifier(
+                  -halfPower2,
+                  "HALF_POWER",
+                  "Half power",
+                  cooling
+                    ? "Cooling: the heat ray fires at half power until the end of its owner's next turn."
+                    : "A heat ray fires at half power after the unit moved this turn.",
+                  2,
+                ),
+              ]
+            : []),
           ...(alpha > 0
             ? [
                 modifier(
@@ -240,10 +339,12 @@ export function publicUnitStatsV7(
                 modifier(
                   charge,
                   "CHARGE",
-                  dinosaur ? "Pounce" : "Charge",
+                  dinosaur ? "Pounce" : martian ? "Strafe" : "Charge",
                   dinosaur
                     ? "Pounce adds 1 Attack after an ordinary move of at least two cells."
-                    : "Charge adds 1 Attack after an ordinary move of at least two cells.",
+                    : martian
+                      ? "Strafe adds 1 Attack after a Move of at least two tiles."
+                      : "Charge adds 1 Attack after an ordinary move of at least two cells.",
                   2,
                 ),
               ]
@@ -259,14 +360,18 @@ export function publicUnitStatsV7(
                       ? "WAAAGH!"
                       : dinosaur
                         ? "War Drums"
-                        : "Inspired",
+                        : martian
+                          ? "Psychic Command"
+                          : "Inspired",
                   frenzied
                     ? "Necromancer Frenzy adds 1 Attack to the next attack this turn."
                     : goblin
                       ? "Orc Warboss WAAAGH! adds 1 Attack to the next attack this turn."
                       : dinosaur
                         ? "Shaman War Drums add 1 Attack to the next attack this turn."
-                        : "Captain Rally adds 1 Attack to the next attack this turn.",
+                        : martian
+                          ? "Brain Psychic Command adds 1 Attack to the next attack this turn."
+                          : "Captain Rally adds 1 Attack to the next attack this turn.",
                   2,
                 ),
               ]
@@ -334,7 +439,9 @@ export function publicUnitStatsV7(
                 ? "WAAAGH!: +1 Attack on the next attack"
                 : dinosaur
                   ? "War Drums: +1 Attack on the next attack"
-                  : "Inspired: +1 next Attack",
+                  : martian
+                    ? "Psychic Command: +1 Attack on the next attack"
+                    : "Inspired: +1 next Attack",
           ]
         : []),
       ...(runUp > 0 ? [`Charge! +${formatHalf(runUp)} Attack`] : []),
@@ -377,6 +484,38 @@ export function publicUnitStatsV7(
             runUpBonus: linebreaker ? mechanics.runUpBonus2 / 2 : 0,
             runUpMaximum: linebreaker ? RUN_UP_MAXIMUM_TILES_V7 : 0,
             egg: eggStatus(state, unit),
+          },
+        }
+      : {}),
+    ...(martian
+      ? {
+          martian: {
+            shield,
+            shieldMaximum,
+            // A Thrall has no home and uses no slot.
+            capacitySlots: thrall ? 0 : mechanics.capacitySlots,
+            movementMode: mechanics.movementMode,
+            rayPower,
+            cooling,
+            pierce: !embarked && role.abilities.includes("PIERCE"),
+            forceField: !embarked && role.abilities.includes("FORCE_FIELD"),
+            thrall: thrall
+              ? {
+                  brainUnitId:
+                    state.thralls.find((entry) => entry.unitId === unit.id)
+                      ?.brainUnitId ?? null,
+                }
+              : null,
+            mindControl: role.abilities.includes("MIND_CONTROL")
+              ? {
+                  cooldown:
+                    state.mindControlCooldowns.find(
+                      (entry) => entry.unitId === unit.id,
+                    )?.turnsRemaining ?? null,
+                  thralls: thrallsOfBrainV7(state.thralls, unit.id).length,
+                  thrallLimit: MIND_CONTROL_THRALL_LIMIT_V7,
+                }
+              : null,
           },
         }
       : {}),

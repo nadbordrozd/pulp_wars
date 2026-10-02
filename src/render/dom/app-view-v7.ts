@@ -233,6 +233,11 @@ const COLOR_LABELS: Readonly<Record<string, string>> = {
   GOLD: "Gold",
   VIOLET: "Violet",
 };
+/**
+ * The factions the setup screen offers. The Martian faction is registered in
+ * the engine (`pulp_wars-t6s.2`) but is not offered until its UI bead
+ * (`pulp_wars-t6s.4`) adds it here.
+ */
 const FACTIONS: readonly FactionIdV7[] = [
   "ORIGINAL",
   "UNDEAD",
@@ -244,6 +249,7 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
   UNDEAD: "Undead",
   GOBLIN: "Goblin",
   DINOSAUR: "Dinosaur",
+  MARTIAN: "Martian",
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
 type FactionBadgeV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR" | null;
@@ -4963,7 +4969,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r21",
+    rulesetId: "pulp-wars-poc-7r22",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -5112,6 +5118,14 @@ function effectDescription(
       return nestingUnlockTextV7();
     case "WALLBREAKER":
       return WALLBREAKER_UNLOCK_TEXT_V7;
+    // The Martian revision (section 4): the engine bead's unlock texts; the
+    // Martian UI (`pulp_wars-t6s.4`) owns the full presentation.
+    case "BRAIN_SUPPORT":
+      return "Brains give Psychic Command or take Mind Control of weakened enemies";
+    case "FORCE_FIELDS":
+      return "Shields also recharge at the end of your turn";
+    case "DISINTEGRATOR":
+      return "Heat rays ignore Walls and Field Defense";
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -5254,6 +5268,9 @@ function technologyEffectGroupIdV7(
     case "PLUNDER":
     case "NESTING":
     case "WALLBREAKER":
+    case "BRAIN_SUPPORT":
+    case "FORCE_FIELDS":
+    case "DISINTEGRATOR":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":

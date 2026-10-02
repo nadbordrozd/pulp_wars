@@ -1,8 +1,14 @@
 import type { PlayerId } from "../model/ids";
 import {
   EMBARKED_MOVE_V7,
+  canCrossWaterV7,
+  canEnterTerrainV7,
+  flyerMayStandOnSiteV7,
   technologyCapabilitiesV7,
+  unitFliesV7,
+  unitMovementModeV7,
   unitRoleRuleV7,
+  type MovementModeV7,
 } from "../rules/ruleset-v7";
 import {
   arePlayersAlliedV7,
@@ -34,7 +40,10 @@ export type MovementFailureReasonV7 =
   | "MOUNTAIN_STOPS_MOVE"
   | "FOREST_STOPS_MOVE"
   | "ZOC_STOPS_MOVE"
-  | "ALLY_TERRITORY_FORBIDDEN";
+  | "ALLY_TERRITORY_FORBIDDEN"
+  // The Martian revision section 7.2: a flyer cannot end a Move on a neutral
+  // village center or on the center of a city it does not own.
+  | "SETTLEMENT_FORBIDDEN";
 
 export type MovementPathResultV7 =
   | {
@@ -47,7 +56,13 @@ export type MovementPathResultV7 =
       readonly revealed: readonly CoordV7[];
       readonly interruption: {
         readonly at: CoordV7;
-        readonly reason: "OCCUPIED" | "ENGINEERING_REQUIRED" | "ZOC";
+        readonly reason:
+          | "OCCUPIED"
+          | "ENGINEERING_REQUIRED"
+          | "ZOC"
+          // The Martian revision: a flyer entered an unexplored cell that
+          // is a settlement center it cannot stand on.
+          | "SETTLEMENT_FORBIDDEN";
       } | null;
     }
   | { readonly legal: false; readonly reason: MovementFailureReasonV7 };
@@ -61,6 +76,14 @@ export interface ReachablePathV7 {
 /**
  * Validates ordinary movement. A Move passes through tiles held by the
  * mover's own units as if they were empty, but never ends on one.
+ *
+ * The Martian revision (section 7): a land-form walker or flyer enters a
+ * Mountain without Engineering and is never stopped by terrain; it may step
+ * onto water (a walker Shallow Water, a flyer also Deep Water with
+ * Navigation), and a Move that ends there self-launches it (the reducer
+ * embarks it). A flyer also passes over every unit, ignores hostile zones of
+ * control, and cannot end on a settlement center it does not own. Terrain
+ * entry goes through the shared `canEnterTerrainV7` and `canCrossWaterV7`.
  */
 export function validateMovementPathV7(
   state: GameStateV7,
@@ -88,6 +111,11 @@ function validateMovementPathWithOptionsV7(
     player.faction,
   );
   const budget2 = (unit.form === "EMBARKED" ? EMBARKED_MOVE_V7 : rule.move) * 2;
+  // An embarked machine is an ordinary embarked unit (section 7.3).
+  const mode: MovementModeV7 =
+    unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
+  const flies = mode === "FLY";
+  const navigation = player.researchedTechs.includes("NAVIGATION");
   const knownBeforeCommand = player.explored;
   let explored = player.explored;
   const revealed: CoordV7[] = [];
@@ -119,9 +147,10 @@ function validateMovementPathWithOptionsV7(
         candidate.hp > 0 &&
         same(candidate.at, step),
     );
+    // A flyer passes over a unit of any owner; no Move ends on a unit.
     const passesOwnUnit =
       occupant !== undefined &&
-      occupant.ownerId === unit.ownerId &&
+      (occupant.ownerId === unit.ownerId || flies) &&
       (passThroughProbe || index < path.length - 1);
     const occupied = occupant !== undefined && !passesOwnUnit;
     const water =
@@ -137,13 +166,61 @@ function validateMovementPathWithOptionsV7(
       ) &&
       player.researchedTechs.includes("SHORECRAFT") &&
       isActivePortV7(state, step, unit.ownerId);
+    // Terrain entry through the shared helper: a land-form unit stands on
+    // land it can enter, embarks at an own active Port, or (a machine)
+    // crosses water; an afloat unit stays on water it can enter.
     const engineeringRequired =
-      (tile.terrain === "MOUNTAIN" && !capabilities.mountainMovement) ||
-      (unit.form === "LAND" && water && !autoEmbark) ||
-      (unit.form !== "LAND" && !water) ||
-      (water &&
-        tile.terrain === "DEEP_WATER" &&
-        !player.researchedTechs.includes("NAVIGATION"));
+      unit.form === "LAND"
+        ? water
+          ? (!autoEmbark &&
+              !canCrossWaterV7({
+                terrain: tile.terrain,
+                movementMode: mode,
+                navigation,
+              })) ||
+            (tile.terrain === "DEEP_WATER" && !navigation)
+          : !canEnterTerrainV7({
+              terrain: tile.terrain,
+              movementMode: mode,
+              afloat: false,
+              engineering: capabilities.mountainMovement,
+              navigation,
+            })
+        : !canEnterTerrainV7({
+            terrain: tile.terrain,
+            movementMode: "GROUND",
+            afloat: true,
+            engineering: capabilities.mountainMovement,
+            navigation,
+          });
+    // The Martian revision section 7.2: a flyer may pass over a settlement
+    // center it does not own but never ends a Move there.
+    const forbiddenSite =
+      flies &&
+      !passThroughProbe &&
+      index === path.length - 1 &&
+      !flyerMayStandOnSiteV7(
+        tile.site,
+        state.cities.find((city) => same(city.at, step))?.ownerId ?? null,
+        unit.ownerId,
+      );
+    if (forbiddenSite && !occupied && !engineeringRequired) {
+      if (wasKnownBeforeCommand)
+        return { legal: false, reason: "SETTLEMENT_FORBIDDEN" };
+      // An unexplored center: the Move is accepted and interrupted, like a
+      // Move into a hidden unit, so a rejection reveals nothing.
+      const entered = lastFreeEnteredPath(state, unit, traversedPath, flies);
+      return {
+        legal: true,
+        destination: entered.at(-1) ?? unit.at,
+        traversedPath: entered,
+        spentPoints2,
+        stopped: true,
+        explored,
+        revealed: unique(revealed),
+        interruption: { at: step, reason: "SETTLEMENT_FORBIDDEN" },
+      };
+    }
     if (occupied || engineeringRequired) {
       const occupantVisible =
         occupant !== undefined &&
@@ -153,7 +230,7 @@ function validateMovementPathWithOptionsV7(
           legal: false,
           reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
         };
-      const entered = lastFreeEnteredPath(state, unit, traversedPath);
+      const entered = lastFreeEnteredPath(state, unit, traversedPath, flies);
       return {
         legal: true,
         destination: entered.at(-1) ?? unit.at,
@@ -176,18 +253,19 @@ function validateMovementPathWithOptionsV7(
     explored = sight.explored;
     revealed.push(...sight.revealed);
     const observationState = withUnitAtForObservationV7(state, unit.id, step);
-    const entersZoc = inHostileZoc(
-      observationState,
-      { ...unit, at: step },
-      step,
-      explored,
-    );
+    // The Martian revision section 7.2: a flyer ignores hostile ZOC.
+    const entersZoc =
+      !flies &&
+      inHostileZoc(observationState, { ...unit, at: step }, step, explored);
     const newlyEncounteredZoc =
       entersZoc &&
       !inHostileZoc(state, { ...unit, at: step }, step, knownBeforeCommand);
     // The stop is waived only on a Road edge: both ends usable Road nodes.
     const stepRoadNode = isUsableRoadNodeV7(state, player, step);
+    // The Martian revision section 7.1: a walker or flyer is never stopped
+    // by terrain.
     const terrainStops =
+      mode === "GROUND" &&
       !(currentRoadNode && stepRoadNode) &&
       (tile.terrain === "MOUNTAIN" ||
         (tile.terrain === "FOREST" && !ignoresForest));
@@ -197,7 +275,7 @@ function validateMovementPathWithOptionsV7(
     currentRoadNode = stepRoadNode;
     if (stops && index < path.length - 1) {
       if (newlyEncounteredZoc) {
-        const entered = lastFreeEnteredPath(state, unit, traversedPath);
+        const entered = lastFreeEnteredPath(state, unit, traversedPath, flies);
         return {
           legal: true,
           destination: entered.at(-1) ?? unit.at,
@@ -213,9 +291,9 @@ function validateMovementPathWithOptionsV7(
         legal: false,
         reason: !wasExplored
           ? "UNEXPLORED_INTERMEDIATE"
-          : tile.terrain === "MOUNTAIN"
+          : mode === "GROUND" && tile.terrain === "MOUNTAIN"
             ? "MOUNTAIN_STOPS_MOVE"
-            : tile.terrain === "FOREST" && !ignoresForest
+            : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
               ? "FOREST_STOPS_MOVE"
               : "ZOC_STOPS_MOVE",
       };
@@ -253,6 +331,7 @@ export function reachableMovementPathsV7(
   );
   // Revision 19 section 6.2: an Egg never moves.
   if (player === undefined || unit.form === "EGG") return [];
+  const flies = unitFliesV7(state, unit);
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -277,14 +356,24 @@ export function reachableMovementPathsV7(
       const prior = best.get(destinationKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
       // An own-occupied tile is never a destination; it is only passed, and
-      // only when the Move would not have to stop on it.
-      const ownOccupied = state.units.some(
-        (other) =>
-          other.id !== unit.id &&
-          other.hp > 0 &&
-          other.ownerId === unit.ownerId &&
-          same(other.at, destination),
-      );
+      // only when the Move would not have to stop on it. The Martian
+      // revision: a flyer passes every unit and every settlement center it
+      // cannot stand on, and ends on neither.
+      const ownOccupied =
+        state.units.some(
+          (other) =>
+            other.id !== unit.id &&
+            other.hp > 0 &&
+            (flies || other.ownerId === unit.ownerId) &&
+            same(other.at, destination),
+        ) ||
+        (flies &&
+          !flyerMayStandOnSiteV7(
+            tileAtV7(state.board, destination)?.site ?? null,
+            state.cities.find((city) => same(city.at, destination))?.ownerId ??
+              null,
+            unit.ownerId,
+          ));
       if (ownOccupied && validation.stopped) continue;
       best.set(destinationKey, validation.spentPoints2);
       if (!ownOccupied)
@@ -309,6 +398,7 @@ export function reachablePlayerMovementPathsV7(
   // Revision 19 section 6.2: an Egg never moves.
   if (unit.form === "EGG") return [];
   const context = publicMovementContextV7(view);
+  const flies = unitFliesV7(view, unit);
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -334,11 +424,15 @@ export function reachablePlayerMovementPathsV7(
       const prior = best.get(destinationKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
       // An own-occupied tile is never a destination; it is only passed, and
-      // only when the Move would not have to stop on it.
+      // only when the Move would not have to stop on it. The Martian
+      // revision: a flyer also passes, and never ends on, a settlement
+      // center it cannot stand on.
       const ownOccupied =
         context.unitsByPosition
           .get(destinationKey)
-          ?.some((other) => other.id !== unit.id) === true;
+          ?.some((other) => other.id !== unit.id) === true ||
+        (flies &&
+          !publicFlyerMayStandV7(view, unit, publicTileAt(view, destination)));
       if (ownOccupied && validation.stopped) continue;
       best.set(destinationKey, validation.spentPoints2);
       if (!ownOccupied)
@@ -440,6 +534,12 @@ function validatePlayerMovementPathWithContextV7(
   const role = unitRoleRuleV7(view, unit);
   const capabilities = context.capabilities;
   const budget2 = (unit.form === "EMBARKED" ? EMBARKED_MOVE_V7 : role.move) * 2;
+  // The Martian revision section 7: the unit's own movement mode. The
+  // technologies are the viewer's (exact for the viewer's own units).
+  const mode: MovementModeV7 =
+    unit.form === "LAND" ? unitMovementModeV7(view, unit) : "GROUND";
+  const flies = mode === "FLY";
+  const navigation = view.viewer.researchedTechs.includes("NAVIGATION");
   let current = unit.at;
   let currentRoadNode = isUsablePublicRoadNodeV7(
     view,
@@ -469,11 +569,16 @@ function validatePlayerMovementPathWithContextV7(
           (port) => same(port.at, tile.at) && port.status === "ACTIVE",
         );
       if (
-        (unit.form === "LAND" && water && !autoEmbark) ||
+        (unit.form === "LAND" &&
+          water &&
+          !autoEmbark &&
+          !canCrossWaterV7({
+            terrain: tile.terrain,
+            movementMode: mode,
+            navigation,
+          })) ||
         (unit.form !== "LAND" && !water) ||
-        (water &&
-          tile.terrain === "DEEP_WATER" &&
-          !view.viewer.researchedTechs.includes("NAVIGATION"))
+        (water && tile.terrain === "DEEP_WATER" && !navigation)
       )
         return { legal: false, reason: "ENGINEERING_REQUIRED" };
     }
@@ -483,6 +588,7 @@ function validatePlayerMovementPathWithContextV7(
     if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
       return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
     // Only the mover's own visible units can be passed, and never ended on.
+    // The Martian revision: a flyer passes every visible unit.
     const passesOwnUnits = passThroughProbe || index < path.length - 1;
     if (
       context.unitsByPosition
@@ -490,7 +596,7 @@ function validatePlayerMovementPathWithContextV7(
         ?.some(
           (candidate) =>
             candidate.id !== unit.id &&
-            !(passesOwnUnits && candidate.ownerId === unit.ownerId),
+            !(passesOwnUnits && (flies || candidate.ownerId === unit.ownerId)),
         )
     )
       return { legal: false, reason: "OCCUPIED" };
@@ -502,16 +608,30 @@ function validatePlayerMovementPathWithContextV7(
       return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
     if (
       tile.explored &&
-      tile.terrain === "MOUNTAIN" &&
-      !capabilities.mountainMovement
+      tile.biome !== null &&
+      !canEnterTerrainV7({
+        terrain: tile.terrain,
+        movementMode: mode,
+        afloat: false,
+        engineering: capabilities.mountainMovement,
+        navigation,
+      })
     )
       return { legal: false, reason: "ENGINEERING_REQUIRED" };
+    if (
+      flies &&
+      !passThroughProbe &&
+      index === path.length - 1 &&
+      !publicFlyerMayStandV7(view, unit, tile)
+    )
+      return { legal: false, reason: "SETTLEMENT_FORBIDDEN" };
     const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
       unit.role,
     );
-    const entersZoc = publicHostileZoc(view, unit, step, context);
+    const entersZoc = !flies && publicHostileZoc(view, unit, step, context);
     const stepRoadNode = isUsablePublicRoadNodeV7(view, tile, context);
     const terrainStops =
+      mode === "GROUND" &&
       tile.explored &&
       !(currentRoadNode && stepRoadNode) &&
       (tile.terrain === "MOUNTAIN" ||
@@ -525,9 +645,9 @@ function validatePlayerMovementPathWithContextV7(
         legal: false,
         reason: !tile.explored
           ? "UNEXPLORED_INTERMEDIATE"
-          : tile.terrain === "MOUNTAIN"
+          : mode === "GROUND" && tile.terrain === "MOUNTAIN"
             ? "MOUNTAIN_STOPS_MOVE"
-            : tile.terrain === "FOREST" && !ignoresForest
+            : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
               ? "FOREST_STOPS_MOVE"
               : "ZOC_STOPS_MOVE",
       };
@@ -692,6 +812,8 @@ function projectsZocV7(
 ): boolean {
   // Revision 19 section 6.2: an Egg projects no zone of control.
   if (projector.form === "EMBARKED" || projector.form === "EGG") return false;
+  // The Martian revision section 7.2: a flyer exerts no zone of control.
+  if (unitFliesV7(state, projector)) return false;
   const targetTile = tileAtV7(state.board, at);
   const water = targetTile?.biome === null;
   if (!water) return projector.form !== "NAVAL";
@@ -767,6 +889,8 @@ function publicHostileZoc(
         unit.form === "EMBARKED" ||
         // Revision 19: an Egg projects no zone of control.
         unit.form === "EGG" ||
+        // The Martian revision: a flyer exerts no zone of control.
+        unitFliesV7(view, unit) ||
         unit.ownerId === target.ownerId ||
         publicAllied(view, target.ownerId, unit.ownerId)
       )
@@ -806,11 +930,14 @@ function publicProjectsZocV7(
 /**
  * The entered path cut back to its last tile that holds no other unit. An
  * interrupted Move never leaves the mover on a tile it was only passing.
+ * The Martian revision section 7.2: a flyer is also never left on a
+ * settlement center it cannot stand on.
  */
 function lastFreeEnteredPath(
-  state: Pick<GameStateV7, "units">,
+  state: Pick<GameStateV7, "units" | "board" | "cities">,
   unit: UnitStateV7,
   entered: readonly CoordV7[],
+  flies: boolean,
 ): readonly CoordV7[] {
   for (let length = entered.length; length > 0; length -= 1) {
     const at = entered[length - 1];
@@ -818,11 +945,35 @@ function lastFreeEnteredPath(
       at !== undefined &&
       !state.units.some(
         (other) => other.id !== unit.id && other.hp > 0 && same(other.at, at),
-      )
+      ) &&
+      (!flies ||
+        flyerMayStandOnSiteV7(
+          tileAtV7(state.board, at)?.site ?? null,
+          state.cities.find((city) => same(city.at, at))?.ownerId ?? null,
+          unit.ownerId,
+        ))
     )
       return entered.slice(0, length);
   }
   return [];
+}
+
+/**
+ * Whether a flyer of `unit`'s owner may end a Move on a public tile: an
+ * unexplored tile is unknown and allowed (resolution interrupts the Move if
+ * it turns out to be a center); an explored center needs an own city.
+ */
+function publicFlyerMayStandV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  tile: PlayerTileViewV7 | undefined,
+): boolean {
+  if (tile?.explored !== true) return true;
+  return flyerMayStandOnSiteV7(
+    tile.site,
+    view.cities.find((city) => same(city.at, tile.at))?.ownerId ?? null,
+    unit.ownerId,
+  );
 }
 
 function tileOwner(

@@ -1,6 +1,13 @@
 # Ruleset 7: Martian faction
 
-**Status:** contract (`pulp_wars-t6s.1`), not yet implemented. It is an
+**Status:** contract (`pulp_wars-t6s.1`); **the engine is implemented**
+(`pulp_wars-t6s.2`, identity `pulp-wars-poc-7r22`: every rule, command, event,
+query, and state shape of this document). **The Normal AI
+([section 12](#12-normal-ai-requirements), `pulp_wars-t6s.3`) and the UI and
+placeholder art ([section 13](#13-ui-requirements), `pulp_wars-t6s.4`) are
+pending:** a Martian seat plays with the generic Normal policy and the setup
+screen does not offer the faction. What the implementation changed or made
+precise is in [section 19](#19-implementation-notes-pulp_wars-t6s2). It is an
 overlay over the rules in force when `pulp_wars-t6s.2` starts: today that is
 [revision 20](RULESET_7_REVISION_20.md), which amends
 [revision 19](RULESET_7_REVISION_19_DINOSAURS.md), which is an overlay over
@@ -2665,3 +2672,115 @@ questions it raised.
 14. **The line model is crude.** It has no terrain, no manoeuvre, and a
     fixed engagement width; several of its results flip with one HP. It
     ranks designs; it cannot stand in for the matrix.
+
+## 19. Implementation notes (`pulp_wars-t6s.2`)
+
+### 19.1 The re-run before coding (section 15, first step)
+
+The scratch analysis of [section 9](#9-per-unit-battle-analysis) was re-run
+against the registry of commit `1ee8c52` (revision 20 and 21 in force, the
+Normal AI of `pulp_wars-9s0.1`), before any Martian number was coded.
+
+- **Registry.** The 24 existing units the analysis uses have the same HP,
+  Attack, Defense, Move, range, and cost as at `f1c17bd` (0 differences).
+  Revision 20 left the Human units at 10 HP; the revision-20 Triceratops and
+  T-Rex were already in the tables.
+- **Formula check.** 8,640 exchanges between existing units against
+  `calculateCombatPreviewV7`: 0 mismatches, once the model gave a Triceratops
+  attack its Charge! rule (fortification ignored).
+- **Per-unit tables, skirmishes, and pressure results.** The regenerated
+  outputs are byte-identical to the ones this document was written from. **No
+  verdict, counter count, or pressure result flips, and no Martian number
+  was changed.**
+- **Heavier and earlier waves** (new: waves of three from round 1, every
+  round or every second round, against a two-unit opening that adds one unit
+  a round). A two-Grunt opening holds every wave a two-Fighter opening holds
+  and several it does not (three Fighters, three Skeletons, three Cavemen,
+  and a Raider with two Fighters every second round all break two 10-HP
+  Fighters by round 3 and do not break two Grunts in 12 rounds). It falls to
+  two Fighters and a Marksman (round 4), a Raptor with two Cavemen
+  (round 8), three Goblins every round (round 2) or every second round
+  (round 12), and three Wolf Riders (round 3). A two-Fighter opening falls
+  to each of these no later. A two-Caveman opening (12 HP) lasts one round
+  longer against two Fighters and a Marksman and holds three Goblins every
+  second round; it falls to the other three no later.
+- **The 9-HP Grunt is not advisable.** [Section 9.2](#92-grunt) names 9 HP
+  as "the first value to try" if the Fighter stays at 10 HP, which it did.
+  Under the heavier waves a 9-HP Grunt opening falls in every scenario
+  tried, so 10 HP stays, and the Grunt remains the first lever of
+  `pulp_wars-t6s.5` in the other direction only with the matrix as evidence.
+- **Bodies first.** A Shield Projector or a Saucer as the third unit falls in
+  round 2 to every wave of three; a third Grunt holds
+  ([section 9.12](#912-early-pressure) confirmed). Developed five-unit groups
+  (Grunts with a Projector and a Ray Gunner; with a Tripod) hold every wave
+  tried; the group with a Brain loses once (a Raptor with two Cavemen,
+  round 9).
+
+The scripts and outputs are in the session scratch space under `t6s2/step0/`
+(the directory named in [section 9.1](#91-method) with `t6s1` replaced).
+
+### 19.2 Deviations and precise readings
+
+1. **Whole hit for Pierce and splash.** It is `shieldDamage + hpDamage`, as
+   [section 5.3](#53-damage) defines it, so it is capped at the target's
+   Shield plus HP like every splash before this revision. The examples of
+   [section 6.4](#64-pierce-tripod) quote the uncapped formula damage: a
+   full-power ray on a 10-HP Fighter is a whole hit of 10 and pierces for 5,
+   not 6 (a Guard: 10 and 5, as written; a half-power ray on a Fighter: 5
+   and 3, as written).
+2. **Plague without HP damage.** A hit that a Shield absorbs completely
+   plagues nobody. A hit of 0 on a unit without a Shield still plagues, as
+   before this revision (needed for parity).
+3. **Tractor Beam and another player's technology.** Whether a pulled unit
+   may enter a Mountain or Deep Water depends on its owner's Engineering or
+   Navigation, which the actor cannot see, and the command must be exact
+   from the actor's view. For a unit of another player the rule therefore
+   reads the board: it is pulled onto a Mountain only if it stands on one
+   (or strides or flies), and onto Deep Water only if it stands on Deep
+   Water. An own unit uses the actor's technologies, as
+   [section 8.4](#84-tractor-beam-mothership) says.
+4. **Interrupted flyer Moves.** `UNIT_MOVE_INTERRUPTED` gains the reason
+   `SETTLEMENT_FORBIDDEN` for a flyer that enters an unexplored center it
+   cannot stand on (a rejection would reveal the site). As for every
+   interruption, the event's `at` is the tile that stopped the Move; the unit
+   stays on the last tile it entered on which it may end a Move.
+5. **Unexplored cells.** Sight is revealed from every tile entered, so the
+   tile after it is explored before the unit steps on: a Move enters an
+   unexplored cell only on its first step. The rule is unchanged.
+6. **Elimination.** The Thralls of an eliminated seat are removed with the
+   rest of its units (cause `ELIMINATION`), not with `BRAIN_LOST`.
+7. **Plague damage entries** (`PLAGUE_DAMAGED`) carry no `shieldDamage`:
+   Plague bypasses the Shield.
+8. **Blockade recompute after `DISBAND`** runs only when the Disband
+   collapsed a Thrall, so matches without a Martian seat emit exactly the
+   events they did.
+9. **Mind Control of a grown unit.** The Thrall's HP is the victim's HP,
+   which the legality rule already limits to 6.
+10. **Rift.** The terrain of `pulp_wars-9s0.5` is not in the game yet. The
+    hook is the shared terrain rule `canEnterTerrainV7` (flyers may enter a
+    Rift, walkers and foot units may not), with the Beam Down and Mind
+    Control notes beside their checks. The Rift rows of
+    [section 15](#15-implementation-split-and-test-expectations) have no
+    tests and go to the Rift bead.
+11. **One terrain rule.** Every "can this unit enter this tile" test (Move,
+    landing, advance, Push, Charge! push, Tractor Beam, Beam Down, treasure
+    unit placement, reward displacement, and their public twins) goes
+    through `canEnterTerrainV7`; `canCrossWaterV7` and
+    `flyerMayStandOnSiteV7` hold the two Martian additions. A source audit
+    in `tests/unit/ruleset-v7-martian-movement.test.ts` pins the call sites.
+12. **Setup screen.** The faction list of the setup screen leaves `MARTIAN`
+    out until `pulp_wars-t6s.4`.
+
+### 19.3 Left to the following beads
+
+- **`pulp_wars-t6s.3` (AI).** The generic policy plays a Martian seat without
+  errors or stalls and never uses Beam Down, Mind Control, or the Tractor
+  Beam. Its simulated views of future positions do not model Cooling or the
+  half power of a ray after a planned Move beyond what `estimateCombatV7`
+  reports for the attacker's own planned path.
+- **`pulp_wars-t6s.4` (UI).** Nothing Martian is drawn or offered.
+- **`pulp_wars-t6s.5` (balance).** The balance matrix has no Martian
+  pairing yet; the headless result carries the `martian` telemetry block
+  ([headless simulation](../architecture/HEADLESS_SIMULATION.md#martian-seats-pulp_wars-t6s2)).
+- **Release corpus.** The identity change invalidates the checked release
+  corpus; its reviewed refresh is the root's gate.

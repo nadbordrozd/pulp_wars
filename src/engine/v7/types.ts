@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r21" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r22" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -32,19 +32,23 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r18",
   "pulp-wars-poc-7r19",
   "pulp-wars-poc-7r20",
+  "pulp-wars-poc-7r21",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r21.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r22.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
   "GOBLIN",
   "DINOSAUR",
+  // The Martian revision (docs/product/RULESET_7_MARTIANS.md).
+  "MARTIAN",
 ] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
   "UNDEAD_BASELINE_V1",
   "GOBLIN_BASELINE_V1",
   "DINOSAUR_BASELINE_V1",
+  "MARTIAN_BASELINE_V1",
 ] as const);
 export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
@@ -136,6 +140,10 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "WAIL",
   "KABOOM",
   "HATCH",
+  // The Martian revision: Saucer, Brain, and Mothership primary actions.
+  "BEAM_DOWN",
+  "MIND_CONTROL",
+  "TRACTOR_BEAM",
   "RECOVER",
   "CAPTURE",
   "PROMOTE",
@@ -196,6 +204,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "PLAGUE_EXPIRED",
   "WINDMILL_HEALING_RESOLVED",
   "UNITS_REGENERATED",
+  "SHIELDS_RECHARGED",
   "INCOME_AWARDED",
   "INCOME_PREVIEWED",
   "TURN_ENDED",
@@ -232,6 +241,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "EGG_HATCHED",
   "UNIT_EMBARKED",
   "UNIT_DISEMBARKED",
+  "UNIT_BEAMED",
   "UNIT_REWARD_GRANTED",
   "UNIT_SPAWN_DISPLACED",
   "UNITS_RALLIED",
@@ -239,6 +249,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "DEAD_RAISED",
   "GRAVE_DEVOURED",
   "UNIT_PUSHED",
+  "UNIT_PULLED",
   "UNIT_MOVED",
   "UNIT_MOVE_INTERRUPTED",
   "TILES_REVEALED",
@@ -255,6 +266,7 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_GREW",
   "UNIT_DIED",
   "UNIT_INFECTED",
+  "UNIT_MIND_CONTROLLED",
   "GRAVE_CREATED",
   "BITTEN_UNIT_RISEN",
   "PLAGUE_CLEARED",
@@ -514,8 +526,62 @@ export interface GameStateV7 {
    * Always empty in a match whose setup has no DINOSAUR seat.
    */
   readonly eggs: readonly EggStatusV7[];
+  /**
+   * The Martian revision (section 5.1): the current Shield of every unit
+   * whose Shield is at least 1, sorted by `unitId`. Always empty in a match
+   * whose setup has no MARTIAN seat.
+   */
+  readonly shields: readonly ShieldStatusV7[];
+  /**
+   * The Martian revision (section 6.2): heat-ray Cooling entries, sorted by
+   * `unitId`. Always empty in a match whose setup has no MARTIAN seat.
+   */
+  readonly cooling: readonly CoolingStatusV7[];
+  /**
+   * The Martian revision (section 8.3): one entry per Thrall, sorted by
+   * `unitId`. Always empty in a match whose setup has no MARTIAN seat.
+   */
+  readonly thralls: readonly ThrallStatusV7[];
+  /**
+   * The Martian revision (section 8.2): Mind Control cooldowns of Brains,
+   * sorted by `unitId`. Always empty in a match whose setup has no MARTIAN
+   * seat.
+   */
+  readonly mindControlCooldowns: readonly MindControlCooldownV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/** The Martian revision: the current Shield (at least 1) of `unitId`. */
+export interface ShieldStatusV7 {
+  readonly unitId: UnitId;
+  readonly shield: number;
+}
+
+/**
+ * The Martian revision: a heat-ray unit that fired at full power. It is
+ * Cooling exactly while `firedThisTurn` is false (from the end of the turn
+ * it fired in until the end of its owner's next turn).
+ */
+export interface CoolingStatusV7 {
+  readonly unitId: UnitId;
+  readonly firedThisTurn: boolean;
+}
+
+/** The Martian revision: the Thrall `unitId` is controlled by `brainUnitId`. */
+export interface ThrallStatusV7 {
+  readonly unitId: UnitId;
+  readonly brainUnitId: UnitId;
+}
+
+/**
+ * The Martian revision: the Brain `unitId` cannot use Mind Control while it
+ * has an entry; `turnsRemaining` (0 to 2) counts its owner's Start Turns
+ * before the entry is removed.
+ */
+export interface MindControlCooldownV7 {
+  readonly unitId: UnitId;
+  readonly turnsRemaining: number;
 }
 
 /**

@@ -81,19 +81,21 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r21");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r21.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r22");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r22.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
       "GOBLIN",
       "DINOSAUR",
+      "MARTIAN",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
       "UNDEAD_BASELINE_V1",
       "GOBLIN_BASELINE_V1",
       "DINOSAUR_BASELINE_V1",
+      "MARTIAN_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("ORIGINAL")).toBe("ORIGINAL_BASELINE_V5");
     expect(factionTreeIdV7("UNDEAD")).toBe("UNDEAD_BASELINE_V1");
@@ -102,12 +104,14 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       UNDEAD: "Undead",
       GOBLIN: "Goblin",
       DINOSAUR: "Dinosaur",
+      MARTIAN: "Martian",
     });
     expect(Object.keys(RULESET_7.factionTrees)).toEqual([
       "ORIGINAL",
       "UNDEAD",
       "GOBLIN",
       "DINOSAUR",
+      "MARTIAN",
     ]);
     expect(FACTION_TREES_V7.UNDEAD.faction).toBe("UNDEAD");
     expect(() => assertRuleset7Registry()).not.toThrow();
@@ -117,11 +121,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r20 and preserves the r21 save", () => {
+  it("cleans obsolete keys through v7r21 and preserves the r22 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r20.current",
+      "pulpWars.save.v7r21.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(20);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(21);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -133,7 +137,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r18.current", "r18"],
       ["pulpWars.save.v7r19.current", "r19"],
       ["pulpWars.save.v7r20.current", "r20"],
-      [SAVE_STORAGE_KEY_V7, "r21"],
+      ["pulpWars.save.v7r21.current", "r21"],
+      [SAVE_STORAGE_KEY_V7, "r22"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -148,8 +153,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r18.current",
         "pulpWars.save.v7r19.current",
         "pulpWars.save.v7r20.current",
+        "pulpWars.save.v7r21.current",
       ],
-      removedCount: 9,
+      removedCount: 10,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1501,6 +1507,14 @@ describe("ruleset-7 all-Human parity digests", () => {
   // route; before, every unit walked to the nearest unexplored tile). Seed 7
   // still reaches the 30-round cap, with 448 commands (was 339); seed 1234
   // has 381 commands (was 357).
+  // The Martian revision (`pulp_wars-t6s.2`) reproduces every digest below
+  // unchanged: its only all-Human differences are the four empty side lists
+  // of the state and the view (`shields`, `cooling`, `thralls`,
+  // `mindControlCooldowns`), the neutral combat-preview fields
+  // `rayPower: "NONE"`, `coolingApplied: false`, `defenderShieldDamage: 0`,
+  // and `attackerShieldDamage: 0`, and the neutral `shieldDamage: 0` of
+  // splash entries, all removed before hashing like the earlier neutral
+  // fields.
   const BASELINE = [
     {
       seed: 7,
@@ -1630,8 +1644,33 @@ describe("ruleset-7 all-Human parity digests", () => {
           acid,
           defenderArmoured,
           attackerArmoured,
-          ...preview
+          rayPower,
+          coolingApplied,
+          defenderShieldDamage,
+          attackerShieldDamage,
+          splash: shieldedSplash,
+          ...previewWithoutSplash
         } = event.preview;
+        // The Martian revision: the four neutral combat-preview fields and
+        // the neutral `shieldDamage: 0` of every splash entry.
+        expect({
+          rayPower,
+          coolingApplied,
+          defenderShieldDamage,
+          attackerShieldDamage,
+        }).toEqual({
+          rayPower: "NONE",
+          coolingApplied: false,
+          defenderShieldDamage: 0,
+          attackerShieldDamage: 0,
+        });
+        const preview = {
+          ...previewWithoutSplash,
+          splash: shieldedSplash.map(({ shieldDamage, ...entry }) => {
+            expect(shieldDamage).toBe(0);
+            return entry;
+          }),
+        };
         expect({
           runUp,
           fortificationIgnored,
@@ -1680,17 +1719,32 @@ describe("ruleset-7 all-Human parity digests", () => {
           plagued: _plagued,
           bitten: _bitten,
           eggs,
+          shields,
+          cooling,
+          thralls,
+          mindControlCooldowns,
           ...rest
         } = value as {
           graves: unknown;
           plagued: unknown;
           bitten: unknown;
           eggs: unknown;
+          shields: unknown;
+          cooling: unknown;
+          thralls: unknown;
+          mindControlCooldowns: unknown;
         };
         void _graves;
         void _plagued;
         void _bitten;
         expect(eggs).toEqual([]);
+        // The Martian revision: four empty side lists in state and view.
+        expect({ shields, cooling, thralls, mindControlCooldowns }).toEqual({
+          shields: [],
+          cooling: [],
+          thralls: [],
+          mindControlCooldowns: [],
+        });
         const neutral = JSON.parse(
           JSON.stringify(rest).replaceAll(RULESET_7_ID, "IDENTITY"),
         ) as {

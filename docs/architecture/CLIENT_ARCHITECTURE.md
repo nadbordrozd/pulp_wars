@@ -2,9 +2,9 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r21` (autosave
-`pulpWars.save.v7r21.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r20.current`), whose rules for the three factions
+The current client runs `pulp-wars-poc-7r22` (autosave
+`pulpWars.save.v7r22.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r21.current`), whose rules for the three factions
 the setup screen offers, Human, Undead, and Goblin, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The engine also
 registers the Dinosaur faction of the
@@ -113,6 +113,45 @@ Ruleset-7 boundary
 **Rules:** [Ruleset 6](../product/RULESET_6.md)
 
 **UI contract:** [Screen Flow](../ui/SCREEN_FLOW.md)
+
+## Martian engine boundary (`pulp_wars-t6s.2`)
+
+The engine registers a fifth faction, `MARTIAN`
+([Martian overlay](../product/RULESET_7_MARTIANS.md)), with every rule of
+that document. **The client does not offer it yet:** the setup screen's
+faction list (`FACTIONS` in `src/render/dom/app-view-v7.ts`) stays Human,
+Undead, Goblin, and Dinosaur until the Martian UI bead (`pulp_wars-t6s.4`),
+and no Martian sprite, marker, button, or Help text exists. The only render
+changes of the engine bead are the display label "Martian" and unlock texts
+for the three new technology unlock kinds, which the exhaustive switches
+need to compile.
+
+What the Martian UI reads, all from `PlayerViewV7` and the public queries:
+
+- `view.shields`, `view.cooling`, `view.thralls` (a Thrall's Brain is null
+  when the viewer cannot see it), and `view.mindControlCooldowns`: one entry
+  per visible unit, public like HP;
+- `publicUnitStatsV7(...).martian` (`shield`, `shieldMaximum`,
+  `capacitySlots`, `movementMode`, `rayPower`, `cooling`, `pierce`,
+  `forceField`, `thrall`, `mindControl`), the `SHIELD` stat row after `HP`,
+  and the `HALF_POWER` and `FORCE_FIELD` modifier sources;
+- the commands `BEAM_DOWN`, `MIND_CONTROL`, and `TRACTOR_BEAM` in
+  `queryPlayerCommandsV7`, with the exact previews `previewBeamDownV7`,
+  `previewMindControlV7`, and `previewTractorBeamV7` (null unless the
+  command is offered);
+- the combat-preview fields `rayPower`, `coolingApplied`,
+  `defenderShieldDamage`, and `attackerShieldDamage` (`damageToDefender`
+  and `damageToAttacker` stay HP damage), `shieldDamage` on splash, Pierce,
+  Wail, and explosion entries, and `fortificationIgnored` for the
+  Disintegrator;
+- the events `SHIELDS_RECHARGED`, `UNIT_BEAMED`, `UNIT_MIND_CONTROLLED`,
+  and `UNIT_PULLED`, the `UNIT_DIED` cause `BRAIN_LOST`, and the
+  `UNIT_MOVE_INTERRUPTED` reason `SETTLEMENT_FORBIDDEN`;
+- `MOVE` offers that already follow Stride, Flying, and self-launch (a
+  machine's Move that ends on water emits `UNIT_EMBARKED`).
+
+In a match without a Martian seat the four lists are empty and the new
+fields have their neutral values, so every existing screen is unchanged.
 
 ## 0. Ruleset-6 replacement boundary
 

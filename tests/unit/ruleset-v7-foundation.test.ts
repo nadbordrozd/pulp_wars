@@ -37,18 +37,20 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r21");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r22");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
       "GOBLIN",
       "DINOSAUR",
+      "MARTIAN",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
       "UNDEAD_BASELINE_V1",
       "GOBLIN_BASELINE_V1",
       "DINOSAUR_BASELINE_V1",
+      "MARTIAN_BASELINE_V1",
     ]);
     expect(RESOURCE_IDS_V7).toEqual([
       "FRUIT",
@@ -94,11 +96,12 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "BATTLESHIP",
     ]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
-    // Revision 20 removes STAMPEDE (46 -> 45 command kinds); the event kinds
-    // are unchanged.
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(45);
+    // Revision 20 removes STAMPEDE (46 -> 45 command kinds). The Martian
+    // revision adds BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM (48) and four
+    // event kinds (72 -> 76).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(48);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(72);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(76);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after
@@ -106,9 +109,17 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("KABOOM"),
-        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 3,
+        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 6,
       ),
-    ).toEqual(["KABOOM", "HATCH", "RECOVER"]);
+    ).toEqual([
+      "KABOOM",
+      "HATCH",
+      // The Martian revision inserts its three commands right after HATCH.
+      "BEAM_DOWN",
+      "MIND_CONTROL",
+      "TRACTOR_BEAM",
+      "RECOVER",
+    ]);
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL"),
@@ -148,14 +159,16 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     ).toEqual(["WAIL_RESOLVED", "EXPLOSION_RESOLVED", "IMPROVEMENT_PILLAGED"]);
     // Revision 14 inserts the Start Turn Plague events after TURN_STARTED;
     // revision 15 adds PLAGUE_EXPIRED after PLAGUE_SPREAD; revision 17 adds
-    // Troll regeneration after Windmill healing.
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 7)).toEqual([
+    // Troll regeneration after Windmill healing; the Martian revision adds
+    // the Shield recharge after it.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 8)).toEqual([
       "TURN_STARTED",
       "PLAGUE_DAMAGED",
       "PLAGUE_SPREAD",
       "PLAGUE_EXPIRED",
       "WINDMILL_HEALING_RESOLVED",
       "UNITS_REGENERATED",
+      "SHIELDS_RECHARGED",
       "INCOME_AWARDED",
     ]);
     expect(PLAYER_EVENT_KIND_ORDER_V7.slice(-3)).toEqual([

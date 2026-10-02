@@ -103,13 +103,38 @@ export interface CombatPreviewV7 {
   readonly defenderArmoured: boolean;
   /** Revision 19 Armoured: the reduction lowered `damageToAttacker`. */
   readonly attackerArmoured: boolean;
+  /**
+   * The Martian revision (section 6.1): `FULL` or `HALF` for a heat ray,
+   * otherwise `NONE`; `attack2` includes the halving.
+   */
+  readonly rayPower: "FULL" | "HALF" | "NONE";
+  /** The attack is a full-power ray and leaves the attacker Cooling. */
+  readonly coolingApplied: boolean;
+  /**
+   * The Martian revision (section 5.3): what the defender's Shield absorbs
+   * of the hit. `damageToDefender` stays HP damage; the whole hit is the sum.
+   */
+  readonly defenderShieldDamage: number;
+  /** What the attacker's Shield absorbs of the retaliation. */
+  readonly attackerShieldDamage: number;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
   readonly at: CoordV7;
+  /** HP damage. */
   readonly damage: number;
   readonly dies: boolean;
+  /**
+   * The Martian revision (section 5.3): what the victim's Shield absorbed
+   * (0 when none). Splash, Pierce, Wail, and explosion entries carry it.
+   */
+  readonly shieldDamage: number;
 }
+/**
+ * A Plague damage entry: Plague bypasses Shields (section 5.3), so it keeps
+ * the pre-Martian shape without `shieldDamage`.
+ */
+export type PlagueDamageEntryV7 = Omit<CombatSplashEntryV7, "shieldDamage">;
 
 export type DomainEventV7 =
   | {
@@ -125,7 +150,7 @@ export type DomainEventV7 =
        */
       readonly kind: "PLAGUE_DAMAGED";
       readonly playerId: PlayerId;
-      readonly results: readonly CombatSplashEntryV7[];
+      readonly results: readonly PlagueDamageEntryV7[];
     }
   | {
       /**
@@ -171,6 +196,19 @@ export type DomainEventV7 =
         readonly unitId: UnitId;
         readonly amount: number;
         readonly hpAfter: number;
+      }[];
+    }
+  | {
+      /**
+       * The Martian revision (section 5.2): the Shields of `playerId` that a
+       * recharge changed (Start Turn, or End Turn with Force Fields), in
+       * unit-ID order, each with its Shield afterwards.
+       */
+      readonly kind: "SHIELDS_RECHARGED";
+      readonly playerId: PlayerId;
+      readonly results: readonly {
+        readonly unitId: UnitId;
+        readonly shield: number;
       }[];
     }
   | {
@@ -436,6 +474,18 @@ export type DomainEventV7 =
       readonly to: CoordV7;
     }
   | {
+      /**
+       * The Martian revision (section 8.1): the Saucer `unitId` beamed its
+       * owner's `passengerUnitId` from `from` to `to`.
+       */
+      readonly kind: "UNIT_BEAMED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly passengerUnitId: UnitId;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
+    }
+  | {
       readonly kind: "UNIT_REWARD_GRANTED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -502,6 +552,17 @@ export type DomainEventV7 =
       readonly to: CoordV7;
     }
   | {
+      /**
+       * The Martian revision (section 8.4): the Mothership `sourceUnitId`
+       * pulled `targetUnitId` one tile toward itself.
+       */
+      readonly kind: "UNIT_PULLED";
+      readonly sourceUnitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
+    }
+  | {
       readonly kind: "UNIT_MOVED";
       readonly unitId: UnitId;
       readonly path: readonly CoordV7[];
@@ -510,7 +571,15 @@ export type DomainEventV7 =
       readonly kind: "UNIT_MOVE_INTERRUPTED";
       readonly unitId: UnitId;
       readonly at: CoordV7;
-      readonly reason: "OCCUPIED" | "ENGINEERING_REQUIRED" | "ZOC";
+      readonly reason:
+        | "OCCUPIED"
+        | "ENGINEERING_REQUIRED"
+        | "ZOC"
+        /**
+         * The Martian revision: a flyer entered an unexplored cell that is
+         * a settlement center it cannot stand on.
+         */
+        | "SETTLEMENT_FORBIDDEN";
     }
   | {
       readonly kind: "TILES_REVEALED";
@@ -623,7 +692,9 @@ export type DomainEventV7 =
         /** Revision 17: killed by an explosion. */
         | "EXPLOSION"
         /** Revision 19: an Egg destroyed because its home city was captured. */
-        | "CITY_CAPTURED";
+        | "CITY_CAPTURED"
+        /** The Martian revision: a Thrall collapsed with its Brain. */
+        | "BRAIN_LOST";
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */
@@ -646,6 +717,22 @@ export type DomainEventV7 =
       readonly unitId: UnitId;
       readonly at: CoordV7;
       readonly homeCityId: CityId | null;
+    }
+  | {
+      /**
+       * The Martian revision (section 8.2): the Brain `unitId` of `playerId`
+       * took `targetUnitId` (removed, not killed); the Thrall
+       * `thrallUnitId` stands on `at` with `hp`.
+       */
+      readonly kind: "UNIT_MIND_CONTROLLED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly targetOwnerId: PlayerId;
+      readonly targetRole: UnitRoleIdV7;
+      readonly thrallUnitId: UnitId;
+      readonly at: CoordV7;
+      readonly hp: number;
     }
   | { readonly kind: "GRAVE_CREATED"; readonly at: CoordV7 }
   | {

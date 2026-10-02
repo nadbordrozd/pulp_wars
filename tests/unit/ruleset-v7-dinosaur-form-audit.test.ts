@@ -483,16 +483,26 @@ describe("ruleset-7 revision-19 form audit: source", () => {
   //
   // A new `form !== "LAND"` fails this test: audit it for Eggs (is "not
   // LAND" being read as "afloat"?), then update the count.
+  //
+  // The Martian revision (`pulp_wars-t6s.2`) re-audited every site. Cover,
+  // fortification, and terrain entry no longer read the form directly: they
+  // go through `unitTakesCoverV7` and the shared `canEnterTerrainV7` (whose
+  // `afloat` input is `isAfloatFormV7`, or the mover's land form in a Move),
+  // which removed three tests from combat.ts and one from movement.ts. The
+  // reducer gained four land-form gates that an Egg must fail: the Saucer
+  // of a Beam Down, the Brain and the target of a Mind Control, and the
+  // Mothership of a Tractor Beam. The state schema gained the Thrall form
+  // rule (a Thrall is land-form or embarked, never an Egg or a boat).
   const AUDITED: Readonly<Record<string, number>> = {
-    "src/engine/v7/combat.ts": 4,
+    "src/engine/v7/combat.ts": 1,
     "src/engine/v7/explosions.ts": 1,
     "src/engine/v7/graves.ts": 1,
-    "src/engine/v7/movement.ts": 3,
+    "src/engine/v7/movement.ts": 2,
     // Revision 20 removed the Stampede resolution and preview (two tests
     // each in the reducer and the queries).
     "src/engine/v7/query.ts": 3,
-    "src/engine/v7/reducer.ts": 11,
-    "src/engine/v7/state-schema.ts": 2,
+    "src/engine/v7/reducer.ts": 15,
+    "src/engine/v7/state-schema.ts": 3,
     "src/engine/v7/wail.ts": 1,
     "src/engine/rules/ruleset-v7.ts": 1,
     // `pulp_wars-c87.5`: the own land units counted for the Shaman training

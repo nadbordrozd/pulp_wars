@@ -61,6 +61,7 @@ export * from "./v7/graves";
 export * from "./v7/growth";
 export * from "./v7/infect";
 export * from "./v7/map";
+export * from "./v7/martian";
 export * from "./v7/movement";
 export * from "./v7/observation";
 export * from "./v7/order";

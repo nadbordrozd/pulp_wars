@@ -4,7 +4,11 @@ import type {
   PlayerEventEnvelopeV7,
   PlayerEventV7,
 } from "./events";
-import { effectiveRoleRuleV7 } from "../rules/ruleset-v7";
+import {
+  SHIELD_CAP_V7,
+  MIND_CONTROL_HP_V7,
+  effectiveRoleRuleV7,
+} from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
@@ -34,6 +38,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   PLAGUE_EXPIRED: ["kind", "playerId", "unitIds"],
   WINDMILL_HEALING_RESOLVED: ["kind", "playerId", "cityId", "at", "results"],
   UNITS_REGENERATED: ["kind", "playerId", "results"],
+  SHIELDS_RECHARGED: ["kind", "playerId", "results"],
   INCOME_AWARDED: ["kind", "playerId", "totalCoins", "cities"],
   INCOME_PREVIEWED: ["kind", "playerId", "totalCoins", "cities"],
   TURN_ENDED: ["kind", "playerId"],
@@ -224,6 +229,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "from",
     "to",
   ],
+  UNIT_BEAMED: ["kind", "playerId", "unitId", "passengerUnitId", "from", "to"],
   UNIT_REWARD_GRANTED: [
     "kind",
     "playerId",
@@ -246,6 +252,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   DEAD_RAISED: ["kind", "playerId", "unitId", "results"],
   GRAVE_DEVOURED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
   UNIT_PUSHED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
+  UNIT_PULLED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
   UNIT_MOVED: ["kind", "unitId", "path"],
   UNIT_MOVE_INTERRUPTED: ["kind", "unitId", "at", "reason"],
   TILES_REVEALED: ["kind", "playerId", "tiles"],
@@ -288,6 +295,17 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "unitId",
     "at",
     "homeCityId",
+  ],
+  UNIT_MIND_CONTROLLED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "targetUnitId",
+    "targetOwnerId",
+    "targetRole",
+    "thrallUnitId",
+    "at",
+    "hp",
   ],
   BITTEN_UNIT_RISEN: [
     "kind",
@@ -600,7 +618,7 @@ function validPayload(
     case "PLAGUE_DAMAGED":
       return (
         id(e.playerId) &&
-        splashEntries(e.results, false) &&
+        plagueEntries(e.results) &&
         (e.results as readonly { damage: number }[]).length > 0 &&
         (e.results as readonly { damage: number }[]).every(
           (entry) => entry.damage <= 2,
@@ -619,6 +637,8 @@ function validPayload(
       );
     case "UNITS_REGENERATED":
       return id(e.playerId) && healingResults(e.results);
+    case "SHIELDS_RECHARGED":
+      return id(e.playerId) && shieldResults(e.results);
     case "INCOME_AWARDED":
     case "INCOME_PREVIEWED":
       return id(e.playerId) && nn(e.totalCoins) && income(e.cities);
@@ -869,6 +889,15 @@ function validPayload(
         parseCoordV7(e.from) !== null &&
         parseCoordV7(e.to) !== null
       );
+    case "UNIT_BEAMED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.passengerUnitId) &&
+        e.unitId !== e.passengerUnitId &&
+        parseCoordV7(e.from) !== null &&
+        parseCoordV7(e.to) !== null
+      );
     case "UNIT_REWARD_GRANTED":
       return (
         id(e.playerId) &&
@@ -909,6 +938,7 @@ function validPayload(
         Number(e.amount) < Number(e.hpAfter)
       );
     case "UNIT_PUSHED":
+    case "UNIT_PULLED":
       return (
         id(e.sourceUnitId) &&
         id(e.targetUnitId) &&
@@ -921,7 +951,12 @@ function validPayload(
       return (
         id(e.unitId) &&
         parseCoordV7(e.at) !== null &&
-        ["OCCUPIED", "ENGINEERING_REQUIRED", "ZOC"].includes(e.reason as string)
+        [
+          "OCCUPIED",
+          "ENGINEERING_REQUIRED",
+          "ZOC",
+          "SETTLEMENT_FORBIDDEN",
+        ].includes(e.reason as string)
       );
     case "TILES_REVEALED":
       return id(e.playerId) && sortedCoords(e.tiles);
@@ -952,11 +987,12 @@ function validPayload(
             unitId: number;
             at: { x: number; y: number };
             damage: number;
+            shieldDamage: number;
           }[]
         ).every(
           (entry) =>
             entry.unitId !== e.unitId &&
-            entry.damage <= (e.damage as number) &&
+            entry.damage + entry.shieldDamage <= (e.damage as number) &&
             Math.max(
               Math.abs(entry.at.x - (e.at as { x: number }).x),
               Math.abs(entry.at.y - (e.at as { y: number }).y),
@@ -1017,7 +1053,24 @@ function validPayload(
           "KABOOM",
           "EXPLOSION",
           "CITY_CAPTURED",
+          "BRAIN_LOST",
         ].includes(e.cause as string)
+      );
+    case "UNIT_MIND_CONTROLLED":
+      // The Martian revision: the Thrall has 1 to `MIND_CONTROL_HP_V7` HP.
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.targetUnitId) &&
+        id(e.targetOwnerId) &&
+        e.targetOwnerId !== e.playerId &&
+        UNIT_ROLE_IDS_V7.includes(e.targetRole as never) &&
+        e.targetRole !== "JUGGERNAUT" &&
+        id(e.thrallUnitId) &&
+        new Set([e.unitId, e.targetUnitId, e.thrallUnitId]).size === 3 &&
+        parseCoordV7(e.at) !== null &&
+        pos(e.hp) &&
+        (e.hp as number) <= MIND_CONTROL_HP_V7
       );
     case "UNIT_INFECTED":
       return (
@@ -1096,6 +1149,10 @@ function combat(input: unknown): boolean {
       "acid",
       "defenderArmoured",
       "attackerArmoured",
+      "rayPower",
+      "coolingApplied",
+      "defenderShieldDamage",
+      "attackerShieldDamage",
     ])
   )
     return false;
@@ -1128,8 +1185,22 @@ function combat(input: unknown): boolean {
       (input.fortificationLevel === 0 &&
         input.defenseBonusNumerator === 1 &&
         input.defenseBonusDenominator === 1)) &&
-    (input.defenderArmoured !== true || Number(input.damageToDefender) >= 1) &&
-    (input.attackerArmoured !== true || Number(input.damageToAttacker) >= 1) &&
+    // The Martian revision: an Armoured hit of at least 1 is HP or Shield.
+    (input.defenderArmoured !== true ||
+      Number(input.damageToDefender) + Number(input.defenderShieldDamage) >=
+        1) &&
+    (input.attackerArmoured !== true ||
+      Number(input.damageToAttacker) + Number(input.attackerShieldDamage) >=
+        1) &&
+    // The Martian revision: ray power, Cooling, and absorbed Shield damage.
+    (input.rayPower === "FULL" ||
+      input.rayPower === "HALF" ||
+      input.rayPower === "NONE") &&
+    input.coolingApplied === (input.rayPower === "FULL") &&
+    [input.defenderShieldDamage, input.attackerShieldDamage].every(
+      (item) => nn(item) && Number(item) <= SHIELD_CAP_V7,
+    ) &&
+    (input.attackerShieldDamage === 0 || input.retaliation === true) &&
     (input.attacksRemaining === 0 || input.attacksRemaining === 1) &&
     input.overrunContinues === (input.attacksRemaining === 1) &&
     (!input.overrunContinues ||
@@ -1196,19 +1267,43 @@ function combat(input: unknown): boolean {
 function splash(input: unknown): boolean {
   return splashEntries(input, false);
 }
+/** Revision 14 Plague damage entries: Plague bypasses Shields. */
+function plagueEntries(input: unknown): boolean {
+  return splashShapedEntries(input, false, false);
+}
 /**
  * Splash-shaped entries sorted by (y, x, unitId) with unique units. Wail
- * results may carry 0 damage; a death always needs positive damage.
+ * results may carry 0 damage; a death always needs positive damage. The
+ * Martian revision: each entry carries `shieldDamage` (what the victim's
+ * Shield absorbed), and a hit whose HP damage is 0 is valid when its Shield
+ * damage is positive.
  */
 function splashEntries(input: unknown, zeroDamage: boolean): boolean {
+  return splashShapedEntries(input, zeroDamage, true);
+}
+function splashShapedEntries(
+  input: unknown,
+  zeroDamage: boolean,
+  shielded: boolean,
+): boolean {
   if (!isDenseArrayV7(input)) return false;
   let previous: { x: number; y: number; unitId: number } | null = null;
   const ids = new Set<number>();
   for (const entry of input) {
     if (
-      !hasExactKeysV7(entry, ["at", "damage", "dies", "unitId"]) ||
+      !hasExactKeysV7(
+        entry,
+        shielded
+          ? ["at", "damage", "dies", "shieldDamage", "unitId"]
+          : ["at", "damage", "dies", "unitId"],
+      ) ||
       !id(entry.unitId) ||
-      !(zeroDamage ? nn(entry.damage) : pos(entry.damage)) ||
+      (shielded &&
+        (!nn(entry.shieldDamage) ||
+          Number(entry.shieldDamage) > SHIELD_CAP_V7)) ||
+      !(zeroDamage || (shielded && Number(entry.shieldDamage) > 0)
+        ? nn(entry.damage)
+        : pos(entry.damage)) ||
       typeof entry.dies !== "boolean" ||
       (entry.dies && entry.damage === 0)
     )
@@ -1386,6 +1481,26 @@ function raisedResults(input: unknown, raiserId: unknown): boolean {
       return false;
     priorId = Number(result.unitId);
     prior = at;
+  }
+  return true;
+}
+/**
+ * The Martian revision `SHIELDS_RECHARGED` results: non-empty, in strictly
+ * increasing unit-ID order, each with a Shield from 1 to 4.
+ */
+function shieldResults(input: unknown): boolean {
+  if (!isDenseArrayV7(input) || input.length === 0) return false;
+  let prior = 0;
+  for (const result of input) {
+    if (
+      !hasExactKeysV7(result, ["shield", "unitId"]) ||
+      !id(result.unitId) ||
+      !pos(result.shield) ||
+      Number(result.shield) > SHIELD_CAP_V7 ||
+      Number(result.unitId) <= prior
+    )
+      return false;
+    prior = Number(result.unitId);
   }
   return true;
 }

@@ -716,8 +716,9 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_INFECTED")).toBe(
       DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_DIED") + 1,
     );
+    // The Martian revision inserts UNIT_MIND_CONTROLLED between them.
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("GRAVE_CREATED")).toBe(
-      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_INFECTED") + 1,
+      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_INFECTED") + 2,
     );
     const valid = {
       kind: "UNIT_INFECTED",

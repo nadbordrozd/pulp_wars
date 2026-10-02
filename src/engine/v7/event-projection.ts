@@ -45,6 +45,19 @@ export function projectEventsV7(
     )
       visiblyCreatedUnitIds.add(event.unitId);
     else if (
+      // The Martian revision: the Thrall of a projected Mind Control.
+      event.kind === "UNIT_MIND_CONTROLLED" &&
+      eventVisible(
+        beforeState,
+        afterState,
+        viewerId,
+        event,
+        beforeVisible,
+        afterVisible,
+      )
+    )
+      visiblyCreatedUnitIds.add(event.thrallUnitId);
+    else if (
       event.kind === "DEAD_RAISED" &&
       eventVisible(
         beforeState,
@@ -117,9 +130,19 @@ export function projectEventsV7(
     }
     // Revision 17 Troll regeneration, projected like Windmill healing: the
     // owner sees every entry; another viewer sees the Trolls it can see.
-    if (event.kind === "UNITS_REGENERATED") {
+    if (
+      event.kind === "UNITS_REGENERATED" ||
+      // The Martian revision section 10.8: a Shield recharge is projected
+      // the same way (the entries of units the viewer can see).
+      event.kind === "SHIELDS_RECHARGED"
+    ) {
       if (event.playerId === viewerId) projected.push(event);
-      else {
+      else if (event.kind === "UNITS_REGENERATED") {
+        const results = event.results.filter((result) =>
+          afterVisible.has(result.unitId),
+        );
+        if (results.length > 0) projected.push({ ...event, results });
+      } else {
         const results = event.results.filter((result) =>
           afterVisible.has(result.unitId),
         );
@@ -231,6 +254,42 @@ function eventVisible(
   afterVisible: ReadonlySet<UnitId>,
 ): boolean {
   const ids = unitIds(event);
+  // The Martian revision section 10.8: a Beam Down, a Mind Control, and a
+  // pull are projected to the actor and to every viewer that can see a unit
+  // or tile involved before or after the command.
+  if (
+    event.kind === "UNIT_BEAMED" ||
+    event.kind === "UNIT_MIND_CONTROLLED" ||
+    event.kind === "UNIT_PULLED"
+  ) {
+    const seen = (id: UnitId): boolean =>
+      beforeVisible.has(id) || afterVisible.has(id);
+    const tile = (at: CoordV7): boolean =>
+      coordVisible(before, after, viewerId, at);
+    if (event.kind === "UNIT_BEAMED")
+      return (
+        event.playerId === viewerId ||
+        seen(event.unitId) ||
+        seen(event.passengerUnitId) ||
+        tile(event.from) ||
+        tile(event.to)
+      );
+    if (event.kind === "UNIT_MIND_CONTROLLED")
+      return (
+        event.playerId === viewerId ||
+        event.targetOwnerId === viewerId ||
+        seen(event.unitId) ||
+        seen(event.targetUnitId) ||
+        seen(event.thrallUnitId) ||
+        tile(event.at)
+      );
+    return (
+      seen(event.sourceUnitId) ||
+      seen(event.targetUnitId) ||
+      tile(event.from) ||
+      tile(event.to)
+    );
+  }
   if (
     ids.length > 0 &&
     ids.some((id) => !beforeVisible.has(id) && !afterVisible.has(id))
@@ -342,7 +401,14 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
     case "UNITS_REGENERATED":
       return event.results.map((result) => result.unitId);
     case "UNIT_PUSHED":
+    case "UNIT_PULLED":
       return [event.sourceUnitId, event.targetUnitId];
+    // The Martian revision: the Saucer and its passenger; the Brain and the
+    // new Thrall (the target has left the board).
+    case "UNIT_BEAMED":
+      return [event.unitId, event.passengerUnitId];
+    case "UNIT_MIND_CONTROLLED":
+      return [event.unitId, event.thrallUnitId];
     case "UNIT_SPAWN_DISPLACED":
       return [event.spawnedUnitId, event.displacedUnitId];
     case "UNIT_INFECTED":

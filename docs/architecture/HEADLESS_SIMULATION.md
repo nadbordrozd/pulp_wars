@@ -5,7 +5,7 @@ Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The headless CLI
-accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r21`
+accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r22`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). Since
 [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md) the
 `achievements` metrics carry all seven achievements: `progressMaximum` and
@@ -27,10 +27,10 @@ with `--factions` needs exactly one `--ai-counts` value, and each batch entry
 records its `factions`.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r21 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
-npm run headless -- batch --ruleset pulp-wars-poc-7r21 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
-npm run headless -- match --ruleset pulp-wars-poc-7r21 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r21 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r22 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
+npm run headless -- batch --ruleset pulp-wars-poc-7r22 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
+npm run headless -- match --ruleset pulp-wars-poc-7r22 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r22 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
 ```
 
 A Dinosaur seat
@@ -102,6 +102,50 @@ units included) counts in the attacker's damage and kills and in the
 credited to no role or faction. Faction-keyed fields (`factionRoles`,
 `overcapacityStatesByFaction`) include a `GOBLIN` entry.
 
+## Martian seats (`pulp_wars-t6s.2`)
+
+`--factions` also accepts `martian`
+([Martian overlay](../product/RULESET_7_MARTIANS.md)), on every map type
+including `showcase`:
+
+```bash
+npm run headless -- match --ruleset pulp-wars-poc-7r22 --map-type pangea --factions martian,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r22 --map-type showcase --ai-count 3 --factions martian,human,undead,goblin --max-rounds 50
+```
+
+The engine bead adds no Martian policy. A Martian seat plays with the
+generic Normal policy on the Martian registration: it trains, moves,
+attacks, captures, researches, and builds like a Human seat, its machines
+stride, fly, and self-launch wherever the generic route search sends them,
+and its ray units fire at full or half power as their Moves happen to
+allow. It never issues `BEAM_DOWN`, `MIND_CONTROL`, or `TRACTOR_BEAM` (the
+policy gives an unknown command kind no priority), so it has no Thralls.
+The other factions' policies attack Martian units with their ordinary
+previews, which include Shields. The Martian policy is `pulp_wars-t6s.3`.
+
+Every v7 result carries a `martian` block (all zero without a Martian
+seat), computed from the events of the accepted commands:
+
+- `shieldAbsorbed` by source (`attack`, `retaliation`, `splash`, which
+  includes Pierce, `wail`, `blast`), `hitsFullyAbsorbed`, `rechargeEvents`,
+  `rechargedShields`, and `endTurnRechargeEvents` (Force Fields);
+- `raysFull`, `raysHalf` (`raysHalfMoved`, `raysHalfCooling`), `rayDamage`,
+  `rayKills`, and `raysIgnoringFortification` (the Disintegrator);
+- `pierceHitsHostile`, `pierceHitsFriendly`, `pierceDamage`, `pierceKills`;
+- `beamDowns` and `beamDownPassengers` by role; `mindControls`,
+  `mindControlTargets` by role, `mindControlTargetHp`, `thrallsCollapsed`,
+  `thrallsMaximum`, and `thrallCaptures`; `tractorBeamsOwn`,
+  `tractorBeamsHostile`, and `tractorBeamsOffCenter`; `psychicCommands`;
+- `selfLaunches` (machines that embarked without a Port) and `flyoverMoves`
+  (flyer Moves over a unit of another player).
+
+`commandsByKind` counts the three new commands and the event counters the
+four new events like any other kind. Faction-keyed fields include a
+`MARTIAN` entry. The pressure telemetry script below accepts the pairing
+letter `M`; the balance matrix (`scripts/ruleset7-undead-balance-matrix.ts`)
+gets its Martian pairings and summary with the balance bead
+(`pulp_wars-t6s.5`).
+
 ## Normal AI pressure telemetry (`pulp_wars-9s0.1`)
 
 `scripts/ruleset7-ai-pressure-telemetry.ts` measures how expansionist and
@@ -117,7 +161,7 @@ npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --from-output a.json,b.json --
 ```
 
 A pairing is one letter per seat (`H` Human, `U` Undead, `G` Goblin, `D`
-Dinosaur): two-letter pairings run on every `--sizes` value (default 11 and
+Dinosaur, `M` Martian): two-letter pairings run on every `--sizes` value (default 11 and
 14), longer ones on `--multi-size` (default 16). `--maps` defaults to all
 five map types, `--seeds` to 3 (from `--first-seed`), `--max-rounds` to 150.
 `--output` writes the summary and every match; `--from-output` runs no
@@ -199,7 +243,7 @@ change the board): its size defaults to 16 for every seat count, any other
 types at 16. No validation or balance matrix includes it by default.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r21 --map-type showcase --ai-count 3 --factions human,undead,goblin,human --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r22 --map-type showcase --ai-count 3 --factions human,undead,goblin,human --max-rounds 50
 ```
 
 The naval

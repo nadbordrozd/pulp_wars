@@ -30,12 +30,26 @@ const captured300: PlayerViewV7 = {
         "utf8",
       ),
     ) as {
-      readonly view: Omit<PlayerViewV7, "graves" | "plagued" | "bitten">;
+      readonly view: Omit<
+        PlayerViewV7,
+        | "graves"
+        | "plagued"
+        | "bitten"
+        | "shields"
+        | "cooling"
+        | "thralls"
+        | "mindControlCooldowns"
+      >;
     }
   ).view,
   graves: [],
   plagued: [],
   bitten: [],
+  // The Martian revision's neutral side lists.
+  shields: [],
+  cooling: [],
+  thralls: [],
+  mindControlCooldowns: [],
 };
 
 describe("ruleset-7 exact public query indexing", () => {
@@ -50,9 +64,11 @@ describe("ruleset-7 exact public query indexing", () => {
     expect(reads.tileReads).toBeLessThan(6_000);
     expect(reads.unitReads).toBeLessThan(500);
     // The view hash includes the neutral `graves`, `plagued`, and `bitten`
-    // fields added to the captured revision-11 view above.
+    // fields added to the captured revision-11 view above, and since the
+    // Martian revision (`pulp_wars-t6s.2`) the four empty lists `shields`,
+    // `cooling`, `thralls`, and `mindControlCooldowns` (was 219eb2…5d03).
     expect(canonicalHash(measured.view)).toBe(
-      "219eb246742a56b1fe0f739004dd139e99eb19f6816e049aa0816f9552375d03",
+      "d8f602f702c46762f9005deabd4735b53d5eefe26a5cf679397c5e3ddfb6f19a",
     );
 
     const planned = drain(measured.view, commands, 113);

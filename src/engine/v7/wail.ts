@@ -5,11 +5,13 @@ import {
   gravesEnabledV7,
   playerFactionV7,
   unitRoleRuleV7,
+  unitTakesCoverV7,
   type FactionRosterV7,
 } from "../rules/ruleset-v7";
 import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
 import { arePlayersHostileV7 } from "./economy";
 import type { CombatSplashEntryV7 } from "./events";
+import { absorbHitV7, shieldOfV7 } from "./martian";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { CoordV7, GameStateV7, UnitStateV7 } from "./types";
 import type { PlayerViewV7, PublicUnitV7 } from "./view";
@@ -25,8 +27,11 @@ export interface WailTargetV7 {
   readonly defenseBonusNumerator: number;
   readonly defenseBonusDenominator: number;
   readonly fortificationLevel: number;
+  /** HP damage. */
   readonly damage: number;
   readonly dies: boolean;
+  /** The Martian revision: what the target's Shield absorbs of the hit. */
+  readonly shieldDamage: number;
 }
 
 /** Public Wail preview (section 6.6); it equals the resolution exactly. */
@@ -83,6 +88,7 @@ export function wailTargetsV7(
           bonus.numerator,
           bonus.denominator,
           fortificationLevel,
+          shieldOfV7(state.shields, unit.id),
         );
       }),
   );
@@ -110,13 +116,14 @@ export function publicWailTargetsV7(
       continue;
     const tile = publicTile(view, unit.at);
     if (tile?.explored !== true) continue;
+    // The Martian revision: a walker or flyer has no fortification or cover.
+    const takesCover = unitTakesCoverV7(view, unit);
     const fortificationLevel =
-      unit.form === "LAND" && tile.territoryOwnerId === unit.ownerId
+      takesCover && tile.territoryOwnerId === unit.ownerId
         ? (tile.fortificationLevel ?? 0)
         : 0;
     const covered =
-      unit.form === "LAND" &&
-      (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
+      takesCover && (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
     targets.push(
       target(
         view,
@@ -131,6 +138,7 @@ export function publicWailTargetsV7(
         covered ? 3 : 1,
         covered ? 2 : 1,
         fortificationLevel,
+        shieldOfV7(view.shields, unit.id),
       ),
     );
   }
@@ -162,6 +170,7 @@ export function wailResultEntriesV7(
     at: { x: entry.at.x, y: entry.at.y },
     damage: entry.damage,
     dies: entry.dies,
+    shieldDamage: entry.shieldDamage,
   }));
 }
 
@@ -170,7 +179,9 @@ export function wailResultEntriesV7(
  * target: the attacker's `attack2` at its current HP against the target's
  * defense, cover, and fortification; `min(target.hp, roundHalfUp(...))`.
  * Revision 19: `armour`, when given, reduces the rounded damage before the
- * cap at the target's HP (an Armoured target).
+ * cap at the target's HP (an Armoured target). The Martian revision:
+ * `shield`, when given, raises the cap to the Shield plus the HP; the result
+ * is then the whole hit, which the caller splits with `absorbHitV7`.
  */
 export function wailDamageV7(input: {
   readonly attack2: number;
@@ -182,6 +193,7 @@ export function wailDamageV7(input: {
   readonly defenseBonusNumerator: number;
   readonly defenseBonusDenominator: number;
   readonly armour?: (damage: number) => number;
+  readonly shield?: number;
 }): number {
   const attackOnCommon =
     BigInt(input.attack2) *
@@ -201,7 +213,7 @@ export function wailDamageV7(input: {
     throw new RangeError("INTEGER_OVERFLOW");
   const damage = Number(rounded);
   return Math.min(
-    input.defenderHp,
+    input.defenderHp + (input.shield ?? 0),
     input.armour === undefined ? damage : input.armour(damage),
   );
 }
@@ -215,8 +227,10 @@ function target(
   defenseBonusNumerator: number,
   defenseBonusDenominator: number,
   fortificationLevel: number,
+  shield: number,
 ): WailTargetV7 {
-  const damage = wailDamageV7({
+  // The Martian revision section 5.3: the Shield absorbs the Wail first.
+  const hit = wailDamageV7({
     attack2,
     attackerHp: banshee.hp,
     attackerMaxHp: banshee.maxHp,
@@ -226,7 +240,9 @@ function target(
     defenseBonusNumerator,
     defenseBonusDenominator,
     armour: (value) => armouredDamageV7(roster, unit, value),
+    shield,
   });
+  const { shieldDamage, hpDamage: damage } = absorbHitV7(shield, unit.hp, hit);
   return {
     unitId: unit.id,
     at: { x: unit.at.x, y: unit.at.y },
@@ -236,6 +252,7 @@ function target(
     fortificationLevel,
     damage,
     dies: damage >= unit.hp,
+    shieldDamage,
   };
 }
 

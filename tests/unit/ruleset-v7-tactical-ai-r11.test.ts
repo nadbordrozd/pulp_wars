@@ -961,9 +961,13 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // (was 704210…2a87). pulp_wars-9s0.1 (was bc6d10…4ffd): the command
         // is the same Capture and one candidate's score differs, Train
         // Guard at priority 1205 (was 1080): an enemy city is known and
-        // fewer than two thirds of the unit slots are filled.
+        // fewer than two thirds of the unit slots are filled. The Martian
+        // revision (`pulp_wars-t6s.2`) inserts BEAM_DOWN, MIND_CONTROL, and
+        // TRACTOR_BEAM after HATCH, moving every later kind forward by
+        // three (was ae8b91…e5c5); the revision-12-ordinal value below is
+        // unchanged.
         expect(canonicalHash(beforeDecision)).toBe(
-          "ae8b91a6685e8655110bf7e931961b912f1d6a844e2f5c60575817dfbaeee5c5",
+          "e42f375e166ab4e1d3601694a3dfc5150de76db678c723ffc9e0f20c6041e43d",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1022,8 +1026,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // (was ece5c4…27cf). pulp_wars-9s0.1 (was 23912d…23bf): the command
         // is the same Build Monument and one candidate's score differs,
         // Train Guard at priority 1205 (was 1080), as before the capture.
+        // The Martian revision (`pulp_wars-t6s.2`) inserts BEAM_DOWN,
+        // MIND_CONTROL, and TRACTOR_BEAM after HATCH, moving every later
+        // command-kind ordinal forward by three (was 548fac…c17a).
         expect(canonicalHash(capturedDecision)).toBe(
-          "548fac9d190b97a3af674e72b23c0636d8fbcee1f4d6028c61bdef1d0615c17a",
+          "caaa289901579aba8b375e90a4881267442615df1876f4813700d0e09a7cc38a",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1).
         expect(

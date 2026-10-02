@@ -84,6 +84,35 @@ export type CommandV7 =
       readonly eggUnitId: UnitId;
     }
   | {
+      /**
+       * The Martian revision (section 8.1): a Saucer that has not moved
+       * brings its owner's `passengerUnitId` from a city to the adjacent
+       * tile `to`.
+       */
+      readonly kind: "BEAM_DOWN";
+      readonly unitId: UnitId;
+      readonly passengerUnitId: UnitId;
+      readonly to: CoordV7;
+    }
+  | {
+      /**
+       * The Martian revision (section 8.2): a Brain takes a weakened
+       * hostile unit, which becomes a Thrall.
+       */
+      readonly kind: "MIND_CONTROL";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
+      /**
+       * The Martian revision (section 8.4): a Mothership pulls a unit two
+       * tiles away one tile toward itself.
+       */
+      readonly kind: "TRACTOR_BEAM";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
       /** Revision 19: a Dinosaur city lays an Egg of `role` on `at`. */
       readonly kind: "LAY_EGG";
       readonly cityId: CityId;
@@ -246,7 +275,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: id, path } };
   }
-  if (kind === "ATTACK") {
+  if (kind === "ATTACK" || kind === "MIND_CONTROL" || kind === "TRACTOR_BEAM") {
     if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
       return invalid(kind);
     const unit = parseUnitIdV7(candidate.unitId);
@@ -254,6 +283,19 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     return unit === null || target === null
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target } };
+  }
+  if (kind === "BEAM_DOWN") {
+    if (!hasExactKeysV7(input, ["kind", "unitId", "passengerUnitId", "to"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const passenger = parseUnitIdV7(candidate.passengerUnitId);
+    const to = parseCoordV7(candidate.to);
+    return unit === null || passenger === null || to === null
+      ? invalid(kind)
+      : {
+          ok: true,
+          value: { kind, unitId: unit, passengerUnitId: passenger, to },
+        };
   }
   if (kind === "HATCH") {
     if (!hasExactKeysV7(input, ["kind", "unitId", "eggUnitId"]))
@@ -380,6 +422,14 @@ export function compareCommandsV7(left: CommandV7, right: CommandV7): number {
         UNIT_ROLE_IDS_V7.indexOf(right.role) ||
       compareNullableCoords(left.at, right.at)
     );
+  // The Martian revision section 11: `BEAM_DOWN` is offered in unit-ID,
+  // passenger-ID, then (y, x) order.
+  if (left.kind === "BEAM_DOWN" && right.kind === "BEAM_DOWN")
+    return (
+      left.unitId - right.unitId ||
+      left.passengerUnitId - right.passengerUnitId ||
+      compareNullableCoords(left.to, right.to)
+    );
   const leftAt = targetCoord(left);
   const rightAt = targetCoord(right);
   const byTarget = compareNullableCoords(leftAt, rightAt);
@@ -438,7 +488,12 @@ function referencedOrdinal(command: CommandV7): number {
     return REWARD_IDS_V7.indexOf(command.reward);
   if (command.kind === "BUILD_MONUMENT")
     return ACHIEVEMENT_IDS_V7.indexOf(command.achievement);
-  if (command.kind === "ATTACK") return command.targetUnitId;
+  if (
+    command.kind === "ATTACK" ||
+    command.kind === "MIND_CONTROL" ||
+    command.kind === "TRACTOR_BEAM"
+  )
+    return command.targetUnitId;
   if (command.kind === "HATCH") return command.eggUnitId;
   return 0;
 }

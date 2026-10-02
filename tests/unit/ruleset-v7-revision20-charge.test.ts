@@ -1284,6 +1284,7 @@ describe("ruleset-7 revision-20 Charge! interactions (section 2.6)", () => {
       at: at(4, 2),
       damage: blast.damage,
       dies: false,
+      shieldDamage: 0,
     });
     expect(run.attacker).toMatchObject({
       at: at(4, 2),

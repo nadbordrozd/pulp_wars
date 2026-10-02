@@ -13,8 +13,9 @@ import {
   recomputeLiveEconomyV7,
 } from "./economy";
 import { armouredDamageV7 } from "../rules/ruleset-v7";
-import type { CombatSplashEntryV7, DomainEventV7 } from "./events";
+import type { DomainEventV7, PlagueDamageEntryV7 } from "./events";
 import { recordCombatDeathV7 } from "./graves";
+import { collapseThrallsV7 } from "./martian";
 import { unitSightRadiusAtV7 } from "./movement";
 import type {
   CoordV7,
@@ -55,8 +56,9 @@ export function resolveStartTurnPlagueV7(
     .sort(compareUnitsByTile);
   if (sufferers.length === 0) return { state, events: [] };
   const events: DomainEventV7[] = [];
-  const results: CombatSplashEntryV7[] = sufferers.map((unit) => {
-    // Revision 19: an Armoured unit takes 1 instead of 2.
+  const results: PlagueDamageEntryV7[] = sufferers.map((unit) => {
+    // Revision 19: an Armoured unit takes 1 instead of 2. The Martian
+    // revision section 5.3: Plague bypasses the Shield (HP damage only).
     const damage = Math.min(
       armouredDamageV7(state, unit, PLAGUE_DAMAGE_V7),
       unit.hp,
@@ -82,6 +84,7 @@ export function resolveStartTurnPlagueV7(
   let graves = state.graves;
   let nextEntityId = state.nextEntityId;
   const risings: UnitStateV7[] = [];
+  const collapsedIds = new Set<UnitId>();
   for (const entry of results) {
     if (!entry.dies) continue;
     const victim = state.units.find((unit) => unit.id === entry.unitId);
@@ -103,10 +106,18 @@ export function resolveStartTurnPlagueV7(
       units = [...units, rising];
     } else
       graves = recordCombatDeathV7(state, graves, victim, "PLAGUE", events);
+    // The Martian revision section 8.3: a Brain killed by Plague takes its
+    // Thralls with it, right after its own death events.
+    const collapse = collapseThrallsV7(units, state.thralls, events);
+    if (collapse.collapsed.length > 0) {
+      units = [...collapse.units];
+      for (const thrall of collapse.collapsed) collapsedIds.add(thrall.id);
+    }
   }
-  const dead = new Set(
-    results.filter((entry) => entry.dies).map((entry) => entry.unitId),
-  );
+  const dead = new Set([
+    ...results.filter((entry) => entry.dies).map((entry) => entry.unitId),
+    ...collapsedIds,
+  ]);
   const damaged = new Set(results.map((entry) => entry.unitId));
   const survivingPlague = state.plagued.filter(
     (entry) => !dead.has(entry.unitId),

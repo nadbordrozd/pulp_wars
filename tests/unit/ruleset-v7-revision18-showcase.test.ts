@@ -114,8 +114,8 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         expect(created.ok).toBe(true);
         accepted += 1;
       }
-    // Revision 19: four factions (16, 64, and 256 mixes).
-    expect(accepted).toBe(16 + 64 + 256);
+    // The Martian revision: five factions (25, 125, and 625 mixes).
+    expect(accepted).toBe(25 + 125 + 625);
     for (const aiMode of ["RIVAL", "COOPERATIVE"] as const)
       expect(createPlayableGameV7(showcaseSetup(THREE, { aiMode })).ok).toBe(
         true,
@@ -154,6 +154,9 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
     // the empty `eggs` list, so the same hashes return once both are undone.
     // Revision 21 (`pulp_wars-9s0.4`) adds four locked entitlements to every
     // player and nothing else; the hashes return once they are removed too.
+    // The Martian revision (`pulp_wars-t6s.2`) adds the four empty lists
+    // `shields`, `cooling`, `thralls`, and `mindControlCooldowns`; the
+    // hashes return once they are removed as well.
     const pinned = {
       DRY_LAND:
         "82f66f98a5ee995551537573fd5644730860105cd5da95ce14774e1abd2659af",
@@ -170,8 +173,21 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         showcaseSetup(THREE, { mapType: mapType as MatchSetupV7["mapType"] }),
       );
       if (!created.ok) throw new Error(`${mapType} rejected`);
-      const { eggs, ...revision19State } = created.state;
+      const {
+        eggs,
+        shields,
+        cooling,
+        thralls,
+        mindControlCooldowns,
+        ...revision19State
+      } = created.state;
       expect(eggs).toEqual([]);
+      expect([shields, cooling, thralls, mindControlCooldowns]).toEqual([
+        [],
+        [],
+        [],
+        [],
+      ]);
       for (const player of revision19State.players)
         expect(player.achievementEntitlements.slice(3)).toEqual(
           ["CONQUEROR", "LAND_BARON", "SEA_DOG", "SLAYER"].map(
@@ -766,7 +782,13 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       FACTION_IDS_V7.map(
         (faction) => effectiveRoleRuleV7("JUGGERNAUT", faction).label,
       ),
-    ).toEqual(["Juggernaut", "Abomination", "Troll", "Brontosaurus"]);
+    ).toEqual([
+      "Juggernaut",
+      "Abomination",
+      "Troll",
+      "Brontosaurus",
+      "Colossus",
+    ]);
   });
 });
 

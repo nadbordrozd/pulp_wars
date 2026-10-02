@@ -27,6 +27,12 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * production takes priority 1205 and the Guard is trained in city 16
  * before that Attack (which is still a candidate). The candidate count is
  * unchanged; Move candidates follow the units' campaign jobs.
+ *
+ * The Martian revision (`pulp_wars-t6s.2`): `policyDecisionHash` was
+ * 455981…4e25. `BEAM_DOWN`, `MIND_CONTROL`, and `TRACTOR_BEAM` are inserted
+ * after `HATCH`, so the `-ordinal` tie-break of every candidate whose kind
+ * follows `HATCH` moves by three. The command, the candidate count, and the
+ * hash with revision-12 ordinals are unchanged.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -34,7 +40,7 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b",
   /** `canonicalHash` of the whole decision (command and candidates). */
   policyDecisionHash:
-    "4559810ae43dec76c5358c0c495860a5ebcd6c9b69b95594bb8262cdf6b64e25",
+    "3128237c8cc70023fb1da17eefc25b89897dcac0830b75143e252a1a23c48c44",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -112,10 +118,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r21",
+    rulesetId: "pulp-wars-poc-7r22",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r21",
+      rulesetId: "pulp-wars-poc-7r22",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     },
@@ -204,6 +210,11 @@ export function upgradeRetainedPublicViewV7(
     // Revision 14: nor any Plague or Bitten status.
     plagued: [],
     bitten: [],
+    // The Martian revision: nor any Shield, Cooling, Thrall, or cooldown.
+    shields: [],
+    cooling: [],
+    thralls: [],
+    mindControlCooldowns: [],
   };
 }
 import {

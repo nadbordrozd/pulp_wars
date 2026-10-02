@@ -10,16 +10,26 @@ import {
   factionTreeV7,
   technologyCapabilitiesV7,
   EGG_DEFENSE2_V7,
+  MIND_CONTROL_COOLDOWN_TURNS_V7,
+  MIND_CONTROL_HP_V7,
+  MIND_CONTROL_RANGE_V7,
+  MIND_CONTROL_THRALL_LIMIT_V7,
   PROMOTION_KILLS_V7,
+  TRACTOR_BEAM_RANGE_V7,
   armouredDamageV7,
   attackIgnoresCityWallsV7,
   attackIsChargeV7,
+  canEnterTerrainV7,
   chargeRunUpAttack2V7,
+  flyerMayStandOnSiteV7,
   isEggLaidRoleV7,
   unitCapacitySlotsV7,
+  unitFliesV7,
   unitGrowsV7,
+  unitMovementModeV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
+  unitTakesCoverV7,
   cityUnitCapacityForV7,
   isRallyTargetV7,
   isResourceRevealedV7,
@@ -56,10 +66,21 @@ import { INFECT_RISING_HP_V7 } from "./infect";
 import {
   attackFortificationV7,
   attackHasAcidV7,
+  attackHasPierceV7,
   calculateCombatPreviewV7,
+  collateralEntryV7,
   gangUpBonusV7,
+  tractorBeamTargetTechnologyV7,
   undeadCombatEffectsV7,
 } from "./combat";
+import {
+  absorbHitV7,
+  isThrallV7,
+  pierceTileV7,
+  rayPowerV7,
+  shieldOfV7,
+  tractorBeamDestinationV7,
+} from "./martian";
 import { grownHpV7 } from "./growth";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
 import type { CombatPreviewV7, DomainEventV7 } from "./events";
@@ -499,14 +520,26 @@ function publicLandingTilesV7(
   from: CoordV7,
 ): PlayerTileViewV7[] {
   const player = view.viewer;
+  // The Martian revision: the landing tile goes through the shared
+  // `canEnterTerrainV7` with the unit's land-form movement mode, and a
+  // flyer never lands on a settlement center it does not own.
+  const movementMode = unitMovementModeV7(view, unit);
   return adjacentPublicTiles(view, from).filter(
     (tile) =>
       tile.explored &&
-      tile.biome !== null &&
-      !(
-        tile.terrain === "MOUNTAIN" &&
-        !player.researchedTechs.includes("ENGINEERING")
-      ) &&
+      canEnterTerrainV7({
+        terrain: tile.terrain,
+        movementMode,
+        afloat: false,
+        engineering: player.researchedTechs.includes("ENGINEERING"),
+        navigation: player.researchedTechs.includes("NAVIGATION"),
+      }) &&
+      (movementMode !== "FLY" ||
+        flyerMayStandOnSiteV7(
+          tile.site,
+          view.cities.find((city) => same(city.at, tile.at))?.ownerId ?? null,
+          unit.ownerId,
+        )) &&
       (tile.territoryOwnerId === null ||
         tile.territoryOwnerId === player.id ||
         !publicAllied(view, player.id, tile.territoryOwnerId)) &&
@@ -649,6 +682,33 @@ function appendPublicUnitCommandsV7(
         targetUnitId: target.id,
       });
   }
+  // The Martian revision: Beam Down (an unmoved Saucer), Mind Control, and
+  // the Tractor Beam, each offered exactly for its legal targets.
+  if (!overrun && unit.form === "LAND" && !primaryUsedForQuery(unit)) {
+    if (rule.abilities.includes("BEAM_DOWN") && !unit.activation.moved)
+      for (const passenger of publicBeamDownPassengersV7(view, unit))
+        for (const to of publicBeamDownDestinationsV7(view, unit, passenger))
+          candidates.push({
+            kind: "BEAM_DOWN",
+            unitId: unit.id,
+            passengerUnitId: passenger.id,
+            to,
+          });
+    if (rule.abilities.includes("MIND_CONTROL"))
+      for (const target of publicMindControlTargetsV7(view, unit))
+        candidates.push({
+          kind: "MIND_CONTROL",
+          unitId: unit.id,
+          targetUnitId: target.id,
+        });
+    if (rule.abilities.includes("TRACTOR_BEAM"))
+      for (const target of publicTractorBeamTargetsV7(view, unit))
+        candidates.push({
+          kind: "TRACTOR_BEAM",
+          unitId: unit.id,
+          targetUnitId: target.id,
+        });
+  }
   // Revision 19 Hatch: every adjacent own Egg laid on an earlier turn.
   if (
     !overrun &&
@@ -731,12 +791,16 @@ function appendPublicUnitCommandsV7(
     publicCaptureTarget(view, unit.at)
   )
     candidates.push({ kind: "CAPTURE", unitId: unit.id });
-  // Revision 19: a Dinosaur unit grows instead and is never promoted.
+  // Revision 19: a Dinosaur unit grows instead and is never promoted. The
+  // Martian revision: a Thrall is never promoted and cannot Disband, and a
+  // flyer cannot Pillage.
+  const thrall = isThrallV7(view.thralls, unit.id);
   if (
     unit.form !== "EMBARKED" &&
     unit.kills >= PROMOTION_KILLS_V7 &&
     !unit.veteran &&
-    !unitGrowsV7(view, unit)
+    !unitGrowsV7(view, unit) &&
+    !thrall
   )
     candidates.push({ kind: "PROMOTE", unitId: unit.id });
   const tile = tileAtView(view, unit.at);
@@ -744,6 +808,7 @@ function appendPublicUnitCommandsV7(
     player.researchedTechs.includes("RAIDING") &&
     unit.form === "LAND" &&
     unit.role !== "JUGGERNAUT" &&
+    !unitFliesV7(view, unit) &&
     !primaryUsedForQuery(unit) &&
     tile?.explored === true &&
     tile.improvement !== null &&
@@ -757,6 +822,7 @@ function appendPublicUnitCommandsV7(
     !primaryUsedForQuery(unit) &&
     unit.form === "LAND" &&
     unit.role !== "JUGGERNAUT" &&
+    !thrall &&
     !view.plagued.some((entry) => entry.unitId === unit.id) &&
     !view.bitten.some((entry) => entry.unitId === unit.id)
   )
@@ -800,6 +866,329 @@ function publicHatchTargetsV7(
         ),
     )
     .sort((left, right) => left.id - right.id);
+}
+
+/**
+ * The Martian revision section 8.1 row 6: the passengers an own Saucer may
+ * beam: other own living land-form one-slot non-flying units standing on or
+ * next to the center of an own city, in unit-ID order. Own units and cities
+ * are always visible to their owner.
+ */
+function publicBeamDownPassengersV7(
+  view: PlayerViewV7,
+  saucer: PlayerViewV7["units"][number],
+): readonly PlayerViewV7["units"][number][] {
+  const centers = view.cities.filter((city) => city.ownerId === saucer.ownerId);
+  return view.units
+    .filter(
+      (unit) =>
+        unit.id !== saucer.id &&
+        unit.hp > 0 &&
+        unit.ownerId === saucer.ownerId &&
+        unit.form === "LAND" &&
+        unitCapacitySlotsV7(view, unit) === 1 &&
+        unitMovementModeV7(view, unit) !== "FLY" &&
+        centers.some((city) => chebyshev(city.at, unit.at) <= 1),
+    )
+    .sort((left, right) => left.id - right.id);
+}
+
+/**
+ * Section 8.1 row 7: the legal Beam Down tiles of `passenger` around the
+ * Saucer, in (y, x) order: land, with no unit and no treasure chest, not a
+ * settlement site, not in territory allied to the actor, and enterable by
+ * the passenger. Every tile around an own Saucer is explored.
+ */
+function publicBeamDownDestinationsV7(
+  view: PlayerViewV7,
+  saucer: PlayerViewV7["units"][number],
+  passenger: PlayerViewV7["units"][number],
+): readonly CoordV7[] {
+  const player = view.viewer;
+  const movementMode = unitMovementModeV7(view, passenger);
+  return adjacentPublicTiles(view, saucer.at)
+    .filter(
+      (tile) =>
+        tile.explored &&
+        tile.site === null &&
+        canEnterTerrainV7({
+          terrain: tile.terrain,
+          movementMode,
+          afloat: false,
+          engineering: player.researchedTechs.includes("ENGINEERING"),
+          navigation: player.researchedTechs.includes("NAVIGATION"),
+        }) &&
+        !view.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at)) &&
+        !view.treasureChests.some((chest) => same(chest, tile.at)) &&
+        !(
+          tile.territoryOwnerId !== null &&
+          publicAllied(view, player.id, tile.territoryOwnerId)
+        ),
+    )
+    .map((tile) => tile.at)
+    .sort((left, right) => left.y - right.y || left.x - right.x);
+}
+
+/**
+ * Section 8.2: the legal Mind Control targets of an own Brain that is ready
+ * (land form, no primary action used): none while it has a cooldown entry
+ * or controls the limit of Thralls; otherwise every visible hostile
+ * land-form one-slot non-`JUGGERNAUT` unit within range with at most
+ * `MIND_CONTROL_HP_V7` HP that does not stand on a settlement site.
+ */
+function publicMindControlTargetsV7(
+  view: PlayerViewV7,
+  brain: PlayerViewV7["units"][number],
+): readonly PlayerViewV7["units"][number][] {
+  if (
+    view.mindControlCooldowns.some((entry) => entry.unitId === brain.id) ||
+    view.thralls.filter((entry) => entry.brainUnitId === brain.id).length >=
+      MIND_CONTROL_THRALL_LIMIT_V7
+  )
+    return [];
+  return view.units
+    .filter((target) => {
+      const tile = tileAtView(view, target.at);
+      return (
+        target.hp > 0 &&
+        publicHostile(view, brain.ownerId, target.ownerId) &&
+        target.form === "LAND" &&
+        target.role !== "JUGGERNAUT" &&
+        unitCapacitySlotsV7(view, target) === 1 &&
+        tile?.explored === true &&
+        tile.site === null &&
+        chebyshev(brain.at, target.at) <= MIND_CONTROL_RANGE_V7 &&
+        target.hp <= MIND_CONTROL_HP_V7
+      );
+    })
+    .sort((left, right) => left.id - right.id);
+}
+
+/**
+ * Section 8.4: the tile an own Mothership would pull `target` to, or null
+ * when the pull is illegal: the target is visible, own or hostile, exactly
+ * `TRACTOR_BEAM_RANGE_V7` tiles away, not an Egg, a `JUGGERNAUT`-role unit,
+ * or a two-slot unit, and the destination passes the Push conditions and
+ * holds no treasure chest. The destination is next to the Mothership, so it
+ * is explored and every unit on it is visible.
+ */
+function publicTractorBeamDestinationV7(
+  view: PlayerViewV7,
+  mothership: PlayerViewV7["units"][number],
+  target: PlayerViewV7["units"][number],
+): CoordV7 | null {
+  if (
+    target.hp <= 0 ||
+    publicAllied(view, mothership.ownerId, target.ownerId) ||
+    target.form === "EGG" ||
+    target.role === "JUGGERNAUT" ||
+    unitCapacitySlotsV7(view, target) !== 1 ||
+    chebyshev(mothership.at, target.at) !== TRACTOR_BEAM_RANGE_V7
+  )
+    return null;
+  const to = tractorBeamDestinationV7(mothership.at, target.at);
+  const tile = tileAtView(view, to);
+  if (tile?.explored !== true || tile.site !== null) return null;
+  const technology = tractorBeamTargetTechnologyV7(
+    target.ownerId === view.viewer.id,
+    view.viewer.researchedTechs,
+    (() => {
+      const from = tileAtView(view, target.at);
+      return from?.explored === true ? from.terrain : undefined;
+    })(),
+  );
+  return canEnterTerrainV7({
+    terrain: tile.terrain,
+    movementMode: unitMovementModeV7(view, target),
+    afloat: isAfloatFormV7(target.form),
+    ...technology,
+  }) &&
+    !view.units.some(
+      (unit) => unit.id !== target.id && unit.hp > 0 && same(unit.at, to),
+    ) &&
+    !view.treasureChests.some((chest) => same(chest, to)) &&
+    !(
+      tile.territoryOwnerId !== null &&
+      publicAllied(view, target.ownerId, tile.territoryOwnerId)
+    )
+    ? to
+    : null;
+}
+
+/** The legal Tractor Beam targets of an own Mothership, in unit-ID order. */
+function publicTractorBeamTargetsV7(
+  view: PlayerViewV7,
+  mothership: PlayerViewV7["units"][number],
+): readonly PlayerViewV7["units"][number][] {
+  return view.units
+    .filter(
+      (target) =>
+        target.id !== mothership.id &&
+        publicTractorBeamDestinationV7(view, mothership, target) !== null,
+    )
+    .sort((left, right) => left.id - right.id);
+}
+
+/** The Martian revision section 11: the preview of an offered Beam Down. */
+export interface BeamDownPreviewV7 {
+  readonly unitId: UnitId;
+  readonly passengerUnitId: UnitId;
+  /** The passenger's tile now. */
+  readonly from: CoordV7;
+  /** The legal destination tiles in (y, x) order. */
+  readonly destinations: readonly CoordV7[];
+  /** The destinations whose Field Defense the landing would destroy. */
+  readonly fieldDefenseDestroyed: readonly CoordV7[];
+}
+
+/**
+ * Null unless a `BEAM_DOWN` with that Saucer and passenger is offered;
+ * otherwise exact (every tile around an own Saucer is explored).
+ */
+export function previewBeamDownV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  passengerUnitId: UnitId,
+): BeamDownPreviewV7 | null {
+  const destinations = queryPlayerCommandsV7(view).flatMap((command) =>
+    command.kind === "BEAM_DOWN" &&
+    command.unitId === unitId &&
+    command.passengerUnitId === passengerUnitId
+      ? [command.to]
+      : [],
+  );
+  const passenger = view.units.find((unit) => unit.id === passengerUnitId);
+  if (destinations.length === 0 || passenger === undefined) return null;
+  return {
+    unitId,
+    passengerUnitId,
+    from: passenger.at,
+    destinations,
+    fieldDefenseDestroyed: destinations.filter((at) => {
+      const tile = tileAtView(view, at);
+      return (
+        tile?.explored === true &&
+        tile.fieldDefense &&
+        tile.territoryOwnerId !== null &&
+        publicHostile(view, view.viewer.id, tile.territoryOwnerId)
+      );
+    }),
+  };
+}
+
+/** The Martian revision section 11: the preview of an offered Mind Control. */
+export interface MindControlPreviewV7 {
+  readonly unitId: UnitId;
+  readonly targetUnitId: UnitId;
+  /** The tile the Thrall appears on (the target's tile). */
+  readonly at: CoordV7;
+  readonly thrallHp: number;
+  readonly thrallMaxHp: number;
+  /** The Thralls the Brain controls afterwards. */
+  readonly thrallsAfter: number;
+  readonly thrallLimit: number;
+  /** The cooldown the Mind Control starts. */
+  readonly cooldownTurns: number;
+  /** Visible Thralls that collapse because the target is their Brain. */
+  readonly collapsingUnitIds: readonly UnitId[];
+  /** Visible units whose Plague ends because the target is its source. */
+  readonly plagueCleared: readonly UnitId[];
+}
+
+/** Null unless that `MIND_CONTROL` is offered; otherwise exact. */
+export function previewMindControlV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): MindControlPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "MIND_CONTROL" &&
+        command.unitId === unitId &&
+        command.targetUnitId === targetUnitId,
+    )
+  )
+    return null;
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (target === undefined) return null;
+  const maxHp = effectiveRoleRuleV7("FIGHTER", view.viewer.faction).maxHp;
+  return {
+    unitId,
+    targetUnitId,
+    at: target.at,
+    thrallHp: Math.min(target.hp, maxHp),
+    thrallMaxHp: maxHp,
+    thrallsAfter:
+      view.thralls.filter((entry) => entry.brainUnitId === unitId).length + 1,
+    thrallLimit: MIND_CONTROL_THRALL_LIMIT_V7,
+    cooldownTurns: MIND_CONTROL_COOLDOWN_TURNS_V7,
+    collapsingUnitIds: view.thralls
+      .filter((entry) => entry.brainUnitId === targetUnitId)
+      .map((entry) => entry.unitId),
+    plagueCleared: view.plagued
+      .filter((entry) => entry.sourceUnitId === targetUnitId)
+      .map((entry) => entry.unitId),
+  };
+}
+
+/** The Martian revision section 11: the preview of an offered Tractor Beam. */
+export interface TractorBeamPreviewV7 {
+  readonly unitId: UnitId;
+  readonly targetUnitId: UnitId;
+  readonly from: CoordV7;
+  readonly to: CoordV7;
+  /** Fortification levels the target has on `from` and not on `to`. */
+  readonly fortificationLost: number;
+  /** The city whose center the pull empties of a unit not besieging it. */
+  readonly emptiesCenterOfCityId: CityId | null;
+  /** The city whose siege the pull lifts (the target besieges it). */
+  readonly liftsSiegeOfCityId: CityId | null;
+}
+
+/** Null unless that `TRACTOR_BEAM` is offered; otherwise exact. */
+export function previewTractorBeamV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): TractorBeamPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "TRACTOR_BEAM" &&
+        command.unitId === unitId &&
+        command.targetUnitId === targetUnitId,
+    )
+  )
+    return null;
+  const mothership = view.units.find((unit) => unit.id === unitId);
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (mothership === undefined || target === undefined) return null;
+  const to = publicTractorBeamDestinationV7(view, mothership, target);
+  if (to === null) return null;
+  const fortification = (at: CoordV7): number => {
+    const tile = tileAtView(view, at);
+    return unitTakesCoverV7(view, target) &&
+      tile?.explored === true &&
+      tile.territoryOwnerId === target.ownerId
+      ? (tile.fortificationLevel ?? 0)
+      : 0;
+  };
+  const city = view.cities.find((candidate) => same(candidate.at, target.at));
+  const besieges =
+    city !== undefined && publicHostile(view, target.ownerId, city.ownerId);
+  return {
+    unitId,
+    targetUnitId,
+    from: target.at,
+    to,
+    fortificationLost: Math.max(
+      0,
+      fortification(target.at) - fortification(to),
+    ),
+    emptiesCenterOfCityId: city !== undefined && !besieges ? city.id : null,
+    liftsSiegeOfCityId: city !== undefined && besieges ? city.id : null,
+  };
 }
 
 function publicTendTargetsV7(
@@ -1097,9 +1486,12 @@ export interface ExplosionPreviewResultV7 {
   readonly unitId: UnitId | null;
   readonly ownerId: PlayerId;
   readonly at: CoordV7;
+  /** HP damage. */
   readonly damage: number;
   readonly dies: boolean;
   readonly friendly: boolean;
+  /** The Martian revision: what the victim's Shield absorbs of the blast. */
+  readonly shieldDamage: number;
 }
 
 /** One previewed explosion of a chain, in resolution order. */
@@ -1587,7 +1979,9 @@ export function queryAiReadyCommandsV7(
                 ? command.targetUnitId
                 : command.kind === "HATCH"
                   ? command.eggUnitId
-                  : 0;
+                  : command.kind === "BEAM_DOWN"
+                    ? command.passengerUnitId
+                    : 0;
     return {
       command,
       tuple: [
@@ -1633,11 +2027,20 @@ export function queryThreatenedTilesV7(
   if (!rule.abilities.includes("ATTACK") && !wail) return [];
   const minimumRange = kaboom ? 0 : wail ? 1 : rule.minimumRange;
   const maximumRange = wail ? WAIL_RADIUS_V7 : rule.range;
+  // The Martian revision: a land-form machine that ends a Move on water
+  // self-launches and cannot attack from there, so its water destinations
+  // are not attack origins.
+  const machine =
+    unit.form === "LAND" && unitMovementModeV7(view, unit) !== "GROUND";
   const origins = [
     unit.at,
-    ...reachablePlayerMovementPathsV7(view, unit).map(
-      (path) => path.destination,
-    ),
+    ...reachablePlayerMovementPathsV7(view, unit)
+      .map((path) => path.destination)
+      .filter((at) => {
+        if (!machine) return true;
+        const tile = tileAtView(view, at);
+        return tile?.explored !== true || tile.biome !== null;
+      }),
   ];
   const direct = view.board.tiles
     .map((tile) => tile.at)
@@ -4825,6 +5228,14 @@ function publicCombatPreviewCore(
   const charge = attackIsChargeV7(view, attacker);
   const runUpAttack2 = chargeRunUpAttack2V7(view, attacker);
   const attack2 = rationalToHalfUnits(attack.total) + gangUp * 2;
+  // The Martian revision section 6.1: the halving of a half-power ray is
+  // already in the public Attack total (the `HALF_POWER` modifier).
+  const rayPower = rayPowerV7(
+    view,
+    view.cooling,
+    attacker,
+    attacker.activation.moved,
+  );
   const targetTile = tileAtView(view, target.at);
   if (targetTile?.explored !== true) return null;
   // Revision 19 Acid: a land-form Spitter's attack ignores the defender's
@@ -4832,8 +5243,10 @@ function publicCombatPreviewCore(
   const acid = attackHasAcidV7(attackerRule, attacker);
   // Revision 20: Charge! removes every fortification level and Wallbreaker
   // the City Walls levels. The public tile level is Walls plus Field Defense.
+  // The Martian revision: a walker or flyer has no fortification or cover.
+  const targetTakesCover = unitTakesCoverV7(view, target);
   const tileFortification =
-    target.form === "LAND" && targetTile.territoryOwnerId === target.ownerId
+    targetTakesCover && targetTile.territoryOwnerId === target.ownerId
       ? (targetTile.fortificationLevel ?? 0)
       : 0;
   const tileFieldDefense = Math.min(
@@ -4853,6 +5266,13 @@ function publicCombatPreviewCore(
         attacker,
         view.viewer.researchedTechs,
       ),
+      // The Martian revision section 6.5: the Disintegrator.
+      disintegrator:
+        rayPower !== "NONE" &&
+        technologyCapabilitiesV7(
+          view.viewer.researchedTechs,
+          view.viewer.faction,
+        ).raysIgnoreFortification,
     },
   );
   // Revision 19 section 6.2: an Egg defends with a fixed 1.
@@ -4864,7 +5284,7 @@ function publicCombatPreviewCore(
         : defenderRule.defense2 + fortificationLevel * 2;
   const bonus =
     !acid &&
-    target.form === "LAND" &&
+    targetTakesCover &&
     (targetTile.terrain === "FOREST" || targetTile.terrain === "MOUNTAIN")
       ? { numerator: 3, denominator: 2 }
       : { numerator: 1, denominator: 1 };
@@ -4885,12 +5305,18 @@ function publicCombatPreviewCore(
     attackOnCommon * BigInt(attack2) * 9n,
     total * 4n,
   );
-  const damageToDefender = Math.min(
+  // The Martian revision section 5.3: the Shield absorbs the hit first.
+  const defenderShield = shieldOfV7(view.shields, target.id);
+  const defenderHit = absorbHitV7(
+    defenderShield,
     target.hp,
     armouredDamageV7(view, target, rawDefenderDamage),
   );
+  const damageToDefender = defenderHit.hpDamage;
+  const defenderShieldDamage = defenderHit.shieldDamage;
+  const hitOnDefender = damageToDefender + defenderShieldDamage;
   const defenderArmoured =
-    damageToDefender < Math.min(target.hp, rawDefenderDamage);
+    hitOnDefender < Math.min(target.hp + defenderShield, rawDefenderDamage);
   const defenderDies = damageToDefender >= target.hp;
   // Revision 14 (V1): an UNANSWERED attacker draws no retaliation.
   const unanswered = attackerRule.abilities.includes("UNANSWERED");
@@ -4909,49 +5335,62 @@ function publicCombatPreviewCore(
   const rawAttackerDamage = retaliation
     ? roundHalfUpPublic(defenseOnCommon * BigInt(defense2) * 9n, total * 4n)
     : 0;
-  const damageToAttacker = Math.min(
+  const attackerShield = shieldOfV7(view.shields, attacker.id);
+  const attackerHit = absorbHitV7(
+    attackerShield,
     attacker.hp,
     armouredDamageV7(view, attacker, rawAttackerDamage),
   );
+  const damageToAttacker = attackerHit.hpDamage;
+  const attackerShieldDamage = attackerHit.shieldDamage;
   const attackerArmoured =
-    damageToAttacker < Math.min(attacker.hp, rawAttackerDamage);
+    damageToAttacker + attackerShieldDamage <
+    Math.min(attacker.hp + attackerShield, rawAttackerDamage);
   const attackerDies = damageToAttacker >= attacker.hp;
   // Revision 17: the Bomb Chucker's bomb (splash target mode `ALL`) lists
   // visible own and allied units too.
-  const splash = attackerMechanics.splash
-    ? view.units
-        .filter(
+  // The Martian revision: splash and Pierce are computed from the whole hit
+  // on the primary target; each visible victim's own Shield absorbs first.
+  const splashVictims = attackerMechanics.splash
+    ? view.units.filter(
+        (unit) =>
+          unit.hp > 0 &&
+          unit.id !== target.id &&
+          unit.id !== attacker.id &&
+          chebyshev(unit.at, target.at) === 1 &&
+          (attackerMechanics.splashTargets === "ALL" ||
+            publicHostile(view, attacker.ownerId, unit.ownerId)),
+      )
+    : [];
+  // Section 6.4 Pierce: the visible unit directly behind the target, of any
+  // owner (a hidden one is hit by the resolution only).
+  const pierceAt = attackHasPierceV7(attackerRule, attacker)
+    ? pierceTileV7(attacker.at, target.at)
+    : null;
+  const pierced =
+    pierceAt === null
+      ? undefined
+      : view.units.find(
           (unit) =>
             unit.hp > 0 &&
-            unit.id !== target.id &&
             unit.id !== attacker.id &&
-            chebyshev(unit.at, target.at) === 1 &&
-            (attackerMechanics.splashTargets === "ALL" ||
-              publicHostile(view, attacker.ownerId, unit.ownerId)),
-        )
-        .sort(
-          (left, right) =>
-            left.at.y - right.at.y ||
-            left.at.x - right.at.x ||
-            left.id - right.id,
-        )
-        .map((unit) => {
-          const damage = Math.min(
-            unit.hp,
-            armouredDamageV7(
-              view,
-              unit,
-              Math.max(1, Math.ceil(damageToDefender / 2)),
-            ),
-          );
-          return {
-            unitId: unit.id,
-            at: unit.at,
-            damage,
-            dies: damage >= unit.hp,
-          };
-        })
-    : [];
+            unit.id !== target.id &&
+            same(unit.at, pierceAt) &&
+            !splashVictims.some((victim) => victim.id === unit.id),
+        );
+  const splash = [...splashVictims, ...(pierced === undefined ? [] : [pierced])]
+    .sort(
+      (left, right) =>
+        left.at.y - right.at.y || left.at.x - right.at.x || left.id - right.id,
+    )
+    .map((unit) =>
+      collateralEntryV7(
+        view,
+        unit,
+        shieldOfV7(view.shields, unit.id),
+        hitOnDefender,
+      ),
+    );
   // Revision 14 Plague and Bitten from the public statuses of visible units.
   const afflictions = afflictionCombatEffectsV7({
     roster: view,
@@ -4961,6 +5400,7 @@ function publicCombatPreviewCore(
     defenderRule,
     damageToDefender,
     damageToAttacker,
+    defenderShieldDamage,
     attackerDies,
     defenderDies,
     splash,
@@ -4989,7 +5429,7 @@ function publicCombatPreviewCore(
     attackerMechanics.advancesAfterKill &&
     attacker.form === "LAND" &&
     (target.form === "LAND" || target.form === "EGG") &&
-    publicAdvanceDestinationLegal(view, target.at);
+    publicAdvanceDestinationLegal(view, attacker, target.at);
   const nextAttacks = attacker.activation.attacksUsed + 1;
   const overrunContinues =
     attackerRule.abilities.includes("OVERRUN") &&
@@ -5063,6 +5503,10 @@ function publicCombatPreviewCore(
     acid,
     defenderArmoured,
     attackerArmoured,
+    rayPower,
+    coolingApplied: rayPower === "FULL",
+    defenderShieldDamage,
+    attackerShieldDamage,
   };
 }
 
@@ -5114,7 +5558,14 @@ interface PublicChainSimulationV7 {
     dependsOnUnexplored?: boolean,
     /** Field Defense the previewed command removed before the chain. */
     clearedFieldDefense?: readonly CoordV7[],
+    /** The Martian revision: Shields the previewed command already spent. */
+    shieldDamage?: ReadonlyMap<UnitId, number>,
   ) => ExplosionChainPreviewV7 & { readonly units: readonly BlastUnitV7[] };
+  /**
+   * The Martian revision section 8.3: `units` without the visible Thralls
+   * whose (visible) Brain is no longer among them.
+   */
+  readonly collapse: (units: readonly BlastUnitV7[]) => BlastUnitV7[];
 }
 
 /**
@@ -5152,7 +5603,25 @@ function createPublicChainSimulationV7(
       ? null
       : rising(victim.at, biterId, BITTEN_RISING_HP_V7);
   };
+  // The Thralls the viewer sees with their Brain (a Thrall whose Brain is
+  // hidden cannot be seen to collapse).
+  const collapsing = (units: readonly BlastUnitV7[]): readonly UnitId[] => {
+    if (view.thralls.length === 0) return [];
+    const alive = new Set(units.map((unit) => unit.id));
+    return view.thralls
+      .filter(
+        (entry) =>
+          entry.brainUnitId !== null &&
+          alive.has(entry.unitId) &&
+          !alive.has(entry.brainUnitId),
+      )
+      .map((entry) => entry.unitId);
+  };
   return {
+    collapse: (units) => {
+      const gone = collapsing(units);
+      return units.filter((unit) => !gone.includes(unit.id));
+    },
     blastUnit: (unit) => ({
       id: unit.id,
       ownerId: unit.ownerId,
@@ -5172,6 +5641,7 @@ function createPublicChainSimulationV7(
       initial,
       dependsOnUnexplored = false,
       clearedFieldDefense = [],
+      shieldDamage = new Map(),
     ) => {
       const chain = resolveExplosionChainV7<BlastUnitV7>({
         roster: view,
@@ -5179,6 +5649,19 @@ function createPublicChainSimulationV7(
         height: view.board.height,
         units,
         initial,
+        shields:
+          view.shields.length === 0
+            ? undefined
+            : new Map(
+                view.shields.map((entry) => [
+                  entry.unitId,
+                  Math.max(
+                    0,
+                    entry.shield - (shieldDamage.get(entry.unitId) ?? 0),
+                  ),
+                ]),
+              ),
+        onCollapse: view.thralls.length === 0 ? undefined : collapsing,
         fieldDefense: (at) => {
           if (clearedFieldDefense.some((cleared) => same(at, cleared)))
             return false;
@@ -5241,6 +5724,7 @@ function createPublicChainSimulationV7(
                 damage: entry.damage,
                 dies: entry.dies,
                 friendly,
+                shieldDamage: entry.shieldDamage,
               };
             }),
           };
@@ -5365,11 +5849,21 @@ function publicAttackChainV7(
       ),
     });
   units.push(...risings);
+  // The Martian revision section 10.8: a Pierce whose tile behind the target
+  // is unexplored may hit a hidden unit.
+  const pierceAt = attackHasPierceV7(
+    unitRoleRuleV7(view, attackerUnit),
+    attackerUnit,
+  )
+    ? pierceTileV7(attacker.at, target.at)
+    : null;
+  const pierceTile = pierceAt === null ? undefined : tileAtView(view, pierceAt);
   const splashRingUnexplored =
-    unitRoleMechanicsV7(view, attackerUnit).splash &&
-    blastAreaV7(target.at, view.board.width, view.board.height).some(
-      (at) => tileAtView(view, at)?.explored !== true,
-    );
+    (unitRoleMechanicsV7(view, attackerUnit).splash &&
+      blastAreaV7(target.at, view.board.width, view.board.height).some(
+        (at) => tileAtView(view, at)?.explored !== true,
+      )) ||
+    (pierceTile !== undefined && !pierceTile.explored);
   // The attack's primary Field Defense rules (CATAPULT, INSPIRED,
   // EXPLOSIVES, OCCUPATION) resolve before the chain, as canonically.
   const targetTile = tileAtView(view, target.at);
@@ -5385,11 +5879,19 @@ function publicAttackChainV7(
         view.viewer.researchedTechs.includes("EXPLOSIVES")) ||
       preview.advances);
   const chain = sim.run(
-    units,
+    // The Thralls of a Brain the attack removed collapse before the chain.
+    sim.collapse(units),
     initial,
     splashRingUnexplored ||
       (initial.length > 0 && preview.push === "UNKNOWN_BEHIND_FOG"),
     primaryDefenseLost ? [target.at] : [],
+    new Map([
+      [target.id, preview.defenderShieldDamage],
+      [attacker.id, preview.attackerShieldDamage],
+      ...preview.splash.map(
+        (entry) => [entry.unitId, entry.shieldDamage] as const,
+      ),
+    ]),
   );
   const { units: after, ...chainPreview } = chain;
   return { preview: chainPreview, units: after };
@@ -5397,13 +5899,22 @@ function publicAttackChainV7(
 
 function publicAdvanceDestinationLegal(
   view: PlayerViewV7,
+  attacker: PlayerViewV7["units"][number],
   at: CoordV7,
 ): boolean {
   const tile = tileAtView(view, at);
+  // The advance goes through the shared `canEnterTerrainV7` (a striding
+  // Colossus enters a Mountain without Engineering).
   return (
     tile?.explored === true &&
     (tile.terrain !== "MOUNTAIN" ||
-      view.viewer.researchedTechs.includes("ENGINEERING"))
+      canEnterTerrainV7({
+        terrain: tile.terrain,
+        movementMode: unitMovementModeV7(view, attacker),
+        afloat: false,
+        engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
+        navigation: false,
+      }))
   );
 }
 
@@ -5449,10 +5960,18 @@ function publicPushState(
       publicAllied(view, defender.ownerId, tile.territoryOwnerId))
   )
     return "BLOCKED";
-  if (tile.terrain === "MOUNTAIN" && defender.ownerId !== view.viewer.id)
+  // The Martian revision: a walker or flyer is pushed onto a Mountain
+  // whatever its owner has researched (the shared `canEnterTerrainV7`).
+  const strides = unitMovementModeV7(view, defender) !== "GROUND";
+  if (
+    tile.terrain === "MOUNTAIN" &&
+    !strides &&
+    defender.ownerId !== view.viewer.id
+  )
     return "UNKNOWN_BEHIND_FOG";
   if (
     tile.terrain === "MOUNTAIN" &&
+    !strides &&
     !view.viewer.researchedTechs.includes("ENGINEERING")
   )
     return "BLOCKED";
@@ -5507,6 +6026,7 @@ function roundHalfUpPublic(numerator: bigint, denominator: bigint): number {
 
 function publicCommandTarget(view: PlayerViewV7, command: CommandV7): CoordV7 {
   if ("at" in command) return command.at;
+  if (command.kind === "BEAM_DOWN") return command.to;
   if ("path" in command) return command.path.at(-1) ?? { x: -1, y: -1 };
   if ("targetUnitId" in command)
     return (

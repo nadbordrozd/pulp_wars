@@ -16,7 +16,9 @@ import {
  * STAMPEDE and HATCH after KABOOM and LAY_EGG after TRAIN_NAVAL (Dinosaur
  * spec section 10). Revision 20 removes STAMPEDE again (its section 2.7), so
  * every kind after KABOOM moves back by one; kinds are mapped by name, so
- * the revision-12-ordinal proofs are unaffected.
+ * the revision-12-ordinal proofs are unaffected. The Martian revision
+ * inserts BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM after HATCH (its section
+ * 11).
  */
 const LATER_COMMAND_KINDS: readonly string[] = [
   "RAISE_DEAD",
@@ -24,6 +26,9 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "WAIL",
   "KABOOM",
   "HATCH",
+  "BEAM_DOWN",
+  "MIND_CONTROL",
+  "TRACTOR_BEAM",
   "LAY_EGG",
 ];
 const REVISION_12_COMMAND_KIND_ORDER = COMMAND_KIND_ORDER_V7.filter(

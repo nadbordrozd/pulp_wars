@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r21 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r21");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r21");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r21.current");
+  it("keeps r18 among the gap-free prior identities after the r22 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r22");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r22");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r22.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 19 },
+        { length: 20 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-3)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-4)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 19 },
+        { length: 20 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r21");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r22");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -222,12 +222,14 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       "UNDEAD",
       "GOBLIN",
       "DINOSAUR",
+      "MARTIAN",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
       "UNDEAD_BASELINE_V1",
       "GOBLIN_BASELINE_V1",
       "DINOSAUR_BASELINE_V1",
+      "MARTIAN_BASELINE_V1",
     ]);
     expect(FACTION_IDS_V7.map(factionTreeIdV7)).toEqual(FACTION_TREE_IDS_V7);
     expect(FACTION_TREES_V7.DINOSAUR.faction).toBe("DINOSAUR");
@@ -239,6 +241,7 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       UNDEAD: "Undead",
       GOBLIN: "Goblin",
       DINOSAUR: "Dinosaur",
+      MARTIAN: "Martian",
     });
     // The registry assertion accepts the fourth tree unchanged.
     expect(() => assertRuleset7Registry()).not.toThrow();
@@ -255,6 +258,7 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       ["UNDEAD", "KNIGHT", 0, 0, true],
       ["GOBLIN", "KNIGHT", 1, 2, false],
       ["DINOSAUR", "RAIDER", 0, 0, false],
+      ["MARTIAN", "RAIDER", 0, 0, false],
     ]);
     expect([
       EGG_HP_V7,
@@ -860,6 +864,8 @@ describe("ruleset-7 Dinosaur technology", () => {
       ["UNDEAD", 0, 0, true],
       ["GOBLIN", 0, 0, true],
       ["DINOSAUR", 4, 1, false],
+      // The Martian Fortification is Force Fields: no Field Defense either.
+      ["MARTIAN", 0, 0, false],
     ]);
     const drill = technologyCapabilitiesV7(["DRILL"], "DINOSAUR");
     expect([drill.eggHpBonus, drill.eggHatchTurnReduction]).toEqual([0, 0]);
@@ -883,12 +889,24 @@ describe("ruleset-7 Dinosaur technology", () => {
     });
     expect(
       FACTION_IDS_V7.map((faction) => technologyNameV7("EXPLOSIVES", faction)),
-    ).toEqual(["Explosives", "Explosives", "Explosives", "Wallbreaker"]);
+    ).toEqual([
+      "Explosives",
+      "Explosives",
+      "Explosives",
+      "Wallbreaker",
+      "Disintegrator",
+    ]);
     expect(
       FACTION_IDS_V7.map((faction) =>
         technologyNameV7("FORTIFICATION", faction),
       ),
-    ).toEqual(["Fortification", "Fortification", "Fortification", "Nesting"]);
+    ).toEqual([
+      "Fortification",
+      "Fortification",
+      "Fortification",
+      "Nesting",
+      "Force Fields",
+    ]);
     for (const tech of TECHNOLOGY_IDS_V7)
       if (tech !== "FORTIFICATION" && tech !== "EXPLOSIVES")
         expect(technologyNameV7(tech, "DINOSAUR")).toBe(
@@ -1499,13 +1517,21 @@ describe("ruleset-7 Dinosaur Showcase", () => {
 
 describe("ruleset-7 revision-19 declared shapes", () => {
   it("orders and parses the two Dinosaur commands, which only a Dinosaur seat is offered", () => {
-    // Revision 20 removed `STAMPEDE` (it sat between KABOOM and HATCH).
+    // Revision 20 removed `STAMPEDE` (it sat between KABOOM and HATCH). The
+    // Martian revision inserts its three commands right after HATCH.
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("KABOOM"),
-        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 3,
+        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 6,
       ),
-    ).toEqual(["KABOOM", "HATCH", "RECOVER"]);
+    ).toEqual([
+      "KABOOM",
+      "HATCH",
+      "BEAM_DOWN",
+      "MIND_CONTROL",
+      "TRACTOR_BEAM",
+      "RECOVER",
+    ]);
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL"),

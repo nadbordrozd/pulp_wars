@@ -28,12 +28,26 @@ const captured = (commandIndex: 300 | 425): PlayerViewV7 => ({
         "utf8",
       ),
     ) as {
-      readonly view: Omit<PlayerViewV7, "graves" | "plagued" | "bitten">;
+      readonly view: Omit<
+        PlayerViewV7,
+        | "graves"
+        | "plagued"
+        | "bitten"
+        | "shields"
+        | "cooling"
+        | "thralls"
+        | "mindControlCooldowns"
+      >;
     }
   ).view,
   graves: [],
   plagued: [],
   bitten: [],
+  // The Martian revision's neutral side lists.
+  shields: [],
+  cooling: [],
+  thralls: [],
+  mindControlCooldowns: [],
 });
 
 describe("ruleset-7 exact public-planning performance", () => {

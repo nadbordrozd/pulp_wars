@@ -9,6 +9,7 @@ import {
 } from "../rules/ruleset-v7";
 import { placeTreasureChestsV6 } from "../v6/map";
 import { initialAchievementEntitlementsV7 } from "./achievements";
+import { withFullShieldsV7 } from "./martian";
 import { parseMatchSetupV7 } from "./setup";
 import {
   createShowcaseEntitiesV7,
@@ -1952,6 +1953,15 @@ function initialMapStateFromV7(
     plagued: [],
     bitten: [],
     eggs: [],
+    // The Martian revision: a starting Grunt has its full Shield.
+    shields: withFullShieldsV7(
+      { players: explored, thralls: [] },
+      [],
+      entities.units,
+    ),
+    cooling: [],
+    thralls: [],
+    mindControlCooldowns: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -1993,6 +2003,15 @@ function showcaseInitialStateV7(
     plagued: [],
     bitten: [],
     eggs: [],
+    // The Martian revision: every Showcase unit starts at its full Shield.
+    shields: withFullShieldsV7(
+      { players: entities.players, thralls: [] },
+      [],
+      entities.units,
+    ),
+    cooling: [],
+    thralls: [],
+    mindControlCooldowns: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -2030,14 +2049,14 @@ function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
  * second Goblin is placed by `startingCompanionCellV7`.
  */
 export const STARTING_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
-  deepFreeze({ ORIGINAL: 1, UNDEAD: 1, GOBLIN: 1, DINOSAUR: 1 });
+  deepFreeze({ ORIGINAL: 1, UNDEAD: 1, GOBLIN: 1, DINOSAUR: 1, MARTIAN: 1 });
 
 /**
  * Revision 17 section 8.9: the `FIGHTER` units of a level-3 Militia reward.
  * A Goblin Militia is two Goblins; every other faction's is one unit.
  */
 export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
-  deepFreeze({ ORIGINAL: 1, UNDEAD: 1, GOBLIN: 2, DINOSAUR: 1 });
+  deepFreeze({ ORIGINAL: 1, UNDEAD: 1, GOBLIN: 2, DINOSAUR: 1, MARTIAN: 1 });
 
 /**
  * Revision 17 section 2.2: the cell of a Goblin seat's second starting

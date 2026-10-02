@@ -308,6 +308,7 @@ describe("ruleset-7 Goblin blast resolution", () => {
         at: where,
         damage: 5,
         dies: false,
+        shieldDamage: 0,
       })),
     );
   });
@@ -491,12 +492,19 @@ describe("ruleset-7 Goblin death blasts", () => {
         wave: 1,
         damage: 2,
         results: [
-          { unitId: fighter.id, at: at(5, 2), damage: 2, dies: true },
+          {
+            unitId: fighter.id,
+            at: at(5, 2),
+            damage: 2,
+            dies: true,
+            shieldDamage: 0,
+          },
           {
             unitId: unitAtV7(state, at(6, 2)).id,
             at: at(6, 2),
             damage: 2,
             dies: false,
+            shieldDamage: 0,
           },
         ],
       },
@@ -699,6 +707,7 @@ describe("ruleset-7 Goblin chain reactions", () => {
                 at: row[index + 1],
                 damage: 4,
                 dies: true,
+                shieldDamage: 0,
               },
             ],
       );
@@ -1142,8 +1151,20 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         wave: 1,
         damage: 5,
         results: [
-          { unitId: firstRising, at: at(4, 2), damage: 5, dies: false },
-          { unitId: victim.id, at: at(5, 2), damage: 4, dies: true },
+          {
+            unitId: firstRising,
+            at: at(4, 2),
+            damage: 5,
+            dies: false,
+            shieldDamage: 0,
+          },
+          {
+            unitId: victim.id,
+            at: at(5, 2),
+            damage: 4,
+            dies: true,
+            shieldDamage: 0,
+          },
         ],
       },
       { kind: "UNIT_DIED", unitId: victim.id, cause: "EXPLOSION" },
@@ -1165,6 +1186,7 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         damage: 5,
         dies: false,
         friendly: false,
+        shieldDamage: 0,
       },
       {
         unitId: victim.id,
@@ -1173,6 +1195,7 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         damage: 4,
         dies: true,
         friendly: true,
+        shieldDamage: 0,
       },
     ]);
   });
@@ -1273,8 +1296,20 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         wave: 1,
         damage: 2,
         results: [
-          { unitId: troll.id, at: at(3, 2), damage: 2, dies: false },
-          { unitId: skeleton.id, at: at(5, 2), damage: 2, dies: true },
+          {
+            unitId: troll.id,
+            at: at(3, 2),
+            damage: 2,
+            dies: false,
+            shieldDamage: 0,
+          },
+          {
+            unitId: skeleton.id,
+            at: at(5, 2),
+            damage: 2,
+            dies: true,
+            shieldDamage: 0,
+          },
         ],
       },
     ]);
@@ -1374,7 +1409,13 @@ describe("ruleset-7 Goblin explosion events and projection", () => {
     const result = kaboom(state, at(3, 2));
     const canonical = explosionsOf(result.events);
     expect(canonical[1]?.results).toEqual([
-      { unitId: fighter.id, at: at(5, 2), damage: 4, dies: false },
+      {
+        unitId: fighter.id,
+        at: at(5, 2),
+        damage: 4,
+        dies: false,
+        shieldDamage: 0,
+      },
     ]);
     const projectedFor = (viewer: PlayerId) => {
       const envelope = projectEventsV7(
@@ -1405,7 +1446,15 @@ describe("ruleset-7 Goblin explosion events and projection", () => {
     ).toEqual([
       {
         kind: "COMBAT_SPLASH_DAMAGE",
-        splash: [{ unitId: fighter.id, at: at(5, 2), damage: 4, dies: false }],
+        splash: [
+          {
+            unitId: fighter.id,
+            at: at(5, 2),
+            damage: 4,
+            dies: false,
+            shieldDamage: 0,
+          },
+        ],
       },
     ]);
     expect(cart.id).toBe(canonical[1]?.unitId);
@@ -2133,6 +2182,7 @@ function expectPreviewMatches(
           damage: entry.damage,
           dies: entry.dies,
           friendly,
+          shieldDamage: entry.shieldDamage,
         };
       }),
     });

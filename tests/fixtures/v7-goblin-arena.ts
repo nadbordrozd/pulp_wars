@@ -134,6 +134,10 @@ export function goblinArenaV7(
     })),
     cities: base.cities.map((city) => ({ ...city, cityActionAvailable: true })),
     units,
+    // The pieces replace the starting units, so a Martian seat's starting
+    // Shield entry goes with them (the pieces start without Shield entries;
+    // `martianFieldV7` adds them).
+    shields: [],
     treasureChests: base.treasureChests.filter(
       (chest) => !cleared.some((at) => sameV7(at, chest)),
     ),

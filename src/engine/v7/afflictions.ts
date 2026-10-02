@@ -68,6 +68,11 @@ export function afflictionCombatEffectsV7(input: {
   readonly defenderRule: EffectiveRoleRuleV7;
   readonly damageToDefender: number;
   readonly damageToAttacker: number;
+  /**
+   * The Martian revision section 5.3: what the defender's Shield absorbed.
+   * A hit that a Shield absorbed completely plagues nobody.
+   */
+  readonly defenderShieldDamage?: number;
   readonly attackerDies: boolean;
   readonly defenderDies: boolean;
   readonly splash: readonly CombatSplashEntryV7[];
@@ -91,9 +96,15 @@ export function afflictionCombatEffectsV7(input: {
     ownerId !== undefined && isLivingOwnerV7(input.roster, ownerId);
   const plagued: UnitId[] = [];
   if (input.attackerRule.abilities.includes("PLAGUE") && !input.attackerDies) {
+    // The Martian revision section 5.3: a Lich plagues only targets that
+    // lost HP, so a hit a Shield absorbed completely plagues nobody (an
+    // unshielded target of a 0-damage hit is plagued as before).
     if (
       !input.defenderDies &&
       input.defender.form !== "EGG" &&
+      !(
+        (input.defenderShieldDamage ?? 0) > 0 && input.damageToDefender === 0
+      ) &&
       living(input.defender.ownerId) &&
       !input.plaguedUnitIds.has(input.defender.id)
     )
@@ -101,6 +112,7 @@ export function afflictionCombatEffectsV7(input: {
     for (const entry of input.splash)
       if (
         !entry.dies &&
+        !(entry.shieldDamage > 0 && entry.damage === 0) &&
         input.eggUnitIds?.has(entry.unitId) !== true &&
         living(input.splashOwner(entry.unitId)) &&
         !input.plaguedUnitIds.has(entry.unitId)

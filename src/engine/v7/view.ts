@@ -22,6 +22,7 @@ import type {
   BoardSizeV7,
   BiomeIdV7,
   AchievementIdV7,
+  CoolingStatusV7,
   CoordV7,
   EggStatusV7,
   FactionIdV7,
@@ -30,6 +31,7 @@ import type {
   ImprovementIdV7,
   MatchOutcomeV7,
   MatchSetupV7,
+  MindControlCooldownV7,
   PendingChoiceV7,
   PlayerColorV7,
   PlayerStateV7,
@@ -37,6 +39,7 @@ import type {
   ResourceIdV7,
   RewardIdV7,
   RulesetIdV7,
+  ShieldStatusV7,
   TerrainIdV7,
   UnitActivationV7,
   UnitFormV7,
@@ -242,8 +245,28 @@ export interface PlayerViewV7 {
    * (an Egg's role, HP, and countdown are public on a visible Egg).
    */
   readonly eggs: readonly EggStatusV7[];
+  /**
+   * The Martian revision: the Shield of every unit in `units` whose Shield
+   * is at least 1, sorted by unit ID (a visible unit's Shield is public).
+   */
+  readonly shields: readonly ShieldStatusV7[];
+  /** The Martian revision: the Cooling entries of the units in `units`. */
+  readonly cooling: readonly CoolingStatusV7[];
+  /**
+   * The Martian revision: every Thrall in `units`; its Brain is named only
+   * when the viewer can see it.
+   */
+  readonly thralls: readonly PublicThrallStatusV7[];
+  /** The Martian revision: the Mind Control cooldowns of visible Brains. */
+  readonly mindControlCooldowns: readonly MindControlCooldownV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/** The Martian revision: the public status of a visible Thrall. */
+export interface PublicThrallStatusV7 {
+  readonly unitId: UnitId;
+  readonly brainUnitId: UnitId | null;
 }
 
 /**
@@ -597,6 +620,7 @@ export function viewForV7(
         publicUnitStatsV7(state, unit),
         unit.ownerId === viewerId,
         explored.has(key(unit.at)),
+        visibleUnitIds,
       ),
     ),
     naval: {
@@ -661,6 +685,31 @@ export function viewForV7(
         unitId: entry.unitId,
         turnsRemaining: entry.turnsRemaining,
         laidThisTurn: entry.laidThisTurn,
+      })),
+    // The Martian revision: Shields, Cooling, Thrall status, and Mind
+    // Control cooldowns are public on every visible unit.
+    shields: state.shields
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({ unitId: entry.unitId, shield: entry.shield })),
+    cooling: state.cooling
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({
+        unitId: entry.unitId,
+        firedThisTurn: entry.firedThisTurn,
+      })),
+    thralls: state.thralls
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({
+        unitId: entry.unitId,
+        brainUnitId: visibleUnitIds.has(entry.brainUnitId)
+          ? entry.brainUnitId
+          : null,
+      })),
+    mindControlCooldowns: state.mindControlCooldowns
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({
+        unitId: entry.unitId,
+        turnsRemaining: entry.turnsRemaining,
       })),
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
@@ -789,10 +838,23 @@ const HIDDEN_POSITION_MODIFIERS_V7 = new Set([
 ]);
 
 function publicUnitStatsForViewerV7(
-  stats: PublicUnitStatsV7,
+  input: PublicUnitStatsV7,
   isOwner: boolean,
   positionExplored: boolean,
+  visibleUnitIds: ReadonlySet<UnitId>,
 ): PublicUnitStatsV7 {
+  // The Martian revision: a Thrall's Brain is named only when the viewer
+  // can see it (the Plague-source precedent).
+  const brainUnitId = input.martian?.thrall?.brainUnitId ?? null;
+  const stats: PublicUnitStatsV7 =
+    input.martian === undefined ||
+    brainUnitId === null ||
+    visibleUnitIds.has(brainUnitId)
+      ? input
+      : {
+          ...input,
+          martian: { ...input.martian, thrall: { brainUnitId: null } },
+        };
   const statuses = isOwner
     ? stats.statuses
     : stats.statuses.filter((status) => status.startsWith("Inspired:"));

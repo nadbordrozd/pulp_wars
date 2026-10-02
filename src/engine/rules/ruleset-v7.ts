@@ -119,6 +119,21 @@ export type TechnologyUnlockV7 =
    * attacks of the owner's growing land-form units ignore City Walls.
    */
   | { readonly kind: "WALLBREAKER" }
+  /**
+   * The Martian revision: the Brain's Psychic Command (Rally) and Mind
+   * Control (the Martian `ADMINISTRATION`).
+   */
+  | { readonly kind: "BRAIN_SUPPORT" }
+  /**
+   * The Martian revision: Force Fields (the Martian `FORTIFICATION`): the
+   * owner's Shields also recharge at the end of its turn.
+   */
+  | { readonly kind: "FORCE_FIELDS" }
+  /**
+   * The Martian revision: the Disintegrator (the Martian `EXPLOSIVES`): the
+   * owner's heat rays ignore the defender's fortification.
+   */
+  | { readonly kind: "DISINTEGRATOR" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -170,7 +185,26 @@ export type UnitRoleAbilityV7 =
   | "HATCH"
   | "ACID"
   | "ARMOURED"
-  | "GROW";
+  | "GROW"
+  // The Martian revision: heat rays (Ray Gunner, Tripod, Colossus), the
+  // Tripod's Pierce, the Shield Projector's Force Field, the Saucer's Beam
+  // Down, the Brain's Mind Control, the Mothership's Tractor Beam, and the
+  // public mirrors of the movement modes `FLY` and `STRIDE`.
+  | "HEAT_RAY"
+  | "PIERCE"
+  | "FORCE_FIELD"
+  | "BEAM_DOWN"
+  | "MIND_CONTROL"
+  | "TRACTOR_BEAM"
+  | "FLY"
+  | "STRIDE";
+
+/**
+ * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
+ * (walkers) and `FLY` (flyers) are the Martian machines; every other role of
+ * every faction is `GROUND`.
+ */
+export type MovementModeV7 = "GROUND" | "STRIDE" | "FLY";
 
 export interface EffectiveRoleRuleV7 {
   readonly role: UnitRoleIdV7;
@@ -247,6 +281,13 @@ export interface RoleMechanicsV7 {
   readonly runUpBonus2: 0 | 2;
   /** Revision 19 Armoured: damage removed from every hit of 2 or more. */
   readonly armourReduction: 0 | 1;
+  /**
+   * The Martian revision (section 5.1): the role's Shield maximum (0 for
+   * every role of every other faction and for boats).
+   */
+  readonly shield: 0 | 1 | 2 | 3 | 4;
+  /** The Martian revision (section 7): the role's movement mode. */
+  readonly movementMode: MovementModeV7;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -868,6 +909,8 @@ const mechanics = (
           hatchTurns: null,
           runUpBonus2: 0,
           armourReduction: 0,
+          shield: 0,
+          movementMode: "GROUND",
           ...overrides[roleId],
         },
       ]),
@@ -1457,6 +1500,212 @@ export const DINOSAUR_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
   roleMechanics: DINOSAUR_ROLE_MECHANICS_V7,
 });
 
+/**
+ * The Martian technology graph (docs/product/RULESET_7_MARTIANS.md section
+ * 4): identical to ORIGINAL_BASELINE_V5 except that Administration grants
+ * `BRAIN_SUPPORT` instead of Captain support, Chivalry grants no Overrun,
+ * Fortification (displayed as Force Fields) grants `FORCE_FIELDS` instead of
+ * `BUILD_FIELD_DEFENSE`, and Explosives (displayed as Disintegrator) keeps
+ * both of its unlocks and adds `DISINTEGRATOR`.
+ */
+export const MARTIAN_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
+  deepFreeze(
+    ORIGINAL_BASELINE_V5_NODES.map((original) =>
+      node(
+        original.id,
+        original.branch,
+        original.tier,
+        original.prerequisites,
+        [
+          ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+            unlock.kind === "CAPTAIN_SUPPORT"
+              ? [{ kind: "BRAIN_SUPPORT" }]
+              : unlock.kind === "OVERRUN"
+                ? []
+                : unlock.kind === "COMMAND" &&
+                    unlock.command === "BUILD_FIELD_DEFENSE"
+                  ? [{ kind: "FORCE_FIELDS" }]
+                  : [unlock],
+          ),
+          ...(original.id === "EXPLOSIVES"
+            ? [{ kind: "DISINTEGRATOR" } as const]
+            : []),
+        ],
+      ),
+    ),
+  );
+
+/** The Martian roster (docs/product/RULESET_7_MARTIANS.md section 3). */
+export const MARTIAN_ROLE_RULES_V7: Readonly<
+  Record<UnitRoleIdV7, EffectiveRoleRuleV7>
+> = deepFreeze({
+  // The Grunt; a Thrall is a `FIGHTER`-role unit with a `thralls` entry and
+  // shares this statline (section 8.3).
+  FIGHTER: role({
+    role: "FIGHTER",
+    label: "Grunt",
+    tacticalRole: "LINE",
+    cost: 2,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 3,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+  RAIDER: role({
+    role: "RAIDER",
+    label: "Saucer",
+    tacticalRole: "SKIRMISHER",
+    cost: 4,
+    maxHp: 8,
+    attack2: 3,
+    defense2: 2,
+    move: 3,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "SCOUTING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CHARGE", "FLY", "BEAM_DOWN"],
+  }),
+  MARKSMAN: role({
+    role: "MARKSMAN",
+    label: "Ray Gunner",
+    tacticalRole: "RANGED",
+    cost: 4,
+    maxHp: 8,
+    attack2: 6,
+    defense2: 2,
+    move: 1,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "MARKSMANSHIP",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "HEAT_RAY"],
+  }),
+  GUARD: role({
+    role: "GUARD",
+    label: "Shield Projector",
+    tacticalRole: "DEFENDER",
+    cost: 4,
+    maxHp: 12,
+    attack2: 3,
+    defense2: 5,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "DRILL",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "CAPTURE", "FORCE_FIELD"],
+  }),
+  CAPTAIN: role({
+    role: "CAPTAIN",
+    label: "Brain",
+    tacticalRole: "SUPPORT",
+    cost: 5,
+    maxHp: 8,
+    attack2: 2,
+    defense2: 2,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "ADMINISTRATION",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "RALLY", "MIND_CONTROL"],
+  }),
+  CATAPULT: role({
+    role: "CATAPULT",
+    label: "Tripod",
+    tacticalRole: "SIEGE",
+    cost: 9,
+    maxHp: 12,
+    attack2: 8,
+    defense2: 2,
+    move: 2,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "SAWMILLING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "STRIDE", "HEAT_RAY", "PIERCE"],
+  }),
+  KNIGHT: role({
+    role: "KNIGHT",
+    label: "Mothership",
+    tacticalRole: "BREAKTHROUGH",
+    cost: 10,
+    maxHp: 16,
+    attack2: 5,
+    defense2: 4,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "CHIVALRY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "FLY", "TRACTOR_BEAM"],
+  }),
+  JUGGERNAUT: role({
+    role: "JUGGERNAUT",
+    label: "Colossus",
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: 32,
+    attack2: 8,
+    defense2: 6,
+    move: 1,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "PUSH", "STRIDE", "HEAT_RAY"],
+  }),
+  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
+  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+});
+
+/**
+ * The Martian engine mechanics: no role builds Field Defense; every land
+ * role has a Shield maximum; the Saucer and the Mothership fly and the
+ * Tripod and the Colossus stride; flyers and the Tripod never advance after
+ * a kill; the Mothership and the Colossus use two capacity slots. Boats are
+ * Human boats (no Shield).
+ */
+export const MARTIAN_ROLE_MECHANICS_V7 = mechanics({
+  FIGHTER: { buildsFieldDefense: false, shield: 2 },
+  RAIDER: { shield: 2, movementMode: "FLY", advancesAfterKill: false },
+  MARKSMAN: { shield: 2 },
+  GUARD: { buildsFieldDefense: false, shield: 3 },
+  CAPTAIN: { shield: 2 },
+  CATAPULT: { shield: 2, movementMode: "STRIDE", advancesAfterKill: false },
+  KNIGHT: {
+    shield: 4,
+    movementMode: "FLY",
+    advancesAfterKill: false,
+    capacitySlots: 2,
+  },
+  JUGGERNAUT: { shield: 3, movementMode: "STRIDE", capacitySlots: 2 },
+  BATTLESHIP: { splash: true },
+});
+
+export const MARTIAN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "MARTIAN_BASELINE_V1",
+  faction: "MARTIAN",
+  startingTechIds: [],
+  nodes: MARTIAN_BASELINE_V1_NODES,
+  roleRules: MARTIAN_ROLE_RULES_V7,
+  roleMechanics: MARTIAN_ROLE_MECHANICS_V7,
+});
+
 /** Frozen faction registrations; there is no cross-faction fallback. */
 export const FACTION_TREES_V7: Readonly<
   Record<FactionIdV7, FactionTechnologyTreeV7>
@@ -1465,6 +1714,7 @@ export const FACTION_TREES_V7: Readonly<
   UNDEAD: UNDEAD_BASELINE_V1_TREE,
   GOBLIN: GOBLIN_BASELINE_V1_TREE,
   DINOSAUR: DINOSAUR_BASELINE_V1_TREE,
+  MARTIAN: MARTIAN_BASELINE_V1_TREE,
 });
 
 export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
@@ -1473,6 +1723,7 @@ export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
     UNDEAD: "Undead",
     GOBLIN: "Goblin",
     DINOSAUR: "Dinosaur",
+    MARTIAN: "Martian",
   });
 
 /**
@@ -1490,6 +1741,8 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   UNDEAD: {},
   GOBLIN: { COMMERCE: "Plunder" },
   DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
+  // The Martian revision: Fortification and Explosives are renamed.
+  MARTIAN: { FORTIFICATION: "Force Fields", EXPLOSIVES: "Disintegrator" },
 });
 
 export function factionTreeV7(faction: FactionIdV7): FactionTechnologyTreeV7 {
@@ -1521,8 +1774,9 @@ export interface FactionRulesV7 {
   readonly gangUpMaximum: 0 | 2;
   /**
    * Revision 19: the mechanical role of the treasure chest unit (`KNIGHT`
-   * for Human, Undead, and Goblin; `RAIDER`, the Raptor, for Dinosaur). The
-   * serialized `TREASURE_CAPTURED` reward literal stays `KNIGHT`.
+   * for Human, Undead, and Goblin; `RAIDER` for Dinosaur, the Raptor, and
+   * for Martian, the Saucer). The serialized `TREASURE_CAPTURED` reward
+   * literal stays `KNIGHT`.
    */
   readonly treasureUnitRole: UnitRoleIdV7;
 }
@@ -1548,6 +1802,12 @@ export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
       treasureUnitRole: "KNIGHT",
     },
     DINOSAUR: {
+      restless: false,
+      cityCapacityBonus: 0,
+      gangUpMaximum: 0,
+      treasureUnitRole: "RAIDER",
+    },
+    MARTIAN: {
       restless: false,
       cityCapacityBonus: 0,
       gangUpMaximum: 0,
@@ -1913,6 +2173,157 @@ export function armouredDamageV7(
   return reduction === 0 ? damage : Math.max(1, damage - reduction);
 }
 
+/** The Martian revision (section 5.4): a covered unit recharges to this. */
+export const FORCE_FIELD_SHIELD_V7 = 4;
+/**
+ * The Martian revision (section 16.3): no Shield in the game exceeds this
+ * value, so a hit of 5 always costs HP.
+ */
+export const SHIELD_CAP_V7 = 4;
+/** The Martian revision (section 8.2): the most HP a Mind Control target has. */
+export const MIND_CONTROL_HP_V7 = 6;
+/** The Martian revision (section 8.2): Mind Control reach (Chebyshev). */
+export const MIND_CONTROL_RANGE_V7 = 2;
+/** The Martian revision (section 8.2): the cooldown a Mind Control starts. */
+export const MIND_CONTROL_COOLDOWN_TURNS_V7 = 2;
+/** The Martian revision (section 8.3): Thralls one Brain controls at most. */
+export const MIND_CONTROL_THRALL_LIMIT_V7 = 2;
+/** The Martian revision (section 8.4): the exact Tractor Beam distance. */
+export const TRACTOR_BEAM_RANGE_V7 = 2;
+
+/** The unit facts the Martian registry helpers read. */
+export interface MartianUnitFactsV7 {
+  readonly ownerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  readonly form: UnitFormV7;
+}
+
+/** The movement mode of a unit's role under its owner's registration. */
+export function unitMovementModeV7(
+  roster: FactionRosterV7,
+  unit: Pick<MartianUnitFactsV7, "ownerId" | "role">,
+): MovementModeV7 {
+  return unitRoleMechanicsV7(roster, unit).movementMode;
+}
+
+/**
+ * The Martian revision (section 7.2): whether the unit currently flies (a
+ * land-form unit whose role's movement mode is `FLY`). An embarked flyer is
+ * an ordinary embarked unit.
+ */
+export function unitFliesV7(
+  roster: FactionRosterV7,
+  unit: MartianUnitFactsV7,
+): boolean {
+  return unit.form === "LAND" && unitMovementModeV7(roster, unit) === "FLY";
+}
+
+/**
+ * Whether the unit gets terrain cover and fortification: a land-form unit
+ * whose movement mode is `GROUND`. The Martian machines (walkers and flyers)
+ * are tall and never get either (section 7.1).
+ */
+export function unitTakesCoverV7(
+  roster: FactionRosterV7,
+  unit: MartianUnitFactsV7,
+): boolean {
+  return unit.form === "LAND" && unitMovementModeV7(roster, unit) === "GROUND";
+}
+
+/**
+ * The Martian revision (section 6.1): whether an `ATTACK` by this unit is a
+ * heat ray (a land-form unit whose role has `HEAT_RAY`).
+ */
+export function attackIsRayV7(
+  roster: FactionRosterV7,
+  unit: MartianUnitFactsV7,
+): boolean {
+  return (
+    unit.form === "LAND" &&
+    unitRoleRuleV7(roster, unit).abilities.includes("HEAT_RAY")
+  );
+}
+
+/** The role `attack2` of a ray at half power: half, rounded down. */
+export function halfPowerAttack2V7(attack2: number): number {
+  return Math.floor(attack2 / 2);
+}
+
+/**
+ * THE shared "can this unit enter this terrain" rule (the Martian revision,
+ * section 7 and concern 11). Every rule that asks whether a unit may stand
+ * on a tile goes through it: `MOVE`, `DISEMBARK`, the advance after a kill,
+ * Push and Tractor Beam destinations, Beam Down, reward displacement, and
+ * treasure-unit placement. `afloat` is whether the unit is, or would be on
+ * that tile, a naval or embarked unit.
+ *
+ * - Grass and Forest: every land-form unit.
+ * - Mountain: a land-form unit whose owner has Engineering, and every
+ *   walker and flyer (Stride and Flying need no Engineering).
+ * - Shallow Water: afloat units only.
+ * - Deep Water: afloat units whose owner has Navigation.
+ *
+ * Rift (the terrain of `pulp_wars-9s0.5`, not in the game yet) belongs here
+ * when it lands: **flyers may enter and end a Move on a Rift; walkers, foot
+ * units, and afloat units may not** (`!afloat && movementMode === "FLY"`).
+ * Stride is Forest, Mountain, and Shallow Water, nothing else (section 7.4).
+ *
+ * Occupancy, settlement sites, territory, and exploration are not terrain
+ * and stay with each caller.
+ */
+export function canEnterTerrainV7(input: {
+  readonly terrain: TerrainIdV7;
+  readonly movementMode: MovementModeV7;
+  readonly afloat: boolean;
+  readonly engineering: boolean;
+  readonly navigation: boolean;
+}): boolean {
+  switch (input.terrain) {
+    case "GRASS":
+    case "FOREST":
+      return !input.afloat;
+    case "MOUNTAIN":
+      return (
+        !input.afloat && (input.engineering || input.movementMode !== "GROUND")
+      );
+    case "SHALLOW_WATER":
+      return input.afloat;
+    case "DEEP_WATER":
+      return input.afloat && input.navigation;
+  }
+}
+
+/**
+ * The Martian revision (section 7.3): whether a LAND-form unit may step
+ * onto a water tile inside a Move. A flyer crosses Shallow Water, and Deep
+ * Water with Navigation; a walker crosses Shallow Water only; a foot unit
+ * never does (it embarks at a Port). A Move that ends on such a tile
+ * self-launches the machine there (it embarks).
+ */
+export function canCrossWaterV7(input: {
+  readonly terrain: TerrainIdV7;
+  readonly movementMode: MovementModeV7;
+  readonly navigation: boolean;
+}): boolean {
+  if (input.terrain === "SHALLOW_WATER") return input.movementMode !== "GROUND";
+  if (input.terrain === "DEEP_WATER")
+    return input.movementMode === "FLY" && input.navigation;
+  return false;
+}
+
+/**
+ * The Martian revision (section 7.2): whether a flyer may END a Move, land,
+ * or be placed on a tile with this settlement state. A flyer never stands on
+ * a neutral village center or on the center of a city it does not own.
+ */
+export function flyerMayStandOnSiteV7(
+  site: "CAPITAL" | "VILLAGE" | "CITY" | null,
+  cityOwnerId: PlayerId | null,
+  unitOwnerId: PlayerId,
+): boolean {
+  return site === null || cityOwnerId === unitOwnerId;
+}
+
 /** The unit facts Rally eligibility reads (state units and public units). */
 export interface RallyUnitV7 {
   readonly id: number;
@@ -2005,6 +2416,16 @@ export interface TechnologyCapabilitiesV7 {
   readonly nestingCityCapacityBonus: 0 | 1;
   /** Revision 20 Wallbreaker: the player's dinosaurs ignore City Walls. */
   readonly ignoresCityWalls: boolean;
+  /**
+   * The Martian revision, Force Fields: the player's Shields also recharge
+   * at the end of its turn.
+   */
+  readonly shieldsRechargeAtEndTurn: boolean;
+  /**
+   * The Martian revision, Disintegrator: the player's heat rays ignore the
+   * defender's fortification.
+   */
+  readonly raysIgnoreFortification: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -2047,6 +2468,8 @@ export function technologyCapabilitiesV7(
   let eggHatchTurnReduction: 0 | 1 = 0;
   let nestingCityCapacityBonus: 0 | 1 = 0;
   let ignoresCityWalls = false;
+  let shieldsRechargeAtEndTurn = false;
+  let raysIgnoreFortification = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -2117,6 +2540,13 @@ export function technologyCapabilitiesV7(
       case "WALLBREAKER":
         ignoresCityWalls = true;
         break;
+      case "FORCE_FIELDS":
+        shieldsRechargeAtEndTurn = true;
+        break;
+      case "DISINTEGRATOR":
+        raysIgnoreFortification = true;
+        break;
+      case "BRAIN_SUPPORT":
       case "CAPTAIN_SUPPORT":
       case "NECROMANCER_SUPPORT":
       case "WAAAGH_SUPPORT":
@@ -2160,6 +2590,8 @@ export function technologyCapabilitiesV7(
     eggHatchTurnReduction,
     nestingCityCapacityBonus,
     ignoresCityWalls,
+    shieldsRechargeAtEndTurn,
+    raysIgnoreFortification,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

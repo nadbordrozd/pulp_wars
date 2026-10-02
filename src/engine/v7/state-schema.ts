@@ -1,7 +1,10 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
 import type { PlayerId } from "../model/ids";
 import {
+  FORCE_FIELD_SHIELD_V7,
   GROWTH_HP_V7,
+  MIND_CONTROL_COOLDOWN_TURNS_V7,
+  MIND_CONTROL_THRALL_LIMIT_V7,
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
   effectiveRoleRuleV7,
@@ -31,6 +34,7 @@ import {
   type BittenStatusV7,
   type CityRewardRecordV7,
   type CityStateV7,
+  type CoolingStatusV7,
   type CoordV7,
   type EggStatusV7,
   type FactionIdV7,
@@ -38,6 +42,7 @@ import {
   type ImprovementIdV7,
   type MatchOutcomeV7,
   type MatchSetupV7,
+  type MindControlCooldownV7,
   type PendingChoiceV7,
   type PlagueStatusV7,
   type PlayerStateV7,
@@ -46,7 +51,9 @@ import {
   type RandomStateV7,
   type ResourceIdV7,
   type RewardIdV7,
+  type ShieldStatusV7,
   type TechnologyIdV7,
+  type ThrallStatusV7,
   type TileStateV7,
   type UnitActivationV7,
   type UnitRoleIdV7,
@@ -79,9 +86,11 @@ const STATE_KEYS = [
   "board",
   "cities",
   "commandIndex",
+  "cooling",
   "eggs",
   "graves",
   "humanPlayerId",
+  "mindControlCooldowns",
   "nextEntityId",
   "outcome",
   "pendingChoices",
@@ -93,6 +102,8 @@ const STATE_KEYS = [
   "rulesetId",
   "schemaVersion",
   "setup",
+  "shields",
+  "thralls",
   "treasureChests",
   "turnOrder",
   "units",
@@ -141,6 +152,12 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const plagued = parsePlagued(input.plagued);
   const bitten = parseBitten(input.bitten);
   const eggs = parseEggs(input.eggs);
+  const shields = parseShields(input.shields);
+  const cooling = parseCooling(input.cooling);
+  const thralls = parseThralls(input.thralls);
+  const mindControlCooldowns = parseMindControlCooldowns(
+    input.mindControlCooldowns,
+  );
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -158,6 +175,10 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     plagued === null ||
     bitten === null ||
     eggs === null ||
+    shields === null ||
+    cooling === null ||
+    thralls === null ||
+    mindControlCooldowns === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -189,6 +210,10 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       plagued,
       bitten,
       eggs,
+      shields,
+      cooling,
+      thralls,
+      mindControlCooldowns,
       choices,
       outcome,
       humanPlayerId,
@@ -220,6 +245,10 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     plagued,
     bitten,
     eggs,
+    shields,
+    cooling,
+    thralls,
+    mindControlCooldowns,
     pendingChoices: choices,
     outcome,
   };
@@ -992,6 +1021,91 @@ function parseEggs(input: unknown): readonly EggStatusV7[] | null {
   return values;
 }
 
+/**
+ * The Martian revision `shields` entries: `{ unitId, shield }` sorted by
+ * unit ID with a positive integer Shield; the per-unit maximum is checked
+ * with the cross references.
+ */
+function parseShields(input: unknown): readonly ShieldStatusV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: ShieldStatusV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["shield", "unitId"])) return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    if (
+      unitId === null ||
+      !isPositiveSafeIntegerV7(candidate.shield) ||
+      (values.length > 0 && (values.at(-1) as ShieldStatusV7).unitId >= unitId)
+    )
+      return null;
+    values.push({ unitId, shield: candidate.shield });
+  }
+  return values;
+}
+
+/** The Martian revision `cooling` entries, sorted by unit ID. */
+function parseCooling(input: unknown): readonly CoolingStatusV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: CoolingStatusV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["firedThisTurn", "unitId"])) return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    if (
+      unitId === null ||
+      typeof candidate.firedThisTurn !== "boolean" ||
+      (values.length > 0 && (values.at(-1) as CoolingStatusV7).unitId >= unitId)
+    )
+      return null;
+    values.push({ unitId, firedThisTurn: candidate.firedThisTurn });
+  }
+  return values;
+}
+
+/** The Martian revision `thralls` entries, sorted by unit ID. */
+function parseThralls(input: unknown): readonly ThrallStatusV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: ThrallStatusV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["brainUnitId", "unitId"])) return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    const brainUnitId = parseUnitIdV7(candidate.brainUnitId);
+    if (
+      unitId === null ||
+      brainUnitId === null ||
+      unitId === brainUnitId ||
+      (values.length > 0 && (values.at(-1) as ThrallStatusV7).unitId >= unitId)
+    )
+      return null;
+    values.push({ unitId, brainUnitId });
+  }
+  return values;
+}
+
+/**
+ * The Martian revision `mindControlCooldowns` entries, sorted by unit ID,
+ * with `turnsRemaining` an integer from 0 to the cooldown (2).
+ */
+function parseMindControlCooldowns(
+  input: unknown,
+): readonly MindControlCooldownV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: MindControlCooldownV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["turnsRemaining", "unitId"])) return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    if (
+      unitId === null ||
+      !isNonNegativeSafeIntegerV7(candidate.turnsRemaining) ||
+      candidate.turnsRemaining > MIND_CONTROL_COOLDOWN_TURNS_V7 ||
+      (values.length > 0 &&
+        (values.at(-1) as MindControlCooldownV7).unitId >= unitId)
+    )
+      return null;
+    values.push({ unitId, turnsRemaining: candidate.turnsRemaining });
+  }
+  return values;
+}
+
 function parseSortedCoords(input: unknown): readonly CoordV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: CoordV7[] = [];
@@ -1031,6 +1145,10 @@ interface CrossInput {
   plagued: readonly PlagueStatusV7[];
   bitten: readonly BittenStatusV7[];
   eggs: readonly EggStatusV7[];
+  shields: readonly ShieldStatusV7[];
+  cooling: readonly CoolingStatusV7[];
+  thralls: readonly ThrallStatusV7[];
+  mindControlCooldowns: readonly MindControlCooldownV7[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
@@ -1052,6 +1170,10 @@ function validateCrossReferences(value: CrossInput): boolean {
     plagued,
     bitten,
     eggs,
+    shields,
+    cooling,
+    thralls,
+    mindControlCooldowns,
     choices,
     outcome,
   } = value;
@@ -1315,6 +1437,82 @@ function validateCrossReferences(value: CrossInput): boolean {
         Math.abs(egg.at.x - home.at.x),
         Math.abs(egg.at.y - home.at.y),
       ) !== 1
+    )
+      return false;
+  }
+  // The Martian revision side lists (sections 5.1, 6.2, 8.2, and 8.3).
+  // Every entry needs a role that only the Martian registration has, so all
+  // four lists are empty in a match without a Martian seat.
+  const thrallIds = new Set(thralls.map((entry) => entry.unitId));
+  const thrallsByBrain = new Map<number, number>();
+  for (const entry of thralls) {
+    const thrall = unitById.get(entry.unitId);
+    const brain = unitById.get(entry.brainUnitId);
+    const faction =
+      thrall === undefined
+        ? undefined
+        : playerById.get(thrall.ownerId)?.faction;
+    const controlled = (thrallsByBrain.get(entry.brainUnitId) ?? 0) + 1;
+    thrallsByBrain.set(entry.brainUnitId, controlled);
+    if (
+      thrall === undefined ||
+      thrall.hp <= 0 ||
+      faction !== "MARTIAN" ||
+      thrall.role !== "FIGHTER" ||
+      (thrall.form !== "LAND" && thrall.form !== "EMBARKED") ||
+      thrall.homeCityId !== null ||
+      thrall.veteran ||
+      thrall.maxHp !== effectiveRoleRuleV7("FIGHTER", faction).maxHp ||
+      brain === undefined ||
+      brain.hp <= 0 ||
+      brain.ownerId !== thrall.ownerId ||
+      !effectiveRoleRuleV7(brain.role, faction).abilities.includes(
+        "MIND_CONTROL",
+      ) ||
+      controlled > MIND_CONTROL_THRALL_LIMIT_V7
+    )
+      return false;
+  }
+  for (const entry of shields) {
+    const unit = unitById.get(entry.unitId);
+    const faction =
+      unit === undefined ? undefined : playerById.get(unit.ownerId)?.faction;
+    if (unit === undefined || unit.hp <= 0 || faction === undefined)
+      return false;
+    // A Thrall has no Shield whatever its role says.
+    const maximum = thrallIds.has(unit.id)
+      ? 0
+      : roleMechanicsV7(unit.role, faction).shield;
+    if (
+      maximum === 0 ||
+      entry.shield > Math.max(maximum, FORCE_FIELD_SHIELD_V7)
+    )
+      return false;
+  }
+  for (const entry of cooling) {
+    const unit = unitById.get(entry.unitId);
+    const faction =
+      unit === undefined ? undefined : playerById.get(unit.ownerId)?.faction;
+    if (
+      unit === undefined ||
+      unit.hp <= 0 ||
+      faction === undefined ||
+      !effectiveRoleRuleV7(unit.role, faction).abilities.includes("HEAT_RAY") ||
+      (entry.firedThisTurn && unit.ownerId !== value.activePlayerId)
+    )
+      return false;
+  }
+  for (const entry of mindControlCooldowns) {
+    const unit = unitById.get(entry.unitId);
+    const faction =
+      unit === undefined ? undefined : playerById.get(unit.ownerId)?.faction;
+    if (
+      unit === undefined ||
+      unit.hp <= 0 ||
+      faction === undefined ||
+      !effectiveRoleRuleV7(unit.role, faction).abilities.includes(
+        "MIND_CONTROL",
+      )
     )
       return false;
   }
