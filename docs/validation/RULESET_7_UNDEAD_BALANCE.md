@@ -1222,3 +1222,12 @@ four-seat mixes; the Goblin measurements, tuning, and targets are in the
 pairings of that run (`HU`, `UH`, `UU`, `HH`) have byte-identical final
 hashes to the untuned tree: Undead win 57.1% (`HU`) and 62.2% (`UH`), cap
 rates 2.0–6.3%.
+
+## 17. Revision 19: Dinosaurs (`pulp_wars-c87.8`)
+
+The matrix script now also runs the Dinosaur pairings and the four-faction
+mixes, with the Dinosaur telemetry (`summary.dinosaur`); see the
+[Dinosaur balance report](RULESET_7_DINOSAUR_BALANCE.md) (interim, ahead of
+the revision 20 rework). In its before run (revision-19 identity, untuned
+tree) Undead win 58.8% (`HU`) and 64.5% (`UH`), with cap rates of 2.0–4.3%
+for the four Human/Undead pairings.

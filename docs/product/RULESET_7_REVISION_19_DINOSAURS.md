@@ -165,10 +165,12 @@ ledger, unit tiles, forms, homes, and entity IDs as any other faction.
   every Egg the seat lays.
 - First income is the Human one (16 Coins; land trade applies).
 - **Capacity.** The homes are unchanged, so with 2-slot units the Dinosaur
-  capital starts at 8 of 7 slots (Caveman 1, Shaman 1, Triceratops 2, T-Rex
+  capital starts at 7 of 7 slots (Caveman 1, Shaman 1, Triceratops 1, T-Rex
   2, Brontosaurus 2), North at 3 of 6, and Coast at 2 of 5. Showcase creation
   performs no capacity check; the capital simply cannot train or lay until a
   slot frees, and North and Coast can lay every Egg from the first turn.
+  (With the contract's two-slot Triceratops the capital started at 8 of 7;
+  [section 15.4](#154-tuning-record-pulp_wars-c878).)
 
 ## 3. Dinosaur roster
 
@@ -179,12 +181,12 @@ the Egg's hatch time in owner Start Turns ([section 6.4](#64-hatching));
 
 | Unit         | Role          | Tech              | Cost | Hatch   | Slots |  HP | Attack (`attack2`) | Defense (`defense2`) | Move | Range | Sight | Attack after Move | Capture | Grows | Abilities                      |
 | ------------ | ------------- | ----------------- | ---: | ------- | ----: | --: | -----------------: | -------------------: | ---: | ----: | ----: | ----------------- | ------- | ----- | ------------------------------ |
-| Caveman      | `FIGHTER`     | start             |    2 | trained |     1 |  10 |              2 (4) |                2 (4) |    1 |     1 |     1 | yes               | yes     | no    | no Field Defense               |
+| Caveman      | `FIGHTER`     | start             |    2 | trained |     1 |  12 |              2 (4) |                2 (4) |    1 |     1 |     1 | yes               | yes     | no    | no Field Defense               |
 | Raptor       | `RAIDER`      | Scouting          |    4 | 1       |     1 |  12 |            2.5 (5) |                1 (2) |    2 |     1 |     2 | yes               | yes     | yes   | Pounce (Raiding); no Escape    |
 | Spitter      | `MARKSMAN`    | Marksmanship      |    4 | 1       |     1 |  10 |              2 (4) |                1 (2) |    1 |   1–2 |    1¹ | yes               | yes     | yes   | Acid                           |
 | Ankylosaurus | `GUARD`       | Drill             |    5 | 2       |     1 |  20 |              2 (4) |                3 (6) |    1 |     1 |     1 | no                | yes     | yes   | Armoured; no Field Defense     |
 | Shaman       | `CAPTAIN`     | Administration    |    5 | trained |     1 |  10 |              1 (2) |                1 (2) |    1 |     1 |     1 | yes               | no      | no    | War Drums; Tend Wounded; Hatch |
-| Triceratops  | `CATAPULT`    | Sawmilling        |    8 | 2       |     2 |  18 |              3 (6) |                2 (4) |    1 |     1 |     1 | no                | no      | yes   | Stampede                       |
+| Triceratops  | `CATAPULT`    | Sawmilling        |    8 | 1       |     1 |  18 |              3 (6) |                2 (4) |    1 |     1 |     1 | no                | no      | yes   | Stampede                       |
 | T-Rex        | `KNIGHT`      | Chivalry          |   10 | 3       |     2 |  28 |              4 (8) |                2 (4) |    2 |     1 |     1 | yes               | no      | yes   | Rampage                        |
 | Brontosaurus | `JUGGERNAUT`  | reward only       |    — | —       |     2 |  45 |            3.5 (7) |                4 (8) |    1 |     1 |     1 | yes               | yes     | yes   | Push                           |
 | Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 | trained |     1 |  10 |              2 (4) |                2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval                          |
@@ -192,11 +194,15 @@ the Egg's hatch time in owner Start Turns ([section 6.4](#64-hatching));
 
 ¹ Spitter Sight becomes 2 with Fieldcraft.
 
+The table holds the tuned values of `pulp_wars-c87.8`
+([section 15.4](#154-tuning-record-pulp_wars-c878)): the contract had the
+Caveman at 10 HP and the Triceratops at hatch time 2 and 2 slots.
+
 - **Caveman** has Fighter parity (capture, Pillage with Raiding, Disband,
-  ordinary Promotion) except that it cannot build Field Defense
-  ([section 5.3](#53-wild-no-field-defense)). It is trained on the city
-  center with `TRAIN`, so a Dinosaur seat can always produce a unit from the
-  first turn.
+  ordinary Promotion) except that it has 12 HP (17 when promoted) and cannot
+  build Field Defense ([section 5.3](#53-wild-no-field-defense)). It is
+  trained on the city center with `TRAIN`, so a Dinosaur seat can always
+  produce a unit from the first turn.
 - **Raptor** has Raider parity for Move 2, Sight 2 (Scouting), Charge
   (Raiding), labelled **Pounce**, Pillage, capture, and Fieldcraft Forest
   freedom. It has no Escape.
@@ -291,7 +297,7 @@ Every rule in this section applies only to units and cities owned by a
 ### 5.1 Big bodies: capacity slots
 
 Every role has a **slot** value in its owner's registration (role mechanic
-`capacitySlots`): 2 for the Triceratops, T-Rex, and Brontosaurus, and 1 for
+`capacitySlots`): 2 for the T-Rex and Brontosaurus, and 1 for
 every other role of every faction.
 
 - **Used slots** of a city are the sum of the slots of every unit on the
@@ -305,7 +311,7 @@ every other role of every faction.
 - **Gate.** `TRAIN`, `TRAIN_NAVAL`, and `LAY_EGG` need
   `used + slots(role) <= capacity`, otherwise `CITY_CAPACITY_FULL`. So a
   level-1 capital (capacity 2) holding the starting Caveman can lay a Raptor
-  Egg but not a Triceratops Egg.
+  or a Triceratops Egg but not a T-Rex Egg.
 - **Treasure.** The treasure unit ([section 9.8](#98-starting-units-rewards-and-treasure))
   needs a city with `used + slots <= capacity` under the existing city order;
   otherwise the chest gives 5 Coins.
@@ -632,7 +638,7 @@ a minimum of 1:
 | Raptor       |          1 |            1 |
 | Spitter      |          1 |            1 |
 | Ankylosaurus |          2 |            1 |
-| Triceratops  |          2 |            1 |
+| Triceratops  |          1 |            1 |
 | T-Rex        |          3 |            2 |
 
 Nesting is read when the Egg is laid. Researching it changes no Egg already
@@ -695,7 +701,9 @@ of a projectile.
   target.
 - **Open lane.** Every lane tile must be **open**:
   1. explored by the actor;
-  2. land of terrain Grass: a Forest, a Mountain, and water close the lane;
+  2. land of terrain Grass or Forest: a Mountain and water close the lane
+     (`pulp_wars-c87.8` applied the Forest fallback of
+     [section 15.1](#151-tuning-bounds); the contract value was Grass only);
   3. not in territory of a player allied to the actor;
   4. free of a treasure chest;
   5. free of units, except that a lane tile **other than the stand tile**
@@ -1300,13 +1308,13 @@ One sentence per rule, shown in Help for every viewer:
   it, and the Egg hatches into a full-strength unit after its hatch time.
 - **Egg weakness:** an Egg cannot move or fight and has only 6 HP, so enemies
   can smash it before it hatches, and all Eggs of a captured city are lost.
-- **Big bodies:** a Triceratops, T-Rex, or Brontosaurus takes two unit slots
-  in its city.
+- **Big bodies:** a T-Rex or a Brontosaurus takes two unit slots in its
+  city.
 - **Grow:** a Dinosaur grows when it kills: Big after 1 kill (+4 HP) and
   Alpha after 3 kills (+4 more HP and +1 Attack), for good.
 - **Stampede:** a Triceratops that has not moved charges a unit 2 or 3 tiles
-  away in a straight line over open ground, with +1 Attack per tile run and
-  no retaliation, and pushes the survivor back.
+  away in a straight line over Grass or Forest, with +1 Attack per tile run
+  and no retaliation, and pushes the survivor back.
 - **Acid:** a Spitter's attack ignores Forest and Mountain cover, Walls, and
   Field Defense.
 - **Armoured:** an Ankylosaurus takes 1 less damage from every hit, to a
@@ -1475,6 +1483,59 @@ If the gameplay fails these, `c87.8` iterates within
 [section 15.1](#151-tuning-bounds) and the Dinosaur-only Normal AI, and asks
 the root before going outside the bounds.
 
+### 15.4 Tuning record (`pulp_wars-c87.8`)
+
+**Interim.** The user play-tested the faction while this bead ran and asked
+for a rework (revision 20: a different Triceratops, a costlier T-Rex with a
+longer hatch, a changed Nesting branch, and stronger Humans) with its own
+balance pass. `c87.8` therefore stopped early. The values below are the ones
+it had measured; they are the baseline that revision 20 starts from, not a
+final tuning.
+
+The contract values met the win-rate band only barely (Dinosaurs won 40.8%
+of decided games against Undead and 41.8% against Goblins) and failed the
+Stampede target (28.7% of the seat-games with Sawmilling). `c87.8` changed
+these numbers, all inside [section 15.1](#151-tuning-bounds), applied the
+pre-approved Forest fallback, and changed the Dinosaur-only Normal AI; every
+other number keeps its contract value. The evidence and the iterations are
+in the [Dinosaur balance report](../validation/RULESET_7_DINOSAUR_BALANCE.md).
+
+| Parameter              |   Contract |           Tuned | Why                                                                                                             |
+| ---------------------- | ---------: | --------------: | --------------------------------------------------------------------------------------------------------------- |
+| Caveman HP             |         10 |              12 | the only win-rate lever that worked (about +7 points against Humans, +5 against Undead, +3 against Goblins)     |
+| Triceratops slots      |          2 |               1 | the Egg no longer waits for a second free slot: two thirds more Triceratops, Stampede use from 50% to 55%       |
+| Triceratops hatch time |          2 |               1 | on the board one round sooner (measured together with the AI bias below)                                        |
+| Stampede lane terrain  | Grass only | Grass or Forest | the named fallback: a lane was open on 8% of Triceratops-turns, Stampede use rose from 28% to 42% with it alone |
+
+Hatch times, slots, and costs were tried first, as section 15.1 asks: a
+cheaper and faster-hatching T-Rex and Triceratops, a cheaper Ankylosaurus and
+Raptor, and an Ankylosaurus that hatches in one turn did not move the win
+rates. Tougher beasts (Raptor 14 HP, Ankylosaurus 24 HP, Triceratops 22 HP)
+did not either.
+
+The Normal AI changes are Dinosaur-seat only and leave every match without a
+Dinosaur seat byte-identical: the first-Triceratops production bias is 20
+(was 4); the next technology toward the Triceratops or the T-Rex is
+researched at priority 1170 once the seat owns two cities; and an unmoved
+Triceratops with no lane tile in reach walks toward the nearest launch tile.
+See [Normal AI](../architecture/NORMAL_AI.md#revision-19-dinosaur-play-pulp_wars-c875).
+
+Measured after tuning on the seven Dinosaur pairings of the section 15.2
+matrix (2,100 games; the nine earlier pairings and the four-seat mixes were
+not re-run after tuning, see the report): Dinosaurs win 55.8% of decided
+games against Humans, 47.4% against Undead, and 45.3% against Goblins; the
+worst Dinosaur cap rate is 0.7 points above the non-Dinosaur reference;
+Stampede is used in 52.6% of the seat-games with Sawmilling; an Egg is
+destroyed by an enemy in 25.7% of seat-games (3.6% of Eggs laid); a unit
+reaches Big in 80.0% of seat-games; a T-Rex Egg is laid in 39.0% of the
+seat-games of matches that last 35 rounds or more; no errors, stalls, or
+exceptions; and a 24-match parity run without a Dinosaur seat is identical
+to the untuned tree in every command, event, and state.
+
+Not changed, and left for revision 20: the named fallbacks for the Shaman
+Hatch and the hatch time 2 for the Raptor and Spitter (no evidence called
+for them), the T-Rex, and every other value of section 15.1.
+
 ## 16. Decisions made in this spec
 
 Each fills a gap in the brief with the simplest rule consistent with the
@@ -1538,6 +1599,10 @@ engine; the root may change any of them.
     land with no chest; Forest, Mountain, and water close a lane. It gives
     opponents a counter (stand in cover, block the lane) and Dinosaurs a use
     for Clear Forest, which their Sawmilling path already unlocks.
+    **Changed by `pulp_wars-c87.8`:** a Forest lane tile is open too
+    ([section 15.4](#154-tuning-record-pulp_wars-c878)); a Mountain, water,
+    a chest, and a blocking unit still close a lane, and a target standing in
+    a Forest keeps its cover.
 23. **Hostile ZOC never affects a Stampede,** and Roads are irrelevant.
 24. **Every lane tile must be explored,** which makes hidden units in the
     lane impossible and the Stampede preview exact; the brief's "deterministic
@@ -1567,7 +1632,8 @@ engine; the root may change any of them.
 36. **The treasure unit's role is a faction rule;** the event literal stays
     `KNIGHT`.
 37. **Showcase:** Dinosaur units start hatched at stage 0 with unchanged
-    homes, so the capital starts one slot over capacity.
+    homes, so the capital starts one slot over capacity. (Exactly full since
+    `pulp_wars-c87.8` made the Triceratops a one-slot unit.)
 38. **Names:** commands `LAY_EGG`, `HATCH`, `STAMPEDE`; parameters
     `targetUnitId` and `eggUnitId` (the engine's unit-ID naming, where the
     brief wrote `targetId` and `eggId`); events `EGG_LAID`, `EGG_HATCHED`,
@@ -1601,7 +1667,10 @@ engine; the root may change any of them.
    of the Sawmilling seat-games) will show it. The fallback within the
    mechanic is to let a Forest lane tile count as open, listed in
    [section 15.1](#151-tuning-bounds). **Decided (root):** Grass only, with
-   that fallback.
+   that fallback. **Outcome (`pulp_wars-c87.8`):** the fallback was applied;
+   with Grass-only lanes a lane was open on 7% of Triceratops-turns and
+   Stampede was used in 28% of the seat-games with Sawmilling
+   ([section 15.4](#154-tuning-record-pulp_wars-c878)).
 4. **Stampede evicts city defenders.** A push off a center followed by the
    Triceratops standing on it besieges the city and opens it for a capturer
    on a later turn (the Triceratops itself blocks the center until it moves).
@@ -1632,7 +1701,9 @@ engine; the root may change any of them.
 10. **Level-1 capitals hold two slots,** so a Dinosaur seat cannot lay a
     Triceratops or T-Rex Egg until its city grows or its Caveman leaves the
     roster. Intended ("fewer"), but it delays the faction's signature units;
-    slots are a first tuning lever.
+    slots are a first tuning lever. **Outcome (`pulp_wars-c87.8`):** the
+    Triceratops uses one slot; the T-Rex keeps two
+    ([section 15.4](#154-tuning-record-pulp_wars-c878)).
 11. **Showcase capital over capacity** ([decision 37](#16-decisions-made-in-this-spec)):
     the existing Showcase test "no capacity exceeded" must exclude Dinosaur
     seats, and the Showcase shows no Egg and no grown unit unless the player

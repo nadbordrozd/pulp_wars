@@ -569,7 +569,7 @@ describe("ruleset-7 revision-19 Stampede lanes", () => {
     ).toBe("UNIT_NOT_OWNED");
   });
 
-  it("needs every lane tile open: explored Grass, no allied territory, no chest, no blocking unit", () => {
+  it("needs every lane tile open: explored Grass or Forest, no allied territory, no chest, no blocking unit", () => {
     const far = { x: 6, y: 3 };
     const first = { x: 4, y: 3 };
     const stand = { x: 5, y: 3 };
@@ -584,7 +584,12 @@ describe("ruleset-7 revision-19 Stampede lanes", () => {
       });
     for (const tile of [first, stand]) {
       blocked(unexplore(base, 0, [tile]), "unexplored");
-      blocked(forest(base, tile), "Forest");
+      // pulp_wars-c87.8 (the section 15.1 fallback): a Forest lane tile is
+      // open, the stand tile included; before, a Forest closed the lane.
+      expect(
+        stampede(forest(base, tile), T, far).preview.combat.stampede,
+        "Forest",
+      ).toBe(2);
       blocked(mountain(base, tile), "Mountain");
       blocked(checkedV7({ ...base, treasureChests: [tile] }), "chest");
       blocked(
@@ -616,8 +621,8 @@ describe("ruleset-7 revision-19 Stampede lanes", () => {
       ]),
       "own unit on the stand tile",
     );
-    // Even with Engineering a Mountain closes the lane, and Fieldcraft does
-    // not open a Forest: every technology is researched here.
+    // Even with Engineering a Mountain closes the lane: every technology is
+    // researched here.
     expect(
       base.players.every((player) =>
         player.researchedTechs.includes("ENGINEERING"),
@@ -786,7 +791,8 @@ describe("ruleset-7 revision-19 Stampede lanes", () => {
   });
 
   it("offers exactly the legal Stampedes, equal to queryStampedeLanesV7, all accepted", () => {
-    const state = forest(
+    // A Mountain on (1, 3) closes the lane to the Guard on (0, 3).
+    const state = mountain(
       field([
         { seat: 0, role: "CATAPULT", at: T },
         { seat: 0, role: "FIGHTER", at: { x: 3, y: 2 } },
@@ -1003,8 +1009,8 @@ describe("ruleset-7 revision-19 Stampede hit", () => {
       { seat: 0, role: "CATAPULT", at: T },
       { seat: 1, role: "GUARD", at: to },
     ]);
-    // The target tile may be a Forest or a Mountain (only the lane is open
-    // ground): cover multiplies the Defense by 1.5.
+    // The target tile may be a Forest or a Mountain (only the lane must be
+    // open): cover multiplies the Defense by 1.5.
     for (const cover of [forest, mountain]) {
       const run = stampede(cover(plain, to), T, to);
       expect(run.preview.combat).toMatchObject({
@@ -1729,7 +1735,7 @@ describe("ruleset-7 revision-19 Stampede events, chains, and growth", () => {
 
 describe("ruleset-7 revision-19 Stampede threat", () => {
   it("adds open lanes at distance 2 and 3 to the threatened tiles of an unmoved Triceratops", () => {
-    const base = forest(
+    const base = mountain(
       field(
         [
           { seat: 0, role: "CATAPULT", at: T },
@@ -1749,7 +1755,7 @@ describe("ruleset-7 revision-19 Stampede threat", () => {
     // East: an open lane at distance 2 and 3.
     expect(has({ x: 5, y: 3 })).toBe(true);
     expect(has({ x: 6, y: 3 })).toBe(true);
-    // North: the first lane tile is a Forest, so distance 3 is not reached
+    // North: the first lane tile is a Mountain, so distance 3 is not reached
     // (distance 2 is inside the ordinary move-and-attack envelope).
     expect(has({ x: 3, y: 0 })).toBe(false);
     // West: a hostile unit (the viewer's) on the first lane tile.

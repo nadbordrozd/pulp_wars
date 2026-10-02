@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import { NormalPolicyWorkV7, chooseNormalCommandV7 } from "../src/ai/v7";
 import { canonicalHash, type PlayerViewV7 } from "../src/engine/index";
-import { upgradeRetainedPublicViewV7 } from "./ruleset-v7-late-public-view-contract";
+import {
+  RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION,
+  upgradeRetainedPublicViewV7,
+} from "./ruleset-v7-late-public-view-contract";
 
 const source = JSON.parse(
   readFileSync("tests/fixtures/ruleset-v7-late-public-view.json", "utf8"),
@@ -54,14 +57,15 @@ const report = {
   },
 };
 
+// The expected decision is the pin the unit test keeps current
+// (`RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION`), not a second copy.
+const expected = RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION;
 if (
-  report.fixtureViewHash !==
-    "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b" ||
-  report.policyDecisionHash !==
-    "c5d38ea77c2efa7b859191f3e3449082e75f0753273308e1192535742b9d1f82" ||
+  report.fixtureViewHash !== expected.fixtureViewHash ||
+  report.policyDecisionHash !== expected.policyDecisionHash ||
   report.synchronous.decisionHash !== report.policyDecisionHash ||
-  JSON.stringify(report.command) !==
-    JSON.stringify({ kind: "BUILD_FORGE", at: { x: 9, y: 8 } })
+  JSON.stringify(report.command) !== JSON.stringify(expected.command) ||
+  report.candidateCount !== expected.candidateCount
 )
   throw new Error(`Normal policy parity changed: ${JSON.stringify(report)}`);
 

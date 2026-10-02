@@ -598,9 +598,9 @@ Shared estimates (every match; all neutral without a Dinosaur unit):
   the run bonus (+1 Attack per lane tile). The unit under evaluation never
   blocks its own lane. This reach feeds every safety test, the city threats,
   and the Move safety value, so a unit steps out of a lane when an equally
-  good tile exists, prefers Forest and Mountain (cover, and a Forest or
-  Mountain lane tile closes the lane), and a center a Triceratops can
-  Stampede is a threatened city.
+  good tile exists, prefers Forest and Mountain (cover; a Mountain lane tile
+  also closes the lane, a Forest one no longer does since `pulp_wars-c87.8`),
+  and a center a Triceratops can Stampede is a threatened city.
 
 As Dinosaurs:
 
@@ -609,7 +609,9 @@ As Dinosaurs:
   each hatch turn beyond the first costs 1 (12 per hatch turn in a threatened
   city, so short-hatch Eggs and trained units come first there); a two-slot
   Egg that takes the last slots of a city with capacity 3 or less costs 4; the
-  first Stampede unit gains 4; the first Shaman gains 10 while an own Egg with
+  first Stampede unit gains 20 (4 before `pulp_wars-c87.8`: a third of the
+  seats that researched Sawmilling never laid a Triceratops Egg); the first
+  Shaman gains 10 while an own Egg with
   two or more turns left waits or at least three own attackers could use War
   Drums, and a Shaman costs 30 in a threatened city (it is no defender). An
   Egg is never laid on a tile where the visible enemies' projected damage
@@ -673,7 +675,25 @@ As Dinosaurs:
   onto a tile from which a lane to a visible hostile unit or Egg is open,
   valued by the projected hit from there (a quarter, at most 24), when the
   tile is outside visible lethal reach; such a tile needs no screen (the
-  siege-role screen rule is waived for it).
+  siege-role screen rule is waived for it). With no such tile one Move away,
+  it walks toward the nearest **launch tile** (`pulp_wars-c87.8`): a free,
+  enterable land tile within four tiles of it from which a lane to a visible
+  hostile land unit or Egg is open. A routine Move that ends nearer to one,
+  outside visible lethal reach, takes priority 855 and gains 2 per tile of
+  progress, so the Triceratops closes in on a line instead of trailing its
+  army.
+- **Signature research** (`pulp_wars-c87.8`). Once the seat owns two cities,
+  the next technology toward the signature role whose technology it lacks
+  (the Triceratops through Sawmilling or the T-Rex through Chivalry; the one
+  with fewer technologies left first, the Triceratops on a tie) takes
+  priority 1170: above land production (1080) and the best economic plan
+  (1160), below every naval objective (1280). Its strategic value is the
+  role's HP plus its Attack and Defense in half-units. The ordinary role plan
+  (1060) bought both tier-3 technologies only after most matches were
+  decided; nothing is saved up for it (a one-turn Coin hold was measured and
+  dropped, as were a rule that kept two slots free for the first big body
+  and one that stepped an own unit off a lane's stand tile: none moved the
+  measurements).
 - War Drums, Tend Wounded, Rampage, and Pounce use the Rally, Tend, Overrun,
   and Charge rules unchanged.
 
@@ -705,11 +725,14 @@ Against Dinosaurs (every seat in such a match):
 - **Goblin blasts.** Kaboom, bomb splash, and death-blast chains value an Egg
   like any hostile unit, at the Egg's target value above.
 
-Opening research and research valuation are unchanged. In a 140-match sanity
-sample (10 seeds x sizes 11 and 14 x `DH`, `HD`, `DU`, `UD`, `DG`, `GD`,
-`DD`) no match had a policy error, a stall, or a turn at the 128-command cap
-(the longest turn used 49 commands). Tuning the numbers above against the
-balance acceptance is `pulp_wars-c87.8`.
+Opening research is unchanged, and research valuation is unchanged except
+for the Dinosaur signature research above. In a 140-match sanity sample (10
+seeds x sizes 11 and 14 x `DH`, `HD`, `DU`, `UD`, `DG`, `GD`, `DD`) no match
+had a policy error, a stall, or a turn at the 128-command cap (the longest
+turn used 49 commands). `pulp_wars-c87.8` tuned the numbers above against the
+balance acceptance; the measurements are in the
+[Dinosaur balance report](../validation/RULESET_7_DINOSAUR_BALANCE.md), an
+interim baseline ahead of the revision 20 rework.
 
 ## Revision-8 merged industry and processor adjacency
 
@@ -857,7 +880,14 @@ It complements the separate public-planning benchmark's independently frozen
 public-query hashes with a new same-core sync/chunk policy regression. This
 command checks the retained view and policy decision hashes, not every engine
 hash itself. The new policy decision hash was recorded after scheduler
-integration, so it is not represented as a pre-refactor golden. On the
+integration, so it is not represented as a pre-refactor golden. The expected
+decision is `RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION` in
+`scripts/ruleset-v7-late-public-view-contract.ts`, the pin that
+`tests/unit/ruleset-v7-normal-policy.test.ts` keeps current under
+`npm run check`. Until `pulp_wars-c87.8` the script carried its own copy
+(`BUILD_FORGE` at (9, 8)), which no gate ran: it had been stale since
+521c3da (revision 4, 2026-09-12), when the decision became the Attack of
+unit 19 on unit 34, and the script threw on every later tree. On the
 development machine, observed constructor time was 0.9–1.5 ms, total sliced preparation/scoring was
 1.16–1.20 seconds, the largest 8 ms host slice was 12.6–13.5 ms, and no measured
 slice exceeded 16 ms. These are load-sensitive diagnostics, not portable timing

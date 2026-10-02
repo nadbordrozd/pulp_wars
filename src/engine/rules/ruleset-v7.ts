@@ -1253,9 +1253,11 @@ export const DINOSAUR_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
 export const DINOSAUR_ROLE_RULES_V7: Readonly<
   Record<UnitRoleIdV7, EffectiveRoleRuleV7>
 > = deepFreeze({
+  // `pulp_wars-c87.8`: 12 HP (the contract value was the Fighter's 10).
   FIGHTER: role({
     ...ORIGINAL_ROLE_RULES_V7.FIGHTER,
     label: "Caveman",
+    maxHp: 12,
     abilities: ["ATTACK", "CAPTURE"],
   }),
   RAIDER: role({
@@ -1376,7 +1378,7 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
 
 /**
  * Revision 19 Dinosaur engine mechanics: no role builds Field Defense
- * (Wild); the Triceratops, T-Rex, and Brontosaurus use two capacity slots;
+ * (Wild); the T-Rex and Brontosaurus use two capacity slots;
  * the five egg-laid roles carry their hatch time; the Triceratops is a melee
  * body that advances after a kill and carries the Stampede run bonus; the
  * Ankylosaurus is Armoured. Boats are Human boats.
@@ -1386,7 +1388,9 @@ export const DINOSAUR_ROLE_MECHANICS_V7 = mechanics({
   RAIDER: { hatchTurns: 1 },
   MARKSMAN: { hatchTurns: 1 },
   GUARD: { buildsFieldDefense: false, hatchTurns: 2, armourReduction: 1 },
-  CATAPULT: { capacitySlots: 2, hatchTurns: 2, stampedeRunBonus2: 2 },
+  // `pulp_wars-c87.8`: the Triceratops uses 1 slot (was 2) and hatches in 1
+  // turn (was 2).
+  CATAPULT: { hatchTurns: 1, stampedeRunBonus2: 2 },
   KNIGHT: { capacitySlots: 2, hatchTurns: 3 },
   JUGGERNAUT: { capacitySlots: 2 },
   BATTLESHIP: { splash: true },

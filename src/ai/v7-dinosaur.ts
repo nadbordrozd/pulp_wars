@@ -12,6 +12,7 @@ import { previewHatchV7 } from "../engine/v7/query";
 import {
   STAMPEDE_DIRECTIONS_V7,
   STAMPEDE_DISTANCES_V7,
+  isStampedeTargetFormV7,
   stampedeLaneV7,
   viewStampedeFactsV7,
   type StampedeBoardFactsV7,
@@ -61,6 +62,14 @@ export const STAMPEDE_CAPTURER_NEAR_VALUE_V7 = 15;
  * routine moves (700 to 850), below every attack.
  */
 export const STAMPEDE_LANE_MOVE_PRIORITY_V7 = 860;
+/**
+ * A Move that brings an unmoved Triceratops nearer a launch tile (a free
+ * tile with an open lane to a visible hostile unit): above routine Moves,
+ * below a Move onto the launch tile itself (`pulp_wars-c87.8`).
+ */
+export const STAMPEDE_APPROACH_PRIORITY_V7 = 855;
+/** Launch tiles farther than this many tiles are not approached. */
+export const STAMPEDE_APPROACH_RANGE_V7 = 4;
 /** A Hatch of an unthreatened Egg: just above ordinary land production. */
 export const HATCH_PRIORITY_V7 = 1085;
 /** A Hatch of an Egg that visible enemies can hit: above threatened training. */
@@ -86,11 +95,24 @@ export const EGG_SLOT_FILL_COST_V7 = 4;
 /** A city with at most this capacity is small (level 2, or level 1 with Planning). */
 export const SMALL_CITY_CAPACITY_V7 = 3;
 /** The first Stampede unit (a siege unit the seat has none of). */
-export const FIRST_STAMPEDE_UNIT_BIAS_V7 = 4;
+export const FIRST_STAMPEDE_UNIT_BIAS_V7 = 20;
 /** The first Shaman, while a long Egg waits or an army can use War Drums. */
 export const SHAMAN_TRAINING_BIAS_V7 = 10;
 /** A Shaman (Attack 1, Defense 1) is no defender for a threatened city. */
 export const SHAMAN_THREATENED_COST_V7 = 30;
+/**
+ * Research toward a signature unit (`pulp_wars-c87.8`): above land production
+ * (1080) and the best economic plan (1160), below every naval objective.
+ */
+export const SIGNATURE_RESEARCH_PRIORITY_V7 = 1170;
+/** Signature research starts once the seat owns this many cities. */
+export const SIGNATURE_RESEARCH_CITIES_V7 = 2;
+/**
+ * The Dinosaur signature roles, the Triceratops and the T-Rex: a tie between
+ * their remaining research chains goes to the first.
+ */
+export const SIGNATURE_ROLES_V7: readonly ["CATAPULT", "KNIGHT"] =
+  Object.freeze(["CATAPULT", "KNIGHT"]);
 /** Reaching Big and Alpha, in strategic units (+4 HP; +4 HP and +1 Attack). */
 export const GROWTH_STAGE_VALUE_V7: readonly [number, number] = [10, 16];
 /** A grown unit's extra value per stage (its kills are not for sale). */
@@ -305,6 +327,65 @@ export function stampedeLaneBetweenV7(
     ownerId !== view.viewer.id,
   );
   return lane.ok ? lane.lane : [];
+}
+
+/**
+ * The launch tiles of the viewer's own Triceratops `actor`: every explored,
+ * enterable land tile holding no other unit, within
+ * `STAMPEDE_APPROACH_RANGE_V7` of it, from which a lane to one of the visible
+ * `hostiles` (land units and Eggs) is open, with `actor` itself treated as
+ * absent. Bounded: sixteen tiles per hostile unit.
+ */
+export function stampedeLaunchTilesV7(
+  view: PlayerViewV7,
+  actor: PublicUnitV7,
+  hostiles: readonly PublicUnitV7[],
+): readonly CoordV7[] {
+  const engineering = technologyCapabilitiesV7(
+    view.viewer.researchedTechs,
+    view.viewer.faction,
+  ).mountainMovement;
+  const occupied = new Set<string>();
+  for (const unit of view.units)
+    if (unit.hp > 0 && unit.id !== actor.id)
+      occupied.add(`${unit.at.y},${unit.at.x}`);
+  const seen = new Set<string>();
+  const tiles: CoordV7[] = [];
+  for (const hostile of hostiles) {
+    if (hostile.hp <= 0 || !isStampedeTargetFormV7(hostile.form)) continue;
+    if (distanceV7(hostile.at, actor.at) > 3 + STAMPEDE_APPROACH_RANGE_V7)
+      continue;
+    for (const direction of STAMPEDE_DIRECTIONS_V7)
+      for (const run of STAMPEDE_DISTANCES_V7) {
+        const at = {
+          x: hostile.at.x - direction.x * run,
+          y: hostile.at.y - direction.y * run,
+        };
+        const key = `${at.y},${at.x}`;
+        if (
+          at.x < 0 ||
+          at.y < 0 ||
+          at.x >= view.board.width ||
+          at.y >= view.board.height ||
+          seen.has(key) ||
+          occupied.has(key) ||
+          distanceV7(at, actor.at) > STAMPEDE_APPROACH_RANGE_V7
+        )
+          continue;
+        const tile = view.board.tiles[at.y * view.board.width + at.x];
+        if (
+          tile === undefined ||
+          !tile.explored ||
+          tile.biome === null ||
+          (tile.terrain === "MOUNTAIN" && !engineering) ||
+          stampedeLaneRunV7(view, actor.ownerId, at, hostile.at, actor.id) === 0
+        )
+          continue;
+        seen.add(key);
+        tiles.push(at);
+      }
+  }
+  return tiles;
 }
 
 type LayEggCommandV7 = Extract<CommandV7, { kind: "LAY_EGG" }>;

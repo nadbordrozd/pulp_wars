@@ -6,6 +6,32 @@ export const RULESET7_LATE_PUBLIC_VIEW_FIXTURE_URL = `/${RULESET7_LATE_PUBLIC_VI
 export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
 
 /**
+ * The Normal policy's decision for the upgraded retained view: the single
+ * pin shared by `tests/unit/ruleset-v7-normal-policy.test.ts` (which keeps it
+ * current under `npm run check`) and
+ * `scripts/benchmark-ruleset-v7-normal-policy.ts`. The benchmark used to
+ * carry its own copy, which no gate ran: it went stale at 521c3da (revision
+ * 4, 2026-09-12), when the decision changed from a Forge to this Attack, and
+ * the decision hash then changed twelve more times unnoticed
+ * (`pulp_wars-c87.8`). Refresh it here, with the cause, whenever a change is
+ * meant to alter this decision or its candidate list.
+ */
+export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
+  /** `canonicalHash` of the retained fixture as read from disk. */
+  fixtureViewHash:
+    "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b",
+  /** `canonicalHash` of the whole decision (command and candidates). */
+  policyDecisionHash:
+    "27ee3b69e87055cf3768a9c9c972cb001357eadc89440f6f712ef5da74ffbfeb",
+  command: Object.freeze({
+    kind: "ATTACK",
+    unitId: 19,
+    targetUnitId: 34,
+  }),
+  candidateCount: 28,
+});
+
+/**
  * Upgrade the immutable retained benchmark fixture at its revision-9 read
  * boundary. This is a public-fixture adapter, never a runtime save migration.
  */

@@ -108,27 +108,29 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
       ],
       { techs: { 0: [], 1: [] } },
     );
+    // pulp_wars-c87.8: the Triceratops uses one slot (was two); the T-Rex and
+    // the Brontosaurus keep two.
     expect(state.units.map((unit) => unitCapacitySlotsV7(state, unit))).toEqual(
-      [1, 2, 2, 2, 1, 1, 1],
+      [1, 1, 2, 2, 1, 1, 1],
     );
     const dinosaurCity = cityOfV7(state, 0);
     const humanCity = cityOfV7(state, 1);
-    expect(assignedUnitCountV7(state, dinosaurCity.id)).toBe(7);
+    expect(assignedUnitCountV7(state, dinosaurCity.id)).toBe(6);
     expect(assignedUnitCountV7(state, humanCity.id)).toBe(3);
     expect(cityUnitCapacityV7(state, dinosaurCity)).toBe(2);
     expect(previewCityCapacityV7(state, dinosaurCity.id)).toEqual({
       cityId: dinosaurCity.id,
       capacity: 2,
-      assigned: 7,
+      assigned: 6,
       available: 0,
-      overCapacity: 5,
+      overCapacity: 4,
       roleSlots: [
         { role: "FIGHTER", slots: 1 },
         { role: "RAIDER", slots: 1 },
         { role: "MARKSMAN", slots: 1 },
         { role: "GUARD", slots: 1 },
         { role: "CAPTAIN", slots: 1 },
-        { role: "CATAPULT", slots: 2 },
+        { role: "CATAPULT", slots: 1 },
         { role: "KNIGHT", slots: 2 },
         { role: "PATROL_BOAT", slots: 1 },
         { role: "BATTLESHIP", slots: 1 },
@@ -145,7 +147,9 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
   });
 
   it("rejects a 2-slot role with one free slot and accepts it with two (level-1 capital)", () => {
-    const researched = techs("HUNTING", "FORESTRY", "SAWMILLING", "SCOUTING");
+    // The T-Rex is the two-slot egg-laid role (pulp_wars-c87.8 made the
+    // Triceratops a one-slot unit).
+    const researched = techs("SCOUTING", "RAIDING", "CHIVALRY");
     // A level-1 capital holds two slots; the starting Caveman uses one.
     const one = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
@@ -160,10 +164,10 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
     expect(cityUnitCapacityV7(one, city)).toBe(2);
     // Egg-laid roles are laid on a nest tile (`pulp_wars-c87.3`).
     const nest = { x: city.at.x - 1, y: city.at.y - 1 };
-    const triceratops: CommandV7 = {
+    const tRex: CommandV7 = {
       kind: "LAY_EGG",
       cityId: city.id,
-      role: "CATAPULT",
+      role: "KNIGHT",
       at: nest,
     };
     const raptor: CommandV7 = {
@@ -176,24 +180,24 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
     expect(offered).toContainEqual(raptor);
     expect(
       offered.filter(
-        (command) => command.kind === "LAY_EGG" && command.role === "CATAPULT",
+        (command) => command.kind === "LAY_EGG" && command.role === "KNIGHT",
       ),
     ).toEqual([]);
-    expect(applyCommandV7(one, one.humanPlayerId, triceratops)).toMatchObject({
+    expect(applyCommandV7(one, one.humanPlayerId, tRex)).toMatchObject({
       accepted: false,
       error: { code: "CITY_CAPACITY_FULL", params: { cityId: city.id } },
     });
     expect(applyCommandV7(one, one.humanPlayerId, raptor).accepted).toBe(true);
-    // With both slots free the Triceratops is offered and accepted.
+    // With both slots free the T-Rex is offered and accepted.
     const empty = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [{ seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } }],
       { techs: { 0: researched } },
     );
     expect(queryPlayerCommandsV7(empty, empty.humanPlayerId)).toContainEqual(
-      triceratops,
+      tRex,
     );
-    const trained = applyOkV7(empty, empty.humanPlayerId, triceratops);
+    const trained = applyOkV7(empty, empty.humanPlayerId, tRex);
     // The Egg uses the slots of the unit inside from the moment it is laid.
     expect(unitAtV7(trained.state, nest).form).toBe("EGG");
     expect(assignedUnitCountV7(trained.state, city.id)).toBe(2);
@@ -228,12 +232,12 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
     // A death frees its slots at once.
     const freed = checkedV7({
       ...full,
-      units: full.units.filter((unit) => unit.role !== "CATAPULT"),
+      units: full.units.filter((unit) => unit.role !== "KNIGHT"),
       eggs: [],
     });
     expect(assignedUnitCountV7(freed, city.id)).toBe(0);
     expect(queryPlayerCommandsV7(freed, freed.humanPlayerId)).toContainEqual(
-      triceratops,
+      tRex,
     );
   });
 
@@ -246,13 +250,13 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
       ],
     );
     const city = cityOfV7(planned, 0);
-    // Level + 1, +1 Planning: the Caveman (1) and a Triceratops (2) fit.
+    // Level + 1, +1 Planning: the Caveman (1) and a T-Rex (2) fit.
     expect(cityUnitCapacityV7(planned, city)).toBe(3);
     expect(cityUnitCapacityV7(planned, cityOfV7(planned, 1))).toBe(3);
     const train: CommandV7 = {
       kind: "LAY_EGG",
       cityId: city.id,
-      role: "CATAPULT",
+      role: "KNIGHT",
       at: { x: city.at.x - 1, y: city.at.y - 1 },
     };
     expect(
@@ -768,13 +772,16 @@ describe("ruleset-7 Dinosaur Grow", () => {
       const promote: CommandV7 = { kind: "PROMOTE", unitId: unit.id };
       expect(offered).toContainEqual(promote);
       const result = applyOkV7(state, state.humanPlayerId, promote);
+      // The Caveman on (6, 3) has 12 HP since pulp_wars-c87.8 (was 10); the
+      // Shaman on (7, 3) has 10. Promotion adds 5.
+      const maxHp = x === 6 ? 17 : 15;
       expect(result.events).toEqual([
-        { kind: "UNIT_PROMOTED", unitId: unit.id, maxHp: 15 },
+        { kind: "UNIT_PROMOTED", unitId: unit.id, maxHp },
       ]);
       expect(unitAtV7(result.state, { x, y: 3 })).toMatchObject({
         veteran: true,
-        maxHp: 15,
-        hp: 15,
+        maxHp,
+        hp: maxHp,
       });
     }
   });
@@ -810,13 +817,14 @@ describe("ruleset-7 Dinosaur Grow", () => {
     expect(patched(raptor, { kills: 3, maxHp: 16 })).toBeNull();
     expect(patched(raptor, { kills: 3, maxHp: 17, veteran: true })).toBeNull();
     expect(patched(raptor, { kills: 3, maxHp: 20, veteran: true })).toBeNull();
-    // Every other unit keeps the Promotion rule.
-    expect(patched(caveman, { kills: 3, maxHp: 10 })).not.toBeNull();
+    // Every other unit keeps the Promotion rule (the Caveman's 12 HP, 10
+    // before pulp_wars-c87.8, plus 5 when veteran).
+    expect(patched(caveman, { kills: 3, maxHp: 12 })).not.toBeNull();
     expect(
-      patched(caveman, { kills: 3, maxHp: 15, veteran: true }),
+      patched(caveman, { kills: 3, maxHp: 17, veteran: true }),
     ).not.toBeNull();
-    expect(patched(caveman, { kills: 1, maxHp: 14 })).toBeNull();
-    expect(patched(caveman, { kills: 3, maxHp: 18, veteran: true })).toBeNull();
+    expect(patched(caveman, { kills: 1, maxHp: 16 })).toBeNull();
+    expect(patched(caveman, { kills: 3, maxHp: 20, veteran: true })).toBeNull();
     expect(patched(raider, { kills: 1, maxHp: 10 })).not.toBeNull();
     expect(patched(raider, { kills: 1, maxHp: 14 })).toBeNull();
     expect(
@@ -1745,7 +1753,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
     });
     expect(
       publicUnitStatsV7(ready, unitAtV7(ready, { x: 4, y: 3 })).dinosaur,
-    ).toMatchObject({ stampedeRunBonus: 1, capacitySlots: 2 });
+    ).toMatchObject({ stampedeRunBonus: 1, capacitySlots: 1 });
   });
 
   it("gives the Brontosaurus Push and the T-Rex no capture", () => {

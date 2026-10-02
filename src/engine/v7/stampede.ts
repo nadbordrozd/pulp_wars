@@ -72,9 +72,11 @@ export type StampedeLaneV7 =
 /**
  * The lane from `from` to `to`, or why there is none. `to` must be exactly 2
  * or 3 tiles away in one of the eight directions; every lane tile must be
- * open (section 7.1): explored, Grass, outside territory allied to the
- * actor, free of a treasure chest, and free of units, except that a lane
- * tile other than the stand tile may hold the actor's own units or Eggs.
+ * open (section 7.1): explored, Grass or Forest (`pulp_wars-c87.8`: the
+ * Forest fallback of section 15.1; a Mountain and water close a lane),
+ * outside territory allied to the actor, free of a treasure chest, and free
+ * of units, except that a lane tile other than the stand tile may hold the
+ * actor's own units or Eggs.
  * `unexploredOpen` treats an unexplored lane tile as open (the threat
  * envelope of a hostile Triceratops, "open as far as the viewer can see").
  */
@@ -116,7 +118,7 @@ export function stampedeLaneV7(
       return { ok: false, reason: "LANE_BLOCKED" };
     }
     if (
-      tile.terrain !== "GRASS" ||
+      (tile.terrain !== "GRASS" && tile.terrain !== "FOREST") ||
       (tile.territoryOwnerId !== null &&
         facts.allied(actorOwnerId, tile.territoryOwnerId)) ||
       facts.hasChest(at)

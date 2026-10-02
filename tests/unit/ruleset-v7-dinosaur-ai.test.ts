@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   EGG_GUARD_PRIORITY_V7,
+  FIRST_STAMPEDE_UNIT_BIAS_V7,
   GROWN_RETREAT_PRIORITY_V7,
   HATCH_APPROACH_PRIORITY_V7,
   HATCH_LAST_TURN_PRIORITY_V7,
   HATCH_PRIORITY_V7,
   HATCH_THREATENED_PRIORITY_V7,
+  SIGNATURE_RESEARCH_PRIORITY_V7,
+  STAMPEDE_APPROACH_PRIORITY_V7,
   STAMPEDE_BREAKER_PRIORITY_V7,
   STAMPEDE_CHIP_PRIORITY_V7,
   STAMPEDE_KILL_PRIORITY_V7,
@@ -15,7 +18,10 @@ import {
   dinosaurProductionAdjustmentV7,
   layEggAdjustmentV7,
 } from "../../src/ai/v7-dinosaur";
-import { publicProjectedDamageForPolicyV7 } from "../../src/ai/v7";
+import {
+  publicProjectedDamageForPolicyV7,
+  scoreCommandV7,
+} from "../../src/ai/v7";
 import {
   applyCommandV7,
   queryCombatPreviewV7,
@@ -28,6 +34,7 @@ import {
   dinosaurFieldV7,
   dinosaurTechsWithoutV7,
   forestTileV7,
+  mountainTileV7,
   isCandidateV7,
   moveCandidateV7,
   patchTileV7,
@@ -160,12 +167,15 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: production", () => {
       -2,
     );
     expect(adjust(lay("GUARD"), { ...city, freeSlots: 1 })).toBe(-1);
-    // The first Stampede unit.
-    expect(adjust(lay("CATAPULT"))).toBe(-1 + 4);
+    // The first Stampede unit. pulp_wars-c87.8: the bias is 20 (was 4), and
+    // a Triceratops Egg hatches in one turn (was two), so it has no delay
+    // cost (was -1).
+    expect(FIRST_STAMPEDE_UNIT_BIAS_V7).toBe(20);
+    expect(adjust(lay("CATAPULT"))).toBe(FIRST_STAMPEDE_UNIT_BIAS_V7);
     const withTriceratops = viewerViewV7(
       dino([own("CATAPULT", 5, 1), foe("FIGHTER", 1, 1)], NO_NESTING),
     );
-    expect(adjust(lay("CATAPULT"), city, withTriceratops)).toBe(-1);
+    expect(adjust(lay("CATAPULT"), city, withTriceratops)).toBe(0);
     // Nesting shortens the delay.
     const nesting = viewerViewV7(dino([foe("FIGHTER", 1, 1)]));
     expect(adjust(lay("KNIGHT"), city, nesting)).toBe(-1);
@@ -535,10 +545,15 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Stampede", () => {
       700,
     );
     expect(unitCandidatesV7(state, from)[0]).toEqual(far);
-    // A Forest on (2, 3) closes the lane from (1, 3).
-    const closed = forestTileV7(state, { x: 2, y: 3 });
+    // A Mountain on (2, 3) closes the lane from (1, 3); a Forest there
+    // leaves it open (pulp_wars-c87.8).
+    const closed = mountainTileV7(state, { x: 2, y: 3 });
     expect(moveCandidateV7(closed, from, { x: 1, y: 3 })?.score.priority).toBe(
       700,
+    );
+    const wooded = forestTileV7(state, { x: 2, y: 3 });
+    expect(moveCandidateV7(wooded, from, { x: 1, y: 3 })?.score.priority).toBe(
+      STAMPEDE_LANE_MOVE_PRIORITY_V7,
     );
     // A Triceratops that has already acted gains nothing from a lane tile.
     const spent = dino([
@@ -571,6 +586,53 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Stampede", () => {
     ).toBe(true);
   });
 
+  it("walks an unmoved Triceratops toward the nearest launch tile when no lane tile is in reach", () => {
+    // pulp_wars-c87.8. The Guard on (6, 3) can be hit from (3, 3) and (4, 3)
+    // on its row, from (3, 0) and (4, 1) on a diagonal, and so on. None is
+    // one Move from (1, 2); (2, 1), (2, 2), and (2, 3) are one tile nearer.
+    const state = dino([own("CATAPULT", 1, 2), foe("GUARD", 6, 3)]);
+    const from = { x: 1, y: 2 };
+    expect(unitCandidatesV7(state, from, "STAMPEDE")).toEqual([]);
+    for (const to of [
+      { x: 2, y: 1 },
+      { x: 2, y: 2 },
+      { x: 2, y: 3 },
+    ])
+      expect(moveCandidateV7(state, from, to)?.score.priority, `${to.y}`).toBe(
+        STAMPEDE_APPROACH_PRIORITY_V7,
+      );
+    // A Move away from them stays routine.
+    expect(moveCandidateV7(state, from, { x: 0, y: 3 })?.score.priority).toBe(
+      700,
+    );
+    expect(unitCandidatesV7(state, from)[0]?.score.priority).toBe(
+      STAMPEDE_APPROACH_PRIORITY_V7,
+    );
+    // A launch tile more than four tiles away is not approached.
+    const far = dino([own("CATAPULT", 1, 2), foe("GUARD", 10, 3)]);
+    expect(
+      unitCandidatesV7(far, from, "MOVE").every(
+        (candidate) => candidate.score.priority < STAMPEDE_APPROACH_PRIORITY_V7,
+      ),
+    ).toBe(true);
+    // Nor by a Triceratops that has already acted, nor by another role.
+    const spent = dino([
+      {
+        ...own("CATAPULT", 1, 2),
+        activation: { attacked: true, attacksUsed: 1 },
+      },
+      foe("GUARD", 6, 3),
+    ]);
+    const guard = dino([own("GUARD", 1, 2), foe("GUARD", 6, 3)]);
+    for (const other of [spent, guard])
+      expect(
+        unitCandidatesV7(other, from, "MOVE").every(
+          (candidate) =>
+            candidate.score.priority !== STAMPEDE_APPROACH_PRIORITY_V7,
+        ),
+      ).toBe(true);
+  });
+
   it("declines a Stampede whose death blast kills an own unit, and prices its own blast once", () => {
     const blast = dinosaurFieldV7(
       ["DINOSAUR", "GOBLIN"],
@@ -586,6 +648,90 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Stampede", () => {
     const doomed = withKillsV7(blast, from, 1, 3);
     expect(scoreV7(doomed, stampedeV7(doomed, from, buggy)).priority).toBe(-1);
     expect(isCandidateV7(doomed, stampedeV7(doomed, from, buggy))).toBe(false);
+  });
+});
+
+describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () => {
+  // pulp_wars-c87.8: with two cities, the next technology toward the
+  // Triceratops (Sawmilling) or the T-Rex (Chivalry) goes before land
+  // production (1080).
+  const research = (
+    tech: "SAWMILLING" | "CHIVALRY" | "RAIDING",
+  ): CommandV7 => ({
+    kind: "RESEARCH",
+    tech,
+  });
+  const priority = (
+    state: GameStateV7,
+    cityCount: number,
+    command: CommandV7,
+  ): number => {
+    const view = viewerViewV7(state);
+    return scoreCommandV7(
+      {
+        ...view,
+        leaderboard: view.leaderboard.map((entry) =>
+          entry.isViewer ? { ...entry, cityCount } : entry,
+        ),
+      },
+      command,
+    ).priority;
+  };
+  const without = (
+    factions: readonly ["DINOSAUR" | "ORIGINAL", "ORIGINAL"],
+    ...techs: Parameters<typeof dinosaurTechsWithoutV7>
+  ): GameStateV7 =>
+    dinosaurFieldV7(factions, [own("FIGHTER", 8, 8), foe("FIGHTER", 1, 1)], {
+      techs: { 0: dinosaurTechsWithoutV7(...techs) },
+    });
+
+  it("researches toward the Triceratops first, then the T-Rex, once it owns two cities", () => {
+    const both = without(DH, "SAWMILLING", "CHIVALRY");
+    // Both chains are one technology long: the Triceratops goes first.
+    expect(priority(both, 2, research("SAWMILLING"))).toBe(
+      SIGNATURE_RESEARCH_PRIORITY_V7,
+    );
+    expect(priority(both, 2, research("CHIVALRY"))).toBeLessThan(
+      SIGNATURE_RESEARCH_PRIORITY_V7,
+    );
+    // With one city nothing is raised.
+    expect(priority(both, 1, research("SAWMILLING"))).toBeLessThan(
+      SIGNATURE_RESEARCH_PRIORITY_V7,
+    );
+    // With Sawmilling known, the T-Rex is next.
+    const tRex = without(DH, "CHIVALRY");
+    expect(priority(tRex, 2, research("CHIVALRY"))).toBe(
+      SIGNATURE_RESEARCH_PRIORITY_V7,
+    );
+  });
+
+  it("takes the shorter chain first and raises its next technology", () => {
+    // The T-Rex needs Raiding and Chivalry, the Triceratops only Sawmilling.
+    const short = without(DH, "SAWMILLING", "RAIDING");
+    expect(priority(short, 2, research("SAWMILLING"))).toBe(
+      SIGNATURE_RESEARCH_PRIORITY_V7,
+    );
+    expect(priority(short, 2, research("RAIDING"))).toBeLessThan(
+      SIGNATURE_RESEARCH_PRIORITY_V7,
+    );
+    // The Triceratops needs Forestry and Sawmilling, the T-Rex only Chivalry.
+    const long = without(DH, "FORESTRY", "CHIVALRY");
+    expect(priority(long, 2, research("CHIVALRY"))).toBe(
+      SIGNATURE_RESEARCH_PRIORITY_V7,
+    );
+    // Sawmilling known, Raiding missing: Raiding is the next step to the T-Rex.
+    const raiding = without(DH, "RAIDING");
+    expect(priority(raiding, 2, research("RAIDING"))).toBe(
+      SIGNATURE_RESEARCH_PRIORITY_V7,
+    );
+  });
+
+  it("changes nothing for a Human seat", () => {
+    const human = without(["ORIGINAL", "ORIGINAL"], "SAWMILLING", "CHIVALRY");
+    for (const tech of ["SAWMILLING", "CHIVALRY"] as const)
+      expect(priority(human, 2, research(tech))).toBeLessThan(
+        SIGNATURE_RESEARCH_PRIORITY_V7,
+      );
   });
 });
 

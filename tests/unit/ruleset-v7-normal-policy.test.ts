@@ -1,5 +1,8 @@
 import { readFileSync } from "node:fs";
-import { upgradeRetainedPublicViewV7 } from "../../scripts/ruleset-v7-late-public-view-contract";
+import {
+  RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION,
+  upgradeRetainedPublicViewV7,
+} from "../../scripts/ruleset-v7-late-public-view-contract";
 import { describe, expect, it } from "vitest";
 import {
   NormalPolicyWorkV7,
@@ -783,12 +786,17 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     }
     const sync = chooseNormalCommandV7(structuredClone(source));
     expect(slices).toBeGreaterThan(2_000);
-    expect(sliced.command).toEqual({
-      kind: "ATTACK",
-      unitId: 19,
-      targetUnitId: 34,
-    });
-    expect(sliced.candidates).toHaveLength(28);
+    // The pin is shared with scripts/benchmark-ruleset-v7-normal-policy.ts
+    // (`pulp_wars-c87.8`): its own copy had been stale since 521c3da.
+    expect(canonicalHash(retained)).toBe(
+      RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION.fixtureViewHash,
+    );
+    expect(sliced.command).toEqual(
+      RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION.command,
+    );
+    expect(sliced.candidates).toHaveLength(
+      RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION.candidateCount,
+    );
     // pulp_wars-1mc: this view is an endgame (4 cities against 1), so its
     // capturers' approach MOVEs rise from 700 to 1105 (was 5c8816…e1b3); the
     // command and every non-MOVE candidate below keep their pinned values.
@@ -797,7 +805,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again; the
     // revision-12-ordinal value below is unchanged.
     expect(canonicalHash(sliced)).toBe(
-      "27ee3b69e87055cf3768a9c9c972cb001357eadc89440f6f712ef5da74ffbfeb",
+      RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION.policyDecisionHash,
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value was 8936ff…1156

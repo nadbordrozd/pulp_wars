@@ -242,8 +242,10 @@ describe("ruleset-7 revision-19 Normal AI: legal play with Eggs", () => {
       ["DINOSAUR", "ORIGINAL"],
       ["GOBLIN", "DINOSAUR"],
     ] as const) {
+      // Seed 4 (was 3): since pulp_wars-c87.8 the 12-HP Cavemen of seed 3
+      // win in ten rounds, before any Egg is laid.
       const setup = {
-        ...goblinSetupV7(factions, 3),
+        ...goblinSetupV7(factions, 4),
         mapType: "PANGEA" as const,
       };
       const match = runAiMatchV7(setup, { maxRounds: 60 });

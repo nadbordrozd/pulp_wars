@@ -382,3 +382,14 @@ not move beyond noise. The explosion friendly share (T6) moved within the
 Undead, three- and four-seat; normalised state and event-chain hashes) is
 identical to the `0ao.6` and `0ao.7` policies: the rules run only for a
 Goblin viewer's own Bomb Chuckers.
+
+## 10. Revision 19: Dinosaurs (`pulp_wars-c87.8`)
+
+The matrix script now also runs the Dinosaur pairings (`DH`, `HD`, `DU`,
+`UD`, `DG`, `GD`, `DD`) and the four-faction mixes; the Dinosaur
+measurements and tuning are in the
+[Dinosaur balance report](RULESET_7_DINOSAUR_BALANCE.md) (interim, ahead of
+the revision 20 rework). Its before run repeats the nine pairings of this
+report on the revision-19 identity: Goblins win 57.2% against Humans and
+48.4% against Undead, with cap rates of 0.3–2.3%. `summary.goblin` is
+still computed from the revision-17 pairings only.

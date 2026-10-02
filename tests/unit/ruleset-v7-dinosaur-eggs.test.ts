@@ -713,18 +713,26 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
     const base = dino([], [], { techs: { 0: without("FORTIFICATION") } });
     const actor = base.humanPlayerId;
     const city = cityOfV7(base, 0);
-    const preview = (state: GameStateV7, role: UnitRoleIdV7 = "CATAPULT") =>
+    // The T-Rex, the two-slot egg-laid role (pulp_wars-c87.8 made the
+    // Triceratops this test used a one-slot unit that hatches in one turn).
+    const preview = (state: GameStateV7, role: UnitRoleIdV7 = "KNIGHT") =>
       previewLayEggV7(viewForV7(state, actor), city.id, role);
     expect(preview(base)).toEqual({
       cityId: city.id,
-      role: "CATAPULT",
-      cost: 8,
+      role: "KNIGHT",
+      cost: 10,
       slots: 2,
       usedSlots: 0,
       capacity: 3,
       hp: 6,
-      turnsToHatch: 2,
+      turnsToHatch: 3,
       nestTiles: nestTilesV7(base, city),
+      unavailableReason: null,
+    });
+    expect(preview(base, "CATAPULT")).toMatchObject({
+      cost: 8,
+      slots: 1,
+      turnsToHatch: 1,
       unavailableReason: null,
     });
     // Not an egg-laid role, or not the viewer's city.
@@ -749,7 +757,7 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
       unavailableReason: "CITY_CAPACITY_FULL",
     });
     expect(
-      preview(patchPlayer(full, 0, { researchedTechs: without("SAWMILLING") }))
+      preview(patchPlayer(full, 0, { researchedTechs: without("CHIVALRY") }))
         ?.unavailableReason,
     ).toBe("TECH_REQUIRED");
     const besieged = dino([{ seat: 1, role: "FIGHTER", at: city.at }], [], {
@@ -762,7 +770,7 @@ describe("ruleset-7 revision-19 LAY_EGG legality", () => {
         ?.unavailableReason,
     ).toBe("CITY_ACTION_SPENT");
     // Nesting: 10 HP and one turn sooner.
-    expect(preview(dino())).toMatchObject({ hp: 10, turnsToHatch: 1 });
+    expect(preview(dino())).toMatchObject({ hp: 10, turnsToHatch: 2 });
   });
 });
 
@@ -1338,7 +1346,9 @@ describe("ruleset-7 revision-19 Egg unit", () => {
     const state = dino([], [], { techs: { 0: without("FORTIFICATION") } });
     const actor = state.humanPlayerId;
     const city = cityOfV7(state, 0);
-    const laid = applyOkV7(state, actor, lay(state, "CATAPULT", NEST));
+    // A T-Rex Egg (two slots, hatch time 3): pulp_wars-c87.8 made the
+    // Triceratops this test used a one-slot unit that hatches in one turn.
+    const laid = applyOkV7(state, actor, lay(state, "KNIGHT", NEST));
     expect(assignedUnitCountV7(laid.state, city.id)).toBe(2);
     expect(previewCityCapacityV7(laid.state, city.id)).toMatchObject({
       capacity: 3,
@@ -1348,13 +1358,15 @@ describe("ruleset-7 revision-19 Egg unit", () => {
     const first = endTurnUntilV7(laid.state, actor).state;
     expect(unitAtV7(first, NEST).form).toBe("EGG");
     expect(assignedUnitCountV7(first, city.id)).toBe(2);
-    // One slot left: a Raptor Egg fits, a T-Rex Egg does not.
+    // One slot left: a second T-Rex Egg does not fit.
     expect(
       applyCommandV7(first, actor, lay(first, "KNIGHT", { x: 8, y: 7 })),
     ).toMatchObject({ accepted: false, error: { code: "CITY_CAPACITY_FULL" } });
     const second = endTurnUntilV7(first, actor).state;
-    expect(unitAtV7(second, NEST)).toMatchObject({ form: "LAND", hp: 18 });
-    expect(assignedUnitCountV7(second, city.id)).toBe(2);
+    expect(unitAtV7(second, NEST).form).toBe("EGG");
+    const third = endTurnUntilV7(second, actor).state;
+    expect(unitAtV7(third, NEST)).toMatchObject({ form: "LAND", hp: 28 });
+    expect(assignedUnitCountV7(third, city.id)).toBe(2);
   });
 
   it("publishes an Egg's stats, countdown, and form to every viewer who sees it", () => {
@@ -1363,7 +1375,9 @@ describe("ruleset-7 revision-19 Egg unit", () => {
       [
         {
           seat: 0,
-          role: "CATAPULT",
+          // A T-Rex Egg: pulp_wars-c87.8 made the Triceratops Egg this test
+          // used hatch in one turn, so it never has two turns left.
+          role: "KNIGHT",
           at: NEST,
           maxHp: 10,
           hp: 7,
@@ -1381,7 +1395,7 @@ describe("ruleset-7 revision-19 Egg unit", () => {
       const view = viewForV7(terrain, seatIdV7(terrain, viewerSeat));
       expect(view.units.find((unit) => unit.id === egg.id)).toMatchObject({
         form: "EGG",
-        role: "CATAPULT",
+        role: "KNIGHT",
         hp: 7,
         maxHp: 10,
       });
@@ -1401,7 +1415,7 @@ describe("ruleset-7 revision-19 Egg unit", () => {
           armourReduction: 0,
           acid: false,
           stampedeRunBonus: 0,
-          egg: { turnsRemaining: 2, hatchesAs: "CATAPULT" },
+          egg: { turnsRemaining: 2, hatchesAs: "KNIGHT" },
         },
       });
       expect(
@@ -1419,7 +1433,7 @@ describe("ruleset-7 revision-19 Egg unit", () => {
         ["RANGE", null, 0, 0],
         ["SIGHT", null, 0, 0],
       ]);
-      expect(stats?.stats[0]?.base.sourceLabel).toBe("Triceratops Egg base");
+      expect(stats?.stats[0]?.base.sourceLabel).toBe("T-Rex Egg base");
     }
     // Hidden with its tile, like any unit.
     const hidden = patchPlayer(state, 1, {
@@ -1445,7 +1459,8 @@ describe("ruleset-7 revision-19 hatching", () => {
       ["RAIDER", 1, 12],
       ["MARKSMAN", 1, 10],
       ["GUARD", 2, 20],
-      ["CATAPULT", 2, 18],
+      // pulp_wars-c87.8: the Triceratops hatch time is 1 (was 2).
+      ["CATAPULT", 1, 18],
       ["KNIGHT", 3, 28],
     ] as const) {
       const start = dino([], [], { techs: { 0: without("FORTIFICATION") } });
@@ -1643,10 +1658,11 @@ describe("ruleset-7 revision-19 hatching", () => {
       id: egg.id,
       form: "LAND",
     });
-    // The Windmill healed the Caveman (9 - 2 Plague + 3) but not the Egg.
+    // The Windmill healed the Caveman (9 - 2 Plague, then to its maximum:
+    // 12 since pulp_wars-c87.8, was 10) but not the Egg.
     expect(
       result.events.find((event) => event.kind === "WINDMILL_HEALING_RESOLVED"),
-    ).toMatchObject({ results: [{ unitId: caveman.id, hpAfter: 10 }] });
+    ).toMatchObject({ results: [{ unitId: caveman.id, hpAfter: 12 }] });
   });
 
   it("does not count an Egg for Muster", () => {
@@ -1963,7 +1979,9 @@ describe("ruleset-7 revision-19 Nesting", () => {
       ["RAIDER", 1, 1],
       ["MARKSMAN", 1, 1],
       ["GUARD", 2, 1],
-      ["CATAPULT", 2, 1],
+      // pulp_wars-c87.8: the Triceratops hatch time is 1 (was 2), so Nesting
+      // no longer shortens it.
+      ["CATAPULT", 1, 1],
       ["KNIGHT", 3, 2],
     ] as const) {
       for (const [techs, hp, turns] of [
@@ -2012,7 +2030,9 @@ describe("ruleset-7 revision-19 Egg destruction", () => {
         { seat: 1, role: "FIGHTER", at: { x: 6, y: 7 } },
         { seat: 0, role: "FIGHTER", at: { x: 4, y: 3 } },
       ],
-      [{ seat: 0, role: "CATAPULT", at: NEST }],
+      // A two-slot T-Rex Egg (the Triceratops uses one slot since
+      // pulp_wars-c87.8).
+      [{ seat: 0, role: "KNIGHT", at: NEST }],
       { opponent: "UNDEAD", activeSeat: 1 },
     );
     const state = withKillsV7(arena, { x: 6, y: 7 }, 2);

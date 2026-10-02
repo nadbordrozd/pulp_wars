@@ -97,6 +97,9 @@ export function patchTileV7(
 export const forestTileV7 = (state: GameStateV7, at: CoordV7): GameStateV7 =>
   patchTileV7(state, at, { terrain: "FOREST", biome: "WOODLAND" });
 
+export const mountainTileV7 = (state: GameStateV7, at: CoordV7): GameStateV7 =>
+  patchTileV7(state, at, { terrain: "MOUNTAIN", biome: "HIGHLANDS" });
+
 /** Every Dinosaur technology except `excluded` and what depends on them. */
 export function dinosaurTechsWithoutV7(
   ...excluded: TechnologyIdV7[]

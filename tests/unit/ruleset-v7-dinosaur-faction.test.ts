@@ -399,6 +399,9 @@ describe("ruleset-7 Dinosaur roster", () => {
     string,
   ];
   const ROSTER: readonly Row[] = [
+    // pulp_wars-c87.8: Caveman HP 12 (was 10), Triceratops hatch time 1
+    // (was 2) and 1 slot (was 2); see the tuning record, section 15.4 of the
+    // contract.
     [
       "Caveman",
       "FIGHTER",
@@ -406,7 +409,7 @@ describe("ruleset-7 Dinosaur roster", () => {
       2,
       null,
       1,
-      10,
+      12,
       4,
       4,
       1,
@@ -494,8 +497,8 @@ describe("ruleset-7 Dinosaur roster", () => {
       "CATAPULT",
       "SAWMILLING",
       8,
-      2,
-      2,
+      1,
+      1,
       18,
       6,
       4,
@@ -647,7 +650,7 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["MARKSMAN", 1, 1, 0, 0, false, true, false],
       ["GUARD", 1, 2, 0, 1, false, true, false],
       ["CAPTAIN", 1, null, 0, 0, false, true, false],
-      ["CATAPULT", 2, 2, 2, 0, false, true, false],
+      ["CATAPULT", 1, 1, 2, 0, false, true, false],
       ["KNIGHT", 2, 3, 0, 0, false, true, false],
       ["JUGGERNAUT", 2, null, 0, 0, false, true, false],
       ["PATROL_BOAT", 1, null, 0, 0, false, true, false],
@@ -1017,7 +1020,7 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
           veteran: false,
         });
         if (faction === "DINOSAUR") {
-          expect([unit.hp, unit.maxHp]).toEqual([10, 10]);
+          expect([unit.hp, unit.maxHp]).toEqual([12, 12]);
           expect(unitRoleRuleV7(state, unit).label).toBe("Caveman");
         }
       });
@@ -1040,8 +1043,9 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
       role: "FIGHTER",
       form: "LAND",
       at: city.at,
-      hp: 10,
-      maxHp: 10,
+      // pulp_wars-c87.8: Caveman HP 12 (was 10).
+      hp: 12,
+      maxHp: 12,
       homeCityId: city.id,
     });
     expect(caveman.activation).toMatchObject({
@@ -1061,11 +1065,12 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
   });
 
   it("grants a hatched 2-slot Brontosaurus for the level-5 reward, over capacity", () => {
-    // Three Triceratopses already use 6 of the capital's 7 slots.
+    // Three T-Rexes already use 6 of the capital's 7 slots (the Triceratops
+    // uses one slot since pulp_wars-c87.8).
     const fixture = rewardStateV7("JUGGERNAUT", "DINOSAUR", [
-      { role: "CATAPULT", at: { x: 4, y: 3 } },
-      { role: "CATAPULT", at: { x: 5, y: 3 } },
-      { role: "CATAPULT", at: { x: 6, y: 3 } },
+      { role: "KNIGHT", at: { x: 4, y: 3 } },
+      { role: "KNIGHT", at: { x: 5, y: 3 } },
+      { role: "KNIGHT", at: { x: 6, y: 3 } },
     ]);
     const city = cityOfV7(fixture.state, 0);
     expect(cityUnitCapacityV7(fixture.state, city)).toBe(7);
@@ -1368,7 +1373,9 @@ describe("ruleset-7 Dinosaur Showcase", () => {
     expect(
       state.players.find((player) => player.id === dinosaurId)?.researchedTechs,
     ).toEqual(TECHNOLOGY_IDS_V7);
-    // Used slots: the capital starts one over capacity (root decision).
+    // Used slots: the capital starts exactly full. With the two-slot
+    // Triceratops of the contract it started one over capacity (root
+    // decision 37); pulp_wars-c87.8 made the Triceratops a one-slot unit.
     const slots = state.cities
       .filter((city) => city.ownerId === dinosaurId)
       .map((city) => [
@@ -1376,7 +1383,7 @@ describe("ruleset-7 Dinosaur Showcase", () => {
         cityUnitCapacityV7(state, city),
       ]);
     expect(slots).toEqual([
-      [8, 7],
+      [7, 7],
       [3, 6],
       [2, 5],
     ]);
@@ -1480,6 +1487,9 @@ describe("ruleset-7 revision-19 declared shapes", () => {
       [
         { seat: 0, role: "CATAPULT", at: { x: 4, y: 3 } },
         { seat: 0, role: "CAPTAIN", at: { x: 4, y: 5 } },
+        // A third unit fills the capital's three slots (the Triceratops
+        // uses one slot since pulp_wars-c87.8).
+        { seat: 0, role: "FIGHTER", at: { x: 2, y: 5 } },
         { seat: 1, role: "FIGHTER", at: { x: 6, y: 3 } },
       ],
     );
@@ -1755,7 +1765,9 @@ describe("ruleset-7 revision-19 declared shapes", () => {
 describe("ruleset-7 Dinosaur persistence and headless play", () => {
   it("round-trips Dinosaur seats through save, replay, and checkpoint hashes", () => {
     const setup: MatchSetupV7 = {
-      ...goblinSetupV7(["DINOSAUR", "UNDEAD"], 7),
+      // Seed 6 (was 7): since pulp_wars-c87.8 the 12-HP Cavemen of seed 7
+      // win in ten rounds, before any Egg is laid.
+      ...goblinSetupV7(["DINOSAUR", "UNDEAD"], 6),
       mapType: "PANGEA",
     };
     const match = runAiMatchV7(setup, { maxRounds: 25 });

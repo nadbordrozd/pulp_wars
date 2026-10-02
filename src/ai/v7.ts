@@ -100,6 +100,7 @@ import {
   GROWN_RETREAT_PRIORITY_V7,
   HATCH_APPROACH_PRIORITY_V7,
   LANE_BLOCK_PRIORITY_V7,
+  STAMPEDE_APPROACH_PRIORITY_V7,
   STAMPEDE_BREAKER_PRIORITY_V7,
   STAMPEDE_CAPTURER_NEAR_VALUE_V7,
   STAMPEDE_CHIP_PRIORITY_V7,
@@ -110,6 +111,9 @@ import {
   STAMPEDE_LANE_MOVE_PRIORITY_V7,
   STAMPEDE_PUSH_CENTER_PRIORITY_V7,
   STAMPEDE_PUSH_CENTER_VALUE_V7,
+  SIGNATURE_RESEARCH_CITIES_V7,
+  SIGNATURE_RESEARCH_PRIORITY_V7,
+  SIGNATURE_ROLES_V7,
   armouredForPolicyV7,
   chosenLayEggCommandsV7,
   dinosaurMatchForPolicyV7,
@@ -124,6 +128,7 @@ import {
   hatchScoreV7,
   layEggAdjustmentV7,
   stampedeLaneBetweenV7,
+  stampedeLaunchTilesV7,
   stampedeLaneRunV7,
   stampedeLaneTilesV7,
   stampederV7,
@@ -3781,6 +3786,17 @@ function scoreCommandWithContext(
       }
     }
     if (
+      view.viewer.faction === "DINOSAUR" &&
+      priority < SIGNATURE_RESEARCH_PRIORITY_V7
+    ) {
+      // Revision 19 (`pulp_wars-c87.8`): the Triceratops and the T-Rex.
+      const signature = signatureResearchV7(view);
+      if (signature !== null && signature.tech === command.tech) {
+        priority = SIGNATURE_RESEARCH_PRIORITY_V7;
+        strategicValue = signature.strategic;
+      }
+    }
+    if (
       !view.viewer.researchedTechs.includes("ENGINEERING") &&
       command.tech === "ENGINEERING"
     ) {
@@ -6271,6 +6287,38 @@ function plunderResearchValueV7(
 }
 
 /**
+ * Dinosaur signature research (`pulp_wars-c87.8`): once the seat owns two
+ * cities, the next technology toward the signature role whose technology it
+ * lacks (the Triceratops or the T-Rex, the one with the shorter remaining
+ * chain first) is researched before land production and before the best
+ * economic plan. Both units sit behind tier-3 technologies that the ordinary
+ * role plan reached after most matches were decided.
+ */
+function signatureResearchV7(
+  view: PlayerViewV7,
+): { readonly tech: TechnologyIdV7; readonly strategic: number } | null {
+  if (
+    view.viewer.faction !== "DINOSAUR" ||
+    (view.leaderboard.find((item) => item.isViewer)?.cityCount ?? 0) <
+      SIGNATURE_RESEARCH_CITIES_V7
+  )
+    return null;
+  let best: {
+    readonly chain: readonly TechnologyIdV7[];
+    readonly role: UnitRoleIdV7;
+  } | null = null;
+  for (const role of SIGNATURE_ROLES_V7) {
+    const chain = shortestResearchChainForRole(view, role);
+    if (chain.length > 0 && (best === null || chain.length < best.chain.length))
+      best = { chain, role };
+  }
+  const tech = best?.chain[0];
+  if (best === null || tech === undefined) return null;
+  const rule = effectiveRoleRuleV7(best.role, view.viewer.faction);
+  return { tech, strategic: rule.maxHp + rule.attack2 + rule.defense2 };
+}
+
+/**
  * Revision 19 Dinosaur play (`pulp_wars-c87.5`). Every helper below runs only
  * in a match with a Dinosaur seat (`context.dinosaur`); each is a bounded
  * scan of the public view and public previews inside an existing scoring
@@ -6306,6 +6354,8 @@ interface DinosaurFactsV7 {
   readonly nestDanger: Map<string, number>;
   readonly stampedeScores: Map<string, DinosaurScoreV7>;
   stampedeHolds: ReadonlySet<UnitId> | null;
+  /** Launch tiles of each own unmoved Triceratops (`pulp_wars-c87.8`). */
+  readonly stampedeLaunchTiles: Map<UnitId, readonly CoordV7[]>;
 }
 
 const NO_DINOSAUR_SCORE_V7: DinosaurScoreV7 = Object.freeze({
@@ -6365,6 +6415,7 @@ function dinosaurFactsV7(context: PolicyContextV7): DinosaurFactsV7 {
     nestDanger: new Map(),
     stampedeScores: new Map(),
     stampedeHolds: null,
+    stampedeLaunchTiles: new Map(),
   };
   context.dinosaurFacts = facts;
   return facts;
@@ -6991,6 +7042,31 @@ function dinosaurMoveValueV7(
     if (lane > 0) {
       raised = Math.max(raised, STAMPEDE_LANE_MOVE_PRIORITY_V7);
       strategic += Math.min(24, Math.ceil(lane / 4));
+    } else if (
+      raised < STAMPEDE_APPROACH_PRIORITY_V7 &&
+      stampederV7(view, actor) &&
+      !actor.activation.moved &&
+      primaryReadyForPolicyV7(actor)
+    ) {
+      // `pulp_wars-c87.8`: with no lane tile in reach, a Triceratops walks
+      // toward the nearest launch tile instead of trailing its army.
+      let launch = dinosaur.stampedeLaunchTiles.get(actor.id);
+      if (launch === undefined) {
+        launch = stampedeLaunchTilesV7(
+          view,
+          actor,
+          context.lookup.visibleHostiles,
+        );
+        dinosaur.stampedeLaunchTiles.set(actor.id, launch);
+      }
+      if (launch.length > 0) {
+        const here = nearestDistance(actor.at, launch);
+        const there = nearestDistance(to, launch);
+        if (there < here && dangerThere() < actor.hp) {
+          raised = STAMPEDE_APPROACH_PRIORITY_V7;
+          strategic += 2 * (here - there);
+        }
+      }
     }
     if (rule.abilities.includes("HATCH")) {
       // An Egg laid this turn cannot be hatched until the next one.

@@ -13,19 +13,30 @@
  * `UG`, and `GG`, the four-seat mixes with all three factions (`GHUG`,
  * `HUGH`, `UGHU`), and the section 14.2 Goblin telemetry (`summary.goblin`).
  *
+ * Revision 19 (`pulp_wars-c87.8`) adds the Dinosaur pairings `DH`, `HD`,
+ * `DU`, `UD`, `DG`, `GD`, and `DD`, the four-seat mixes with all four
+ * factions (`HUGD`, `DHUG`, `GDHU`, `UGDH`), and the section 15.2 Dinosaur
+ * telemetry (`summary.dinosaur`).
+ *
  * Usage:
  *   npm run balance:ruleset7-undead -- [--seeds 30] [--multi-seeds 4]
  *     [--sizes 11,14] [--maps dry-land,pangea,continents,archipelago,lakes]
- *     [--pairings HU,UH,UU,HH,GH,HG,GU,UG,GG,HUHU,UHUH,GHUG,HUGH,UGHU]
+ *     [--pairings HU,UH,UU,HH,GH,HG,GU,UG,GG,DH,HD,DU,UD,DG,GD,DD,
+ *       HUHU,UHUH,GHUG,HUGH,UGHU,HUGD,DHUG,GDHU,UGDH]
  *     [--max-rounds 150]
  *     [--multi-max-rounds 120] [--jobs N] [--output file.json]
  *     [--detail-output file.json] [--markdown] [--strict]
+ *     [--first-seed 0] [--from-detail a.json,b.json]
  *
- * Seeds are 0..N-1 for every cell. `--strict` exits non-zero when any match
- * ends in a policy error or stall (they are always counted in the summary).
+ * Seeds are 0..N-1 for every cell (`--first-seed K` starts the 1v1 seeds at
+ * K). `--strict` exits non-zero when any match ends in a policy error or
+ * stall (they are always counted in the summary). `--from-detail` runs no
+ * match: it reads the per-match entries of earlier `--detail-output` files
+ * and summarises the cells the other parameters select, so one run can be
+ * split over several processes or summarised for a seed subset.
  */
 import { spawn } from "node:child_process";
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { availableParallelism } from "node:os";
 import { resolve } from "node:path";
 import { createInterface } from "node:readline";
@@ -47,10 +58,25 @@ import {
   type MatchSetupV7,
   type UnitRoleIdV7,
 } from "../src/engine/v7/types";
-import { factionTreeV7 } from "../src/engine/rules/ruleset-v7";
+import {
+  factionTreeV7,
+  unitGrowthStageV7,
+  unitRoleRuleV7,
+} from "../src/engine/rules/ruleset-v7";
 import type { PlayerId } from "../src/engine/model/ids";
-import { arePlayersAlliedV7 } from "../src/engine/v7/economy";
+import {
+  arePlayersAlliedV7,
+  assignedUnitCountV7,
+  cityUnitCapacityV7,
+} from "../src/engine/v7/economy";
+import {
+  defenseBonusForUnitV7,
+  fortificationLevelForUnitV7,
+} from "../src/engine/v7/combat";
+import { nestTilesV7 } from "../src/engine/v7/eggs";
+import { queryStampedeLanesV7 } from "../src/engine/v7/query";
 import { applyCommandV7, createPlayableGameV7 } from "../src/engine/v7/reducer";
+import { viewForV7 } from "../src/engine/v7/view";
 
 const MAP_TYPES: readonly MapTypeV7[] = [
   "DRY_LAND",
@@ -62,7 +88,8 @@ const MAP_TYPES: readonly MapTypeV7[] = [
 /**
  * Seat-ordered pairings: `H` Human (`ORIGINAL`), `U` Undead, `G` Goblin
  * (`pulp_wars-0ao.7` adds the Goblin 1v1 pairings and the four-seat mixes
- * with all three factions).
+ * with all three factions), `D` Dinosaur (`pulp_wars-c87.8` adds the
+ * Dinosaur 1v1 pairings and the four-seat mixes with all four factions).
  */
 const PAIRINGS = {
   HU: ["ORIGINAL", "UNDEAD"],
@@ -74,11 +101,22 @@ const PAIRINGS = {
   GU: ["GOBLIN", "UNDEAD"],
   UG: ["UNDEAD", "GOBLIN"],
   GG: ["GOBLIN", "GOBLIN"],
+  DH: ["DINOSAUR", "ORIGINAL"],
+  HD: ["ORIGINAL", "DINOSAUR"],
+  DU: ["DINOSAUR", "UNDEAD"],
+  UD: ["UNDEAD", "DINOSAUR"],
+  DG: ["DINOSAUR", "GOBLIN"],
+  GD: ["GOBLIN", "DINOSAUR"],
+  DD: ["DINOSAUR", "DINOSAUR"],
   HUHU: ["ORIGINAL", "UNDEAD", "ORIGINAL", "UNDEAD"],
   UHUH: ["UNDEAD", "ORIGINAL", "UNDEAD", "ORIGINAL"],
   GHUG: ["GOBLIN", "ORIGINAL", "UNDEAD", "GOBLIN"],
   HUGH: ["ORIGINAL", "UNDEAD", "GOBLIN", "ORIGINAL"],
   UGHU: ["UNDEAD", "GOBLIN", "ORIGINAL", "UNDEAD"],
+  HUGD: ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"],
+  DHUG: ["DINOSAUR", "ORIGINAL", "UNDEAD", "GOBLIN"],
+  GDHU: ["GOBLIN", "DINOSAUR", "ORIGINAL", "UNDEAD"],
+  UGDH: ["UNDEAD", "GOBLIN", "DINOSAUR", "ORIGINAL"],
 } as const satisfies Record<string, readonly FactionIdV7[]>;
 type PairingId = keyof typeof PAIRINGS;
 const ONE_VS_ONE: readonly PairingId[] = [
@@ -91,10 +129,41 @@ const ONE_VS_ONE: readonly PairingId[] = [
   "GU",
   "UG",
   "GG",
+  "DH",
+  "HD",
+  "DU",
+  "UD",
+  "DG",
+  "GD",
+  "DD",
 ];
-const MULTI: readonly PairingId[] = ["HUHU", "UHUH", "GHUG", "HUGH", "UGHU"];
+const MULTI: readonly PairingId[] = [
+  "HUHU",
+  "UHUH",
+  "GHUG",
+  "HUGH",
+  "UGHU",
+  "HUGD",
+  "DHUG",
+  "GDHU",
+  "UGDH",
+];
 /** 1v1 pairings without a Goblin seat (the cap-rate reference). */
 const NON_GOBLIN_ONE_VS_ONE: readonly PairingId[] = ["HU", "UH", "UU", "HH"];
+/** The revision-17 Goblin 1v1 pairings and mixes (section 14.3 measures). */
+const GOBLIN_ONE_VS_ONE: readonly PairingId[] = ["GH", "HG", "GU", "UG", "GG"];
+const GOBLIN_MULTI: readonly PairingId[] = ["GHUG", "HUGH", "UGHU"];
+/** The revision-19 Dinosaur 1v1 pairings and mixes (section 15.3). */
+const DINOSAUR_ONE_VS_ONE: readonly PairingId[] = [
+  "DH",
+  "HD",
+  "DU",
+  "UD",
+  "DG",
+  "GD",
+  "DD",
+];
+const DINOSAUR_MULTI: readonly PairingId[] = ["HUGD", "DHUG", "GDHU", "UGDH"];
 
 export interface MatrixCell {
   readonly pairing: PairingId;
@@ -158,6 +227,8 @@ export interface MatrixEntry extends MatrixCell {
   readonly liches: LichStats;
   /** `pulp_wars-0ao.7` Goblin telemetry; null in a match without Goblins. */
   readonly goblin: GoblinMatchStats | null;
+  /** `pulp_wars-c87.8` Dinosaur telemetry; null without a Dinosaur seat. */
+  readonly dinosaur: DinosaurMatchStats | null;
 }
 
 /**
@@ -512,6 +583,487 @@ function goblinTelemetry(
   return match;
 }
 
+type RoleCounts = Partial<Record<UnitRoleIdV7, number>>;
+
+/**
+ * Revision 19 section 15.2 Dinosaur telemetry for one Dinosaur seat of one
+ * match (`pulp_wars-c87.8`). Rounds advance at each Start Turn of the first
+ * seat in turn order; an Egg's role is the role of the unit inside.
+ */
+interface DinosaurSeatStats {
+  seat: number;
+  /** Own turns, and those that reached 128 accepted commands. */
+  turns: number;
+  capTurns: number;
+  /** Units owned at each End Turn (Eggs included): the sum and the most. */
+  unitTurns: number;
+  maxUnits: number;
+  /** Units trained with `TRAIN` or `TRAIN_NAVAL`, by role. */
+  trained: RoleCounts;
+  eggsLaid: RoleCounts;
+  eggsHatchedByTime: RoleCounts;
+  eggsHatchedByShaman: RoleCounts;
+  /** Eggs destroyed by enemies (attack, splash, Wail, or explosion). */
+  eggsDestroyed: RoleCounts;
+  eggsDestroyedByCause: Record<string, number>;
+  /** `<faction initial>:<role>` of the unit credited, or `WAIL`. */
+  eggsDestroyedByAttacker: Record<string, number>;
+  /** Eggs destroyed because their home city was captured. */
+  eggsLostWithCity: RoleCounts;
+  /** Eggs removed with their eliminated owner. */
+  eggsEliminated: RoleCounts;
+  /** Eggs abandoned with `DISBAND`. */
+  eggsAbandoned: RoleCounts;
+  /** Coins paid for Eggs, and those paid for Eggs enemies destroyed. */
+  eggCoins: number;
+  eggCoinsDestroyed: number;
+  /** Own End Turns at which an Egg was on the board, summed over Eggs. */
+  eggTurns: number;
+  /** Hatched Eggs by rounds from laying to hatching: 0, 1, 2, 3, 4 or more. */
+  hatchDelays: [number, number, number, number, number];
+  /** Units that reached Big and Alpha, and grown units killed, by role. */
+  big: RoleCounts;
+  alpha: RoleCounts;
+  grownLost: RoleCounts;
+  alphaLost: RoleCounts;
+  stampedes: number;
+  /** Stampedes from distance 2 and distance 3. */
+  stampedesByDistance: [number, number];
+  stampedeKills: number;
+  stampedeEggKills: number;
+  stampedePushes: number;
+  /** The target survived and was not pushed (never counted for an Egg). */
+  stampedeBlockedPushes: number;
+  stampedeDamage: number;
+  /** Field Defense destroyed by Stampede commands (target and stand tile). */
+  stampedeFieldDefense: number;
+  /** Stampedes at a unit on a city center, and those that pushed it off. */
+  stampedeCenterTargets: number;
+  stampedeCenterPushes: number;
+  /** Triceratops killed before their owner's next turn after a Stampede. */
+  triceratopsLostAfterStampede: number;
+  /** Ordinary `ATTACK` commands of a Triceratops. */
+  triceratopsAttacks: number;
+  /** Own turns that began with a land-form Triceratops, and with a lane. */
+  turnsWithTriceratops: number;
+  turnsWithLane: number;
+  /** Land-form Triceratops at the start of own turns, and those with a lane. */
+  triceratopsTurns: number;
+  triceratopsTurnsWithLane: number;
+  /** Spitter attacks, and those that ignored cover or fortification. */
+  acidAttacks: number;
+  acidIgnored: number;
+  /** Hits on this seat's units that Armoured reduced (1 damage each). */
+  armouredPrevented: number;
+  hatches: number;
+  warDrums: number;
+  warDrumsUnits: number;
+  tends: number;
+  /** Own cities at each End Turn, with their used slots and capacity. */
+  cityTurns: number;
+  slotsUsed: number;
+  slotsCapacity: number;
+  maxSlotsUsed: number;
+  overCapacityCityTurns: number;
+  /** City-turns with no free slot, with fewer than two, and with no nest tile. */
+  fullCityTurns: number;
+  noTwoSlotCityTurns: number;
+  noNestCityTurns: number;
+  /** Land-form units of the two-slot roles at each End Turn, summed. */
+  bigBodyTurns: RoleCounts;
+  /** Hostile kills by the credited unit's role; losses by role and cause. */
+  killsByRole: RoleCounts;
+  lossesByRole: RoleCounts;
+  lossesByCause: Record<string, number>;
+  /** Round each technology was researched in. */
+  researchRound: Record<string, number>;
+  /** Round the first Egg of each role was laid in. */
+  firstEggRound: RoleCounts;
+}
+
+/** Dinosaur telemetry for one match: one entry per Dinosaur seat. */
+interface DinosaurMatchStats {
+  readonly seats: DinosaurSeatStats[];
+}
+
+function emptyDinosaurSeat(seat: number): DinosaurSeatStats {
+  return {
+    seat,
+    turns: 0,
+    capTurns: 0,
+    unitTurns: 0,
+    maxUnits: 0,
+    trained: {},
+    eggsLaid: {},
+    eggsHatchedByTime: {},
+    eggsHatchedByShaman: {},
+    eggsDestroyed: {},
+    eggsDestroyedByCause: {},
+    eggsDestroyedByAttacker: {},
+    eggsLostWithCity: {},
+    eggsEliminated: {},
+    eggsAbandoned: {},
+    eggCoins: 0,
+    eggCoinsDestroyed: 0,
+    eggTurns: 0,
+    hatchDelays: [0, 0, 0, 0, 0],
+    big: {},
+    alpha: {},
+    grownLost: {},
+    alphaLost: {},
+    stampedes: 0,
+    stampedesByDistance: [0, 0],
+    stampedeKills: 0,
+    stampedeEggKills: 0,
+    stampedePushes: 0,
+    stampedeBlockedPushes: 0,
+    stampedeDamage: 0,
+    stampedeFieldDefense: 0,
+    stampedeCenterTargets: 0,
+    stampedeCenterPushes: 0,
+    triceratopsLostAfterStampede: 0,
+    triceratopsAttacks: 0,
+    turnsWithTriceratops: 0,
+    turnsWithLane: 0,
+    triceratopsTurns: 0,
+    triceratopsTurnsWithLane: 0,
+    acidAttacks: 0,
+    acidIgnored: 0,
+    armouredPrevented: 0,
+    hatches: 0,
+    warDrums: 0,
+    warDrumsUnits: 0,
+    tends: 0,
+    cityTurns: 0,
+    slotsUsed: 0,
+    slotsCapacity: 0,
+    maxSlotsUsed: 0,
+    overCapacityCityTurns: 0,
+    fullCityTurns: 0,
+    noTwoSlotCityTurns: 0,
+    noNestCityTurns: 0,
+    bigBodyTurns: {},
+    killsByRole: {},
+    lossesByRole: {},
+    lossesByCause: {},
+    researchRound: {},
+    firstEggRound: {},
+  };
+}
+
+/**
+ * Replays the accepted command log (as {@link goblinTelemetry} does) and
+ * attributes every Dinosaur event. Only called for matches with a Dinosaur
+ * seat. Lanes are read from the seat's public view at the start of its turn.
+ */
+function dinosaurTelemetry(
+  setup: MatchSetupV7,
+  log: ReturnType<typeof runAiMatchV7>["commandLog"],
+): DinosaurMatchStats {
+  const created = createPlayableGameV7(setup);
+  if (!created.ok) throw new Error(`CREATE_REJECTED:${created.error.code}`);
+  let state = created.state;
+  const seats = new Map<number, DinosaurSeatStats>();
+  const factionOf = new Map<number, FactionIdV7>();
+  for (const player of state.players) {
+    factionOf.set(player.id, player.faction);
+    if (player.faction === "DINOSAUR")
+      seats.set(player.id, emptyDinosaurSeat(player.seat));
+  }
+  const first = state.turnOrder[0];
+  let round = 1;
+  let turnCommands = 0;
+  let newTurn = true;
+  const cityCenters = new Set(state.cities.map((city) => coordKey(city.at)));
+  // Eggs on the board: owner, role, cost, and the round they were laid in.
+  const eggs = new Map<
+    number,
+    { owner: number; role: UnitRoleIdV7; cost: number; round: number }
+  >();
+  // Triceratops that stampeded since their owner's last Start Turn.
+  const stampeded = new Map<number, number>();
+  for (const record of log) {
+    const before = state;
+    const units = new Map(
+      before.units.map((unit) => [unit.id as number, unit]),
+    );
+    const actor = seats.get(record.playerId);
+    const command = record.command;
+    // A pending city reward is settled before anything is offered.
+    const settling: boolean = newTurn && command.kind === "CHOOSE_CITY_REWARD";
+    if (newTurn && !settling && actor !== undefined) {
+      const triceratops = before.units.filter(
+        (unit) =>
+          unit.ownerId === record.playerId &&
+          unit.hp > 0 &&
+          unit.form === "LAND" &&
+          unitRoleRuleV7(before, unit).abilities.includes("STAMPEDE"),
+      );
+      if (triceratops.length > 0) {
+        const view = viewForV7(before, record.playerId);
+        const withLane = triceratops.filter(
+          (unit) => queryStampedeLanesV7(view, unit.id).length > 0,
+        ).length;
+        actor.turnsWithTriceratops += 1;
+        actor.triceratopsTurns += triceratops.length;
+        actor.triceratopsTurnsWithLane += withLane;
+        actor.turnsWithLane += Number(withLane > 0);
+      }
+    }
+    newTurn = command.kind === "END_TURN" || settling;
+    turnCommands += 1;
+    if (command.kind === "END_TURN") {
+      if (actor !== undefined) {
+        actor.turns += 1;
+        actor.capTurns += Number(turnCommands >= 128);
+        const own = before.units.filter(
+          (unit) => unit.ownerId === record.playerId && unit.hp > 0,
+        );
+        actor.unitTurns += own.length;
+        actor.maxUnits = Math.max(actor.maxUnits, own.length);
+        for (const unit of own) {
+          if (unit.form === "EGG") actor.eggTurns += 1;
+          else if (
+            unit.form === "LAND" &&
+            (unit.role === "CATAPULT" ||
+              unit.role === "KNIGHT" ||
+              unit.role === "JUGGERNAUT")
+          )
+            bump(actor.bigBodyTurns, unit.role);
+        }
+        for (const city of before.cities) {
+          if (city.ownerId !== record.playerId) continue;
+          const capacity = cityUnitCapacityV7(before, city);
+          const used = assignedUnitCountV7(before, city.id);
+          actor.cityTurns += 1;
+          actor.slotsUsed += used;
+          actor.slotsCapacity += capacity;
+          actor.maxSlotsUsed = Math.max(actor.maxSlotsUsed, used);
+          actor.overCapacityCityTurns += Number(used > capacity);
+          actor.fullCityTurns += Number(used >= capacity);
+          actor.noTwoSlotCityTurns += Number(capacity - used < 2);
+          actor.noNestCityTurns += Number(
+            nestTilesV7(before, city).length === 0,
+          );
+        }
+      }
+      turnCommands = 0;
+    }
+    const result = applyCommandV7(state, record.playerId, command);
+    if (!result.accepted) throw new Error("Dinosaur telemetry replay rejected");
+    state = result.state;
+    const after = new Map(state.units.map((unit) => [unit.id as number, unit]));
+    const unitOf = (unitId: number) => units.get(unitId) ?? after.get(unitId);
+    const killerName = (unitId: number, suffix = "") => {
+      const unit = unitOf(unitId);
+      return unit === undefined
+        ? "?"
+        : `${(factionOf.get(unit.ownerId) ?? "?").slice(0, 1)}:${unit.role}${suffix}`;
+    };
+    if (actor !== undefined) {
+      if (command.kind === "HATCH") actor.hatches += 1;
+      if (command.kind === "RALLY") actor.warDrums += 1;
+      if (command.kind === "TEND_WOUNDED") actor.tends += 1;
+      if (
+        command.kind === "ATTACK" &&
+        units.get(command.unitId)?.role === "CATAPULT"
+      )
+        actor.triceratopsAttacks += 1;
+    }
+    // Who destroyed each unit in this command (events may come in any order).
+    const killedBy = new Map<number, string>();
+    for (const event of record.events) {
+      if (event.kind === "COMBAT_RESOLVED") {
+        const preview = event.preview;
+        if (preview.defenderDies)
+          killedBy.set(preview.targetUnitId, killerName(preview.attackerId));
+        for (const entry of preview.splash)
+          if (entry.dies)
+            killedBy.set(
+              entry.unitId,
+              killerName(preview.attackerId, ":SPLASH"),
+            );
+      }
+      if (event.kind === "WAIL_RESOLVED")
+        for (const entry of event.results)
+          if (entry.dies) killedBy.set(entry.unitId, "WAIL");
+      if (event.kind === "EXPLOSION_RESOLVED")
+        for (const hit of event.results)
+          if (hit.dies)
+            killedBy.set(
+              hit.unitId,
+              `${(factionOf.get(event.playerId) ?? "?").slice(0, 1)}:${event.role}:BLAST`,
+            );
+    }
+    const stampedeActor = command.kind === "STAMPEDE" ? actor : undefined;
+    let stampedePushed = false;
+    let stampedeSurvivor: number | null = null;
+    for (const event of record.events) {
+      if (event.kind === "TURN_STARTED") {
+        if (event.playerId === first) round += 1;
+        for (const [unitId, owner] of stampeded)
+          if (owner === event.playerId) stampeded.delete(unitId);
+      }
+      if (event.kind === "TECH_RESEARCHED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) seat.researchRound[event.tech] = round;
+      }
+      if (
+        event.kind === "UNIT_TRAINED" ||
+        event.kind === "NAVAL_UNIT_TRAINED"
+      ) {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) bump(seat.trained, event.role);
+      }
+      if (event.kind === "UNITS_RALLIED" && actor !== undefined)
+        actor.warDrumsUnits += event.unitIds.length;
+      if (event.kind === "EGG_LAID") {
+        const seat = seats.get(event.playerId);
+        eggs.set(event.unitId, {
+          owner: event.playerId,
+          role: event.role,
+          cost: event.cost,
+          round,
+        });
+        if (seat !== undefined) {
+          bump(seat.eggsLaid, event.role);
+          seat.eggCoins += event.cost;
+          seat.firstEggRound[event.role] ??= round;
+        }
+      }
+      if (event.kind === "EGG_HATCHED") {
+        const egg = eggs.get(event.unitId);
+        eggs.delete(event.unitId);
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) {
+          bump(
+            event.cause === "TIME"
+              ? seat.eggsHatchedByTime
+              : seat.eggsHatchedByShaman,
+            event.role,
+          );
+          const delay = Math.min(4, round - (egg?.round ?? round));
+          seat.hatchDelays[delay] = (seat.hatchDelays[delay] ?? 0) + 1;
+        }
+      }
+      if (event.kind === "UNIT_DISBANDED") {
+        const egg = eggs.get(event.unitId);
+        if (egg !== undefined) {
+          eggs.delete(event.unitId);
+          const seat = seats.get(egg.owner);
+          if (seat !== undefined) bump(seat.eggsAbandoned, egg.role);
+        }
+      }
+      if (event.kind === "UNIT_GREW") {
+        const unit = unitOf(event.unitId);
+        const seat = unit === undefined ? undefined : seats.get(unit.ownerId);
+        if (unit !== undefined && seat !== undefined)
+          bump(event.stage === 1 ? seat.big : seat.alpha, unit.role);
+      }
+      if (event.kind === "UNIT_DIED") {
+        const egg = eggs.get(event.unitId);
+        if (egg !== undefined) {
+          eggs.delete(event.unitId);
+          const seat = seats.get(egg.owner);
+          if (seat !== undefined) {
+            if (event.cause === "CITY_CAPTURED")
+              bump(seat.eggsLostWithCity, egg.role);
+            else if (event.cause === "ELIMINATION")
+              bump(seat.eggsEliminated, egg.role);
+            else {
+              bump(seat.eggsDestroyed, egg.role);
+              seat.eggCoinsDestroyed += egg.cost;
+              seat.eggsDestroyedByCause[event.cause] =
+                (seat.eggsDestroyedByCause[event.cause] ?? 0) + 1;
+              const by = killedBy.get(event.unitId) ?? event.cause;
+              seat.eggsDestroyedByAttacker[by] =
+                (seat.eggsDestroyedByAttacker[by] ?? 0) + 1;
+            }
+          }
+        } else if (event.cause !== "ELIMINATION") {
+          const unit = unitOf(event.unitId);
+          const seat = unit === undefined ? undefined : seats.get(unit.ownerId);
+          if (unit !== undefined && seat !== undefined) {
+            bump(seat.lossesByRole, unit.role);
+            seat.lossesByCause[event.cause] =
+              (seat.lossesByCause[event.cause] ?? 0) + 1;
+            const stage = unitGrowthStageV7(before, unit) ?? 0;
+            if (stage >= 1) bump(seat.grownLost, unit.role);
+            if (stage >= 2) bump(seat.alphaLost, unit.role);
+            if (stampeded.delete(event.unitId))
+              seat.triceratopsLostAfterStampede += 1;
+          }
+        }
+      }
+      if (event.kind === "UNIT_PUSHED" && stampedeActor !== undefined)
+        stampedePushed = true;
+      if (
+        event.kind === "FIELD_DEFENSE_DESTROYED" &&
+        stampedeActor !== undefined
+      )
+        stampedeActor.stampedeFieldDefense += 1;
+      if (event.kind === "COMBAT_RESOLVED") {
+        const preview = event.preview;
+        const attacker = unitOf(preview.attackerId);
+        const defender = unitOf(preview.targetUnitId);
+        const attackerSeat =
+          attacker === undefined ? undefined : seats.get(attacker.ownerId);
+        const defenderSeat =
+          defender === undefined ? undefined : seats.get(defender.ownerId);
+        if (attacker !== undefined && attackerSeat !== undefined) {
+          if (preview.defenderDies)
+            bump(attackerSeat.killsByRole, attacker.role);
+          for (const entry of preview.splash)
+            if (entry.dies) bump(attackerSeat.killsByRole, attacker.role);
+          if (attacker.role === "MARKSMAN") {
+            attackerSeat.acidAttacks += 1;
+            const covered = units.get(preview.targetUnitId);
+            attackerSeat.acidIgnored += Number(
+              preview.acid &&
+                covered !== undefined &&
+                (defenseBonusForUnitV7(before, covered).numerator !==
+                  defenseBonusForUnitV7(before, covered).denominator ||
+                  fortificationLevelForUnitV7(before, covered) > 0),
+            );
+          }
+          attackerSeat.armouredPrevented += Number(preview.attackerArmoured);
+          if (stampedeActor !== undefined && preview.stampede > 0) {
+            attackerSeat.stampedes += 1;
+            attackerSeat.stampedesByDistance[preview.stampede === 1 ? 0 : 1] +=
+              1;
+            attackerSeat.stampedeDamage += preview.damageToDefender;
+            const egg = defender?.form === "EGG";
+            if (preview.defenderDies) {
+              attackerSeat.stampedeKills += 1;
+              attackerSeat.stampedeEggKills += Number(egg);
+            } else if (!egg) stampedeSurvivor = preview.targetUnitId;
+            if (
+              defender !== undefined &&
+              cityCenters.has(coordKey(defender.at))
+            )
+              attackerSeat.stampedeCenterTargets += 1;
+            stampeded.set(preview.attackerId, attacker.ownerId);
+          }
+        }
+        if (defender !== undefined && defenderSeat !== undefined) {
+          if (preview.attackerDies)
+            bump(defenderSeat.killsByRole, defender.role);
+          defenderSeat.armouredPrevented += Number(preview.defenderArmoured);
+        }
+      }
+    }
+    if (stampedeActor !== undefined && stampedeSurvivor !== null) {
+      if (stampedePushed) {
+        stampedeActor.stampedePushes += 1;
+        const target = units.get(stampedeSurvivor);
+        if (target !== undefined && cityCenters.has(coordKey(target.at)))
+          stampedeActor.stampedeCenterPushes += 1;
+      } else stampedeActor.stampedeBlockedPushes += 1;
+    }
+  }
+  return { seats: [...seats.values()] };
+}
+
 /**
  * Lich lifecycle statistics for one match (`pulp_wars-vkq.21`), summed over
  * every Undead seat.
@@ -644,6 +1196,7 @@ function parsePairings(): readonly PairingId[] {
 function matrixParameters() {
   return {
     seeds: positiveInteger("--seeds", 30),
+    firstSeed: positiveInteger("--first-seed", 0),
     multiSeeds: positiveInteger("--multi-seeds", 4),
     sizes: parseSizes(),
     maps: parseMaps(),
@@ -662,7 +1215,11 @@ function buildCells(): MatrixCell[] {
   ))
     for (const mapType of parameters.maps)
       for (const size of parameters.sizes)
-        for (let seed = 0; seed < parameters.seeds; seed += 1)
+        for (
+          let seed = parameters.firstSeed;
+          seed < parameters.seeds;
+          seed += 1
+        )
           cells.push({
             pairing,
             mapType,
@@ -766,6 +1323,9 @@ export function runCell(cell: MatrixCell): MatrixEntry {
     liches: analysis.liches,
     goblin: (factions as readonly FactionIdV7[]).includes("GOBLIN")
       ? goblinTelemetry(setup, result.commandLog)
+      : null,
+    dinosaur: (factions as readonly FactionIdV7[]).includes("DINOSAUR")
+      ? dinosaurTelemetry(setup, result.commandLog)
       : null,
   };
 }
@@ -1066,7 +1626,9 @@ function analyzeLog(
             gainer.treeCompletionRound = round;
         } else if (
           event.kind === "UNIT_TRAINED" ||
-          event.kind === "NAVAL_UNIT_TRAINED"
+          event.kind === "NAVAL_UNIT_TRAINED" ||
+          // Revision 19: an Egg is the Dinosaur seat's unit production.
+          event.kind === "EGG_LAID"
         ) {
           gainer.trainingCoins += event.cost;
           gainer.trainedUnits += 1;
@@ -1310,7 +1872,10 @@ async function runMain(): Promise<void> {
     positiveInteger("--jobs", Math.max(1, availableParallelism() - 2)),
   );
   const started = performance.now();
-  const entries = await runParallel(cells, jobs);
+  const entries =
+    valueAfter("--from-detail") === undefined
+      ? await runParallel(cells, jobs)
+      : entriesFromDetail(valueAfter("--from-detail") ?? "");
   const ordered = cells.flatMap((cell) => {
     const entry = entries.results.get(cellKey(cell));
     if (entry !== undefined) return [entry];
@@ -1360,6 +1925,21 @@ async function runMain(): Promise<void> {
     args.includes("--strict")
   )
     process.exitCode = 1;
+}
+
+/** The per-match entries of earlier `--detail-output` files, by cell. */
+function entriesFromDetail(files: string): {
+  readonly results: Map<string, MatrixEntry>;
+  readonly exceptions: { cell: MatrixCell; exception: string }[];
+} {
+  const results = new Map<string, MatrixEntry>();
+  for (const file of files.split(",")) {
+    const detail = JSON.parse(readFileSync(file, "utf8")) as {
+      readonly entries: readonly MatrixEntry[];
+    };
+    for (const entry of detail.entries) results.set(cellKey(entry), entry);
+  }
+  return { results, exceptions: [] };
 }
 
 function cellKey(cell: MatrixCell): string {
@@ -1794,6 +2374,7 @@ export function summarize(entries: readonly MatrixEntry[]) {
     errors: sum(entries.map((entry) => entry.errors)),
     stalls: sum(entries.map((entry) => entry.stalls)),
     goblin: goblinSummary(entries),
+    dinosaur: dinosaurSummary(entries),
     duel: {
       perPairing,
       undeadWinMixed: rateFor(mixed, undeadWon),
@@ -2083,7 +2664,14 @@ function capRateOf(group: readonly MatrixEntry[]): number | null {
 
 /** Section 14.3 Goblin acceptance measures and section 14.2 telemetry. */
 function goblinSummary(entries: readonly MatrixEntry[]) {
-  const duel = entries.filter((entry) => entry.aiCount === 1);
+  // The revision-17 pairings only: Goblin seats of the Dinosaur pairings
+  // (`DG`, `GD`) are reported under `summary.dinosaur`.
+  const duel = entries.filter(
+    (entry) =>
+      entry.aiCount === 1 &&
+      (GOBLIN_ONE_VS_ONE.includes(entry.pairing) ||
+        NON_GOBLIN_ONE_VS_ONE.includes(entry.pairing)),
+  );
   const versus = (opponent: FactionIdV7) =>
     duel.filter(
       (entry) =>
@@ -2102,9 +2690,7 @@ function goblinSummary(entries: readonly MatrixEntry[]) {
   const nonGoblin = duel.filter((entry) =>
     NON_GOBLIN_ONE_VS_ONE.includes(entry.pairing),
   );
-  const goblinPairings = ONE_VS_ONE.filter(
-    (pairing) => !NON_GOBLIN_ONE_VS_ONE.includes(pairing),
-  );
+  const goblinPairings = GOBLIN_ONE_VS_ONE;
   const pairingCaps: Record<string, number | null> = Object.fromEntries(
     goblinPairings.flatMap((pairing) => {
       const group = duel.filter((entry) => entry.pairing === pairing);
@@ -2116,7 +2702,7 @@ function goblinSummary(entries: readonly MatrixEntry[]) {
     (rate) => (rate ?? 0) - (reference ?? 0),
   );
   const multi = entries.filter(
-    (entry) => entry.aiCount === 3 && entry.factions.includes("GOBLIN"),
+    (entry) => entry.aiCount === 3 && GOBLIN_MULTI.includes(entry.pairing),
   );
   return {
     versusHuman: rateFor(versus("ORIGINAL"), goblinWon),
@@ -2194,6 +2780,381 @@ function goblinSummary(entries: readonly MatrixEntry[]) {
   };
 }
 
+const dinosaurWon = (entry: MatrixEntry) => entry.winnerFaction === "DINOSAUR";
+
+/** Dinosaur seats of a group with their matches (for per-seat economy). */
+function dinosaurSeatsOf(group: readonly MatrixEntry[]) {
+  return group.flatMap((entry) =>
+    (entry.dinosaur?.seats ?? []).map((seatStats) => ({
+      entry,
+      seatStats,
+      economy: entry.seats.find((seat) => seat.seat === seatStats.seat),
+    })),
+  );
+}
+
+const totalOf = (record: Partial<Record<string, number>>) =>
+  sum(Object.values(record).map((value) => value ?? 0));
+
+/**
+ * Section 15.2 Dinosaur telemetry summed over every Dinosaur seat of
+ * `group`, with the section 15.3 ratios.
+ */
+function dinosaurAggregate(group: readonly MatrixEntry[]) {
+  const seats = dinosaurSeatsOf(group);
+  const total = (key: keyof DinosaurSeatStats) =>
+    sum(
+      seats.map(({ seatStats }) => {
+        const value = seatStats[key];
+        return typeof value === "number" ? value : 0;
+      }),
+    );
+  const roles = (
+    pick: (seat: DinosaurSeatStats) => Partial<Record<string, number>>,
+  ) => {
+    const totals: Record<string, number> = {};
+    for (const { seatStats } of seats)
+      for (const [key, value] of Object.entries(pick(seatStats)))
+        totals[key] = (totals[key] ?? 0) + (value ?? 0);
+    return totals;
+  };
+  const count = (
+    test: (seat: DinosaurSeatStats, entry: MatrixEntry) => boolean,
+  ) => seats.filter(({ seatStats, entry }) => test(seatStats, entry)).length;
+  const perSeat = (value: number) =>
+    seats.length === 0 ? null : Math.round((100 * value) / seats.length) / 100;
+  const researched = (tech: string) => (seat: DinosaurSeatStats) =>
+    seat.researchRound[tech] !== undefined;
+  const sawmilling = researched("SAWMILLING");
+  const chivalry = researched("CHIVALRY");
+  const laid = (role: UnitRoleIdV7) => (seat: DinosaurSeatStats) =>
+    (seat.eggsLaid[role] ?? 0) > 0;
+  const hatched = (role: UnitRoleIdV7) => (seat: DinosaurSeatStats) =>
+    (seat.eggsHatchedByTime[role] ?? 0) +
+      (seat.eggsHatchedByShaman[role] ?? 0) >
+    0;
+  const eggsLaid = roles((seat) => seat.eggsLaid);
+  const eggsDestroyed = roles((seat) => seat.eggsDestroyed);
+  const hatchedByTime = roles((seat) => seat.eggsHatchedByTime);
+  const hatchedByShaman = roles((seat) => seat.eggsHatchedByShaman);
+  const big = roles((seat) => seat.big);
+  const alpha = roles((seat) => seat.alpha);
+  const grownLost = roles((seat) => seat.grownLost);
+  const hatchDelays = [0, 1, 2, 3, 4].map((index) =>
+    sum(seats.map(({ seatStats }) => seatStats.hatchDelays[index] ?? 0)),
+  );
+  const sawmillingSeats = count(sawmilling);
+  const sawmillingStampedeSeats = count(
+    (seat) => sawmilling(seat) && seat.stampedes > 0,
+  );
+  const longSeats = count((_, entry) => entry.rounds >= 35);
+  const research = (tech: string) => ({
+    seatGames: count(researched(tech)),
+    round: stats(
+      seats.flatMap(({ seatStats }) => {
+        const value = seatStats.researchRound[tech];
+        return value === undefined ? [] : [value];
+      }),
+    ),
+  });
+  const firstEgg = (role: UnitRoleIdV7) =>
+    stats(
+      seats.flatMap(({ seatStats }) => {
+        const value = seatStats.firstEggRound[role];
+        return value === undefined ? [] : [value];
+      }),
+    );
+  const techs: Record<string, number> = {};
+  for (const { seatStats } of seats)
+    for (const tech of Object.keys(seatStats.researchRound))
+      techs[tech] = (techs[tech] ?? 0) + 1;
+  return {
+    games: group.filter((entry) => entry.dinosaur !== null).length,
+    seatGames: seats.length,
+    turns: total("turns"),
+    capTurns: total("capTurns"),
+    maxUnits: stats(seats.map(({ seatStats }) => seatStats.maxUnits)),
+    meanUnitsAtEndTurn: share(total("unitTurns"), total("turns")),
+    trained: roles((seat) => seat.trained),
+    eggs: {
+      laid: eggsLaid,
+      laidPerSeatGame: perSeat(totalOf(eggsLaid)),
+      hatchedByTime,
+      hatchedByShaman,
+      destroyed: eggsDestroyed,
+      destroyedByCause: roles((seat) => seat.eggsDestroyedByCause),
+      destroyedByAttacker: roles((seat) => seat.eggsDestroyedByAttacker),
+      lostWithCity: roles((seat) => seat.eggsLostWithCity),
+      eliminated: roles((seat) => seat.eggsEliminated),
+      abandoned: roles((seat) => seat.eggsAbandoned),
+      /** Section 15.3: the share of all laid Eggs enemies destroyed. */
+      destroyedShare: share(totalOf(eggsDestroyed), totalOf(eggsLaid)),
+      /** Section 15.3: seat-games with at least one Egg destroyed. */
+      seatGamesWithDestroyed: count((seat) => totalOf(seat.eggsDestroyed) > 0),
+      seatGamesWithDestroyedShare: share(
+        count((seat) => totalOf(seat.eggsDestroyed) > 0),
+        seats.length,
+      ),
+      seatGamesWithEgg: count((seat) => totalOf(seat.eggsLaid) > 0),
+      coins: total("eggCoins"),
+      coinsDestroyed: total("eggCoinsDestroyed"),
+      eggTurns: total("eggTurns"),
+      /** Hatched Eggs by rounds from laying to hatching: 0, 1, 2, 3, 4+. */
+      hatchDelays,
+      firstEggRound: {
+        RAIDER: firstEgg("RAIDER"),
+        MARKSMAN: firstEgg("MARKSMAN"),
+        GUARD: firstEgg("GUARD"),
+        CATAPULT: firstEgg("CATAPULT"),
+        KNIGHT: firstEgg("KNIGHT"),
+      },
+    },
+    growth: {
+      big,
+      alpha,
+      bigPerSeatGame: perSeat(totalOf(big)),
+      alphaPerSeatGame: perSeat(totalOf(alpha)),
+      /** Section 15.3: seat-games in which a unit reached Big. */
+      seatGamesWithBig: count((seat) => totalOf(seat.big) > 0),
+      seatGamesWithBigShare: share(
+        count((seat) => totalOf(seat.big) > 0),
+        seats.length,
+      ),
+      seatGamesWithAlpha: count((seat) => totalOf(seat.alpha) > 0),
+      grownLost,
+      alphaLost: roles((seat) => seat.alphaLost),
+      /** Grown units killed, as a share of the units that reached Big. */
+      grownLostShare: share(totalOf(grownLost), totalOf(big)),
+    },
+    stampede: {
+      stampedes: total("stampedes"),
+      perSeatGame: perSeat(total("stampedes")),
+      byDistance: [0, 1].map((index) =>
+        sum(
+          seats.map(
+            ({ seatStats }) => seatStats.stampedesByDistance[index] ?? 0,
+          ),
+        ),
+      ),
+      kills: total("stampedeKills"),
+      eggKills: total("stampedeEggKills"),
+      pushes: total("stampedePushes"),
+      blockedPushes: total("stampedeBlockedPushes"),
+      damage: total("stampedeDamage"),
+      fieldDefenseDestroyed: total("stampedeFieldDefense"),
+      centerTargets: total("stampedeCenterTargets"),
+      centerPushes: total("stampedeCenterPushes"),
+      triceratopsLostAfterStampede: total("triceratopsLostAfterStampede"),
+      ordinaryTriceratopsAttacks: total("triceratopsAttacks"),
+      seatGamesWithStampede: count((seat) => seat.stampedes > 0),
+      /** Section 15.3: Stampede among the seat-games with Sawmilling. */
+      seatGamesWithSawmilling: sawmillingSeats,
+      seatGamesWithSawmillingAndStampede: sawmillingStampedeSeats,
+      stampedeShareOfSawmillingSeatGames: share(
+        sawmillingStampedeSeats,
+        sawmillingSeats,
+      ),
+      /** The funnel from Sawmilling to a Stampede. */
+      sawmillingSeatGamesWithTriceratopsEgg: count(
+        (seat) => sawmilling(seat) && laid("CATAPULT")(seat),
+      ),
+      sawmillingSeatGamesWithTriceratops: count(
+        (seat) => sawmilling(seat) && hatched("CATAPULT")(seat),
+      ),
+      sawmillingSeatGamesWithLane: count(
+        (seat) => sawmilling(seat) && seat.turnsWithLane > 0,
+      ),
+      turnsWithTriceratops: total("turnsWithTriceratops"),
+      turnsWithLane: total("turnsWithLane"),
+      triceratopsTurns: total("triceratopsTurns"),
+      triceratopsTurnsWithLane: total("triceratopsTurnsWithLane"),
+      laneShareOfTriceratopsTurns: share(
+        total("triceratopsTurnsWithLane"),
+        total("triceratopsTurns"),
+      ),
+    },
+    tRex: {
+      seatGamesWithChivalry: count(chivalry),
+      seatGamesWithEgg: count(laid("KNIGHT")),
+      seatGamesWithTRex: count(hatched("KNIGHT")),
+      /** Seat-games of matches that lasted 35 or more rounds. */
+      longSeatGames: longSeats,
+      longSeatGamesWithChivalry: count(
+        (seat, entry) => entry.rounds >= 35 && chivalry(seat),
+      ),
+      longSeatGamesWithEgg: count(
+        (seat, entry) => entry.rounds >= 35 && laid("KNIGHT")(seat),
+      ),
+      longSeatGamesWithEggShare: share(
+        count((seat, entry) => entry.rounds >= 35 && laid("KNIGHT")(seat)),
+        longSeats,
+      ),
+    },
+    research: {
+      SAWMILLING: research("SAWMILLING"),
+      CHIVALRY: research("CHIVALRY"),
+      FORTIFICATION: research("FORTIFICATION"),
+      ADMINISTRATION: research("ADMINISTRATION"),
+      seatGamesByTech: techs,
+    },
+    abilities: {
+      acidAttacks: total("acidAttacks"),
+      acidIgnored: total("acidIgnored"),
+      armouredPrevented: total("armouredPrevented"),
+      hatches: total("hatches"),
+      seatGamesWithHatch: count((seat) => seat.hatches > 0),
+      warDrums: total("warDrums"),
+      warDrumsUnits: total("warDrumsUnits"),
+      tends: total("tends"),
+    },
+    slots: {
+      cityTurns: total("cityTurns"),
+      meanUsed: share(total("slotsUsed"), total("cityTurns")),
+      meanCapacity: share(total("slotsCapacity"), total("cityTurns")),
+      usedShare: share(total("slotsUsed"), total("slotsCapacity")),
+      maxUsed: Math.max(
+        0,
+        ...seats.map(({ seatStats }) => seatStats.maxSlotsUsed),
+      ),
+      overCapacityCityTurns: total("overCapacityCityTurns"),
+      fullCityTurns: total("fullCityTurns"),
+      noTwoSlotCityTurns: total("noTwoSlotCityTurns"),
+      noNestCityTurns: total("noNestCityTurns"),
+      bigBodyTurns: roles((seat) => seat.bigBodyTurns),
+    },
+    killsByRole: roles((seat) => seat.killsByRole),
+    lossesByRole: roles((seat) => seat.lossesByRole),
+    lossesByCause: roles((seat) => seat.lossesByCause),
+    economy: {
+      income: perSeat(sum(seats.map(({ economy }) => economy?.income ?? 0))),
+      trainingCoins: perSeat(
+        sum(seats.map(({ economy }) => economy?.trainingCoins ?? 0)),
+      ),
+      researchCoins: perSeat(
+        sum(seats.map(({ economy }) => economy?.researchCoins ?? 0)),
+      ),
+      techs: perSeat(sum(seats.map(({ economy }) => economy?.techs ?? 0))),
+      finalCoins: perSeat(
+        sum(seats.map(({ economy }) => economy?.finalCoins ?? 0)),
+      ),
+    },
+  };
+}
+
+/** Section 15.3 Dinosaur acceptance measures and section 15.2 telemetry. */
+function dinosaurSummary(entries: readonly MatrixEntry[]) {
+  const duel = entries.filter((entry) => entry.aiCount === 1);
+  const dinosaurDuel = duel.filter((entry) =>
+    DINOSAUR_ONE_VS_ONE.includes(entry.pairing),
+  );
+  const versus = (opponent: FactionIdV7) =>
+    dinosaurDuel.filter(
+      (entry) => entry.pairing !== "DD" && entry.factions.includes(opponent),
+    );
+  const byKey = (
+    group: readonly MatrixEntry[],
+    key: (entry: MatrixEntry) => string,
+  ) =>
+    Object.fromEntries(
+      Object.entries(groupBy(group, key)).map(([name, items]) => [
+        name,
+        rateFor(items, dinosaurWon),
+      ]),
+    );
+  const against = (opponent: FactionIdV7) => {
+    const group = versus(opponent);
+    return {
+      win: rateFor(group, dinosaurWon),
+      bySeat: byKey(group, (entry) => entry.pairing),
+      bySize: byKey(group, (entry) => String(entry.size)),
+      byMap: byKey(group, (entry) => entry.mapType),
+      byMapSize: byKey(group, (entry) => `${entry.mapType}/${entry.size}`),
+    };
+  };
+  // The reference: every 1v1 pairing of the same run without a Dinosaur seat.
+  const reference = capRateOf(
+    duel.filter((entry) => !DINOSAUR_ONE_VS_ONE.includes(entry.pairing)),
+  );
+  const pairingCaps: Record<string, number | null> = Object.fromEntries(
+    DINOSAUR_ONE_VS_ONE.flatMap((pairing) => {
+      const group = duel.filter((entry) => entry.pairing === pairing);
+      return group.length === 0 ? [] : [[pairing, capRateOf(group)]];
+    }),
+  );
+  const excesses = Object.values(pairingCaps).map(
+    (rate) => (rate ?? 0) - (reference ?? 0),
+  );
+  const multi = entries.filter(
+    (entry) => entry.aiCount === 3 && DINOSAUR_MULTI.includes(entry.pairing),
+  );
+  return {
+    versusHuman: against("ORIGINAL"),
+    versusUndead: against("UNDEAD"),
+    versusGoblin: against("GOBLIN"),
+    mirrorSeatZeroWin: rateFor(
+      duel.filter((entry) => entry.pairing === "DD"),
+      seatZeroWon,
+    ),
+    capRates: {
+      nonDinosaurReference: reference,
+      byPairing: pairingCaps,
+      /** Percentage points above the reference (worst Dinosaur pairing). */
+      worstExcessPoints:
+        reference === null || excesses.length === 0
+          ? null
+          : Math.round(1000 * Math.max(...excesses)) / 10,
+    },
+    telemetry: {
+      ...Object.fromEntries(
+        DINOSAUR_ONE_VS_ONE.flatMap((pairing) => {
+          const group = duel.filter((entry) => entry.pairing === pairing);
+          return group.length === 0
+            ? []
+            : [[pairing, dinosaurAggregate(group)]];
+        }),
+      ),
+      mixedVersusHuman: dinosaurAggregate(versus("ORIGINAL")),
+      mixedVersusUndead: dinosaurAggregate(versus("UNDEAD")),
+      mixedVersusGoblin: dinosaurAggregate(versus("GOBLIN")),
+      allOneVsOne: dinosaurAggregate(dinosaurDuel),
+      multi: dinosaurAggregate(multi),
+    },
+    multi: Object.fromEntries(
+      Object.entries(groupBy(multi, (entry) => entry.pairing)).map(
+        ([pairing, group]) => [
+          pairing,
+          {
+            games: group.length,
+            capRate: capRateOf(group),
+            winnerFaction: groupCount(
+              group,
+              (entry) => entry.winnerFaction ?? entry.termination,
+            ),
+            aliveSeatsByFaction: groupCount(
+              group.flatMap((entry) =>
+                entry.seats.filter((seat) => seat.alive),
+              ),
+              (seat) => seat.faction,
+            ),
+            citiesByFaction: Object.fromEntries(
+              FACTION_IDS_V7.map((faction) => [
+                faction,
+                sum(
+                  group.flatMap((entry) =>
+                    entry.seats
+                      .filter((seat) => seat.faction === faction)
+                      .map((seat) => seat.cities),
+                  ),
+                ),
+              ]),
+            ),
+          },
+        ],
+      ),
+    ),
+  };
+}
+
 function groupCount<T>(
   items: readonly T[],
   key: (item: T) => string,
@@ -2220,6 +3181,7 @@ function markdown(summary: ReturnType<typeof summarize>): string {
     `Plague duration (mixed games with Plague ${summary.duel.plague.gamesWithPlague}/${summary.duel.plague.games}): most plagued at once mean ${summary.duel.plague.plaguedMaximum.mean} p90 ${summary.duel.plague.plaguedMaximum.p90}; rounds with Plague mean ${summary.duel.plague.plagueRounds.mean} p90 ${summary.duel.plague.plagueRounds.p90}; longest streak mean ${summary.duel.plague.longestStreak.mean}; longest single-unit Plague mean ${summary.duel.plague.longestUnitTurns.mean} turns; plagued unit-turns per game ${summary.duel.plague.plaguedUnitTurnsPerGame}; turns per plagued unit ${summary.duel.plague.turnsPerPlaguedUnit}`,
     "",
     ...goblinMarkdown(summary.goblin, pct),
+    ...dinosaurMarkdown(summary.dinosaur, pct),
     "| Pairing | Games | Undead win | Seat-0 win | First mover win | Rounds mean/median/p90 | Cap rate |",
     "| --- | ---: | --- | --- | --- | --- | ---: |",
     ...Object.entries(summary.duel.perPairing).map(
@@ -2268,6 +3230,37 @@ function goblinMarkdown(
     `Kaboom (1v1): ${all.kabooms} in ${all.seatGamesWithKaboom}/${all.seatGames} seat-games; chain damage hostile ${all.kaboomChain.hostileDamage} vs friendly ${all.kaboomChain.friendlyDamage}`,
     `Goblin explosion deaths (1v1): hostile ${all.blast.hostileKills}, own ${all.blast.ownKills}, allied ${all.blast.alliedKills}; friendly share ${all.blast.friendlyDeathShare}; bomb friendly share ${all.bomb.friendlyDeathShare}`,
     `Chains (1v1): ${all.chains.count}, sizes 1/2/3/4/5+ ${all.chains.sizes.join("/")}, longest ${all.chains.longest}; Plunder ${all.plunderCoins} (${all.plunderShareOfIncome} of income); Gang Up 0/1/2 ${all.gangUp.join("/")}; WAAAGH! ${all.waaaghs}; Trolls ${all.trolls}`,
+    "",
+  ];
+}
+
+/** Section 15.3 Dinosaur acceptance lines (empty without Dinosaur games). */
+function dinosaurMarkdown(
+  dinosaur: ReturnType<typeof dinosaurSummary>,
+  pct: (rate: Rate) => string,
+): string[] {
+  const all = dinosaur.telemetry.allOneVsOne;
+  if (all.seatGames === 0) return [];
+  const caps = dinosaur.capRates;
+  const flat = (record: Record<string, number>) =>
+    Object.entries(record)
+      .map(([key, value]) => `${key} ${value}`)
+      .join(", ");
+  return [
+    `Dinosaur win vs Human (DH+HD): ${pct(dinosaur.versusHuman.win)}`,
+    `Dinosaur win vs Undead (DU+UD): ${pct(dinosaur.versusUndead.win)}`,
+    `Dinosaur win vs Goblin (DG+GD): ${pct(dinosaur.versusGoblin.win)}`,
+    `Dinosaur mirror seat 0: ${pct(dinosaur.mirrorSeatZeroWin)}`,
+    `Cap rates: non-Dinosaur reference ${caps.nonDinosaurReference}; ${Object.entries(
+      caps.byPairing,
+    )
+      .map(([pairing, rate]) => `${pairing} ${rate}`)
+      .join(", ")}; worst excess ${caps.worstExcessPoints} points`,
+    `Stampede (1v1): ${all.stampede.stampedes} (d2/d3 ${all.stampede.byDistance.join("/")}; kills ${all.stampede.kills}, pushes ${all.stampede.pushes}, blocked ${all.stampede.blockedPushes}, Field Defense ${all.stampede.fieldDefenseDestroyed}) in ${all.stampede.seatGamesWithSawmillingAndStampede}/${all.stampede.seatGamesWithSawmilling} Sawmilling seat-games (${all.stampede.stampedeShareOfSawmillingSeatGames}); funnel egg ${all.stampede.sawmillingSeatGamesWithTriceratopsEgg}, hatched ${all.stampede.sawmillingSeatGamesWithTriceratops}, lane ${all.stampede.sawmillingSeatGamesWithLane}; lane share of Triceratops-turns ${all.stampede.laneShareOfTriceratopsTurns}`,
+    `Eggs (1v1): laid ${flat(all.eggs.laid)} (${all.eggs.laidPerSeatGame} per seat-game); hatched by time ${totalOf(all.eggs.hatchedByTime)}, by Shaman ${totalOf(all.eggs.hatchedByShaman)}; destroyed ${totalOf(all.eggs.destroyed)} (${all.eggs.destroyedShare} of laid) in ${all.eggs.seatGamesWithDestroyed}/${all.seatGames} seat-games (${all.eggs.seatGamesWithDestroyedShare}); lost with city ${totalOf(all.eggs.lostWithCity)}, abandoned ${totalOf(all.eggs.abandoned)}`,
+    `Growth (1v1): Big ${all.growth.bigPerSeatGame} and Alpha ${all.growth.alphaPerSeatGame} per seat-game; Big in ${all.growth.seatGamesWithBig}/${all.seatGames} seat-games (${all.growth.seatGamesWithBigShare}); grown lost ${all.growth.grownLostShare}`,
+    `T-Rex (1v1): Chivalry ${all.tRex.seatGamesWithChivalry}, Egg ${all.tRex.seatGamesWithEgg} of ${all.seatGames} seat-games; in 35+ round games ${all.tRex.longSeatGamesWithEgg}/${all.tRex.longSeatGames} (${all.tRex.longSeatGamesWithEggShare})`,
+    `Slots (1v1): used ${all.slots.meanUsed} of ${all.slots.meanCapacity} per city-turn; full ${all.slots.fullCityTurns}, under two free ${all.slots.noTwoSlotCityTurns}, no nest ${all.slots.noNestCityTurns} of ${all.slots.cityTurns}; cap turns ${all.capTurns}/${all.turns}`,
     "",
   ];
 }

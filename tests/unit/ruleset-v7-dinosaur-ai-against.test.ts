@@ -18,6 +18,7 @@ import {
   attackV7,
   dinosaurFieldV7,
   forestTileV7,
+  mountainTileV7,
   isCandidateV7,
   moveCandidateV7,
   publicUnitAtV7,
@@ -183,8 +184,17 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Stampede lanes", ()
     // Not off the lines, and not beyond three tiles.
     for (const at of ["4,4", "5,4", "6,3", "3,5"])
       expect(reach.has(at), at).toBe(false);
-    // A Forest on (3, 3) closes the row.
-    const closed = forestTileV7(state, { x: 3, y: 3 });
+    // A Mountain on (3, 3) closes the row; a Forest there does not
+    // (pulp_wars-c87.8: Forest lane tiles are open).
+    const wooded = new Set(
+      publicThreatenedTilesForPolicyV7(
+        viewerViewV7(forestTileV7(state, { x: 3, y: 3 })),
+        triceratops,
+      ).map(key),
+    );
+    expect(wooded.has("4,3")).toBe(true);
+    expect(wooded.has("5,3")).toBe(true);
+    const closed = mountainTileV7(state, { x: 3, y: 3 });
     const closedReach = new Set(
       publicThreatenedTilesForPolicyV7(viewerViewV7(closed), triceratops).map(
         key,
@@ -217,8 +227,8 @@ describe("ruleset-7 revision-19 Normal AI against Dinosaurs: Stampede lanes", ()
     expect(clear?.score.safetyValue).toBe(0);
     expect(lane?.score.objectiveValue).toBe(clear?.score.objectiveValue);
     expect(unitCandidatesV7(state, from)[0]?.command).toEqual(clear?.command);
-    // With the lane closed by a Forest the tile is as safe as the others.
-    const closed = forestTileV7(state, { x: 3, y: 3 });
+    // With the lane closed by a Mountain the tile is as safe as the others.
+    const closed = mountainTileV7(state, { x: 3, y: 3 });
     expect(
       moveCandidateV7(closed, from, { x: 5, y: 3 })?.score.safetyValue,
     ).toBe(0);
