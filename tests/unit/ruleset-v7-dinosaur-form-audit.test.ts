@@ -499,6 +499,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // bias (an Egg and an embarked unit are neither a Shaman nor a fighter).
     // Revision 20: the Wallbreaker estimate asks for a land-form attacker
     // (an Egg and an embarked unit never attack).
+    // `pulp_wars-9s0.1`: the campaign plan gives jobs to land-form units
+    // only (an Egg and an embarked unit must fail the gate).
+    "src/ai/v7-campaign.ts": 1,
     "src/ai/v7-dinosaur.ts": 2,
     "src/ai/v7-goblin.ts": 1,
     "src/ai/v7-undead.ts": 1,

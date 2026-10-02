@@ -1031,6 +1031,22 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
         commandsThisTurn =
           command.kind === "END_TURN" ? 0 : commandsThisTurn + 1;
       }
+      // pulp_wars-9s0.1: where the sea shortcut needs Deep Water (and so
+      // Navigation first), the scout walks the explored land route instead
+      // and takes the capital before a transport could sail: the policy no
+      // longer waits at the Port while a land route is open.
+      if (deepLane && geometry === "SEA_SHORTCUT") {
+        expect({ shorecraft, port, departure }).toEqual({
+          shorecraft: true,
+          port: true,
+          departure: false,
+        });
+        expect(state.outcome).toEqual({
+          kind: "VICTORY",
+          winnerId: fixture.subjectId,
+        });
+        return;
+      }
       expect({
         shorecraft,
         navigation: deepLane ? navigation : true,

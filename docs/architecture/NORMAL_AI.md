@@ -16,7 +16,10 @@ tiles, Egg protection, Hatch, Grow, the Triceratops's Charge! (revision 20,
 play against each of them. It is gated on a match with a Dinosaur seat, so
 matches without one decide as under revision 18, except that a wounded unit
 that can be promoted is promoted first (revision 20: a Promotion fully
-heals).
+heals). The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
+[summarized below](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01):
+every land unit has one job (a village, an invader, the frontier, or a known
+enemy city) and walks the land route to it, in every match.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
@@ -119,6 +122,217 @@ The older merged-industry policy notes below are retained implementation
 history and do not override the
 [current Human technology graph](../product/RULESET_7_CURRENT.md#62-technology-tree)
 or the revision-11 AI contract.
+
+## Campaign: expansion, exploration, and standing pressure (`pulp_wars-9s0.1`)
+
+A playtest found the policy passive: it sent a unit or two, lost them, and
+left the player alone for ten turns; it fought a neighbour next door and
+stayed out across any gap. Measurement
+([the telemetry](HEADLESS_SIMULATION.md#normal-ai-pressure-telemetry-pulp_wars-9s01),
+results [below](#measurements)) traced that to movement and targeting, not
+to spending:
+
+- every unit moved greedily by Chebyshev distance
+  (`tacticalMovementObjectiveValueV7`, `movementObjectiveValue`), so it
+  stopped in front of a lake or a mountain range with the objective beyond
+  it; with no objective, every unit walked to the same nearest unexplored
+  tile, and a seat with sixteen units had not found an enemy nine tiles
+  away by round 30;
+- each unit took the objective with the best `30 − 4 × distance` score
+  (`tacticalPlanWorkV7`), so with two enemies every unit went for the nearer
+  one, and a seat whose nearest known enemy city was nine or more tiles away
+  had units at that front on a tenth of its turns;
+- a Raider within two tiles of the seat's richest city outranked any march
+  (`scoutPicketValue`, priority 710 over 700), so Raiders, the fast units,
+  circled home all game;
+- a visible enemy boat or one own transport made the naval plan active
+  (`navalPlanWorkV7`), which drew every land capturer to the Ports (820 and
+  1300 over 700); a transport with no way forward waited at sea for the
+  rest of the match and kept the plan active, and Patrol Boats filled the
+  unit slots;
+- units around a besieged own city did not engage: all of them held the
+  city as their objective and stood next to it;
+- units left as soon as they were trained, one at a time.
+
+The enemy was never forgotten: a city on an explored tile stays in the view
+for the rest of the match. Spending was not the cause either: from round 1
+about a fifth of the Coins spent go to units, the bank stays near zero until
+round 30, and a freed unit slot is refilled at once.
+
+The policy now gives every own land unit one **job** per decision
+(`src/ai/v7-campaign.ts`, built in `tacticalPlanWorkV7`) and follows the
+breadth-first land route to it over explored, enterable tiles (units are
+not walls; Mountains need Engineering; allied territory is closed). A unit
+with no route keeps the old straight-line objective, and the naval plan
+keeps the units with no job on land. Everything reads the public view only:
+explored tiles and their territory owner, cities on explored tiles, visible
+units, treasure chests, own Ports, and the seat's own free unit slots. It
+adds no PRNG use, no elapsed-time input, and no work units (at most a few
+dozen searches per decision, inside the tactical step).
+
+Units that keep their old objective: the unit on an own city center while a
+hostile land unit is visible within three tiles (the garrison), and a
+defender-role unit whose objective is a threatened own city (it still takes
+the defence job below when an invader is in reach). Every other land unit
+takes the first job that applies:
+
+1. **Scout** (while no enemy city is known). The first scout goes before
+   anything else, to the nearest explored land tile next to an unexplored
+   one, first among those within three tiles of enemy territory whose city
+   has not been seen or of a visible enemy unit.
+2. **Expansion.** Each explored, unclaimed village gets the nearest
+   capture-capable unit by route, then each treasure chest a capturer
+   within six route steps. A capturer on its way to a village is not called
+   back.
+3. **Defence.** Each visible hostile land unit within two tiles of an own
+   city center is engaged by attack-capable units within six route steps:
+   up to three while no enemy city is known, one once there is a city to
+   march on (the others counterattack).
+4. **Exploration.** Before contact a second scout takes a stretch of
+   frontier at least four tiles from the first, and the other capturers
+   follow the first scout, so what it finds meets a group. After contact
+   one scout keeps exploring. A scout is the fastest capturer, then the
+   oldest.
+5. **Pressure.** Every other unit marches on its nearest known enemy city by
+   route (City Walls count as two extra steps). With several hostile seats
+   in reach, each seat gets at least a pair of units, as far as the army
+   goes round, taken from the seat with the most. A known city stays a
+   target for as long as it is hostile, whatever was lost there. Where the
+   naval plan's sea route to its target is more than three steps shorter
+   than the walk, the capturers bound for that target get no job on land
+   and sail, as before.
+
+**Waves.** A unit within two tiles of an own city center (home) does not
+leave the home zone until three units for its target are home; fewer when
+the seat has no free unit slot left to train them, and only the target with
+the most units waits for new ones. It leaves at once when two or more units
+for that target are already out, or when the target is within five route
+steps of an own city (next door there is nothing to wait for). Units never
+wait near the enemy: a staging ring three tiles from the target was
+measured and dropped, because the defenders picked the waiting units off.
+
+**Assault.** The endgame's combined attack on the defender of a city center
+(this attack and the other offered attacks kill it, and a fresh capturer
+stands next to the center) is allowed on every city the campaign marches
+on, at the endgame's priorities 1344 and 1343.
+
+**Military share.** While an enemy city is known and fewer than two thirds
+of the seat's unit slots are filled, land production (`TRAIN`, `LAY_EGG`)
+takes priority 1205: before every economic action except one that reaches a
+city level (1210) and the opening growth harvest (1212), so losses at the
+front are replaced first. Above that share it keeps priority 1080.
+
+**Naval plan.** A unit with a job never boards and is not drawn to a Port.
+An embarked unit is stranded when it has not moved, has no Move that makes
+route progress or reveals a tile, has no planned landing on offer, and the
+plan is not holding it off a target that an own or allied capturer is
+taking. It lands (priority 810) on an offered tile from which a village or
+a known enemy city can be walked to, and takes that job ashore. Beyond two owned naval
+units the seat trains only the naval role its plan asks for, in every match
+(the revision-14 rule for Undead matches). The plan still becomes active
+only as before, so a seat with objectives on its own land does not start an
+invasion across the water; see the limits below.
+
+A Raider pickets its richest city only while a threat to an own city is
+visible, and a screen does not step back from its job to stand next to a
+ranged unit.
+
+### Measurements
+
+Before is main `a158cfd` (`pulp-wars-poc-7r21`), after is this change; both
+ran the same seeds with the telemetry script (Rival, Normal, auto board
+sizes unless stated). The **turtle** sets put a defender that never leaves
+home on seat 0 (`--turtle`); its view counts hostile land units in or next
+to its territory at the end of each of its turns.
+
+```bash
+npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --turtle --pairings HH,HU,HG,HD --sizes 14 --seeds 3 --max-rounds 80
+npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --turtle --pairings HH,HU,HG,HD --sizes 20 --seeds 1 --max-rounds 80
+npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --turtle --pairings HUGD,HDGU,HGUD --seeds 3 --max-rounds 80
+npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --pairings HU,UH,UU,HH,GH,HG,GU,UG,GG,DH,HD,DU,UD,DG,GD,DD --seeds 3
+npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --pairings HUGD,DHUG,GDHU,UGDH --seeds 2 --max-rounds 120
+```
+
+The turtle's view (pressed: turns with at least that many hostile units at
+its border, from the first such turn on; calm: its longest run of turns
+with none):
+
+| Set                 | Policy | Matches | First pressed (never) | Pressed 1+ |    2+ | Longest calm, median / p90 | Calm runs of 5+ per match | Turtle defeated | Round cap |
+| ------------------- | ------ | ------: | --------------------- | ---------: | ----: | -------------------------- | ------------------------: | --------------: | --------: |
+| 1v1, 14 x 14        | before |      60 | round 20.5 (2)        |      50.4% | 31.5% | 2 / 46                     |                      0.55 |              40 |     23.3% |
+| 1v1, 14 x 14        | after  |      60 | round 18 (1)          |      62.2% | 37.2% | 2 / 18                     |                      0.43 |              41 |     15.0% |
+| 1v1, 20 x 20        | before |      20 | round 16 (5)          |      57.0% | 37.1% | 4 / 29                     |                      0.80 |               5 |     65.0% |
+| 1v1, 20 x 20        | after  |      20 | round 24 (0)          |      73.5% | 58.7% | 1.5 / 34                   |                      0.25 |               8 |     45.0% |
+| Four seats, 16 x 16 | before |      45 | round 14 (3)          |      53.2% | 34.6% | 4 / 34                     |                      0.80 |              25 |     44.4% |
+| Four seats, 16 x 16 | after  |      45 | round 14 (1)          |      62.3% | 43.1% | 2 / 32                     |                      0.56 |              32 |     28.9% |
+
+The AI seats (front: turns after first contact with at least one own land
+unit in or next to enemy territory; free: the turns with no hostile land
+unit within two tiles of an own city):
+
+| Set                         | Policy | Seats | First siege (never) | Front 1+ | Free front 1+ | Longest quiet, median / p90 | Free quiet of 4+ (seats) | Front at gap 6-8 | at gap 9+ |
+| --------------------------- | ------ | ----: | ------------------- | -------: | ------------: | --------------------------- | -----------------------: | ---------------: | --------: |
+| Turtle 1v1, 14 x 14         | before |    60 | round 28 (11)       |    61.9% |         73.4% | 2 / 26                      |                    21.7% |            86.3% |         - |
+| Turtle 1v1, 14 x 14         | after  |    60 | round 28 (9)        |    68.7% |         79.5% | 2 / 15                      |                    18.3% |            93.8% |      100% |
+| Turtle 1v1, 20 x 20         | before |    20 | round 32 (3)        |    74.3% |         76.9% | 3 / 51                      |                    30.0% |            94.9% |         - |
+| Turtle 1v1, 20 x 20         | after  |    20 | round 29.5 (0)      |    93.8% |         95.0% | 2 / 5                       |                     5.0% |            96.7% |         - |
+| Turtle four seats           | before |   135 | round 15.5 (31)     |    70.0% |         67.8% | 4 / 15                      |                    30.4% |            58.0% |      9.2% |
+| Turtle four seats           | after  |   135 | round 15 (32)       |    70.5% |         71.4% | 3 / 11                      |                    23.7% |            61.2% |     56.3% |
+| AI v AI 1v1, 11 and 14      | before |   960 | round 19 (258)      |    67.6% |         79.4% | 3 / 11                      |                    16.6% |            72.8% |     66.4% |
+| AI v AI 1v1, 11 and 14      | after  |   960 | round 17 (264)      |    68.3% |         77.3% | 3 / 9                       |                    15.0% |            70.3% |     55.0% |
+| AI v AI four seats, 16 x 16 | before |   160 | round 17.5 (28)     |    70.1% |         68.7% | 5 / 16                      |                    35.6% |            62.0% |     11.0% |
+| AI v AI four seats, 16 x 16 | after  |   160 | round 14 (38)       |    75.3% |         79.6% | 4 / 10                      |                    21.3% |            69.0% |     64.9% |
+
+Matches (no errors or stalls in any set):
+
+| Set                         | Policy | Matches | Median rounds | p90 | Round cap |
+| --------------------------- | ------ | ------: | ------------: | --: | --------: |
+| AI v AI 1v1, 11 and 14      | before |     480 |            29 |  51 |      1.3% |
+| AI v AI 1v1, 11 and 14      | after  |     480 |            29 |  49 |      2.1% |
+| AI v AI four seats, 16 x 16 | before |      40 |            53 | 121 |     32.5% |
+| AI v AI four seats, 16 x 16 | after  |      40 |            46 | 121 |     17.5% |
+
+Win rates over the decided mixed 1v1 games (final balance is
+`pulp_wars-0hi.3`): Human 44.4% before, 36.0% after; Undead 58.2%, 50.0%;
+Goblin 46.4%, 48.0%; Dinosaur 51.1%, 66.1%. Dinosaurs gain against every
+other faction (against Humans 58.3% to 71.2%, Undead 46.6% to 67.8%,
+Goblins 48.3% to 59.3%).
+
+Spending did not move much: of the Coins spent in rounds 1-10, 11-20, and
+21-30 units take 21.6%, 25.4%, and 23.6% (before: 20.1%, 24.8%, 22.6%);
+research takes about 40% and the economy about a third. Armies are the same
+size (median 5, 7, 7 units in rounds 10, 15, 20). Embarked units that did
+not move fell from 5.8% to 2.1% of unit-turns (9.8% to 3.9% with four
+seats), and idle units at home from 9.4% to 4.5%.
+
+Cost: on the retained late view
+(`npx tsx scripts/benchmark-ruleset-v7-normal-policy.ts`, three runs each on
+the development machine) the sliced decision takes 16.4 to 17.6 ms (before
+15.4 to 17.7 ms) and the synchronous one 2.6 to 3.2 ms (2.4 to 3.0 ms); the
+largest 8 ms slice is 8.2 ms and none exceeds 16 ms.
+
+Limits measured after the change:
+
+- **Close starts.** With the capitals seven or eight tiles apart (Pangea,
+  14 x 14) the turtle is pressed on 47.5% of its turns (before 46.6%) and
+  loses in 3 of 12 games (5 of 12). When the nearest enemy city is four or
+  five tiles from an own city, the seat has a unit at the enemy border on
+  half of its turns (50.7%, before 43.8%), against 92% or more at every
+  other distance. At that range an enemy unit stands within two tiles of
+  one of the seat's cities on 58% of its turns (8% at a gap of six to
+  eight), and its units fight there; on its other turns it is at the enemy
+  border 73% of the time (before 62%).
+- **Water.** A seat with any objective on its own land still does not start
+  an invasion across the water (the naval plan becomes active as before).
+  On Continents with four seats the turtle is pressed on 42.6% of its turns
+  (47.9%), and on the 20 x 20 Archipelago on 16.6% (43.1%, four games).
+- **Units and Coins.** The military share of spending is unchanged, and the
+  policy still buys the cheapest unit that fits as soon as a slot frees: it
+  never saves for an expensive unit or a technology.
+- **After a lost front** the seat is back within two turns at the median
+  (p90 5, before 7), but in a third of the AI-v-AI cases it never comes back
+  before the match ends (341 of 1,584; before 326 of 1,544). Most of those
+  seats are losing the match.
 
 ## Revision-13 Undead play (`pulp_wars-vkq.9`)
 

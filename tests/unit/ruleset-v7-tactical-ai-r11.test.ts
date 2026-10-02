@@ -958,16 +958,21 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // ordinals once more, and revision 19 inserts STAMPEDE and HATCH after
         // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision
         // 20 removes STAMPEDE, moving every kind after KABOOM back by one
-        // (was 704210…2a87); the revision-12-ordinal value below is unchanged.
+        // (was 704210…2a87). pulp_wars-9s0.1 (was bc6d10…4ffd): the command
+        // is the same Capture and one candidate's score differs, Train
+        // Guard at priority 1205 (was 1080): an enemy city is known and
+        // fewer than two thirds of the unit slots are filled.
         expect(canonicalHash(beforeDecision)).toBe(
-          "bc6d10a0f7f7fc75ab207765b6bfc836a64757b58f37926281c903bcb33f4ffd",
+          "ae8b91a6685e8655110bf7e931961b912f1d6a844e2f5c60575817dfbaeee5c5",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
-        // tuples (spec section 8); with revision-12 ordinals it is unchanged.
+        // tuples (spec section 8); this is the value with revision-12
+        // ordinals (pulp_wars-9s0.1: was 294bac…41a7, for the same Train
+        // priority).
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(beforeDecision)),
         ).toBe(
-          "294bac761fb6d09e191de6344fb1ddf9e49c4394bd3dff6ab3552433c10c41a7",
+          "ee3a7f046f0b73b577623aa08f03c8eac39223bfd4ffee6a6fab64dbf9aa1ed8",
         );
       }
       expect(inspectNormalTacticalFactsV7(beforeView).roadCorridor).toBeNull();
@@ -1014,14 +1019,17 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // ordinals once more, and revision 19 inserts STAMPEDE and HATCH after
         // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision
         // 20 removes STAMPEDE, moving every kind after KABOOM back by one
-        // (was ece5c4…27cf); the revision-12-ordinal value below is unchanged.
+        // (was ece5c4…27cf). pulp_wars-9s0.1 (was 23912d…23bf): the command
+        // is the same Build Monument and one candidate's score differs,
+        // Train Guard at priority 1205 (was 1080), as before the capture.
         expect(canonicalHash(capturedDecision)).toBe(
-          "23912d9df5cea7ef6d97d42f4a62594983ab3654b2cdf5adc328b72e725223bf",
+          "548fac9d190b97a3af674e72b23c0636d8fbcee1f4d6028c61bdef1d0615c17a",
         );
+        // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1).
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(capturedDecision)),
         ).toBe(
-          "c56f00e419ab99b4532a25f2dc423d4558d80453e561137e30e95f816e9173c1",
+          "091615e1c2e75e26bd70178d3e5badbc40e76cfece8342d63d09dd999f50054b",
         );
       }
 

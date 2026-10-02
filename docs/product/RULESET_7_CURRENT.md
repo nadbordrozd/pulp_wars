@@ -1451,6 +1451,18 @@ units on the tile receive none. There is no other city-center defense bonus.
 - It avoids attacks predicted to lose the unit without a city-saving or
   capture-enabling reason, keeps a sole city defender unless replaced, and
   spreads units across objectives.
+- **Campaign** (`pulp_wars-9s0.1`): every land unit has one job and walks
+  the land route to it: the nearest unclaimed village, an invader next to an
+  own city, the unexplored frontier (two scouts and the group behind the
+  first while no enemy city is known, one scout afterwards), or the nearest
+  known enemy city. A known enemy city stays a target for as long as it is
+  hostile, whatever was lost there; with several hostile seats in reach each
+  gets at least a pair of units. Units set out from home in waves of three
+  (fewer when the cities cannot hold that many; at once next door or while a
+  wave is out), and while an enemy city is known and fewer than two thirds
+  of the unit slots are filled, land production comes before the economy.
+  Details and measurements:
+  [Normal AI campaign](../architecture/NORMAL_AI.md#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01).
 - **Opening research:** on its first turn Normal researches its free tier-1
   technology before other work, chosen deterministically from its own public
   view of explored tiles within Chebyshev 2 of its original capital: Gathering

@@ -122,11 +122,12 @@ describe("ruleset-7 Normal AI endgame siege (pulp_wars-1mc)", () => {
     );
     expect(lone).toMatchObject({ attackerDies: true, defenderDies: false });
 
-    // Outside the endgame every such attack is rejected as harmful.
+    // pulp_wars-9s0.1: outside the endgame the same combined attack is
+    // committed on any city the campaign's group has gone in on (until then
+    // every such attack was rejected as harmful).
     const outside = decide(fortify(arena(pieces, OUTSIDE_VILLAGES)));
-    expect(outside.candidates.some((c) => c.command.kind === "ATTACK")).toBe(
-      false,
-    );
+    expect(outside.command?.kind).toBe("ATTACK");
+    expect([1343, 1344]).toContain(outside.candidates[0]?.score.priority);
 
     let state = fortify(arena(pieces, ENDGAME_VILLAGES));
     const first = decide(state);
@@ -195,6 +196,8 @@ describe("ruleset-7 Normal AI endgame siege (pulp_wars-1mc)", () => {
     // wounded unit and now ends by conquest in round 142 (was round 47). It
     // still finishes below the 150-round cap without a stall; eight other
     // Undead mirror seeds on this map stay within five rounds of revision 19.
+    // With the revision-21 achievements it ended in round 55, and with the
+    // campaign plan (`pulp_wars-9s0.1`) it ends in round 35.
     { factions: ["UNDEAD", "UNDEAD"], seed: 0, mapType: "PANGEA", rounds: 150 },
   ] as const)(
     "finishes a formerly stalled $factions $mapType seed $seed match",

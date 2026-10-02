@@ -1491,6 +1491,16 @@ describe("ruleset-7 all-Human parity digests", () => {
   // from there. Seed 7 now reaches the 30-round cap with 339 commands (was a
   // conquest in round 25 with 264); seed 1234 still has 357 commands. The
   // four new entitlements and progress entries are removed before hashing.
+  // `pulp_wars-9s0.1` (Normal AI campaign plan: jobs by land route, waves,
+  // the military share; no rule or identity change) re-pins the command,
+  // event, final state, view, and command digests of both matches; map and
+  // post-generation PRNG digests are unchanged. Each match was compared
+  // command by command with the previous policy (a158cfd): seed 7 first
+  // differs at command 26 and seed 1234 at command 18, each a scouting Move
+  // to a different tile (two scouts take separate stretches of frontier by
+  // route; before, every unit walked to the nearest unexplored tile). Seed 7
+  // still reaches the 30-round cap, with 448 commands (was 339); seed 1234
+  // has 381 commands (was 357).
   const BASELINE = [
     {
       seed: 7,
@@ -1499,7 +1509,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "RIVAL",
       mapType: "CONTINENTS",
       maxRounds: 30,
-      acceptedCommands: 339,
+      acceptedCommands: 448,
       rounds: 31,
       termination: "ROUND_CAP",
       mapHash:
@@ -1507,15 +1517,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "05237774fce947cd78c119c41c26fb64e04d66ed9d7a6611fa8ceae7ba0e9137",
+        "3708fbfeb83fe296ab766414ba271462a48b649c7baa16ca7a2a2d65f860a818",
       eventHash:
-        "47db04c8e10fe796aa15518f372b68bd0392ad37895dfc459d8f61031d260e42",
+        "bf40cc1c0f5cbf447b6b076e294822b7cad5c375751f64dc0769be1d9c39ffeb",
       normalizedFinalStateHash:
-        "4a0927584daf07065d559b4ffef5597a8d420192eb93ae87409caee349294f9f",
+        "9c292718fa70a3a6b6cd9430c5c879d327eed1dd9933e91a78f8bf5d8a8ae8f8",
       normalizedHumanViewHash:
-        "72c02dfd294532bef4d65feb443dfda0a4851fd277e1703df5bc965dc759431e",
+        "b8059d51cf76c4e088e6e272da73db6430696b12f4d2ca6524ee4009509f455e",
       normalizedHumanCommandsHash:
-        "6bdddab95413e1339c1eb72974cc3f485c69a8391d89c5f580930aa053d0b649",
+        "79550e6a252ba37374e86ee11ce7c0a28abd8519bf01d3612443ab6ca447f597",
     },
     {
       seed: 1234,
@@ -1524,7 +1534,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "COOPERATIVE",
       mapType: "ARCHIPELAGO",
       maxRounds: 18,
-      acceptedCommands: 357,
+      acceptedCommands: 381,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1532,15 +1542,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "5057997bab943f4403eb2405e209a51cdfd100c072695da9d29723bc78bfed2a",
+        "d86a22c9e06ffb9ad65bb72be0617046bb1e730350a333674923081260aadf22",
       eventHash:
-        "a2d441a9df9b3070ae00070b82449ba38e98df9eccb0779300aefef5fffa1a0c",
+        "7936d770488010b78b15b1ae4e5cdfb55fc380ef162a98171746db328d6bb8f4",
       normalizedFinalStateHash:
-        "6555e8b8bbdc0b231457550b1df79abd95975a5efd14dc882c51de47ab675a8b",
+        "1da937eaabaf2a711cf7ba9842c8b809188bce2b22c0fab47bf99faedd47f0d8",
       normalizedHumanViewHash:
-        "d63367700fb25cf057e3b4fe8d491e96efa07d28be6d1b2cfefcda676aa0dbda",
+        "56872e5f85d5c6009515108580078d698fd2be6a1738cc13175b6dd1c42a811b",
       normalizedHumanCommandsHash:
-        "4cd6ac9be62ab9064575c2b31ed78bda3941cba1e7cb9bea04e30899c524de57",
+        "bceb83043f4befbf477799afabe31c464aaa702e0eb5df4259c9156560a22381",
     },
   ] as const;
 

@@ -53,6 +53,14 @@ import {
 } from "../engine/v7/spatial-economy";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 import {
+  campaignHasWorkAtV7,
+  campaignHoldsMoveV7,
+  campaignPlanForPolicyV7,
+  campaignRouteProgressV7,
+  type CampaignJobV7,
+  type CampaignPlanV7,
+} from "./v7-campaign";
+import {
   ENDGAME_APPROACH_PRIORITY_V7,
   ENDGAME_VACATE_PRIORITY_V7,
   endgamePlanForPolicyV7,
@@ -284,6 +292,10 @@ interface PolicyContextV7 {
   readonly threatenedTiles: ReadonlyMap<UnitId, ReadonlySet<string>>;
   naval: NavalPlanV7;
   tactical: TacticalPlanV7;
+  /** `pulp_wars-9s0.1`: land production before the economy (cached). */
+  warTraining: boolean | null;
+  /** `pulp_wars-9s0.1`: embarked units with no way forward (cached). */
+  readonly strandedTransports: Map<UnitId, boolean>;
   redevelopmentMayChangeImprovement: Map<string, boolean>;
   sharedCityContextPrepared: boolean;
   preferredSharedCityActionByCity: Map<CityId, CommandV7 | null>;
@@ -335,12 +347,18 @@ interface TacticalPlanV7 {
   readonly objectiveByUnitId: ReadonlyMap<UnitId, CoordV7>;
   readonly roadCorridor: RoadCorridorV7 | null;
   readonly defenderReplacementActionKeys: ReadonlySet<string>;
+  /**
+   * `pulp_wars-9s0.1`: villages, exploration, and standing pressure on the
+   * known enemy cities, by land route (`src/ai/v7-campaign.ts`).
+   */
+  readonly campaign: CampaignPlanV7 | null;
 }
 
 const NO_TACTICAL_PLAN_V7: TacticalPlanV7 = Object.freeze({
   objectiveByUnitId: new Map<UnitId, CoordV7>(),
   roadCorridor: null,
   defenderReplacementActionKeys: new Set<string>(),
+  campaign: null,
 });
 
 export interface NormalPolicyWorkBoundsV7 {
@@ -399,6 +417,16 @@ interface NavalPlanV7 {
   readonly landing: readonly CoordV7[];
   readonly deepWaterRequired: boolean;
   readonly visibleNavalDanger: boolean;
+  /**
+   * The target can be walked to, but the public sea route is shorter by more
+   * than three steps: the capture units bound for it go by sea.
+   */
+  readonly seaShortcut: boolean;
+  /**
+   * A visible capture unit of the viewer or an ally stands on the target:
+   * the other transports wait off the coast until it is taken.
+   */
+  readonly holding: boolean;
   readonly reserveCoins: number;
   /** Landed capture units that still have a public objective on this landmass. */
   readonly retainLandedUnitIds: ReadonlySet<UnitId>;
@@ -417,6 +445,8 @@ const NO_NAVAL_PLAN_V7: NavalPlanV7 = Object.freeze({
   landing: [],
   deepWaterRequired: false,
   visibleNavalDanger: false,
+  seaShortcut: false,
+  holding: false,
   reserveCoins: 0,
   retainLandedUnitIds: new Set<UnitId>(),
   waterDistanceByKey: new Map(),
@@ -1179,6 +1209,8 @@ function bareContext(
     threatenedTiles,
     naval: NO_NAVAL_PLAN_V7,
     tactical: NO_TACTICAL_PLAN_V7,
+    warTraining: null,
+    strandedTransports: new Map(),
     redevelopmentMayChangeImprovement: new Map(),
     sharedCityContextPrepared: false,
     preferredSharedCityActionByCity: new Map(),
@@ -1381,10 +1413,46 @@ function* tacticalPlanWorkV7(
     yield;
   }
   const roadCorridor = yield* roadCorridorWorkV7(view, commands, pathWork);
+  // pulp_wars-9s0.1: every unit that is not defending a threatened own city
+  // takes its campaign job (a village, the frontier, or a known enemy city)
+  // and follows the land route to it.
+  const ownCityKeys = new Set(
+    view.cities
+      .filter((city) => city.ownerId === view.viewer.id)
+      .map((city) => coordKey(city.at)),
+  );
+  // Slots a wave can still wait for. With a naval plan active the policy
+  // may hold land production back (a slot for the fleet, the Coin reserve),
+  // so a wave then never waits for a unit that may not come.
+  let freeLandSlots = 0;
+  if (!context.naval.active)
+    for (const city of view.cities)
+      if (city.ownerId === view.viewer.id)
+        freeLandSlots += Math.max(0, freeCapacity(view, city.id));
+  const campaign = campaignPlanForPolicyV7(view, {
+    freeLandSlots,
+    seaTarget: context.naval.seaShortcut ? context.naval.target : null,
+    isHostile: (ownerId) => isHostile(view, ownerId),
+    isAllied: (ownerId) => publicPlayersAllied(view, view.viewer.id, ownerId),
+    // The garrison of a threatened center and a defender walking to one
+    // keep that objective; every other unit near home engages the invaders.
+    keepsObjective: (unit) => {
+      const objective = objectiveByUnitId.get(unit.id);
+      if (objective === undefined || !ownCityKeys.has(coordKey(objective)))
+        return false;
+      return (
+        same(unit.at, objective) ||
+        unitRoleRuleV7(view, unit).tacticalRole === "DEFENDER"
+      );
+    },
+  });
+  for (const [unitId, assignment] of campaign.assignmentByUnitId)
+    objectiveByUnitId.set(unitId, assignment.at);
   return {
     objectiveByUnitId,
     roadCorridor,
     defenderReplacementActionKeys,
+    campaign,
   };
 }
 
@@ -2012,6 +2080,8 @@ function* navalPlanWorkV7(
     landing,
     deepWaterRequired,
     visibleNavalDanger,
+    seaShortcut: seaAdvantageous,
+    holding: targetHasCaptureUnit,
     reserveCoins,
     retainLandedUnitIds,
     waterDistanceByKey: view.viewer.researchedTechs.includes("NAVIGATION")
@@ -2252,6 +2322,25 @@ export function inspectNormalTacticalFactsV7(view: PlayerViewV7): {
   }[];
   readonly roadCorridor: RoadCorridorV7 | null;
   readonly defenderReplacementActionKeys: readonly string[];
+  /** `pulp_wars-9s0.1`: the campaign jobs and the state of each target. */
+  readonly campaign: {
+    readonly atWar: boolean;
+    readonly warTraining: boolean;
+    readonly assignments: readonly {
+      readonly unitId: UnitId;
+      readonly job: CampaignJobV7;
+      readonly at: CoordV7;
+      readonly targetCityId: CityId | null;
+    }[];
+    readonly targets: readonly {
+      readonly cityId: CityId;
+      readonly assigned: number;
+      readonly home: number;
+      readonly out: number;
+      readonly needed: number;
+      readonly push: boolean;
+    }[];
+  };
 } {
   const context = makeContext(
     view,
@@ -2266,7 +2355,72 @@ export function inspectNormalTacticalFactsV7(view: PlayerViewV7): {
     defenderReplacementActionKeys: [
       ...context.tactical.defenderReplacementActionKeys,
     ],
+    campaign: {
+      atWar: context.tactical.campaign?.atWar === true,
+      warTraining: warTrainingFirstV7(context),
+      assignments: [
+        ...(context.tactical.campaign?.assignmentByUnitId ?? []),
+      ].map(([unitId, assignment]) => ({
+        unitId,
+        job: assignment.job,
+        at: assignment.at,
+        targetCityId: assignment.targetCityId,
+      })),
+      targets: [...(context.tactical.campaign?.targetByCityId ?? [])].map(
+        ([cityId, target]) => ({
+          cityId,
+          assigned: target.assigned,
+          home: target.home,
+          out: target.out,
+          needed: target.needed,
+          push: target.push,
+        }),
+      ),
+    },
   };
+}
+
+/**
+ * `pulp_wars-9s0.1`: the standing military share. While a hostile city is
+ * known and fewer than two thirds of the seat's unit slots are filled, land
+ * production comes before the economy (except a city level and the opening
+ * growth harvest), so losses at the front are replaced first. Above that
+ * share production keeps its old place after the economy.
+ */
+const WAR_TRAINING_PRIORITY_V7 = 1205;
+const WAR_TRAINING_FILL_NUMERATOR_V7 = 2;
+const WAR_TRAINING_FILL_DENOMINATOR_V7 = 3;
+
+function warTrainingFirstV7(context: PolicyContextV7): boolean {
+  if (context.warTraining !== null) return context.warTraining;
+  const view = context.view;
+  let result = false;
+  if (context.tactical.campaign?.atWar === true) {
+    let capacity = 0;
+    const ownCityIds = new Set<CityId>();
+    for (const city of view.cities) {
+      if (city.ownerId !== view.viewer.id) continue;
+      ownCityIds.add(city.id);
+      capacity += cityUnitCapacityForV7(
+        city.level,
+        view.viewer.researchedTechs,
+        view.viewer.faction,
+      );
+    }
+    let used = 0;
+    for (const unit of view.units)
+      if (
+        unit.ownerId === view.viewer.id &&
+        unit.homeCityId !== null &&
+        ownCityIds.has(unit.homeCityId)
+      )
+        used += unitCapacitySlotsV7(view, unit);
+    result =
+      used * WAR_TRAINING_FILL_DENOMINATOR_V7 <
+      capacity * WAR_TRAINING_FILL_NUMERATOR_V7;
+  }
+  context.warTraining = result;
+  return result;
 }
 
 function* publicThreatenedTilesWorkV7(
@@ -2502,12 +2656,20 @@ function isPolicyCandidate(
     return false;
   const autoembark = isAutoembarkMoveV7(context, command);
   if (autoembark && !context.naval.active) return false;
+  // pulp_wars-9s0.1: a unit with a job it can walk to does not board.
+  if (
+    autoembark &&
+    context.tactical.campaign?.assignmentByUnitId.has(command.unitId) === true
+  )
+    return false;
   if (autoembark && context.undead && fragileCargoV7(context, command.unitId))
     return false;
   if (command.kind === "DISEMBARK" && context.naval.active)
     return (
       context.naval.landing.some((at) => same(at, command.at)) ||
-      endgameLandingValueV7(context, command) > 0
+      endgameLandingValueV7(context, command) > 0 ||
+      (strandedTransportV7(context, command.unitId) &&
+        campaignHasWorkAtV7(context.tactical.campaign, command.at))
     );
   if (autoembark && context.naval.retainLandedUnitIds.has(command.unitId))
     return false;
@@ -3348,14 +3510,14 @@ function* sharedCityContextWorkV7(
           : (!spendsReserve ||
               (context.naval.visibleNavalDanger &&
                 command.role === "PATROL_BOAT")) &&
-            // Revision 14 AI fix (Undead matches): a garrisoned center only
-            // offers naval training, which filled every spare slot with
-            // Patrol Boats (~15 per game); beyond two naval units, train
-            // only the naval role the plan asks for.
+            // Revision 14 AI fix: a garrisoned center only offers naval
+            // training, which filled every spare slot with Patrol Boats
+            // (~15 per game); beyond two naval units, train only the naval
+            // role the plan asks for. pulp_wars-9s0.1: in every match (it
+            // was limited to Undead matches to keep all-Human pins): idle
+            // boats held the unit slots the land war needed.
             !(
-              context.undead &&
-              preferredNaval !== command.role &&
-              patrolBoats + battleships >= 2
+              preferredNaval !== command.role && patrolBoats + battleships >= 2
             ));
       if (eligible) {
         const utility =
@@ -3578,6 +3740,50 @@ function isAutoembarkMoveV7(
       (port) => port.status === "ACTIVE" && same(port.at, destination),
     )
   );
+}
+
+/**
+ * `pulp_wars-9s0.1`: an embarked unit is stranded when it has not moved, has
+ * no Move that makes route progress or reveals a tile, has no planned
+ * landing on offer, and the plan is not holding it off a target that an own
+ * or allied capturer is taking. Such a transport used to wait at sea for
+ * the rest of the match (and kept the naval plan active); it now lands on an
+ * offered tile from which a village or a known enemy city can be walked to,
+ * and takes that job ashore (a unit with a job does not board again).
+ */
+function strandedTransportV7(
+  context: PolicyContextV7,
+  unitId: UnitId,
+): boolean {
+  const cached = context.strandedTransports.get(unitId);
+  if (cached !== undefined) return cached;
+  const actor = context.lookup.unitsById.get(unitId);
+  let stranded = false;
+  if (
+    actor !== undefined &&
+    actor.form === "EMBARKED" &&
+    actor.ownerId === context.view.viewer.id &&
+    !actor.activation.moved &&
+    !context.naval.holding &&
+    !context.commands.some(
+      (command) =>
+        command.kind === "DISEMBARK" &&
+        command.unitId === unitId &&
+        context.naval.landing.some((at) => same(at, command.at)),
+    )
+  ) {
+    stranded = true;
+    for (const to of context.lookup.moveDestinationsByUnit.get(unitId) ?? [])
+      if (
+        navalMovementObjectiveValueV7(context, actor, to, 1) > 0 ||
+        publicRevealGain(context.view, actor, to, context.lookup) > 0
+      ) {
+        stranded = false;
+        break;
+      }
+  }
+  context.strandedTransports.set(unitId, stranded);
+  return stranded;
 }
 
 /**
@@ -3826,7 +4032,11 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "TRAIN" || command.kind === "LAY_EGG") {
-    priority = threatenedCity(context, command.cityId) ? 1260 : 1080;
+    priority = threatenedCity(context, command.cityId)
+      ? 1260
+      : warTrainingFirstV7(context)
+        ? WAR_TRAINING_PRIORITY_V7
+        : 1080;
     immediateValue = -trainingCostV7(view, command);
     strategicValue = trainingStrategicValue(context, command);
   }
@@ -3858,7 +4068,12 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "DISEMBARK" && actor !== undefined) {
-    priority = context.naval.active ? 1335 : 810;
+    priority =
+      context.naval.active &&
+      (context.naval.landing.some((at) => same(at, command.at)) ||
+        !strandedTransportV7(context, actor.id))
+        ? 1335
+        : 810;
     strategicValue = unitRoleRuleV7(view, actor).abilities.includes("CAPTURE")
       ? 70
       : 10;
@@ -4181,8 +4396,22 @@ function scoreCommandWithContext(
   if (command.kind === "MOVE" && actor !== undefined) {
     const autoembark = isAutoembarkMoveV7(context, command);
     const chest = view.treasureChests.some((at) => same(at, resultAt));
-    const picket = scoutPicketValue(view, actor, resultAt);
-    const screen = screenValue(view, actor, resultAt);
+    // pulp_wars-9s0.1: a Raider pickets its richest city only while a threat
+    // to an own city is visible (it used to orbit that city all game), and a
+    // screen does not walk away from its campaign job to stand by a unit.
+    const campaign = context.tactical.campaign;
+    const routeProgress =
+      resultAt === null
+        ? null
+        : campaignRouteProgressV7(campaign, actor, resultAt);
+    const picket =
+      routeProgress === null || context.threats.length > 0
+        ? scoutPicketValue(view, actor, resultAt)
+        : 0;
+    const screen =
+      routeProgress !== null && routeProgress < 0
+        ? 0
+        : screenValue(view, actor, resultAt);
     if (chest) {
       priority = 1330;
       strategicValue = 1;
@@ -4199,6 +4428,12 @@ function scoreCommandWithContext(
       priority = objectiveValue > 0 ? 700 : reveal > 0 ? 600 : -1;
       strategicValue = picket + screen;
       if (strategicValue > 0) priority = Math.max(priority, 710);
+      // pulp_wars-9s0.1: a wave forms at home before it sets out; tactical
+      // Moves below (a capture, a kill setup) still apply.
+      if (resultAt !== null && campaignHoldsMoveV7(campaign, actor, resultAt)) {
+        priority = -1;
+        strategicValue = 0;
+      }
       if (context.naval.active) {
         const navalValue = navalMovementObjectiveValueV7(
           context,
@@ -5172,13 +5407,15 @@ function endgameCombinedKillV7(
   command: Extract<CommandV7, { kind: "ATTACK" }>,
   preview: CombatPreviewV7,
 ): boolean {
-  const plan = context.endgame;
-  if (plan === null || preview.defenderDies || preview.damageToDefender <= 0)
-    return false;
+  if (preview.defenderDies || preview.damageToDefender <= 0) return false;
   const view = context.view;
   const target = context.lookup.unitsById.get(command.targetUnitId);
   if (target === undefined) return false;
-  const city = endgameTargetAtV7(plan, target.at);
+  // pulp_wars-9s0.1: the same assault on the center of any city the
+  // campaign marches on, not only on the last cities.
+  const city =
+    endgameTargetAtV7(context.endgame, target.at) ??
+    campaignAssaultCityV7(context, target.at);
   if (city === undefined) return false;
   const capturer = freshCapturerNextToV7(
     context,
@@ -5223,6 +5460,18 @@ function endgameCombinedKillV7(
     pool.delete(best.id);
   }
   return false;
+}
+
+/** A hostile city center the campaign marches on. */
+function campaignAssaultCityV7(
+  context: PolicyContextV7,
+  at: CoordV7,
+): PlayerViewV7["cities"][number] | undefined {
+  const city = context.lookup.citiesByKey.get(coordKey(at));
+  return city !== undefined &&
+    context.tactical.campaign?.targetByCityId.has(city.id) === true
+    ? city
+    : undefined;
 }
 
 /** Endgame training: capturers and siege units wanted near the targets. */
@@ -7886,7 +8135,11 @@ function tacticalMovementObjectiveValueV7(
   const assigned = context.tactical.objectiveByUnitId.get(actor.id);
   if (assigned === undefined)
     return movementObjectiveValue(context.view, actor.at, to);
-  let value = distance(actor.at, assigned) - distance(to, assigned);
+  // pulp_wars-9s0.1: a campaign job is approached by land route, so a unit
+  // walks around a lake or a mountain instead of stopping in front of it.
+  let value =
+    campaignRouteProgressV7(context.tactical.campaign, actor, to) ??
+    distance(actor.at, assigned) - distance(to, assigned);
   const role = policyTacticalRoleV7(unitRoleRuleV7(context.view, actor));
   if (role === "SIEGE") {
     const range = distance(to, assigned);
@@ -7956,6 +8209,9 @@ function navalMovementObjectiveValueV7(
     return routeProgress(context.naval.fleetDistanceByKey, actor.at, to);
   }
   if (!unitRoleRuleV7(context.view, actor).abilities.includes("CAPTURE"))
+    return 0;
+  // pulp_wars-9s0.1: nor does it walk to a Port.
+  if (context.tactical.campaign?.assignmentByUnitId.has(actor.id) === true)
     return 0;
   const ports = view.naval.ownedPorts
     .filter((port) => port.status === "ACTIVE")

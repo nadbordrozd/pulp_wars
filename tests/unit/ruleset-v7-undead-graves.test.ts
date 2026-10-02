@@ -626,10 +626,11 @@ describe("ruleset-7 revision-13 Graves: state, events, and persistence", () => {
   });
 
   it("round-trips Graves through replay, checkpoints, save, and state hashes", () => {
-    // Seed 6: thirty rounds with the revision-16 economy numbers include a
+    // Seed 6: thirty rounds with the revision-16 economy numbers included a
     // Raise Dead or Devour (pulp_wars-vkq.9); seed 4 did before them, seed 2
-    // on its revision-13 map.
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 6);
+    // on its revision-13 map. pulp_wars-9s0.1: with the campaign plan seed 6
+    // ends without one; seed 2 has two (and five Graves left).
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 2);
     const match = runAiMatchV7(setup, { maxRounds: 30 });
     expect(match.errors).toEqual([]);
     expect(match.state.graves.length).toBeGreaterThan(0);

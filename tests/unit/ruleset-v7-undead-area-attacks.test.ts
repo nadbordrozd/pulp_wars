@@ -744,7 +744,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
   });
 
   it("round-trips Wails and Lich splash through replay, checkpoints, and save", () => {
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 16);
+    // pulp_wars-9s0.1: with the campaign plan the seed-16 match has no Wail
+    // within 60 rounds; seed 4 has two.
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 4);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;

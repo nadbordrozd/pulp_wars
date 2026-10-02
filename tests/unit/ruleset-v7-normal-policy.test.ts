@@ -83,6 +83,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/v7/types",
       "../engine/v7/spatial-economy",
       "../engine/v7/view",
+      "./v7-campaign",
       "./v7-endgame",
       "./v7-goblin",
       "./v7-dinosaur",
@@ -280,14 +281,18 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // ordinals once more, and revision 19 inserts STAMPEDE and HATCH after
     // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision 20
     // removes STAMPEDE, moving every kind after KABOOM back by one (was
-    // 965473…ff1f); the revision-12-ordinal value below is unchanged.
+    // 965473…ff1f). pulp_wars-9s0.1 (was 07dc97…d442): the command is the
+    // same Move to (7, 9); two other Moves of that unit, to (7, 7) and
+    // (7, 8), are no longer candidates: they were closer to its objective in
+    // a straight line but not along the land route the unit now follows.
     expect(canonicalHash(basicChoice)).toBe(
-      "07dc975a0e03774f9ea67a36efc1b02d72efd250c9bab014d574ed8918f4d442",
+      "1a5ed79fe161c6e687dbe047db7507ee74674d709cd7ed50b39a439ddd92d668",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
-    // (spec section 8); this is the value with revision-12 ordinals.
+    // (spec section 8); this is the value with revision-12 ordinals
+    // (pulp_wars-9s0.1: was 2355bb…3e7a, for the same two Moves).
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(basicChoice))).toBe(
-      "2355bb8282e72067119c87b60b8c9eddf5202c925fd19fcd7fd5709532373e7a",
+      "4aa0f76c8ee28f6e988a0c16c538c66dfc7e74bc3370801d83aaf63c609ffbbf",
     );
     const basicCommands = queryPlayerCommandsV7(basicView);
     const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
@@ -811,9 +816,12 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value was 8936ff…1156
-    // before the pulp_wars-1mc endgame MOVE priorities above.
+    // before the pulp_wars-1mc endgame MOVE priorities above, and
+    // 41418b…e607 before the pulp_wars-9s0.1 campaign plan (the pin's
+    // comment in scripts/ruleset-v7-late-public-view-contract.ts has the
+    // cause).
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(sliced))).toBe(
-      "41418b921a55aa2350074cf495c8ced6b20febd44f48631a9d69d3cbf444e607",
+      "de28fd8fb2f5f79a67bd8306bb63787851989f47516b2c95a2a8a9fad347a6e4",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',

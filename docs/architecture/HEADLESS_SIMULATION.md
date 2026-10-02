@@ -102,6 +102,59 @@ units included) counts in the attacker's damage and kills and in the
 credited to no role or faction. Faction-keyed fields (`factionRoles`,
 `overcapacityStatesByFaction`) include a `GOBLIN` entry.
 
+## Normal AI pressure telemetry (`pulp_wars-9s0.1`)
+
+`scripts/ruleset7-ai-pressure-telemetry.ts` measures how expansionist and
+aggressive the Normal policy plays. It runs Normal-vs-Normal matches and
+replays each accepted command log through the reducer; nothing in it is read
+by the policy, and no gate runs it. Matches are independent and seeded, so
+the result does not depend on `--jobs`.
+
+```bash
+npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --pairings HU,UH,GD,DG --seeds 3 --markdown
+npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --turtle --pairings HUGD,HDGU --multi-size 16 --seeds 2 --max-rounds 60 --markdown
+npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --from-output a.json,b.json --maps pangea --markdown
+```
+
+A pairing is one letter per seat (`H` Human, `U` Undead, `G` Goblin, `D`
+Dinosaur): two-letter pairings run on every `--sizes` value (default 11 and
+14), longer ones on `--multi-size` (default 16). `--maps` defaults to all
+five map types, `--seeds` to 3 (from `--first-seed`), `--max-rounds` to 150.
+`--output` writes the summary and every match; `--from-output` runs no
+match and summarises the selected cells of earlier output files.
+
+Per seat it reports, at the end of each own turn:
+
+- the round of first contact (enemy territory or an enemy city explored),
+  of the first attack on an enemy unit, of the first siege (an attack on a
+  unit on an enemy city center, or a step onto one), and of the first city
+  capture;
+- after first contact: the share of turns with at least one, two, or three
+  own land units in or next to enemy territory, the longest run of turns
+  with none, and the same over the turns in which no hostile land unit
+  stands within two tiles of an own city (the seat is free to attack);
+- how long the seat takes to come back after it loses its presence at the
+  front, split by whether those units died or withdrew;
+- the same shares by the gap between its nearest city and the nearest known
+  enemy city, and by the distance between the capitals at the start;
+- what each land unit did that turn (at the front, moved closer to a known
+  enemy city, moved away, other move, acted, idle on a center, idle at home,
+  idle in the field), the embarked share, and Raiders near home;
+- Coins spent on units, on the economy, and on research by round, the bank
+  at the end of the turn, the share of full cities, army and city counts by
+  round, and how fast villages are taken.
+
+`--turtle` makes seat 0 a defender that stays at home: it plays the Normal
+policy's best command that is not a Move ending more than three tiles from
+its own cities, onto a Port, or a landing. It develops, trains, and kills
+what comes into reach, like a player who sits behind their walls. The
+summary then adds the turtle's view (hostile land units in or next to its
+territory at the end of each of its turns: the first round, the share of
+turns with one, two, or three, and the calm runs), counts the matches in
+which it lost its last city, and leaves the turtle out of the per-seat
+tables. The measurements of `pulp_wars-9s0.1` are in
+[Greedy Normal AI](NORMAL_AI.md#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01).
+
 ## Ruleset-7 revision-2 historical implementation contract
 
 The commands, identifiers, inventory counts, and checked matrix below describe

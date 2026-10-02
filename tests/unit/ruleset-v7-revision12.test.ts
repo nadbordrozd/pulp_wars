@@ -952,9 +952,11 @@ describe("ruleset-7 revision-12 Raider Escape", () => {
 
   it("round-trips a natural escape through replay and save", () => {
     // Revision 16 maps and openings differ (growth floor, growth-first AI
-    // opening); seed 5 shows a natural escape within the same command cap
+    // opening); seed 5 showed a natural escape within the same command cap
     // (seed 13 did on revision-14/15 maps, seed 3 on revision-13 maps).
-    const setup = setupV7(5);
+    // pulp_wars-9s0.1: with the campaign plan the seed-5 Raider scouts
+    // elsewhere; seed 1 shows a natural escape within the cap.
+    const setup = setupV7(1);
     const natural = runAiMatchV7(setup, { maxRounds: 40, maxCommands: 110 });
     const index = natural.commandLog.findIndex((entry) =>
       entry.events.some(

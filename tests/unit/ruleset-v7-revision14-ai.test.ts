@@ -351,10 +351,13 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // rounds; seed 8 Pangea did. With the revision-21 achievements
     // (`pulp_wars-9s0.4`) a match changes once a seat unlocks one (seed 8:
     // Conqueror and Land Baron in round 16) and seed 8 ends in round 23
-    // with no Lich; seed 4 Pangea trains one and plagues again.
+    // with no Lich; seed 4 Pangea trained one and plagued again. With the
+    // campaign plan (`pulp_wars-9s0.1`) seed 4 ends in round 18 before any
+    // Lich; seed 16 Pangea trains one and plagues (4 of seeds 0-23 train a
+    // Lich within 40 rounds, as before).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 4,
+      seed: 16,
       width: 11,
       height: 11,
       aiCount: 1,

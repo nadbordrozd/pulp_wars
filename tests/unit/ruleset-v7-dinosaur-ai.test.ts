@@ -264,13 +264,22 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: production", () => {
 
 describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
   const egg = [{ seat: 0, role: "KNIGHT", at: { x: 9, y: 7 } }] as const;
+  // pulp_wars-9s0.1: a capturer's first job is the nearest unclaimed
+  // village. With an own unit on each village, the Fighter under test
+  // marches on the enemy capital (2, 8), so its routine Moves lead west.
+  const camp = [
+    own("FIGHTER", 5, 5),
+    own("FIGHTER", 8, 5),
+    own("FIGHTER", 5, 8),
+  ] as const;
 
   it("moves a guard next to an Egg that a visible enemy reaches before it hatches", () => {
     // The Fighter on (10, 4) is three tiles from the Egg, which needs three
     // turns; no own unit stands next to the Egg.
-    const state = dino([own("FIGHTER", 10, 9), foe("FIGHTER", 10, 4)], {
-      eggs: egg,
-    });
+    const state = dino(
+      [...camp, own("FIGHTER", 10, 9), foe("FIGHTER", 10, 4)],
+      { eggs: egg },
+    );
     const guard = moveCandidateV7(state, { x: 10, y: 9 }, { x: 10, y: 8 });
     expect(guard?.score.priority).toBe(EGG_GUARD_PRIORITY_V7);
     // A quarter of the Egg's protection value (68 * 2 / 4 = 34).
@@ -280,13 +289,18 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
     ).toBe(700);
     // With a guard already there, or no enemy in sight, it is a routine Move.
     const guarded = dino(
-      [own("FIGHTER", 10, 9), own("FIGHTER", 8, 7), foe("FIGHTER", 10, 4)],
+      [
+        ...camp,
+        own("FIGHTER", 10, 9),
+        own("FIGHTER", 8, 7),
+        foe("FIGHTER", 10, 4),
+      ],
       { eggs: egg },
     );
     expect(
       moveCandidateV7(guarded, { x: 10, y: 9 }, { x: 10, y: 8 }),
     ).toBeUndefined();
-    const calm = dino([own("FIGHTER", 10, 9), foe("FIGHTER", 1, 1)], {
+    const calm = dino([...camp, own("FIGHTER", 10, 9), foe("FIGHTER", 1, 1)], {
       eggs: egg,
     });
     expect(
@@ -296,9 +310,10 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
 
   it("keeps the sole guard beside an Egg until it hatches", () => {
     // The Fighter on (10, 5) reaches the Egg on (9, 7) next turn.
-    const state = dino([own("FIGHTER", 10, 8), foe("FIGHTER", 10, 5)], {
-      eggs: egg,
-    });
+    const state = dino(
+      [...camp, own("FIGHTER", 10, 8), foe("FIGHTER", 10, 5)],
+      { eggs: egg },
+    );
     const ends = unitCandidatesV7(state, { x: 10, y: 8 }, "MOVE").flatMap(
       (candidate) =>
         candidate.command.kind === "MOVE"
@@ -313,7 +328,7 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
       ),
     ).toBe(true);
     // Without the threat the guard is free to leave.
-    const calm = dino([own("FIGHTER", 10, 8), foe("FIGHTER", 1, 1)], {
+    const calm = dino([...camp, own("FIGHTER", 10, 8), foe("FIGHTER", 1, 1)], {
       eggs: egg,
     });
     expect(
@@ -324,15 +339,16 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Egg protection", () => {
     ).toBeUndefined();
     // It also stays while the enemy is two turns away (the Fighter on
     // (10, 4) is three tiles from the Egg), but not for one farther off.
-    const near = dino([own("FIGHTER", 10, 8), foe("FIGHTER", 10, 4)], {
+    const near = dino([...camp, own("FIGHTER", 10, 8), foe("FIGHTER", 10, 4)], {
       eggs: egg,
     });
     expect(
       moveCandidateV7(near, { x: 10, y: 8 }, { x: 9, y: 9 }),
     ).toBeUndefined();
-    const distant = dino([own("FIGHTER", 10, 8), foe("FIGHTER", 10, 3)], {
-      eggs: egg,
-    });
+    const distant = dino(
+      [...camp, own("FIGHTER", 10, 8), foe("FIGHTER", 10, 3)],
+      { eggs: egg },
+    );
     expect(
       moveCandidateV7(distant, { x: 10, y: 8 }, { x: 9, y: 9 }),
     ).toBeDefined();
@@ -416,8 +432,10 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: Grow", () => {
     expect(moveCandidateV7(hurt(1, from), from, safe)?.score.priority).toBe(
       GROWN_RETREAT_PRIORITY_V7,
     );
-    expect(moveCandidateV7(hurt(0, from), from, safe)?.score.priority).toBe(
-      700,
+    // pulp_wars-9s0.1: the ungrown Raptor has no such retreat (the step
+    // away from its village job is no routine Move either).
+    expect(moveCandidateV7(hurt(0, from), from, safe)?.score.priority).not.toBe(
+      GROWN_RETREAT_PRIORITY_V7,
     );
     // From safety, a Move into that reach is offered to the ungrown Raptor
     // only.

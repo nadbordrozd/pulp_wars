@@ -20,6 +20,13 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * `STAMPEDE` command kind is removed, so the `-ordinal` tie-break of every
  * candidate whose kind follows `KABOOM` moves by one. The command, the
  * candidate count, and the hash with revision-12 ordinals are unchanged.
+ *
+ * `pulp_wars-9s0.1` (campaign plan): `policyDecisionHash` was 74d605…ed4b
+ * and the command the Attack of unit 19 on unit 34. An enemy city is known
+ * and fewer than two thirds of the seat's unit slots are filled, so land
+ * production takes priority 1205 and the Guard is trained in city 16
+ * before that Attack (which is still a candidate). The candidate count is
+ * unchanged; Move candidates follow the units' campaign jobs.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -27,11 +34,11 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b",
   /** `canonicalHash` of the whole decision (command and candidates). */
   policyDecisionHash:
-    "74d6056adf54e01cd9d535f0327caee08bbaf849cc20dc5ce0f037d9a2cfed4b",
+    "4559810ae43dec76c5358c0c495860a5ebcd6c9b69b95594bb8262cdf6b64e25",
   command: Object.freeze({
-    kind: "ATTACK",
-    unitId: 19,
-    targetUnitId: 34,
+    kind: "TRAIN",
+    cityId: 16,
+    role: "GUARD",
   }),
   candidateCount: 28,
 });
