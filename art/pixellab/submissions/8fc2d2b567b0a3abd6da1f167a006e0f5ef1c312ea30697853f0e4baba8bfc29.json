@@ -1,0 +1,36 @@
+{
+  "id": "portrait-bomb-chucker-skin-edit-b",
+  "jobId": "86927675-aace-441d-b2c2-def54a328e9e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-bomb-chucker",
+    "subject": "PORTRAIT:GOBLIN:MARKSMAN",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81212,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the two red patches beside his cheeks: they become olive green, colour #8a952f, like his pointed ears. Do not redraw anything: his face, his big grin, eyes, the rusted pot helmet and goggles, the bomb with its yellow stripes and spark, the brown strap, pose, proportions, thick black outline and art style all stay exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the two red patches beside his cheeks: they become olive green, colour #8a952f, like his pointed ears. Do not redraw anything: his face, his big grin, eyes, the rusted pot helmet and goggles, the bomb with its yellow stripes and spark, the brown strap, pose, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the two red patches beside his cheeks: they become olive green, colour #8a952f, like his pointed ears. Do not redraw anything: his face, his big grin, eyes, the rusted pot helmet and goggles, the bomb with its yellow stripes and spark, the brown strap, pose, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the two red patches beside his cheeks: they become olive green, colour #8a952f, like his pointed ears. Do not redraw anything: his face, his big grin, eyes, the rusted pot helmet and goggles, the bomb with its yellow stripes and spark, the brown strap, pose, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-bomb-chucker-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "5b5b45f2278659581d0eed5c86ac5510815dbf6c0eb2a87948d6fb7cec820c51"
+    }
+  }
+}

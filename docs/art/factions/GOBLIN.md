@@ -1,7 +1,9 @@
 # Faction fragment: GOBLIN
 
 **Status:** approved by the root on 2026-09-30 (bead `pulp_wars-0ao.10`),
-under the user's delegation of art judgement for epic `pulp_wars-0ao`.
+under the user's delegation of art judgement for epic `pulp_wars-0ao`. The
+prompt and negative fragments were rewritten to the palette of the new
+direction in bead `pulp_wars-3tq.9` (see the next section).
 Written from
 [FACTION_TEMPLATE.md](FACTION_TEMPLATE.md) under the rules in the
 [README](README.md) and the precedent of [UNDEAD.md](UNDEAD.md).
@@ -22,6 +24,67 @@ The roster and rules come from the
 (sections 2.3, 3, 6, 7 and 11.4). Patrol Boat and Battleship reuse the Human
 art ([section 3](../../product/RULESET_7_REVISION_17_GOBLINS.md#3-goblin-roster)).
 
+## New direction (October 2026): scrap raiders in fixed colours
+
+**Status:** the user chose this look on 2026-10-02 after two study passes
+(recorded on bead `pulp_wars-3tq.9`); that bead produced the art (batch
+`direction-goblin`) and made it the default look. The sections from
+[Palette](#palette) down describe the previous art, which the game still
+draws with Settings > Developer tools > Classic look. See
+[VISUAL_DIRECTION_2026-10.md](../VISUAL_DIRECTION_2026-10.md#16-goblin-production)
+for the decisions, the measured palette and the evidence.
+
+- **Identity:** unchanged. Scrappy pulp goblins, big orcs and one enormous
+  troll; loud, cheeky and ramshackle; funny, never grim.
+- **Faction colours, fixed for every player:**
+
+| Role            | Colour                                                      | Used for                                                             |
+| --------------- | ----------------------------------------------------------- | -------------------------------------------------------------------- |
+| Goblin olive    | `#8a952f`, shadow `#495508`                                 | the skin of every goblin, the tiny vehicle crews included            |
+| Orc green       | `#4a5830` (Brute); `#7f8c54` on `#3e4e29` (Warboss)         | Orc skin: a dull dark moss green, darker and duller than a goblin's  |
+| Troll green     | `#3f5a37`, shadow `#22331b`                                 | Troll skin: a dark green, never blue or grey                         |
+| Brown leather   | `#955627`, shadow `#562a0c`                                 | caps, straps, loincloths, kilts, satchels, hides, the Troll's smock  |
+| Dark brown wood | `#391501` to `#642b03`                                      | the fireworks cart, the Orc Brute's shield, hut planks               |
+| Gunmetal scrap  | `#6c6d6a`, `#47545b`, `#313a45`                             | helmets, blades, the buggy's body, the megaphone, huts and the tower |
+| Rust            | `#925432`, `#8a4625`                                        | the pot helmet, streaks on the buggy, hut roofs: an accent           |
+| Hazard yellow   | `#fbc208` on near-black                                     | small stripes on things that explode only                            |
+| Rocket paper    | red, orange, yellow, blue, green with cream cones `#fee388` | the fireworks cart only                                              |
+
+- **No garment recolour.** A Goblin unit, city or portrait looks the same
+  for every player: no owner area, no mask (`fixedColours` in the
+  registry). The player is read from the base plate under the unit, the
+  pennant on a city, the territory border and the interface.
+- **Rust, brown and wood are allowed.** The "no rust, no brown, no wood"
+  rules below existed to protect the red key colour of the mask; with no
+  mask they are lifted for this look.
+- **Hazard stripes are rare.** None on the basic Goblin, the Wolf Rider, the
+  Orcs or the Troll; one band on the Bomb Chucker's bomb and one small panel
+  on the Scrap Buggy. Hazard yellow is close to the Human gold (difference 14) and to the Gold player colour (20), so it is never a filled area.
+- **Ships** are shared by every faction and are not converted.
+
+| Role                      | New look (silhouette, canvas and anchor unchanged)                                                                    |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Goblin (`FIGHTER`)        | bare olive chest and limbs, a brown leather cap, two crossed straps, a loincloth; no stripe                           |
+| Wolf Rider (`RAIDER`)     | bare-chested rider with a brown cap and one strap; a brown hide saddle blanket on the unchanged grey wolf             |
+| Bomb Chucker (`MARKSMAN`) | a rusted pot helmet with goggles, brown straps and a big satchel; one hazard band on the bomb                         |
+| Orc Brute (`GUARD`)       | dull dark green skin, bare chest with crossed straps, a brown kilt, a round shield of dark planks, iron rim           |
+| Orc Warboss (`CAPTAIN`)   | moss green face, horned gunmetal helmet, a brown hide cape with fur shoulders, the tin megaphone                      |
+| Rocket Cart (`CATAPULT`)  | five paper fireworks rockets roped on a dark brown plank cart; an olive goblin leans out with a lit match             |
+| Scrap Buggy (`KNIGHT`)    | a gunmetal scrap body with rust streaks and one small hazard panel, rusted hubs; olive driver in a brown cap          |
+| Troll (`JUGGERNAUT`)      | dark green skin, a plain brown hide smock with two stitched patches, the stone club                                   |
+| City 1 to 3               | hide tents, huts of rusted sheet iron and gunmetal scrap, a bare pole (lookout pole, tower, big tent) for the pennant |
+
+Every piece is an `edit-image-pixen` edit of its accepted classic sprite (or
+of a step of the study), so an edit sent only its instruction and the prompt
+fragment below was not used. The subject lines `UNIT:GOBLIN:<ROLE>/SCRAP`,
+`PORTRAIT:GOBLIN:<ROLE>/SCRAP` and `CITY:GOBLIN:<level>/SCRAP` in
+[`GOBLIN.json`](../../../scripts/art/chibi/subjects/GOBLIN.json) describe
+the new look in full; a fresh creation would combine them with the prompt
+fragment below. What the edits taught is in the
+[production notes](../VISUAL_DIRECTION_2026-10.md#what-the-goblin-batch-made): give
+colours as hex values, start with "Recolour only …", one part per edit, and
+never write "grey" for skin.
+
 ## Identity
 
 Scrappy pulp goblins, big orcs and one enormous troll, drawn as the same
@@ -33,11 +96,48 @@ explosions that hit friend and foe alike.
 
 ## Prompt fragment
 
-58 words. It names only a mood, materials, surfaces, colours and small
-motifs: no figure (not even "goblin", "orc" or "troll"), no skin, no bombs
-and no place or building. Skin colours and bombs belong in the subject
-lines, because layer 3 also reaches portraits and icons, and Pixen draws
-every noun it is given.
+The fragment of the new direction (bead `pulp_wars-3tq.9`), 60 words. Like
+the one it replaces it names only a mood, materials, surfaces, colours and
+small motifs: no figure (not even "goblin", "orc" or "troll"), no skin, no
+bombs and no place or building. Skin colours and bombs belong in the
+subject lines, because layer 3 also reaches portraits and icons, and Pixen
+draws every noun it is given. It applies to recipes generated from now on;
+no accepted asset was generated with it (the production art is edits, which
+send only their instruction), so treat it as unproven until a fresh
+creation uses it.
+
+```text
+Faction: rowdy, ramshackle scrap-heap raiders, loud and silly, never grim.
+Everything is made of warm mid-brown leather straps and stitched hide, dark
+brown planks and dented riveted gunmetal scrap iron with orange-brown rust,
+with bolts, stitches and soot smudges as details and small hazard
+yellow-and-black stripes on things that explode; leather is shaded dark
+brown, iron with darker blue-grey.
+```
+
+## Negative fragment
+
+Firearms and modern vehicle parts keep the era: Goblin bangs come only from
+round bombs and fireworks. Skulls and bones belong to the Undead. Glows and
+lime green sit close to the Teal and Violet player colours or to the grass.
+Wood, brown and rust are no longer excluded: they are the palette. Red
+cloth is, because the previous look wore the key red and Pixen still
+reaches for it; bright orange leather and big yellow areas are what the two
+study passes had to be steered away from.
+
+```text
+gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome,
+headlights, neon, glowing green, lime green, cyan glow, purple magic glow,
+skull, bones, blood, gore, horror, red cloth, red flag, bright orange
+leather, yellow cloth, maroon
+```
+
+## Previous fragments (classic look)
+
+The classic batches `goblin`, `5-goblin` and `cities-goblin` were generated
+with these; their records and receipts keep the text as sent. A new recipe
+in one of those batches (owner colour on a mask) would need them back: the
+fragment above has no red garment and allows brown.
 
 ```text
 Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim.
@@ -47,16 +147,9 @@ and soot smudges as details; iron is shaded with darker blue-grey, leather
 with charcoal grey, cloth with a deeper tone of its own colour, never brown.
 ```
 
-## Negative fragment
-
-Firearms and modern vehicle parts keep the era: Goblin bangs come only from
-round bombs and rockets. Wood is excluded because every Goblin handle,
-wheel, frame and club is iron or stone, and wood drifts brown. Skulls and
-bones belong to the Undead. Glows and lime green sit close to the Teal and
-Violet player colours or to the grass. It ends with the red-brown drift
-words the dry run needed for a metal and leather faction; **rust** stays
-here as a drift word even though the Goblins are scrappy (see
-[Palette](#palette)).
+Negative (wood was excluded because every classic Goblin handle, wheel,
+frame and club is iron or stone and wood drifts brown; **rust** was a drift
+word even though the Goblins are scrappy):
 
 ```text
 gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome,
@@ -67,6 +160,10 @@ shading, red-brown, maroon
 ```
 
 ## Palette
+
+**Classic look.** This section and the ones after it describe the previous,
+player-coloured art (the palette of the default look is in
+[New direction](#new-direction-october-2026-scrap-raiders-in-fixed-colours)).
 
 - **Owner colour:** only the shared key colour `#d8262c`, on a patched
   garment that covers the torso and legs (tunic, smock, saddle blanket) plus

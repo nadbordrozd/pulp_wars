@@ -1,5 +1,8 @@
 /**
- * Goblin art review evidence (bead pulp_wars-0ao.8):
+ * Goblin art review evidence (bead pulp_wars-0ao.8; since bead
+ * pulp_wars-3tq.9 the live look draws the Goblin production art of batch
+ * `direction-goblin`, so every in-game capture here shows it, and the
+ * sheets show it beside the classic, player-coloured sprites):
  *
  *   npm run art:chibi-goblin-review -- [--port 6301] [--skip-capture]
  *       [--skip-batch-review]
@@ -12,14 +15,18 @@
  *                            eight Goblin units for a Goblin viewer and rival
  *                            (scripts/art/chibi/review-scene-v7.ts), and
  *                            index.json; skipped with --skip-batch-review
- *   faction-units-1x.png     every Goblin unit on grass at 1:1 beside the
- *                            Human and Undead unit of the same role (both in
- *                            Coral), then the Goblin in the key colour and
- *                            for the four player colours (Coral, Teal, Gold,
- *                            Violet) through the runtime mask recolour
- *   faction-units-x4.png     the same at x4 nearest, plus the owner mask
- *   faction-portraits-1x.png the PORTRAIT:GOBLIN:<ROLE> busts (batch
- *   faction-portraits-x4.png 5-goblin) on the dark dock panel, likewise
+ *   faction-units-1x.png     every Goblin unit on grass at 1:1: the live
+ *                            sprite (fixed colours, the same for every
+ *                            player) beside the live Human unit and the
+ *                            Undead unit (Coral) of the same role, then the
+ *                            classic sprite in the key colour and for the
+ *                            four player colours (Coral, Teal, Gold, Violet)
+ *                            through the runtime mask recolour
+ *   faction-units-x4.png     the same at x4 nearest, plus the classic
+ *                            sprite's owner mask
+ *   faction-portraits-1x.png the PORTRAIT:GOBLIN:<ROLE> busts (live: batch
+ *   faction-portraits-x4.png direction-goblin; classic: batch 5-goblin) on
+ *                            the dark dock panel, likewise
  *   goblin-match-*.png       a fresh Goblin-vs-Undead match with ?art=chibi
  *                            (seed 67): the board at zoom 1 and 0.75 on
  *                            desktop and phone, and on desktop the unit dock
@@ -56,6 +63,9 @@ import {
 const ROOT = process.cwd();
 const BATCH = "goblin";
 const PORTRAIT_BATCH = "5-goblin";
+/** The live look's Goblin and Human art (beads pulp_wars-3tq.9 and .5). */
+const LIVE_BATCH = "direction-goblin";
+const LIVE_HUMAN_BATCH = "direction-human";
 const TILE = 80;
 
 const ROLES = [
@@ -227,7 +237,14 @@ async function piece(
 /** Anchors of earlier batches' units (batch-2 Humans, the Undead). */
 async function knownAnchors(): Promise<Map<string, Point>> {
   const anchors = new Map<string, Point>();
-  for (const batch of ["1", "2", "undead", BATCH]) {
+  for (const batch of [
+    "1",
+    "2",
+    "undead",
+    BATCH,
+    LIVE_BATCH,
+    LIVE_HUMAN_BATCH,
+  ]) {
     const manifest = await loadBatchManifest(ROOT, batch);
     for (const asset of manifest.assets)
       if (asset.anchor !== undefined) anchors.set(asset.id, asset.anchor);
@@ -287,17 +304,22 @@ async function factionSheet(
   title: string,
   rows: readonly {
     readonly label: string;
-    readonly human: Piece;
+    /** The live Human sprite: fixed colours, drawn as authored. */
+    readonly human: { readonly master: RgbaRaster; readonly anchor: Point };
     readonly undead: Piece;
+    /** The live Goblin sprite: fixed colours, drawn as authored. */
+    readonly live: { readonly master: RgbaRaster; readonly anchor: Point };
+    /** The classic Goblin sprite with its owner mask. */
     readonly goblin: Piece;
   }[],
   k: number,
   cell: (item: RgbaRaster, at: Point, k: number) => Canvas,
 ): Promise<void> {
   const columns = [
-    "Human",
+    "Human live",
     "Undead",
-    "Key",
+    "Goblin live",
+    "Classic key",
     ...OWNERS.map(([name]) => name.charAt(0) + name.slice(1).toLowerCase()),
     ...(k > 1 ? ["Mask"] : []),
   ];
@@ -322,14 +344,12 @@ async function factionSheet(
     labels.push({ text: entry.label, left: GAP, top });
     const coral = RULESET7_PLAYER_COLORS.CORAL;
     const items: [RgbaRaster, Point][] = [
-      [
-        recoloured(entry.human.master, entry.human.mask, coral),
-        entry.human.anchor,
-      ],
+      [entry.human.master, entry.human.anchor],
       [
         recoloured(entry.undead.master, entry.undead.mask, coral),
         entry.undead.anchor,
       ],
+      [entry.live.master, entry.live.anchor],
       [entry.goblin.master, entry.goblin.anchor],
       ...OWNERS.map(([, colour]): [RgbaRaster, Point] => [
         recoloured(entry.goblin.master, entry.goblin.mask, colour),
@@ -365,6 +385,31 @@ async function sheets(directory: string): Promise<string[]> {
   ).assets;
   const manifest = await loadBatchManifest(ROOT, BATCH);
   const portraitManifest = await loadBatchManifest(ROOT, PORTRAIT_BATCH);
+  const liveRecords = (
+    await loadRecords(productionLayout(ROOT, LIVE_BATCH), LIVE_BATCH)
+  ).assets;
+  const liveHumanRecords = (
+    await loadRecords(
+      productionLayout(ROOT, LIVE_HUMAN_BATCH),
+      LIVE_HUMAN_BATCH,
+    )
+  ).assets;
+  /** An accepted fixed-colour sprite of the live look, on its anchor. */
+  const livePiece = async (
+    records: Readonly<Record<string, AssetRecord>>,
+    id: string,
+    anchor?: Point,
+  ): Promise<{ readonly master: RgbaRaster; readonly anchor: Point }> => {
+    const record = records[id];
+    if (record?.status !== "ACCEPTED" || record.mask !== undefined)
+      throw new Error(`${id} has no accepted, fixed-colour record`);
+    const raster = await readRaster(path.join(ROOT, record.master.path));
+    return {
+      master: raster,
+      anchor: anchor ??
+        anchors.get(id) ?? { x: raster.width / 2, y: raster.height - TILE / 2 },
+    };
+  };
   const grass = await readRaster(
     path.join(ROOT, "public/assets/chibi/terrain/chibi-grass-1.png"),
   );
@@ -384,13 +429,11 @@ async function sheets(directory: string): Promise<string[]> {
     const unitPath = (id: string) => `public/assets/chibi/units/chibi-${id}`;
     const portraitPath = (id: string) =>
       `public/assets/chibi/portraits/chibi-portrait-${id}`;
+    const slug = unitSpec.id.replace(/^chibi-goblin-/, "");
     unitRows.push({
-      label: `${name} (${role}, ${unit.master.width} x ${unit.master.height}, owner ${((unit.mask?.qa.coverage ?? 0) * 100).toFixed(1)}%)`,
-      human: await piece(
-        `${unitPath(human)}.png`,
-        `${unitPath(human)}.mask.png`,
-        anchors.get(`chibi-${human}`),
-      ),
+      label: `${name} (${role}, ${unit.master.width} x ${unit.master.height}; classic owner area ${((unit.mask?.qa.coverage ?? 0) * 100).toFixed(1)}%)`,
+      human: await livePiece(liveHumanRecords, `chibi-direction-${human}`),
+      live: await livePiece(liveRecords, `chibi-direction-goblin-${slug}`),
       undead: await piece(
         `${unitPath(undead)}.png`,
         `${unitPath(undead)}.mask.png`,
@@ -403,10 +446,15 @@ async function sheets(directory: string): Promise<string[]> {
       ),
     });
     portraitRows.push({
-      label: `${name} portrait (owner ${((bust.mask?.qa.coverage ?? 0) * 100).toFixed(1)}%, mask ${bust.mask?.source ?? "?"})`,
-      human: await piece(
-        `${portraitPath(human)}.png`,
-        `${portraitPath(human)}.mask.png`,
+      label: `${name} portrait (classic owner area ${((bust.mask?.qa.coverage ?? 0) * 100).toFixed(1)}%, mask ${bust.mask?.source ?? "?"})`,
+      human: await livePiece(
+        liveHumanRecords,
+        `chibi-direction-portrait-${human}`,
+        { x: 24, y: 24 },
+      ),
+      live: await livePiece(
+        liveRecords,
+        `chibi-direction-portrait-goblin-${slug}`,
         { x: 24, y: 24 },
       ),
       undead: await piece(
@@ -429,7 +477,7 @@ async function sheets(directory: string): Promise<string[]> {
     const unitsFile = path.join(directory, `faction-units-${suffix}.png`);
     await factionSheet(
       unitsFile,
-      `Goblin units at ${k === 1 ? "1:1" : "x4"} (Human, Undead: Coral)`,
+      `Goblin units at ${k === 1 ? "1:1" : "x4"} (live look, then the classic sprite per player; Undead: Coral)`,
       unitRows,
       k,
       board,
@@ -440,7 +488,7 @@ async function sheets(directory: string): Promise<string[]> {
     );
     await factionSheet(
       portraitsFile,
-      `Goblin portraits at ${k === 1 ? "1:1" : "x4"} (Human, Undead: Coral)`,
+      `Goblin portraits at ${k === 1 ? "1:1" : "x4"} (live look, then the classic bust per player; Undead: Coral)`,
       portraitRows,
       k,
       dock,
@@ -851,7 +899,7 @@ async function main(): Promise<void> {
       stopDevServer(server);
     }
     captureNote =
-      "A fresh Goblin (seat 0) vs Undead (seat 1) match, seed 67, captured from the running game with ?art=chibi.";
+      "A fresh Goblin (seat 0) vs Undead (seat 1) match, seed 67, captured from the running game with ?art=chibi in the default look: the Goblin production art of bead pulp_wars-3tq.9.";
   }
   const images = await Promise.all(
     outputs.map(async (file) => {
@@ -870,9 +918,10 @@ async function main(): Promise<void> {
     `${JSON.stringify(
       {
         bead: "pulp_wars-0ao.8",
-        batches: [BATCH, PORTRAIT_BATCH],
+        liveBead: "pulp_wars-3tq.9",
+        batches: [BATCH, PORTRAIT_BATCH, LIVE_BATCH],
         owners: Object.fromEntries(OWNERS),
-        note: "DPR 1 masters; every enlargement is integer nearest-neighbour. Owner colours use the runtime mask recolour.",
+        note: "DPR 1 masters; every enlargement is integer nearest-neighbour. The live Goblin and Human sprites have fixed colours and are drawn as authored for every player; the classic Goblin sprites (the developer option Classic look) use the runtime mask recolour.",
         captures: captureNote,
         images,
       },

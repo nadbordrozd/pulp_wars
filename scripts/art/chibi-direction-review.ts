@@ -1,9 +1,13 @@
 /**
  * Review evidence for the production art of the new visual direction (bead
- * pulp_wars-3tq.5, batch `direction-human`):
+ * pulp_wars-3tq.5, batch `direction-human`, and bead pulp_wars-3tq.9, batch
+ * `direction-goblin`):
  *
  *   CHROME_PATH=... npm run art:chibi-direction-review -- [--port 6471] [--skip-capture]
  *   CHROME_PATH=... npm run art:chibi-direction-review -- --farms-only --out DIR
+ *   CHROME_PATH=... npm run art:chibi-direction-review -- --goblin-only
+ *
+ * `--goblin-only` writes only the Goblin evidence (the second list below).
  *
  * `--farms-only` writes only the four `ingame-farms-*` captures, into DIR
  * (default: the review directory), and leaves the sheets and index.json
@@ -42,6 +46,37 @@
  *                                    buildings, a field under units
  *   index.json                       sizes and hashes
  *
+ * and art/pixellab/reviews/chibi-batch-direction-goblin/:
+ *
+ *   units-old-new-{1x,x4}.png        every Goblin unit: the classic sprite
+ *                                    (key red and Coral), the new one, and
+ *                                    the new Human, the Undead and the
+ *                                    Dinosaur unit of the same role
+ *   units-zoom-0.75.png              the 1:1 sheet at zoom step 0.75
+ *   portraits-old-new-{1x,x4}.png    every Goblin portrait, classic and new,
+ *                                    on the dock panel, beside the map sprite
+ *   cities-{1x,x4}.png               Goblin City 1-3 classic and new, with
+ *                                    the pennant at its recorded anchor,
+ *                                    beside the new Human city
+ *   showcase-goblin-{desktop,phone}-zoom-{1,0.75}.png
+ *                                    a real Showcase match in the default
+ *                                    look with a Goblin viewer against a
+ *                                    Human, an Undead and a Dinosaur seat
+ *   showcase-goblin-four-{desktop,phone}-zoom-{1,0.75}.png
+ *                                    the same with four Goblin seats
+ *   showcase-goblin-today-desktop-zoom-1.png  the Goblin match in the classic
+ *                                    look (the previous Goblin art)
+ *   showcase-goblin-{dock,tech}-desktop.png   the interface in the default look
+ *   ingame-goblin-{roster,mixed}-{desktop,phone}-zoom-{1,0.75}.png
+ *                                    the ROSTER and MIXED scenes of
+ *                                    scripts/art/goblin-direction/scene.ts
+ *                                    drawn by the real board host as the
+ *                                    game draws them: four Goblin players
+ *                                    with the whole roster and a garrisoned
+ *                                    city of each tier, and Goblin against
+ *                                    Human
+ *   index.json                       sizes and hashes
+ *
  * No PixelLab call is made. Captures start Vite on --port (never 6173).
  */
 import { spawn, type ChildProcess } from "node:child_process";
@@ -51,6 +86,11 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import sharp from "sharp";
+import {
+  RULESET7_PLAYER_COLORS,
+  parseHexColourV7,
+  recolourOwnerPixelsV7,
+} from "../../src/render/canvas/owner-recolour-v7";
 import {
   DIRECTION_FLAG_ANCHORS_V7,
   RECOMMENDED_DIRECTION_V7,
@@ -68,7 +108,20 @@ import {
 
 const ROOT = process.cwd();
 const BATCH = "direction-human";
+const GOBLIN_BATCH = "direction-goblin";
 const TILE = 80;
+
+/** Goblin role names as they appear in the asset ids. */
+const GOBLIN_NAMES = {
+  FIGHTER: ["Goblin", "goblin"],
+  RAIDER: ["Wolf Rider", "wolf-rider"],
+  MARKSMAN: ["Bomb Chucker", "bomb-chucker"],
+  GUARD: ["Orc Brute", "orc-brute"],
+  CAPTAIN: ["Orc Warboss", "orc-warboss"],
+  CATAPULT: ["Rocket Cart", "rocket-cart"],
+  KNIGHT: ["Scrap Buggy", "scrap-buggy"],
+  JUGGERNAUT: ["Troll", "troll"],
+} as const;
 
 const ROLES = [
   "FIGHTER",
@@ -250,7 +303,7 @@ async function writeGrid(
 async function acceptedMasters(): Promise<Map<string, string>> {
   const masters = new Map<string, string>();
   for (const batch of await listBatches(ROOT)) {
-    if (batch === BATCH) continue;
+    if (batch === BATCH || batch === GOBLIN_BATCH) continue;
     const manifest = await loadBatchManifest(ROOT, batch);
     if (manifest.dryRun) continue;
     const records = await loadRecords(productionLayout(ROOT, batch), batch);
@@ -275,6 +328,16 @@ async function sheets(directory: string): Promise<string[]> {
       throw new Error(`${id} has no accepted record`);
     return record.master.path;
   };
+  const goblinRecords = await loadRecords(
+    productionLayout(ROOT, GOBLIN_BATCH),
+    GOBLIN_BATCH,
+  );
+  const goblinMaster = (id: string): string => {
+    const record = goblinRecords.assets[id];
+    if (record?.status !== "ACCEPTED")
+      throw new Error(`${id} has no accepted record`);
+    return record.master.path;
+  };
   const files: string[] = [];
 
   // Units: today, new, and the same role of the other three factions.
@@ -292,6 +355,17 @@ async function sheets(directory: string): Promise<string[]> {
         background: "grass" as const,
       },
       ...(["UNDEAD", "GOBLIN", "DINOSAUR"] as const).flatMap((faction) => {
+        // The Goblins are converted (bead pulp_wars-3tq.9): their live art.
+        if (faction === "GOBLIN")
+          return [
+            {
+              image: goblinMaster(
+                `chibi-direction-goblin-${GOBLIN_NAMES[role][1]}`,
+              ),
+              label: "Goblin (new, fixed colours)",
+              background: "grass" as const,
+            },
+          ];
         const file = others.get(`UNIT:${faction}:${role}`);
         return file === undefined
           ? []
@@ -526,6 +600,188 @@ async function sheets(directory: string): Promise<string[]> {
   return files;
 }
 
+/** A classic owned sprite through the runtime mask recolour. */
+async function recolouredImage(
+  masterPath: string,
+  colour: string,
+): Promise<Exclude<Cell["image"], string>> {
+  const read = (file: string) =>
+    sharp(path.join(ROOT, file))
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+  const master = await read(masterPath);
+  const mask = await read(masterPath.replace(/\.png$/, ".mask.png"));
+  const owner = parseHexColourV7(colour);
+  if (owner === null) throw new Error(colour);
+  return {
+    data: Buffer.from(
+      recolourOwnerPixelsV7({
+        pixels: new Uint8ClampedArray(master.data),
+        width: master.info.width,
+        height: master.info.height,
+        mask: new Uint8ClampedArray(mask.data),
+        maskWidth: mask.info.width,
+        maskHeight: mask.info.height,
+        owner,
+      }),
+    ),
+    width: master.info.width,
+    height: master.info.height,
+  };
+}
+
+/** The Goblin sheets of bead pulp_wars-3tq.9 (batch `direction-goblin`). */
+async function goblinSheets(directory: string): Promise<string[]> {
+  const others = await acceptedMasters();
+  const human = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
+  const goblin = await loadRecords(
+    productionLayout(ROOT, GOBLIN_BATCH),
+    GOBLIN_BATCH,
+  );
+  const master = (
+    records: typeof goblin,
+    id: string,
+  ): { readonly path: string } => {
+    const record = records.assets[id];
+    if (record?.status !== "ACCEPTED")
+      throw new Error(`${id} has no accepted record`);
+    return { path: record.master.path };
+  };
+  const coral = RULESET7_PLAYER_COLORS.CORAL;
+  const files: string[] = [];
+
+  const unitRows: Row[] = [];
+  const portraitRows: Row[] = [];
+  for (const role of ROLES) {
+    const [title, name] = GOBLIN_NAMES[role];
+    const classic = `public/assets/chibi/units/chibi-goblin-${name}.png`;
+    const next = master(goblin, `chibi-direction-goblin-${name}`);
+    unitRows.push({
+      title,
+      cells: [
+        { image: classic, label: "classic (key red)", background: "grass" },
+        {
+          image: await recolouredImage(classic, coral),
+          label: "classic (Coral)",
+          background: "grass",
+        },
+        { image: next.path, label: "new (every player)", background: "grass" },
+        {
+          image: master(human, `chibi-direction-${slug(role)}`).path,
+          label: "Human (new)",
+          background: "grass",
+        },
+        ...(["UNDEAD", "DINOSAUR"] as const).flatMap((faction) => {
+          const file = others.get(`UNIT:${faction}:${role}`);
+          return file === undefined
+            ? []
+            : [
+                {
+                  image: file,
+                  label: `${faction[0]}${faction.slice(1).toLowerCase()} (key red)`,
+                  background: "grass" as const,
+                },
+              ];
+        }),
+      ],
+    });
+    const bust = `public/assets/chibi/portraits/chibi-portrait-goblin-${name}.png`;
+    const nextBust = master(goblin, `chibi-direction-portrait-goblin-${name}`);
+    portraitRows.push({
+      title,
+      cells: [
+        { image: bust, label: "classic (key red)", background: "panel" },
+        {
+          image: await recolouredImage(bust, coral),
+          label: "classic (Coral)",
+          background: "panel",
+        },
+        { image: nextBust.path, label: "new", background: "panel" },
+        { image: next.path, label: "new map sprite", background: "grass" },
+        {
+          image: master(human, `chibi-direction-portrait-${slug(role)}`).path,
+          label: "Human (new)",
+          background: "panel",
+        },
+      ],
+    });
+  }
+  const box = { width: 108, height: 108 };
+  const units1x = path.join(directory, "units-old-new-1x.png");
+  files.push(await writeGrid(units1x, unitRows, box, 1));
+  files.push(
+    await writeGrid(
+      path.join(directory, "units-old-new-x4.png"),
+      unitRows,
+      box,
+      4,
+    ),
+  );
+  const meta = await sharp(units1x).metadata();
+  const zoomFile = path.join(directory, "units-zoom-0.75.png");
+  await sharp(units1x)
+    .resize(Math.round((meta.width ?? 0) * 0.75), null, { kernel: "nearest" })
+    .png({ compressionLevel: 9 })
+    .toFile(zoomFile);
+  files.push(zoomFile);
+  for (const scale of [1, 4])
+    files.push(
+      await writeGrid(
+        path.join(
+          directory,
+          `portraits-old-new-${scale === 1 ? "1x" : "x4"}.png`,
+        ),
+        portraitRows,
+        box,
+        scale,
+      ),
+    );
+
+  const cityRows: Row[] = [];
+  for (const level of [1, 2, 3] as const) {
+    const id = `chibi-direction-goblin-city-${level}`;
+    const classic = `public/assets/chibi/settlements/chibi-goblin-city-${level}.png`;
+    const flag = DIRECTION_FLAG_ANCHORS_V7[id];
+    const humanId = `chibi-direction-city-${level}`;
+    const humanFlag = DIRECTION_FLAG_ANCHORS_V7[humanId];
+    cityRows.push({
+      title: `Goblin City ${level}`,
+      cells: [
+        { image: classic, label: "classic (key red)", background: "grass" },
+        {
+          image: await recolouredImage(classic, coral),
+          label: "classic (Coral)",
+          background: "grass",
+        },
+        { image: master(goblin, id).path, label: "new", background: "grass" },
+        {
+          image: master(goblin, id).path,
+          label: "new, with the code-drawn pennant",
+          background: "grass",
+          ...(flag === undefined ? {} : { flag }),
+        },
+        {
+          image: master(human, humanId).path,
+          label: "Human (new), with its pennant",
+          background: "grass",
+          ...(humanFlag === undefined ? {} : { flag: humanFlag }),
+        },
+      ],
+    });
+  }
+  for (const scale of [1, 4])
+    files.push(
+      await writeGrid(
+        path.join(directory, `cities-${scale === 1 ? "1x" : "x4"}.png`),
+        cityRows,
+        { width: 108, height: 108 },
+        scale,
+      ),
+    );
+  return files;
+}
+
 // ------------------------------------------------------------ browser
 
 interface Connection {
@@ -646,6 +902,10 @@ async function screenshot(
 
 const BOARD = `document.querySelector('canvas.board-canvas-v7')`;
 const SCENE = `globalThis.__CHIBI_DIRECTION_SCENE__`;
+const GOBLIN_MATCHES = [
+  { name: "goblin", factions: ["GOBLIN", "ORIGINAL", "UNDEAD", "DINOSAUR"] },
+  { name: "goblin-four", factions: ["GOBLIN", "GOBLIN", "GOBLIN", "GOBLIN"] },
+] as const;
 const CLASSIC_LOOK_KEY = "pulpWars.ruleset7.boardClassicLook.v1";
 
 async function zoomTo(
@@ -725,7 +985,9 @@ async function captures(
   directory: string,
   baseUrl: string,
   farmsOnly = false,
-): Promise<string[]> {
+  /** Where the Goblin captures go; they are skipped without it. */
+  goblin?: { readonly directory: string; readonly only: boolean },
+): Promise<{ readonly human: string[]; readonly goblin: string[] }> {
   const chrome = process.env.CHROME_PATH;
   if (chrome === undefined || chrome === "")
     throw new Error(
@@ -753,6 +1015,7 @@ async function captures(
     { stdio: "ignore" },
   );
   const files: string[] = [];
+  const goblinFiles: string[] = [];
   try {
     let target: { webSocketDebuggerUrl: string } | undefined;
     for (let attempt = 0; attempt < 150 && target === undefined; attempt += 1) {
@@ -784,7 +1047,7 @@ async function captures(
         deviceScaleFactor: viewport.dpr,
         mobile: viewport.mobile,
       });
-      for (const match of MATCHES) {
+      for (const match of goblin?.only === true ? [] : MATCHES) {
         if (farmsOnly && match.name !== "human") continue;
         await launch(connection, url.href, match.factions, false);
         for (const step of farmsOnly ? [] : ["1", "0.75"]) {
@@ -856,7 +1119,94 @@ async function captures(
           `(() => { ${SCENE}.host.destroy(); document.querySelector('[data-chibi-review-scene]')?.remove(); delete ${SCENE}; return true; })()`,
         );
       }
-      if (viewport.name === "desktop" && !farmsOnly) {
+      if (goblin !== undefined && !farmsOnly) {
+        // The Goblin faction in the default look (bead pulp_wars-3tq.9).
+        for (const match of GOBLIN_MATCHES) {
+          await launch(connection, url.href, match.factions, false);
+          for (const step of ["1", "0.75"]) {
+            await zoomTo(connection, step, false);
+            goblinFiles.push(
+              await screenshot(
+                connection,
+                path.join(
+                  goblin.directory,
+                  `showcase-${match.name}-${viewport.name}-zoom-${step}.png`,
+                ),
+              ),
+            );
+          }
+          if (match.name !== "goblin") continue;
+          if (viewport.name === "desktop") {
+            await zoomTo(connection, "1", false);
+            await evaluate(connection, `${BOARD}.focus()`);
+            await pressKey(connection, "Enter");
+            await waitFor(
+              connection,
+              `document.querySelector('.v7-selection-dock h2') !== null`,
+            ).catch(() => undefined);
+            goblinFiles.push(
+              await screenshot(
+                connection,
+                path.join(goblin.directory, "showcase-goblin-dock-desktop.png"),
+              ),
+            );
+            await pressKey(connection, "Escape");
+            await evaluate(
+              connection,
+              `Array.from(document.querySelectorAll('button')).find((button) => button.textContent?.trim() === 'Tech')?.click()`,
+            );
+            await delay(500);
+            goblinFiles.push(
+              await screenshot(
+                connection,
+                path.join(goblin.directory, "showcase-goblin-tech-desktop.png"),
+              ),
+            );
+            await pressKey(connection, "Escape");
+          }
+          // The whole roster for four Goblin players with a garrisoned city
+          // of each tier, and Goblin against Human, with the game's own art.
+          for (const kind of ["ROSTER", "MIXED"] as const) {
+            await evaluate(
+              connection,
+              `(async () => { const scene = await import('/scripts/art/goblin-direction/scene.ts'); ${SCENE} = scene.showGoblinStudySceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, { kind: ${JSON.stringify(kind)}, live: true }); return true; })()`,
+            );
+            await waitFor(connection, `${SCENE} !== undefined`);
+            for (const step of ["1", "0.75"]) {
+              await zoomTo(connection, step, true);
+              await delay(900);
+              goblinFiles.push(
+                await screenshot(
+                  connection,
+                  path.join(
+                    goblin.directory,
+                    `ingame-goblin-${kind.toLowerCase()}-${viewport.name}-zoom-${step}.png`,
+                  ),
+                ),
+              );
+            }
+            await evaluate(
+              connection,
+              `(() => { ${SCENE}.host.destroy(); document.querySelector('[data-chibi-review-scene]')?.remove(); delete ${SCENE}; return true; })()`,
+            );
+          }
+        }
+        if (viewport.name === "desktop") {
+          // The same Goblin match in the classic look (the previous art).
+          await launch(connection, url.href, GOBLIN_MATCHES[0].factions, true);
+          await zoomTo(connection, "1", false);
+          goblinFiles.push(
+            await screenshot(
+              connection,
+              path.join(
+                goblin.directory,
+                "showcase-goblin-today-desktop-zoom-1.png",
+              ),
+            ),
+          );
+        }
+      }
+      if (viewport.name === "desktop" && !farmsOnly && goblin?.only !== true) {
         // The same all-Human match in the classic look (the previous art).
         await launch(connection, url.href, MATCHES[0].factions, true);
         await zoomTo(connection, "1", false);
@@ -874,7 +1224,7 @@ async function captures(
     await delay(300);
     await rm(profile, { recursive: true, force: true }).catch(() => undefined);
   }
-  return files;
+  return { human: files, goblin: goblinFiles };
 }
 
 async function waitForServer(url: string): Promise<void> {
@@ -925,58 +1275,95 @@ async function main(): Promise<void> {
   if (farmsOnly) {
     const server = await startDevServer(port);
     try {
-      for (const file of await captures(
-        directory,
-        `http://localhost:${port}/`,
-        true,
-      ))
+      for (const file of (
+        await captures(directory, `http://localhost:${port}/`, true)
+      ).human)
         console.log(file);
     } finally {
       stopDevServer(server);
     }
     return;
   }
-  const outputs = await sheets(directory);
+  const goblinOnly = process.argv.includes("--goblin-only");
+  const goblinDirectory = reviewDirectory(ROOT, GOBLIN_BATCH);
+  await mkdir(goblinDirectory, { recursive: true });
+  const outputs = goblinOnly ? [] : await sheets(directory);
+  const goblinOutputs = await goblinSheets(goblinDirectory);
   let captureNote = "skipped (--skip-capture)";
+  let goblinCaptureNote = captureNote;
   if (!process.argv.includes("--skip-capture")) {
     const server = await startDevServer(port);
     try {
-      outputs.push(...(await captures(directory, `http://localhost:${port}/`)));
+      const captured = await captures(
+        directory,
+        `http://localhost:${port}/`,
+        false,
+        { directory: goblinDirectory, only: goblinOnly },
+      );
+      outputs.push(...captured.human);
+      goblinOutputs.push(...captured.goblin);
     } finally {
       stopDevServer(server);
     }
+    goblinCaptureNote =
+      "showcase-goblin-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look, with a Goblin viewer against a Human, an Undead and a Dinosaur seat; 'four' is four Goblin seats; 'today' is the Goblin match with Settings > Developer tools > Classic look (previous art) ON. ingame-goblin-*: the ROSTER and MIXED scenes of scripts/art/goblin-direction/scene.ts drawn by the real board host with the live direction and the game's own art (the Goblin production art of bead pulp_wars-3tq.9).";
     captureNote =
       "showcase-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look (the new visual direction, bead pulp_wars-3tq.6); 'human' is every seat Human, 'mixed' is Human, Undead, Goblin and Dinosaur; 'today' is the same all-Human match with Settings > Developer tools > Classic look (previous art) ON. ingame-farms-*: the FARMS patch of scripts/art/visual-direction/scene.ts drawn by the real board host with the live direction and the game's own art; the Farm is the vegetable beds the user chose (bead pulp_wars-9s0.7).";
   }
-  const images = await Promise.all(
-    outputs.map(async (file) => {
-      const bytes = await readFile(file);
-      const meta = await sharp(bytes).metadata();
-      return {
-        file: posix(file),
-        width: meta.width,
-        height: meta.height,
-        sha256: sha256(bytes),
-      };
-    }),
-  );
-  await writeFile(
-    path.join(directory, "index.json"),
-    `${JSON.stringify(
-      {
-        bead: "pulp_wars-3tq.5",
-        batch: BATCH,
-        note: "DPR 1 masters; every enlargement is integer nearest-neighbour. The new units, cities and portraits have no owner area: they are drawn as authored for every player.",
-        captures: captureNote,
-        images,
-      },
-      null,
-      2,
-    )}\n`,
-  );
-  for (const image of images)
-    console.log(`${image.file} ${image.width}x${image.height}`);
-  console.log(`Direction review evidence: ${posix(directory)}`);
+  const describe = (files: readonly string[]) =>
+    Promise.all(
+      files.map(async (file) => {
+        const bytes = await readFile(file);
+        const meta = await sharp(bytes).metadata();
+        return {
+          file: posix(file),
+          width: meta.width,
+          height: meta.height,
+          sha256: sha256(bytes),
+        };
+      }),
+    );
+  const note =
+    "DPR 1 masters; every enlargement is integer nearest-neighbour. The new units, cities and portraits have no owner area: they are drawn as authored for every player.";
+  for (const index of [
+    ...(goblinOnly
+      ? []
+      : [
+          {
+            directory,
+            bead: "pulp_wars-3tq.5",
+            batch: BATCH,
+            captures: captureNote,
+            files: outputs,
+          },
+        ]),
+    {
+      directory: goblinDirectory,
+      bead: "pulp_wars-3tq.9",
+      batch: GOBLIN_BATCH,
+      captures: goblinCaptureNote,
+      files: goblinOutputs,
+    },
+  ]) {
+    const images = await describe(index.files);
+    await writeFile(
+      path.join(index.directory, "index.json"),
+      `${JSON.stringify(
+        {
+          bead: index.bead,
+          batch: index.batch,
+          note,
+          captures: index.captures,
+          images,
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    for (const image of images)
+      console.log(`${image.file} ${image.width}x${image.height}`);
+    console.log(`Direction review evidence: ${posix(index.directory)}`);
+  }
 }
 
 main().catch((error: unknown) => {

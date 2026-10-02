@@ -1,0 +1,37 @@
+{
+  "id": "orc-warboss-scrap-edit-a",
+  "jobId": "4f7424d4-520f-428f-a60d-c7f5dbfb0c72",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-orc-warboss",
+    "subject": "UNIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80501,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the red parts: the red cape becomes dull mid-brown patched hide, colour #955627 with #562a0c shadows and a few darker stitched patches; the red tunic becomes the same brown leather; no red and no orange left on him. Do not touch his skin or face. Keep everything else exactly the same: the horned helmet, the shoulder plates, the tin megaphone, tusks, belt, boots, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the red parts: the red cape becomes dull mid-brown patched hide, colour #955627 with #562a0c shadows and a few darker stitched patches; the red tunic becomes the same brown leather; no red and no orange left on him. Do not touch his skin or face. Keep everything else exactly the same: the horned helmet, the shoulder plates, the tin megaphone, tusks, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the red parts: the red cape becomes dull mid-brown patched hide, colour #955627 with #562a0c shadows and a few darker stitched patches; the red tunic becomes the same brown leather; no red and no orange left on him. Do not touch his skin or face. Keep everything else exactly the same: the horned helmet, the shoulder plates, the tin megaphone, tusks, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the red parts: the red cape becomes dull mid-brown patched hide, colour #955627 with #562a0c shadows and a few darker stitched patches; the red tunic becomes the same brown leather; no red and no orange left on him. Do not touch his skin or face. Keep everything else exactly the same: the horned helmet, the shoulder plates, the tin megaphone, tusks, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "batch": "goblin",
+      "recipe": "orc-warboss-a-edit-3",
+      "candidate": 0,
+      "sha256": "4e59c5716e2e348a9ea7148b5489bfb1ef2e8906e05dc06d729fd7874ce8e939"
+    }
+  }
+}

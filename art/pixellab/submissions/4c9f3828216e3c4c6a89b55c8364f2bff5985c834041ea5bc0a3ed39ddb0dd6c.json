@@ -1,0 +1,36 @@
+{
+  "id": "portrait-scrap-buggy-skin-edit-a",
+  "jobId": "beb39412-6999-4196-b0ca-604c6273d7bf",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-scrap-buggy",
+    "subject": "PORTRAIT:GOBLIN:KNIGHT",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81611,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the driver's skin: his yellow face and ears become a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow. Do not touch his goggles or cap, and do not touch the buggy. Keep everything else exactly the same: the grey scrap metal body with its rust and hazard striped panels, the ram, wheels, exhaust and soot cloud, the brown leather cap, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the driver's skin: his yellow face and ears become a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow. Do not touch his goggles or cap, and do not touch the buggy. Keep everything else exactly the same: the grey scrap metal body with its rust and hazard striped panels, the ram, wheels, exhaust and soot cloud, the brown leather cap, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the driver's skin: his yellow face and ears become a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow. Do not touch his goggles or cap, and do not touch the buggy. Keep everything else exactly the same: the grey scrap metal body with its rust and hazard striped panels, the ram, wheels, exhaust and soot cloud, the brown leather cap, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the driver's skin: his yellow face and ears become a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow. Do not touch his goggles or cap, and do not touch the buggy. Keep everything else exactly the same: the grey scrap metal body with its rust and hazard striped panels, the ram, wheels, exhaust and soot cloud, the brown leather cap, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-scrap-buggy-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "574d400287c4f699a6df833bbfadc1cee0dcb3343d23f7608de42ff7af97f667"
+    }
+  }
+}

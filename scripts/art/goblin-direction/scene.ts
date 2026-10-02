@@ -18,8 +18,14 @@
  *   its role, for cross-faction contrast (hazard yellow against Human gold
  *   and against the Gold plate).
  *
- * `study: false` draws the same scene with the current Goblin sprites (the
+ * - ROSTER (bead pulp_wars-3tq.9): four Goblin players with the whole
+ *   roster, a damaged and a ready unit of most roles, and a Goblin city of
+ *   each tier with a garrison (the capital is the level-3 camp).
+ *
+ * `study: false` draws the same scene with the classic Goblin sprites (the
  * before of a before/after pair): only the three study sprites differ.
+ * `live: true` draws the scene exactly as the game does, with the Goblin
+ * production art of bead pulp_wars-3tq.9 (scripts/art/chibi-direction-review.ts).
  */
 import type {
   CityId,
@@ -43,7 +49,7 @@ import { liveBoardLookV7 } from "../../../src/render/canvas/live-board-look-v7";
 type Tile = PlayerViewV7["board"]["tiles"][number];
 type Seat = "A" | "B" | "C" | "D";
 
-export type GoblinStudySceneKindV7 = "FOUR" | "MIXED";
+export type GoblinStudySceneKindV7 = "FOUR" | "MIXED" | "ROSTER";
 
 const SEATS: readonly Seat[] = ["A", "B", "C", "D"];
 
@@ -66,6 +72,12 @@ const SEATING: Readonly<
     { faction: "GOBLIN", color: "TEAL" },
     { faction: "ORIGINAL", color: "VIOLET" },
   ],
+  ROSTER: [
+    { faction: "GOBLIN", color: "CORAL" },
+    { faction: "GOBLIN", color: "TEAL" },
+    { faction: "GOBLIN", color: "GOLD" },
+    { faction: "GOBLIN", color: "VIOLET" },
+  ],
 };
 
 const TERRAIN: Readonly<Record<string, TerrainIdV7>> = {
@@ -73,12 +85,20 @@ const TERRAIN: Readonly<Record<string, TerrainIdV7>> = {
   f: "FOREST",
   m: "MOUNTAIN",
 };
-/** F Goblin or Fighter, M Bomb Chucker or Marksman, C Rocket Cart or Catapult, K Knight. */
+/**
+ * F Goblin or Fighter, M Bomb Chucker or Marksman, C Rocket Cart or
+ * Catapult, K Scrap Buggy or Knight, R Wolf Rider, G Orc Brute, P Orc
+ * Warboss, J Troll.
+ */
 const ROLE: Readonly<Record<string, UnitRoleIdV7>> = {
   F: "FIGHTER",
   M: "MARKSMAN",
   C: "CATAPULT",
   K: "KNIGHT",
+  R: "RAIDER",
+  G: "GUARD",
+  P: "CAPTAIN",
+  J: "JUGGERNAUT",
 };
 
 /**
@@ -216,6 +236,63 @@ const LAYOUTS: Readonly<
       "g-/road/C:A:100:r",
       "g-/road/F:D:100",
       "g-/road/M:C:70",
+      "g-/road",
+      "g-",
+    ],
+  ],
+  ROSTER: [
+    [
+      "g-",
+      "g-/F:A:100:r",
+      "g-/F:B:100",
+      "g-/M:C:100",
+      "g-/M:D:100:r",
+      "g-/F:C:50",
+      "g-",
+    ],
+    [
+      "g-",
+      "g-/G:A:100",
+      "g-/G:B:60:r",
+      "g-/P:C:100",
+      "g-/P:D:100:r",
+      "g-/M:A:40",
+      "g-",
+    ],
+    [
+      "g-",
+      "g-/R:A:100:r",
+      "g-/R:B:100",
+      "g-/K:C:100",
+      "g-/K:D:50:r",
+      "g-/C:A:100",
+      "g-",
+    ],
+    ["f-", "f-/C:B:100:r", "g-/J:C:100", "g-", "g-/J:D:70:r", "f-", "f-"],
+    [
+      "gD",
+      "gD/city1/G:D:100",
+      "gB/K:B:100",
+      "gA/city3*/F:A:100",
+      "gA/P:A:100:r",
+      "gC/city2/M:C:100",
+      "gC/J:A:100",
+    ],
+    [
+      "m-",
+      "m-/F:D:100",
+      "m-/M:B:100:r",
+      "f-/G:C:100",
+      "f-/F:B:40",
+      "m-/P:B:100",
+      "m-",
+    ],
+    [
+      "g-",
+      "g-/road",
+      "g-/road/C:C:100",
+      "g-/road/R:D:100:r",
+      "g-/road/K:A:100",
       "g-/road",
       "g-",
     ],
@@ -444,8 +521,13 @@ export function goblinStudySceneViewV7(
 
 export interface GoblinStudySceneOptionsV7 {
   readonly kind: GoblinStudySceneKindV7;
-  /** The study's sample sprites; omitted or empty draws the current art. */
+  /** The study's sample sprites; omitted or empty draws the classic art. */
   readonly samples?: readonly ChibiArtAssetV7[];
+  /**
+   * Draws the scene with the game's own live look and art, the Goblin
+   * production art included (bead pulp_wars-3tq.9); `samples` is ignored.
+   */
+  readonly live?: boolean;
   /**
    * Selects the capital's cell: the review script finds that outline in the
    * capture to learn where the scene sits on screen.
@@ -476,8 +558,10 @@ export function showGoblinStudySceneV7(
     onCommand: () => undefined,
   });
   const scene = goblinStudySceneViewV7(live, options.kind);
-  // The look the game draws (bead pulp_wars-3tq.6); the study's sprites are
-  // added to its production art, so only the three Goblin units change.
+  // The look the game draws (bead pulp_wars-3tq.6). The study's panels use
+  // the Human production art plus the study's sprites, so "today" keeps the
+  // classic Goblin sprites and only the three study units change; `live`
+  // uses the game's whole registry, with the Goblin production art.
   const look = liveBoardLookV7("CHIBI");
   const samples = options.samples ?? [];
   const art = buildChibiArtRegistryV7([
@@ -502,7 +586,7 @@ export function showGoblinStudySceneV7(
     highContrast: false,
     artSet: "CHIBI",
     ...look,
-    ...(samples.length === 0 ? {} : { visualDirectionArt: art.registry }),
+    ...(options.live === true ? {} : { visualDirectionArt: art.registry }),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

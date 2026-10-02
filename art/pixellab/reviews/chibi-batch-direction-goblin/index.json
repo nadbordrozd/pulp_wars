@@ -1,0 +1,164 @@
+{
+  "bead": "pulp_wars-3tq.9",
+  "batch": "direction-goblin",
+  "note": "DPR 1 masters; every enlargement is integer nearest-neighbour. The new units, cities and portraits have no owner area: they are drawn as authored for every player.",
+  "captures": "showcase-goblin-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look, with a Goblin viewer against a Human, an Undead and a Dinosaur seat; 'four' is four Goblin seats; 'today' is the Goblin match with Settings > Developer tools > Classic look (previous art) ON. ingame-goblin-*: the ROSTER and MIXED scenes of scripts/art/goblin-direction/scene.ts drawn by the real board host with the live direction and the game's own art (the Goblin production art of bead pulp_wars-3tq.9).",
+  "images": [
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/units-old-new-1x.png",
+      "width": 832,
+      "height": 1080,
+      "sha256": "84883240e446f9e7d5efcb23518bb2dbd0b8253f9c700be3291115cdf0c17542"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/units-old-new-x4.png",
+      "width": 2776,
+      "height": 3672,
+      "sha256": "ce63f52188965230aed1e18e375a7c96e58fb42f0629c392b880ab1076200b85"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/units-zoom-0.75.png",
+      "width": 624,
+      "height": 810,
+      "sha256": "d3372b21782907f8a4197b0ce55c670db15e7b18ca112bb68220c51bd8975f25"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/portraits-old-new-1x.png",
+      "width": 716,
+      "height": 1080,
+      "sha256": "52009a6cdf0a456fc671d6cf778663aca24d882cb2cca0d19d2990a98f8e220a"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/portraits-old-new-x4.png",
+      "width": 2336,
+      "height": 3672,
+      "sha256": "becd90efefd0d4fdbdc7902d9c29541fbcae62e763e213d0a8b0cc1d05be9a02"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/cities-1x.png",
+      "width": 716,
+      "height": 410,
+      "sha256": "29a3c2d9a6e82a6219b3e3705689313108e3c4dcf81f6171eb759f2646b4abf6"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/cities-x4.png",
+      "width": 2336,
+      "height": 1382,
+      "sha256": "5bc4cc79014f84005c4fae2cf867419105d5daf10db97114c8dce31887b60496"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "abf218e11149d418bdcc9ce8fd1f2008658f7ea557cda264f15fd33e12be8576"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "55b9d205e6d692bd96cb374ea1d153522618ae3b664ad2322ae11f58af98b558"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-dock-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0aff6cf61542405bf7c9b71cc653d5cf9ae5378ffff37f77488e382d3e70fe81"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-tech-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7435898fe87d8cd90cd928f4b2f5f853ffacd4639253e3f97556536f53758b34"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/ingame-goblin-roster-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "870de2dbeccf3ffb29a80a1386592799d147ee53cce494711fd1fc73ed7607fb"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/ingame-goblin-roster-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7fcfa5b6496c2a4735bec4189653875f8d1dbe11091ab8db4a7ccf6cb0fe9c8b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/ingame-goblin-mixed-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2e6654aa3ad86a8104be4722566ca6209335736eb9469d8e6b44813bda44bdce"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/ingame-goblin-mixed-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "745bacffd2a48b89605397f67b4fe3d66c895be34c06e95a38794f50169bea70"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-four-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1f5e8fff45e505330fed6ba1217dbc9873b23ffb54d812faf476d9eb498b2433"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-four-desktop-zoom-0.75.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6bfa05ecbf0acb696e3674b22c47b36b2d3f9f6ce6c785098ca0d02be7778d2d"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-today-desktop-zoom-1.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2c6b9d653d643dc2a8231fe1736b0dd850e6e7a18ae0509d1907ebea1b09ef5b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "9559f569caf43e44ff6bfa6d12d2bf2cee4148d589e238b47fe3b917a1f86dd1"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "62aa47227d99937f7678494ba311e145c4bb614cb99419ceaeabac5915fac4bf"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/ingame-goblin-roster-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "4113d7b8e0935ac3b23e78246deb81af213be1c67dcabc6cd906b2ac56c6725b"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/ingame-goblin-roster-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "a95c3bc47ec337ba8e49a856dff44123bd64261eda435dea0b48401504b4f126"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/ingame-goblin-mixed-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "8365a81ea477e5d699384455fb8b3495c74bf822b60bb8544e4a5668e6584710"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/ingame-goblin-mixed-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "5d15aaaa3bd1f303096b1fa9771383f937c23eb0680f999b61099588f0e6f6cf"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-four-phone-zoom-1.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "661522fa8301d4ae21fd641134f6fb117d27def358a36e34dfa0669ea49d1dab"
+    },
+    {
+      "file": "art/pixellab/reviews/chibi-batch-direction-goblin/showcase-goblin-four-phone-zoom-0.75.png",
+      "width": 1170,
+      "height": 2532,
+      "sha256": "e95b77132685d0bb58ab53688f95f864d6edd28f4570bfe3603c6b8c8056edc8"
+    }
+  ]
+}

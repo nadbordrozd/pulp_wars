@@ -1,0 +1,36 @@
+{
+  "id": "scrap-buggy-skin-edit-a",
+  "jobId": "59df201e-1bc8-4153-9081-0ed417492b40",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-scrap-buggy",
+    "subject": "UNIT:GOBLIN:KNIGHT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80611,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the driver's skin: his face, ears and hands become a mid-tone olive green, colour #8a952f with #495508 shadows. Do not touch his eyes, grin, goggles or cap, and do not touch the buggy. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, the black wheels, the exhaust and the grey soot cloud, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the driver's skin: his face, ears and hands become a mid-tone olive green, colour #8a952f with #495508 shadows. Do not touch his eyes, grin, goggles or cap, and do not touch the buggy. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, the black wheels, the exhaust and the grey soot cloud, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the driver's skin: his face, ears and hands become a mid-tone olive green, colour #8a952f with #495508 shadows. Do not touch his eyes, grin, goggles or cap, and do not touch the buggy. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, the black wheels, the exhaust and the grey soot cloud, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the driver's skin: his face, ears and hands become a mid-tone olive green, colour #8a952f with #495508 shadows. Do not touch his eyes, grin, goggles or cap, and do not touch the buggy. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, the black wheels, the exhaust and the grey soot cloud, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "scrap-buggy-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "657caff5c74947a3ba48b3a95a1bc1d598a1ea4babe0cc6dcb43ea0d38fc3034"
+    }
+  }
+}

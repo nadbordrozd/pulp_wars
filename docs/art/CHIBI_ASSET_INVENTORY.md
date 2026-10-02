@@ -111,7 +111,12 @@ in the Undead badge's corner. Goblin Patrol Boats, Battleships and embarked
 transports use the Human subjects, with the badge. Prompts and recipes:
 [GOBLIN.md](factions/GOBLIN.md) and `scripts/art/chibi/subjects/GOBLIN.json`;
 review evidence: `npm run art:chibi-goblin-review` into
-`art/pixellab/reviews/chibi-batch-goblin/`. The programmatic placeholders of
+`art/pixellab/reviews/chibi-batch-goblin/`. Since bead `pulp_wars-3tq.9` the
+default look draws the fixed-colour art of batch `direction-goblin` for the
+same subjects (see
+[its section](#new-visual-direction-batch-direction-goblin-bead-pulp_wars-3tq9));
+the masked rasters of batches `goblin` and `5-goblin` are what the Classic
+look and a failed direction raster draw. The programmatic placeholders of
 bead `pulp_wars-0ao.4` and their generator were removed when this art was
 registered; their evidence stays in
 `art/pixellab/reviews/chibi-goblin-placeholders/`.
@@ -333,18 +338,49 @@ anchors are master pixels from the top-left corner
 **Not in the batch:** the Patrol Boat, the Battleship and the embarked
 transport (shared by every faction; unchanged), the Mine (part of the Mined
 Mountain terrain art; toned by code with the terrain), terrain, resources,
-and everything Undead, Goblin and Dinosaur.
+and everything Undead, Goblin and Dinosaur (the Goblins have their own
+batch, below).
+
+## New visual direction: batch `direction-goblin` (bead `pulp_wars-3tq.9`)
+
+Production art of the Goblin faction in the
+[new direction](VISUAL_DIRECTION_2026-10.md#16-goblin-production), live in
+the default look. The subjects are the Goblin faction subjects above; the
+rasters are registered in `CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7` of
+[`src/assets/chibi-direction-art-manifest.ts`](../../src/assets/chibi-direction-art-manifest.ts)
+and resolved before the classic Goblin art. None has an owner mask; every
+one is an edit of the classic sprite, on the same canvas, anchor and
+overflow.
+
+| Subject                                     | Asset id                                                       | Canvas   | Class           | Notes                                                     |
+| ------------------------------------------- | -------------------------------------------------------------- | -------- | --------------- | --------------------------------------------------------- |
+| `UNIT:GOBLIN:FIGHTER`, `MARKSMAN`, `GUARD`  | `chibi-direction-goblin-goblin`, `-bomb-chucker`, `-orc-brute` | 56 x 80  | `STANDARD_UNIT` | default anchor; `fixedColours`                            |
+| `UNIT:GOBLIN:CAPTAIN`                       | `chibi-direction-goblin-orc-warboss`                           | 56 x 80  | `STANDARD_UNIT` | anchor (27, 40), as the classic Warboss                   |
+| `UNIT:GOBLIN:RAIDER`                        | `chibi-direction-goblin-wolf-rider`                            | 72 x 88  | `LARGE_UNIT`    | default anchor                                            |
+| `UNIT:GOBLIN:CATAPULT`                      | `chibi-direction-goblin-rocket-cart`                           | 72 x 88  | `LARGE_UNIT`    | the fireworks cart; anchor (34, 48)                       |
+| `UNIT:GOBLIN:KNIGHT`                        | `chibi-direction-goblin-scrap-buggy`                           | 72 x 88  | `LARGE_UNIT`    | anchor (32, 48)                                           |
+| `UNIT:GOBLIN:JUGGERNAUT`                    | `chibi-direction-goblin-troll`                                 | 88 x 104 | `GIANT_UNIT`    | default anchor                                            |
+| `PORTRAIT:GOBLIN:<ROLE>` (the 8 land roles) | `chibi-direction-portrait-goblin-<name>`                       | 48 x 48  | `PORTRAIT`      | edits of the batch `5-goblin` busts; the cart whole       |
+| `CITY:GOBLIN:1`                             | `chibi-direction-goblin-city-1`                                | 88 x 96  | `SETTLEMENT`    | pennant anchor (62, 10), beside the lookout pole's knob   |
+| `CITY:GOBLIN:2`                             | `chibi-direction-goblin-city-2`                                | 96 x 100 | `SETTLEMENT`    | pennant anchor (48.5, 0), a 6 px pole on the tower's stub |
+| `CITY:GOBLIN:3`                             | `chibi-direction-goblin-city-3`                                | 96 x 104 | `SETTLEMENT`    | pennant anchor (50, 5), beside the big tent's pole        |
+
+Unlike the Human cities of batch `direction-human`, the Goblin cities keep
+the classic canvases and their upward overflow (16 to 24 px), so a pennant
+flies in the cell to the north. **Not in the batch:** the Kaboom! and
+WAAAGH! icons (batch `5-goblin`, unchanged) and the shared ships.
 
 ## Counts per batch
 
-| Batch             | Map subjects                                                                                           | Minimum rasters (with the variants above)                                                                                                             |
-| ----------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1                 | Grass, Forest, Mountain, Shallow and Deep Water, Village, City 1–3, Fighter, Marksman                  | about 19: 3 grass, 2–3 forest, 2–3 mountain, 2 + 2 water, 4 settlements, 2 units                                                                      |
-| 2                 | Raider, Guard, Captain, Catapult, Knight, Juggernaut                                                   | 6                                                                                                                                                     |
-| 3                 | 6 resources, Treasure, Farm, Lumber Camp, Port, Monument, Mined Mountain; Roads and Field Defense      | about 17 plus 2–3 mined mountains; Roads and Field Defense need a decision first                                                                      |
-| 4                 | Windmill, Sawmill, Forge, Workshop, Market, Shipyard, Patrol Boat, Battleship, Embarked form           | 9                                                                                                                                                     |
-| 5                 | portraits, 23 technology icons, action, reward and HUD art                                             | 8 portraits, 3 dedicated technology icons plus 5 reused portraits or actions, 13 action icons, 3 reward icons, 2 HUD icons; vector glyphs by decision |
-| `direction-human` | the 8 Human land units and their portraits, the 10 improvements, City 1–3, the Village (new direction) | 30                                                                                                                                                    |
+| Batch              | Map subjects                                                                                           | Minimum rasters (with the variants above)                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1                  | Grass, Forest, Mountain, Shallow and Deep Water, Village, City 1–3, Fighter, Marksman                  | about 19: 3 grass, 2–3 forest, 2–3 mountain, 2 + 2 water, 4 settlements, 2 units                                                                      |
+| 2                  | Raider, Guard, Captain, Catapult, Knight, Juggernaut                                                   | 6                                                                                                                                                     |
+| 3                  | 6 resources, Treasure, Farm, Lumber Camp, Port, Monument, Mined Mountain; Roads and Field Defense      | about 17 plus 2–3 mined mountains; Roads and Field Defense need a decision first                                                                      |
+| 4                  | Windmill, Sawmill, Forge, Workshop, Market, Shipyard, Patrol Boat, Battleship, Embarked form           | 9                                                                                                                                                     |
+| 5                  | portraits, 23 technology icons, action, reward and HUD art                                             | 8 portraits, 3 dedicated technology icons plus 5 reused portraits or actions, 13 action icons, 3 reward icons, 2 HUD icons; vector glyphs by decision |
+| `direction-human`  | the 8 Human land units and their portraits, the 10 improvements, City 1–3, the Village (new direction) | 30                                                                                                                                                    |
+| `direction-goblin` | the 8 Goblin land units and their portraits, Goblin City 1–3 (new direction)                           | 19                                                                                                                                                    |
 
 ## Flags the plan did not foresee
 

@@ -1,0 +1,37 @@
+{
+  "id": "portrait-bomb-chucker-scrap-edit-a",
+  "jobId": "dc4b3165-1761-4ed7-b85f-66eba4af68f3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-bomb-chucker",
+    "subject": "PORTRAIT:GOBLIN:MARKSMAN",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81201,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his clothes and the bomb: the red cap becomes a dented rusted iron pot helmet, keeping the goggles on its front; the red tunic becomes bare olive green shoulders with a dull mid-brown leather strap (#955627); the black bomb gets one band of hazard yellow and black stripes. No red left. Keep the face, ears, the bomb's shape and spark, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his clothes and the bomb: the red cap becomes a dented rusted iron pot helmet, keeping the goggles on its front; the red tunic becomes bare olive green shoulders with a dull mid-brown leather strap (#955627); the black bomb gets one band of hazard yellow and black stripes. No red left. Keep the face, ears, the bomb's shape and spark, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his clothes and the bomb: the red cap becomes a dented rusted iron pot helmet, keeping the goggles on its front; the red tunic becomes bare olive green shoulders with a dull mid-brown leather strap (#955627); the black bomb gets one band of hazard yellow and black stripes. No red left. Keep the face, ears, the bomb's shape and spark, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only his clothes and the bomb: the red cap becomes a dented rusted iron pot helmet, keeping the goggles on its front; the red tunic becomes bare olive green shoulders with a dull mid-brown leather strap (#955627); the black bomb gets one band of hazard yellow and black stripes. No red left. Keep the face, ears, the bomb's shape and spark, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-goblin",
+      "recipe": "portrait-goblin-bomb-chucker-a",
+      "candidate": 0,
+      "sha256": "f0a61f48420b8ded72e5ea91d7fb0fe502717a449b075bed24251dbf6a0947cc"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "bomb-chucker-leather-edit-e",
+  "jobId": "c781c05c-fab0-4003-aa40-d8655124331e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 79105,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his skin colour: the face, ears, chest, belly, arms and legs become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face is clearly visible; not black, not yellow. Keep everything else the same: the rusted pot helmet and goggles, the orange-brown leather straps and loincloth, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his skin colour: the face, ears, chest, belly, arms and legs become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face is clearly visible; not black, not yellow. Keep everything else the same: the rusted pot helmet and goggles, the orange-brown leather straps and loincloth, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his skin colour: the face, ears, chest, belly, arms and legs become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face is clearly visible; not black, not yellow. Keep everything else the same: the rusted pot helmet and goggles, the orange-brown leather straps and loincloth, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only his skin colour: the face, ears, chest, belly, arms and legs become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face is clearly visible; not black, not yellow. Keep everything else the same: the rusted pot helmet and goggles, the orange-brown leather straps and loincloth, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "bomb-chucker-leather-edit-c",
+      "candidate": 0,
+      "sha256": "6c8e1f6125a1eb987323b384ac18f6e881c360dfa96ddad09ab2b6ac61b1e9ca"
+    }
+  }
+}

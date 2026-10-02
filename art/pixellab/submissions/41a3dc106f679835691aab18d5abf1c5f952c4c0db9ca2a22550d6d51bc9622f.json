@@ -1,0 +1,37 @@
+{
+  "id": "troll-scrap-edit-b",
+  "jobId": "644da118-6bc2-4f84-b8da-90d6bfebd97a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-troll",
+    "subject": "UNIT:GOBLIN:JUGGERNAUT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 80702,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only two things. The big red smock becomes dull mid-brown hide, colour #955627 with #562a0c shadows and two darker stitched patches. His skin becomes a darker forest green, colour #3d6a2a with #264219 shadows: clearly green, not grey, not blue, the face still clearly visible. Keep everything else exactly the same: the moss, face, beard, tusks, wrist bands, stone club, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only two things. The big red smock becomes dull mid-brown hide, colour #955627 with #562a0c shadows and two darker stitched patches. His skin becomes a darker forest green, colour #3d6a2a with #264219 shadows: clearly green, not grey, not blue, the face still clearly visible. Keep everything else exactly the same: the moss, face, beard, tusks, wrist bands, stone club, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only two things. The big red smock becomes dull mid-brown hide, colour #955627 with #562a0c shadows and two darker stitched patches. His skin becomes a darker forest green, colour #3d6a2a with #264219 shadows: clearly green, not grey, not blue, the face still clearly visible. Keep everything else exactly the same: the moss, face, beard, tusks, wrist bands, stone club, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only two things. The big red smock becomes dull mid-brown hide, colour #955627 with #562a0c shadows and two darker stitched patches. His skin becomes a darker forest green, colour #3d6a2a with #264219 shadows: clearly green, not grey, not blue, the face still clearly visible. Keep everything else exactly the same: the moss, face, beard, tusks, wrist bands, stone club, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "batch": "goblin",
+      "recipe": "troll-a-edit-2",
+      "candidate": 0,
+      "sha256": "ad3d8676773d8c6c5dde3c1e5bee1f8863b22950c3b808e243db879cdbeba82d"
+    }
+  }
+}

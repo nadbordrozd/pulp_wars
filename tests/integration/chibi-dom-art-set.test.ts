@@ -376,6 +376,112 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     classic.app.destroy();
   });
 
+  it("draws the Goblin direction art by default, the classic Goblin art in the Classic look and LEGACY art in LEGACY, and falls back per piece (pulp_wars-3tq.9)", () => {
+    const identity = (): HTMLImageElement | null =>
+      document.querySelector<HTMLImageElement>(".v7-identity-art img");
+    const assetIds = (selector: string): (string | undefined)[] =>
+      [...document.querySelectorAll<HTMLImageElement>(selector)].map(
+        (image) => image.dataset.chibiAssetId,
+      );
+    // A Goblin unit shows the direction's sprite as authored: fixed colours,
+    // so the master is used and nothing is recoloured to the owner.
+    const goblin = mount(goblinShowcaseFixtureV7(), "CHIBI");
+    for (const [at, id] of [
+      [GOBLIN_SHOWCASE_V7.kaboom, "chibi-direction-goblin-goblin"],
+      [GOBLIN_SHOWCASE_V7.warboss, "chibi-direction-goblin-orc-warboss"],
+      [GOBLIN_SHOWCASE_V7.troll, "chibi-direction-goblin-troll"],
+      [GOBLIN_SHOWCASE_V7.scrapBuggy, "chibi-direction-goblin-scrap-buggy"],
+      [GOBLIN_SHOWCASE_V7.rocketCart, "chibi-direction-goblin-rocket-cart"],
+      [GOBLIN_SHOWCASE_V7.bombChucker, "chibi-direction-goblin-bomb-chucker"],
+    ] as const) {
+      goblin.select(at);
+      expect(identity()?.dataset.chibiAssetId, id).toBe(id);
+      expect(identity()?.getAttribute("src"), id).toBe(
+        "data:image/test;216,38,44",
+      );
+      // Its own faction art: no stand-in badge.
+      expect(document.querySelector(".v7-identity-art .v7-goblin-badge")).toBe(
+        null,
+      );
+    }
+    // The Human rival keeps the Human direction art.
+    goblin.select(GOBLIN_SHOWCASE_V7.enemyFighter);
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-direction-fighter");
+    // The technology tree's unit cards are the Goblin direction sprites.
+    document.querySelector<HTMLButtonElement>('[data-action="tech"]')?.click();
+    expect(
+      document.querySelector<HTMLImageElement>('[data-action="tech-drill"] img')
+        ?.dataset.chibiAssetId,
+    ).toBe("chibi-direction-goblin-orc-brute");
+    goblin.app.destroy();
+    // The city dock and its training cards (a fresh Goblin capital with
+    // room to train): the Goblin city and portraits, never the Human ones.
+    const arena = () =>
+      undeadUiArenaV7(
+        [{ seat: 0, role: "CAPTAIN", at: { x: 7, y: 7 } }],
+        [],
+        ["GOBLIN", "ORIGINAL"],
+      );
+    const city = mount(arena(), "CHIBI");
+    city.selectCapital();
+    const cityArt = assetIds(".v7-action-card img, .v7-selection-dock img");
+    expect(
+      cityArt.filter((id) => id?.startsWith("chibi-direction-goblin-city-")),
+    ).not.toEqual([]);
+    const portraits = cityArt.filter((id) => id?.includes("portrait"));
+    expect(portraits.length).toBeGreaterThan(0);
+    for (const id of portraits)
+      expect(id).toMatch(/^chibi-direction-portrait-goblin-/);
+    expect(cityArt).not.toContain("chibi-direction-city-1");
+    expect(cityArt.filter((id) => id?.startsWith("chibi-goblin-"))).toEqual([]);
+    city.app.destroy();
+
+    // A direction raster that fails to load falls back to the classic
+    // Goblin sprite of that piece alone, in the owner's colour.
+    const failing = mount(
+      goblinShowcaseFixtureV7(),
+      "CHIBI",
+      environment("chibi-direction-goblin-goblin."),
+    );
+    failing.select(GOBLIN_SHOWCASE_V7.kaboom);
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-goblin-goblin");
+    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    failing.select(GOBLIN_SHOWCASE_V7.troll);
+    expect(identity()?.dataset.chibiAssetId).toBe(
+      "chibi-direction-goblin-troll",
+    );
+    failing.app.destroy();
+
+    // The developer option returns the interface to the previous art.
+    const classic = mount(arena(), "CHIBI", environment(), undefined, {
+      getItem: (key: string) =>
+        key === "pulpWars.ruleset7.boardClassicLook.v1"
+          ? '{"classic":true}'
+          : null,
+      setItem: () => undefined,
+      removeItem: () => undefined,
+    });
+    classic.select({ x: 7, y: 7 });
+    expect(identity()?.dataset.chibiAssetId).toBe("chibi-goblin-orc-warboss");
+    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    classic.selectCapital();
+    const classicArt = assetIds(".v7-action-card img, .v7-selection-dock img");
+    expect(
+      classicArt.filter((id) => id?.startsWith("chibi-direction-goblin-")),
+    ).toEqual([]);
+    expect(
+      classicArt.filter((id) => id?.startsWith("chibi-goblin-city-")),
+    ).not.toEqual([]);
+    classic.app.destroy();
+
+    // LEGACY never draws any of it.
+    const legacy = mount(goblinShowcaseFixtureV7(), "LEGACY");
+    legacy.select(GOBLIN_SHOWCASE_V7.kaboom);
+    expect(document.body.innerHTML).not.toContain("chibi-direction-goblin");
+    expect(document.body.innerHTML).not.toContain("v7-chibi-art");
+    legacy.app.destroy();
+  });
+
   it("draws the Goblin Kaboom! and WAAAGH! command icons in CHIBI and keeps the code-drawn bomb in LEGACY", () => {
     const bomb = () =>
       document.querySelector(

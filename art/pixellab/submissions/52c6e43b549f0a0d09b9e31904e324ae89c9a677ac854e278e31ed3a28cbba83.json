@@ -1,0 +1,37 @@
+{
+  "id": "goblin-city-1-scrap-edit-b",
+  "jobId": "45fb8e58-938a-49f9-ab93-4e5033b5a13a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-city-1",
+    "subject": "CITY:GOBLIN:1",
+    "faction": "GOBLIN",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 82002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only: the red tents become dull tan hide tents (#9b8461, shadows #5b4b36) with darker stitched patches; the pale grey hut becomes rusted iron sheets (#8a4a2a) and dull gunmetal scrap; the red flag cloth on the lookout pole is removed, but the tall lookout pole and its small basket platform stay, in dark gunmetal iron; no red left. Keep every building's shape and place, the size, black outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Recolour only: the red tents become dull tan hide tents (#9b8461, shadows #5b4b36) with darker stitched patches; the pale grey hut becomes rusted iron sheets (#8a4a2a) and dull gunmetal scrap; the red flag cloth on the lookout pole is removed, but the tall lookout pole and its small basket platform stay, in dark gunmetal iron; no red left. Keep every building's shape and place, the size, black outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Recolour only: the red tents become dull tan hide tents (#9b8461, shadows #5b4b36) with darker stitched patches; the pale grey hut becomes rusted iron sheets (#8a4a2a) and dull gunmetal scrap; the red flag cloth on the lookout pole is removed, but the tall lookout pole and its small basket platform stay, in dark gunmetal iron; no red left. Keep every building's shape and place, the size, black outline and art style exactly the same.",
+    "editInstruction": "Recolour only: the red tents become dull tan hide tents (#9b8461, shadows #5b4b36) with darker stitched patches; the pale grey hut becomes rusted iron sheets (#8a4a2a) and dull gunmetal scrap; the red flag cloth on the lookout pole is removed, but the tall lookout pole and its small basket platform stay, in dark gunmetal iron; no red left. Keep every building's shape and place, the size, black outline and art style exactly the same.",
+    "source": {
+      "batch": "cities-goblin",
+      "recipe": "goblin-city-1-a-edit-2",
+      "candidate": 0,
+      "sha256": "17b9def711ddb3e8bef794ee2fd318345a30fecba47d1e99be93971414afefe5"
+    }
+  }
+}

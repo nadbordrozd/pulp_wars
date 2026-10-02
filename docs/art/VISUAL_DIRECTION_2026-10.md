@@ -12,7 +12,9 @@ set. Sections 1 to 12 are kept as written at the time: where they say
 "today", "by default" or "the developer toggle", read them as history;
 section 13 is the current behaviour.
 [Section 14](#14-goblin-study) is a study of the Goblin faction in the same
-direction (bead `pulp_wars-3tq.8`); nothing of it is live. The
+direction (bead `pulp_wars-3tq.8`), and
+[section 16](#16-goblin-production) is the Goblin production art that
+followed it and is live in the default look (bead `pulp_wars-3tq.9`). The
 [chibi art direction](CHIBI_ART_DIRECTION.md) governs production art; its
 section 4a holds the rules this direction changed.
 
@@ -945,6 +947,11 @@ set. The LEGACY art set is untouched: it is never given a direction.
 
 ### What is not converted
 
+**Since bead `pulp_wars-3tq.9` the Goblins are converted** (units,
+portraits and cities; see [section 16](#16-goblin-production)); what follows
+still holds for Undead and Dinosaur, and for a Goblin piece whose direction
+raster failed to load.
+
 Undead, Goblin and Dinosaur keep their current art until the user decides
 (`pulp_wars-3tq.7`):
 
@@ -1057,7 +1064,10 @@ direction's rasters go through the same cached desaturated copies.
 
 ## 14. Goblin study
 
-**Status:** bead `pulp_wars-3tq.8`, waiting for the user's review. The user
+**Status:** bead `pulp_wars-3tq.8`; the user reviewed both passes and the
+roster was produced and made live in bead `pulp_wars-3tq.9`
+([section 16](#16-goblin-production)). The text below is the study as it
+was written. The user
 liked the Human faction in play and asked to redo the Goblins on the same
 principles; the approved look is **scrapyard raiders**. This is a study on
 three units (Goblin, Bomb Chucker, Rocket Cart). **Nothing is live:** the
@@ -1835,3 +1845,253 @@ Evidence in
 `alternatives-x4.png`, `markers-x4.png`, `palette.{png,json}`,
 `readability.json`, `scene-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png`,
 `same-unit-{desktop,phone}-zoom-{1,0.75}.png` and `index.json`.
+
+## 16. Goblin production
+
+**Status:** bead `pulp_wars-3tq.9`. The user reviewed pass 2 of the
+[Goblin study](#14-goblin-study) on 2026-10-02: "let's go with olive skin,
+make leather browner, try a pot helmet on the bomb chucker, make the cart
+dark brown. lower contrast on grass is fine. generate the other sprites as
+well. make the troll a dark hue of green, not blue. make whatever decisions
+you need and incorporate it all into the game." This section is that: the
+whole Goblin roster, its portraits and its three cities in fixed faction
+colours, **live in the default look**. The Classic look and LEGACY are
+unchanged. Undead and Dinosaur are still not converted.
+
+![Four Goblin players with the whole roster and a garrisoned city of each tier](../../art/pixellab/reviews/chibi-batch-direction-goblin/ingame-goblin-roster-desktop-zoom-1.png)
+
+### Decisions
+
+The first five are the user's; the rest were delegated ("make whatever
+decisions you need") and are recorded here so they can be overruled.
+
+| Question                 | Decision                                                                                                                                                                                               | By        |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- |
+| Goblin skin              | olive, as in pass 2 (`#8a952f`, shadow `#495508`), on every Goblin-crewed unit                                                                                                                         | user      |
+| Leather                  | a warm mid brown, `#955627` shaded `#562a0c`: browner than pass 2's orange `#ca4d02`, lighter than pass 1's near-black                                                                                 | user      |
+| Bomb Chucker             | the rusted pot helmet with goggles                                                                                                                                                                     | user      |
+| Cart                     | the fireworks cart stays; planks dull dark brown (`#391501` to `#642b03`)                                                                                                                              | user      |
+| Troll                    | a dark green (`#3f5a37`, hue 105 to 128), not blue or grey                                                                                                                                             | user      |
+| Orcs                     | a dull dark moss green, darker and duller than the Goblins (Brute `#4a5830`; the Warboss one step lighter, `#7f8c54` on `#3e4e29`, so the shouting face reads)                                         | root      |
+| Hazard stripe            | none on the basic Goblin; only on the Bomb Chucker's bomb, one panel of the Scrap Buggy and the bomb and buggy portraits                                                                               | root      |
+| Rust and gunmetal        | minor accents: the pot helmet, the buggy's body, the city huts and tower                                                                                                                               | root      |
+| Player colour            | none anywhere: no owner area and no mask on any Goblin sprite; plate, pennant and border show the player                                                                                               | root      |
+| Wardrobe of the rest     | Wolf Rider bare-chested with one strap, a brown hide saddle blanket; Orc Brute bare-chested with crossed straps and a kilt; the Warboss keeps cape and tunic, in brown hide; the Troll keeps the smock | this bead |
+| Orc Brute's shield       | dark planks with an iron rim and boss, no red skull, no stripe                                                                                                                                         | this bead |
+| Scrap Buggy's body       | gunmetal scrap panels with rust streaks, one small hazard-striped panel, rusted hubs; no planks (it must not read as a second cart)                                                                    | this bead |
+| Crew of the cart         | bigger and leaning out of the cart with a lit match, so it reads at zoom 0.75; this costs width (66 px)                                                                                                | this bead |
+| Cities                   | converted: hide tents, rust and gunmetal huts, a bare pole for the code-drawn pennant; same canvases and footprint as the classic camps                                                                | this bead |
+| City 1's lookout pole    | kept (dark iron, no flag): the recipe that dropped it left the level-1 camp with no tall shape and nowhere to fly a pennant                                                                            | this bead |
+| Tent colour              | not unified: City 1 pale hide (`#cdb083`), City 2 brown (`#765a41`), City 3 tan (`#8f6e41`); two edits to unify City 1 added a ground rim or recoloured the hut instead                                | this bead |
+| Portrait of the Rider    | keeps a short olive tunic where the unit is bare-chested                                                                                                                                               | this bead |
+| Kaboom!, WAAAGH! icons   | unchanged (the bomb icon has no hazard band)                                                                                                                                                           | brief     |
+| Goblin boats             | unchanged: the shared ships with the player-coloured sail and ring                                                                                                                                     | brief     |
+| Wide units and the plate | accepted as they are; no wider plate for large units                                                                                                                                                   | this bead |
+
+### What the Goblin batch made
+
+Batch [`direction-goblin`](../../scripts/art/chibi/batches/batch-direction-goblin.json)
+(faction `GOBLIN`, `fixedFactionColours`, every asset `ownerColour: false`;
+records in `scripts/art/chibi/records/`, masters under `public/assets/chibi/`,
+registered in `CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7` of
+[`chibi-direction-art-manifest.ts`](../../src/assets/chibi-direction-art-manifest.ts)):
+19 assets from 72 recipes, 14 of them imported from the study's exploration
+run with no PixelLab call and 58 new calls, two of which failed at PixelLab
+(`goblin-brown-edit-b`, `wolf-rider-scrap-edit-a`) and stay recorded as
+submitted. Every asset is an `edit-image-pixen` edit of the accepted classic
+sprite (batches `goblin`, `5-goblin`, `cities-goblin`) or of a study step,
+so canvas, anchor, overflow, silhouette and feet are unchanged.
+
+| Asset        | Recipes tried   | Accepted                     | Notes                                                                                                   |
+| ------------ | --------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Goblin       | 6 (3 imported)  | `goblin-brown-edit-c`        | the pass-2 Goblin with the leather recoloured by hex values; "chestnut" wording browned only the belt   |
+| Bomb Chucker | 6 (4 imported)  | `bomb-chucker-brown-edit-b`  | the pass-2 pot helmet alternative, straps and satchel brown; the first edit painted the face brown      |
+| Rocket Cart  | 15 (7 imported) | `fireworks-cart-crew-edit-d` | wood by hex values, then a bigger crew, then one recolour of crew and wood together                     |
+| Wolf Rider   | 4               | `wolf-rider-skin-edit-b`     | wardrobe edit, then two skin edits to bring the rider from yellow-green to olive                        |
+| Orc Brute    | 5               | `orc-brute-skin-edit-d`      | wardrobe edit, then four skin edits: "grey-green" gave charcoal and stone grey; "moss green" worked     |
+| Orc Warboss  | 4               | `orc-warboss-skin-edit-c`    | one recolour of cape and tunic, then three skin edits                                                   |
+| Scrap Buggy  | 4               | `scrap-buggy-hub-edit-a`     | one recolour of the body; the driver's skin and the red hub rings each needed an edit of their own      |
+| Troll        | 2               | `troll-scrap-edit-b`         | smock and skin in one hex recolour; without hex values the smock came out ochre with spots              |
+| 8 portraits  | 20              | see the records              | wardrobe edit, then a skin (or smock, or rocket) edit each; two skin edits redrew the face and were cut |
+| City 1       | 4               | `goblin-city-1-scrap-edit-b` | the first edit removed the lookout pole with the flag                                                   |
+| City 2 and 3 | 1 each          | first edit                   | "change only the colours and the flag … remove the red flag, leaving a bare pole"                       |
+
+What worked, added to the prompt notes of the study:
+
+- **Give colours as hex values.** "The orange cap … becomes dull desaturated
+  mid-brown leather like an old saddle, colour `#8a4a1c` with `#5a2e10`
+  shadows" landed on `#955627` and `#562a0c`. Colour words alone ("chestnut",
+  "milk chocolate", "dark chocolate") were ignored or gave orange highlights.
+  This is the leather-only edit pass 2 had not tried.
+- **Start with "Recolour only …"** and name the current colour of the part
+  ("the orange cap", "the yellow skin", "the thin red-orange rings").
+- **Never write "grey" for skin.** "Grey-green" turned an orc charcoal black,
+  stone grey all over, or yellow. "Moss green, colour `#5f7d3a`" gave a
+  clear green; "one step darker and duller, a dull dark moss green" then
+  gave the Orc tone.
+- **One part per edit.** Skin and wheel hubs together repainted the tyres
+  and the soot cloud; each alone worked.
+- **"Do not redraw anything"** protects a portrait's face: two skin edits
+  without it drew a human face and a white mask.
+- **Removing a flag can remove its pole.** Say what stays: "the red flag
+  cloth is removed, but the tall lookout pole and its basket platform stay".
+- **An edit instruction is at most 500 characters**, and PixelLab's tier
+  allows eight jobs at once.
+
+![Every Goblin unit: classic, new, and the Human, Undead and Dinosaur unit of its role](../../art/pixellab/reviews/chibi-batch-direction-goblin/units-old-new-1x.png)
+
+### The palette, measured
+
+Measured on the accepted masters (the most common lit tone and the next
+tone of each material).
+
+| Role            | Colours                                                                          | Used for                                                                |
+| --------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Goblin olive    | `#8a952f`, `#919e2f`; shadow `#495508`, `#5e6615`; the Wolf Rider's is `#a5a634` | skin of Goblin, Bomb Chucker, Wolf Rider, the cart's crew, the driver   |
+| Orc green       | Brute `#4a5830`; Warboss `#7f8c54` on `#3e4e29`                                  | Orc skin: a dull dark moss green                                        |
+| Troll green     | `#3f5a37`, `#415d38`; shadow `#22331b`                                           | Troll skin: dark green, hue 105 to 128                                  |
+| Brown leather   | `#955627`, `#733b18`, `#643923`; shadow `#562a0c`, `#5f2407`                     | caps, straps, loincloths, kilts, the satchel, the saddle blanket, smock |
+| Brown hide      | `#9d6d41` on `#56371a` (Warboss cape); tents `#cdb083`, `#765a41`, `#8f6e41`     | the Warboss's cape, city tents                                          |
+| Dark brown wood | `#391501` to `#642b03`; `#5c3a22` in the portrait                                | the cart, the Brute's shield, city huts                                 |
+| Gunmetal        | `#6c6d6a`, `#47545b`, `#738c99`; helmets `#313a45`                               | helmets, blades, the buggy's body, the megaphone, city huts and tower   |
+| Rust            | `#925432`, `#8a4625`; the pot helmet `#682f1c`; the buggy portrait `#762b1d`     | the pot helmet, streaks on the buggy, hut roofs, tower plates           |
+| Hazard yellow   | `#fbc208` on near-black                                                          | the bomb's band, one buggy panel; under 2% of any sprite                |
+| Rocket paper    | `#e00c02`, `#f65700`, `#fec100`, `#065f98`, `#27781c`, cones `#fee388`           | the fireworks only                                                      |
+
+No sprite has an owner area. Pixels in the owner key's hue band (hue 340 to
+5, saturated) are 0% of six units, 0.4% of the Wolf Rider (the wolf's
+mouth), 3.5% of the cart (the red rocket), 2.1% of City 1 (rust) and 0.6 to
+5.3% of the portraits (tongues, the red rocket); a classic owned sprite has
+15% or more. A test holds every master under 6%.
+
+### Readability
+
+CIE76 colour difference (about 10 is clear at a glance, 20 and more are
+different colours) and the WCAG luminance contrast in brackets.
+
+| Unit         | Skin against Grass `#89b75b` | Skin against the Gold plate | Leather or wood against Grass | Against the Coral plate | Against Human crimson | Sprite and plate width |
+| ------------ | ---------------------------- | --------------------------- | ----------------------------- | ----------------------- | --------------------- | ---------------------- |
+| Goblin       | 39 (3.5) on the shadow tone  | 53                          | 59 (2.5)                      | 36                      | 34                    | 53 and 52 px           |
+| Wolf Rider   | 22 (1.1)                     | 22                          | 73 (5.2)                      | 49                      | 34                    | 62 and 57 px           |
+| Bomb Chucker | 33 (2.7)                     | 45                          | 66 (3.8)                      | 43                      | 33                    | 46 and 52 px           |
+| Orc Brute    | 44 (3.3)                     | 61                          | 68 (4.8)                      | 54                      | 43                    | 53 and 52 px           |
+| Orc Warboss  | 25 (1.6)                     | 44                          | 50 (1.9)                      | 40                      | 42                    | 56 and 52 px           |
+| Rocket Cart  | 22 (1.6), the crew           | 34                          | 85 (8.0)                      | 71                      | 55                    | 66 and 57 px           |
+| Scrap Buggy  | 32 (2.3), the driver         | 44                          | 68 (3.8), the rust            | 40                      | 30                    | 68 and 57 px           |
+| Troll        | 44 (3.3)                     | 65                          | 66 (4.2)                      | 49                      | 39                    | 71 and 68 px           |
+
+- **Leather against the Coral plate** is 36 for the Goblin (pass 2's orange
+  was 32) and 40 or more for the others: a Coral player's Goblin is now a
+  brown and green figure on a coral plate, not an orange one.
+- **Leather against Human crimson** is 30 to 43; the lit brown is as far as
+  pass 2's orange (34 against 33), and its shadow no longer sits on the
+  crimson's hue. Green skin and the Humans' steel and gold do the rest.
+- **Skin against Grass** is lower in contrast than pass 1, as the user
+  accepted. The lit olive is 17 to 22 from the Grass; the shadow tone, the
+  black outline and the brown leather separate the figure. The Orcs and the
+  Troll are darker than the Grass by a contrast of 3.3.
+- **Hazard yellow** against the Human gold is 14 and against the Gold plate
+  20, on under 2% of a sprite.
+- **Plates:** the standard units stand within their plate or 4 px over it.
+  The cart is 9 px and the buggy 11 px wider than the plate; the plate's
+  front edge and tips still show (see the scene above), and today's cart
+  and buggy are as wide (65 and 68 px).
+
+![Goblin against Human at zoom 0.75](../../art/pixellab/reviews/chibi-batch-direction-goblin/ingame-goblin-mixed-desktop-zoom-0.75.png)
+
+### What is live
+
+| Piece                                       | Default look                                                                                              | Classic look and LEGACY |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------- |
+| The eight Goblin land units on the board    | the production sprite, the same for every player, on the seat-shaped plate                                | unchanged               |
+| Unit dock, unit dialogs, technology cards   | the production map sprite                                                                                 | unchanged               |
+| Training cards, rewards, the tree's busts   | the eight production portraits                                                                            | unchanged               |
+| Goblin City 1 to 3, board and city dock     | the production camp, drawn as authored, with the code-drawn pennant at its own pole (gold for a capital)  | unchanged               |
+| Showcase, Help, the setup screen            | follow from the above: they draw the same subjects (the setup screen shows faction names, no faction art) | unchanged               |
+| Patrol Boat, Battleship, embarked transport | not converted: the shared ships with the player-coloured sail                                             | unchanged               |
+| Kaboom! and WAAAGH! icons, the bomb glyph   | not converted                                                                                             | unchanged               |
+| Kaboom! preview, armed marker, explosions   | unchanged code-drawn markers and effects; checked over the new sprites                                    | unchanged               |
+| Gang Up, Plunder, Warrens, Troll regrowth   | unchanged                                                                                                 | unchanged               |
+| Undead and Dinosaur units and cities        | not converted (section 13)                                                                                | unchanged               |
+
+Runtime:
+
+- The Goblin art is registered under the Goblin faction subjects
+  (`UNIT:GOBLIN:<ROLE>`, `PORTRAIT:GOBLIN:<ROLE>`, `CITY:GOBLIN:<level>`) in
+  the live direction registry, so the board and the interface resolve it
+  before the classic Goblin art, exactly like the Human art; nothing else
+  in the unit path changed. A raster that fails to load falls back to the
+  classic Goblin sprite of that piece alone, in the owner's colour.
+- **Cities.** `LIVE_DIRECTION_V7` keeps `city.factionCities: "CLASSIC"`, and
+  that mode now means: a faction city that has direction art of its own is
+  drawn from it as authored (no owner recolour, no tone), anything else as
+  the classic look draws it. So Goblin cities are converted and Undead and
+  Dinosaur cities are not, with no per-faction switch. The pennant anchors
+  are in `DIRECTION_FLAG_ANCHORS_V7` (`chibi-direction-goblin-city-1` to
+  `-3`); with the pennant drawn, the stock capital crown and the seat badge
+  are replaced, as for a Human city. A Goblin city that fell back to its
+  classic raster has no anchor and keeps the classic crown and no pennant.
+- The study scenes of section 14 keep drawing the classic Goblin sprites in
+  their "today" panels: `scripts/art/goblin-direction/scene.ts` passes the
+  Human production art plus the study's samples unless asked for `live`.
+
+Markers and effects, checked in the captures of
+`npm run review:ruleset7-goblin-ui` (CHIBI, desktop and phone): the Kaboom!
+preview and the armed confirmation (the dashed pale area, the "Yours −5"
+and "−3" chips, the "Kaboom!" label) sit on and beside the brown and green
+sprites as they did on the red ones; the explosion flash and soot puffs
+(white, cream and grey) are lighter than every new sprite; the Gang Up chip
+of an attack preview, WAAAGH!, Plunder and Warrens are chips and interface
+text and are unaffected.
+
+### Evidence
+
+- `npm run art:chibi-direction-review` writes
+  [`art/pixellab/reviews/chibi-batch-direction-goblin/`](../../art/pixellab/reviews/chibi-batch-direction-goblin/):
+  `units-old-new-{1x,x4}.png`, `units-zoom-0.75.png`,
+  `portraits-old-new-{1x,x4}.png`, `cities-{1x,x4}.png`,
+  `showcase-goblin-*` (a Goblin viewer against Human, Undead and Dinosaur;
+  four Goblin seats; the Classic look; the dock and the technology tree),
+  `ingame-goblin-{roster,mixed}-*` and `index.json`. The Human sheets of the
+  same command now show the live Goblin unit in their Goblin column.
+- `npm run art:chibi-goblin-review` writes
+  `art/pixellab/reviews/chibi-batch-goblin/`: the batch review of the
+  classic batch (its in-game roster is drawn in the live look), the faction
+  sheets with the live sprite beside the classic one per player, and a
+  fresh Goblin match.
+
+![Goblin City 1 to 3: classic, new, with the pennant, beside the Human city](../../art/pixellab/reviews/chibi-batch-direction-goblin/cities-x4.png)
+
+![The Goblin portraits: classic, new, the map sprite, the Human bust](../../art/pixellab/reviews/chibi-batch-direction-goblin/portraits-old-new-x4.png)
+
+### Weak spots
+
+- **The faction is dark and brown.** Orc Brute, Troll, the buggy and the
+  cart's planks are dark sprites; on Forest and beside a Goblin city they
+  sit close together in value. A garrison in a Goblin city is brown and
+  green on brown and grey: the plate and the damaged HP bar separate it,
+  the colours do not.
+- **Three greens, not one ramp.** Goblin olive, Orc moss and Troll green
+  were each reached by a separate edit; the Warboss is lighter than the
+  Brute, and the Wolf Rider and the Bomb Chucker's portrait are a yellower
+  olive than the Goblin.
+- **The Bomb Chucker lost the lit spark** on the bomb's fuse (the fuse cap
+  stays); two small orange strap ends remain at the hip.
+- **The cart is 66 px wide**, wider than pass 2's 58: the readable crew
+  leans out of the cart. No edit made the cart itself shorter.
+- **The cart's portrait** shows four thin rockets with coloured tips on a
+  flat cart: recognisably fireworks, but not the unit's fat rockets with
+  cream cones, and still with no crew.
+- **The buggy's portrait has redder rust** than the unit, and eight bright
+  red pixels.
+- **City tents differ in tone** from tier to tier, and City 1's are pale.
+- **The pennant of a Goblin city flies in the top of its tall canvas**, in
+  the cell to the north: a large unit standing there covers it. The classic
+  camps had their own flag in the same place.
+- **The cities are drab beside the Human ones**: no saturated colour at all.
+  Their owner is read from the pennant and the border.
+- **Four Goblin players** differ only by plate, pennant and border, as four
+  Human players do.
+- **Review evidence of other commands** that happens to show a Goblin
+  (`art:chibi-faction-cities-review`, `art:chibi-dinosaur-review`,
+  `art:chibi-playtest3-review`, the study reviews) was not regenerated.

@@ -20,7 +20,8 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * (src/render/canvas/live-board-look-v7.ts); a raster that fails to load
  * falls back to the default asset of that subject. Units, cities and
  * portraits have no owner area: `fixedColours` instead of a mask. Ships,
- * the other factions and terrain are not converted yet.
+ * the Undead and Dinosaur factions and terrain are not converted yet; the
+ * Goblins are (the list below this one).
  */
 export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   {
@@ -302,9 +303,234 @@ export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   },
 ];
 
+/**
+ * Goblin production art of the new visual direction (bead pulp_wars-3tq.9,
+ * batch `direction-goblin`; see docs/art/VISUAL_DIRECTION_2026-10.md, "Goblin
+ * production"): every Goblin unit and portrait and the scrap camp City 1-3
+ * in the faction's fixed colours (olive skin, brown leather, rust and
+ * gunmetal scrap, the fireworks cart). The entries use the Goblin faction
+ * subjects of chibi-art-manifest.ts, on the same canvases and anchors as
+ * the classic sprites, and have no owner area. Goblin boats are the shared
+ * ships and are not converted.
+ */
+export const CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
+  [
+    {
+      id: "chibi-direction-goblin-goblin",
+      subject: "UNIT:GOBLIN:FIGHTER",
+      assetClass: "STANDARD_UNIT",
+      width: 56,
+      height: 80,
+      url: chibiArtUrl("assets/chibi/units/chibi-direction-goblin-goblin.png"),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-goblin-wolf-rider",
+      subject: "UNIT:GOBLIN:RAIDER",
+      assetClass: "LARGE_UNIT",
+      width: 72,
+      height: 88,
+      url: chibiArtUrl(
+        "assets/chibi/units/chibi-direction-goblin-wolf-rider.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-goblin-bomb-chucker",
+      subject: "UNIT:GOBLIN:MARKSMAN",
+      assetClass: "STANDARD_UNIT",
+      width: 56,
+      height: 80,
+      url: chibiArtUrl(
+        "assets/chibi/units/chibi-direction-goblin-bomb-chucker.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-goblin-orc-brute",
+      subject: "UNIT:GOBLIN:GUARD",
+      assetClass: "STANDARD_UNIT",
+      width: 56,
+      height: 80,
+      url: chibiArtUrl(
+        "assets/chibi/units/chibi-direction-goblin-orc-brute.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-goblin-orc-warboss",
+      subject: "UNIT:GOBLIN:CAPTAIN",
+      assetClass: "STANDARD_UNIT",
+      width: 56,
+      height: 80,
+      url: chibiArtUrl(
+        "assets/chibi/units/chibi-direction-goblin-orc-warboss.png",
+      ),
+      anchor: { x: 27, y: 40 },
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-goblin-rocket-cart",
+      subject: "UNIT:GOBLIN:CATAPULT",
+      assetClass: "LARGE_UNIT",
+      width: 72,
+      height: 88,
+      url: chibiArtUrl(
+        "assets/chibi/units/chibi-direction-goblin-rocket-cart.png",
+      ),
+      anchor: { x: 34, y: 48 },
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-goblin-scrap-buggy",
+      subject: "UNIT:GOBLIN:KNIGHT",
+      assetClass: "LARGE_UNIT",
+      width: 72,
+      height: 88,
+      url: chibiArtUrl(
+        "assets/chibi/units/chibi-direction-goblin-scrap-buggy.png",
+      ),
+      anchor: { x: 32, y: 48 },
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-goblin-troll",
+      subject: "UNIT:GOBLIN:JUGGERNAUT",
+      assetClass: "GIANT_UNIT",
+      width: 88,
+      height: 104,
+      url: chibiArtUrl("assets/chibi/units/chibi-direction-goblin-troll.png"),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-goblin-goblin",
+      subject: "PORTRAIT:GOBLIN:FIGHTER",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-goblin-goblin.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-goblin-wolf-rider",
+      subject: "PORTRAIT:GOBLIN:RAIDER",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-goblin-wolf-rider.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-goblin-bomb-chucker",
+      subject: "PORTRAIT:GOBLIN:MARKSMAN",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-goblin-bomb-chucker.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-goblin-orc-brute",
+      subject: "PORTRAIT:GOBLIN:GUARD",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-goblin-orc-brute.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-goblin-orc-warboss",
+      subject: "PORTRAIT:GOBLIN:CAPTAIN",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-goblin-orc-warboss.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-goblin-rocket-cart",
+      subject: "PORTRAIT:GOBLIN:CATAPULT",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-goblin-rocket-cart.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-goblin-scrap-buggy",
+      subject: "PORTRAIT:GOBLIN:KNIGHT",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-goblin-scrap-buggy.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-goblin-troll",
+      subject: "PORTRAIT:GOBLIN:JUGGERNAUT",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-goblin-troll.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-goblin-city-1",
+      subject: "CITY:GOBLIN:1",
+      assetClass: "SETTLEMENT",
+      width: 88,
+      height: 96,
+      url: chibiArtUrl(
+        "assets/chibi/settlements/chibi-direction-goblin-city-1.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-goblin-city-2",
+      subject: "CITY:GOBLIN:2",
+      assetClass: "SETTLEMENT",
+      width: 96,
+      height: 100,
+      url: chibiArtUrl(
+        "assets/chibi/settlements/chibi-direction-goblin-city-2.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-goblin-city-3",
+      subject: "CITY:GOBLIN:3",
+      assetClass: "SETTLEMENT",
+      width: 96,
+      height: 104,
+      url: chibiArtUrl(
+        "assets/chibi/settlements/chibi-direction-goblin-city-3.png",
+      ),
+      fixedColours: true,
+    },
+  ];
+
 /** The registry the live look resolves before the default art. */
 export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
-  const built = buildChibiArtRegistryV7(CHIBI_DIRECTION_ART_ASSETS_V7);
+  const built = buildChibiArtRegistryV7([
+    ...CHIBI_DIRECTION_ART_ASSETS_V7,
+    ...CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7,
+  ]);
   if (built.problems.length > 0) throw new Error(built.problems.join("; "));
   return built.registry;
 }

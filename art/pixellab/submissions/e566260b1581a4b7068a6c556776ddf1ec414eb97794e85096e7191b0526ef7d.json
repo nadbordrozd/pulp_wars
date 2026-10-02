@@ -1,0 +1,36 @@
+{
+  "id": "orc-warboss-skin-edit-b",
+  "jobId": "0d7434d5-1d2e-4ad9-ba9e-0c8506b2f8b0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-orc-warboss",
+    "subject": "UNIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80512,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin: the face, ears, arms and hands become moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the steel horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the shoulder plates, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin: the face, ears, arms and hands become moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the steel horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the shoulder plates, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin: the face, ears, arms and hands become moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the steel horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the shoulder plates, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only his skin: the face, ears, arms and hands become moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the steel horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the shoulder plates, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "orc-warboss-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "3de4ecd9fdb4e4bede7cb36ac81829b0ae7f5a01e361979788c28169fe36bea6"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-brown-edit-c",
+  "jobId": "5fc92e77-6fc7-4582-92f3-779d3e6e50ce",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the wood: the cart's planks and wheels become dull desaturated dark brown weathered wood like dark chocolate, colour #5c3a22 with #3a2414 shadows and #7a5234 highlights on the plank edges; no orange, not black, not red. Do not touch the rockets. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the little goblin with his green skin and match, the cart and wheel shapes, thick black outline and art style."
+      }
+    ],
+    "prompt": "Recolour only the wood: the cart's planks and wheels become dull desaturated dark brown weathered wood like dark chocolate, colour #5c3a22 with #3a2414 shadows and #7a5234 highlights on the plank edges; no orange, not black, not red. Do not touch the rockets. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the little goblin with his green skin and match, the cart and wheel shapes, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Recolour only the wood: the cart's planks and wheels become dull desaturated dark brown weathered wood like dark chocolate, colour #5c3a22 with #3a2414 shadows and #7a5234 highlights on the plank edges; no orange, not black, not red. Do not touch the rockets. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the little goblin with his green skin and match, the cart and wheel shapes, thick black outline and art style.",
+    "editInstruction": "Recolour only the wood: the cart's planks and wheels become dull desaturated dark brown weathered wood like dark chocolate, colour #5c3a22 with #3a2414 shadows and #7a5234 highlights on the plank edges; no orange, not black, not red. Do not touch the rockets. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the little goblin with his green skin and match, the cart and wheel shapes, thick black outline and art style.",
+    "source": {
+      "recipe": "fireworks-cart-edit-g",
+      "candidate": 0,
+      "sha256": "c021c8e19f7bc53349567b245a9164fc430054dd0a6bab29c8e1a4d67e9555dc"
+    }
+  }
+}

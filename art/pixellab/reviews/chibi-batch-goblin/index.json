@@ -262,16 +262,16 @@
       "subject": "UNIT:GOBLIN:CATAPULT",
       "assetClass": "LARGE_UNIT",
       "status": "ACCEPTED",
-      "recipe": "rocket-cart-c-edit-4",
+      "recipe": "rocket-cart-e-edit-2",
       "master": {
         "path": "public/assets/chibi/units/chibi-goblin-rocket-cart.png",
-        "sha256": "a71455094329977b4a9798a8af4708305b22216c61d5e0d1be16a2987f0f5c2a",
-        "pixelSha256": "0e524b81a802831d600d5b486f3e01c8cd81f3dd0ab7267a16c7c54c4aff9fae",
+        "sha256": "caf961f1106daacb5c49d05d7bdb8d80811a17681f02923a202abda9f518592b",
+        "pixelSha256": "b8942470d630f5edee9ac57080c4ab36fd26e84aff9cd834c1da7555fb0d032f",
         "width": 72,
         "height": 88
       },
       "anchor": {
-        "x": 36,
+        "x": 34,
         "y": 48
       },
       "overflow": {
@@ -284,15 +284,15 @@
         "kind": "as-is"
       },
       "plateCheck": {
-        "bandRows": 13,
-        "groundShare": 0,
-        "footprintWidthShare": 0.7213,
+        "bandRows": 14,
+        "groundShare": 0.0133,
+        "footprintWidthShare": 0.8462,
         "suspect": false
       },
       "mask": {
         "path": "public/assets/chibi/units/chibi-goblin-rocket-cart.mask.png",
         "source": "AUTO",
-        "coverage": 0.1916,
+        "coverage": 0.185,
         "coverageOnTarget": false,
         "qa": "PASS",
         "failures": [],
@@ -389,73 +389,73 @@
       "file": "art/pixellab/reviews/chibi-batch-goblin/sheet-1x.png",
       "width": 1042,
       "height": 1140,
-      "sha256": "450aaee1efad2cc5110c1c2732517f7e6d7262b47f1442644217d8649093aa38"
+      "sha256": "faca46c4f2bf45e11de91240d661ca6410a3a3213782dae1baff656912182ccf"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/sheet-x4.png",
       "width": 2370,
       "height": 3828,
-      "sha256": "370eee08fac4c0c6a84adb81efdd3172f711affe1a30fdaf036399adc1707fa7"
+      "sha256": "c830c91ab2612bea513b2d0edb249a7409726d68358337112a10e08fe62c08c0"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/phone-mock.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "13d9b64dba4db303a3d3f6e6f17eba50e8bb85df54e29abc774ceb1056a4e936"
+      "sha256": "c77f97754e5e8b338fe452e45ddb883b8ec48eab7fa80e043b5d1d618b367ae6"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/desktop-mock.png",
       "width": 1440,
       "height": 900,
-      "sha256": "daec33cb72439d2c42a2a5b98a05003aaa216abd78d3528250b24fb34bbc3608"
+      "sha256": "dc04aa7edac7dc60d81337028c2ac3f2c9cd93cc049bd27da50dcc2b644e37f5"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "f514acbcbbddd27f5c85e68ac5d8fc8a4e6a31ed684c8f06bfa0097856c6e6c3"
+      "sha256": "c815dac30283469e11a1aae33c0681674eb31616db177a839069fcfa2cc6f00d"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "8a7efbcd6abf47ba4aeb204491f4c0e47ef8e5998dfa2c008fcdab12c37ff089"
+      "sha256": "9ef4770a4b98226e51b58678b8604bde1038a2a73d045afcaaae78cf06214691"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "0ed9feb0d76474bd3cbfb2cddca223c0d858b31cbad7d2535c5dd83e7bdba14f"
+      "sha256": "c7bf6037975566ac500cf6d39aaa8d5ee1126a9c864e8eadcf567dd4193a88d6"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "2ee898a089b9b777e12dc7ba0c4cfe42b35b6ca17bdc0414bfef8e9a226f3c66"
+      "sha256": "30c585f160e2765617f910ecfd634f30768333e1e2fb284d9fa1e4396676f76b"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "c455b8dc6cfdf3ed768f567b83075f20959b27e1c68f1fa2323e5b87c91b7ce0"
+      "sha256": "943e851ab80df360eec5341e3365ab37d6811785445e2ef333c30b32825a275e"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "6007808d7c852d603de06c67aa97543b582953d2fa63e86b523bc6b508a63b92"
+      "sha256": "67117d5dc63b15b64ae2c94a386b9653d8505fa06b40e91b99ec700b01996e31"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "1f865433c206e3115cc7a4f4627ffb22bc56af58045b56692f393536a82d6971"
+      "sha256": "758f83b05a24ae8a1557afc3366ac2d40eaa3043d9cdd68b59e21daa364497ed"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "271a457d2d8b22ac48a84fa2943d02e033575689a64cd5e84c011a0caf55f40a"
+      "sha256": "667ee21ec45faa5dc763c44930e9a1699aea8f52d5f4207d1ff645272f5d331f"
     }
   ],
   "captures": {

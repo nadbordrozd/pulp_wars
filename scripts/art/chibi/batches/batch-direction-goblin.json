@@ -1,0 +1,1411 @@
+{
+  "schemaVersion": 1,
+  "batch": "direction-goblin",
+  "title": "New visual direction: Goblin units and portraits in fixed faction colours (olive skin, brown leather, rust and gunmetal scrap, the fireworks cart), and the Goblin scrap camp City 1-3",
+  "bead": "pulp_wars-3tq.9",
+  "faction": "GOBLIN",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-goblin-goblin",
+      "subject": "UNIT:GOBLIN:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:FIGHTER/SCRAP"
+    },
+    {
+      "id": "chibi-direction-goblin-wolf-rider",
+      "subject": "UNIT:GOBLIN:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:RAIDER/SCRAP"
+    },
+    {
+      "id": "chibi-direction-goblin-bomb-chucker",
+      "subject": "UNIT:GOBLIN:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:MARKSMAN/SCRAP"
+    },
+    {
+      "id": "chibi-direction-goblin-orc-brute",
+      "subject": "UNIT:GOBLIN:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:GUARD/SCRAP"
+    },
+    {
+      "id": "chibi-direction-goblin-orc-warboss",
+      "subject": "UNIT:GOBLIN:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "anchor": {
+        "x": 27,
+        "y": 40
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:CAPTAIN/SCRAP"
+    },
+    {
+      "id": "chibi-direction-goblin-rocket-cart",
+      "subject": "UNIT:GOBLIN:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:CATAPULT/SCRAP"
+    },
+    {
+      "id": "chibi-direction-goblin-scrap-buggy",
+      "subject": "UNIT:GOBLIN:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:KNIGHT/SCRAP"
+    },
+    {
+      "id": "chibi-direction-goblin-troll",
+      "subject": "UNIT:GOBLIN:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:JUGGERNAUT/SCRAP"
+    },
+    {
+      "id": "chibi-direction-portrait-goblin-goblin",
+      "subject": "PORTRAIT:GOBLIN:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:FIGHTER/SCRAP"
+    },
+    {
+      "id": "chibi-direction-portrait-goblin-wolf-rider",
+      "subject": "PORTRAIT:GOBLIN:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:RAIDER/SCRAP"
+    },
+    {
+      "id": "chibi-direction-portrait-goblin-bomb-chucker",
+      "subject": "PORTRAIT:GOBLIN:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:MARKSMAN/SCRAP"
+    },
+    {
+      "id": "chibi-direction-portrait-goblin-orc-brute",
+      "subject": "PORTRAIT:GOBLIN:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:GUARD/SCRAP"
+    },
+    {
+      "id": "chibi-direction-portrait-goblin-orc-warboss",
+      "subject": "PORTRAIT:GOBLIN:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:CAPTAIN/SCRAP"
+    },
+    {
+      "id": "chibi-direction-portrait-goblin-rocket-cart",
+      "subject": "PORTRAIT:GOBLIN:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:CATAPULT/SCRAP"
+    },
+    {
+      "id": "chibi-direction-portrait-goblin-scrap-buggy",
+      "subject": "PORTRAIT:GOBLIN:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:KNIGHT/SCRAP"
+    },
+    {
+      "id": "chibi-direction-portrait-goblin-troll",
+      "subject": "PORTRAIT:GOBLIN:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:JUGGERNAUT/SCRAP"
+    },
+    {
+      "id": "chibi-direction-goblin-city-1",
+      "subject": "CITY:GOBLIN:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:GOBLIN:1/SCRAP"
+    },
+    {
+      "id": "chibi-direction-goblin-city-2",
+      "subject": "CITY:GOBLIN:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 100
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:GOBLIN:2/SCRAP"
+    },
+    {
+      "id": "chibi-direction-goblin-city-3",
+      "subject": "CITY:GOBLIN:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "settlement",
+      "canvas": {
+        "width": 96,
+        "height": 104
+      },
+      "ownerColour": false,
+      "subjectKey": "CITY:GOBLIN:3/SCRAP"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "goblin-leather-edit-b",
+      "asset": "chibi-direction-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "goblin-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change his clothes and skin: the red bandana becomes a small orange-brown leather cap; take off the red tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and a harness of two crossed orange-brown leather straps on the chest. His skin a slightly deeper, darker true goblin green, not yellow. Keep the face, ears, dagger, belt, wrist bands, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Pass 2, B: from the live Goblin; leather cap, loincloth and crossed harness, no stripe."
+    },
+    {
+      "id": "goblin-leather-edit-g",
+      "asset": "chibi-direction-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79007,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes one shade darker and greener, a medium leaf green with a slightly darker green shadow tone. Keep the skin shading simple and the same shapes. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Pass 2: 'deeper, darker' overshot to emerald with black-green shadows (edit-d); this asks for one shade only."
+    },
+    {
+      "id": "goblin-leather-edit-k",
+      "asset": "chibi-direction-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 79011,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-g",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his skin (face, ears, chest, belly, arms, hands, legs, feet) becomes clearly lighter, a mid-tone leaf green, with the shadow tone only a little darker than the light tone, so the arms and legs are not dark; not yellow, not pale. Keep everything else exactly the same: the orange-brown leather cap, crossed straps and loincloth, the belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Pass 2: G is a true green (#4b6707) but a lot darker than asked, with near-black limbs; this lifts it to a mid-tone."
+    },
+    {
+      "id": "bomb-chucker-scrap-edit-a",
+      "asset": "chibi-direction-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 78101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "bomb-chucker-b-edit-4",
+        "candidate": 0
+      },
+      "editInstruction": "Change only colours: the red flying cap and red tunic become near-black dark brown patched leather with one lighter brown hide patch, keeping the iron goggles; the round black bomb gets one band of hazard yellow and black diagonal stripes and a small red-orange fuse spark; his skin a brighter, more saturated yellow-olive green. Keep the face, ears, raised bomb, satchel, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Balance A: leather cap, hazard band on the bomb only."
+    },
+    {
+      "id": "bomb-chucker-scrap-edit-e",
+      "asset": "chibi-direction-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 78105,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: the dark leather flying cap becomes a dented rusted iron pot helmet with bolts, keeping the goggles on its front, and his skin (face, both ears, hands, feet) becomes a much brighter, lighter yellow-olive green. Keep everything else exactly the same: the dark leather clothes and patch, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. A with the pot helmet and the Goblin's skin."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-c",
+      "asset": "chibi-direction-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-scrap-edit-e",
+        "candidate": 0
+      },
+      "editInstruction": "Change his clothes and skin: take off the dark leather tunic so his chest, belly, arms and legs are bare skin; he wears a short orange-brown leather loincloth and one orange-brown leather strap across the chest to the satchel. His skin a deeper, darker true goblin green, not yellow. Keep the rusted pot helmet and goggles, the face, ears, the raised bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style the same.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Pass 2, C: from the pass-1 chosen Bomb Chucker; keeps the rusted pot helmet, loincloth and strap."
+    },
+    {
+      "id": "bomb-chucker-leather-edit-e",
+      "asset": "chibi-direction-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 79105,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his skin colour: the face, ears, chest, belly, arms and legs become a much lighter, medium true goblin green like moss, with a darker green shadow tone, so the face is clearly visible; not black, not yellow. Keep everything else the same: the rusted pot helmet and goggles, the orange-brown leather straps and loincloth, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Pass 2: C's face is lost in a dark olive (#53520d); this lifts the skin. The pot-helmet variant."
+    },
+    {
+      "id": "rocket-cart-scrap-edit-b",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 78202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "rocket-cart-e-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red paper rocket tube becomes black tarred cardboard painted with hazard yellow and black diagonal stripes along its whole length; the fuse spark becomes red-orange; the little goblin wears near-black dark brown leather. Keep the cream cone cap, cream bands, stick, fuse, the dark iron cart, the wheels, the rocket shape and angle, the crouching goblin, his olive skin, proportions, thick black outline and art style exactly the same.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Balance B: still a paper fireworks rocket, the whole tube in hazard stripes (the most stripe), gunmetal cart unchanged."
+    },
+    {
+      "id": "rocket-cart-scrap-edit-c",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 78203,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-scrap-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only these colours: the cart becomes rickety weathered dark brown planks and its wheels rusty brown iron; the yellow tail fins and stick of the rocket become dark gunmetal iron; the little goblin has a near-black dark brown leather cap instead of the red bandana and bright yellow-olive green skin. Keep the black rocket with its yellow stripes, the cream cone, the fuse and spark, the shapes, the crouching goblin, proportions, thick black outline and art style exactly the same.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Balance C: the striped paper rocket of B on a wooden junk cart, the last red and the yellow fins removed."
+    },
+    {
+      "id": "rocket-cart-scrap-edit-e",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 78205,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-scrap-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: the yellow tail fins and tail stick of the rocket become dark gunmetal grey iron, and the little goblin's face, ears and hands become bright yellow-olive green skin. Keep everything else exactly the same: the black rocket with its yellow stripes, the cream cone, the fuse and spark, the wooden cart, the wheels, the goblin's helmet and clothes, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. C without the solid yellow fins, and a goblin whose skin is the faction green."
+    },
+    {
+      "id": "fireworks-cart-edit-a",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-scrap-edit-e",
+        "candidate": 0
+      },
+      "editInstruction": "Replace the one big black rocket with a tight bundle of five small fireworks rockets of different sizes on thin wooden sticks, standing up in the cart and leaning forward, tied with pale rope: paper tubes in grubby red, orange, yellow, one blue and one green, each with a cream paper cone tip and a short fuse, one fuse lit with a spark. The little goblin gets green skin and an orange-brown leather cap. Keep the wooden cart, wheels, goblin, black outline and art style.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Pass 2, A: from the pass-1 chosen cart; the single rocket becomes an upright bundle of five paper rockets."
+    },
+    {
+      "id": "fireworks-cart-edit-c",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79203,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only small things: the little goblin's face, ears and hands become medium true green skin; each paper rocket gets one small star or stripe of another colour and a short curly cream fuse at its tail, and one fuse is lit with a small red-orange spark. Keep everything else the same: the five rockets, their colours and cream cones, the sticks, rope, wooden cart, wheels, the goblin's orange cap, proportions, thick black outline and art style.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Pass 2: A is the right idea; the crew goblin's skin is ochre and the plain tubes look like coloured pencils."
+    },
+    {
+      "id": "fireworks-cart-edit-e",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79205,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Move only the little goblin: he no longer crouches on the ground at the right of the cart; he sits on the cart itself, in front of the rockets, holding a small lit match, so nothing sticks out to the right of the cart and the whole image is narrower. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, wooden cart, wheels, the goblin's green skin and orange cap, thick black outline and art style.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Pass 2: the cart is 60 px wide over a 52 px plate; the crew goblin beside it is the widest part."
+    },
+    {
+      "id": "fireworks-cart-edit-g",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 79207,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-e",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the right edge: remove the goblin's outstretched arm with the torch and the plank sticking out at the lower right, so nothing reaches past the cart's right side; the goblin instead holds a small lit match up in front of his chest, and his skin becomes a mid-tone olive leaf green. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, wooden cart, wheels, orange cap, thick black outline and art style.",
+      "notes": "Imported from art/explorations/goblin-direction-2026-10. Pass 2: E puts the goblin on the cart, but his torch arm makes it 62 px wide; this tucks it in."
+    },
+    {
+      "id": "goblin-brown-edit-a",
+      "asset": "chibi-direction-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 80001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-k",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the leather: the orange cap, the two crossed chest straps and the loincloth become a warm mid-brown saddle leather, the brown of a chestnut, with a dark brown shadow tone; clearly brown, not orange and not red. Do not touch his skin, face or ears. Keep everything else exactly the same: the olive green skin, belt, wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "The leather-only edit pass 2 did not try: brown instead of orange."
+    },
+    {
+      "id": "bomb-chucker-brown-edit-a",
+      "asset": "chibi-direction-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 80101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-e",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the leather: the orange crossed chest straps, the loincloth and the satchel become a warm mid-brown saddle leather, the brown of a chestnut, with a dark brown shadow tone; clearly brown, not orange and not red. Do not touch his skin, face or ears. Keep everything else exactly the same: the rusted iron pot helmet and goggles, the olive green skin, the bomb with its yellow stripes and spark, gloves, boots, pose, proportions, thick black outline and art style.",
+      "notes": "Pot helmet (the user's choice) with brown leather."
+    },
+    {
+      "id": "fireworks-cart-brown-edit-a",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 80201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-g",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things. The wood of the cart's planks and wheels becomes dark chocolate brown with mid-brown highlights on the plank edges; clearly dark brown, not black, not red. The little goblin in the cart gets a lighter olive green face, ears and hands with big cream eyes and a mid-brown leather cap. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the cart and wheel shapes, black outline and art style.",
+      "notes": "Dark brown planks between the near-black edit-g and the red-brown edit-i; a readable crew."
+    },
+    {
+      "id": "wolf-rider-scrap-edit-a",
+      "asset": "chibi-direction-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 80301,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "wolf-rider-b-edit-3",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the rider's clothes and the blanket: the red bandana becomes a warm mid-brown leather cap; take off the red tunic so his chest, belly and arms are bare olive green skin, with one mid-brown leather strap across the chest and a mid-brown leather loincloth; the red saddle blanket becomes warm mid-brown stitched hide with a dark brown edge. Chestnut brown, not orange, not red. Keep the grey wolf, the goblin's face, ears, spear, pose, proportions, black outline and art style the same."
+    },
+    {
+      "id": "orc-brute-scrap-edit-a",
+      "asset": "chibi-direction-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 80401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "orc-brute-a-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes and shield: take off the red tunic so his chest and arms are bare skin, with two crossed brown leather straps and a brown leather kilt to the knees, dull mid-brown #955627 with #562a0c shadows; the round shield becomes dark brown planks (#5c3a22) with a rusted iron rim and an iron boss, no red skull; remove the red skull badge from his arm. No red left. Keep the pot helmet, his skin, tusks, face, cleaver, boots, pose, proportions, black outline and art style the same."
+    },
+    {
+      "id": "orc-warboss-scrap-edit-a",
+      "asset": "chibi-direction-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 80501,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "orc-warboss-a-edit-3",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the red parts: the red cape becomes dull mid-brown patched hide, colour #955627 with #562a0c shadows and a few darker stitched patches; the red tunic becomes the same brown leather; no red and no orange left on him. Do not touch his skin or face. Keep everything else exactly the same: the horned helmet, the shoulder plates, the tin megaphone, tusks, belt, boots, pose, proportions, thick black outline and art style, on a transparent background."
+    },
+    {
+      "id": "scrap-buggy-scrap-edit-a",
+      "asset": "chibi-direction-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 80601,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "scrap-buggy-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the red parts: the red body panels of the buggy become mismatched scrap metal, some panels dull gunmetal grey #6d7684 and some rusted iron #8a4a2a, and one small side panel hazard yellow with black diagonal stripes; the red wheel hubs become rusted iron; the driver's red cap becomes dull brown leather #955627. No red left. Keep the buggy's shape, the ram, wheels, exhaust and soot cloud, the driver, his goggles and olive skin, proportions, black outline and art style the same."
+    },
+    {
+      "id": "troll-scrap-edit-a",
+      "asset": "chibi-direction-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 80701,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "troll-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of his smock: the big red smock becomes warm mid-brown patched hide with a few darker stitched square patches and a dark brown shadow tone; brown like a chestnut, not orange, not red. Do not touch his head or skin. Keep everything else exactly the same: the dark green skin, moss, face, tusks, wrist bands, stone club, pose, proportions, thick black outline and art style, on a transparent background."
+    },
+    {
+      "id": "portrait-goblin-scrap-edit-a",
+      "asset": "chibi-direction-portrait-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 81001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-goblin",
+        "recipe": "portrait-goblin-goblin-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes: the red bandana becomes a small brown leather cap; take off the red tunic so his shoulders and chest are bare olive green skin with one brown leather strap across the chest. The leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the face, ears, eyes, teeth, dagger, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-wolf-rider-scrap-edit-a",
+      "asset": "chibi-direction-portrait-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 81101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-goblin",
+        "recipe": "portrait-goblin-wolf-rider-b-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the goblin's clothes: the red bandana becomes a brown leather cap and the red tunic becomes bare olive green shoulders with one brown leather strap. The leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the goblin's face and ears, the grey wolf's head, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-bomb-chucker-scrap-edit-a",
+      "asset": "chibi-direction-portrait-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 81201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-goblin",
+        "recipe": "portrait-goblin-bomb-chucker-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes and the bomb: the red cap becomes a dented rusted iron pot helmet, keeping the goggles on its front; the red tunic becomes bare olive green shoulders with a dull mid-brown leather strap (#955627); the black bomb gets one band of hazard yellow and black stripes. No red left. Keep the face, ears, the bomb's shape and spark, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-orc-brute-scrap-edit-a",
+      "asset": "chibi-direction-portrait-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 81301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-goblin",
+        "recipe": "portrait-goblin-orc-brute-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes and shield: the red tunic becomes bare shoulders with two dull mid-brown leather straps (#955627, shadows #562a0c); the red round shield becomes dark brown planks (#5c3a22) with a rusted iron rim and an iron boss. No red left. Keep the pot helmet, his skin, tusks, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-orc-warboss-scrap-edit-a",
+      "asset": "chibi-direction-portrait-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 81401,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-goblin",
+        "recipe": "portrait-goblin-orc-warboss-a-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the red parts: the red cape and red scarf become dull mid-brown patched hide, colour #955627 with #562a0c shadows; no red and no orange left on him. Do not touch his skin or face. Keep everything else exactly the same: the horned helmet, the shoulder plates, the tin megaphone, tusks, pose, proportions, thick black outline and art style, on a transparent background."
+    },
+    {
+      "id": "portrait-rocket-cart-scrap-edit-a",
+      "asset": "chibi-direction-portrait-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 81501,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-goblin",
+        "recipe": "portrait-goblin-rocket-cart-k",
+        "candidate": 0
+      },
+      "editInstruction": "Replace the one big red rocket with a tight roped bundle of four small paper fireworks rockets on thin sticks: paper tubes in grubby red, orange, yellow and blue, each with a cream paper cone tip and a small star, one fuse lit with a small spark. The cart becomes rickety dull dark brown planks (#5c3a22, shadows #3a2414) with dark brown wooden wheels. Keep the size, the cart's shape, thick black outline and art style, on a transparent background."
+    },
+    {
+      "id": "portrait-scrap-buggy-scrap-edit-a",
+      "asset": "chibi-direction-portrait-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 81601,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-goblin",
+        "recipe": "portrait-goblin-scrap-buggy-d-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the red parts: the red body panels of the buggy become mismatched scrap metal, some dull gunmetal grey #6d7684 and some rusted iron #8a4a2a, with one small panel of hazard yellow and black diagonal stripes; the driver's red cap becomes dull brown leather #955627. No red left. Keep the buggy's shape, ram, wheels, exhaust and soot cloud, the driver, proportions, thick black outline and art style exactly the same, on a transparent background."
+    },
+    {
+      "id": "portrait-troll-scrap-edit-a",
+      "asset": "chibi-direction-portrait-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 81701,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5-goblin",
+        "recipe": "portrait-goblin-troll-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only two things. The red smock becomes dull mid-brown hide, colour #955627 with #562a0c shadows. His skin becomes a darker forest green, colour #3d6a2a with #264219 shadows: clearly green, not grey, not blue, the face still clearly visible. Keep everything else exactly the same: the face, beard, tusks, club, pose, proportions, thick black outline and art style, on a transparent background."
+    },
+    {
+      "id": "goblin-city-1-scrap-edit-a",
+      "asset": "chibi-direction-goblin-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 82001,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "cities-goblin",
+        "recipe": "goblin-city-1-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours and the flag: the red tents become dull mid-brown patched hide tents (#955627, shadows #562a0c) with darker stitched patches; remove the red flag so the lookout pole is bare; the pale grey hut becomes rusted iron sheets (#8a4a2a) and dull gunmetal scrap with a dark brown plank door; no red left. Keep every building's shape and place, the lookout pole, the size, black outline and art style exactly the same."
+    },
+    {
+      "id": "goblin-city-2-scrap-edit-a",
+      "asset": "chibi-direction-goblin-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 82101,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "batch": "cities-goblin",
+        "recipe": "goblin-city-2-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours and the flag: the red tents become dull mid-brown patched hide tents (#955627, shadows #562a0c) with darker stitched patches; remove the red flag from the top of the tower, leaving a short bare pole; the tower stays dull gunmetal scrap iron with a few rusted iron plates (#8a4a2a); the hut becomes dark brown planks (#5c3a22); no red left. Keep every building's shape and place, the chimney and smoke, the size, black outline and art style the same."
+    },
+    {
+      "id": "goblin-city-3-scrap-edit-a",
+      "asset": "chibi-direction-goblin-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 82201,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "batch": "cities-goblin",
+        "recipe": "goblin-city-3-c-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours and the flag: the big red tent and the small red tents become dull mid-brown patched hide (#955627, shadows #562a0c) with darker stitched patches; remove the red flag, leaving the bare pole on the big tent; the red roof panels of the grey huts become rusted iron sheets (#8a4a2a); the huts stay dull gunmetal scrap; no red left. Keep every building's shape and place, the chimneys and smoke, the size, black outline and art style the same."
+    },
+    {
+      "id": "goblin-brown-edit-b",
+      "asset": "chibi-direction-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 80002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-k",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the orange parts: the orange cap, the two orange chest straps and the orange loincloth become dull brown leather, the brown of milk chocolate, shaded dark brown; there is no orange and no red left on him. Do not touch his skin, face or ears. Keep everything else exactly the same: the olive green skin, the grey belt and wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "edit-a browned the belt and left the leather orange."
+    },
+    {
+      "id": "goblin-brown-edit-c",
+      "asset": "chibi-direction-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 80003,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-leather-edit-k",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the orange parts: the orange cap, the two orange chest straps and the orange loincloth become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows and #a55a22 highlights; no orange and no red left on him. Do not touch his skin, face or ears. Keep everything else exactly the same: the olive green skin, the grey belt and wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "The same with the target colours as hex values."
+    },
+    {
+      "id": "bomb-chucker-brown-edit-b",
+      "asset": "chibi-direction-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 80102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-leather-edit-e",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the orange parts: the two orange chest straps, the orange loincloth and the orange satchel become dull desaturated mid-brown leather like an old saddle, colour #955627 with #562a0c shadows; no orange left on him except the fuse spark. Do not touch his skin, face, ears or helmet. Keep everything else the same: the rusted pot helmet and goggles, the olive green skin and face, the bomb with its yellow stripes and spark, gloves, boots, pose, proportions, black outline and art style.",
+      "notes": "edit-a painted the face brown; hex values worked on the Goblin (goblin-brown-edit-c)."
+    },
+    {
+      "id": "fireworks-cart-brown-edit-b",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 80202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-g",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the wood and the goblin: the cart's planks and wheels become dark brown wood, colour #5c3317 with #3b1f0e shadows and #7d4a24 highlights on the plank edges; not black, not red. The little goblin's orange cap becomes brown leather #955627, and his face, ears and hands olive green #8a952f with big cream eyes. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the cart and wheel shapes, black outline and art style.",
+      "notes": "edit-a left the planks near-black (#341108) and added a second spark that widened the sprite to 64 px."
+    },
+    {
+      "id": "fireworks-cart-brown-edit-c",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 80203,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-edit-g",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the wood: the cart's planks and wheels become dull desaturated dark brown weathered wood like dark chocolate, colour #5c3a22 with #3a2414 shadows and #7a5234 highlights on the plank edges; no orange, not black, not red. Do not touch the rockets. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the little goblin with his green skin and match, the cart and wheel shapes, thick black outline and art style.",
+      "notes": "edit-b gave near-black planks with saturated orange highlights (#792a02, #ac6f0d): orange-brown, not dark brown."
+    },
+    {
+      "id": "fireworks-cart-crew-edit-a",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 80211,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-brown-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the little goblin in the cart: a little bigger, with a big round olive green head (#8a952f), two long pointed ears sticking out sideways, big cream eyes with black pupils, a toothy grin and a brown leather cap (#955627); he leans out over the side of the cart holding a small lit match. Nothing sticks out past the cart's right side. Keep everything else the same: the five paper rockets, the dark brown cart and wheels, sticks, rope, fuse spark, black outline and art style.",
+      "notes": "The user asked for a readable crew goblin."
+    },
+    {
+      "id": "fireworks-cart-crew-edit-b",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 80212,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-brown-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things. Remove the yellow spark and fuse sticking out at the right of the rockets. The little goblin in the cart becomes bigger: a big round olive green head (#8a952f, shadows #495508), long pointed ears, big cream eyes with black pupils, a toothy grin and a brown leather cap (#955627); nothing reaches past the cart's right side. Keep everything else the same: the five rockets, the dull dark brown cart and wheels, sticks, rope, black outline and art style.",
+      "notes": "brown-edit-c has the right dull dark brown planks but a new spark at the right (65 px wide); crew-edit-a showed a readable crew, in frog green on an orange cart."
+    },
+    {
+      "id": "fireworks-cart-crew-edit-c",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 80213,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-crew-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the goblin: his bright green skin becomes olive green, colour #8a952f with #495508 shadows; his orange cap becomes dull brown leather, colour #955627 with #562a0c shadows. Shorten his right ear so nothing reaches past the cart's right side. Keep everything else exactly the same: his face, eyes and grin, the five paper rockets, the dull dark brown cart and wheels, sticks, rope, thick black outline and art style.",
+      "notes": "crew-edit-b: a readable crew, but frog green with an orange cap, and the ear makes the sprite 64 px wide."
+    },
+    {
+      "id": "fireworks-cart-crew-edit-d",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 80214,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-crew-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only: the cart's orange planks and wheels become dull desaturated dark brown wood, colour #5c3a22 with #3a2414 shadows; the goblin's bright green skin becomes olive green #8a952f with #495508 shadows; his orange cap becomes dull brown leather #955627. He holds the match close to his chest so nothing reaches past the cart's right side. Keep everything else exactly the same: his face, the five paper rockets, sticks, rope, fuse spark, thick black outline and art style.",
+      "notes": "crew-edit-a: the best crew figure, on an orange cart and in frog green; 66 px wide because of the match."
+    },
+    {
+      "id": "fireworks-cart-crew-edit-e",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 80215,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "fireworks-cart-crew-edit-d",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the goblin's outstretched arm at the right: he now holds the small lit match up close in front of his chest, inside the cart, and his right ear is a little shorter, so nothing reaches past the cart's right wheel. Do not touch his face. Keep everything else exactly the same: his olive green skin, brown cap, eyes and grin, the five paper rockets, the dark brown cart and wheels, sticks, rope, fuse spark, thick black outline and art style, on a transparent background.",
+      "notes": "crew-edit-d is right in colour and crew; 66 px wide because of the match and the ear."
+    },
+    {
+      "id": "wolf-rider-scrap-edit-b",
+      "asset": "chibi-direction-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 80302,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "wolf-rider-b-edit-3",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the rider's clothes and the blanket: the red bandana becomes a brown leather cap; take off the red tunic so his chest, belly and arms are bare olive green skin with one brown leather strap across the chest; the red saddle blanket becomes stitched brown hide. All leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the grey wolf, the goblin's face, ears, spear, pose, proportions, thick black outline and art style exactly the same.",
+      "notes": "wolf-rider-scrap-edit-a failed at PixelLab; the leather is now given as hex values, which worked on the Goblin."
+    },
+    {
+      "id": "troll-scrap-edit-b",
+      "asset": "chibi-direction-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 80702,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "troll-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only two things. The big red smock becomes dull mid-brown hide, colour #955627 with #562a0c shadows and two darker stitched patches. His skin becomes a darker forest green, colour #3d6a2a with #264219 shadows: clearly green, not grey, not blue, the face still clearly visible. Keep everything else exactly the same: the moss, face, beard, tusks, wrist bands, stone club, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "troll-scrap-edit-a: the smock came out pale ochre with big brown spots, and the skin was not darkened."
+    },
+    {
+      "id": "wolf-rider-skin-edit-a",
+      "asset": "chibi-direction-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 80311,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "wolf-rider-scrap-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the goblin rider's skin: his face, ears, chest, belly, arms and hands become olive green, colour #8a952f with #495508 shadows, a little darker and less yellow than now; the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, strap and saddle blanket, the spear, the grey wolf, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "scrap-edit-b has the wardrobe; the rider's skin is today's lighter yellow-green (#a8b941), not the roster's olive."
+    },
+    {
+      "id": "orc-brute-skin-edit-a",
+      "asset": "chibi-direction-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 80411,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-brute-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the face, ears, chest, belly, arms and hands become a dark grey-green, colour #5a6b3c with #37432a shadows: darker and greyer than now, clearly green, not yellow, and the face stays clearly visible. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "The Orc green: darker and greyer than the Goblins' olive."
+    },
+    {
+      "id": "wolf-rider-skin-edit-b",
+      "asset": "chibi-direction-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 80312,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "wolf-rider-skin-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the goblin rider's skin: the bright yellow-green of his face, ears, chest, belly, arms and hands becomes a mid-tone olive green, colour #8a952f, with #495508 shadows; not yellow, not bright, and the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, strap and saddle blanket, the spear, the grey wolf, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "skin-edit-a is still #b2b537 (hue 61): yellower and lighter than the Goblin's #8a952f."
+    },
+    {
+      "id": "orc-brute-skin-edit-b",
+      "asset": "chibi-direction-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 80412,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-brute-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the yellow skin of his face, ears, chest, belly, arms and hands becomes a mid-tone grey-green, colour #6b7d45, with shadows only a little darker, #46552e: greener and greyer than now, not yellow, not black, and the face stays clearly visible. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style.",
+      "notes": "skin-edit-a turned him charcoal black. As in the study: ask for a mid-tone with a shadow only a little darker."
+    },
+    {
+      "id": "orc-warboss-skin-edit-a",
+      "asset": "chibi-direction-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 80511,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-warboss-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the pale khaki skin of his face, ears, arms and hands becomes a mid-tone grey-green, colour #6b7d45, with shadows only a little darker, #46552e: clearly green, not yellow, not black, and the face stays clearly visible. Keep everything else exactly the same: the horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the shoulder plates, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style.",
+      "notes": "The Warboss takes the same Orc green as the Brute."
+    },
+    {
+      "id": "scrap-buggy-scrap-edit-b",
+      "asset": "chibi-direction-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 80602,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "scrap-buggy-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only two things. The driver's yellow skin (face, ears, hands) becomes a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow. The red rings on the wheel hubs become rusted iron, colour #8a4a2a. Do not touch his eyes, grin, goggles or cap. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, wheels, exhaust and soot cloud, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "scrap-edit-a: the body is right (gunmetal, rust, one hazard panel); the driver is mustard yellow and the hubs are still red."
+    },
+    {
+      "id": "orc-brute-skin-edit-c",
+      "asset": "chibi-direction-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 80413,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-brute-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the face, ears, chest, belly, arms and hands become moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, and the face stays clearly visible. Do not touch his clothes. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "skin-edit-b ('grey-green') desaturated the whole figure to stone grey, kilt included. No 'grey' in the wording now."
+    },
+    {
+      "id": "orc-warboss-skin-edit-b",
+      "asset": "chibi-direction-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 80512,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-warboss-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the face, ears, arms and hands become moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the steel horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the shoulder plates, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "skin-edit-a ('grey-green') turned the skin yellow-khaki (#aea964) and darkened the helmet."
+    },
+    {
+      "id": "scrap-buggy-skin-edit-a",
+      "asset": "chibi-direction-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 80611,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "scrap-buggy-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the driver's skin: his face, ears and hands become a mid-tone olive green, colour #8a952f with #495508 shadows. Do not touch his eyes, grin, goggles or cap, and do not touch the buggy. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, the black wheels, the exhaust and the grey soot cloud, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "scrap-edit-b fixed the driver's skin but painted the tyres and the soot cloud rust brown and left the red hub rings."
+    },
+    {
+      "id": "orc-brute-skin-edit-d",
+      "asset": "chibi-direction-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 80414,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-brute-skin-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his green skin (face, ears, chest, belly, arms, hands) becomes one step darker and duller, a dull dark moss green, colour #5a7038 with #3a4a26 shadows; still clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his clothes. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield, the cleaver, boots, pose, proportions, thick black outline and art style.",
+      "notes": "skin-edit-c is a clear moss green (#768f41) about as light as the Goblin's olive; the Orcs should be a step darker and duller."
+    },
+    {
+      "id": "orc-warboss-skin-edit-c",
+      "asset": "chibi-direction-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 80513,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-warboss-skin-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "A small colour change only: his light green skin (face, ears, arms, hands) becomes one step darker and duller, a dull dark moss green, colour #5a7038 with #3a4a26 shadows; still clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the steel horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style.",
+      "notes": "skin-edit-b is a light green (#96af65), lighter than the Brute's."
+    },
+    {
+      "id": "scrap-buggy-hub-edit-a",
+      "asset": "chibi-direction-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 80621,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "scrap-buggy-skin-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the thin red-orange rings on the wheel hubs: they become dull rusted iron, colour #8a4a2a with #5a2c18 shadows; no red left anywhere. Do not touch the tyres, which stay black. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, the black wheels, the exhaust and the grey soot cloud, the driver, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "skin-edit-a fixed the driver; the hub rings are still the old owner red-orange (#a12d01)."
+    },
+    {
+      "id": "portrait-goblin-skin-edit-a",
+      "asset": "chibi-direction-portrait-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 81011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-goblin-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the yellow skin of his head, ears, shoulders, chest and hand becomes a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow, and the face stays clearly visible. Keep everything else exactly the same: the brown leather cap and crossed straps, the eye, teeth and tongue, the dagger, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "scrap-edit-a has the cap and straps; the skin is the old portrait's mustard yellow."
+    },
+    {
+      "id": "portrait-wolf-rider-skin-edit-a",
+      "asset": "chibi-direction-portrait-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 81111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-wolf-rider-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the goblin's skin: the yellow skin of his face, ears and hands becomes a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow, and the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, his clothes and strap, the grey wolf's head, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "scrap-edit-a: brown cap and strap; the tunic turned olive instead of bare skin, and the face is mustard yellow."
+    },
+    {
+      "id": "portrait-bomb-chucker-skin-edit-a",
+      "asset": "chibi-direction-portrait-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 81211,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-bomb-chucker-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only two things. The two red patches beside his cheeks become olive green ears. His yellow-green skin (face, ears, shoulders) becomes a mid-tone olive green, colour #8a952f with #495508 shadows; no red left except his tongue, and the face stays clearly visible. Keep everything else exactly the same: the rusted pot helmet and goggles, the bomb with its yellow stripes and spark, the brown strap, pose, proportions, thick black outline and art style.",
+      "notes": "scrap-edit-a: pot helmet, goggles and a hazard band on the bomb; two red patches are left of the old cap's flaps."
+    },
+    {
+      "id": "portrait-orc-brute-skin-edit-a",
+      "asset": "chibi-direction-portrait-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 81311,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-orc-brute-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the pale skin of his face, ears, shoulders and arms becomes a dull moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet, straps or shield. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps, the plank shield with its iron rim, pose, proportions, thick black outline and art style.",
+      "notes": "scrap-edit-a: straps and plank shield are right; the skin is a pale grey olive, not the Orc green of the unit."
+    },
+    {
+      "id": "portrait-orc-warboss-skin-edit-a",
+      "asset": "chibi-direction-portrait-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 81411,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-orc-warboss-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the pale skin of his face, ears and hands becomes a dull moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the horned helmet, tusks, open mouth, the brown hide cape, the megaphone, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "scrap-edit-a: brown hide cape; the skin is a pale grey green."
+    },
+    {
+      "id": "portrait-rocket-cart-scrap-edit-b",
+      "asset": "chibi-direction-portrait-goblin-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 81502,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-rocket-cart-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the four rockets: make each a fat paper fireworks rocket, a short wide paper tube with a big pointed cream paper cone on top, one small star or patch of another colour on its wrapper and a cream band; keep them red, orange, yellow and blue, roped together, standing on their thin sticks, with one lit fuse and spark. Keep the dark brown plank cart and wheels, the size, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "scrap-edit-a: thin plain tubes with coloured tips read as four coloured pencils."
+    },
+    {
+      "id": "portrait-scrap-buggy-skin-edit-a",
+      "asset": "chibi-direction-portrait-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 81611,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-scrap-buggy-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the driver's skin: his yellow face and ears become a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow. Do not touch his goggles or cap, and do not touch the buggy. Keep everything else exactly the same: the grey scrap metal body with its rust and hazard striped panels, the ram, wheels, exhaust and soot cloud, the brown leather cap, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "scrap-edit-a: gunmetal and rust body with hazard panels; the driver is mustard yellow."
+    },
+    {
+      "id": "portrait-troll-smock-edit-a",
+      "asset": "chibi-direction-portrait-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 81711,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-troll-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his smock: the drab khaki smock on his shoulders and chest becomes brown hide, colour #643923 with #4a281b shadows; clearly brown. Do not touch his head or skin. Keep everything else exactly the same: the dark green skin, face, beard, tusks, the club, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "scrap-edit-a: the skin is the unit's dark green; the smock came out a drab grey khaki, not the unit's brown."
+    },
+    {
+      "id": "goblin-city-1-scrap-edit-b",
+      "asset": "chibi-direction-goblin-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 82002,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "cities-goblin",
+        "recipe": "goblin-city-1-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only: the red tents become dull tan hide tents (#9b8461, shadows #5b4b36) with darker stitched patches; the pale grey hut becomes rusted iron sheets (#8a4a2a) and dull gunmetal scrap; the red flag cloth on the lookout pole is removed, but the tall lookout pole and its small basket platform stay, in dark gunmetal iron; no red left. Keep every building's shape and place, the size, black outline and art style exactly the same.",
+      "notes": "scrap-edit-a removed the whole lookout pole with the flag; the level-1 camp lost its tallest shape."
+    },
+    {
+      "id": "portrait-bomb-chucker-skin-edit-b",
+      "asset": "chibi-direction-portrait-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 81212,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-bomb-chucker-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the two red patches beside his cheeks: they become olive green, colour #8a952f, like his pointed ears. Do not redraw anything: his face, his big grin, eyes, the rusted pot helmet and goggles, the bomb with its yellow stripes and spark, the brown strap, pose, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+      "notes": "skin-edit-a redrew him as a serious human face with no grin and no pointed ears. Only the red patches are changed now."
+    },
+    {
+      "id": "portrait-orc-warboss-skin-edit-b",
+      "asset": "chibi-direction-portrait-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 81412,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-orc-warboss-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the pale grey skin of his face, ears and hands: it becomes moss green, colour #6f8a44 with #46592c shadows: clearly green, not grey, and the face stays clearly visible. Do not redraw anything: the horned helmet, tusks, open mouth and tongue, the brown hide cape, the megaphone, pose, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+      "notes": "skin-edit-a changed nothing visible: the skin is still a pale grey green."
+    },
+    {
+      "id": "portrait-scrap-buggy-skin-edit-b",
+      "asset": "chibi-direction-portrait-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 81612,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-scrap-buggy-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the yellow of the driver's face and ears: the yellow becomes olive green, colour #8a952f. Do not redraw anything: the driver's dark goggles and brown leather cap, the grey scrap metal body with its rust and hazard striped panels, the ram, wheels, exhaust and soot cloud, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+      "notes": "skin-edit-a replaced the driver's face with a white mask."
+    },
+    {
+      "id": "portrait-scrap-buggy-rust-edit-a",
+      "asset": "chibi-direction-portrait-goblin-scrap-buggy",
+      "endpoint": "edit-image-pixen",
+      "seed": 81621,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-scrap-buggy-skin-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the red parts of the buggy's body: the dark red rust patches and the small bright red spots become dull orange-brown rusted iron, colour #8a4a2a with #5a2c18 shadows; no red left anywhere. Do not redraw anything: the grey scrap metal panels, the hazard striped panels, the ram, wheels, exhaust and soot cloud, the driver with his olive green face, dark goggles and brown cap, proportions, thick black outline and art style all stay exactly the same.",
+      "notes": "skin-edit-b: the driver is right; the rust is a dark red (#762b1d, hue 9) with a few key-red pixels (#d61816), redder than the unit's rust."
+    },
+    {
+      "id": "goblin-city-1-tent-edit-a",
+      "asset": "chibi-direction-goblin-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 82011,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "goblin-city-1-scrap-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the three pale cream tents: they become tan-brown hide, colour #8f6e41 with #634b2b shadows, keeping their darker brown stitched patches. Do not redraw anything: the rusted iron hut, the dark iron lookout pole with its basket platform, the grey stones, every shape and place, the size, thick black outline and art style all stay exactly the same, on a transparent background.",
+      "notes": "scrap-edit-b keeps the lookout pole; its tents are a pale cream, lighter than the tan hide of City 3 (#8f6e41)."
+    },
+    {
+      "id": "goblin-city-1-tent-edit-b",
+      "asset": "chibi-direction-goblin-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 82012,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "goblin-city-1-scrap-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the cloth of the three pale cream tents: the cream becomes tan-brown hide, colour #8f6e41 with #634b2b shadows; their darker brown patches stay. Add nothing: no ground, no floor, no shadow and no pale rim under the tents. Do not redraw anything: the rusted iron hut, the dark iron lookout pole with its basket platform, the grey stones, every shape and place, the size, thick black outline and art style stay exactly the same, on a transparent background.",
+      "notes": "tent-edit-a got the tan right but added a pale grey rim of ground under the tents."
+    }
+  ]
+}

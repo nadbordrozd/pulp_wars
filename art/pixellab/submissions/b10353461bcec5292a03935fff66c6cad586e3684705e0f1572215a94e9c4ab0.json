@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-crew-edit-e",
+  "jobId": "41df7f2d-cbeb-4ff0-b115-90c47f1afbdf",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80215,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the goblin's outstretched arm at the right: he now holds the small lit match up close in front of his chest, inside the cart, and his right ear is a little shorter, so nothing reaches past the cart's right wheel. Do not touch his face. Keep everything else exactly the same: his olive green skin, brown cap, eyes and grin, the five paper rockets, the dark brown cart and wheels, sticks, rope, fuse spark, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the goblin's outstretched arm at the right: he now holds the small lit match up close in front of his chest, inside the cart, and his right ear is a little shorter, so nothing reaches past the cart's right wheel. Do not touch his face. Keep everything else exactly the same: his olive green skin, brown cap, eyes and grin, the five paper rockets, the dark brown cart and wheels, sticks, rope, fuse spark, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the goblin's outstretched arm at the right: he now holds the small lit match up close in front of his chest, inside the cart, and his right ear is a little shorter, so nothing reaches past the cart's right wheel. Do not touch his face. Keep everything else exactly the same: his olive green skin, brown cap, eyes and grin, the five paper rockets, the dark brown cart and wheels, sticks, rope, fuse spark, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only the goblin's outstretched arm at the right: he now holds the small lit match up close in front of his chest, inside the cart, and his right ear is a little shorter, so nothing reaches past the cart's right wheel. Do not touch his face. Keep everything else exactly the same: his olive green skin, brown cap, eyes and grin, the five paper rockets, the dark brown cart and wheels, sticks, rope, fuse spark, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "fireworks-cart-crew-edit-d",
+      "candidate": 0,
+      "sha256": "7193ff7dc16dbc365360b36441f8695d7e7e2be3ee04f33548e6f612ce2e65ec"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "portrait-troll-scrap-edit-a",
+  "jobId": "facf6a0d-fa2a-4e0f-afda-ad19f9310a9a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-troll",
+    "subject": "PORTRAIT:GOBLIN:JUGGERNAUT",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81701,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only two things. The red smock becomes dull mid-brown hide, colour #955627 with #562a0c shadows. His skin becomes a darker forest green, colour #3d6a2a with #264219 shadows: clearly green, not grey, not blue, the face still clearly visible. Keep everything else exactly the same: the face, beard, tusks, club, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only two things. The red smock becomes dull mid-brown hide, colour #955627 with #562a0c shadows. His skin becomes a darker forest green, colour #3d6a2a with #264219 shadows: clearly green, not grey, not blue, the face still clearly visible. Keep everything else exactly the same: the face, beard, tusks, club, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only two things. The red smock becomes dull mid-brown hide, colour #955627 with #562a0c shadows. His skin becomes a darker forest green, colour #3d6a2a with #264219 shadows: clearly green, not grey, not blue, the face still clearly visible. Keep everything else exactly the same: the face, beard, tusks, club, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only two things. The red smock becomes dull mid-brown hide, colour #955627 with #562a0c shadows. His skin becomes a darker forest green, colour #3d6a2a with #264219 shadows: clearly green, not grey, not blue, the face still clearly visible. Keep everything else exactly the same: the face, beard, tusks, club, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "batch": "5-goblin",
+      "recipe": "portrait-goblin-troll-a-edit-2",
+      "candidate": 0,
+      "sha256": "fdea37b8b4df2f49e74ecce5c1b068b10804fecc0fd24f0b02ac5b5a62033eed"
+    }
+  }
+}

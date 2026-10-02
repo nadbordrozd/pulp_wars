@@ -1,0 +1,36 @@
+{
+  "id": "wolf-rider-skin-edit-b",
+  "jobId": "1b5a7df1-ec2f-4a4b-9184-aa4506c7b3b8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-wolf-rider",
+    "subject": "UNIT:GOBLIN:RAIDER",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80312,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the goblin rider's skin: the bright yellow-green of his face, ears, chest, belly, arms and hands becomes a mid-tone olive green, colour #8a952f, with #495508 shadows; not yellow, not bright, and the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, strap and saddle blanket, the spear, the grey wolf, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the goblin rider's skin: the bright yellow-green of his face, ears, chest, belly, arms and hands becomes a mid-tone olive green, colour #8a952f, with #495508 shadows; not yellow, not bright, and the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, strap and saddle blanket, the spear, the grey wolf, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the goblin rider's skin: the bright yellow-green of his face, ears, chest, belly, arms and hands becomes a mid-tone olive green, colour #8a952f, with #495508 shadows; not yellow, not bright, and the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, strap and saddle blanket, the spear, the grey wolf, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the goblin rider's skin: the bright yellow-green of his face, ears, chest, belly, arms and hands becomes a mid-tone olive green, colour #8a952f, with #495508 shadows; not yellow, not bright, and the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, strap and saddle blanket, the spear, the grey wolf, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "wolf-rider-skin-edit-a",
+      "candidate": 0,
+      "sha256": "b1a96800e87d49d740b3d48d5390a52769d849f500ec1108a066a62821557c2e"
+    }
+  }
+}

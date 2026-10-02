@@ -1,0 +1,37 @@
+{
+  "id": "wolf-rider-scrap-edit-b",
+  "jobId": "baa0db25-e3c2-4434-af94-a885c71917e8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-wolf-rider",
+    "subject": "UNIT:GOBLIN:RAIDER",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the rider's clothes and the blanket: the red bandana becomes a brown leather cap; take off the red tunic so his chest, belly and arms are bare olive green skin with one brown leather strap across the chest; the red saddle blanket becomes stitched brown hide. All leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the grey wolf, the goblin's face, ears, spear, pose, proportions, thick black outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Change only the rider's clothes and the blanket: the red bandana becomes a brown leather cap; take off the red tunic so his chest, belly and arms are bare olive green skin with one brown leather strap across the chest; the red saddle blanket becomes stitched brown hide. All leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the grey wolf, the goblin's face, ears, spear, pose, proportions, thick black outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Change only the rider's clothes and the blanket: the red bandana becomes a brown leather cap; take off the red tunic so his chest, belly and arms are bare olive green skin with one brown leather strap across the chest; the red saddle blanket becomes stitched brown hide. All leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the grey wolf, the goblin's face, ears, spear, pose, proportions, thick black outline and art style exactly the same.",
+    "editInstruction": "Change only the rider's clothes and the blanket: the red bandana becomes a brown leather cap; take off the red tunic so his chest, belly and arms are bare olive green skin with one brown leather strap across the chest; the red saddle blanket becomes stitched brown hide. All leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the grey wolf, the goblin's face, ears, spear, pose, proportions, thick black outline and art style exactly the same.",
+    "source": {
+      "batch": "goblin",
+      "recipe": "wolf-rider-b-edit-3",
+      "candidate": 0,
+      "sha256": "d98643bc206ea31d8519c229108eac9a0010aa6303161bf3029f1803267b7580"
+    }
+  }
+}

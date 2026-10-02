@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-crew-edit-b",
+  "jobId": "a367ed3e-9c65-4f29-84f9-3a3d2953cc51",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80212,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things. Remove the yellow spark and fuse sticking out at the right of the rockets. The little goblin in the cart becomes bigger: a big round olive green head (#8a952f, shadows #495508), long pointed ears, big cream eyes with black pupils, a toothy grin and a brown leather cap (#955627); nothing reaches past the cart's right side. Keep everything else the same: the five rockets, the dull dark brown cart and wheels, sticks, rope, black outline and art style."
+      }
+    ],
+    "prompt": "Change only two things. Remove the yellow spark and fuse sticking out at the right of the rockets. The little goblin in the cart becomes bigger: a big round olive green head (#8a952f, shadows #495508), long pointed ears, big cream eyes with black pupils, a toothy grin and a brown leather cap (#955627); nothing reaches past the cart's right side. Keep everything else the same: the five rockets, the dull dark brown cart and wheels, sticks, rope, black outline and art style.",
+    "negativePrompt": "",
+    "description": "Change only two things. Remove the yellow spark and fuse sticking out at the right of the rockets. The little goblin in the cart becomes bigger: a big round olive green head (#8a952f, shadows #495508), long pointed ears, big cream eyes with black pupils, a toothy grin and a brown leather cap (#955627); nothing reaches past the cart's right side. Keep everything else the same: the five rockets, the dull dark brown cart and wheels, sticks, rope, black outline and art style.",
+    "editInstruction": "Change only two things. Remove the yellow spark and fuse sticking out at the right of the rockets. The little goblin in the cart becomes bigger: a big round olive green head (#8a952f, shadows #495508), long pointed ears, big cream eyes with black pupils, a toothy grin and a brown leather cap (#955627); nothing reaches past the cart's right side. Keep everything else the same: the five rockets, the dull dark brown cart and wheels, sticks, rope, black outline and art style.",
+    "source": {
+      "recipe": "fireworks-cart-brown-edit-c",
+      "candidate": 0,
+      "sha256": "852ded919d4d8bb3bbbc8a4c690674d5941cbfc47df820b95a4bf175543afd51"
+    }
+  }
+}

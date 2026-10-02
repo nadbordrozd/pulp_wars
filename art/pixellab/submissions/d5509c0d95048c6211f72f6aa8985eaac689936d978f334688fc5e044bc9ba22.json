@@ -1,0 +1,36 @@
+{
+  "id": "goblin-city-1-tent-edit-b",
+  "jobId": "1686476b-54d4-42dc-b01d-9131d00313dc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-city-1",
+    "subject": "CITY:GOBLIN:1",
+    "faction": "GOBLIN",
+    "recipeClass": "settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 82012,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the cloth of the three pale cream tents: the cream becomes tan-brown hide, colour #8f6e41 with #634b2b shadows; their darker brown patches stay. Add nothing: no ground, no floor, no shadow and no pale rim under the tents. Do not redraw anything: the rusted iron hut, the dark iron lookout pole with its basket platform, the grey stones, every shape and place, the size, thick black outline and art style stay exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the cloth of the three pale cream tents: the cream becomes tan-brown hide, colour #8f6e41 with #634b2b shadows; their darker brown patches stay. Add nothing: no ground, no floor, no shadow and no pale rim under the tents. Do not redraw anything: the rusted iron hut, the dark iron lookout pole with its basket platform, the grey stones, every shape and place, the size, thick black outline and art style stay exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the cloth of the three pale cream tents: the cream becomes tan-brown hide, colour #8f6e41 with #634b2b shadows; their darker brown patches stay. Add nothing: no ground, no floor, no shadow and no pale rim under the tents. Do not redraw anything: the rusted iron hut, the dark iron lookout pole with its basket platform, the grey stones, every shape and place, the size, thick black outline and art style stay exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the cloth of the three pale cream tents: the cream becomes tan-brown hide, colour #8f6e41 with #634b2b shadows; their darker brown patches stay. Add nothing: no ground, no floor, no shadow and no pale rim under the tents. Do not redraw anything: the rusted iron hut, the dark iron lookout pole with its basket platform, the grey stones, every shape and place, the size, thick black outline and art style stay exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "goblin-city-1-scrap-edit-b",
+      "candidate": 0,
+      "sha256": "2a6767f9e4326b1d3e2d2972c331f85b19d749d7777b69ed83c19ca4ccf767cf"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-scrap-edit-c",
+  "jobId": "fc5ca6f7-321e-445d-8244-bb3c9deb71d2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 78203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only these colours: the cart becomes rickety weathered dark brown planks and its wheels rusty brown iron; the yellow tail fins and stick of the rocket become dark gunmetal iron; the little goblin has a near-black dark brown leather cap instead of the red bandana and bright yellow-olive green skin. Keep the black rocket with its yellow stripes, the cream cone, the fuse and spark, the shapes, the crouching goblin, proportions, thick black outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Change only these colours: the cart becomes rickety weathered dark brown planks and its wheels rusty brown iron; the yellow tail fins and stick of the rocket become dark gunmetal iron; the little goblin has a near-black dark brown leather cap instead of the red bandana and bright yellow-olive green skin. Keep the black rocket with its yellow stripes, the cream cone, the fuse and spark, the shapes, the crouching goblin, proportions, thick black outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Change only these colours: the cart becomes rickety weathered dark brown planks and its wheels rusty brown iron; the yellow tail fins and stick of the rocket become dark gunmetal iron; the little goblin has a near-black dark brown leather cap instead of the red bandana and bright yellow-olive green skin. Keep the black rocket with its yellow stripes, the cream cone, the fuse and spark, the shapes, the crouching goblin, proportions, thick black outline and art style exactly the same.",
+    "editInstruction": "Change only these colours: the cart becomes rickety weathered dark brown planks and its wheels rusty brown iron; the yellow tail fins and stick of the rocket become dark gunmetal iron; the little goblin has a near-black dark brown leather cap instead of the red bandana and bright yellow-olive green skin. Keep the black rocket with its yellow stripes, the cream cone, the fuse and spark, the shapes, the crouching goblin, proportions, thick black outline and art style exactly the same.",
+    "source": {
+      "recipe": "rocket-cart-scrap-edit-b",
+      "candidate": 0,
+      "sha256": "11f2dda0ece46b5094855aeb8a15da965a3fae000f7b8ff1cf16610da7899b7c"
+    }
+  }
+}

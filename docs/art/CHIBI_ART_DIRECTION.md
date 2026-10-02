@@ -118,9 +118,10 @@ Rules for resolution:
 
 **Scope since bead `pulp_wars-3tq.6`:** the rules of this section are current
 behaviour only for art that is not converted to the new direction: the
-Undead, Goblin and Dinosaur units, cities and portraits, the ships, and
-everything the **Classic look** developer option draws. For the Human
-faction and the shared improvements the default game follows
+Undead and Dinosaur units, cities and portraits, the ships, and everything
+the **Classic look** developer option draws. For the Human faction, the
+Goblin faction (since bead `pulp_wars-3tq.9`) and the shared improvements
+the default game follows
 [section 4a](#4a-the-new-owner-colour-rule-october-2026-direction).
 
 - Every unit, city and owned building has a large, solid owner-colour area:
@@ -177,15 +178,17 @@ look stays available as Settings > Developer tools > Classic look.
   carries `fixedColours: true` instead of `ownerMaskUrl` (a registry entry
   must have exactly one of the two). The key colour, mask extraction and
   mask QA are unchanged for everything not converted: ships (shared, sail in
-  the player colour), and the Undead, Goblin and Dinosaur units, cities and
-  portraits.
+  the player colour), and the Undead and Dinosaur units, cities and
+  portraits. The Goblins are converted (batch `direction-goblin`, bead
+  `pulp_wars-3tq.9`): olive, moss and dark green skins, brown leather, rust
+  and gunmetal scrap, on the classic canvases and anchors.
 - **Units stay chibi:** black outline, full saturation, the sizes and anchors
   of section 3. They are the only black-outlined, fully saturated pieces.
 - **Chrome of the default look:** no numbered seat badge; the HP bar only
   for a damaged unit, a short bar on its plate; the ready cue as a bright
   rim round the plate; thin solid territory borders; Roads without the black
   casing.
-- **Not converted yet:** the other three factions, ships, terrain and
+- **Not converted yet:** Undead and Dinosaur, ships, terrain and
   resources. Their units and portraits keep the player-coloured garments of
   section 4 and stand on a plate; their cities keep their own art, owner
   recolour and capital crown, without a seat badge or a pennant; ships keep

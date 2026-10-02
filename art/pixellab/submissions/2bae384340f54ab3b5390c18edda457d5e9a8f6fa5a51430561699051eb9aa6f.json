@@ -1,0 +1,36 @@
+{
+  "id": "portrait-rocket-cart-scrap-edit-b",
+  "jobId": "572465f1-257e-4d9b-bd8d-d39c05d9684e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-rocket-cart",
+    "subject": "PORTRAIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81502,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the four rockets: make each a fat paper fireworks rocket, a short wide paper tube with a big pointed cream paper cone on top, one small star or patch of another colour on its wrapper and a cream band; keep them red, orange, yellow and blue, roped together, standing on their thin sticks, with one lit fuse and spark. Keep the dark brown plank cart and wheels, the size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the four rockets: make each a fat paper fireworks rocket, a short wide paper tube with a big pointed cream paper cone on top, one small star or patch of another colour on its wrapper and a cream band; keep them red, orange, yellow and blue, roped together, standing on their thin sticks, with one lit fuse and spark. Keep the dark brown plank cart and wheels, the size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the four rockets: make each a fat paper fireworks rocket, a short wide paper tube with a big pointed cream paper cone on top, one small star or patch of another colour on its wrapper and a cream band; keep them red, orange, yellow and blue, roped together, standing on their thin sticks, with one lit fuse and spark. Keep the dark brown plank cart and wheels, the size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the four rockets: make each a fat paper fireworks rocket, a short wide paper tube with a big pointed cream paper cone on top, one small star or patch of another colour on its wrapper and a cream band; keep them red, orange, yellow and blue, roped together, standing on their thin sticks, with one lit fuse and spark. Keep the dark brown plank cart and wheels, the size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-rocket-cart-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "121d44258a684ca3a9c3d5b971360a0f26d648492bd0fc6182df406f42ce376d"
+    }
+  }
+}

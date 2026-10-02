@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-edit-a",
+  "jobId": "e79d30be-1fe8-414e-946a-ce1d4c886b0a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 79201,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Replace the one big black rocket with a tight bundle of five small fireworks rockets of different sizes on thin wooden sticks, standing up in the cart and leaning forward, tied with pale rope: paper tubes in grubby red, orange, yellow, one blue and one green, each with a cream paper cone tip and a short fuse, one fuse lit with a spark. The little goblin gets green skin and an orange-brown leather cap. Keep the wooden cart, wheels, goblin, black outline and art style."
+      }
+    ],
+    "prompt": "Replace the one big black rocket with a tight bundle of five small fireworks rockets of different sizes on thin wooden sticks, standing up in the cart and leaning forward, tied with pale rope: paper tubes in grubby red, orange, yellow, one blue and one green, each with a cream paper cone tip and a short fuse, one fuse lit with a spark. The little goblin gets green skin and an orange-brown leather cap. Keep the wooden cart, wheels, goblin, black outline and art style.",
+    "negativePrompt": "",
+    "description": "Replace the one big black rocket with a tight bundle of five small fireworks rockets of different sizes on thin wooden sticks, standing up in the cart and leaning forward, tied with pale rope: paper tubes in grubby red, orange, yellow, one blue and one green, each with a cream paper cone tip and a short fuse, one fuse lit with a spark. The little goblin gets green skin and an orange-brown leather cap. Keep the wooden cart, wheels, goblin, black outline and art style.",
+    "editInstruction": "Replace the one big black rocket with a tight bundle of five small fireworks rockets of different sizes on thin wooden sticks, standing up in the cart and leaning forward, tied with pale rope: paper tubes in grubby red, orange, yellow, one blue and one green, each with a cream paper cone tip and a short fuse, one fuse lit with a spark. The little goblin gets green skin and an orange-brown leather cap. Keep the wooden cart, wheels, goblin, black outline and art style.",
+    "source": {
+      "recipe": "rocket-cart-scrap-edit-e",
+      "candidate": 0,
+      "sha256": "06aebc575c4f6bfd677b8e7d2ed0724220fbfee845acdcd06513335151dd6be1"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "orc-brute-skin-edit-c",
+  "jobId": "eda148a7-9e33-46e9-b012-3d6ef60e2c2c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-orc-brute",
+    "subject": "UNIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80413,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin: the face, ears, chest, belly, arms and hands become moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, and the face stays clearly visible. Do not touch his clothes. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin: the face, ears, chest, belly, arms and hands become moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, and the face stays clearly visible. Do not touch his clothes. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin: the face, ears, chest, belly, arms and hands become moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, and the face stays clearly visible. Do not touch his clothes. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only his skin: the face, ears, chest, belly, arms and hands become moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, and the face stays clearly visible. Do not touch his clothes. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "orc-brute-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "b24dbacfe9e9a9a5567b5293ab51e7c053c5fb463df7add31883b889a2e8223e"
+    }
+  }
+}

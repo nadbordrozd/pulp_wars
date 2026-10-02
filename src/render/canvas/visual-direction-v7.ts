@@ -84,6 +84,12 @@ export interface BoardVisualDirectionV7 {
      * the capital crown, without a pennant: their art already carries the
      * player colour, and the corner pennant would cover the Field Defense
      * badge. The seat badge follows `chrome.badge` either way.
+     *
+     * A faction city that has direction art of its own (the Goblin scrap
+     * camps since bead pulp_wars-3tq.9) is converted in both modes: its
+     * direction raster is drawn as authored, with the pennant on its
+     * authored anchor. CLASSIC applies to it only while that raster is
+     * missing or failed to load.
      */
     readonly factionCities: "DIRECTED" | "CLASSIC";
   };
@@ -254,10 +260,13 @@ export const HUMAN_DEMO_DIRECTION_V7: BoardVisualDirectionV7 = {
  * demo's rules with the production art. The app passes it to the board
  * unless the developer option "Classic look (previous art)" is on.
  *
- * Undead, Goblin and Dinosaur are not converted: their units keep the
+ * Undead and Dinosaur are not converted: their units keep the
  * player-coloured garments and stand on a plate, and their cities are drawn
  * as in the classic look (owner recolour, capital crown) without the seat
- * badge. Ships keep the player-coloured sail and stand in a thin ring.
+ * badge. Goblins are converted since bead pulp_wars-3tq.9: their units,
+ * portraits and cities resolve from the direction art registry in fixed
+ * faction colours, and their cities fly the pennant. Ships keep the
+ * player-coloured sail and stand in a thin ring.
  */
 export const LIVE_DIRECTION_V7: BoardVisualDirectionV7 = {
   ...HUMAN_DEMO_DIRECTION_V7,
@@ -299,6 +308,12 @@ export const DIRECTION_FLAG_ANCHORS_V7: Readonly<
   // The same masters as the demo's Port and Shipyard.
   "chibi-direction-port": { x: 49.5, y: 22, pole: 0 },
   "chibi-direction-shipyard": { x: 21, y: 4, pole: 11 },
+  // The Goblin scrap camps (bead pulp_wars-3tq.9, batch `direction-goblin`):
+  // beside the knob of the lookout pole; on a short pole over the tower's
+  // own stub; beside the top of the big tent's pole.
+  "chibi-direction-goblin-city-1": { x: 62, y: 10, pole: 0 },
+  "chibi-direction-goblin-city-2": { x: 48.5, y: 0, pole: 6 },
+  "chibi-direction-goblin-city-3": { x: 50, y: 5, pole: 0 },
 };
 
 const clampPercent = (value: unknown, low: number, high: number): number =>
@@ -775,13 +790,21 @@ export function createDirectedChibiArtV7(input: {
           cacheKey: `${resolved.cacheKey}|halo`,
         };
       }
-      // An unconverted faction's city keeps its classic raster.
+      // An unconverted faction's city keeps its classic raster; a faction
+      // city with direction art of its own (Goblin) is drawn from it.
       if (
         group === "CITY" &&
         direction.city.factionCities === "CLASSIC" &&
         !humanPiece(request.subject)
-      )
-        return base.resolve(request);
+      ) {
+        const sample =
+          direction.city.samples && input.samples !== undefined
+            ? input.samples.resolve(request)
+            : null;
+        return sample !== null && sample.kind !== "MISSING"
+          ? sample
+          : base.resolve(request);
+      }
       const settings = group === "CITY" ? direction.city : direction.building;
       // A re-created sample sprite is drawn as authored: its colours are the
       // faction's already, so it takes neither the tone nor an owner colour.

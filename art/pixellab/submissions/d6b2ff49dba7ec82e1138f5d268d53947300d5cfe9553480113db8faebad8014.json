@@ -1,0 +1,37 @@
+{
+  "id": "portrait-orc-brute-scrap-edit-a",
+  "jobId": "3c6b0bd2-b713-4645-b87d-d181a4fefb3f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-orc-brute",
+    "subject": "PORTRAIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81301,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his clothes and shield: the red tunic becomes bare shoulders with two dull mid-brown leather straps (#955627, shadows #562a0c); the red round shield becomes dark brown planks (#5c3a22) with a rusted iron rim and an iron boss. No red left. Keep the pot helmet, his skin, tusks, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his clothes and shield: the red tunic becomes bare shoulders with two dull mid-brown leather straps (#955627, shadows #562a0c); the red round shield becomes dark brown planks (#5c3a22) with a rusted iron rim and an iron boss. No red left. Keep the pot helmet, his skin, tusks, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his clothes and shield: the red tunic becomes bare shoulders with two dull mid-brown leather straps (#955627, shadows #562a0c); the red round shield becomes dark brown planks (#5c3a22) with a rusted iron rim and an iron boss. No red left. Keep the pot helmet, his skin, tusks, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only his clothes and shield: the red tunic becomes bare shoulders with two dull mid-brown leather straps (#955627, shadows #562a0c); the red round shield becomes dark brown planks (#5c3a22) with a rusted iron rim and an iron boss. No red left. Keep the pot helmet, his skin, tusks, face, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-goblin",
+      "recipe": "portrait-goblin-orc-brute-a-edit",
+      "candidate": 0,
+      "sha256": "3910d55c7fc72c27d9aaf25c32f13ffb08b6c5c0406ab6861127e4b04eae0ee7"
+    }
+  }
+}

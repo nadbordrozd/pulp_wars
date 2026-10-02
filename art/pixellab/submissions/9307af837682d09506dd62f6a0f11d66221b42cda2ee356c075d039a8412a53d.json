@@ -1,0 +1,36 @@
+{
+  "id": "bomb-chucker-brown-edit-b",
+  "jobId": "56f3abfa-cdff-4bae-9a5d-37591a0fa820",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange parts: the two orange chest straps, the orange loincloth and the orange satchel become dull desaturated mid-brown leather like an old saddle, colour #955627 with #562a0c shadows; no orange left on him except the fuse spark. Do not touch his skin, face, ears or helmet. Keep everything else the same: the rusted pot helmet and goggles, the olive green skin and face, the bomb with its yellow stripes and spark, gloves, boots, pose, proportions, black outline and art style."
+      }
+    ],
+    "prompt": "Recolour only the orange parts: the two orange chest straps, the orange loincloth and the orange satchel become dull desaturated mid-brown leather like an old saddle, colour #955627 with #562a0c shadows; no orange left on him except the fuse spark. Do not touch his skin, face, ears or helmet. Keep everything else the same: the rusted pot helmet and goggles, the olive green skin and face, the bomb with its yellow stripes and spark, gloves, boots, pose, proportions, black outline and art style.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange parts: the two orange chest straps, the orange loincloth and the orange satchel become dull desaturated mid-brown leather like an old saddle, colour #955627 with #562a0c shadows; no orange left on him except the fuse spark. Do not touch his skin, face, ears or helmet. Keep everything else the same: the rusted pot helmet and goggles, the olive green skin and face, the bomb with its yellow stripes and spark, gloves, boots, pose, proportions, black outline and art style.",
+    "editInstruction": "Recolour only the orange parts: the two orange chest straps, the orange loincloth and the orange satchel become dull desaturated mid-brown leather like an old saddle, colour #955627 with #562a0c shadows; no orange left on him except the fuse spark. Do not touch his skin, face, ears or helmet. Keep everything else the same: the rusted pot helmet and goggles, the olive green skin and face, the bomb with its yellow stripes and spark, gloves, boots, pose, proportions, black outline and art style.",
+    "source": {
+      "recipe": "bomb-chucker-leather-edit-e",
+      "candidate": 0,
+      "sha256": "38ec0a6c4ec6a539662278e6f9c7734dabb77c2c10094198ce0d02517a394149"
+    }
+  }
+}

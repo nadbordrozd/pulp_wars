@@ -1,0 +1,36 @@
+{
+  "id": "goblin-brown-edit-b",
+  "jobId": "f3fddc4d-ac39-44dd-95d2-8a707f44fadb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange parts: the orange cap, the two orange chest straps and the orange loincloth become dull brown leather, the brown of milk chocolate, shaded dark brown; there is no orange and no red left on him. Do not touch his skin, face or ears. Keep everything else exactly the same: the olive green skin, the grey belt and wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the orange parts: the orange cap, the two orange chest straps and the orange loincloth become dull brown leather, the brown of milk chocolate, shaded dark brown; there is no orange and no red left on him. Do not touch his skin, face or ears. Keep everything else exactly the same: the olive green skin, the grey belt and wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange parts: the orange cap, the two orange chest straps and the orange loincloth become dull brown leather, the brown of milk chocolate, shaded dark brown; there is no orange and no red left on him. Do not touch his skin, face or ears. Keep everything else exactly the same: the olive green skin, the grey belt and wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the orange parts: the orange cap, the two orange chest straps and the orange loincloth become dull brown leather, the brown of milk chocolate, shaded dark brown; there is no orange and no red left on him. Do not touch his skin, face or ears. Keep everything else exactly the same: the olive green skin, the grey belt and wrist bands, dagger, eyes, teeth, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "goblin-leather-edit-k",
+      "candidate": 0,
+      "sha256": "56c8975111b9b48656f5cc6c607a60b020cd63e2224f03fe0e81276821252e17"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "portrait-orc-warboss-scrap-edit-a",
+  "jobId": "3f59bc49-7a1f-4c14-943a-e937f705ae03",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-orc-warboss",
+    "subject": "PORTRAIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81401,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the red parts: the red cape and red scarf become dull mid-brown patched hide, colour #955627 with #562a0c shadows; no red and no orange left on him. Do not touch his skin or face. Keep everything else exactly the same: the horned helmet, the shoulder plates, the tin megaphone, tusks, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the red parts: the red cape and red scarf become dull mid-brown patched hide, colour #955627 with #562a0c shadows; no red and no orange left on him. Do not touch his skin or face. Keep everything else exactly the same: the horned helmet, the shoulder plates, the tin megaphone, tusks, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the red parts: the red cape and red scarf become dull mid-brown patched hide, colour #955627 with #562a0c shadows; no red and no orange left on him. Do not touch his skin or face. Keep everything else exactly the same: the horned helmet, the shoulder plates, the tin megaphone, tusks, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the red parts: the red cape and red scarf become dull mid-brown patched hide, colour #955627 with #562a0c shadows; no red and no orange left on him. Do not touch his skin or face. Keep everything else exactly the same: the horned helmet, the shoulder plates, the tin megaphone, tusks, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "batch": "5-goblin",
+      "recipe": "portrait-goblin-orc-warboss-a-edit-b",
+      "candidate": 0,
+      "sha256": "ac3d1e71ac34b368e77683e67521d7bd358d30c7c9ed318b4dd052af098cf5be"
+    }
+  }
+}

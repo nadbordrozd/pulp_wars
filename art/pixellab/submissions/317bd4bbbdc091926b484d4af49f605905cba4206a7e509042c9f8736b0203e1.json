@@ -1,0 +1,36 @@
+{
+  "id": "portrait-bomb-chucker-skin-edit-a",
+  "jobId": "76037f79-b1d1-4fd7-a486-cd71fa87278a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-bomb-chucker",
+    "subject": "PORTRAIT:GOBLIN:MARKSMAN",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81211,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only two things. The two red patches beside his cheeks become olive green ears. His yellow-green skin (face, ears, shoulders) becomes a mid-tone olive green, colour #8a952f with #495508 shadows; no red left except his tongue, and the face stays clearly visible. Keep everything else exactly the same: the rusted pot helmet and goggles, the bomb with its yellow stripes and spark, the brown strap, pose, proportions, thick black outline and art style."
+      }
+    ],
+    "prompt": "Recolour only two things. The two red patches beside his cheeks become olive green ears. His yellow-green skin (face, ears, shoulders) becomes a mid-tone olive green, colour #8a952f with #495508 shadows; no red left except his tongue, and the face stays clearly visible. Keep everything else exactly the same: the rusted pot helmet and goggles, the bomb with its yellow stripes and spark, the brown strap, pose, proportions, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Recolour only two things. The two red patches beside his cheeks become olive green ears. His yellow-green skin (face, ears, shoulders) becomes a mid-tone olive green, colour #8a952f with #495508 shadows; no red left except his tongue, and the face stays clearly visible. Keep everything else exactly the same: the rusted pot helmet and goggles, the bomb with its yellow stripes and spark, the brown strap, pose, proportions, thick black outline and art style.",
+    "editInstruction": "Recolour only two things. The two red patches beside his cheeks become olive green ears. His yellow-green skin (face, ears, shoulders) becomes a mid-tone olive green, colour #8a952f with #495508 shadows; no red left except his tongue, and the face stays clearly visible. Keep everything else exactly the same: the rusted pot helmet and goggles, the bomb with its yellow stripes and spark, the brown strap, pose, proportions, thick black outline and art style.",
+    "source": {
+      "recipe": "portrait-bomb-chucker-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "5b5b45f2278659581d0eed5c86ac5510815dbf6c0eb2a87948d6fb7cec820c51"
+    }
+  }
+}

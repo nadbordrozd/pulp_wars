@@ -1,0 +1,36 @@
+{
+  "id": "orc-brute-skin-edit-b",
+  "jobId": "3f57095d-848f-44d0-88e0-146077a9bff7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-orc-brute",
+    "subject": "UNIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80412,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin: the yellow skin of his face, ears, chest, belly, arms and hands becomes a mid-tone grey-green, colour #6b7d45, with shadows only a little darker, #46552e: greener and greyer than now, not yellow, not black, and the face stays clearly visible. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style."
+      }
+    ],
+    "prompt": "Recolour only his skin: the yellow skin of his face, ears, chest, belly, arms and hands becomes a mid-tone grey-green, colour #6b7d45, with shadows only a little darker, #46552e: greener and greyer than now, not yellow, not black, and the face stays clearly visible. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin: the yellow skin of his face, ears, chest, belly, arms and hands becomes a mid-tone grey-green, colour #6b7d45, with shadows only a little darker, #46552e: greener and greyer than now, not yellow, not black, and the face stays clearly visible. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style.",
+    "editInstruction": "Recolour only his skin: the yellow skin of his face, ears, chest, belly, arms and hands becomes a mid-tone grey-green, colour #6b7d45, with shadows only a little darker, #46552e: greener and greyer than now, not yellow, not black, and the face stays clearly visible. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield with its iron rim, the cleaver, boots, pose, proportions, thick black outline and art style.",
+    "source": {
+      "recipe": "orc-brute-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "b24dbacfe9e9a9a5567b5293ab51e7c053c5fb463df7add31883b889a2e8223e"
+    }
+  }
+}

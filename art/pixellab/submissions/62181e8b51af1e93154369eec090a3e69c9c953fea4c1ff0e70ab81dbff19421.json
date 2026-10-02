@@ -1,0 +1,36 @@
+{
+  "id": "portrait-scrap-buggy-skin-edit-b",
+  "jobId": "575b7811-dcc6-4627-8114-067ae926f18c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-scrap-buggy",
+    "subject": "PORTRAIT:GOBLIN:KNIGHT",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81612,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the yellow of the driver's face and ears: the yellow becomes olive green, colour #8a952f. Do not redraw anything: the driver's dark goggles and brown leather cap, the grey scrap metal body with its rust and hazard striped panels, the ram, wheels, exhaust and soot cloud, proportions, thick black outline and art style all stay exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the yellow of the driver's face and ears: the yellow becomes olive green, colour #8a952f. Do not redraw anything: the driver's dark goggles and brown leather cap, the grey scrap metal body with its rust and hazard striped panels, the ram, wheels, exhaust and soot cloud, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the yellow of the driver's face and ears: the yellow becomes olive green, colour #8a952f. Do not redraw anything: the driver's dark goggles and brown leather cap, the grey scrap metal body with its rust and hazard striped panels, the ram, wheels, exhaust and soot cloud, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the yellow of the driver's face and ears: the yellow becomes olive green, colour #8a952f. Do not redraw anything: the driver's dark goggles and brown leather cap, the grey scrap metal body with its rust and hazard striped panels, the ram, wheels, exhaust and soot cloud, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-scrap-buggy-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "574d400287c4f699a6df833bbfadc1cee0dcb3343d23f7608de42ff7af97f667"
+    }
+  }
+}

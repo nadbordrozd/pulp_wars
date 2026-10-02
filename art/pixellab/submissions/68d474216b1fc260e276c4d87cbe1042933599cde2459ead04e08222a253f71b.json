@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-brown-edit-b",
+  "jobId": "4dd95a85-c3be-459b-bb82-e04a59337360",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the wood and the goblin: the cart's planks and wheels become dark brown wood, colour #5c3317 with #3b1f0e shadows and #7d4a24 highlights on the plank edges; not black, not red. The little goblin's orange cap becomes brown leather #955627, and his face, ears and hands olive green #8a952f with big cream eyes. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the cart and wheel shapes, black outline and art style."
+      }
+    ],
+    "prompt": "Recolour only the wood and the goblin: the cart's planks and wheels become dark brown wood, colour #5c3317 with #3b1f0e shadows and #7d4a24 highlights on the plank edges; not black, not red. The little goblin's orange cap becomes brown leather #955627, and his face, ears and hands olive green #8a952f with big cream eyes. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the cart and wheel shapes, black outline and art style.",
+    "negativePrompt": "",
+    "description": "Recolour only the wood and the goblin: the cart's planks and wheels become dark brown wood, colour #5c3317 with #3b1f0e shadows and #7d4a24 highlights on the plank edges; not black, not red. The little goblin's orange cap becomes brown leather #955627, and his face, ears and hands olive green #8a952f with big cream eyes. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the cart and wheel shapes, black outline and art style.",
+    "editInstruction": "Recolour only the wood and the goblin: the cart's planks and wheels become dark brown wood, colour #5c3317 with #3b1f0e shadows and #7d4a24 highlights on the plank edges; not black, not red. The little goblin's orange cap becomes brown leather #955627, and his face, ears and hands olive green #8a952f with big cream eyes. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, the cart and wheel shapes, black outline and art style.",
+    "source": {
+      "recipe": "fireworks-cart-edit-g",
+      "candidate": 0,
+      "sha256": "c021c8e19f7bc53349567b245a9164fc430054dd0a6bab29c8e1a4d67e9555dc"
+    }
+  }
+}

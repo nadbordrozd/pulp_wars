@@ -1,0 +1,36 @@
+{
+  "id": "portrait-troll-smock-edit-a",
+  "jobId": "c0b8e939-1926-47aa-ad6f-5b007099dcf2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-troll",
+    "subject": "PORTRAIT:GOBLIN:JUGGERNAUT",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81711,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his smock: the drab khaki smock on his shoulders and chest becomes brown hide, colour #643923 with #4a281b shadows; clearly brown. Do not touch his head or skin. Keep everything else exactly the same: the dark green skin, face, beard, tusks, the club, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his smock: the drab khaki smock on his shoulders and chest becomes brown hide, colour #643923 with #4a281b shadows; clearly brown. Do not touch his head or skin. Keep everything else exactly the same: the dark green skin, face, beard, tusks, the club, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his smock: the drab khaki smock on his shoulders and chest becomes brown hide, colour #643923 with #4a281b shadows; clearly brown. Do not touch his head or skin. Keep everything else exactly the same: the dark green skin, face, beard, tusks, the club, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only his smock: the drab khaki smock on his shoulders and chest becomes brown hide, colour #643923 with #4a281b shadows; clearly brown. Do not touch his head or skin. Keep everything else exactly the same: the dark green skin, face, beard, tusks, the club, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-troll-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "1a413f309ab8e24a64bbe42572e622a5fc93bddc67b9718374b9710c5ec00926"
+    }
+  }
+}

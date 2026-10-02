@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-crew-edit-d",
+  "jobId": "a7e6aae7-63ca-4a37-8596-0db26d19c03f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80214,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only: the cart's orange planks and wheels become dull desaturated dark brown wood, colour #5c3a22 with #3a2414 shadows; the goblin's bright green skin becomes olive green #8a952f with #495508 shadows; his orange cap becomes dull brown leather #955627. He holds the match close to his chest so nothing reaches past the cart's right side. Keep everything else exactly the same: his face, the five paper rockets, sticks, rope, fuse spark, thick black outline and art style."
+      }
+    ],
+    "prompt": "Recolour only: the cart's orange planks and wheels become dull desaturated dark brown wood, colour #5c3a22 with #3a2414 shadows; the goblin's bright green skin becomes olive green #8a952f with #495508 shadows; his orange cap becomes dull brown leather #955627. He holds the match close to his chest so nothing reaches past the cart's right side. Keep everything else exactly the same: his face, the five paper rockets, sticks, rope, fuse spark, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Recolour only: the cart's orange planks and wheels become dull desaturated dark brown wood, colour #5c3a22 with #3a2414 shadows; the goblin's bright green skin becomes olive green #8a952f with #495508 shadows; his orange cap becomes dull brown leather #955627. He holds the match close to his chest so nothing reaches past the cart's right side. Keep everything else exactly the same: his face, the five paper rockets, sticks, rope, fuse spark, thick black outline and art style.",
+    "editInstruction": "Recolour only: the cart's orange planks and wheels become dull desaturated dark brown wood, colour #5c3a22 with #3a2414 shadows; the goblin's bright green skin becomes olive green #8a952f with #495508 shadows; his orange cap becomes dull brown leather #955627. He holds the match close to his chest so nothing reaches past the cart's right side. Keep everything else exactly the same: his face, the five paper rockets, sticks, rope, fuse spark, thick black outline and art style.",
+    "source": {
+      "recipe": "fireworks-cart-crew-edit-a",
+      "candidate": 0,
+      "sha256": "acdff6a68d9fc2ac1c3510a8d564de23eae0d76aebef1c0bb548e218ffb2766c"
+    }
+  }
+}

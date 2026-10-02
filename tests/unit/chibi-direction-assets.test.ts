@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   CHIBI_DIRECTION_ART_ASSETS_V7,
+  CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7,
   chibiDirectionArtRegistryV7,
 } from "../../src/assets/chibi-direction-art-manifest";
 import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
@@ -112,15 +113,17 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
       registry.variants("IMPROVEMENT:FARM").map((asset) => asset.id),
     ).toEqual(["chibi-direction-farm"]);
     // Ships are shared by every faction and are not converted; neither are
-    // the other factions.
+    // the Undead and the Dinosaurs. The Goblins have their own list since
+    // bead pulp_wars-3tq.9 (tested below).
     for (const subject of [
       "UNIT:PATROL_BOAT",
       "UNIT:BATTLESHIP",
       "UNIT:EMBARKED_TRANSPORT",
       "UNIT:UNDEAD:FIGHTER",
-      "UNIT:GOBLIN:FIGHTER",
       "UNIT:DINOSAUR:FIGHTER",
       "CITY:UNDEAD:1",
+      "CITY:DINOSAUR:1",
+      "PORTRAIT:UNDEAD:FIGHTER",
     ] as const)
       expect(registry.variants(subject), subject).toHaveLength(0);
   });
@@ -218,8 +221,10 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
   });
 
   it("records a pennant anchor inside the art of City 1-3, the Port and the Shipyard only", () => {
-    const anchored = Object.keys(DIRECTION_FLAG_ANCHORS_V7).filter((id) =>
-      id.startsWith("chibi-direction-"),
+    const anchored = Object.keys(DIRECTION_FLAG_ANCHORS_V7).filter(
+      (id) =>
+        id.startsWith("chibi-direction-") &&
+        !id.startsWith("chibi-direction-goblin-"),
     );
     expect(anchored.sort()).toEqual([
       "chibi-direction-city-1",
@@ -632,5 +637,248 @@ describe("pipeline support for the new visual direction (pulp_wars-3tq.5)", asyn
     expect(
       records.recipes["fighter-heraldic-edit"]?.request.source,
     ).toMatchObject({ batch: "1", recipe: "fighter-h-edit" });
+  });
+});
+
+const GOBLIN_BATCH = "direction-goblin";
+const GOBLIN_UNITS = {
+  FIGHTER: "goblin",
+  RAIDER: "wolf-rider",
+  MARKSMAN: "bomb-chucker",
+  GUARD: "orc-brute",
+  CAPTAIN: "orc-warboss",
+  CATAPULT: "rocket-cart",
+  KNIGHT: "scrap-buggy",
+  JUGGERNAUT: "troll",
+} as const;
+
+/** Share of opaque pixels in the owner key's hue band (owner-mask.ts). */
+function ownerKeyShare(image: RgbaRaster): number {
+  let opaque = 0;
+  let key = 0;
+  for (let offset = 0; offset < image.data.length; offset += 4) {
+    if ((image.data[offset + 3] ?? 0) < 128) continue;
+    opaque += 1;
+    const r = image.data[offset] ?? 0;
+    const g = image.data[offset + 1] ?? 0;
+    const b = image.data[offset + 2] ?? 0;
+    const high = Math.max(r, g, b);
+    const low = Math.min(r, g, b);
+    if (high === low) continue;
+    const sector =
+      high === r
+        ? ((g - b) / (high - low)) % 6
+        : high === g
+          ? (b - r) / (high - low) + 2
+          : (r - g) / (high - low) + 4;
+    const hue = (sector * 60 + 360) % 360;
+    if (
+      (hue >= 340 || hue <= 5) &&
+      (high - low) / high >= 0.65 &&
+      high / 255 >= 0.3
+    )
+      key += 1;
+  }
+  return opaque === 0 ? 0 : key / opaque;
+}
+
+describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", () => {
+  const classic = buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7).registry;
+
+  it("registers every Goblin unit, portrait and city tier, beside the Human art", () => {
+    const registry = chibiDirectionArtRegistryV7();
+    const expected: [ArtSubjectV7, string][] = [
+      ...Object.entries(GOBLIN_UNITS).map(
+        ([role, name]): [ArtSubjectV7, string] => [
+          `UNIT:GOBLIN:${role}` as ArtSubjectV7,
+          `chibi-direction-goblin-${name}`,
+        ],
+      ),
+      ...Object.entries(GOBLIN_UNITS).map(
+        ([role, name]): [ArtSubjectV7, string] => [
+          `PORTRAIT:GOBLIN:${role}` as ArtSubjectV7,
+          `chibi-direction-portrait-goblin-${name}`,
+        ],
+      ),
+      ...([1, 2, 3] as const).map((level): [ArtSubjectV7, string] => [
+        `CITY:GOBLIN:${level}`,
+        `chibi-direction-goblin-city-${level}`,
+      ]),
+    ];
+    expect(CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7).toHaveLength(expected.length);
+    for (const [subject, id] of expected)
+      expect(
+        registry.variants(subject).map((asset) => asset.id),
+        subject,
+      ).toEqual([id]);
+    // The Human art is still there; the Goblin command icons and the shared
+    // ships are not part of the batch.
+    expect(registry.variants("UNIT:FIGHTER")).toHaveLength(1);
+    for (const subject of [
+      "ICON:ACTION:KABOOM",
+      "ICON:ACTION:GOBLIN:RALLY",
+      "UNIT:PATROL_BOAT",
+    ] as const)
+      expect(registry.variants(subject), subject).toHaveLength(0);
+    // The classic Goblin art stays registered, masked, for the Classic look.
+    const defaults = new Set(CHIBI_ART_ASSETS_V7.map((asset) => asset.id));
+    for (const asset of CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7)
+      expect(defaults.has(asset.id), asset.id).toBe(false);
+    for (const [role, name] of Object.entries(GOBLIN_UNITS)) {
+      const variants = classic.variants(`UNIT:GOBLIN:${role}` as ArtSubjectV7);
+      expect(variants.map((asset) => asset.id)).toEqual([
+        `chibi-goblin-${name}`,
+      ]);
+      expect(variants[0]?.ownerMaskUrl).toBeDefined();
+    }
+  });
+
+  it("keeps the canvas, anchor and overflow of every classic Goblin sprite", () => {
+    for (const asset of CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7) {
+      expect(chibiAssetProblemsV7(asset), asset.id).toEqual([]);
+      const before = classic.variants(asset.subject)[0];
+      if (before === undefined) throw new Error(`${asset.id}: no classic art`);
+      expect(
+        [asset.assetClass, asset.width, asset.height, asset.anchor],
+        asset.id,
+      ).toEqual([
+        before.assetClass,
+        before.width,
+        before.height,
+        before.anchor,
+      ]);
+      expect(chibiOverflowV7(asset), asset.id).toEqual(chibiOverflowV7(before));
+    }
+  });
+
+  it("matches the accepted records of the batch: no mask, no owner area, imported study recipes", async () => {
+    const manifest = await loadBatchManifest(ROOT, GOBLIN_BATCH);
+    expect(manifest.faction).toBe("GOBLIN");
+    expect(manifest.fixedFactionColours).toBe(true);
+    expect(
+      batchManifestProblems(manifest, await loadFragments(ROOT), GOBLIN_BATCH),
+    ).toEqual([]);
+    const layout = productionLayout(ROOT, GOBLIN_BATCH);
+    const records = await loadRecords(layout, GOBLIN_BATCH);
+    const accepted = Object.values(records.assets).filter(
+      (record) => record.status === "ACCEPTED",
+    );
+    const ids = CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7.map(
+      (asset) => asset.id,
+    ).sort();
+    expect(accepted.map((record) => record.id).sort()).toEqual(ids);
+    expect(manifest.assets.map((asset) => asset.id).sort()).toEqual(ids);
+    for (const entry of CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7) {
+      const record = records.assets[entry.id];
+      const asset = manifest.assets.find((spec) => spec.id === entry.id);
+      if (asset === undefined || record === undefined)
+        throw new Error(`${entry.id}: not in the batch`);
+      expect(asset.ownerColour, entry.id).toBe(false);
+      expect(record.mask, entry.id).toBeUndefined();
+      expect(entry.ownerMaskUrl, entry.id).toBeUndefined();
+      expect(entry.fixedColours, entry.id).toBe(true);
+      expect(
+        entry.url.endsWith(record.master.path.replace(/^public\//, "")),
+        entry.id,
+      ).toBe(true);
+      expect([entry.width, entry.height]).toEqual([
+        record.master.width,
+        record.master.height,
+      ]);
+      const line = registryEntry(asset, record);
+      expect(line).toContain("fixedColours: true");
+      expect(line).not.toContain("ownerMaskUrl");
+      await expect(
+        readFile(
+          path.join(ROOT, record.master.path.replace(/\.png$/, ".mask.png")),
+        ),
+      ).rejects.toThrow();
+      // The master is the size it registers with and has no owner area: a
+      // classic owned sprite carries the key red on 15% or more of its
+      // pixels; here only tongues, rust and one paper rocket are red.
+      const master = await readRaster(
+        await readFile(path.join(ROOT, record.master.path)),
+      );
+      expect([master.width, master.height], entry.id).toEqual([
+        entry.width,
+        entry.height,
+      ]);
+      expect(ownerKeyShare(master), entry.id).toBeLessThan(0.06);
+      expect(opaqueBounds(master), entry.id).not.toBeNull();
+    }
+    // The study's recipes were imported with no new PixelLab call, and
+    // every recipe has a credential-free receipt.
+    const imported = Object.values(records.recipes).filter(
+      (recipe) => recipe.importedFrom !== undefined,
+    );
+    expect(imported).toHaveLength(14);
+    for (const recipe of imported)
+      expect(recipe.importedFrom?.exploration).toBe(
+        "art/explorations/goblin-direction-2026-10",
+      );
+    for (const recipe of Object.values(records.recipes)) {
+      const receipt = await loadSubmissionReceipt(
+        layout.submissions,
+        recipe.jobId,
+      );
+      expect(receipt?.id, recipe.id).toBe(recipe.id);
+      expect(JSON.stringify(receipt)).not.toMatch(
+        /authorization|bearer|api[_-]?key|secret/i,
+      );
+    }
+  });
+
+  it("describes the look in /SCRAP subject lines with no owner layer, and edits every piece", async () => {
+    const manifest = await loadBatchManifest(ROOT, GOBLIN_BATCH);
+    const fragments = await loadFragments(ROOT);
+    for (const asset of manifest.assets) {
+      expect(asset.subjectKey, asset.id).toBe(`${asset.subject}/SCRAP`);
+      const prompt = layeredPrompt(fragments, manifest, asset, {});
+      expect(prompt.layers.map((layer) => layer.layer)).not.toContain("owner");
+      expect(prompt.description, asset.id).not.toMatch(
+        /bright red (patched|bandana|tunic|cloth|flag)/,
+      );
+    }
+    for (const recipe of manifest.recipes) {
+      expect(recipe.endpoint, recipe.id).toBe("edit-image-pixen");
+      expect(
+        (recipe.editInstruction ?? "").length,
+        recipe.id,
+      ).toBeLessThanOrEqual(500);
+    }
+  });
+
+  it("records a pennant anchor inside each Goblin city, at its own pole", async () => {
+    for (const level of [1, 2, 3] as const) {
+      const id = `chibi-direction-goblin-city-${level}`;
+      const asset = CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7.find(
+        (entry) => entry.id === id,
+      );
+      const anchor = DIRECTION_FLAG_ANCHORS_V7[id];
+      if (asset === undefined || anchor === undefined)
+        throw new Error(`${id}: no asset or anchor`);
+      expect(anchor.x).toBeGreaterThan(0);
+      // The 17 px pennant stays inside the canvas.
+      expect(anchor.x + 17).toBeLessThanOrEqual(asset.width);
+      expect(anchor.y).toBeGreaterThanOrEqual(0);
+      expect(anchor.y + anchor.pole).toBeLessThan(asset.height);
+      // The anchor is at the art's own pole: an opaque pixel of the master
+      // lies within three pixels left of it, in the pennant's rows.
+      const master = await readRaster(
+        await readFile(
+          path.join(ROOT, `public/assets/chibi/settlements/${id}.png`),
+        ),
+      );
+      let onPole = false;
+      for (let y = Math.floor(anchor.y); y <= anchor.y + 11; y += 1)
+        for (let x = Math.floor(anchor.x) - 3; x < anchor.x; x += 1)
+          if ((master.data[(y * master.width + x) * 4 + 3] ?? 0) >= 128)
+            onPole = true;
+      expect(onPole, id).toBe(true);
+    }
+    // No Goblin unit or portrait has an anchor.
+    for (const asset of CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7)
+      if (!asset.subject.startsWith("CITY:"))
+        expect(DIRECTION_FLAG_ANCHORS_V7[asset.id], asset.id).toBeUndefined();
   });
 });

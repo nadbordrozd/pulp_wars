@@ -1,0 +1,37 @@
+{
+  "id": "portrait-goblin-scrap-edit-a",
+  "jobId": "8b9aa3d7-6f51-4d1c-ad5c-f3fc2ce429ea",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-goblin",
+    "subject": "PORTRAIT:GOBLIN:FIGHTER",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81001,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his clothes: the red bandana becomes a small brown leather cap; take off the red tunic so his shoulders and chest are bare olive green skin with one brown leather strap across the chest. The leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the face, ears, eyes, teeth, dagger, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his clothes: the red bandana becomes a small brown leather cap; take off the red tunic so his shoulders and chest are bare olive green skin with one brown leather strap across the chest. The leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the face, ears, eyes, teeth, dagger, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his clothes: the red bandana becomes a small brown leather cap; take off the red tunic so his shoulders and chest are bare olive green skin with one brown leather strap across the chest. The leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the face, ears, eyes, teeth, dagger, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only his clothes: the red bandana becomes a small brown leather cap; take off the red tunic so his shoulders and chest are bare olive green skin with one brown leather strap across the chest. The leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the face, ears, eyes, teeth, dagger, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-goblin",
+      "recipe": "portrait-goblin-goblin-b-edit",
+      "candidate": 0,
+      "sha256": "c1dfdeac3c311b61ab76a9f5ab75dcb15a6b275e85db330f2ed94ffc21be64e8"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-orc-brute-skin-edit-a",
+  "jobId": "9581756b-d8b1-4abc-b24b-7c5c93fb8e36",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-orc-brute",
+    "subject": "PORTRAIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81311,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin: the pale skin of his face, ears, shoulders and arms becomes a dull moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet, straps or shield. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps, the plank shield with its iron rim, pose, proportions, thick black outline and art style."
+      }
+    ],
+    "prompt": "Recolour only his skin: the pale skin of his face, ears, shoulders and arms becomes a dull moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet, straps or shield. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps, the plank shield with its iron rim, pose, proportions, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin: the pale skin of his face, ears, shoulders and arms becomes a dull moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet, straps or shield. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps, the plank shield with its iron rim, pose, proportions, thick black outline and art style.",
+    "editInstruction": "Recolour only his skin: the pale skin of his face, ears, shoulders and arms becomes a dull moss green, colour #5f7d3a with #3f5626 shadows: clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet, straps or shield. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps, the plank shield with its iron rim, pose, proportions, thick black outline and art style.",
+    "source": {
+      "recipe": "portrait-orc-brute-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "d2ffabf75df36d0b73ddfdb0634ec82a4b687187d64e06f4651d556bc952414a"
+    }
+  }
+}

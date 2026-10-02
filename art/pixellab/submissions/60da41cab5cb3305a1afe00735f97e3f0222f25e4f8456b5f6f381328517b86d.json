@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-edit-g",
+  "jobId": "cd0a04fe-4704-49df-9b17-98fe3e77f153",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 79207,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the right edge: remove the goblin's outstretched arm with the torch and the plank sticking out at the lower right, so nothing reaches past the cart's right side; the goblin instead holds a small lit match up in front of his chest, and his skin becomes a mid-tone olive leaf green. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, wooden cart, wheels, orange cap, thick black outline and art style."
+      }
+    ],
+    "prompt": "Change only the right edge: remove the goblin's outstretched arm with the torch and the plank sticking out at the lower right, so nothing reaches past the cart's right side; the goblin instead holds a small lit match up in front of his chest, and his skin becomes a mid-tone olive leaf green. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, wooden cart, wheels, orange cap, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Change only the right edge: remove the goblin's outstretched arm with the torch and the plank sticking out at the lower right, so nothing reaches past the cart's right side; the goblin instead holds a small lit match up in front of his chest, and his skin becomes a mid-tone olive leaf green. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, wooden cart, wheels, orange cap, thick black outline and art style.",
+    "editInstruction": "Change only the right edge: remove the goblin's outstretched arm with the torch and the plank sticking out at the lower right, so nothing reaches past the cart's right side; the goblin instead holds a small lit match up in front of his chest, and his skin becomes a mid-tone olive leaf green. Keep everything else the same: the five paper rockets, their colours, stars and cream cones, sticks, rope, fuse spark, wooden cart, wheels, orange cap, thick black outline and art style.",
+    "source": {
+      "recipe": "fireworks-cart-edit-e",
+      "candidate": 0,
+      "sha256": "5a1200d949424f79f29a453971792340d3c54fe8f6446580aad927210f364319"
+    }
+  }
+}

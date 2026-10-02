@@ -1,0 +1,36 @@
+{
+  "id": "scrap-buggy-hub-edit-a",
+  "jobId": "5073a2b9-c998-4532-8587-f2950a29dfd1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-scrap-buggy",
+    "subject": "UNIT:GOBLIN:KNIGHT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80621,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the thin red-orange rings on the wheel hubs: they become dull rusted iron, colour #8a4a2a with #5a2c18 shadows; no red left anywhere. Do not touch the tyres, which stay black. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, the black wheels, the exhaust and the grey soot cloud, the driver, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the thin red-orange rings on the wheel hubs: they become dull rusted iron, colour #8a4a2a with #5a2c18 shadows; no red left anywhere. Do not touch the tyres, which stay black. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, the black wheels, the exhaust and the grey soot cloud, the driver, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the thin red-orange rings on the wheel hubs: they become dull rusted iron, colour #8a4a2a with #5a2c18 shadows; no red left anywhere. Do not touch the tyres, which stay black. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, the black wheels, the exhaust and the grey soot cloud, the driver, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the thin red-orange rings on the wheel hubs: they become dull rusted iron, colour #8a4a2a with #5a2c18 shadows; no red left anywhere. Do not touch the tyres, which stay black. Keep everything else exactly the same: the grey scrap metal body with its rust and the hazard striped panel, the ram, the black wheels, the exhaust and the grey soot cloud, the driver, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "scrap-buggy-skin-edit-a",
+      "candidate": 0,
+      "sha256": "c4d097ba28f5923ed45ac5fc32729be1177e42e6ba99f11ac0aa070bbd07a578"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "bomb-chucker-brown-edit-a",
+  "jobId": "07ae7712-edb4-4417-849d-07c12abf36ac",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colour of the leather: the orange crossed chest straps, the loincloth and the satchel become a warm mid-brown saddle leather, the brown of a chestnut, with a dark brown shadow tone; clearly brown, not orange and not red. Do not touch his skin, face or ears. Keep everything else exactly the same: the rusted iron pot helmet and goggles, the olive green skin, the bomb with its yellow stripes and spark, gloves, boots, pose, proportions, thick black outline and art style."
+      }
+    ],
+    "prompt": "Change only the colour of the leather: the orange crossed chest straps, the loincloth and the satchel become a warm mid-brown saddle leather, the brown of a chestnut, with a dark brown shadow tone; clearly brown, not orange and not red. Do not touch his skin, face or ears. Keep everything else exactly the same: the rusted iron pot helmet and goggles, the olive green skin, the bomb with its yellow stripes and spark, gloves, boots, pose, proportions, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Change only the colour of the leather: the orange crossed chest straps, the loincloth and the satchel become a warm mid-brown saddle leather, the brown of a chestnut, with a dark brown shadow tone; clearly brown, not orange and not red. Do not touch his skin, face or ears. Keep everything else exactly the same: the rusted iron pot helmet and goggles, the olive green skin, the bomb with its yellow stripes and spark, gloves, boots, pose, proportions, thick black outline and art style.",
+    "editInstruction": "Change only the colour of the leather: the orange crossed chest straps, the loincloth and the satchel become a warm mid-brown saddle leather, the brown of a chestnut, with a dark brown shadow tone; clearly brown, not orange and not red. Do not touch his skin, face or ears. Keep everything else exactly the same: the rusted iron pot helmet and goggles, the olive green skin, the bomb with its yellow stripes and spark, gloves, boots, pose, proportions, thick black outline and art style.",
+    "source": {
+      "recipe": "bomb-chucker-leather-edit-e",
+      "candidate": 0,
+      "sha256": "38ec0a6c4ec6a539662278e6f9c7734dabb77c2c10094198ce0d02517a394149"
+    }
+  }
+}

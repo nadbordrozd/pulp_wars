@@ -454,7 +454,7 @@ export class Ruleset7DomAppView {
         ? (options.chibiDomEnvironment ??
           browserChibiDomEnvironmentV7(documentRoot))
         : null;
-    // The interface resolves the new direction's art first (Human
+    // The interface resolves the new direction's art first (Human and Goblin
     // portraits, cities, the shared improvements) and the default art for
     // everything else, like the board.
     this.#chibiDom =

@@ -50,9 +50,11 @@ Roads, that text now describes the **Classic look** developer option
   glow is not drawn; the dock still says **Needs action** or **Handled**.
 - **Cities.** A Human city flies a code-drawn swallow-tailed pennant in the
   player colour from its tower, carrying the seat's shape in cream, or in
-  gold for the capital (which then has no separate crown). An Undead, Goblin
-  or Dinosaur city is not converted: it keeps its own art in its owner
-  recolour and the capital crown, with no seat badge and no pennant.
+  gold for the capital (which then has no separate crown). A Goblin city
+  (bead `pulp_wars-3tq.9`) does the same from the bare pole of its scrap
+  camp: the lookout pole, the tower or the big tent. An Undead or Dinosaur
+  city is not converted: it keeps its own art in its owner recolour and the
+  capital crown, with no seat badge and no pennant.
   Population pips and the Field Defense badge are unchanged.
 - **Ports and Shipyards** fly a smaller pennant in the territory owner's
   colour. Other improvements carry no player colour: the shared set (Farm as
@@ -60,8 +62,12 @@ Roads, that text now describes the **Classic look** developer option
   Market, Monument) and the neutral Village are drawn as authored.
 - **Human units, portraits and City 1 to 3** use the direction's art in the
   faction's fixed crimson and gold for every player, on the board and in the
-  docks, training cards and technology cards. Undead, Goblin and Dinosaur
-  units and portraits keep their player-coloured garments.
+  docks, training cards and technology cards. **Goblin units, portraits
+  and City 1 to 3** (bead `pulp_wars-3tq.9`) likewise use fixed faction
+  colours for every player: olive goblins, darker green orcs and a dark
+  green troll in brown leather, rust and gunmetal scrap, and the fireworks
+  cart. Undead and Dinosaur units and portraits keep their player-coloured
+  garments.
 - **Territory borders** are one thin solid line in the owner colour with a
   soft dark casing; a border shared by two owners alternates their colours.
 - **Roads** have no black casing. Terrain, resources and Treasure keep their
@@ -242,8 +248,11 @@ looks as in revision 16 apart from the extra faction option.
 - **Labels.** Units are named by their owner's registration (Goblin, Wolf
   Rider, Bomb Chucker, Orc Brute, Orc Warboss, Rocket Cart, Scrap Buggy,
   Troll). The dock shows a "Goblin" faction chip; CHIBI paints the reviewed
-  PixelLab Goblin sprites (`pulp_wars-0ao.8`, which replaced the
-  `pulp_wars-0ao.4` placeholders) and LEGACY (or a CHIBI Goblin subject
+  PixelLab Goblin sprites: in the default look the fixed-colour art of bead
+  `pulp_wars-3tq.9` (sprites, portraits and cities alike), and with the
+  Classic look developer option the player-coloured sprites of
+  `pulp_wars-0ao.8` (which replaced the `pulp_wars-0ao.4` placeholders).
+  LEGACY (or a CHIBI Goblin subject
   without a raster) draws the Human art with an olive goblin-head badge on
   charcoal. Training, recruit help, rewards and CHIBI technology cards use
   the Goblin PixelLab portraits (`PORTRAIT:GOBLIN:<ROLE>`) wherever a Human

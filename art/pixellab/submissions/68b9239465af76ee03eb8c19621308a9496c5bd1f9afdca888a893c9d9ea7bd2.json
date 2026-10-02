@@ -1,0 +1,36 @@
+{
+  "id": "portrait-wolf-rider-skin-edit-a",
+  "jobId": "97a4810b-956e-44a2-82ca-bf0af78dc7db",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-wolf-rider",
+    "subject": "PORTRAIT:GOBLIN:RAIDER",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the goblin's skin: the yellow skin of his face, ears and hands becomes a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow, and the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, his clothes and strap, the grey wolf's head, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the goblin's skin: the yellow skin of his face, ears and hands becomes a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow, and the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, his clothes and strap, the grey wolf's head, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the goblin's skin: the yellow skin of his face, ears and hands becomes a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow, and the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, his clothes and strap, the grey wolf's head, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the goblin's skin: the yellow skin of his face, ears and hands becomes a mid-tone olive green, colour #8a952f with #495508 shadows; not yellow, and the face stays clearly visible. Do not touch the wolf. Keep everything else exactly the same: the brown leather cap, his clothes and strap, the grey wolf's head, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-wolf-rider-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "2c9c104fa5212790cbf7cfbd1898bff1287ca9ba2ca7ea90eabe8580b997f659"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "portrait-scrap-buggy-scrap-edit-a",
+  "jobId": "965506fb-4de6-4923-890c-f13b67dd2221",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-scrap-buggy",
+    "subject": "PORTRAIT:GOBLIN:KNIGHT",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81601,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the red parts: the red body panels of the buggy become mismatched scrap metal, some dull gunmetal grey #6d7684 and some rusted iron #8a4a2a, with one small panel of hazard yellow and black diagonal stripes; the driver's red cap becomes dull brown leather #955627. No red left. Keep the buggy's shape, ram, wheels, exhaust and soot cloud, the driver, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the red parts: the red body panels of the buggy become mismatched scrap metal, some dull gunmetal grey #6d7684 and some rusted iron #8a4a2a, with one small panel of hazard yellow and black diagonal stripes; the driver's red cap becomes dull brown leather #955627. No red left. Keep the buggy's shape, ram, wheels, exhaust and soot cloud, the driver, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the red parts: the red body panels of the buggy become mismatched scrap metal, some dull gunmetal grey #6d7684 and some rusted iron #8a4a2a, with one small panel of hazard yellow and black diagonal stripes; the driver's red cap becomes dull brown leather #955627. No red left. Keep the buggy's shape, ram, wheels, exhaust and soot cloud, the driver, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the red parts: the red body panels of the buggy become mismatched scrap metal, some dull gunmetal grey #6d7684 and some rusted iron #8a4a2a, with one small panel of hazard yellow and black diagonal stripes; the driver's red cap becomes dull brown leather #955627. No red left. Keep the buggy's shape, ram, wheels, exhaust and soot cloud, the driver, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-goblin",
+      "recipe": "portrait-goblin-scrap-buggy-d-edit",
+      "candidate": 0,
+      "sha256": "c61a6529c51ffff88dd467e4dd1246f69f5c266c3005c181c5d190831e84a623"
+    }
+  }
+}

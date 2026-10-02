@@ -1,0 +1,37 @@
+{
+  "id": "portrait-rocket-cart-scrap-edit-a",
+  "jobId": "de9b6c0c-2c82-4807-9a35-5e22142d078d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-rocket-cart",
+    "subject": "PORTRAIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81501,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Replace the one big red rocket with a tight roped bundle of four small paper fireworks rockets on thin sticks: paper tubes in grubby red, orange, yellow and blue, each with a cream paper cone tip and a small star, one fuse lit with a small spark. The cart becomes rickety dull dark brown planks (#5c3a22, shadows #3a2414) with dark brown wooden wheels. Keep the size, the cart's shape, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Replace the one big red rocket with a tight roped bundle of four small paper fireworks rockets on thin sticks: paper tubes in grubby red, orange, yellow and blue, each with a cream paper cone tip and a small star, one fuse lit with a small spark. The cart becomes rickety dull dark brown planks (#5c3a22, shadows #3a2414) with dark brown wooden wheels. Keep the size, the cart's shape, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Replace the one big red rocket with a tight roped bundle of four small paper fireworks rockets on thin sticks: paper tubes in grubby red, orange, yellow and blue, each with a cream paper cone tip and a small star, one fuse lit with a small spark. The cart becomes rickety dull dark brown planks (#5c3a22, shadows #3a2414) with dark brown wooden wheels. Keep the size, the cart's shape, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Replace the one big red rocket with a tight roped bundle of four small paper fireworks rockets on thin sticks: paper tubes in grubby red, orange, yellow and blue, each with a cream paper cone tip and a small star, one fuse lit with a small spark. The cart becomes rickety dull dark brown planks (#5c3a22, shadows #3a2414) with dark brown wooden wheels. Keep the size, the cart's shape, thick black outline and art style, on a transparent background.",
+    "source": {
+      "batch": "5-goblin",
+      "recipe": "portrait-goblin-rocket-cart-k",
+      "candidate": 0,
+      "sha256": "2c73b4dd5c038c7b6f88fb671e2d36924aa4d5716b1db0811184e8562576c814"
+    }
+  }
+}

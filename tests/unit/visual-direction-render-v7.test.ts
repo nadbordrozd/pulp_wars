@@ -11,6 +11,7 @@ import type {
   ArtSubjectV7,
   ChibiArtAssetV7,
 } from "../../src/assets/chibi-art-v7";
+import { CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-art-manifest";
 import {
   drawBoardV7,
   type BoardRenderPlanEntryV7,
@@ -705,14 +706,16 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
         expect(asset.height, asset.id).toBeLessThanOrEqual(
           asset.subject.startsWith("CITY:") ? 88 : 80,
         );
-    // Every pennant anchor belongs to a demo sample or to its production
-    // successor (bead pulp_wars-3tq.5) and lies inside it.
+    // Every pennant anchor belongs to a demo sample, to its production
+    // successor (bead pulp_wars-3tq.5) or to a Goblin city (bead
+    // pulp_wars-3tq.9) and lies inside it.
     const anchors = Object.entries(DIRECTION_FLAG_ANCHORS_V7);
     expect(anchors.length).toBeGreaterThan(0);
     for (const [id, anchor] of anchors) {
       const asset = [
         ...HUMAN_DEMO_SAMPLE_ASSETS_V7,
         ...VISUAL_DIRECTION_SAMPLE_SETS_V7.PRODUCTION,
+        ...CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7,
       ].find((candidate) => candidate.id === id);
       expect(asset, id).toBeDefined();
       if (asset === undefined) continue;
@@ -1000,7 +1003,10 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     ]);
   });
 
-  it("leaves the other factions unconverted: player-coloured units on plates, classic cities with the crown and no pennant", () => {
+  it("leaves a faction without direction art unconverted: player-coloured units on plates, classic cities with the crown and no pennant", () => {
+    // Undead and Dinosaur have no direction art; here the Goblin subjects
+    // have none either (the fixture registers Human art only), which is
+    // also what a Goblin piece falls back to when its raster fails.
     const base = chibiArt();
     const readPixels = vi.fn(environment.readPixels);
     const art = createDirectedChibiArtV7({
@@ -1104,6 +1110,247 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     const fallback = chrome(humanCapital, false);
     expect(fallback.handled.crown).toBe(true);
     expect(fills(fallback.log)).toContain(CORAL);
+  });
+
+  it("draws the Goblin direction art in the live look and the classic Goblin art in the Classic look (pulp_wars-3tq.9)", () => {
+    // The live registry carries the whole Goblin roster, its portraits and
+    // its three city tiers, in fixed colours, on the Goblin subjects.
+    for (const role of [
+      "FIGHTER",
+      "RAIDER",
+      "MARKSMAN",
+      "GUARD",
+      "CAPTAIN",
+      "CATAPULT",
+      "KNIGHT",
+      "JUGGERNAUT",
+    ] as const)
+      for (const kind of ["UNIT", "PORTRAIT"] as const) {
+        const variants = LIVE_DIRECTION_ART_REGISTRY_V7.variants(
+          `${kind}:GOBLIN:${role}`,
+        );
+        expect(variants, `${kind} ${role}`).toHaveLength(1);
+        expect(variants[0]?.fixedColours).toBe(true);
+        expect(variants[0]?.ownerMaskUrl).toBeUndefined();
+      }
+    expect(
+      ([1, 2, 3] as const).map(
+        (level) =>
+          LIVE_DIRECTION_ART_REGISTRY_V7.variants(`CITY:GOBLIN:${level}`)[0]
+            ?.id,
+      ),
+    ).toEqual([
+      "chibi-direction-goblin-city-1",
+      "chibi-direction-goblin-city-2",
+      "chibi-direction-goblin-city-3",
+    ]);
+    // Undead and Dinosaur are still not converted.
+    for (const subject of [
+      "UNIT:UNDEAD:FIGHTER",
+      "UNIT:DINOSAUR:FIGHTER",
+      "CITY:UNDEAD:1",
+      "CITY:DINOSAUR:1",
+    ] as const)
+      expect(LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject)).toHaveLength(0);
+
+    const goblin = entry("UNIT", 1, 2, "unit-fighter", "UNIT:GOBLIN:FIGHTER", {
+      key: "unit:7",
+      ownerColor: CORAL,
+      ownerSeat: 0,
+      faction: "GOBLIN",
+      hp: 6,
+      maxHp: 6,
+    });
+    // Live look: the direction sprite as authored (no owner colour in its
+    // cache key), on a plate in the player colour.
+    const live = drawLive([goblin], {
+      samples: directionArt(["UNIT:GOBLIN:FIGHTER"]),
+    });
+    expect(live.images).toEqual([raster("direction:UNIT:GOBLIN:FIGHTER")]);
+    expect(fills(live.log)).toContain(CORAL);
+    expect(fills(live.log)).toContain(darkerColourV7(CORAL));
+    // No seat number, no faction badge, no full HP bar.
+    expect(live.log.filter((call) => call[0] === "fillText")).toEqual([]);
+    expect(fills(live.log)).not.toContain("#101718");
+    // Still loading: nothing, never a flash of the classic sprite.
+    expect(
+      drawLive([goblin], {
+        samples: directionArt(["UNIT:GOBLIN:FIGHTER"], "LOADING"),
+      }).images,
+    ).toEqual([]);
+    // The raster failed: the classic Goblin sprite in the player's colour.
+    expect(drawLive([goblin], { samples: directionArt([]) }).images).toEqual([
+      raster(`UNIT:GOBLIN:FIGHTER#${CORAL}`),
+    ]);
+    // The Classic look (and LEGACY, which gets no look at all) never asks
+    // for the direction art.
+    expect(
+      drawLive([goblin], {
+        classic: true,
+        samples: directionArt(["UNIT:GOBLIN:FIGHTER"]),
+      }).images,
+    ).toEqual([raster(`UNIT:GOBLIN:FIGHTER#${CORAL}`)]);
+    expect(liveBoardLookV7("LEGACY").visualDirectionArt).toBeUndefined();
+    expect(liveBoardLookV7("CHIBI", true).visualDirectionArt).toBeUndefined();
+  });
+
+  it("draws a Goblin city from its direction art with the pennant on its own pole, and the classic city when the art is missing (pulp_wars-3tq.9)", () => {
+    /** Goblin city art under its registered id, so its anchor is found. */
+    const goblinCities: ChibiBoardArtV7 = {
+      resolve: (request) => {
+        const level = /^CITY:GOBLIN:([123])$/.exec(request.subject)?.[1];
+        return level === undefined
+          ? { kind: "MISSING" }
+          : {
+              kind: "READY",
+              asset: {
+                id: `chibi-direction-goblin-city-${level}`,
+                subject: request.subject,
+                assetClass: "SETTLEMENT",
+                width: 96,
+                height: 100,
+                url: `/direction/goblin-city-${level}.png`,
+                fixedColours: true,
+              } as ChibiArtAssetV7,
+              image: raster(`direction:${request.subject}`),
+              density: 1,
+              smoothing: false,
+              cacheKey: `direction:${request.subject}`,
+            };
+      },
+    };
+    const base = chibiArt();
+    const readPixels = vi.fn(environment.readPixels);
+    const art = createDirectedChibiArtV7({
+      base,
+      direction: LIVE_DIRECTION_V7,
+      environment: { ...environment, readPixels },
+      samples: goblinCities,
+    });
+    const request = { at, ownerColor: CORAL, deviceScale: 1 };
+    const converted = art.resolve({ ...request, subject: "CITY:GOBLIN:2" });
+    // As authored: no owner recolour, no tone, no pixel work, and the
+    // classic resolver is not even asked.
+    expect(converted.kind === "READY" && converted.image).toBe(
+      raster("direction:CITY:GOBLIN:2"),
+    );
+    expect(converted.kind === "READY" && converted.cacheKey).toBe(
+      "direction:CITY:GOBLIN:2",
+    );
+    expect(base.requests).toEqual([]);
+    expect(readPixels).not.toHaveBeenCalled();
+    // An Undead city has no direction art: the classic raster, as before.
+    const undead = art.resolve({ ...request, subject: "CITY:UNDEAD:2" });
+    expect(undead.kind === "READY" && undead.image).toBe(
+      raster(`CITY:UNDEAD:2#${CORAL}`),
+    );
+    // A Goblin city whose direction raster is missing falls back to the
+    // classic Goblin city in the owner's colour.
+    const fallback = createDirectedChibiArtV7({
+      base,
+      direction: LIVE_DIRECTION_V7,
+      environment,
+      samples: directionArt([]),
+    }).resolve({ ...request, subject: "CITY:GOBLIN:2" });
+    expect(fallback.kind === "READY" && fallback.image).toBe(
+      raster(`CITY:GOBLIN:2#${CORAL}`),
+    );
+
+    const capital = entry("CITY", 0, 2, "building-city-2", "CITY:GOBLIN:2", {
+      key: "city:1",
+      ownerColor: CORAL,
+      ownerSeat: 1,
+      capital: true,
+      value: 2,
+      population: 2,
+    });
+    // The pennant is drawn at the recorded anchor of each tier.
+    const rect = { x: 100, y: 200, width: 96, height: 100 };
+    for (const level of [1, 2, 3] as const) {
+      const id = `chibi-direction-goblin-city-${level}`;
+      const anchor = DIRECTION_FLAG_ANCHORS_V7[id];
+      if (anchor === undefined) throw new Error(`${id}: no anchor`);
+      const { context, log } = recordingContext();
+      expect(
+        drawDirectedFlagV7(context, LIVE_DIRECTION_V7, capital, id, rect, 1),
+      ).toBe(true);
+      expect(log.find((call) => call[0] === "moveTo")).toEqual([
+        "moveTo",
+        rect.x + anchor.x,
+        rect.y + anchor.y,
+      ]);
+      expect(fills(log)).toContain(CORAL);
+      expect(fills(log)).toContain("#f4c542");
+    }
+    // The classic Goblin city has no anchor: no pennant on it.
+    {
+      const { context, log } = recordingContext();
+      expect(
+        drawDirectedFlagV7(
+          context,
+          LIVE_DIRECTION_V7,
+          capital,
+          "chibi-goblin-city-2",
+          rect,
+          1,
+        ),
+      ).toBe(false);
+      expect(log).toEqual([]);
+    }
+    const chrome = (flagDrawn: boolean) => {
+      const { context, log } = recordingContext();
+      return {
+        handled: drawDirectedPieceChromeV7(
+          context,
+          LIVE_DIRECTION_V7,
+          capital,
+          0,
+          0,
+          1,
+          false,
+          flagDrawn,
+        ),
+        log,
+      };
+    };
+    // Converted: the pennant carries the capital's gold shape, so the stock
+    // crown and the seat badge are both replaced, and no corner pennant is
+    // added.
+    const flown = chrome(true);
+    expect(flown.handled).toEqual({ badge: true, hp: false, crown: true });
+    expect(flown.log.filter((call) => call[0] === "fill")).toEqual([]);
+    // Fallback (classic raster, no anchor): the classic crown, no pennant.
+    const classicCity = chrome(false);
+    expect(classicCity.handled).toEqual({
+      badge: true,
+      hp: false,
+      crown: false,
+    });
+    expect(classicCity.log.filter((call) => call[0] === "fill")).toEqual([]);
+
+    // On the board: the direction raster, then the pennant in the player's
+    // colour with the gold capital shape; the Classic look draws the
+    // classic city in the owner's colour and no pennant.
+    const live = drawLive([capital], { samples: goblinCities });
+    expect(live.images).toEqual([raster("direction:CITY:GOBLIN:2")]);
+    expect(fills(live.log)).toContain(CORAL);
+    expect(fills(live.log)).toContain("#f4c542");
+    const classic = drawLive([capital], {
+      samples: goblinCities,
+      classic: true,
+    });
+    expect(classic.images).toEqual([raster(`CITY:GOBLIN:2#${CORAL}`)]);
+    // The pennant is a five-point path closed and stroked in a darker tone
+    // of the player colour; the classic frame has no such stroke.
+    const pennantRim = (log: readonly LogEntry[]) =>
+      log.filter(
+        (call) =>
+          call[0] === "set" &&
+          call[1] === "strokeStyle" &&
+          call[2] === darkerColourV7(CORAL),
+      ).length;
+    expect(pennantRim(live.log)).toBeGreaterThan(0);
+    expect(pennantRim(classic.log)).toBe(0);
   });
 
   it("draws other factions' units and the Egg on the board with a plate, without a seat number", () => {

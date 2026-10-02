@@ -303,6 +303,34 @@ pipeline pieces:
   a recipe of the same id, endpoint, seed, size, edit instruction and edit
   source. The exploration's verdict is not carried over: review again.
 
+### The Goblin production batch (bead `pulp_wars-3tq.9`)
+
+Batch `direction-goblin` is the second fixed-colour batch: faction `GOBLIN`,
+`fixedFactionColours`, 19 assets (8 units, 8 portraits, City 1 to 3), all
+`ownerColour: false`. It added no pipeline piece; it uses what
+`direction-human` built:
+
+- **Every recipe is an `edit-image-pixen` edit.** Fourteen were imported
+  from `art/explorations/goblin-direction-2026-10` (`import` keeps their
+  chain: an imported recipe's `source` without a batch names another recipe
+  of this batch, so a whole chain must be imported); the first recipe of
+  each remaining chain names an accepted recipe of batch `goblin`,
+  `5-goblin` or `cities-goblin` as its cross-batch source.
+- **Subject texts** are the `<subject>/SCRAP` keys of
+  `scripts/art/chibi/subjects/GOBLIN.json`. An edit sends only its
+  instruction, so they document the look; the manifest still requires them.
+- **Cities use the `settlement` class** with the classic canvases (as-is
+  derivation), not `calm-settlement`: the camps keep their footprint,
+  anchor and overflow, and no ground removal was needed.
+- **Colours as hex values.** An edit instruction that gives the target
+  colour as `#rrggbb` with its shadow tone lands within a few percent of it;
+  colour words alone did not move PixelLab off orange. See the
+  [production notes](VISUAL_DIRECTION_2026-10.md#what-the-goblin-batch-made).
+- **Failed jobs.** A job that fails at PixelLab leaves its recipe recorded
+  as submitted with its receipt (two here); give the retry a new recipe id.
+- PixelLab's tier allows eight jobs at once: more concurrent `generate`
+  runs are refused with HTTP 429 before a job is created, and can be rerun.
+
 ## Terrain palettes and variants
 
 - **Forced palette:** a Pixflux recipe may name a checked-in PNG in
@@ -445,7 +473,12 @@ colour and the four player colours, with the mask at x4) and
 `goblin-match-*.png` captures of a fresh Goblin-vs-Undead match in CHIBI
 (board at zoom 1 and 0.75 on desktop and phone, the unit dock, the training
 dock and the technology tree), indexed in `goblin-index.json`. Its captures
-start Vite on port 6301 unless `--port` says otherwise.
+start Vite on port 6301 unless `--port` says otherwise. Since bead
+`pulp_wars-3tq.9` the default look draws the Goblin production art, so the
+`ingame-*` and `goblin-match-*` captures show it, and the faction sheets
+put the live sprite (and the live Human one) beside the classic sprite in
+the key colour and the four player colours; the batch review's own sheets
+and mocks still show the classic, masked batch.
 
 `npm run art:chibi-dinosaur-review` (bead `pulp_wars-c87.7`) writes
 `art/pixellab/reviews/chibi-batch-dinosaur/`:
@@ -535,6 +568,25 @@ Its captures start Vite on port 6471 unless `--port` says otherwise. With
 `--farms-only --out DIR` it writes only the four `ingame-farms-*` captures
 into DIR, to try a Farm candidate copied over the master.
 
+The same command (bead `pulp_wars-3tq.9`) also writes
+`art/pixellab/reviews/chibi-batch-direction-goblin/`, alone with
+`--goblin-only`: `units-old-new-{1x,x4}.png` and `units-zoom-0.75.png`
+(every Goblin unit: classic in the key colour and in Coral, new, and the
+new Human, the Undead and the Dinosaur unit of its role),
+`portraits-old-new-{1x,x4}.png`, `cities-{1x,x4}.png` (classic, new, new
+with the pennant at its recorded anchor, the Human city),
+`showcase-goblin-{desktop,phone}-zoom-{1,0.75}.png` (a Showcase match in
+the default look with a Goblin viewer against a Human, an Undead and a
+Dinosaur seat), `showcase-goblin-four-*` (four Goblin seats),
+`showcase-goblin-today-desktop-zoom-1.png` (the Classic look),
+`showcase-goblin-{dock,tech}-desktop.png`,
+`ingame-goblin-{roster,mixed}-{desktop,phone}-zoom-{1,0.75}.png` (the
+`ROSTER` and `MIXED` scenes of `scripts/art/goblin-direction/scene.ts`
+drawn by the real board host with the game's own art: four Goblin players
+with the whole roster and a garrisoned city of each tier, and Goblin
+against Human) and `index.json`. In the Human sheets the Goblin column is
+the live Goblin unit.
+
 `npm run art:goblin-direction-study-review` (bead `pulp_wars-3tq.8`) writes
 `art/pixellab/reviews/goblin-direction-study/`, the evidence of the
 [Goblin direction study](VISUAL_DIRECTION_2026-10.md#14-goblin-study):
@@ -548,6 +600,9 @@ board host with the default look) and `index.json`. Its captures start Vite
 on port 6481 unless `--port` says otherwise; the full-screen captures go to
 `--captures DIR` (a temporary directory by default). It reads the samples
 that `npx tsx scripts/art/goblin-direction/samples.ts` cuts from the run.
+Its "today" panels keep drawing the classic Goblin sprites: the study scene
+passes the Human production art plus the study's samples as the direction
+art, not the live registry, which now holds the Goblin production art.
 
 ## Dry run
 

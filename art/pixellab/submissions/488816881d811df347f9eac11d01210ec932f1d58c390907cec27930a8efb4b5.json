@@ -1,0 +1,36 @@
+{
+  "id": "orc-warboss-skin-edit-c",
+  "jobId": "5ac336b5-65d4-4e3c-a816-66eb32e72930",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-orc-warboss",
+    "subject": "UNIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80513,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A small colour change only: his light green skin (face, ears, arms, hands) becomes one step darker and duller, a dull dark moss green, colour #5a7038 with #3a4a26 shadows; still clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the steel horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style."
+      }
+    ],
+    "prompt": "A small colour change only: his light green skin (face, ears, arms, hands) becomes one step darker and duller, a dull dark moss green, colour #5a7038 with #3a4a26 shadows; still clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the steel horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "A small colour change only: his light green skin (face, ears, arms, hands) becomes one step darker and duller, a dull dark moss green, colour #5a7038 with #3a4a26 shadows; still clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the steel horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style.",
+    "editInstruction": "A small colour change only: his light green skin (face, ears, arms, hands) becomes one step darker and duller, a dull dark moss green, colour #5a7038 with #3a4a26 shadows; still clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his helmet or clothes. Keep everything else exactly the same: the steel horned helmet, tusks, open mouth, the brown hide cape and leather tunic, the tin megaphone, belt, boots, pose, proportions, thick black outline and art style.",
+    "source": {
+      "recipe": "orc-warboss-skin-edit-b",
+      "candidate": 0,
+      "sha256": "55713bd4148859a197e44fdb591a77a1159ca39016d2649c083cc9a842309d3d"
+    }
+  }
+}

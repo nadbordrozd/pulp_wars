@@ -1,0 +1,36 @@
+{
+  "id": "orc-brute-skin-edit-d",
+  "jobId": "df250518-94f3-4dc6-973d-aabbe85c0b04",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-orc-brute",
+    "subject": "UNIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80414,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A small colour change only: his green skin (face, ears, chest, belly, arms, hands) becomes one step darker and duller, a dull dark moss green, colour #5a7038 with #3a4a26 shadows; still clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his clothes. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield, the cleaver, boots, pose, proportions, thick black outline and art style."
+      }
+    ],
+    "prompt": "A small colour change only: his green skin (face, ears, chest, belly, arms, hands) becomes one step darker and duller, a dull dark moss green, colour #5a7038 with #3a4a26 shadows; still clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his clothes. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield, the cleaver, boots, pose, proportions, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "A small colour change only: his green skin (face, ears, chest, belly, arms, hands) becomes one step darker and duller, a dull dark moss green, colour #5a7038 with #3a4a26 shadows; still clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his clothes. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield, the cleaver, boots, pose, proportions, thick black outline and art style.",
+    "editInstruction": "A small colour change only: his green skin (face, ears, chest, belly, arms, hands) becomes one step darker and duller, a dull dark moss green, colour #5a7038 with #3a4a26 shadows; still clearly green, a mid-tone, not black, and the face stays clearly visible. Do not touch his clothes. Keep everything else exactly the same: the pot helmet, tusks, eyes, the brown leather straps and kilt, the plank shield, the cleaver, boots, pose, proportions, thick black outline and art style.",
+    "source": {
+      "recipe": "orc-brute-skin-edit-c",
+      "candidate": 0,
+      "sha256": "096251f1e3de8f36a6aa45b360ce9b819cc3937d99844d25c1c014183d180240"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-crew-edit-a",
+  "jobId": "126f537f-839e-4888-9aa0-ff1dcd4e0a56",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80211,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the little goblin in the cart: a little bigger, with a big round olive green head (#8a952f), two long pointed ears sticking out sideways, big cream eyes with black pupils, a toothy grin and a brown leather cap (#955627); he leans out over the side of the cart holding a small lit match. Nothing sticks out past the cart's right side. Keep everything else the same: the five paper rockets, the dark brown cart and wheels, sticks, rope, fuse spark, black outline and art style."
+      }
+    ],
+    "prompt": "Change only the little goblin in the cart: a little bigger, with a big round olive green head (#8a952f), two long pointed ears sticking out sideways, big cream eyes with black pupils, a toothy grin and a brown leather cap (#955627); he leans out over the side of the cart holding a small lit match. Nothing sticks out past the cart's right side. Keep everything else the same: the five paper rockets, the dark brown cart and wheels, sticks, rope, fuse spark, black outline and art style.",
+    "negativePrompt": "",
+    "description": "Change only the little goblin in the cart: a little bigger, with a big round olive green head (#8a952f), two long pointed ears sticking out sideways, big cream eyes with black pupils, a toothy grin and a brown leather cap (#955627); he leans out over the side of the cart holding a small lit match. Nothing sticks out past the cart's right side. Keep everything else the same: the five paper rockets, the dark brown cart and wheels, sticks, rope, fuse spark, black outline and art style.",
+    "editInstruction": "Change only the little goblin in the cart: a little bigger, with a big round olive green head (#8a952f), two long pointed ears sticking out sideways, big cream eyes with black pupils, a toothy grin and a brown leather cap (#955627); he leans out over the side of the cart holding a small lit match. Nothing sticks out past the cart's right side. Keep everything else the same: the five paper rockets, the dark brown cart and wheels, sticks, rope, fuse spark, black outline and art style.",
+    "source": {
+      "recipe": "fireworks-cart-brown-edit-b",
+      "candidate": 0,
+      "sha256": "958b55f263872f10813fb64ea23ece5596ba71413ba4086ae381babf37588357"
+    }
+  }
+}

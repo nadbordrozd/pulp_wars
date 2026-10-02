@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-edit-e",
+  "jobId": "5e5cc312-2976-42e8-b0c8-e59c9de024a6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 79205,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Move only the little goblin: he no longer crouches on the ground at the right of the cart; he sits on the cart itself, in front of the rockets, holding a small lit match, so nothing sticks out to the right of the cart and the whole image is narrower. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, wooden cart, wheels, the goblin's green skin and orange cap, thick black outline and art style."
+      }
+    ],
+    "prompt": "Move only the little goblin: he no longer crouches on the ground at the right of the cart; he sits on the cart itself, in front of the rockets, holding a small lit match, so nothing sticks out to the right of the cart and the whole image is narrower. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, wooden cart, wheels, the goblin's green skin and orange cap, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Move only the little goblin: he no longer crouches on the ground at the right of the cart; he sits on the cart itself, in front of the rockets, holding a small lit match, so nothing sticks out to the right of the cart and the whole image is narrower. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, wooden cart, wheels, the goblin's green skin and orange cap, thick black outline and art style.",
+    "editInstruction": "Move only the little goblin: he no longer crouches on the ground at the right of the cart; he sits on the cart itself, in front of the rockets, holding a small lit match, so nothing sticks out to the right of the cart and the whole image is narrower. Keep everything else exactly the same: the five paper rockets, their colours, stars and cream cones, the sticks, rope, fuse spark, wooden cart, wheels, the goblin's green skin and orange cap, thick black outline and art style.",
+    "source": {
+      "recipe": "fireworks-cart-edit-c",
+      "candidate": 0,
+      "sha256": "3e2df2c9a57f8a7ab279a6aca1572d4408c3b2d0090dba1f63e9fbd5a6cdfe8c"
+    }
+  }
+}

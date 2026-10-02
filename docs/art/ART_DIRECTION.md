@@ -200,8 +200,10 @@ the [chibi direction, section 4a](CHIBI_ART_DIRECTION.md#4a-the-new-owner-colour
   pennant on a city, the territory border, small accents and the interface.
 - **Buildings are neutral** and calmer and smaller than units, so units stand
   out and the map recedes.
-- Only the Human faction and the shared improvements are converted so far;
-  the other factions keep the owner-colour mask until the user decides.
+- The Human faction, the Goblin faction (bead `pulp_wars-3tq.9`: olive and
+  green skins, brown leather, rust and gunmetal scrap) and the shared
+  improvements are converted so far; Undead and Dinosaur keep the
+  owner-colour mask until the user decides.
 
 ## Tone
 

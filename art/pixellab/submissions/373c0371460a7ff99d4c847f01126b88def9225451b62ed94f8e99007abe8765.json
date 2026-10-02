@@ -1,0 +1,37 @@
+{
+  "id": "portrait-wolf-rider-scrap-edit-a",
+  "jobId": "85d68eca-a3e1-4242-a951-bca4418f4c8a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-wolf-rider",
+    "subject": "PORTRAIT:GOBLIN:RAIDER",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the goblin's clothes: the red bandana becomes a brown leather cap and the red tunic becomes bare olive green shoulders with one brown leather strap. The leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the goblin's face and ears, the grey wolf's head, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the goblin's clothes: the red bandana becomes a brown leather cap and the red tunic becomes bare olive green shoulders with one brown leather strap. The leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the goblin's face and ears, the grey wolf's head, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the goblin's clothes: the red bandana becomes a brown leather cap and the red tunic becomes bare olive green shoulders with one brown leather strap. The leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the goblin's face and ears, the grey wolf's head, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the goblin's clothes: the red bandana becomes a brown leather cap and the red tunic becomes bare olive green shoulders with one brown leather strap. The leather is dull mid-brown, colour #955627 with #562a0c shadows; no red and no orange left. Keep the goblin's face and ears, the grey wolf's head, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5-goblin",
+      "recipe": "portrait-goblin-wolf-rider-b-edit",
+      "candidate": 0,
+      "sha256": "b65c7b39d7f98b6ab21d3d3ba2adaf4b3fd5e1427452938de83153763654b3a1"
+    }
+  }
+}

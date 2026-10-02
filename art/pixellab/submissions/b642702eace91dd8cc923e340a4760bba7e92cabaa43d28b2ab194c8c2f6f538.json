@@ -1,0 +1,36 @@
+{
+  "id": "fireworks-cart-crew-edit-c",
+  "jobId": "1acd0015-1460-4c2f-bd25-385de58a44b6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 80213,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the goblin: his bright green skin becomes olive green, colour #8a952f with #495508 shadows; his orange cap becomes dull brown leather, colour #955627 with #562a0c shadows. Shorten his right ear so nothing reaches past the cart's right side. Keep everything else exactly the same: his face, eyes and grin, the five paper rockets, the dull dark brown cart and wheels, sticks, rope, thick black outline and art style."
+      }
+    ],
+    "prompt": "Recolour only the goblin: his bright green skin becomes olive green, colour #8a952f with #495508 shadows; his orange cap becomes dull brown leather, colour #955627 with #562a0c shadows. Shorten his right ear so nothing reaches past the cart's right side. Keep everything else exactly the same: his face, eyes and grin, the five paper rockets, the dull dark brown cart and wheels, sticks, rope, thick black outline and art style.",
+    "negativePrompt": "",
+    "description": "Recolour only the goblin: his bright green skin becomes olive green, colour #8a952f with #495508 shadows; his orange cap becomes dull brown leather, colour #955627 with #562a0c shadows. Shorten his right ear so nothing reaches past the cart's right side. Keep everything else exactly the same: his face, eyes and grin, the five paper rockets, the dull dark brown cart and wheels, sticks, rope, thick black outline and art style.",
+    "editInstruction": "Recolour only the goblin: his bright green skin becomes olive green, colour #8a952f with #495508 shadows; his orange cap becomes dull brown leather, colour #955627 with #562a0c shadows. Shorten his right ear so nothing reaches past the cart's right side. Keep everything else exactly the same: his face, eyes and grin, the five paper rockets, the dull dark brown cart and wheels, sticks, rope, thick black outline and art style.",
+    "source": {
+      "recipe": "fireworks-cart-crew-edit-b",
+      "candidate": 0,
+      "sha256": "1501f01ab620746c8fd80d86fb77f39c11e6e0e39e4814eb210b0d19d35fa265"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "orc-brute-scrap-edit-a",
+  "jobId": "4ba8fccf-5d2c-4f78-8498-ba1014035d92",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-orc-brute",
+    "subject": "UNIT:GOBLIN:GUARD",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 80401,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his clothes and shield: take off the red tunic so his chest and arms are bare skin, with two crossed brown leather straps and a brown leather kilt to the knees, dull mid-brown #955627 with #562a0c shadows; the round shield becomes dark brown planks (#5c3a22) with a rusted iron rim and an iron boss, no red skull; remove the red skull badge from his arm. No red left. Keep the pot helmet, his skin, tusks, face, cleaver, boots, pose, proportions, black outline and art style the same."
+      }
+    ],
+    "prompt": "Change only his clothes and shield: take off the red tunic so his chest and arms are bare skin, with two crossed brown leather straps and a brown leather kilt to the knees, dull mid-brown #955627 with #562a0c shadows; the round shield becomes dark brown planks (#5c3a22) with a rusted iron rim and an iron boss, no red skull; remove the red skull badge from his arm. No red left. Keep the pot helmet, his skin, tusks, face, cleaver, boots, pose, proportions, black outline and art style the same.",
+    "negativePrompt": "",
+    "description": "Change only his clothes and shield: take off the red tunic so his chest and arms are bare skin, with two crossed brown leather straps and a brown leather kilt to the knees, dull mid-brown #955627 with #562a0c shadows; the round shield becomes dark brown planks (#5c3a22) with a rusted iron rim and an iron boss, no red skull; remove the red skull badge from his arm. No red left. Keep the pot helmet, his skin, tusks, face, cleaver, boots, pose, proportions, black outline and art style the same.",
+    "editInstruction": "Change only his clothes and shield: take off the red tunic so his chest and arms are bare skin, with two crossed brown leather straps and a brown leather kilt to the knees, dull mid-brown #955627 with #562a0c shadows; the round shield becomes dark brown planks (#5c3a22) with a rusted iron rim and an iron boss, no red skull; remove the red skull badge from his arm. No red left. Keep the pot helmet, his skin, tusks, face, cleaver, boots, pose, proportions, black outline and art style the same.",
+    "source": {
+      "batch": "goblin",
+      "recipe": "orc-brute-a-edit-b",
+      "candidate": 0,
+      "sha256": "6fdf96b43057a251a0322f981aa1303a1151f881a2de0baa5610f36719fd792f"
+    }
+  }
+}

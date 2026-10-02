@@ -1,0 +1,36 @@
+{
+  "id": "portrait-scrap-buggy-rust-edit-a",
+  "jobId": "626be1e9-8488-4ded-98f7-44a0a24cef1e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-scrap-buggy",
+    "subject": "PORTRAIT:GOBLIN:KNIGHT",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81621,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the red parts of the buggy's body: the dark red rust patches and the small bright red spots become dull orange-brown rusted iron, colour #8a4a2a with #5a2c18 shadows; no red left anywhere. Do not redraw anything: the grey scrap metal panels, the hazard striped panels, the ram, wheels, exhaust and soot cloud, the driver with his olive green face, dark goggles and brown cap, proportions, thick black outline and art style all stay exactly the same."
+      }
+    ],
+    "prompt": "Recolour only the red parts of the buggy's body: the dark red rust patches and the small bright red spots become dull orange-brown rusted iron, colour #8a4a2a with #5a2c18 shadows; no red left anywhere. Do not redraw anything: the grey scrap metal panels, the hazard striped panels, the ram, wheels, exhaust and soot cloud, the driver with his olive green face, dark goggles and brown cap, proportions, thick black outline and art style all stay exactly the same.",
+    "negativePrompt": "",
+    "description": "Recolour only the red parts of the buggy's body: the dark red rust patches and the small bright red spots become dull orange-brown rusted iron, colour #8a4a2a with #5a2c18 shadows; no red left anywhere. Do not redraw anything: the grey scrap metal panels, the hazard striped panels, the ram, wheels, exhaust and soot cloud, the driver with his olive green face, dark goggles and brown cap, proportions, thick black outline and art style all stay exactly the same.",
+    "editInstruction": "Recolour only the red parts of the buggy's body: the dark red rust patches and the small bright red spots become dull orange-brown rusted iron, colour #8a4a2a with #5a2c18 shadows; no red left anywhere. Do not redraw anything: the grey scrap metal panels, the hazard striped panels, the ram, wheels, exhaust and soot cloud, the driver with his olive green face, dark goggles and brown cap, proportions, thick black outline and art style all stay exactly the same.",
+    "source": {
+      "recipe": "portrait-scrap-buggy-skin-edit-b",
+      "candidate": 0,
+      "sha256": "fa8085ee92d927937600ea28255459cb1311b6fca6661577292fe3fbce8d2a47"
+    }
+  }
+}

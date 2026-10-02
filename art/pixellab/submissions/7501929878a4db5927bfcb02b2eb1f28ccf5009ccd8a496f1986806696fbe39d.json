@@ -1,0 +1,36 @@
+{
+  "id": "portrait-orc-warboss-skin-edit-b",
+  "jobId": "6a2b708e-f755-4d65-beed-87e3360c6e43",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-portrait-goblin-orc-warboss",
+    "subject": "PORTRAIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 81412,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the pale grey skin of his face, ears and hands: it becomes moss green, colour #6f8a44 with #46592c shadows: clearly green, not grey, and the face stays clearly visible. Do not redraw anything: the horned helmet, tusks, open mouth and tongue, the brown hide cape, the megaphone, pose, proportions, thick black outline and art style all stay exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the pale grey skin of his face, ears and hands: it becomes moss green, colour #6f8a44 with #46592c shadows: clearly green, not grey, and the face stays clearly visible. Do not redraw anything: the horned helmet, tusks, open mouth and tongue, the brown hide cape, the megaphone, pose, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the pale grey skin of his face, ears and hands: it becomes moss green, colour #6f8a44 with #46592c shadows: clearly green, not grey, and the face stays clearly visible. Do not redraw anything: the horned helmet, tusks, open mouth and tongue, the brown hide cape, the megaphone, pose, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the pale grey skin of his face, ears and hands: it becomes moss green, colour #6f8a44 with #46592c shadows: clearly green, not grey, and the face stays clearly visible. Do not redraw anything: the horned helmet, tusks, open mouth and tongue, the brown hide cape, the megaphone, pose, proportions, thick black outline and art style all stay exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-orc-warboss-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "02ca93fa18893b81028b7515ff2dc6776085419b8f6124e4d395477181ad4b92"
+    }
+  }
+}
