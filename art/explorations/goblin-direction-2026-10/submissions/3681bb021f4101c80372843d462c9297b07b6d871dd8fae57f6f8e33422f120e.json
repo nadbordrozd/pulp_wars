@@ -1,0 +1,37 @@
+{
+  "id": "goblin-scrap-edit-b",
+  "jobId": "5b7e0253-8219-4c3d-8dc7-19db1853e420",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 78002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours of his clothes: the red tunic becomes warm dark brown patched hide with two lighter tan stitched patches; the red bandana becomes a black headband with hazard yellow diagonal stripes; dirty cream bandage wraps round both forearms. Keep his olive green skin, the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours of his clothes: the red tunic becomes warm dark brown patched hide with two lighter tan stitched patches; the red bandana becomes a black headband with hazard yellow diagonal stripes; dirty cream bandage wraps round both forearms. Keep his olive green skin, the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours of his clothes: the red tunic becomes warm dark brown patched hide with two lighter tan stitched patches; the red bandana becomes a black headband with hazard yellow diagonal stripes; dirty cream bandage wraps round both forearms. Keep his olive green skin, the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours of his clothes: the red tunic becomes warm dark brown patched hide with two lighter tan stitched patches; the red bandana becomes a black headband with hazard yellow diagonal stripes; dirty cream bandage wraps round both forearms. Keep his olive green skin, the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "goblin",
+      "recipe": "goblin-a-edit-2",
+      "candidate": 0,
+      "sha256": "078acc2a1db50bde70d5b203e0f55a238908e4e0103095aae1d38bfaed59fd13"
+    }
+  }
+}

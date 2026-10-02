@@ -1,0 +1,37 @@
+{
+  "id": "goblin-scrap-edit-c",
+  "jobId": "764f8f0b-ade3-4489-a9cd-ea8125e3b76e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 78003,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours of his clothes and skin: the red bandana and red tunic become near-black dark brown leather with one lighter brown stitched hide patch and a rusted orange-brown iron belt buckle; his skin a yellower, saturated yellow-green olive. No yellow on the clothes. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours of his clothes and skin: the red bandana and red tunic become near-black dark brown leather with one lighter brown stitched hide patch and a rusted orange-brown iron belt buckle; his skin a yellower, saturated yellow-green olive. No yellow on the clothes. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours of his clothes and skin: the red bandana and red tunic become near-black dark brown leather with one lighter brown stitched hide patch and a rusted orange-brown iron belt buckle; his skin a yellower, saturated yellow-green olive. No yellow on the clothes. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours of his clothes and skin: the red bandana and red tunic become near-black dark brown leather with one lighter brown stitched hide patch and a rusted orange-brown iron belt buckle; his skin a yellower, saturated yellow-green olive. No yellow on the clothes. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "goblin",
+      "recipe": "goblin-a-edit-2",
+      "candidate": 0,
+      "sha256": "078acc2a1db50bde70d5b203e0f55a238908e4e0103095aae1d38bfaed59fd13"
+    }
+  }
+}

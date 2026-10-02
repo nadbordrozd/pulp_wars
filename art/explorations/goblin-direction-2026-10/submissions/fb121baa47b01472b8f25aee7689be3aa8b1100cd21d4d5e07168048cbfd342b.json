@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-scrap-edit-e",
+  "jobId": "891143ea-f202-4456-b99c-d02f68b38029",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 78205,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: the yellow tail fins and tail stick of the rocket become dark gunmetal grey iron, and the little goblin's face, ears and hands become bright yellow-olive green skin. Keep everything else exactly the same: the black rocket with its yellow stripes, the cream cone, the fuse and spark, the wooden cart, the wheels, the goblin's helmet and clothes, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: the yellow tail fins and tail stick of the rocket become dark gunmetal grey iron, and the little goblin's face, ears and hands become bright yellow-olive green skin. Keep everything else exactly the same: the black rocket with its yellow stripes, the cream cone, the fuse and spark, the wooden cart, the wheels, the goblin's helmet and clothes, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: the yellow tail fins and tail stick of the rocket become dark gunmetal grey iron, and the little goblin's face, ears and hands become bright yellow-olive green skin. Keep everything else exactly the same: the black rocket with its yellow stripes, the cream cone, the fuse and spark, the wooden cart, the wheels, the goblin's helmet and clothes, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only two things: the yellow tail fins and tail stick of the rocket become dark gunmetal grey iron, and the little goblin's face, ears and hands become bright yellow-olive green skin. Keep everything else exactly the same: the black rocket with its yellow stripes, the cream cone, the fuse and spark, the wooden cart, the wheels, the goblin's helmet and clothes, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-scrap-edit-c",
+      "candidate": 0,
+      "sha256": "a06f03562db09a33790a1347a007326cc9cf2b1522a6aca7b83bcf9752553a62"
+    }
+  }
+}

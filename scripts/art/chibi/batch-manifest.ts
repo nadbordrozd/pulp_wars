@@ -1203,7 +1203,10 @@ export function batchManifestProblems(
         // time from that batch's records.
         if (manifest.dryRun)
           problems.push(`${label}: dry runs cannot edit another batch`);
-        if (!/^[1-9][0-9]*$/.test(source.batch))
+        // A numbered batch, or a named one (`goblin`, bead pulp_wars-3tq.8:
+        // the direction edits of a faction start from its accepted sprites).
+        // Batch 0 is the fixture dry run and is never a source.
+        if (!BATCH_ID_PATTERN.test(source.batch) || /^0+$/.test(source.batch))
           problems.push(`${label}: source batch must be a production batch`);
         if (Number(source.batch) >= Number(manifest.batch))
           problems.push(`${label}: source batch must be an earlier batch`);

@@ -10,7 +10,9 @@ what the developer toggle draws. The user then chose the direction
 bead `pulp_wars-3tq.6` made the direction the default look of the CHIBI art
 set. Sections 1 to 12 are kept as written at the time: where they say
 "today", "by default" or "the developer toggle", read them as history;
-section 13 is the current behaviour. The
+section 13 is the current behaviour.
+[Section 14](#14-goblin-study) is a study of the Goblin faction in the same
+direction (bead `pulp_wars-3tq.8`); nothing of it is live. The
 [chibi art direction](CHIBI_ART_DIRECTION.md) governs production art; its
 section 4a holds the rules this direction changed.
 
@@ -1045,6 +1047,206 @@ direction's rasters go through the same cached desaturated copies.
   in play.
 - **Terrain toning** runs once per terrain raster on first use (a few
   milliseconds each); it is not baked by the pipeline yet.
+
+## 14. Goblin study
+
+**Status:** bead `pulp_wars-3tq.8`, waiting for the user's review. The user
+liked the Human faction in play and asked to redo the Goblins on the same
+principles; the approved look is **scrapyard raiders**. This is a study on
+three units (Goblin, Bomb Chucker, Rocket Cart). **Nothing is live:** the
+game draws the Goblins exactly as before, no sprite is registered, and
+[GOBLIN.md](factions/GOBLIN.md) is unchanged. Bead `pulp_wars-3tq.9`
+converts the roster after the review.
+
+![Four Goblin players: today's sprites and the study's, drawn by the game's board](../../art/pixellab/reviews/goblin-direction-study/before-after-four-desktop-zoom-1.png)
+
+### The look
+
+The same rules as the Human direction (section 12): fixed faction colours,
+no owner area and no mask; the player is read from the seat-shaped plate,
+the pennant and the border; chibi proportions, camera, top-left light and
+black outline unchanged; the same canvases and anchors (56 x 80, and
+72 x 88 with anchor 34, 48 for the Rocket Cart).
+
+| Role                    | Colours (measured on the three sprites)      | Share of the sprite | Used for                                                            |
+| ----------------------- | -------------------------------------------- | ------------------- | ------------------------------------------------------------------- |
+| Skin                    | `#bcbb17`, `#d1bd12`; shadow `#797a0f`       | 9%                  | Goblin skin: a saturated yellow-olive, hue about 57° (Grass is 90°) |
+| Leather                 | `#151516`, `#2e2925`, `#291411`              | 35%                 | tunics, caps, bandanas: near-black, warm                            |
+| Hide, rust, planks      | `#682f1c`, `#562c12`, `#945b23`              | 14%                 | stitched patches, the rusted pot helmet, the cart                   |
+| Gunmetal                | `#6c7c93`, `#97a6c0`, `#3c4859`              | 3%                  | blades, goggles, buckles, the rocket's fins                         |
+| Hazard yellow on black  | `#f9c61f`, `#fcab01`, `#f9bb00` on `#151516` | 1.5 to 2.1%         | stripes only: a shoulder pad, a bomb band, the rocket's bands       |
+| Fuse spark              | `#de2900`, `#fe7d00`                         | 0.5%                | the lit fuse of a bomb or a rocket, nothing else                    |
+| Bandage and paper cream | `#fbeaa5`, `#f6e1a3`                         | 2%                  | forearm wraps, teeth, the rocket's paper cone                       |
+
+`npm run art:goblin-direction-study-review` writes the swatches
+(`palette.png`, `palette.json`) from the sprites, so the table is measured,
+not chosen by hand. For the units still to come: Orcs a darker, greyer
+green, the Troll a grey-blue stone tone (the user's direction; not
+generated here).
+
+![The three study sprites beside today's and the Human unit of the same role](../../art/pixellab/reviews/goblin-direction-study/chosen-x4.png)
+
+- **Goblin** (`goblin-scrap-edit-h`, candidate 0): near-black leather
+  bandana and tunic with brown stitched patches, bandage wraps, a strap,
+  and one black shoulder pad with three hazard stripes and a rust rim.
+- **Bomb Chucker** (`bomb-chucker-scrap-edit-e`, candidate 0): a rusted
+  pot helmet with the goggles, near-black leather with a hide patch, one
+  hazard band on the bomb and a small red-orange spark.
+- **Rocket Cart** (`rocket-cart-scrap-edit-e`, candidate 0): still the
+  low-tech fireworks rocket the user asked for (paper cone, stick, fuse),
+  now black tarred card with hazard bands, tied onto a cart of dark planks
+  with rusty wheels; the crouching goblin wears a pot helmet.
+
+### How it was made
+
+Run
+[`art/explorations/goblin-direction-2026-10/`](../../art/explorations/goblin-direction-2026-10/)
+(`batch.json` with every recipe, seed and instruction; `faction.md`;
+`subjects.json`; `records.json` with each request as sent and each verdict;
+receipts in `submissions/`; candidates in `raw/`): 22 recipes, 22 PixelLab
+calls, 39 candidates. One job failed at PixelLab (`goblin-scrap-edit-i`)
+and stays recorded as submitted.
+[`scripts/art/goblin-direction/samples.ts`](../../scripts/art/goblin-direction/samples.ts)
+cuts the chosen candidates and four alternatives into `assets/` and lists
+them in `samples.json`.
+
+![Every candidate with its verdict](../../art/pixellab/reviews/goblin-direction-study/candidates-x3.png)
+
+The palette balance was explored on the Goblin first, then carried over:
+
+| Question                | Tried                                                                                                  | Finding                                                                                                                                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| How much hazard stripe? | none (`edit-c`); a 3-pixel chevron (`edit-a`, `edit-f`); a pad (`edit-h`); a headband (`edit-b`, `-d`) | None is a plain dark goblin with no faction mark. The chevron vanishes at 1:1. A pad with three stripes reads at zoom 0.75. The headband reads best but puts yellow beside the face. |
+| Skin hue                | unchanged `#a8b941` (`edit-b`); brighter `#bcbb17` (`edit-a`, `-h`); `#e8ce27` (`edit-d`)              | The brighter yellow-olive doubles the distance from Grass (see below). Beyond it the skin is mustard and reads as the Gold player: rejected.                                         |
+| Leather darkness        | near-black (`edit-a`, `-c`, `-h`); warm mid brown hide (`edit-b`)                                      | Near-black gives the strongest silhouette on Grass. Mid brown is friendlier, but its cream patches spot the tunic like a giraffe and it sits closer to the Human leather.            |
+| Fresh creation or edit? | one `create-image-pixen` per unit                                                                      | As for the Humans: fresh creations come out smaller-headed, more realistic and thinner-lined, and would not stand beside the unconverted units. Edits keep the silhouette.           |
+| Rocket material         | scrap-iron plates (`edit-a`); striped paper (`edit-b`, `-c`, `-e`); one barrel band (`edit-d`)         | Scrap iron with spiral stripes is busy and reads as a drill missile. The barrel edit turned the rocket into an oil drum. Black card with yellow bands stays a firework.              |
+
+What worked in the prompts:
+
+- **Edit the accepted sprite**, with an instruction that starts "Change
+  only the colours of his clothes and skin: …" and ends "Keep the face,
+  ears, dagger, belt, pose, proportions, thick black outline and art style
+  exactly the same". An edit instruction is at most 500 characters.
+- **Name every red item.** "The red bandana and the red tunic become …"
+  left the bandana red once; a second edit that named only the bandana
+  fixed it.
+- **Repair in small steps.** The chosen Goblin and Rocket Cart are the
+  third edit in a chain, each changing one or two things ("Change only the
+  brown armour plate on his shoulder: …").
+- **Give the stripe a dark carrier.** "A black iron shoulder pad with three
+  bold hazard yellow diagonal stripes" works; "painted with hazard yellow
+  and black stripes" on a brown plate gave a tiny chevron.
+- **Never write "face" for an object.** "Paint its whole face with …
+  stripes" (meaning the plate) painted the stripes over the goblin's face.
+  Add "Do not touch his head, skin or ears" when the edit is beside them.
+- **Ask for "brighter" skin once only**, and not in the same edit as a
+  yellow item near the head: yellow pulls the skin to mustard.
+- **Say what stays cream or dark on a vehicle**, and check the small crew
+  figure: its bandana and skin need their own clause.
+
+The pipeline gained one rule for this: an edit recipe's `source.batch` may
+name a production batch by name (`goblin`), not only by number, so a
+direction edit can start from a faction's accepted sprite.
+
+### Readability
+
+`npm run art:goblin-direction-study-review` writes `readability.json`
+(CIE76 colour difference; about 10 is clear at a glance, 20 and more are
+different colours) and draws the scenes of
+[`scene.ts`](../../scripts/art/goblin-direction/scene.ts) through the real
+board host with the look the game draws.
+
+| Check                                        | Result                                                                                                                                                                                                             |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Goblin skin against Grass (`#89b75b`)        | 34 (Goblin) and 41 (Bomb Chucker); today's skin is 18. Under simulated deuteranopia 30 and 35, today 16. The skin and the Grass are equally bright (contrast 1.1), so the black outline still does the separating. |
+| Dark clothes against Grass                   | Leather 82 with a luminance contrast of 7.8; a Coral or Teal garment today has 1.1 to 1.3. The silhouette is far stronger than today on Grass, Forest and Mountain.                                                |
+| Hazard yellow against Human gold             | 6: **the same yellow**. They are told apart by amount and pattern, not hue: 1.5 to 2.1% of a Goblin sprite, in stripes on black, against 10 to 18% of a Human sprite, in solid fields on crimson.                  |
+| Hazard yellow against the Gold player colour | 17: lighter and more saturated than the plate, and never a filled area.                                                                                                                                            |
+| Goblin skin against the Gold player colour   | 22 (Goblin) and 17 (Bomb Chucker); under simulated deuteranopia 7 and 10. A Goblin of the Gold player is a yellow-green figure on a gold plate: readable, but the weakest of the four.                             |
+| Four Goblin players by plate only            | Plate colours differ by 61 to 110 from each other. With nothing on the sprite to help, the plate is the only cue, and it works at zoom 0.75 on a phone for the Goblin and the Bomb Chucker.                        |
+| The Rocket Cart's plate                      | The cart is 65 px wide and its plate 52: only the plate's tips and front edge show. The same is true of today's cart, but today the rocket itself is in the player colour.                                         |
+| Coral and Teal plates under colour blindness | Unchanged from section 7: the Coral plate is 5.5 from Grass under deuteranopia; the seat shape decides.                                                                                                            |
+
+![The four Goblin players' units on a phone at zoom 0.75, as seen and under simulated colour blindness](../../art/pixellab/reviews/goblin-direction-study/same-unit-phone-zoom-0.75.png)
+
+![Goblin against Human on the desktop at zoom 1](../../art/pixellab/reviews/goblin-direction-study/before-after-mixed-desktop-zoom-1.png)
+
+Against the Humans the two factions separate at once: crimson, gold and
+polished steel against near-black, rust and olive. Beside a Goblin city the
+units no longer repeat the roof colour, so a garrison is easier to pick out;
+the city itself is still today's art with player-coloured roofs.
+
+Evidence in
+[`art/pixellab/reviews/goblin-direction-study/`](../../art/pixellab/reviews/goblin-direction-study/):
+`candidates-x3.png`, `chosen-{1x,x4}.png`, `alternatives-x4.png`,
+`palette.{png,json}`, `readability.json`,
+`before-after-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png`,
+`same-unit-{desktop,phone}-zoom-{1,0.75}.png` and `index.json`.
+
+### Weak spots
+
+- **The units are dark.** That is the look, and it reads on Grass, but
+  three near-black figures in a row are heavier than the Humans, and the
+  Bomb Chucker's face is small under its helmet at zoom 0.75.
+- **Skin is yellower than the old palette's `#9aa83e`** and differs a
+  little between units (`#bcbb17`, `#d1bd12`; the cart's tiny crew goblin
+  is `#a08511`, nearly ochre). A production pass should hold one value.
+- **The Bomb Chucker's helmet is rust brown**, the Goblin's pad black and
+  the dagger blue-grey: the "rusted iron and gunmetal" metal is three
+  tones over three units. The gunmetal-helmet alternative
+  (`bomb-chucker-scrap-edit-d`) is in `alternatives-x4.png`.
+- **The hazard yellow is the Human gold.** Kept apart only by the stripe
+  rule; a solid yellow panel on a later unit would break it.
+- **The rocket's bands are plain rings**, not diagonal stripes, and one
+  star is left from the old fireworks tube.
+- **A wide unit hides its plate** (Rocket Cart; the Scrap Buggy, Wolf Rider
+  and Troll will too).
+- **Portraits, cities and the interface are not touched.**
+
+### Open questions for the user
+
+1. Is near-black leather right, or should the clothes be a warmer mid
+   brown (`goblin-scrap-edit-b` in `alternatives-x4.png`)?
+2. Is the brighter yellow-olive skin right, or should the skin stay as
+   today (greener, closer to the Grass)?
+3. Should the base Goblin carry a hazard stripe at all, or only the units
+   that go bang (Bomb Chucker, Rocket Cart, Scrap Buggy)? `goblin-scrap-edit-c`
+   shows it without.
+4. Bomb Chucker: rust-brown pot helmet (chosen), gunmetal pot helmet or the
+   leather flying cap?
+5. Rocket Cart: striped paper rocket on a plank cart (chosen), or the
+   scrap-iron rocket (`rocket-cart-scrap-edit-a`)?
+6. Wide units cover their plate. Accept it, or give large units a wider
+   plate (a renderer change for every faction)?
+
+### Recommendation for the rest of the roster
+
+Convert as one production batch (`direction-goblin`, `fixedFactionColours`,
+every asset `ownerColour: false`), as edits of the accepted `goblin`,
+`5-goblin` and `cities-goblin` assets, importing the three study recipes
+with `art:chibi -- import`. Write the palette above into a new
+`factions/GOBLIN.md` fragment first (it replaces the "no rust, no brown,
+no wood" rules, which existed only to protect the red key colour), and
+register the art in the direction manifest so the live look resolves it
+like the Human art. Expected cost: about 1.5 edits per unit and portrait
+and 2 per city, roughly 35 to 45 PixelLab calls.
+
+| Piece                 | Plan                                                                                                     | Predicted difficulty                                                                                                                                                                                                         |
+| --------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wolf Rider            | dark leather rider; the red saddle blanket becomes patched hide with one striped strap                   | Medium. The wolf is already dark slate: wolf, rider and blanket may merge into one dark mass. Keep the wolf grey and the blanket a clearly lighter brown.                                                                    |
+| Orc Brute             | darker, greyer green skin; rusted pot helmet; the round shield gets a hazard-striped rim or boss         | Medium. The shield is the largest surface: a fully striped shield would be the biggest yellow area in the faction. The red skull emblem must go.                                                                             |
+| Orc Warboss (Captain) | grey-green skin; the red cape becomes patched hide; striped shoulder plates; tin megaphone unchanged     | Medium. The cape is about a third of the sprite; in dark hide the Warboss may lose his standing as the leader. One striped pauldron pair should carry it.                                                                    |
+| Scrap Buggy           | rusted and gunmetal mismatched panels with one hazard-striped panel or ram; driver as the Bomb Chucker   | High. Today the whole body is the owner colour; the edit must invent a material for it without redrawing the car (the Human Catapult needed "change only …").                                                                |
+| Troll                 | grey-blue stone skin; the red smock becomes a patched hide loincloth; no stripe, or one striped arm band | Medium. The smock is huge; a near-black one would make the largest unit a black block. Use mid-brown hide here and let the skin carry the figure.                                                                            |
+| Portraits (8)         | edits of the `5-goblin` busts, same instruction as the unit                                              | Low to medium. 48 x 48 leaves a stripe two pixels wide; ask for one bold stripe band. The two vehicle portraits follow their units.                                                                                          |
+| Cities 1 to 3         | red roofs and tents become rusted sheet iron and patched hide; one hazard-striped gate or tower per tier | Medium to high. Needs a decision the Humans already have: a code-drawn pennant with recorded anchors (`DIRECTION_FLAG_ANCHORS_V7`) and `factionCities` no longer `"CLASSIC"` for Goblins, which is renderer work with tests. |
+| Kaboom! and WAAAGH!   | add the hazard band to the bomb icon                                                                     | Low.                                                                                                                                                                                                                         |
+
+Order: the fragment and the batch scaffold; Orc Brute, Wolf Rider and Troll
+as the next sample (they settle the two other skin tones); then the rest,
+the portraits, and the cities with their renderer change last. Until then
+a Goblin player keeps today's sprites on plates, as now.
 
 ## Sources
 

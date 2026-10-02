@@ -134,7 +134,10 @@ naming a level four-legged body gave the Brontosaurus and the Triceratops.
 "candidate": 0 }`). The candidate is read from that batch's records and
   raw sheet, must match the request size, and its hash is stored in the new
   record. Batch 3 derives each Mined Mountain from the accepted batch-1
-  Mountain this way, so a Mine keeps its mountain's shape.
+  Mountain this way, so a Mine keeps its mountain's shape. The batch may
+  be numbered or named (`"batch": "goblin"`, bead `pulp_wars-3tq.8`); a
+  numbered source must be earlier than a numbered batch, and batch 0 is
+  never a source.
 - **Cross-batch ground:** a tall-terrain `groundAsset` accepted in an
   earlier production batch is found there when the current batch has no
   such asset; the record's `derivation.ground.batch` names it.
@@ -530,6 +533,20 @@ Its captures start Vite on port 6471 unless `--port` says otherwise. With
 `--farms-only --out DIR` it writes only the `ingame-farms-*` captures into
 DIR, all four crop settings at both viewports and zoom steps (16 files), to
 compare the crops or try a Farm candidate copied over a master.
+
+`npm run art:goblin-direction-study-review` (bead `pulp_wars-3tq.8`) writes
+`art/pixellab/reviews/goblin-direction-study/`, the evidence of the
+[Goblin direction study](VISUAL_DIRECTION_2026-10.md#14-goblin-study):
+`candidates-x3.png` (every candidate of the exploration run with its
+verdict), `chosen-{1x,x4}.png`, `alternatives-x4.png`,
+`palette.{png,json}` and `readability.json` (measured on the sprites),
+`before-after-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png` and
+`same-unit-{desktop,phone}-zoom-{1,0.75}.png` (the scenes of
+[`scene.ts`](../../scripts/art/goblin-direction/scene.ts) drawn by the real
+board host with the default look) and `index.json`. Its captures start Vite
+on port 6481 unless `--port` says otherwise; the full-screen captures go to
+`--captures DIR` (a temporary directory by default). It reads the samples
+that `npx tsx scripts/art/goblin-direction/samples.ts` cuts from the run.
 
 ## Dry run
 

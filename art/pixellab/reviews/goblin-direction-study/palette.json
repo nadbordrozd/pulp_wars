@@ -1,0 +1,78 @@
+{
+  "bead": "pulp_wars-3tq.8",
+  "note": "Measured on the three chosen study sprites pooled: share of opaque pixels and the three commonest colours of each role.",
+  "roles": {
+    "spark": {
+      "label": "fuse spark",
+      "share": "0.5%",
+      "colours": [
+        "#de2900",
+        "#fe7d00",
+        "#f44701"
+      ]
+    },
+    "hazard": {
+      "label": "hazard yellow",
+      "share": "1.8%",
+      "colours": [
+        "#f9c61f",
+        "#fcab01",
+        "#f9bb00"
+      ]
+    },
+    "skin": {
+      "label": "skin",
+      "share": "4%",
+      "colours": [
+        "#bcbb17",
+        "#d1bd12",
+        "#979911"
+      ]
+    },
+    "skinShadow": {
+      "label": "skin shadow",
+      "share": "5%",
+      "colours": [
+        "#797a0f",
+        "#6c6807",
+        "#6b6a0e"
+      ]
+    },
+    "cream": {
+      "label": "bandage, cone",
+      "share": "1.7%",
+      "colours": [
+        "#fbeaa5",
+        "#f6e1a3",
+        "#ffffff"
+      ]
+    },
+    "metal": {
+      "label": "gunmetal",
+      "share": "3.2%",
+      "colours": [
+        "#6c7c93",
+        "#97a6c0",
+        "#3c4859"
+      ]
+    },
+    "hide": {
+      "label": "hide, rust, planks",
+      "share": "14.3%",
+      "colours": [
+        "#682f1c",
+        "#562c12",
+        "#945b23"
+      ]
+    },
+    "leather": {
+      "label": "leather",
+      "share": "34.8%",
+      "colours": [
+        "#151516",
+        "#291411",
+        "#2e2925"
+      ]
+    }
+  }
+}

@@ -1,0 +1,399 @@
+{
+  "schemaVersion": 1,
+  "batch": "goblin-direction-study",
+  "title": "Goblin visual-direction study: Goblin, Bomb Chucker and Rocket Cart as scrapyard raiders in fixed faction colours (exploration, never registered)",
+  "bead": "pulp_wars-3tq.8",
+  "faction": "TEST-GOBLIN-SCRAPYARD",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-study-goblin",
+      "subject": "UNIT:GOBLIN:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-study-bomb-chucker",
+      "subject": "UNIT:GOBLIN:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-study-rocket-cart",
+      "subject": "UNIT:GOBLIN:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "goblin-scrap-edit-a",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 78001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "goblin-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours of his clothes and skin: the red bandana and red tunic become near-black dark brown leather with two lighter brown stitched hide patches; dirty cream bandage wraps round both forearms; one small rusted iron shoulder plate painted with hazard yellow and black diagonal stripes; his skin a brighter, more saturated yellow-olive green. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Balance A: near-black leather, hazard stripes on one shoulder plate, brighter yellow-olive skin."
+    },
+    {
+      "id": "goblin-scrap-edit-b",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 78002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "goblin-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours of his clothes: the red tunic becomes warm dark brown patched hide with two lighter tan stitched patches; the red bandana becomes a black headband with hazard yellow diagonal stripes; dirty cream bandage wraps round both forearms. Keep his olive green skin, the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Balance B: warmer mid-dark hide, hazard stripes on the headband (more stripe, near the face), skin unchanged."
+    },
+    {
+      "id": "goblin-scrap-edit-c",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 78003,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "goblin-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours of his clothes and skin: the red bandana and red tunic become near-black dark brown leather with one lighter brown stitched hide patch and a rusted orange-brown iron belt buckle; his skin a yellower, saturated yellow-green olive. No yellow on the clothes. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Balance C: no hazard stripe at all on the base unit, the yellowest skin."
+    },
+    {
+      "id": "bomb-chucker-scrap-edit-a",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 78101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "bomb-chucker-b-edit-4",
+        "candidate": 0
+      },
+      "editInstruction": "Change only colours: the red flying cap and red tunic become near-black dark brown patched leather with one lighter brown hide patch, keeping the iron goggles; the round black bomb gets one band of hazard yellow and black diagonal stripes and a small red-orange fuse spark; his skin a brighter, more saturated yellow-olive green. Keep the face, ears, raised bomb, satchel, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Balance A: leather cap, hazard band on the bomb only."
+    },
+    {
+      "id": "bomb-chucker-scrap-edit-b",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 78102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "bomb-chucker-b-edit-4",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes and the bomb: the red cap becomes a dented rusted iron pot helmet, keeping the goggles on its front; the red tunic becomes warm dark brown patched hide with a black shoulder strap with hazard yellow diagonal stripes; the black bomb gets a wide band of hazard yellow and black stripes and a red-orange fuse spark. Keep his olive green skin, the face, ears, raised bomb, satchel, pose, proportions, thick black outline and art style exactly the same.",
+      "notes": "Balance B: rusted pot helmet, more stripe (bomb and strap), warmer hide, skin unchanged."
+    },
+    {
+      "id": "rocket-cart-scrap-edit-a",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 78201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "rocket-cart-e-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only colours and materials: the red rocket tube becomes mismatched rusted iron and dark gunmetal scrap plates with bolts and one wide band of hazard yellow and black diagonal stripes; the fuse spark red-orange; the cart becomes weathered dark brown planks with rusty iron wheels; the goblin wears near-black brown leather. Keep the cream cone, stick, fuse, the rocket and cart shapes, the crouching goblin, proportions, thick black outline and art style exactly the same.",
+      "notes": "Balance A: scrap-iron rocket with one hazard band, wooden cart."
+    },
+    {
+      "id": "rocket-cart-scrap-edit-b",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 78202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "rocket-cart-e-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: the red paper rocket tube becomes black tarred cardboard painted with hazard yellow and black diagonal stripes along its whole length; the fuse spark becomes red-orange; the little goblin wears near-black dark brown leather. Keep the cream cone cap, cream bands, stick, fuse, the dark iron cart, the wheels, the rocket shape and angle, the crouching goblin, his olive skin, proportions, thick black outline and art style exactly the same.",
+      "notes": "Balance B: still a paper fireworks rocket, the whole tube in hazard stripes (the most stripe), gunmetal cart unchanged."
+    },
+    {
+      "id": "goblin-scrap-a",
+      "asset": "chibi-study-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 78011,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "shield, helmet, sword, bow, quiver, bomb",
+      "notes": "Fresh creation from the scrapyard faction layer, for comparison with the edits."
+    },
+    {
+      "id": "bomb-chucker-scrap-a",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "create-image-pixen",
+      "seed": 78111,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "bow, quiver, arrows, dagger, shield, flames, explosion",
+      "notes": "Fresh creation from the scrapyard faction layer, for comparison with the edits."
+    },
+    {
+      "id": "rocket-cart-scrap-a",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 78211,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "negativeAddendum": "missile, steel missile, tail fins, warhead, jet engine, catapult arm, bucket, horse, flames, smoke trail, explosion",
+      "notes": "Fresh creation from the scrapyard faction layer, for comparison with the edits."
+    },
+    {
+      "id": "goblin-scrap-edit-d",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 78004,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "goblin-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours of his clothes and skin: the red tunic becomes near-black dark brown leather with two lighter brown stitched hide patches; the red bandana becomes a black headband with hazard yellow diagonal stripes; dirty cream bandage wraps round both forearms; his skin a brighter, more saturated yellow-olive green. Keep the face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Balance D: the near-black leather of A and C with the striped headband of B and the brighter skin."
+    },
+    {
+      "id": "goblin-scrap-edit-e",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 78005,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-scrap-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Add only two things: one big round rusted iron shoulder plate on his shoulder, painted with bold hazard yellow and black diagonal stripes, and dirty cream bandage wraps round both forearms. The belt buckle becomes dull rusted iron. Keep the black leather bandana and tunic, the skin, face, ears, dagger, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Balance E: C plus the approved striped shoulder pad, drawn big enough to read."
+    },
+    {
+      "id": "goblin-scrap-edit-f",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 78006,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: the red bandana becomes near-black dark brown leather, and the small shoulder plate becomes a bigger rusted iron shoulder plate painted with bold hazard yellow and black diagonal stripes. Keep the tunic, patches, bandage wraps, the skin, face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Repairs A: its bandana stayed red and its stripe was a small chevron."
+    },
+    {
+      "id": "bomb-chucker-scrap-edit-c",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 78103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "goblin",
+        "recipe": "bomb-chucker-b-edit-4",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his clothes, skin and the bomb: the red cap becomes a dented rusted iron pot helmet, keeping the goggles on its front; the red tunic becomes near-black dark brown patched leather with one lighter brown hide patch; the black bomb gets one wide band of hazard yellow and black diagonal stripes and a red-orange fuse spark; his skin a brighter, more saturated yellow-olive green. Keep the face, ears, raised bomb, satchel, pose, proportions, thick black outline and art style the same.",
+      "notes": "Balance C: the pot helmet of B, the near-black leather and brighter skin of A, stripes on the bomb only."
+    },
+    {
+      "id": "rocket-cart-scrap-edit-c",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 78203,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-scrap-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only these colours: the cart becomes rickety weathered dark brown planks and its wheels rusty brown iron; the yellow tail fins and stick of the rocket become dark gunmetal iron; the little goblin has a near-black dark brown leather cap instead of the red bandana and bright yellow-olive green skin. Keep the black rocket with its yellow stripes, the cream cone, the fuse and spark, the shapes, the crouching goblin, proportions, thick black outline and art style exactly the same.",
+      "notes": "Balance C: the striped paper rocket of B on a wooden junk cart, the last red and the yellow fins removed."
+    },
+    {
+      "id": "rocket-cart-scrap-edit-d",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 78204,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Simplify the rocket only: its body becomes one plain dented rusted iron barrel with a few bolts and exactly one wide band of hazard yellow and black diagonal stripes round its middle, no spiral stripes; the little goblin gets bright yellow-olive green skin. Keep the cream cone, the fuse and spark, the wooden cart, the wheels, the rocket shape and angle, the crouching goblin, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Balance D: calms the spiral stripes of A to one band."
+    },
+    {
+      "id": "goblin-scrap-edit-g",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 78007,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-scrap-edit-f",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the shoulder plate: paint its whole face with three bold hazard yellow and black diagonal stripes, keeping its size, shape and rusted iron rim. Keep everything else exactly the same: the dark leather bandana and tunic, patches, bandage wraps, skin, face, ears, dagger, belt, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "F with a stripe that reads at 1:1: the chevron of F is three pixels of yellow."
+    },
+    {
+      "id": "rocket-cart-scrap-edit-e",
+      "asset": "chibi-study-rocket-cart",
+      "endpoint": "edit-image-pixen",
+      "seed": 78205,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "rocket-cart-scrap-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: the yellow tail fins and tail stick of the rocket become dark gunmetal grey iron, and the little goblin's face, ears and hands become bright yellow-olive green skin. Keep everything else exactly the same: the black rocket with its yellow stripes, the cream cone, the fuse and spark, the wooden cart, the wheels, the goblin's helmet and clothes, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "C without the solid yellow fins, and a goblin whose skin is the faction green."
+    },
+    {
+      "id": "goblin-scrap-edit-h",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 78008,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-scrap-edit-f",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the brown armour plate on his shoulder: it becomes a black iron shoulder pad with three bold hazard yellow diagonal stripes and a rusty rim, the same size and shape. Do not touch his head, skin or ears. Keep everything else exactly the same: the dark leather bandana and tunic, patches, bandage wraps, dagger, belt, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "G painted the stripes over his face: the instruction said 'its whole face'. This one never uses that word."
+    },
+    {
+      "id": "goblin-scrap-edit-i",
+      "asset": "chibi-study-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 78009,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-scrap-edit-e",
+        "candidate": 1
+      },
+      "editInstruction": "Change only the big striped ball on his shoulder: it becomes a smaller, flatter rusted iron shoulder pad with a dark rim and two bolts, still painted with hazard yellow and black diagonal stripes; add two lighter brown stitched hide patches on the black tunic. Do not touch his head, skin or ears. Keep everything else exactly the same: bandana, bandage wraps, dagger, belt, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "E's pad is a beach ball; this asks for a flatter pad."
+    },
+    {
+      "id": "bomb-chucker-scrap-edit-d",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 78104,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-scrap-edit-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his skin colour: the face, both ears, the hands and the feet become a much brighter, lighter yellow-olive green with a darker olive shadow tone, so the face is clearly visible under the helmet. Keep everything else exactly the same: the rusted iron pot helmet and goggles, the dark leather clothes, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "C's skin is a darker green than the Goblin's and the face is lost at 1:1."
+    },
+    {
+      "id": "bomb-chucker-scrap-edit-e",
+      "asset": "chibi-study-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 78105,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-scrap-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: the dark leather flying cap becomes a dented rusted iron pot helmet with bolts, keeping the goggles on its front, and his skin (face, both ears, hands, feet) becomes a much brighter, lighter yellow-olive green. Keep everything else exactly the same: the dark leather clothes and patch, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+      "notes": "A with the pot helmet and the Goblin's skin."
+    }
+  ]
+}

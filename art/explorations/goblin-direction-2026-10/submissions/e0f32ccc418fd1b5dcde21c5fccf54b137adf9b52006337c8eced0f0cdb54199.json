@@ -1,0 +1,36 @@
+{
+  "id": "bomb-chucker-scrap-edit-e",
+  "jobId": "ddcc17ba-071e-4201-8121-b249b26a1250",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 78105,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: the dark leather flying cap becomes a dented rusted iron pot helmet with bolts, keeping the goggles on its front, and his skin (face, both ears, hands, feet) becomes a much brighter, lighter yellow-olive green. Keep everything else exactly the same: the dark leather clothes and patch, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: the dark leather flying cap becomes a dented rusted iron pot helmet with bolts, keeping the goggles on its front, and his skin (face, both ears, hands, feet) becomes a much brighter, lighter yellow-olive green. Keep everything else exactly the same: the dark leather clothes and patch, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: the dark leather flying cap becomes a dented rusted iron pot helmet with bolts, keeping the goggles on its front, and his skin (face, both ears, hands, feet) becomes a much brighter, lighter yellow-olive green. Keep everything else exactly the same: the dark leather clothes and patch, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only two things: the dark leather flying cap becomes a dented rusted iron pot helmet with bolts, keeping the goggles on its front, and his skin (face, both ears, hands, feet) becomes a much brighter, lighter yellow-olive green. Keep everything else exactly the same: the dark leather clothes and patch, the bomb with its yellow stripes and spark, the satchel, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "bomb-chucker-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "9ea20b80fade98ddd2ae3d45a6fcc2b46b798241b6426ddf16d0c1a4e0665cd1"
+    }
+  }
+}

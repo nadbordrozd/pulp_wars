@@ -1,0 +1,64 @@
+{
+  "id": "bomb-chucker-scrap-a",
+  "jobId": "sync-2cb6b9f4-613e-49e5-9ea4-9771511771ad",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 78111,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/goblin-direction-2026-10/faction.md#prompt-fragment + art/explorations/goblin-direction-2026-10/faction.md#negative-fragment",
+        "text": "Faction: rowdy, ramshackle scrapyard raiders, loud and silly, never grim. Their fixed colours: near-black dark brown leather and patched hide with dirty cream bandage wraps; mismatched rusted iron and dark gunmetal scrap plates with bolts; one signature accent of hazard yellow and black diagonal warning stripes, only as a small striped band on dark scrap, never a solid yellow garment; tiny red-orange fuse sparks. Leather is shaded near-black, iron with darker blue-grey, rust is a dull orange-brown.",
+        "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, red tunic, red cloth, yellow tunic, yellow clothes, solid yellow garment, gold armour, blue cloth, purple cloth"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/goblin-direction-2026-10/subjects.json",
+        "text": "Subject: Bomb Chucker, a chunky cute little goblin bomb thrower with a huge round head about half of the figure's height and a small hunched body, the head and ears filling the whole width of the image: saturated yellow-olive green skin shaded darker olive, long pointed ears sticking out sideways, a big excited grin, a dented rusted iron pot helmet with big round dark iron goggles pushed up on its front, a near-black dark brown patched leather tunic with one lighter brown stitched hide patch covering the chest, belly and legs down to the knees, the right arm raised high holding one big round black bomb above the head with one band of hazard yellow and black diagonal stripes round its middle, a short cream fuse and a small red-orange spark, a bulging dark brown leather satchel of round black bombs on the left hip, dirty cream bandage wraps round the forearms, bare olive green feet; simple shapes and very few details; clearly a bomb thrower, not an archer."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "bow, quiver, arrows, dagger, shield, flames, explosion"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrapyard raiders, loud and silly, never grim. Their fixed colours: near-black dark brown leather and patched hide with dirty cream bandage wraps; mismatched rusted iron and dark gunmetal scrap plates with bolts; one signature accent of hazard yellow and black diagonal warning stripes, only as a small striped band on dark scrap, never a solid yellow garment; tiny red-orange fuse sparks. Leather is shaded near-black, iron with darker blue-grey, rust is a dull orange-brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Bomb Chucker, a chunky cute little goblin bomb thrower with a huge round head about half of the figure's height and a small hunched body, the head and ears filling the whole width of the image: saturated yellow-olive green skin shaded darker olive, long pointed ears sticking out sideways, a big excited grin, a dented rusted iron pot helmet with big round dark iron goggles pushed up on its front, a near-black dark brown patched leather tunic with one lighter brown stitched hide patch covering the chest, belly and legs down to the knees, the right arm raised high holding one big round black bomb above the head with one band of hazard yellow and black diagonal stripes round its middle, a short cream fuse and a small red-orange spark, a bulging dark brown leather satchel of round black bombs on the left hip, dirty cream bandage wraps round the forearms, bare olive green feet; simple shapes and very few details; clearly a bomb thrower, not an archer.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, red tunic, red cloth, yellow tunic, yellow clothes, solid yellow garment, gold armour, blue cloth, purple cloth, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, dagger, shield, flames, explosion",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, ramshackle scrapyard raiders, loud and silly, never grim. Their fixed colours: near-black dark brown leather and patched hide with dirty cream bandage wraps; mismatched rusted iron and dark gunmetal scrap plates with bolts; one signature accent of hazard yellow and black diagonal warning stripes, only as a small striped band on dark scrap, never a solid yellow garment; tiny red-orange fuse sparks. Leather is shaded near-black, iron with darker blue-grey, rust is a dull orange-brown. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Bomb Chucker, a chunky cute little goblin bomb thrower with a huge round head about half of the figure's height and a small hunched body, the head and ears filling the whole width of the image: saturated yellow-olive green skin shaded darker olive, long pointed ears sticking out sideways, a big excited grin, a dented rusted iron pot helmet with big round dark iron goggles pushed up on its front, a near-black dark brown patched leather tunic with one lighter brown stitched hide patch covering the chest, belly and legs down to the knees, the right arm raised high holding one big round black bomb above the head with one band of hazard yellow and black diagonal stripes round its middle, a short cream fuse and a small red-orange spark, a bulging dark brown leather satchel of round black bombs on the left hip, dirty cream bandage wraps round the forearms, bare olive green feet; simple shapes and very few details; clearly a bomb thrower, not an archer. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, lime green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, red tunic, red cloth, yellow tunic, yellow clothes, solid yellow garment, gold armour, blue cloth, purple cloth, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, bow, quiver, arrows, dagger, shield, flames, explosion."
+  }
+}

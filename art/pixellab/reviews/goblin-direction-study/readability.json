@@ -1,0 +1,216 @@
+{
+  "bead": "pulp_wars-3tq.8",
+  "note": "deltaE is CIE76 in L*a*b* (about 2 is just noticeable, 10 is clear at a glance, 20 and more are different colours); contrast is the WCAG luminance ratio (1 to 21). The deuteranopia and protanopia columns repeat deltaE after the Machado 2009 simulation.",
+  "grassMean": "#89b75b",
+  "skinAgainstGrass": [
+    {
+      "a": "study Goblin skin #bcbb17",
+      "b": "Grass #89b75b",
+      "deltaE": 34.1,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 30.1,
+      "protanopiaDeltaE": 27.7
+    },
+    {
+      "a": "study Bomb Chucker skin #d1bd12",
+      "b": "Grass #89b75b",
+      "deltaE": 41.3,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 34.7,
+      "protanopiaDeltaE": 29.1
+    },
+    {
+      "a": "today's Goblin skin #a8b941",
+      "b": "Grass #89b75b",
+      "deltaE": 17.8,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 16.1,
+      "protanopiaDeltaE": 16.1
+    },
+    {
+      "a": "study skin shadow #797a0f",
+      "b": "Grass #89b75b",
+      "deltaE": 28.9,
+      "contrast": 2,
+      "deuteranopiaDeltaE": 21.5,
+      "protanopiaDeltaE": 22.6
+    }
+  ],
+  "clothesAgainstGrass": [
+    {
+      "a": "study leather #151516",
+      "b": "Grass #89b75b",
+      "deltaE": 81.8,
+      "contrast": 7.8,
+      "deuteranopiaDeltaE": 73.4,
+      "protanopiaDeltaE": 79.7
+    },
+    {
+      "a": "study hide #682f1c",
+      "b": "Grass #89b75b",
+      "deltaE": 71.8,
+      "contrast": 4.5,
+      "deuteranopiaDeltaE": 42,
+      "protanopiaDeltaE": 54.5
+    },
+    {
+      "a": "Coral garment (today) #f06762",
+      "b": "Grass #89b75b",
+      "deltaE": 84.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 5.5,
+      "protanopiaDeltaE": 33.3
+    },
+    {
+      "a": "Teal garment (today) #28b7a4",
+      "b": "Grass #89b75b",
+      "deltaE": 43.5,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 43.3,
+      "protanopiaDeltaE": 42.7
+    }
+  ],
+  "hazardYellow": [
+    {
+      "a": "hazard yellow #f9c61f",
+      "b": "Human gold #fbc231",
+      "deltaE": 6.2,
+      "contrast": 1,
+      "deuteranopiaDeltaE": 4,
+      "protanopiaDeltaE": 2
+    },
+    {
+      "a": "hazard yellow #f9c61f",
+      "b": "Gold player #e2b63f",
+      "deltaE": 17.1,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 16.2,
+      "protanopiaDeltaE": 15
+    },
+    {
+      "a": "Human gold #fbc231",
+      "b": "Gold player #e2b63f",
+      "deltaE": 12.7,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 12.4,
+      "protanopiaDeltaE": 13.1
+    },
+    {
+      "a": "study Goblin skin #bcbb17",
+      "b": "Gold player #e2b63f",
+      "deltaE": 22.2,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 6.7,
+      "protanopiaDeltaE": 8.6
+    },
+    {
+      "a": "study Bomb Chucker skin #d1bd12",
+      "b": "Gold player #e2b63f",
+      "deltaE": 17.2,
+      "contrast": 1,
+      "deuteranopiaDeltaE": 9.9,
+      "protanopiaDeltaE": 9.9
+    },
+    {
+      "a": "today's Goblin skin #a8b941",
+      "b": "Gold player #e2b63f",
+      "deltaE": 27.3,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 9.8,
+      "protanopiaDeltaE": 3.5
+    }
+  ],
+  "yellowShareOfSprite": {
+    "note": "Share of the sprite's opaque pixels in the saturated yellow band (hue 30 to 50): the hazard stripe on a Goblin unit, the heraldic gold on a Human one.",
+    "chibi-study-goblin": "1.5%",
+    "chibi-study-bomb-chucker": "1.8%",
+    "chibi-study-rocket-cart": "2.1%",
+    "chibi-direction-fighter": "17.5%",
+    "chibi-direction-marksman": "9.6%",
+    "chibi-direction-catapult": "13.3%"
+  },
+  "plates": [
+    {
+      "a": "Coral plate #f06762",
+      "b": "Teal plate #28b7a4",
+      "deltaE": 98.1,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 39.3,
+      "protanopiaDeltaE": 21.3
+    },
+    {
+      "a": "Coral plate #f06762",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 61,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 30.4,
+      "protanopiaDeltaE": 51.9
+    },
+    {
+      "a": "Coral plate #f06762",
+      "b": "Violet plate #a277d2",
+      "deltaE": 72.5,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 75.5,
+      "protanopiaDeltaE": 62.8
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 78.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 68.1,
+      "protanopiaDeltaE": 61.8
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Violet plate #a277d2",
+      "deltaE": 85.9,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 36.6,
+      "protanopiaDeltaE": 50.7
+    },
+    {
+      "a": "Gold plate #e2b63f",
+      "b": "Violet plate #a277d2",
+      "deltaE": 110.2,
+      "contrast": 1.8,
+      "deuteranopiaDeltaE": 104.6,
+      "protanopiaDeltaE": 111.8
+    }
+  ],
+  "platesAgainstGrass": [
+    {
+      "a": "Coral plate #f06762",
+      "b": "Grass #89b75b",
+      "deltaE": 84.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 5.5,
+      "protanopiaDeltaE": 33.3
+    },
+    {
+      "a": "Teal plate #28b7a4",
+      "b": "Grass #89b75b",
+      "deltaE": 43.5,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 43.3,
+      "protanopiaDeltaE": 42.7
+    },
+    {
+      "a": "Gold plate #e2b63f",
+      "b": "Grass #89b75b",
+      "deltaE": 41.9,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 25.4,
+      "protanopiaDeltaE": 19.3
+    },
+    {
+      "a": "Violet plate #a277d2",
+      "b": "Grass #89b75b",
+      "deltaE": 106.1,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 79.8,
+      "protanopiaDeltaE": 92.6
+    }
+  ]
+}

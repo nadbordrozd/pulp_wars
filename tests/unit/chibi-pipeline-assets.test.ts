@@ -689,9 +689,14 @@ describe("chibi prompt layering and manifests", async () => {
     expect(problems({ batch: "4" }, false)).toContain(
       "source batch must be an earlier batch",
     );
-    expect(problems({ batch: "x" }, false)).toContain(
+    expect(problems({ batch: "X!" }, false)).toContain(
       "source batch must be a production batch",
     );
+    expect(problems({ batch: "0" }, false)).toContain(
+      "source batch must be a production batch",
+    );
+    // A named production batch is a valid source (bead pulp_wars-3tq.8).
+    expect(problems({ batch: "goblin" }, false)).not.toContain("source batch");
     expect(problems({ batch: "1" }, true)).toContain(
       "dry runs cannot edit another batch",
     );

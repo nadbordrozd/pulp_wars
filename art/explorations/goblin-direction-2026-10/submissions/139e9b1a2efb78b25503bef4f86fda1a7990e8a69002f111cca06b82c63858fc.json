@@ -1,0 +1,36 @@
+{
+  "id": "rocket-cart-scrap-edit-d",
+  "jobId": "6a4bc4cf-2c7c-475c-b49b-d3f20be9f750",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-rocket-cart",
+    "subject": "UNIT:GOBLIN:CATAPULT",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 78204,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Simplify the rocket only: its body becomes one plain dented rusted iron barrel with a few bolts and exactly one wide band of hazard yellow and black diagonal stripes round its middle, no spiral stripes; the little goblin gets bright yellow-olive green skin. Keep the cream cone, the fuse and spark, the wooden cart, the wheels, the rocket shape and angle, the crouching goblin, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Simplify the rocket only: its body becomes one plain dented rusted iron barrel with a few bolts and exactly one wide band of hazard yellow and black diagonal stripes round its middle, no spiral stripes; the little goblin gets bright yellow-olive green skin. Keep the cream cone, the fuse and spark, the wooden cart, the wheels, the rocket shape and angle, the crouching goblin, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Simplify the rocket only: its body becomes one plain dented rusted iron barrel with a few bolts and exactly one wide band of hazard yellow and black diagonal stripes round its middle, no spiral stripes; the little goblin gets bright yellow-olive green skin. Keep the cream cone, the fuse and spark, the wooden cart, the wheels, the rocket shape and angle, the crouching goblin, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Simplify the rocket only: its body becomes one plain dented rusted iron barrel with a few bolts and exactly one wide band of hazard yellow and black diagonal stripes round its middle, no spiral stripes; the little goblin gets bright yellow-olive green skin. Keep the cream cone, the fuse and spark, the wooden cart, the wheels, the rocket shape and angle, the crouching goblin, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "rocket-cart-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "db57505f489f6e68d307e78dfcdefb349162899d875ff7c82257fcb427cf1acc"
+    }
+  }
+}

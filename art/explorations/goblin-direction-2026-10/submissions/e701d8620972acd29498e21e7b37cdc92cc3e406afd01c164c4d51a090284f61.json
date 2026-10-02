@@ -1,0 +1,36 @@
+{
+  "id": "goblin-scrap-edit-f",
+  "jobId": "afbb3f21-c092-4877-9108-c37a6a8d9016",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 78006,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: the red bandana becomes near-black dark brown leather, and the small shoulder plate becomes a bigger rusted iron shoulder plate painted with bold hazard yellow and black diagonal stripes. Keep the tunic, patches, bandage wraps, the skin, face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: the red bandana becomes near-black dark brown leather, and the small shoulder plate becomes a bigger rusted iron shoulder plate painted with bold hazard yellow and black diagonal stripes. Keep the tunic, patches, bandage wraps, the skin, face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: the red bandana becomes near-black dark brown leather, and the small shoulder plate becomes a bigger rusted iron shoulder plate painted with bold hazard yellow and black diagonal stripes. Keep the tunic, patches, bandage wraps, the skin, face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two things: the red bandana becomes near-black dark brown leather, and the small shoulder plate becomes a bigger rusted iron shoulder plate painted with bold hazard yellow and black diagonal stripes. Keep the tunic, patches, bandage wraps, the skin, face, ears, dagger, belt, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "goblin-scrap-edit-a",
+      "candidate": 0,
+      "sha256": "7f5bb3860729b923921e945d3823e8e2f7b46e3811c34f81fdd1c841ebaf0f0f"
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "bead": "pulp_wars-3tq.8",
+  "note": "Exploration sample sprites of the Goblin direction study. The URLs are served by the Vite dev server from the repository root; nothing here is registered as production art.",
+  "assets": [
+    {
+      "id": "chibi-study-goblin",
+      "subject": "UNIT:GOBLIN:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "url": "/art/explorations/goblin-direction-2026-10/assets/chibi-study-goblin.png",
+      "fixedColours": true,
+      "role": "chosen",
+      "recipe": "goblin-scrap-edit-h",
+      "candidate": 0,
+      "note": "near-black leather, hide patches, bandage wraps, one striped shoulder pad"
+    },
+    {
+      "id": "chibi-study-bomb-chucker",
+      "subject": "UNIT:GOBLIN:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "url": "/art/explorations/goblin-direction-2026-10/assets/chibi-study-bomb-chucker.png",
+      "fixedColours": true,
+      "role": "chosen",
+      "recipe": "bomb-chucker-scrap-edit-e",
+      "candidate": 0,
+      "note": "rusted pot helmet and goggles, near-black leather, one hazard band on the bomb"
+    },
+    {
+      "id": "chibi-study-rocket-cart",
+      "subject": "UNIT:GOBLIN:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "url": "/art/explorations/goblin-direction-2026-10/assets/chibi-study-rocket-cart.png",
+      "fixedColours": true,
+      "role": "chosen",
+      "recipe": "rocket-cart-scrap-edit-e",
+      "candidate": 0,
+      "note": "black paper rocket with hazard bands on a plank cart with rusty wheels"
+    },
+    {
+      "id": "chibi-study-goblin-headband",
+      "subject": "UNIT:GOBLIN:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "url": "/art/explorations/goblin-direction-2026-10/assets/chibi-study-goblin-headband.png",
+      "fixedColours": true,
+      "role": "alternative",
+      "recipe": "goblin-scrap-edit-b",
+      "candidate": 0,
+      "note": "warm brown hide, stripes on the headband, the current skin"
+    },
+    {
+      "id": "chibi-study-goblin-plain",
+      "subject": "UNIT:GOBLIN:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "url": "/art/explorations/goblin-direction-2026-10/assets/chibi-study-goblin-plain.png",
+      "fixedColours": true,
+      "role": "alternative",
+      "recipe": "goblin-scrap-edit-c",
+      "candidate": 0,
+      "note": "no hazard stripe at all"
+    },
+    {
+      "id": "chibi-study-bomb-chucker-cap",
+      "subject": "UNIT:GOBLIN:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "url": "/art/explorations/goblin-direction-2026-10/assets/chibi-study-bomb-chucker-cap.png",
+      "fixedColours": true,
+      "role": "alternative",
+      "recipe": "bomb-chucker-scrap-edit-a",
+      "candidate": 0,
+      "note": "leather flying cap instead of the pot helmet"
+    },
+    {
+      "id": "chibi-study-bomb-chucker-gunmetal",
+      "subject": "UNIT:GOBLIN:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "width": 56,
+      "height": 80,
+      "url": "/art/explorations/goblin-direction-2026-10/assets/chibi-study-bomb-chucker-gunmetal.png",
+      "fixedColours": true,
+      "role": "alternative",
+      "recipe": "bomb-chucker-scrap-edit-d",
+      "candidate": 0,
+      "note": "gunmetal pot helmet, darker green skin, a bigger spark"
+    },
+    {
+      "id": "chibi-study-rocket-cart-scrap",
+      "subject": "UNIT:GOBLIN:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "width": 72,
+      "height": 88,
+      "anchor": {
+        "x": 34,
+        "y": 48
+      },
+      "url": "/art/explorations/goblin-direction-2026-10/assets/chibi-study-rocket-cart-scrap.png",
+      "fixedColours": true,
+      "role": "alternative",
+      "recipe": "rocket-cart-scrap-edit-a",
+      "candidate": 0,
+      "note": "scrap-iron rocket with spiral stripes"
+    }
+  ]
+}

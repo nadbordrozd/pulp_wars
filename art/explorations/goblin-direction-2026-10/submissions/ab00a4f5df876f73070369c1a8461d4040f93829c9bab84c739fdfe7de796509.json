@@ -1,0 +1,36 @@
+{
+  "id": "goblin-scrap-edit-e",
+  "jobId": "092f90d1-1d0c-44e3-91a5-465073e91a49",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 78005,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only two things: one big round rusted iron shoulder plate on his shoulder, painted with bold hazard yellow and black diagonal stripes, and dirty cream bandage wraps round both forearms. The belt buckle becomes dull rusted iron. Keep the black leather bandana and tunic, the skin, face, ears, dagger, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only two things: one big round rusted iron shoulder plate on his shoulder, painted with bold hazard yellow and black diagonal stripes, and dirty cream bandage wraps round both forearms. The belt buckle becomes dull rusted iron. Keep the black leather bandana and tunic, the skin, face, ears, dagger, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only two things: one big round rusted iron shoulder plate on his shoulder, painted with bold hazard yellow and black diagonal stripes, and dirty cream bandage wraps round both forearms. The belt buckle becomes dull rusted iron. Keep the black leather bandana and tunic, the skin, face, ears, dagger, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only two things: one big round rusted iron shoulder plate on his shoulder, painted with bold hazard yellow and black diagonal stripes, and dirty cream bandage wraps round both forearms. The belt buckle becomes dull rusted iron. Keep the black leather bandana and tunic, the skin, face, ears, dagger, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "goblin-scrap-edit-c",
+      "candidate": 0,
+      "sha256": "04750497bcdecdf591d2ed6a17844cf9517aca29ff9bbe7afd90715a68d7d2c7"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "goblin-scrap-edit-h",
+  "jobId": "54524bd2-7e58-4ad3-ae34-93a3b5f74bc5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-direction-study",
+    "asset": "chibi-study-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-SCRAPYARD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 78008,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the brown armour plate on his shoulder: it becomes a black iron shoulder pad with three bold hazard yellow diagonal stripes and a rusty rim, the same size and shape. Do not touch his head, skin or ears. Keep everything else exactly the same: the dark leather bandana and tunic, patches, bandage wraps, dagger, belt, pose, proportions, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the brown armour plate on his shoulder: it becomes a black iron shoulder pad with three bold hazard yellow diagonal stripes and a rusty rim, the same size and shape. Do not touch his head, skin or ears. Keep everything else exactly the same: the dark leather bandana and tunic, patches, bandage wraps, dagger, belt, pose, proportions, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the brown armour plate on his shoulder: it becomes a black iron shoulder pad with three bold hazard yellow diagonal stripes and a rusty rim, the same size and shape. Do not touch his head, skin or ears. Keep everything else exactly the same: the dark leather bandana and tunic, patches, bandage wraps, dagger, belt, pose, proportions, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only the brown armour plate on his shoulder: it becomes a black iron shoulder pad with three bold hazard yellow diagonal stripes and a rusty rim, the same size and shape. Do not touch his head, skin or ears. Keep everything else exactly the same: the dark leather bandana and tunic, patches, bandage wraps, dagger, belt, pose, proportions, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "goblin-scrap-edit-f",
+      "candidate": 0,
+      "sha256": "69f866d634b802115766d6edb282491acfdb6c268e2c65259396dea3b6d69e48"
+    }
+  }
+}
