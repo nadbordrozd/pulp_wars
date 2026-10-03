@@ -70,6 +70,21 @@ export function improvementSubjectV7(
 }
 
 /**
+ * The subject of an improvement as a faction owns it. Every faction shares
+ * the improvement art today, so this is `improvementSubjectV7`; the faction
+ * building looks (epic pulp_wars-xdh) return their own subjects here, and
+ * the Gallery (bead pulp_wars-ic8) then shows one column per faction for
+ * that building instead of one shared cell.
+ */
+export function factionImprovementSubjectV7(
+  improvement: ImprovementIdV7,
+  faction: FactionIdV7,
+): ArtSubjectV7 {
+  void faction;
+  return improvementSubjectV7(improvement);
+}
+
+/**
  * Technology card art. Where LEGACY reuses a map sprite, CHIBI reuses the
  * chibi map sprite of the same subject; where LEGACY reuses a portrait or an
  * action or reward icon, CHIBI reuses the chibi one. Fieldcraft,

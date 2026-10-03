@@ -45,7 +45,6 @@ import {
   UNIT_ROLE_IDS_V7,
   ACHIEVEMENT_REQUIRED_TECH_V7,
   CITY_LEVEL_INCOME_CAP_V7,
-  MARKET_INCOME_CAP_V7,
   cityLevelIncomeV7,
   forbiddenTechnologiesV7,
   queryTechnologyTreeV7,
@@ -143,8 +142,6 @@ import {
   restlessRecoverBlockedV7,
   tendPreviewPresentationV7,
   cureCaptainPhraseV7,
-  undeadAbilityDescriptionV7,
-  undeadAbilityNameV7,
   undeadBoundaryNoticeV7,
   undeadCommandLabelV7,
   unitAfflictionsV7,
@@ -154,12 +151,9 @@ import {
 import {
   GOBLIN_FIELD_DEFENSE_EXPLANATION_V7,
   GOBLIN_HELP_RULES_V7,
-  goblinAbilityDescriptionV7,
-  goblinAbilityNameV7,
   goblinBoundaryNoticeV7,
   goblinCommandLabelV7,
   goblinFieldDefenseBlockedV7,
-  goblinRecruitNotesV7,
   goblinUnitInfoLinesV7,
   kaboomPreviewTextV7,
   kaboomTooltipV7,
@@ -190,12 +184,9 @@ import {
   nestingUnlockTextV7,
   abandonEggTooltipV7,
   cityCapacityTextV7,
-  dinosaurAbilityDescriptionV7,
-  dinosaurAbilityNameV7,
   dinosaurBoundaryNoticeV7,
   dinosaurCommandLabelV7,
   dinosaurFieldDefenseBlockedV7,
-  dinosaurRecruitNotesV7,
   dinosaurRewardLabelV7,
   dinosaurUnitInfoLinesV7,
   eggCountdownTextV7,
@@ -237,12 +228,9 @@ import {
   TRACTOR_BEAM_TOOLTIP_V7,
   beamDownUnavailableTextV7,
   brainControlTextV7,
-  martianAbilityDescriptionV7,
-  martianAbilityNameV7,
   martianBoundaryNoticeV7,
   martianCommandLabelV7,
   martianFieldDefenseBlockedV7,
-  martianRecruitNotesV7,
   martianRewardLabelV7,
   martianRoleUnlockTextV7,
   martianSlotCapacityTooltipV7,
@@ -283,13 +271,10 @@ import {
   chillChipV7,
   coldSnapSummaryV7,
   frozenAfterMoveV7,
-  iceFolkAbilityDescriptionV7,
-  iceFolkAbilityNameV7,
   iceFolkAbilityUnavailableTextV7,
   iceFolkBoundaryNoticeV7,
   iceFolkCommandLabelV7,
   iceFolkFieldDefenseBlockedV7,
-  iceFolkRecruitNotesV7,
   iceFolkRewardLabelV7,
   iceFolkRoleUnlockTextV7,
   iceFolkUnitInfoLinesV7,
@@ -336,15 +321,12 @@ import {
   bombRunTooltipV7,
   clockworkRecoverBlockedV7,
   digInChipV7,
-  dwarfAbilityDescriptionV7,
-  dwarfAbilityNameV7,
   dwarfAbilityUnavailableTextV7,
   dwarfBoundaryNoticeV7,
   dwarfCityNameV7,
   dwarfCommandLabelV7,
   dwarfFieldDefenseBlockedV7,
   dwarfLabelV7,
-  dwarfRecruitNotesV7,
   dwarfRewardLabelV7,
   dwarfRoleUnlockTextV7,
   dwarfUnitInfoLinesV7,
@@ -364,6 +346,21 @@ import {
   tunnelRidersV7,
 } from "../dwarf-tunnel-v7";
 import type { DwarfPickV7 } from "../canvas/dwarf-board-plan-v7";
+import {
+  AT_SEA_MOVE_TEXT_V7,
+  recruitmentRolePresentationV7,
+  roleAbilityDescriptionV7,
+  roleAbilityNameV7,
+} from "../role-presentation-v7";
+import { economicFormulaV7 } from "../economy-presentation-v7";
+import { GalleryViewV7 } from "./gallery-v7";
+
+export {
+  AT_SEA_MOVE_TEXT_V7,
+  recruitmentRolePresentationV7,
+  type RecruitmentRolePresentationV7,
+} from "../role-presentation-v7";
+export { economicFormulaV7 } from "../economy-presentation-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 /** The Rift (bead pulp_wars-9s0.5, RULESET_7_RIFT.md section 8). */
@@ -500,9 +497,6 @@ export const OWN_UNIT_PASS_THROUGH_TEXT_V7 =
 export const ROAD_MOVEMENT_TEXT_V7 =
   "Leaving a Road tile costs half a move; the tile you move onto needs no Road.";
 
-/** Revision 16 (section 5.4) unit and help text for boats and transports. */
-export const AT_SEA_MOVE_TEXT_V7 = "At sea: Move 2; landing uses 1 of it.";
-
 export interface MountRuleset7AppOptions {
   readonly boardHost?: BoardHostV7;
   /** Presentation-only Ruleset 7 art set; LEGACY when omitted. */
@@ -519,6 +513,11 @@ export interface MountRuleset7AppOptions {
    * fixed source; the browser's crypto (or Math.random) is the default.
    */
   readonly randomSeed?: () => number;
+  /**
+   * The Gallery animation preview's board host (bead pulp_wars-ic8);
+   * tests inject a fake. A CanvasBoardHostV7 by default.
+   */
+  readonly galleryDemoHost?: () => BoardHostV7;
 }
 
 /** A fresh unsigned 32-bit map seed from the browser. */
@@ -683,6 +682,10 @@ export class Ruleset7DomAppView {
   #matchRoot: HTMLElement | null = null;
   #boardContainer: HTMLElement | null = null;
   #destroyed = false;
+  /** The Gallery screen (bead pulp_wars-ic8), built when first opened. */
+  #gallery: GalleryViewV7 | null = null;
+  #galleryOpen = false;
+  readonly #galleryDemoHost: (() => BoardHostV7) | undefined;
 
   constructor(
     documentRoot: Document,
@@ -703,6 +706,7 @@ export class Ruleset7DomAppView {
     this.#settingsStorage = options.settingsStorage ?? null;
     this.#randomSeed =
       options.randomSeed ?? (() => browserRandomSeedV7(documentRoot));
+    this.#galleryDemoHost = options.galleryDemoHost;
     this.#artSet = options.artSet ?? "LEGACY";
     this.#chibiDomEnvironment =
       this.#artSet === "CHIBI"
@@ -778,6 +782,7 @@ export class Ruleset7DomAppView {
     this.#unsubscribeAcceptedBoundary?.();
     this.#unsubscribeAcceptedBoundary = null;
     this.#cancelPresentations();
+    this.#gallery?.destroy();
     this.#boardHost.destroy();
     this.#root.replaceChildren();
   }
@@ -811,6 +816,8 @@ export class Ruleset7DomAppView {
   }
 
   readonly #onKeyDown = (event: KeyboardEvent): void => {
+    // The Gallery handles its own keys (grid, dialog, Escape).
+    if (this.#galleryOpen) return;
     const target = event.target;
     const modal = this.#root.querySelector<HTMLElement>('[aria-modal="true"]');
     if (modal !== null) {
@@ -989,6 +996,10 @@ export class Ruleset7DomAppView {
     this.#matchShell = null;
     this.#matchRoot = null;
     this.#boardContainer = null;
+    if (this.#galleryOpen) {
+      this.#renderGallery();
+      return;
+    }
     const shell = el(this.#document, "div", "v7-app-shell");
     shell.dataset.phase = this.#snapshot.phase.toLowerCase();
     shell.append(
@@ -1139,7 +1150,7 @@ export class Ruleset7DomAppView {
       }
       void this.#launch(setup, replace);
     });
-    main.append(form, this.#ruleset6Link());
+    main.append(form, this.#galleryEntry(), this.#ruleset6Link());
     return main;
   }
 
@@ -1269,7 +1280,7 @@ export class Ruleset7DomAppView {
     );
     remove.onclick = () => void this.#deleteSave();
     actions.append(resume, replace, remove);
-    main.append(actions, this.#ruleset6Link());
+    main.append(actions, this.#galleryEntry(), this.#ruleset6Link());
     return main;
   }
 
@@ -1304,6 +1315,60 @@ export class Ruleset7DomAppView {
     remove.onclick = () => void this.#deleteSave();
     main.append(remove, this.#ruleset6Link());
     return main;
+  }
+
+  /**
+   * The front screen's Gallery entry (bead pulp_wars-ic8): every faction's
+   * units and buildings side by side, in the live CHIBI look.
+   */
+  #galleryEntry(): HTMLButtonElement {
+    const entry = button(
+      this.#document,
+      "Gallery",
+      "gallery",
+      "secondary-action v7-gallery-entry",
+    );
+    entry.onclick = () => this.#openGallery();
+    return entry;
+  }
+
+  #openGallery(): void {
+    this.#galleryOpen = true;
+    this.#gallery ??= new GalleryViewV7(this.#document, {
+      storage: this.#settingsStorage,
+      onBack: () => this.#closeGallery(),
+      motion: () => this.#motion,
+      ...(this.#chibiDomEnvironment === null
+        ? {}
+        : { domEnvironment: this.#chibiDomEnvironment }),
+      ...(this.#galleryDemoHost === undefined
+        ? {}
+        : { createDemoHost: this.#galleryDemoHost }),
+    });
+    this.#render();
+    this.#gallery.focus();
+  }
+
+  #closeGallery(): void {
+    this.#galleryOpen = false;
+    this.#gallery?.suspend();
+    this.#render();
+    this.#root.querySelector<HTMLElement>('[data-action="gallery"]')?.focus();
+  }
+
+  /**
+   * The open Gallery in the app shell. It keeps its own state (filters,
+   * scroll, the open detail and its preview), so a redraw of the front
+   * screen while it is open leaves it in place.
+   */
+  #renderGallery(): void {
+    const gallery = this.#gallery;
+    if (gallery === null) return;
+    if (gallery.root.isConnected && this.#root.contains(gallery.root)) return;
+    const shell = el(this.#document, "div", "v7-app-shell");
+    shell.dataset.phase = "gallery";
+    shell.append(gallery.root);
+    this.#root.replaceChildren(shell);
   }
 
   #ruleset6Link(): HTMLAnchorElement {
@@ -2253,7 +2318,7 @@ export class Ruleset7DomAppView {
           const description =
             ability === "TEND_WOUNDED" && matchHasUndeadV7(view)
               ? TEND_CURES_DESCRIPTION
-              : abilityDescription(
+              : roleAbilityDescriptionV7(
                   ability,
                   stats.minimumRange,
                   stats.maximumRange,
@@ -2276,7 +2341,11 @@ export class Ruleset7DomAppView {
             );
           }
           entry.append(
-            text(this.#document, "strong", abilityName(ability, unitFaction)),
+            text(
+              this.#document,
+              "strong",
+              roleAbilityNameV7(ability, unitFaction),
+            ),
             text(this.#document, "span", description),
           );
           abilities.append(entry);
@@ -7482,150 +7551,6 @@ function technologyEffectGroupIdV7(
   }
 }
 
-export interface RecruitmentRolePresentationV7 {
-  readonly label: string;
-  readonly stats: readonly { readonly label: string; readonly value: string }[];
-  readonly abilities: readonly string[];
-  readonly restrictions: readonly string[];
-}
-
-/** Canonical base-role information only; it deliberately has no live-unit state. */
-export function recruitmentRolePresentationV7(
-  roleId: UnitRoleIdV7,
-  faction: FactionIdV7,
-  cureCaptain: string | null = "a Captain",
-): RecruitmentRolePresentationV7 {
-  const role = effectiveRoleRuleV7(roleId, faction);
-  const restrictions: string[] = [];
-  const ship = roleId === "PATROL_BOAT" || roleId === "BATTLESHIP";
-  if (!role.mayUsePrimaryActionAfterMove && role.minimumRange <= 1 && !ship)
-    restrictions.push("Can't attack after moving.");
-  if (!role.abilities.includes("CAPTURE") && !ship)
-    restrictions.push("Can't capture.");
-  if (ship) restrictions.push("Built at ports. Heals only near your ports.");
-  if (roleId === "BATTLESHIP")
-    restrictions.push(
-      "Shots splash onto nearby enemies.",
-      "Moves or fires each turn, not both.",
-    );
-  if (faction === "UNDEAD" && roleId === "CATAPULT")
-    restrictions.push("Shots splash onto nearby enemies.");
-  if (faction === "UNDEAD" && !role.abilities.includes("ATTACK") && !ship)
-    restrictions.push("Can't attack. Wails instead.");
-  if (faction === "UNDEAD" && !ship)
-    restrictions.push("Restless: recovers only in your territory.");
-  // Revision 17: Kaboom, death blasts, bombs, regeneration, Gang Up and
-  // the Field Defense restriction from the Goblin registration.
-  restrictions.push(...goblinRecruitNotesV7(roleId, faction));
-  // Revision 19: hatch time, slots and the Field Defense restriction from
-  // the Dinosaur registration.
-  restrictions.push(...dinosaurRecruitNotesV7(roleId, faction));
-  // The Martian revision: the Shield, flying or striding, slots and the
-  // Field Defense restriction from the Martian registration.
-  restrictions.push(...martianRecruitNotesV7(roleId, faction));
-  // The Ice Folk revision: Mountain-born, Glide and the Field Defense
-  // restriction from the Ice Folk registration.
-  restrictions.push(...iceFolkRecruitNotesV7(roleId, faction));
-  // The Dwarf revision: clockwork, flight, machines and the Field Defense
-  // restriction from the Dwarf registration.
-  restrictions.push(...dwarfRecruitNotesV7(roleId, faction));
-  return {
-    label: role.label,
-    stats: [
-      { label: "HP", value: String(role.maxHp) },
-      { label: "Attack", value: formatHalfUnits(role.attack2) },
-      { label: "Defense", value: formatHalfUnits(role.defense2) },
-      { label: "Move", value: String(role.move) },
-      {
-        label: "Range",
-        value:
-          role.range === 0
-            ? "—"
-            : role.minimumRange === role.range
-              ? String(role.range)
-              : `${role.minimumRange}–${role.range}`,
-      },
-      { label: "Sight", value: String(role.sightRadius) },
-    ],
-    abilities: role.abilities.flatMap((ability) => {
-      const description = abilityDescription(
-        ability,
-        role.minimumRange,
-        role.range,
-        faction,
-        cureCaptain,
-      );
-      return description === null
-        ? []
-        : [`${abilityName(ability, faction)}: ${description}`];
-    }),
-    restrictions,
-  };
-}
-
-function formatHalfUnits(value2: number): string {
-  return String(value2 / 2);
-}
-
-function abilityDescription(
-  ability: string,
-  minimum: number,
-  maximum: number,
-  faction: FactionIdV7,
-  cureCaptain: string | null,
-): string | null {
-  const undead = undeadAbilityDescriptionV7(ability, faction, cureCaptain);
-  if (undead !== null) return undead;
-  const goblin = goblinAbilityDescriptionV7(ability, faction);
-  if (goblin !== null) return goblin;
-  const dinosaur = dinosaurAbilityDescriptionV7(ability, faction);
-  if (dinosaur !== null) return dinosaur;
-  const martian = martianAbilityDescriptionV7(ability, faction);
-  if (martian !== null) return martian;
-  const iceFolk = iceFolkAbilityDescriptionV7(ability, faction);
-  if (iceFolk !== null) return iceFolk;
-  const dwarf = dwarfAbilityDescriptionV7(ability, faction);
-  if (dwarf !== null) return dwarf;
-  switch (ability) {
-    case "ATTACK":
-      return minimum > 1
-        ? `Fires at range ${minimum}–${maximum}. Can't hit adjacent units or move and fire.`
-        : null;
-    case "CAPTURE":
-      return "Can take villages and enemy cities.";
-    case "CHARGE":
-      return "With Raiding, +1 Attack on the first Attack after moving 2+ cells.";
-    case "RALLY":
-      return "Inspires adjacent friendly land troops except Captains and Catapults.";
-    case "TEND_WOUNDED":
-      return "Heals nearby wounded troops by 2.";
-    case "OVERRUN":
-      return "After a kill, advances and can attack another adjacent enemy.";
-    case "ESCAPE":
-      return "May move again after attacking: a fresh full Move if it survives, then it is done for the turn.";
-    case "PUSH":
-      return "Knocks surviving targets back a tile.";
-    default:
-      return null;
-  }
-}
-export function economicFormulaV7(
-  improvement: string,
-  formula: string,
-): string {
-  if (
-    improvement === "WINDMILL" &&
-    formula === "ADJACENT_FRIENDLY_CONTRIBUTORS"
-  )
-    return "Windmill: +1 per adjacent farm; heals adjacent owner units for 6 HP at Start Turn";
-  if (improvement === "SAWMILL" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")
-    return "Sawmill: +1 per adjacent lumber camp";
-  if (improvement === "FORGE" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")
-    return "Forge: +1 per adjacent mine";
-  if (improvement === "WORKSHOP" && formula === "DISTINCT_BASIC_TYPES")
-    return "Workshop: grows with varied neighbors";
-  return `Market: 1–${MARKET_INCOME_CAP_V7} Coins (1 + adjacent families, max ${MARKET_INCOME_CAP_V7})`;
-}
 export function monumentSourceForViewerV7(
   view: PlayerViewV7,
   at: CoordV7,
@@ -8144,23 +8069,6 @@ function populationMeter(
     meter.append(pip);
   }
   return meter;
-}
-
-function abilityName(ability: string, faction: FactionIdV7): string {
-  const undead = undeadAbilityNameV7(ability, faction);
-  if (undead !== null) return undead;
-  const goblin = goblinAbilityNameV7(ability, faction);
-  if (goblin !== null) return goblin;
-  const dinosaur = dinosaurAbilityNameV7(ability, faction);
-  if (dinosaur !== null) return dinosaur;
-  const martian = martianAbilityNameV7(ability, faction);
-  if (martian !== null) return martian;
-  const iceFolk = iceFolkAbilityNameV7(ability, faction);
-  if (iceFolk !== null) return iceFolk;
-  const dwarf = dwarfAbilityNameV7(ability, faction);
-  if (dwarf !== null) return dwarf;
-  if (ability === "TEND_WOUNDED") return "Tend";
-  return title(ability);
 }
 
 /**

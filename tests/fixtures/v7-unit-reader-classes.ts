@@ -16,6 +16,10 @@
 export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
   {
     "src/ai/v7-campaign.ts::campaignPlanForPolicyV7": "BOARD",
+    // Bead pulp_wars-ic8: the Gallery's demo board, a fresh authored
+    // state on which nothing is burrowed before its cue plays.
+    "src/render/gallery-demo-v7.ts::buildGalleryDemoSceneV7": "BOARD",
+    "src/render/gallery-demo-v7.ts::wounded": "BOARD",
     "src/ai/v7-dinosaur.ts::chosenLayEggCommandsV7": "BOARD",
     "src/ai/v7-dinosaur.ts::dinosaurProductionAdjustmentV7": "BOARD",
     // `pulp_wars-68k.3`: the mission directives read the board. A burrowed

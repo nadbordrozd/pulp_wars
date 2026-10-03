@@ -3017,3 +3017,620 @@
   cursor: not-allowed;
   opacity: 0.55;
 }
+
+/* ---------- Gallery (bead pulp_wars-ic8) ---------- */
+
+.v7-gallery-entry {
+  justify-self: start;
+  min-height: 44px;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: 12px;
+  color: var(--paper);
+}
+
+.v7-gallery {
+  display: block;
+  min-height: 100dvh;
+}
+
+.v7-gallery-content {
+  display: grid;
+  align-content: start;
+  gap: 0.8rem;
+  width: min(92rem, 100%);
+  margin-inline: auto;
+  padding: max(1rem, env(safe-area-inset-top))
+    max(1rem, env(safe-area-inset-right)) 1rem
+    max(1rem, env(safe-area-inset-left));
+}
+
+.v7-gallery-header {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.v7-gallery-header h1 {
+  margin: 0;
+  color: var(--paper);
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  text-shadow: 0 3px 0 var(--accent-dark);
+}
+
+.v7-gallery-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 44px;
+  padding: 0 0.9rem 0 0.55rem;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: 12px;
+  color: var(--paper);
+}
+
+.v7-gallery-tabs {
+  display: inline-flex;
+  justify-self: start;
+  padding: 0.2rem;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.v7-gallery-tab {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.v7-gallery-tab[aria-selected="true"] {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.v7-gallery-panel {
+  display: grid;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.v7-gallery-filters {
+  padding: 0 0.8rem;
+  border: 1px solid var(--v7-edge);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 3%);
+}
+
+.v7-gallery-filters[open] {
+  padding-bottom: 0.7rem;
+}
+
+.v7-gallery-filters > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-gallery-filter {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.v7-gallery-filter-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-gallery-filter-heading > span {
+  min-width: 5.5rem;
+}
+
+.v7-gallery-filter-mode {
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--paper);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-gallery-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.v7-gallery-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--v7-edge);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.v7-gallery-chip[aria-pressed="false"] {
+  opacity: 0.55;
+}
+
+.v7-gallery-chip[aria-pressed="true"] {
+  border-color: var(--faction, var(--v7-edge-strong));
+  background: var(--panel-strong);
+  color: var(--paper);
+}
+
+.v7-gallery-swatch {
+  flex: none;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: var(--faction);
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 35%);
+}
+
+/*
+ * The table scrolls inside its own frame, both ways, so its header row and
+ * its first column stay put; the page itself never scrolls sideways.
+ */
+.v7-gallery-scroll {
+  max-width: 100%;
+  max-height: calc(100dvh - 1.5rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--v7-edge);
+  border-radius: 14px;
+  background: #1c1e2a;
+}
+
+.v7-gallery-nothing {
+  margin: 0;
+  padding: 2rem 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.v7-gallery-table {
+  min-width: 100%;
+  border-spacing: 0;
+  border-collapse: separate;
+}
+
+.v7-gallery-table th,
+.v7-gallery-table td {
+  padding: 0;
+}
+
+.v7-gallery-table thead th {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  background: var(--panel-strong);
+}
+
+.v7-gallery-table .v7-gallery-faction {
+  min-width: 7rem;
+  padding: 0.45rem 0.35rem 0.4rem;
+  border-bottom: 3px solid var(--faction);
+  color: var(--paper);
+  font-size: 0.85rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.v7-gallery-faction > span:last-child {
+  display: block;
+  white-space: nowrap;
+}
+
+.v7-gallery-emblem {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0 auto 0.2rem;
+  overflow: hidden;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--faction) 28%, var(--panel));
+  box-shadow: 0 0 0 2px var(--faction);
+}
+
+.v7-gallery-table .v7-gallery-corner {
+  z-index: 3;
+  left: 0;
+}
+
+.v7-gallery-table .v7-gallery-row-head {
+  position: sticky;
+  z-index: 1;
+  left: 0;
+  width: 6.5rem;
+  min-width: 6.5rem;
+  padding: 0 0.6rem;
+  border-top: 1px solid var(--v7-edge);
+  border-right: 1px solid var(--v7-edge);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-align: left;
+}
+
+.v7-gallery-cell-wrap {
+  border-top: 1px solid var(--v7-edge);
+  text-align: center;
+  vertical-align: top;
+}
+
+.v7-gallery-cell-wrap.is-empty {
+  color: var(--line);
+  vertical-align: middle;
+}
+
+.v7-gallery-cell {
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+  width: 100%;
+  min-height: 0;
+  padding: 0.3rem 0.25rem 0.5rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--paper);
+}
+
+.v7-gallery-cell:hover:not(:disabled) {
+  border-color: transparent;
+  background: rgb(255 255 255 / 6%);
+}
+
+.v7-gallery-cell:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.v7-gallery-tile {
+  display: block;
+  flex: none;
+}
+
+.v7-gallery-cell-name {
+  max-width: 7.5rem;
+  font-size: 0.78rem;
+  line-height: 1.15;
+}
+
+.v7-gallery-shared {
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 10%);
+  color: var(--muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* The detail dialog. */
+
+.v7-gallery .v7-gallery-scrim {
+  position: fixed;
+}
+
+.v7-gallery-detail {
+  position: fixed;
+  z-index: 30;
+  inset: 50% auto auto 50%;
+  display: grid;
+  grid-auto-rows: max-content;
+  gap: 0.9rem;
+  width: min(62rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  padding: 1.25rem;
+  border: 1px solid var(--v7-edge-strong);
+  border-top: 4px solid var(--faction, var(--paper));
+  border-radius: var(--v7-radius);
+  background: var(--v7-glass-strong);
+  box-shadow: var(--v7-shadow);
+  transform: translate(-50%, -50%);
+}
+
+.v7-gallery-detail > .close-button {
+  position: sticky;
+  z-index: 8;
+  top: 0;
+  justify-self: end;
+  width: 2.75rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  min-height: 2.75rem;
+  margin: -0.6rem -0.6rem calc(-2.15rem - 0.9rem) 0;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 45%);
+  color: var(--ink);
+}
+
+.v7-gallery-detail > .close-button .v7-ui-icon {
+  width: 26px;
+  height: 26px;
+  stroke-width: 3;
+}
+
+.v7-gallery-detail-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding-right: 3rem;
+}
+
+.v7-gallery-detail-stage {
+  padding: 0.25rem;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 22%);
+}
+
+.v7-gallery-detail-titles {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.v7-gallery-detail h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.v7-gallery-detail-faction {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: var(--paper);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.v7-gallery-detail-kicker {
+  margin: 0;
+  color: var(--muted);
+}
+
+.v7-gallery-portrait {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  overflow: hidden;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--faction, #888) 25%, var(--panel));
+  box-shadow: 0 0 0 3px var(--faction, var(--line));
+}
+
+.v7-gallery-stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.v7-gallery-step {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: 10px;
+  background: var(--panel-strong);
+  color: var(--paper);
+}
+
+.v7-gallery-step:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.v7-gallery-detail-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+/* A building, the transport and the Egg have no preview: a narrow card. */
+.v7-gallery-detail:not([data-preview="true"]) {
+  width: min(34rem, calc(100% - 2rem));
+}
+
+.v7-gallery-detail:not([data-preview="true"]) .v7-gallery-detail-body {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.v7-gallery-demo {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.v7-gallery-demo-board {
+  position: relative;
+  height: 320px;
+  overflow: hidden;
+  border: 1px solid var(--v7-edge);
+  border-radius: 12px;
+  background: #10121a;
+}
+
+/* The preview is a picture: it never takes the pointer or the wheel. */
+.v7-gallery-demo-board canvas {
+  pointer-events: none;
+}
+
+.v7-gallery-demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.v7-gallery-cue,
+.v7-gallery-replay {
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: 10px;
+  background: var(--panel-strong);
+  color: var(--paper);
+}
+
+.v7-gallery-cue[aria-pressed="true"] {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.v7-gallery-replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+}
+
+.v7-gallery-replay-glyph {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.v7-gallery-facts {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+}
+
+.v7-gallery-cost,
+.v7-gallery-tech {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-weight: 800;
+}
+
+.v7-gallery-cost {
+  font-size: 1.15rem;
+}
+
+.v7-gallery-coin,
+.v7-gallery-tech-icon {
+  display: inline-grid;
+  place-items: center;
+}
+
+.v7-gallery-stats {
+  grid-template-columns: repeat(4, max-content);
+}
+
+.v7-gallery-abilities {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.v7-gallery-ability strong {
+  display: block;
+  color: var(--paper);
+}
+
+.v7-gallery-ability span,
+.v7-gallery-description {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.v7-gallery-description {
+  margin: 0;
+}
+
+.v7-gallery-notes {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 720px) {
+  .v7-gallery-table .v7-gallery-faction {
+    min-width: 6.4rem;
+  }
+
+  .v7-gallery-table .v7-gallery-row-head {
+    width: 5rem;
+    min-width: 5rem;
+    font-size: 0.75rem;
+  }
+
+  .v7-gallery-detail,
+  .v7-gallery-detail:not([data-preview="true"]) {
+    inset: 0;
+    width: auto;
+    max-height: none;
+    padding: 0.9rem 0.75rem 1.25rem;
+    border-radius: 0;
+    transform: none;
+  }
+
+  .v7-gallery-detail-header {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .v7-gallery-detail-stage canvas {
+    width: 120px !important;
+    height: 140px !important;
+  }
+
+  .v7-gallery-portrait {
+    display: none;
+  }
+
+  .v7-gallery-detail h2 {
+    font-size: 1.45rem;
+  }
+
+  .v7-gallery-detail-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v7-gallery-stats {
+    grid-template-columns: repeat(3, max-content);
+  }
+}

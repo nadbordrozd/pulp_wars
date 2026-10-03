@@ -202,7 +202,7 @@ describe("Ruleset 7 browser smoke script", () => {
 
     expect(source).toContain("await probeDinosaurMatch(connection)");
     expect(source).toContain(
-      "; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}.",
+      "; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}.",
     );
     // Setup: Dinosaur is offered, and chosen with three opponents on the
     // Showcase, the one setup with a turn-1 lane and lay-able Eggs.
@@ -344,7 +344,7 @@ describe("Ruleset 7 browser smoke script", () => {
 
     expect(source).toContain("await probeIceFolkMatch(connection)");
     expect(source).toContain(
-      "; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}.",
+      "; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}.",
     );
     // The setup's seven faction options, Ice Folk sixth (pulp_wars-7g3.6)
     // and Dwarf last (pulp_wars-78i.6).
@@ -410,7 +410,9 @@ describe("Ruleset 7 browser smoke script", () => {
     );
 
     expect(source).toContain("await probeDwarfMatch(connection)");
-    expect(source).toContain("; Dwarf ${dwarf}; Showcase ${showcase}.");
+    expect(source).toContain(
+      "; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}.",
+    );
     // Setup: Dwarf is offered and chosen by keyboard (the second "D") with
     // three opponents on the Showcase; the seat that played Dinosaur moved
     // to the freed Human.
@@ -465,7 +467,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
 
     expect(source).toContain("await probeShowcaseMatch(connection)");
-    expect(source).toContain("; Showcase ${showcase}.");
+    expect(source).toContain("; Showcase ${showcase}; Gallery ${gallery}.");
     expect(probe).toContain('options.at(-1) !== "Showcase"');
     // The setup forces 16 x 16 and hides the seed control.
     expect(probe).toContain(
@@ -503,6 +505,29 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(probe).toContain("s.view?.setup.mapType === 'SHOWCASE'");
     // No fixture import: the probe also runs against a deployed bundle.
+    expect(probe).not.toContain("/tests/fixtures/");
+  });
+  it("opens the Gallery from the front screen, filters and plays a unit preview", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = readFileSync("scripts/browser-smoke-v7-gallery.ts", "utf8");
+
+    // After the Showcase probe, which leaves a fresh front screen.
+    expect(source.indexOf("await probeGalleryV7({")).toBeGreaterThan(
+      source.indexOf("await probeShowcaseMatch(connection)"),
+    );
+    expect(source).toContain("; Gallery ${gallery}.");
+    expect(probe).toContain(`pointerClick('[data-action="gallery"]')`);
+    expect(probe).toContain("table.cells !== 78");
+    expect(probe).toContain(`.v7-gallery-chip[data-value="GOBLIN"]`);
+    expect(probe).toContain('storedFilters.unitRows?.join() !== "CATAPULT"');
+    expect(probe).toContain(
+      `.v7-gallery-cell[data-row="CATAPULT"][data-faction="UNDEAD"]`,
+    );
+    expect(probe).toContain("dataset.demoState === 'done'");
+    expect(probe).toContain("await driver.pressEscape()");
+    expect(probe).toContain(`pointerClick('[data-action="gallery-back"]')`);
+    for (const name of ["gallery-units.png", "gallery-detail.png"])
+      expect(probe).toContain(`await driver.capture("${name}")`);
     expect(probe).not.toContain("/tests/fixtures/");
   });
   it("waits for a fresh complete document and installed controller after reload", () => {

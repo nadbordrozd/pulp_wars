@@ -20,6 +20,7 @@ import {
   armFastForwardExpression,
   stableControlPointExpression,
 } from "./browser-smoke-v7-controls";
+import { probeGalleryV7 } from "./browser-smoke-v7-gallery";
 import {
   browserTimingModeV7,
   collectBrowserTimingV7,
@@ -646,6 +647,15 @@ try {
   const iceFolk = await probeIceFolkMatch(connection);
   const dwarf = await probeDwarfMatch(connection);
   const showcase = await probeShowcaseMatch(connection);
+  // Bead pulp_wars-ic8: the Gallery from the fresh front screen.
+  const gallery = await probeGalleryV7({
+    evaluate: (expression) => evaluate(connection, expression),
+    waitForExpression: (expression, attempts) =>
+      waitForExpression(connection, expression, attempts),
+    pointerClick: (selector) => pointerClick(connection, selector),
+    pressEscape: () => pressKey(connection, "Escape", "Escape"),
+    capture: (name) => capture(connection, name),
+  });
   await evaluate(
     connection,
     `localStorage.removeItem('pulpWars.save.current')`,
@@ -728,7 +738,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {

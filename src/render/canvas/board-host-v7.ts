@@ -172,6 +172,11 @@ export interface BoardHostModelV7 {
    * direction raster fails to load falls back to its default asset.
    */
   readonly visualDirectionArt?: ChibiArtRegistryV7;
+  /**
+   * False hides the keyboard cursor (the Gallery's animation preview,
+   * bead pulp_wars-ic8, which no one steers). Omitted draws it as before.
+   */
+  readonly showCursor?: boolean;
 }
 
 export interface BoardHostCallbacksV7 {
@@ -1223,7 +1228,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   ): BoardRenderPlanV7 {
     const model = this.#model;
     if (model === null) throw new Error("Board plan requires a mounted model");
-    const interaction = { ...model.interaction, cursor: this.#focused };
+    const interaction = {
+      ...model.interaction,
+      cursor: model.showCursor === false ? null : this.#focused,
+    };
     const interactionKey = JSON.stringify(interaction);
     const cached = this.#planCache.find(
       (item) =>

@@ -236,7 +236,7 @@ describe("source audits", () => {
     }
     expect(reads).toEqual({
       "src/engine/rules/ruleset-v7.ts": 1,
-      "src/render/dom/app-view-v7.ts": 1,
+      "src/render/role-presentation-v7.ts": 1,
     });
   });
 

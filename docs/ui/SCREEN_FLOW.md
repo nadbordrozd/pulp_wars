@@ -1137,6 +1137,66 @@ select offers every faction, this overlay wins.
   ("Saved match repeats a faction; every player must play a different
   faction.").
 
+## Current Ruleset 7 Gallery
+
+This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
+7 route. Ruleset 5 and 6 routes are unchanged.
+
+- **Entry.** The setup screen and the resume screen have a **Gallery**
+  button under their main actions (above the Classic rules link). Back (or
+  Escape) returns to the front screen with focus on the Gallery button.
+  The Gallery never touches the save.
+- **Look.** Always the live CHIBI look, whatever the art set: each cell is
+  one board tile drawn like the board draws it (Grass, or Shallow Water
+  for ships, transports, Ports and Shipyards; Forest under a Lumber Camp),
+  the unit on its measured ground shadow. A faction piece drawn with the
+  shared stand-in art is marked "Shared".
+- **Units tab.** A table with one row per mechanical role (Fighter,
+  Raider, Marksman, Guard, Captain, Catapult, Knight, Juggernaut, Patrol
+  Boat, Battleship), then the embarked **Transport** and the **Egg**, and
+  one column per registered faction in the frozen faction order. A column
+  header is the faction's Fighter portrait in a ring of its colour, its
+  name, and a bar in its colour. A cell shows the faction's sprite with
+  its name below; a faction without the unit (every Egg cell but the
+  Dinosaurs') shows "—".
+- **Buildings tab.** Rows City 1, City 2, City 3 (the three art levels),
+  Village and every improvement; a building whose art differs between
+  factions (the cities today; the improvements once the faction building
+  looks of `pulp_wars-xdh` give them their own subjects) has one cell per
+  faction, a building every faction shares has one cell across the row.
+- **Filters.** A "Filters" disclosure (open on a wide screen, closed on a
+  phone) holds a chip per faction and a chip per row, each group with All
+  and None. The tab and both selections are remembered per viewer in this
+  browser (`pulpWars.ruleset7.gallery.v1`); blocked storage keeps them for
+  the page only. With nothing selected the table reads "Nothing
+  selected."
+- **Layout.** The table scrolls inside its own frame in both directions,
+  its header row and first column sticky; the page never scrolls
+  sideways, on a phone or a desktop.
+- **Keyboard.** The table is a grid with one tab stop: the arrow keys move
+  between cells (skipping empty ones), Home and End go to a row's ends,
+  Enter or Space opens the cell. The tabs switch with the arrow keys.
+- **Detail.** A dialog over a dim scrim (click outside, Escape or the
+  close button close it and return focus to the cell): the large tile, the
+  portrait, the faction, the name, "role · tactical role", the cost (or
+  "City reward"), the stats (HP, Attack, Defense, Move, Range, Sight,
+  Slots), the technology, the abilities with their short Help texts and
+  the role's restrictions. Arrow buttons (and the arrow keys) step to the
+  previous or next faction along the row and the previous or next unit
+  down the column, within the shown rows and columns. A building's
+  detail has its description, effect text, cost and technology.
+- **Animation preview.** A unit with an attack or an ability command has
+  a demo board, played by the real board host on a throwaway engine state
+  (the unit beside its capital, an enemy Guard in reach): one button per
+  cue (Attack, Kaboom!, Wail, Raise Dead, Devour, Rally and its faction
+  names, Tend or Repair, Beam Down, Mind Control, Tractor Beam, Bolas,
+  Cold Snap, Tunnel, Bomb Run, Assemble) and Replay. Full motion shows the
+  ready unit for a moment and plays the first cue; reduced motion shows
+  the ready unit, waits for a cue and plays its held frames. The board
+  takes no pointer or focus and has no cursor.
+- **Minimal text.** No coordinates anywhere; labels are names, icons and
+  numbers.
+
 ## Current Ruleset 7 playtest round 3 interface overlay
 
 This overlay (`pulp_wars-6gd.4`) applies to the current Ruleset 7 route in
