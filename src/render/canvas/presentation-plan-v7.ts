@@ -7,6 +7,7 @@ import {
 import type { Ruleset7TacticalUiSymbolId } from "../../assets/ruleset7-tactical-ui-symbols";
 import type { ExplosionBlastV7 } from "./goblin-explosion-v7";
 import type { DinosaurEffectV7 } from "./dinosaur-effects-v7";
+import type { MartianFeedbackEffectV7 } from "./martian-effects-v7";
 
 export type CorePresentationStepV7 =
   | {
@@ -35,6 +36,24 @@ export type CorePresentationStepV7 =
       readonly unitIds: readonly number[];
       /** HATCH_CALL: the Shaman's cell. */
       readonly from?: CoordV7;
+      readonly durationMs: number;
+      /** Another player's cue: the camera frames it, like enemy moves. */
+      readonly followCamera?: true;
+    }
+  | {
+      /**
+       * The Martian cues (bead pulp_wars-t6s.4, martian-effects-v7): a heat
+       * ray (with its Pierce victim), a Shield flare, the Beam Down column,
+       * the Tractor Beam, the Mind Control spiral, and Thralls collapsing.
+       */
+      readonly kind: "MARTIAN";
+      readonly effect: MartianFeedbackEffectV7;
+      readonly cells: readonly CoordV7[];
+      readonly from?: CoordV7;
+      readonly pierce?: CoordV7;
+      readonly fullPower?: boolean;
+      /** The ray's shooter: shown before the hit, the result after. */
+      readonly unitId?: number;
       readonly durationMs: number;
       /** Another player's cue: the camera frames it, like enemy moves. */
       readonly followCamera?: true;
@@ -225,6 +244,31 @@ export function corePresentationPlanV7(
       ...(enemyTurn ? { followCamera: true as const } : {}),
     });
   };
+  /** Adds a Martian cue; collapses of one boundary merge. */
+  const pushMartian = (
+    step: Omit<
+      Extract<CorePresentationStepV7, { readonly kind: "MARTIAN" }>,
+      "kind" | "followCamera"
+    >,
+  ): void => {
+    const last = steps.at(-1);
+    if (
+      last?.kind === "MARTIAN" &&
+      last.effect === "THRALL_COLLAPSE" &&
+      step.effect === "THRALL_COLLAPSE"
+    ) {
+      steps[steps.length - 1] = {
+        ...last,
+        cells: [...last.cells, ...step.cells],
+      };
+      return;
+    }
+    steps.push({
+      kind: "MARTIAN",
+      ...step,
+      ...(enemyTurn ? { followCamera: true as const } : {}),
+    });
+  };
   const graves = envelope.events.flatMap((event) =>
     event.kind === "GRAVE_CREATED" &&
     explored.has(`${event.at.x},${event.at.y}`)
@@ -313,6 +357,59 @@ export function corePresentationPlanV7(
       if (event.cause === "SHAMAN" && shaman !== undefined)
         pushDinosaur("HATCH_CALL", event.at, null, 250, shaman.at);
       pushDinosaur("HATCH", event.at, event.unitId, 450);
+    } else if (event.kind === "UNIT_DIED" && event.cause === "BRAIN_LOST") {
+      // The Martian revision: a Thrall collapses when its Brain is lost.
+      const thrall = before.units.find((unit) => unit.id === event.unitId);
+      if (thrall !== undefined && isExplored(thrall.at))
+        pushMartian({
+          effect: "THRALL_COLLAPSE",
+          cells: [thrall.at],
+          durationMs: 320,
+        });
+    } else if (event.kind === "UNIT_BEAMED") {
+      // The Martian revision: the passenger arrives in a column of light.
+      const saucer = before.units.find((unit) => unit.id === event.unitId);
+      if (isExplored(event.to))
+        pushMartian({
+          effect: "BEAM_DOWN",
+          cells: [event.to],
+          ...(saucer === undefined ? {} : { from: saucer.at }),
+          durationMs: 480,
+        });
+      origins.set(event.passengerUnitId, event.to);
+    } else if (event.kind === "UNIT_PULLED") {
+      // The Martian revision: the beam reaches the target, which slides one
+      // tile toward the Mothership.
+      const source =
+        before.units.find((unit) => unit.id === event.sourceUnitId) ??
+        after.units.find((unit) => unit.id === event.sourceUnitId);
+      if (source !== undefined && isExplored(event.from))
+        pushMartian({
+          effect: "TRACTOR_BEAM",
+          cells: [event.from],
+          from: source.at,
+          durationMs: 380,
+        });
+      if (isExplored(event.from) && isExplored(event.to))
+        steps.push({
+          kind: "MOVE",
+          unitId: event.targetUnitId,
+          path: [event.from, event.to],
+          durationMs: 200,
+          ...(enemyTurn ? { followCamera: true as const } : {}),
+        });
+      origins.set(event.targetUnitId, event.to);
+    } else if (event.kind === "UNIT_MIND_CONTROLLED") {
+      // The Martian revision: a spiral over the victim, a ring round the
+      // Brain; the Thrall appears in its place.
+      const brain = before.units.find((unit) => unit.id === event.unitId);
+      if (isExplored(event.at))
+        pushMartian({
+          effect: "MIND_CONTROL",
+          cells: [event.at],
+          ...(brain === undefined ? {} : { from: brain.at }),
+          durationMs: 520,
+        });
     } else if (event.kind === "UNIT_DIED") {
       // Revision 19: a destroyed Egg scatters its shell.
       const egg = before.units.find((unit) => unit.id === event.unitId);
@@ -376,23 +473,57 @@ export function corePresentationPlanV7(
         attacker.role === "MARKSMAN" && attackerFaction === "DINOSAUR";
       // Revision 20: a Charge! after a run-up lands with a star flash.
       const chargeHit = event.preview.runUp > 0;
-      steps.push({
-        kind:
-          (attacker.role === "CATAPULT" && !triceratops) || bomb || acid
-            ? "CATAPULT"
-            : ranged
-              ? "RANGED"
-              : "MELEE",
-        unitId: attacker.id,
-        from: attacker.at,
-        to: defender.at,
-        durationMs: ranged ? 280 : 230,
-        ...(bomb
-          ? { projectile: "BOMB" as const }
-          : acid
-            ? { projectile: "ACID" as const }
-            : {}),
-      });
+      // The Martian revision: a heat ray is a beam from the shooter (with a
+      // thinner beam on to a Pierce victim), not a projectile or a lunge.
+      const ray = event.preview.rayPower !== "NONE";
+      const pierced =
+        ray && attackerFaction === "MARTIAN"
+          ? event.preview.splash[0]
+          : undefined;
+      if (ray)
+        pushMartian({
+          effect: "HEAT_RAY",
+          cells: [defender.at],
+          from: attacker.at,
+          unitId: attacker.id,
+          ...(pierced === undefined ? {} : { pierce: pierced.at }),
+          ...(event.preview.rayPower === "FULL" ? { fullPower: true } : {}),
+          durationMs: 360,
+        });
+      else
+        steps.push({
+          kind:
+            (attacker.role === "CATAPULT" && !triceratops) || bomb || acid
+              ? "CATAPULT"
+              : ranged
+                ? "RANGED"
+                : "MELEE",
+          unitId: attacker.id,
+          from: attacker.at,
+          to: defender.at,
+          durationMs: ranged ? 280 : 230,
+          ...(bomb
+            ? { projectile: "BOMB" as const }
+            : acid
+              ? { projectile: "ACID" as const }
+              : {}),
+        });
+      // The Martian revision: a Shield that absorbed part of a hit flares,
+      // turned toward the blow.
+      if (event.preview.defenderShieldDamage > 0 && isExplored(defender.at))
+        pushMartian({
+          effect: "SHIELD_FLARE",
+          cells: [defender.at],
+          from: attacker.at,
+          durationMs: 240,
+        });
+      if (event.preview.attackerShieldDamage > 0 && isExplored(attacker.at))
+        pushMartian({
+          effect: "SHIELD_FLARE",
+          cells: [attacker.at],
+          from: defender.at,
+          durationMs: 240,
+        });
       if (chargeHit && isExplored(defender.at))
         pushDinosaur("CHARGE_HIT", defender.at, null, 250);
       if (acid && isExplored(defender.at))

@@ -1,4 +1,5 @@
 import type { ArtSubjectV7 } from "../../assets/chibi-art-v7";
+import { MARTIAN_FLAG_ANCHORS_V7 } from "../../assets/chibi-direction-martian-presentation";
 import type { BoardRenderPlanEntryV7 } from "./board-renderer-v7";
 import type {
   ChibiArtRequestV7,
@@ -345,6 +346,9 @@ export const DIRECTION_FLAG_ANCHORS_V7: Readonly<
   "chibi-direction-dinosaur-city-2": { x: 66.5, y: 11, pole: 0 },
   "chibi-direction-dinosaur-city-3": { x: 68.5, y: 0, pole: 12 },
   // --- end Dinosaur ---
+  // --- Martian (art of bead pulp_wars-t6s.6, wired in by pulp_wars-t6s.4):
+  // the tips of the colonies' own antenna masts, so no pole is drawn.
+  ...MARTIAN_FLAG_ANCHORS_V7,
 };
 
 const clampPercent = (value: unknown, low: number, high: number): number =>
@@ -907,7 +911,10 @@ export function drawDirectedUnitBaseV7(
   const style = direction.unit.base;
   const scale = sprite.height / 80;
   const centreX = sprite.x + sprite.width / 2;
-  const afloat = directionUnitAfloatV7(entry.artSubject);
+  // A Martian machine afloat stands in the ships' ring, so the water shows
+  // (bead pulp_wars-t6s.4).
+  const afloat =
+    directionUnitAfloatV7(entry.artSubject) || entry.martian?.afloat === true;
   // --- Dinosaur (bead pulp_wars-3tq.13) ---
   // The Egg's 48 px sprite is a nest that fills its canvas, wider than the
   // 31 px plate its height would give it, so that plate would be hidden. It

@@ -13,11 +13,10 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * portraits, seven command, ability and status icons, five ability effect
  * sprites and City 1-3 (a landed-saucer colony).
  *
- * **Nothing imports this module yet.** The faction is added to the engine
- * and the interface by other beads; `pulp_wars-t6s.4` registers this list in
- * the direction registry (chibiDirectionArtRegistryV7), copies
- * MARTIAN_FLAG_ANCHORS_V7 into DIRECTION_FLAG_ANCHORS_V7, and draws the
- * flyers' lift and shadow from MARTIAN_FLYER_PRESENTATION_V7.
+ * Since bead `pulp_wars-t6s.4` this list is registered in the direction
+ * registry (chibiDirectionArtRegistryV7), MARTIAN_FLAG_ANCHORS_V7 is part of
+ * DIRECTION_FLAG_ANCHORS_V7, and the board draws the flyers' lift and
+ * shadow from MARTIAN_FLYER_PRESENTATION_V7.
  */
 export const CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
   [

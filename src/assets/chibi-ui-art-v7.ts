@@ -10,6 +10,7 @@ import type {
   ArtSubjectV7,
   DinosaurArtRoleV7,
   GoblinArtRoleV7,
+  MartianArtRoleV7,
   UndeadArtRoleV7,
 } from "./chibi-art-v7";
 
@@ -30,8 +31,11 @@ const NAVAL_ROLES: readonly UnitRoleIdV7[] = ["PATROL_BOAT", "BATTLESHIP"];
 
 /**
  * The portrait of a role for a faction: Undead, (revision 17, bead
- * pulp_wars-0ao.8) Goblin and (revision 19, bead pulp_wars-c87.7) Dinosaur
- * land roles have their own; naval roles share the Human ship portraits.
+ * pulp_wars-0ao.8) Goblin, (revision 19, bead pulp_wars-c87.7) Dinosaur
+ * and (bead pulp_wars-t6s.4) Martian land roles have their own; naval roles
+ * share the Human ship portraits. The Thrall's portrait,
+ * `PORTRAIT:MARTIAN:THRALL`, is asked for by subject (the Mind Control
+ * preview).
  */
 export function portraitSubjectV7(
   role: UnitRoleIdV7,
@@ -42,6 +46,8 @@ export function portraitSubjectV7(
   if (faction === "GOBLIN") return `PORTRAIT:GOBLIN:${role as GoblinArtRoleV7}`;
   if (faction === "DINOSAUR")
     return `PORTRAIT:DINOSAUR:${role as DinosaurArtRoleV7}`;
+  if (faction === "MARTIAN")
+    return `PORTRAIT:MARTIAN:${role as MartianArtRoleV7}`;
   return `PORTRAIT:${role}`;
 }
 
@@ -92,7 +98,9 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
 /**
  * Technology art for a viewer's faction: the units and portraits a
  * technology shows follow the faction (an Undead Drill shows the Zombie, a
- * Goblin Drill the Orc Brute, a Dinosaur Drill the Ankylosaurus).
+ * Goblin Drill the Orc Brute, a Dinosaur Drill the Ankylosaurus, a Martian
+ * Drill the Shield Projector). The Martian Force Fields (`FORTIFICATION`)
+ * shows the Force Field icon of the Martian art.
  */
 export function technologySubjectV7(
   tech: TechnologyIdV7,
@@ -100,6 +108,8 @@ export function technologySubjectV7(
 ): ArtSubjectV7 {
   const subject: ArtSubjectV7 = CHIBI_TECH_ART_SUBJECTS_V7[tech];
   if (faction === "ORIGINAL") return subject;
+  if (faction === "MARTIAN" && tech === "FORTIFICATION")
+    return "ICON:ACTION:FORCE_FIELD";
   if (subject.startsWith("PORTRAIT:"))
     return portraitSubjectV7(
       subject.slice("PORTRAIT:".length) as UnitRoleIdV7,
@@ -109,6 +119,7 @@ export function technologySubjectV7(
     const role = subject.slice("UNIT:".length) as UndeadArtRoleV7;
     if (faction === "UNDEAD") return `UNIT:UNDEAD:${role}`;
     if (faction === "DINOSAUR") return `UNIT:DINOSAUR:${role}`;
+    if (faction === "MARTIAN") return `UNIT:MARTIAN:${role}`;
     return `UNIT:GOBLIN:${role}`;
   }
   return subject;
@@ -136,7 +147,9 @@ const RESOURCE_COMMANDS: Partial<Record<CommandV7["kind"], ArtSubjectV7>> = {
  * is War Drums (`ICON:ACTION:DINOSAUR:RALLY`), and Lay Egg and Hatch are
  * `ICON:ACTION:LAY_EGG` and `ICON:ACTION:HATCH` (bead pulp_wars-c87.7).
  * `ICON:ACTION:STAMPEDE` is not a command icon since revision 20: it marks
- * the Triceratops's Charge! ability in the unit information.
+ * the Triceratops's Charge! ability in the unit information. The Martian
+ * Rally is Psychic Command (`ICON:ACTION:MARTIAN:RALLY`); Beam Down, Mind
+ * Control and Tractor Beam are `ICON:ACTION:<KIND>` (bead pulp_wars-t6s.4).
  */
 export function commandSubjectV7(
   command: CommandV7,
@@ -158,6 +171,7 @@ export function commandSubjectV7(
       if (faction === "UNDEAD") return "ICON:ACTION:UNDEAD:RALLY";
       if (faction === "GOBLIN") return "ICON:ACTION:GOBLIN:RALLY";
       if (faction === "DINOSAUR") return "ICON:ACTION:DINOSAUR:RALLY";
+      if (faction === "MARTIAN") return "ICON:ACTION:MARTIAN:RALLY";
       return "ICON:ACTION:RALLY";
     default:
       break;

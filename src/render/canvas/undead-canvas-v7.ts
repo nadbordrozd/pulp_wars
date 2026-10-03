@@ -25,7 +25,17 @@ export type AbilityPreviewStyleV7 =
   /** Revision 19: a legal nest tile of the Egg being laid. */
   | "NEST"
   /** Revision 19: an adjacent own Egg laid this turn (no Hatch yet). */
-  | "HATCH_BLOCKED";
+  | "HATCH_BLOCKED"
+  /**
+   * The Martian revision (bead pulp_wars-t6s.4): the Force Field tiles of a
+   * selected Shield Projector, a Tractor Beam's pull destination and a
+   * Pierce victim (the faction's magenta glow), and a Mind Control target
+   * that cannot be taken (grey, with the reason).
+   */
+  | "FORCE_FIELD"
+  | "PULL"
+  | "PIERCE"
+  | "MARTIAN_BLOCKED";
 
 /** Legacy and CHIBI Undead badge frames, relative to the cell centre. */
 export const UNDEAD_BADGE_FRAME_V7 = {
@@ -452,6 +462,11 @@ const STYLE_COLORS: Readonly<
   // Revision 19: unowned cream and grey cues (DINOSAUR.md).
   NEST: { fill: "rgba(255, 248, 208, 0.28)", stroke: "#fff8d0" },
   HATCH_BLOCKED: { fill: "rgba(174, 182, 194, 0.18)", stroke: "#aeb6c2" },
+  // The Martian revision: MARTIAN_PALETTE_V7's glow and grey.
+  FORCE_FIELD: { fill: "rgba(255, 143, 214, 0.12)", stroke: "#ff8fd6" },
+  PULL: { fill: "rgba(255, 143, 214, 0.26)", stroke: "#ff8fd6" },
+  PIERCE: { fill: "rgba(255, 47, 176, 0.18)", stroke: "#ff8fd6" },
+  MARTIAN_BLOCKED: { fill: "rgba(170, 179, 192, 0.16)", stroke: "#aab3c0" },
 };
 
 /** Dark stripes that turn the friendly-fire outline into a hazard band. */

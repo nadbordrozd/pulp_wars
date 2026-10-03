@@ -121,13 +121,12 @@ Ruleset-7 boundary
 
 The engine registers a fifth faction, `MARTIAN`
 ([Martian overlay](../product/RULESET_7_MARTIANS.md)), with every rule of
-that document. **The client does not offer it yet:** the setup screen's
-faction list (`FACTIONS` in `src/render/dom/app-view-v7.ts`) stays Human,
-Undead, Goblin, and Dinosaur until the Martian UI bead (`pulp_wars-t6s.4`),
-and no Martian sprite, marker, button, or Help text exists. The only render
-changes of the engine bead are the display label "Martian" and unlock texts
-for the three new technology unlock kinds, which the exhaustive switches
-need to compile.
+that document. Since the Martian UI bead (`pulp_wars-t6s.4`) the setup
+screen offers it for every seat (`FACTIONS` in
+`src/render/dom/app-view-v7.ts`), and the client draws and plays it as the
+[Screen Flow Martian overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay)
+describes (see [Martian presentation](#martian-presentation-pulp_wars-t6s4)
+below).
 
 What the Martian UI reads, all from `PlayerViewV7` and the public queries:
 
@@ -155,6 +154,41 @@ What the Martian UI reads, all from `PlayerViewV7` and the public queries:
 
 In a match without a Martian seat the four lists are empty and the new
 fields have their neutral values, so every existing screen is unchanged.
+
+### Martian presentation (`pulp_wars-t6s.4`)
+
+The Martian UI reads only the sources above, in the pattern of the Goblin
+and Dinosaur presentation:
+
+- `src/render/martian-presentation-v7.ts`: every Martian text (section
+  13.2 labels, the fourteen Help sentences, unit info lines, the attack
+  preview's Shield, ray-power, Cooling, Disintegrator and Pierce lines, the
+  Mind Control and Tractor Beam preview lines, the reasons a Beam Down or a
+  Mind Control target is unavailable, log lines, unlock and recruit texts),
+  with names and numbers from the registry and the engine constants;
+- `src/render/canvas/martian-board-plan-v7.ts`: the Martian part of the
+  board plan: unit markers (`BoardRenderPlanEntryV7.martian`), the three
+  aimed abilities (`BoardRenderInteractionV7.martianPick`; target families
+  `BEAM_DOWN_PASSENGER`, `BEAM_DOWN`, `MIND_CONTROL`, `TRACTOR_BEAM`), the
+  Force Field and Thrall-link selection previews, and an attack target's
+  Martian lines (`previewFocusNote`, `pierce`, `pullTo`, `launch`);
+- `src/render/canvas/martian-canvas-v7.ts`: the code-drawn markers (saucer
+  badge, Shield bar, Cooling glyph, Thrall collar and link, flyer shadow and
+  lift, wade ripples), and `src/render/canvas/martian-effects-v7.ts`: the
+  cues of the `MARTIAN` presentation step, beams in code and the effect
+  sprites through the support effect art of the effects canvas;
+- art: the Martian modules of the direction registry
+  (`chibi-direction-martian-art-manifest.ts`), resolved by
+  `unitArtSubjectV7` (Thrall, machine afloat), `cityArtSubjectV7`,
+  `portraitSubjectV7`, `technologySubjectV7` and `commandSubjectV7`, with
+  `chibiFallbackSubjectV7` falling back to the Human subject (the Thrall to
+  the Fighter); `MARTIAN_FLAG_ANCHORS_V7` is part of
+  `DIRECTION_FLAG_ANCHORS_V7`.
+
+The Classic look and LEGACY have no Martian art: a Martian unit is the Human
+sprite of its role with the saucer badge (the rule of every earlier
+faction), and a Martian city the Human city; every marker is code-drawn in
+both.
 
 ## 0. Ruleset-6 replacement boundary
 

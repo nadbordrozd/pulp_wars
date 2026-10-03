@@ -67,6 +67,29 @@ import {
 } from "./dinosaur-canvas-v7";
 import { drawGoblinBadgeV7 } from "./goblin-canvas-v7";
 import {
+  FLYER_LIFT_LEGACY_V7,
+  FLYER_LIFT_MASTER_PX_V7,
+  drawCoolingGlyphV7,
+  drawFlyerShadowV7,
+  drawMartianBadgeV7,
+  drawShieldBarV7,
+  drawThrallCollarV7,
+  drawThrallLinkV7,
+  drawWadeRipplesV7,
+  type MartianUnitMarkersV7,
+} from "./martian-canvas-v7";
+import {
+  addMartianPickEntriesV7,
+  addMartianSelectionEntriesV7,
+  martianAttackTargetExtrasV7,
+  martianMachineV7,
+  martianMoveLabelV7,
+  martianPickTargetsV7,
+  martianUnitMarkersV7,
+  type MartianPickV7,
+} from "./martian-board-plan-v7";
+import { matchHasMartianV7, unitIsThrallV7 } from "../martian-presentation-v7";
+import {
   blastPreviewPresentationV7,
   goblinAttackPreviewTextV7,
   matchHasGoblinV7,
@@ -165,6 +188,12 @@ export interface BoardRenderInteractionV7 {
     readonly cityId: number;
     readonly role: UnitRoleIdV7;
   } | null;
+  /**
+   * The Martian revision (bead pulp_wars-t6s.4): the Beam Down, Mind
+   * Control or Tractor Beam being aimed by the selected unit. Its targets
+   * become the only map targets; null or omitted aims none.
+   */
+  readonly martianPick?: MartianPickV7 | null;
 }
 
 /** Revision 19: the ID of the legacy code-drawn Egg (no raster exists). */
@@ -189,7 +218,16 @@ export interface MapCommandTargetV7 {
     /** Revision 19: an adjacent own Egg a Shaman may hatch. */
     | "HATCH"
     /** Revision 19: a legal nest tile of the Egg being laid. */
-    | "LAY_EGG";
+    | "LAY_EGG"
+    /**
+     * The Martian revision: a Beam Down passenger (choosing it moves on to
+     * the tiles; nothing is dispatched), a Beam Down tile, a Mind Control
+     * target and a Tractor Beam target.
+     */
+    | "BEAM_DOWN_PASSENGER"
+    | "BEAM_DOWN"
+    | "MIND_CONTROL"
+    | "TRACTOR_BEAM";
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -203,6 +241,17 @@ export interface MapCommandTargetV7 {
    * revision 17 adds "Gang Up +N" (Goblin matches only).
    */
   readonly previewNote?: string;
+  /**
+   * The Martian revision: a note that is the same for each of the selected
+   * unit's targets (a ray's power and its Cooling), drawn only on the
+   * focused target (or the only one), so a row of targets stays calm.
+   */
+  readonly previewFocusNote?: string;
+  /**
+   * The Martian revision: a machine's Move that ends on water and
+   * self-launches it ("Launch: crosses water as a transport").
+   */
+  readonly launch?: true;
   /**
    * Revision 17 (Goblin matches only): death-blast, chain, bomb-splash and
    * friendly-fire warnings, one warning box each under the target.
@@ -219,6 +268,22 @@ export interface MapCommandTargetV7 {
    * only), shown on the board while the target is focused.
    */
   readonly blast?: BlastPreviewPresentationV7;
+  /**
+   * The Martian revision: the tile a Tractor Beam target is pulled to, shown
+   * while the target is focused.
+   */
+  readonly pullTo?: CoordV7;
+  /**
+   * The Martian revision: the unit a Tripod's ray pierces, shown while the
+   * target is focused (friendly fire is marked).
+   */
+  readonly pierce?: {
+    readonly at: CoordV7;
+    readonly label: string;
+    readonly friendly: boolean;
+    readonly lethal: boolean;
+    readonly note: string;
+  };
   /** Revision 13: public splash entries of this attack (Undead matches only). */
   readonly splash?: readonly {
     readonly at: CoordV7;
@@ -302,7 +367,7 @@ export interface BoardRenderPlanEntryV7 {
    * with its faction badge unless the CHIBI art set shows its own faction
    * raster.
    */
-  readonly faction?: "UNDEAD" | "GOBLIN" | "DINOSAUR";
+  readonly faction?: "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN";
   /**
    * UNIT only, revision 14: the public Plague and Bitten statuses, drawn as
    * small markers in the piece's overlay frame (absent when there are none).
@@ -319,6 +384,11 @@ export interface BoardRenderPlanEntryV7 {
   readonly egg?: { readonly turnsRemaining: number };
   /** UNIT only, revision 19: a grown Dinosaur unit, Big (1) or Alpha (2). */
   readonly growthStage?: 1 | 2;
+  /**
+   * UNIT only, the Martian revision: the Shield, Cooling, Thrall, flying
+   * and afloat markers of a visible Martian unit.
+   */
+  readonly martian?: MartianUnitMarkersV7;
 }
 
 export interface BoardRenderPlanV7 {
@@ -534,12 +604,25 @@ export function buildBoardRenderPlanV7(
   const eggTurns = new Map(
     view.eggs.map((entry) => [entry.unitId, entry.turnsRemaining] as const),
   );
+  const martianMatch = matchHasMartianV7(view);
   for (const unit of view.units) {
     const faction = playerFactionV7(view, unit.ownerId);
     const factionUnit =
-      faction === "UNDEAD" || faction === "GOBLIN" || faction === "DINOSAUR";
+      faction === "UNDEAD" ||
+      faction === "GOBLIN" ||
+      faction === "DINOSAUR" ||
+      faction === "MARTIAN";
+    // The Martian revision: a Thrall is labelled "Thrall", and a machine
+    // afloat is drawn as itself (never as the transport).
+    const thrall = martianMatch && unitIsThrallV7(view, unit.id);
+    const machine = martianMatch && martianMachineV7(view, unit);
+    const martian = martianMatch ? martianUnitMarkersV7(view, unit) : undefined;
     // Revision 19: an Egg is "{Unit} Egg".
-    const factionLabel = factionUnit ? unitDisplayNameV7(view, unit) : null;
+    const factionLabel = thrall
+      ? "Thrall"
+      : factionUnit
+        ? unitDisplayNameV7(view, unit)
+        : null;
     const afflictions: AfflictionIdV7[] = [];
     if (plaguedIds.has(unit.id)) afflictions.push("PLAGUE");
     if (bittenIds.has(unit.id)) afflictions.push("BITTEN");
@@ -557,29 +640,30 @@ export function buildBoardRenderPlanV7(
       // The Egg has no legacy raster: LEGACY draws it in code.
       assetId: egg
         ? EGG_CODE_ART_ID_V7
-        : unit.form === "EMBARKED"
+        : unit.form === "EMBARKED" && !machine
           ? "unit-shared-embarked-transport"
           : RULESET7_UNIT_ART_IDS[unit.role],
       // Undead and Goblin land units ask for their own art first
       // (UNIT:<FACTION>:<ROLE>); without it the renderer falls back to the
       // Human sprite plus the faction badge.
-      artSubject: unitArtSubjectV7({ ...unit, faction }),
+      artSubject: unitArtSubjectV7({ ...unit, faction, thrall, machine }),
       label:
-        unit.form === "EMBARKED"
-          ? `Embarked Transport · ${factionLabel ?? title(unit.role)} passenger`
-          : (factionLabel ?? title(unit.role)),
+        unit.form === "EMBARKED" && machine
+          ? `${factionLabel ?? title(unit.role)} afloat`
+          : unit.form === "EMBARKED"
+            ? `Embarked Transport · ${factionLabel ?? title(unit.role)} passenger`
+            : (factionLabel ?? title(unit.role)),
       ready:
         unit.ownerId === view.viewer.id &&
         !unit.activation.handled &&
         commands.some(
           (command) => command.kind === "MOVE" && command.unitId === unit.id,
         ),
-      ...(faction === "UNDEAD" || faction === "GOBLIN" || faction === "DINOSAUR"
-        ? { faction }
-        : {}),
+      ...(factionUnit ? { faction } : {}),
       ...(afflictions.length > 0 ? { afflictions } : {}),
       ...(egg ? { egg: { turnsRemaining: eggTurns.get(unit.id) ?? 1 } } : {}),
       ...(growthStage === 1 || growthStage === 2 ? { growthStage } : {}),
+      ...(martian === undefined ? {} : { martian }),
     });
   }
   for (const value of view.improvementValues)
@@ -687,8 +771,13 @@ export function buildBoardRenderPlanV7(
         }
   }
   addTerritoryBoundaries(entries, view, interaction.selection);
-  if (selectedUnitId !== null)
+  if (selectedUnitId !== null) {
     addAbilityPreviews(entries, view, commands, selectedUnitId);
+    // The Martian revision: the Force Field of a selected Shield Projector
+    // and the Thrall-Brain link.
+    if (martianMatch)
+      addMartianSelectionEntriesV7(entries, view, selectedUnitId);
+  }
   if (
     interaction.kaboomPreviewUnitId !== undefined &&
     interaction.kaboomPreviewUnitId !== null
@@ -708,13 +797,25 @@ export function buildBoardRenderPlanV7(
   // Revision 19: while a nest tile is picked, the legal nest tiles of that
   // city and role are the only targets.
   const layEgg = interaction.layEgg ?? null;
+  // The Martian revision: while an ability is aimed, its targets are the
+  // only targets of the selected unit.
+  const martianPick =
+    interaction.martianPick !== undefined &&
+    interaction.martianPick !== null &&
+    interaction.martianPick.unitId === interaction.selectedUnitId
+      ? interaction.martianPick
+      : null;
   const targets = kaboomPreview
     ? []
     : layEgg !== null
       ? layEggTargets(view, commands, layEgg)
-      : dedupeMapTargets(
-          mapTargets(view, commands, interaction.selectedUnitId),
-        );
+      : martianPick !== null
+        ? martianPickTargetsV7(view, commands, martianPick)
+        : dedupeMapTargets(
+            mapTargets(view, commands, interaction.selectedUnitId),
+          );
+  if (martianPick !== null)
+    addMartianPickEntriesV7(entries, view, targets, martianPick);
   for (const target of targets) {
     if (target.family === "LAY_EGG")
       entries.push({
@@ -1539,6 +1640,24 @@ export function drawBoardV7(input: {
               rect,
               camera.zoom,
             );
+          // The Martian revision: a flyer casts a ground shadow (over land
+          // or water) and is drawn lifted above it; the plate stays put.
+          if (entry.kind === "UNIT" && entry.martian?.flyer === true) {
+            drawFlyerShadowV7(
+              context,
+              rect,
+              chibiReady?.asset.id ?? entry.assetId,
+              chibiReady?.asset.width ?? rect.width / camera.zoom,
+            );
+            rect = {
+              ...rect,
+              y:
+                rect.y -
+                (chibiReady === null
+                  ? FLYER_LIFT_LEGACY_V7 * camera.zoom
+                  : FLYER_LIFT_MASTER_PX_V7 * chibiMasterScale(camera)),
+            };
+          }
           // Revision 19: a Big or Alpha chibi sprite is drawn larger about
           // its feet (DINOSAUR.md "Growth display"); a cue may scale it too.
           const spriteScale =
@@ -1643,6 +1762,13 @@ export function drawBoardV7(input: {
               rect.height,
             );
           context.restore();
+          // The Martian revision: a walker afloat wades (ripples at its feet).
+          if (
+            entry.kind === "UNIT" &&
+            entry.martian?.afloat === true &&
+            !entry.martian.flyer
+          )
+            drawWadeRipplesV7(context, rect, camera.zoom);
           if (direction !== undefined && chibiReady !== null)
             directedFlag = drawDirectedFlagV7(
               context,
@@ -1729,6 +1855,23 @@ export function drawBoardV7(input: {
           entry.artSubject !== "UNIT:DINOSAUR:EGG"
         )
           drawDinosaurBadgeV7(context, x, y, camera.zoom, chibiPiece);
+        // The Martian revision: the saucer badge over Human stand-in art
+        // (LEGACY and the classic look), then the Cooling glyph or the
+        // Thrall collar in the status slot right of the sprite.
+        if (entry.kind === "UNIT" && entry.faction === "MARTIAN" && !factionArt)
+          drawMartianBadgeV7(context, x, y, camera.zoom, chibiPiece);
+        if (entry.kind === "UNIT" && entry.martian !== undefined) {
+          if (entry.martian.thrall)
+            drawThrallCollarV7(context, x, y, camera.zoom, {
+              chibi: chibiPiece,
+              highContrast: input.highContrast ?? false,
+            });
+          else if (entry.martian.cooling)
+            drawCoolingGlyphV7(context, x, y, camera.zoom, {
+              chibi: chibiPiece,
+              highContrast: input.highContrast ?? false,
+            });
+        }
         if (entry.kind === "UNIT")
           for (const [slot, affliction] of (
             entry.afflictions ?? []
@@ -1855,6 +1998,25 @@ export function drawBoardV7(input: {
             );
           }
         }
+        // The Martian revision (section 13.1): the segmented Shield bar,
+        // with the HP bar of the look: under the LEGACY bar's row, beside the
+        // classic CHIBI side bar, or on the live look's base.
+        if (
+          entry.kind === "UNIT" &&
+          entry.martian !== undefined &&
+          entry.martian.shieldSegments > 0
+        ) {
+          const base =
+            directed?.hp === true && direction?.chrome.hpPlacement === "BASE";
+          drawShieldBarV7(context, x, y, camera.zoom, entry.martian, {
+            placement: base ? "BASE" : chibiPiece ? "SIDE" : "LEGACY",
+            hpShown:
+              direction?.chrome.hp === "ALWAYS" ||
+              (entry.hp ?? 0) < (entry.maxHp ?? 0),
+            garrisoned: directedGarrison,
+            highContrast: input.highContrast ?? false,
+          });
+        }
       };
       if (chibiPiece) deferredChibiOverlays.push(drawPieceOverlays);
       else drawPieceOverlays();
@@ -1966,7 +2128,10 @@ export function drawBoardV7(input: {
     }
   }
   const publicLinks = input.plan.entries.filter(
-    (entry) => entry.kind === "LINK" && entry.linkTo !== undefined,
+    (entry) =>
+      entry.kind === "LINK" &&
+      entry.linkTo !== undefined &&
+      entry.label !== "THRALL_LINK",
   );
   if (publicLinks.length > 0) {
     context.save();
@@ -1981,6 +2146,27 @@ export function drawBoardV7(input: {
     for (const link of publicLinks) drawPublicLink(context, camera, link);
     context.restore();
   }
+  // The Martian revision: the link from a selected Thrall to its Brain, or
+  // from a selected Brain to its Thralls, drawn over the pieces.
+  for (const entry of input.plan.entries)
+    if (
+      entry.kind === "LINK" &&
+      entry.label === "THRALL_LINK" &&
+      entry.linkTo !== undefined
+    )
+      drawThrallLinkV7(
+        context,
+        {
+          x: camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
+          y: camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom,
+        },
+        {
+          x: camera.offsetX + entry.linkTo.x * TILE_WIDTH * camera.zoom,
+          y: camera.offsetY + entry.linkTo.y * TILE_HEIGHT * camera.zoom,
+        },
+        camera.zoom,
+        input.highContrast ?? false,
+      );
   // Preview labels and notes stay inside the visible, unobscured band and
   // off each other; one placer serves every preview box of this frame.
   // Every label is queued and drawn after every outline and area fill, so
@@ -2026,11 +2212,37 @@ export function drawBoardV7(input: {
       defer,
       paintLater,
     );
+    drawMartianFocusPreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      placer,
+      defer,
+    );
   };
   if (goblinAreaFirst) drawAreaPreviews();
+  // The Martian revision: the shooter's note goes on the focused target,
+  // or on the only target that has one.
+  const focusNoteTargets = input.plan.targets.filter(
+    (target) => target.previewFocusNote !== undefined,
+  );
+  const focus = input.previewFocus ?? null;
+  const focusNoteAt =
+    (focus === null
+      ? undefined
+      : focusNoteTargets.find((target) => same(target.at, focus))?.at) ??
+    (focusNoteTargets.length === 1 ? focusNoteTargets[0]?.at : undefined);
   for (const target of input.plan.entries) {
     if (target.kind !== "TARGET") continue;
-    drawMapTarget(context, camera, target, placer, defer);
+    drawMapTarget(
+      context,
+      camera,
+      target,
+      placer,
+      defer,
+      focusNoteAt !== undefined && same(focusNoteAt, target.at),
+    );
   }
   if (!goblinAreaFirst) drawAreaPreviews();
   for (const entry of input.plan.entries) {
@@ -2194,6 +2406,13 @@ function mapTargetEdges(
 
 function targetPriority(family: MapCommandTargetV7["family"]): number {
   if (family === "ATTACK") return 6;
+  if (
+    family === "MIND_CONTROL" ||
+    family === "TRACTOR_BEAM" ||
+    family === "BEAM_DOWN" ||
+    family === "BEAM_DOWN_PASSENGER"
+  )
+    return 5;
   if (family === "HATCH") return 4;
   // Revision 16: a two-step landing cell keeps its whole dotted outline
   // where it touches a "Land now" or Move target.
@@ -2202,6 +2421,9 @@ function targetPriority(family: MapCommandTargetV7["family"]): number {
   return 1;
 }
 
+/** The Martian revision: the outline of a machine's Launch tile. */
+export const LAUNCH_TARGET_STROKE_V7 = "#c7e7f5";
+
 function targetStroke(
   family: MapCommandTargetV7["family"] | undefined,
 ): string {
@@ -2209,6 +2431,14 @@ function targetStroke(
   if (family === "LANDING_AFTER_MOVE") return "#f4c95d";
   // Revision 19: Hatch and nest-tile targets use the unowned cue cream.
   if (family === "HATCH" || family === "LAY_EGG") return "#fff8d0";
+  // The Martian revision: the faction's magenta glow (MARTIAN_PALETTE_V7).
+  if (
+    family === "MIND_CONTROL" ||
+    family === "TRACTOR_BEAM" ||
+    family === "BEAM_DOWN" ||
+    family === "BEAM_DOWN_PASSENGER"
+  )
+    return "#ff8fd6";
   return "#64e6cf";
 }
 
@@ -2253,13 +2483,19 @@ function drawMapTarget(
   entry: BoardRenderPlanEntryV7,
   placer: PreviewLabelPlacerV7,
   defer: (draw: () => void) => void,
+  /** The Martian revision: this target also shows `previewFocusNote`. */
+  focused = false,
 ): void {
   const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
   const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
   context.save();
   context.lineWidth = 4 * camera.zoom;
-  context.strokeStyle = targetStroke(entry.target?.family);
-  const [dash, gap] = targetDash(entry.target?.family);
+  // The Martian revision: a Launch tile is dotted in the pale glass blue.
+  const launch = entry.target?.launch === true;
+  context.strokeStyle = launch
+    ? LAUNCH_TARGET_STROKE_V7
+    : targetStroke(entry.target?.family);
+  const [dash, gap] = launch ? [3, 5] : targetDash(entry.target?.family);
   context.setLineDash([dash * camera.zoom, gap * camera.zoom]);
   for (const edge of entry.targetEdges ?? TILE_EDGES)
     strokeTileEdge(context, camera, entry.at, edge);
@@ -2281,12 +2517,18 @@ function drawMapTarget(
   });
   const label =
     target?.previewLabel === undefined ? [] : [labelBox(target.previewLabel)];
+  const noteText = [
+    target?.previewNote,
+    focused ? target?.previewFocusNote : undefined,
+  ]
+    .filter((part): part is string => part !== undefined && part !== "")
+    .join(" · ");
   const note =
-    target?.previewNote === undefined
+    noteText === ""
       ? []
       : [
           {
-            text: target.previewNote,
+            text: noteText,
             fill: "#2a1633ee",
             color: "#f3dcff",
             lineBox: 1.6,
@@ -2412,6 +2654,91 @@ function drawSplashPreviewV7(
       placer,
       defer,
       paintLater,
+    );
+}
+
+/**
+ * The Martian revision: the focused (or only) Tractor Beam target's pull
+ * destination, and the focused (or only) attack target's Pierce victim.
+ */
+function drawMartianFocusPreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+  placer: PreviewLabelPlacerV7,
+  defer: (draw: () => void) => void,
+): void {
+  const pick = <Target extends MapCommandTargetV7>(
+    targets: readonly Target[],
+  ): Target | undefined =>
+    (focus === null
+      ? undefined
+      : targets.find((candidate) => same(candidate.at, focus))) ??
+    (targets.length === 1 ? targets[0] : undefined);
+  const x = (at: CoordV7): number =>
+    camera.offsetX + at.x * TILE_WIDTH * camera.zoom;
+  const y = (at: CoordV7): number =>
+    camera.offsetY + at.y * TILE_HEIGHT * camera.zoom;
+  const pull = pick(
+    plan.targets.filter((target) => target.pullTo !== undefined),
+  );
+  if (pull?.pullTo !== undefined) {
+    const to = pull.pullTo;
+    context.save();
+    drawAbilityAreaCellV7(context, x(to), y(to), camera.zoom, "PULL");
+    context.strokeStyle = abilityAreaStrokeV7("PULL");
+    context.lineWidth = 3 * camera.zoom;
+    context.setLineDash([6 * camera.zoom, 4 * camera.zoom]);
+    for (const edge of TILE_EDGES) strokeTileEdge(context, camera, to, edge);
+    // An arrow from the target toward its destination.
+    context.setLineDash([]);
+    context.lineWidth = 4 * camera.zoom;
+    context.lineCap = "round";
+    const fromX = x(pull.at);
+    const fromY = y(pull.at);
+    const toX = x(to);
+    const toY = y(to);
+    const length = Math.hypot(toX - fromX, toY - fromY) || 1;
+    const ux = (toX - fromX) / length;
+    const uy = (toY - fromY) / length;
+    const tipX = toX - ux * 24 * camera.zoom;
+    const tipY = toY - uy * 24 * camera.zoom;
+    context.beginPath();
+    context.moveTo(
+      fromX + ux * 30 * camera.zoom,
+      fromY + uy * 30 * camera.zoom,
+    );
+    context.lineTo(tipX, tipY);
+    context.moveTo(tipX, tipY);
+    context.lineTo(
+      tipX - ux * 14 * camera.zoom - uy * 10 * camera.zoom,
+      tipY - uy * 14 * camera.zoom + ux * 10 * camera.zoom,
+    );
+    context.moveTo(tipX, tipY);
+    context.lineTo(
+      tipX - ux * 14 * camera.zoom + uy * 10 * camera.zoom,
+      tipY - uy * 14 * camera.zoom - ux * 10 * camera.zoom,
+    );
+    context.stroke();
+    context.restore();
+  }
+  const pierce = pick(
+    plan.targets.filter(
+      (target) => target.family === "ATTACK" && target.pierce !== undefined,
+    ),
+  )?.pierce;
+  if (pierce !== undefined)
+    drawAbilityTargetV7(
+      context,
+      x(pierce.at),
+      y(pierce.at),
+      camera.zoom,
+      pierce.friendly ? "BLAST_FRIENDLY" : "PIERCE",
+      pierce.label,
+      pierce.lethal,
+      placer,
+      defer,
     );
 }
 
@@ -3028,6 +3355,7 @@ function commandMapTargets(
   const undeadMatch = matchHasUndeadV7(view);
   const goblinMatch = matchHasGoblinV7(view);
   const dinosaurMatch = matchHasDinosaurV7(view);
+  const martianMatch = matchHasMartianV7(view);
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
     // Revision 19: an adjacent own Egg the selected Shaman may hatch.
@@ -3051,6 +3379,8 @@ function commandMapTargets(
     }
     if (command.kind === "MOVE" && command.unitId === selectedUnitId) {
       const at = command.path.at(-1);
+      // The Martian revision: a machine's Move onto water self-launches.
+      const launch = martianMatch ? martianMoveLabelV7(view, command) : null;
       return at === undefined
         ? []
         : [
@@ -3058,6 +3388,14 @@ function commandMapTargets(
               at,
               command,
               family: "MOVE",
+              // No label box per water tile: a dotted pale outline, named
+              // by the dock's legend and the cursor description.
+              ...(launch === null
+                ? {}
+                : {
+                    launch: true as const,
+                    semanticLabel: `${launch}. Ends this unit's turn afloat.`,
+                  }),
             },
           ];
     }
@@ -3108,10 +3446,16 @@ function commandMapTargets(
         dinosaurMatch && preview !== null
           ? dinosaurCombatNoteV7(preview, view)
           : null;
+      // The Martian revision (Martian matches only): the Shield absorbed on
+      // either side, ray power and Cooling, the Disintegrator, and Pierce.
+      const martian = martianMatch
+        ? martianAttackTargetExtrasV7(view, preview)
+        : null;
       const noteParts = [
         undeadNote,
         goblin?.gangUp ?? null,
         dinosaurNote,
+        ...(martian?.notes ?? []),
       ].filter((part): part is string => part !== null);
       const note = noteParts.length === 0 ? null : noteParts.join(" · ");
       const semanticParts = [
@@ -3123,10 +3467,11 @@ function commandMapTargets(
       ].filter((part): part is string => part !== null);
       const semanticNote =
         semanticParts.length === 0 ? null : semanticParts.join(" ");
-      const warnings =
-        goblin === null || goblin.warnings.length === 0
-          ? null
-          : goblin.warnings;
+      const allWarnings = [
+        ...(goblin?.warnings ?? []),
+        ...(martian?.warnings ?? []),
+      ];
+      const warnings = allWarnings.length === 0 ? null : allWarnings;
       const blast =
         chain !== null && chain.explosions.length > 0
           ? blastPreviewPresentationV7(view, chain, null, command.unitId)
@@ -3145,19 +3490,25 @@ function commandMapTargets(
           previewLabel:
             preview === null
               ? "Damage uncertain"
-              : `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}${preview.splash.length > 0 ? ` · splash ${preview.splash.reduce((sum, item) => sum + item.damage, 0)} to ${preview.splash.length}` : ""}`,
+              : // The Martian revision: a Tripod's second hit is "pierce".
+                `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}${martian?.pierce !== undefined ? ` · pierce ${preview.splash[0]?.damage ?? 0}` : preview.splash.length > 0 ? ` · splash ${preview.splash.reduce((sum, item) => sum + item.damage, 0)} to ${preview.splash.length}` : ""}`,
           ...(preview === null
             ? {}
             : {
-                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${splashSentence}${semanticNote === null ? "" : ` ${semanticNote}`}`,
+                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${martian?.pierce === undefined ? splashSentence : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}`,
               }),
           ...(note === null ? {} : { previewNote: note }),
+          ...(martian === null || martian.shooter.length === 0
+            ? {}
+            : { previewFocusNote: martian.shooter.join(" · ") }),
           ...(warnings === null ? {} : { previewWarnings: warnings }),
           ...(warnings === null || goblin === null || goblin.summary === null
             ? {}
             : { previewWarningSummary: goblin.summary }),
           ...(blast === null ? {} : { blast }),
+          ...(martian?.pierce === undefined ? {} : { pierce: martian.pierce }),
           ...((undeadMatch || goblinMatch) &&
+          martian?.pierce === undefined &&
           preview !== null &&
           preview.splash.length > 0
             ? {

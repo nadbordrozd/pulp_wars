@@ -1,4 +1,7 @@
-import type { ChibiEffectIdV7 } from "../../assets/chibi-art-v7";
+import type {
+  ChibiEffectIdV7,
+  MartianEffectIdV7,
+} from "../../assets/chibi-art-v7";
 import type { CoordV7 } from "../../engine/index";
 import { chibiMasterScale, isWholeScale } from "./chibi-geometry-v7";
 import { projectGrid, worldToScreen, type CameraState } from "./geometry";
@@ -32,7 +35,10 @@ export interface WindmillHealingFeedbackV7 {
  * puff at 1:1.
  */
 export type SupportEffectSubjectV7 =
-  "STATUS:PLAGUED" | `EFFECT:${ChibiEffectIdV7}`;
+  | "STATUS:PLAGUED"
+  | `EFFECT:${ChibiEffectIdV7}`
+  /** The Martian effect sprites (bead pulp_wars-t6s.4, martian-effects-v7). */
+  | `EFFECT:${MartianEffectIdV7}`;
 
 export const SUPPORT_EFFECT_SUBJECTS_V7: readonly SupportEffectSubjectV7[] = [
   "EFFECT:WAIL",

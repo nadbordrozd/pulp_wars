@@ -2639,3 +2639,83 @@
   width: 1.75rem;
   height: 1.75rem;
 }
+
+/*
+ * The Martian revision (docs/art/factions/MARTIAN.md, bead pulp_wars-t6s.4):
+ * the saucer badge is chrome on gunmetal with a chrome rim; the Martian
+ * chips, the aiming panel and the ability glyphs use the faction's magenta
+ * glow (MARTIAN_PALETTE_V7), apart from every owner colour.
+ */
+.v7-martian-badge {
+  border-color: #d5dde6;
+  background: #4a5262;
+  color: #d5dde6;
+}
+
+.v7-martian-badge path {
+  stroke: #ff2fb0;
+  stroke-width: 0.8;
+}
+
+.v7-faction-chip[data-faction="martian"] {
+  border: 1px solid #ff8fd655;
+  background: #2b2f3a;
+  color: #ffd3ee;
+}
+
+.v7-martian-chip {
+  border: 1px solid #ff8fd655;
+  background: #2b2f3a;
+  color: #ffd3ee;
+  white-space: nowrap;
+}
+
+.v7-martian-chip[data-unit-status="cooling"] {
+  border-color: #aab3c066;
+  color: #aab3c0;
+}
+
+.v7-martian-chip[data-force-field="true"] {
+  border-color: #ff8fd6;
+  font-weight: 800;
+}
+
+.v7-command-icon[data-icon="beam-down"],
+.v7-command-icon[data-icon="mind-control"],
+.v7-command-icon[data-icon="tractor-beam"] {
+  color: #ff8fd6;
+}
+
+.v7-martian-pick {
+  border-color: #ff8fd666;
+}
+
+.v7-martian-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  max-height: 6.5rem;
+  overflow-y: auto;
+}
+
+.v7-martian-choice-button {
+  min-height: 2rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid #ff8fd6;
+  border-radius: 8px;
+  background: #3a2236;
+  color: #ffd3ee;
+  font-weight: 700;
+}
+
+.v7-martian-detail {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* The Martian revision: a machine's Launch tiles (dotted pale glass blue). */
+.v7-landing-legend-item[data-landing-marker="launch"]
+  .v7-landing-legend-swatch {
+  border-style: dotted;
+  border-color: #c7e7f5;
+}

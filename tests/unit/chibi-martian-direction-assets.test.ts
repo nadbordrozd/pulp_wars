@@ -182,10 +182,17 @@ describe("Martian production art (pulp_wars-t6s.6)", () => {
       ).toEqual([id]);
   });
 
-  it("is not wired into the game yet: no registry holds a Martian asset", () => {
+  // Turned round by the UI bead (pulp_wars-t6s.4, MARTIAN.md wiring step
+  // 7): the art is live in the direction registry, and only there. The
+  // default (classic) registry holds no Martian asset, so the classic look
+  // and LEGACY draw the Human stand-in with the Martian badge.
+  it("is wired into the live direction registry, and only there", () => {
     const live = chibiDirectionArtRegistryV7();
     for (const asset of CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7)
-      expect(live.variants(asset.subject), asset.subject).toHaveLength(0);
+      expect(
+        live.variants(asset.subject).map((entry) => entry.id),
+        asset.subject,
+      ).toEqual([asset.id]);
     const ids = new Set(
       [...CHIBI_ART_ASSETS_V7, ...CHIBI_DIRECTION_ART_ASSETS_V7].map(
         (asset) => asset.id,

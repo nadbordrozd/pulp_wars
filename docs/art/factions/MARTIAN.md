@@ -1,7 +1,9 @@
 # Faction fragment: MARTIAN
 
 **Status:** production art made in bead `pulp_wars-t6s.6` (batch
-`direction-martian`), **not wired into the game yet**. The user's direction
+`direction-martian`), **live in the default look since the Martian UI bead
+`pulp_wars-t6s.4`** (see [What the UI bead wired](#what-the-ui-bead-wired)).
+The user's direction
 (2026-10-02): "add the martians. Come up with a nice look for them, colors
 and all and just do it. make all the decisions. if i don't like something
 tomorrow we'll change it." The root chose the look, "retro pulp invaders,
@@ -292,35 +294,75 @@ The spec makes these code-drawn; the colours are `MARTIAN_PALETTE_V7`.
   wading Tripod or Colossus; the bottom 6 rows of its legs may be drawn at
   50% alpha.
 
-## What the UI bead must wire
+## What the UI bead wired
 
-`pulp_wars-t6s.4` (the faction is in the engine by then):
+`pulp_wars-t6s.4` did each step (the faction was in the engine by then);
+the list stays as the record of what the wiring is.
 
-1. Add `...CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7` to
+1. **Done.** Add `...CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7` to
    `chibiDirectionArtRegistryV7`
    ([`chibi-direction-art-manifest.ts`](../../../src/assets/chibi-direction-art-manifest.ts)).
    The art subjects exist already (`UNIT:MARTIAN:<ROLE>`,
    `UNIT:MARTIAN:THRALL`, `PORTRAIT:MARTIAN:<ROLE>`, `CITY:MARTIAN:<level>`,
    the icons and effects, in
    [`chibi-art-v7.ts`](../../../src/assets/chibi-art-v7.ts)).
-2. Resolve them: `unitArtSubjectV7` for a Martian unit (and the Thrall
+2. **Done.** Resolve them: `unitArtSubjectV7` for a Martian unit (and the Thrall
    subject for a Thrall of any original faction), `cityArtSubjectV7` and
    `CityArtFactionV7` for a Martian city, the fallback of
    `chibiFallbackSubjectV7`, and the portrait and icon lookups of the DOM
    art hook.
-3. Copy `MARTIAN_FLAG_ANCHORS_V7` into `DIRECTION_FLAG_ANCHORS_V7`.
-4. Draw the flyers' shadow and lift from `MARTIAN_FLYER_PRESENTATION_V7`,
+3. **Done.** Copy `MARTIAN_FLAG_ANCHORS_V7` into `DIRECTION_FLAG_ANCHORS_V7`.
+4. **Done.** Draw the flyers' shadow and lift from `MARTIAN_FLYER_PRESENTATION_V7`,
    and a machine afloat with its own sprite.
-5. Draw the Shield bar, the Cooling glyph, the Thrall collar and the beams
+5. **Done.** Draw the Shield bar, the Cooling glyph, the Thrall collar and the beams
    in code (above), and the effect sprites through the effects canvas.
-6. The placeholder sprites of
+6. **Done.** The placeholder sprites of
    [spec 13.4](../../product/RULESET_7_MARTIANS.md#134-placeholder-art) are
    not needed: this art replaces them. In the Classic look and wherever a
    raster is missing, a Martian unit still falls back to the Human sprite of
    its role with a Martian badge.
-7. Turn round the test "is not wired into the game yet" of
+7. **Done.** Turn round the test "is not wired into the game yet" of
    `tests/unit/chibi-martian-direction-assets.test.ts`, which now checks
    that no registry holds a Martian asset.
+
+### Decisions of the UI bead
+
+Made in `pulp_wars-t6s.4` and recorded so that they can be overruled:
+
+1. **Classic look and LEGACY.** The Martians have no classic art, so both
+   draw the Human sprite of the role (the Fighter for a Thrall) with a
+   code-drawn **saucer badge** (a chrome saucer with a pale dome and a
+   magenta light on a gunmetal disc, chrome rim) in the corner every
+   earlier faction's badge uses, and the Human city. LEGACY does not borrow
+   the direction art: its sprites are of another style, and the badge is
+   the rule every faction followed before its art. Every marker is
+   code-drawn in both.
+2. **The Shield bar is always shown** for a unit with a Shield maximum,
+   though the HP bar of the default look shows only when damaged: the
+   Shield changes how a unit is best attacked (focus it), opponents must
+   see it, and a full bar of two to four small segments in a dark track is
+   quiet. In the default look it sits on the plate, at the HP bar's line
+   while HP is full and directly above the HP bar when it shows; in the
+   Classic look it is a column beside the vertical HP bar; in LEGACY a row
+   under the HP bar (the badges sit above it). The track is dark so magenta segments read on every
+   plate colour (Coral is close to magenta).
+3. **One status chip right of the sprite** carries Cooling (grey heat lines,
+   no magenta) or the Thrall collar (a chrome ring with one magenta light);
+   a Thrall never has a ray, so they never compete.
+4. **Flyers** are lifted a further 4 master pixels above their plate; the
+   shadow (`MARTIAN_FLYER_PRESENTATION_V7`) stays on the ground line, over
+   land and water. No bob: a moving sprite on every ready flyer would not
+   be calm.
+5. **Machines afloat** stand in the ships' thin ring (the water shows); a
+   wading Tripod or Colossus gets two white ripple arcs. Its legs are not
+   faded.
+6. **Beams in code, sprites as accents**: the heat ray, the Beam Down column
+   and the Tractor Beam cone are code-drawn; the heat-ray flash, the Shield
+   flare and the Mind Control spiral are the effect sprites, and the Beam
+   Down and Tractor Beam sprites are small end caps.
+7. **The shooter's preview lines** ("Full power", "Leaves it Cooling next
+   turn") are drawn on the focused attack target only, as they are the same
+   for every target; target lines (Shield, Disintegrator, Pierce) on each.
 
 ## Evidence
 
@@ -372,8 +414,8 @@ decisions":
 12. **Status icons** have a subject family of their own, `ICON:STATUS:*`.
 13. **Effects:** five rasters in one magenta palette; beams are suggested
     as code-drawn.
-14. **Not registered:** the module is imported by nothing until
-    `pulp_wars-t6s.4`.
+14. **Not registered** by this bead: the module was imported by nothing
+    until `pulp_wars-t6s.4` registered it.
 
 ## Weak spots
 

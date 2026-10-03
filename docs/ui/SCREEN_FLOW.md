@@ -52,9 +52,11 @@ Roads, that text now describes the **Classic look** developer option
   player colour from its tower, carrying the seat's shape in cream, or in
   gold for the capital (which then has no separate crown). A Goblin city
   (bead `pulp_wars-3tq.9`) does the same from the bare pole of its scrap
-  camp: the lookout pole, the tower or the big tent. An Undead or Dinosaur
-  city is not converted: it keeps its own art in its owner recolour and the
-  capital crown, with no seat badge and no pennant.
+  camp: the lookout pole, the tower or the big tent. A Martian colony (bead
+  `pulp_wars-t6s.4`) flies it from the tip of its own antenna mast. A
+  faction city without a usable direction raster keeps its classic art in
+  its owner recolour and the capital crown, with no seat badge and no
+  pennant.
   Population pips and the Field Defense badge are unchanged.
 - **Ports and Shipyards** fly a smaller pennant in the territory owner's
   colour. Other improvements carry no player colour: the shared set (Farm as
@@ -536,6 +538,130 @@ seat looks as in revision 18 apart from the extra faction option.
 - **Review.** `npm run review:ruleset7-dinosaur-ui` captures these surfaces
   (the setup, a Showcase with a Dinosaur seat, and the Dinosaur UI fixtures)
   in both art sets at desktop and phone widths (dev server only).
+
+## Current Ruleset 7 Martian overlay
+
+This overlay implements
+[Martian spec section 13](../product/RULESET_7_MARTIANS.md#13-ui-requirements)
+(`pulp_wars-t6s.4`) with the production art of the
+[Martian art fragment](../art/factions/MARTIAN.md) (bead `pulp_wars-t6s.6`):
+the placeholder generator of spec 13.4 is not built. Every cue reads only
+public views (`view.shields`, `view.cooling`, `view.thralls`,
+`view.mindControlCooldowns`), the public unit stats' `martian` block, the
+public previews (`previewBeamDownV7`, `previewMindControlV7`,
+`previewTractorBeamV7`, `queryCombatPreviewV7`) and projected events. A match
+without a Martian seat looks as before apart from the extra faction option.
+
+- **Setup.** Every seat's faction select offers Human, Undead, Goblin,
+  Dinosaur and Martian (default Human); saves, resume and the Showcase keep
+  Martian seats.
+- **Art and labels.** Units are named by their owner's registration (Grunt,
+  Saucer, Ray Gunner, Shield Projector, Brain, Tripod, Mothership, Colossus;
+  a Thrall is "Thrall" with its own sprite). The default look paints the
+  chrome-and-magenta sprites, portraits, icons and the landed-saucer
+  colonies (whose pennant flies from the mast tip). The Classic look and
+  LEGACY have no Martian art: they draw the Human sprite of the role (the
+  Fighter for a Thrall) with the **saucer badge** (chrome saucer on a
+  gunmetal disc) in the corner of the other factions' badges, and the Human
+  city; the dock and the train cards do the same. The dock shows a
+  "Martian" faction chip. Rally reads "Psychic Command" (the antenna-dish
+  icon), Charge "Strafe"; Fortification is "Force Fields" (the Force Field
+  icon) and Explosives "Disintegrator" in the tree, its detail and research;
+  unit unlocks read "Train Tripod (strides, heat ray, Pierce)", "Train Saucer
+  (flies, Beam Down)" and so on, all from the registry. Rewards read "A free
+  Grunt" and "Colossus: A giant unit (2 slots)". In a match with a Martian
+  seat the leaderboard and turn status name each player's faction.
+- **Board markers** (code-drawn, `MARTIAN_PALETTE_V7`; calm: one row and one
+  chip at most):
+  - **Shield bar**, for every visible unit with a Shield maximum: one
+    segment per point of the maximum (4 while a Force Field raised it) in a
+    dark track, magenta when filled, the Force Field's extra segments in the
+    paler glow, empty ones dark with a magenta rim. It is always shown,
+    because the Shield changes how the unit is best attacked. The default
+    look draws it on the plate (directly above the HP bar while that
+    shows), the Classic look as a column beside the vertical HP bar, LEGACY
+    as a row under its HP bar (above it are the seat and faction badges).
+  - **Cooling**: three grey heat lines on a gunmetal chip right of the
+    sprite (no magenta: not at full power), on a Cooling ray unit of any
+    owner.
+  - **Thrall collar**: a chrome ring with one magenta light on the same chip
+    slot (a Thrall has no ray). Selecting a Thrall draws a dashed magenta
+    link to its Brain with a ring round it; selecting a Brain links each of
+    its Thralls.
+  - **Flying**: the Saucer and the Mothership are drawn lifted above their
+    plate with a soft ground shadow (`MARTIAN_FLYER_PRESENTATION_V7`), over
+    land and water. LEGACY lifts the stand-in a little over the same shadow.
+  - **Machines afloat**: a self-launched machine is drawn as itself in the
+    ships' thin ring (never as the transport); a wading Tripod or Colossus
+    gets two white ripple arcs. Embarked foot units keep the transport.
+  - **Force Field**: selecting a land-form Shield Projector tints the eight
+    tiles around it in the pale magenta glow with an outer dashed edge.
+- **Dock and unit info.** Chips beside the name: "Shield 2 / 2" ("Shield 4 /
+  4 (Force Field)" when raised), the ray's power ("Full power" or "Half
+  power: moved"), "Cooling" (with the Cooling tooltip), "Thrall", a Brain's
+  "Thralls 1 / 2" and "Recovering: ready in 2 turns", and "2 slots". The
+  Shield stat row reads current / maximum. Unit info adds the Shield, ray,
+  Thrall ("Controlled by a Brain. No Shield. Collapses if the Brain is lost.
+  Thralls use no slot."), Brain and afloat lines. A machine afloat is
+  "{Unit} (afloat)" and says it cannot attack or use abilities until it
+  lands. A Grunt or Shield Projector where a Fighter or Guard would fortify
+  shows a disabled Fortify: "Martians cannot build Field Defense".
+- **Abilities.** Beam Down, Mind Control and Tractor Beam are one button
+  each (the offered commands, one per passenger and tile or per target, are
+  never buttons). A button without a legal choice is `aria-disabled` and
+  names why: "A Saucer that moved this turn cannot Beam Down", "No unit on
+  or next to one of your city centers", "No free tile next to this Saucer";
+  "Recovering: ready in N turns", "Controls two Thralls already", "No
+  weakened enemy within reach"; "No unit two tiles away can be pulled". A
+  press aims the ability: the dock replaces the actions with a compact
+  prompt (choices as chips, each carrying its whole preview in its
+  accessible name, Back and Cancel), the board's only targets become the
+  ability's (magenta dashed outlines) and the camera frames them above the
+  dock. Escape steps back (a Beam Down tile to its passenger) and then
+  leaves.
+  - **Beam Down**: first the passengers (on or next to own city centers),
+    then the legal tiles around the Saucer ("Beam here", "destroys Field
+    Defense"); a tile performs it.
+  - **Mind Control**: the legal targets ("Thrall · 5 HP", with "Thralls 2 /
+    2 after · Mind Control recovers for 2 turns" and any collapse or Plague
+    it ends); a hostile unit in reach that cannot be taken is marked grey
+    with why: "Too healthy (10 HP)", "Immune", "Protected on a city or
+    village center". A target performs it, like an attack.
+  - **Tractor Beam**: the targets two tiles away; the focused one shows its
+    destination (magenta tile and an arrow) and "Pulled out of Walls",
+    "Pulled off Field Defense", "Empties Player 2's City", "Lifts the siege
+    of your City".
+- **Moves.** A machine's Move onto water is a dotted pale-blue "Launch"
+  outline (no label box); the dock's legend reads "Launch: crosses water as
+  a transport" and the cursor description says it ends the turn afloat.
+- **Attack preview** (own attacks; the cursor description carries every
+  line): "Shield absorbs N" and "Your Shield absorbs N" as notes; the
+  shooter's lines "Full power" / "Half power: moved" / "Half power:
+  Cooling" and "Leaves it Cooling next turn" are drawn on the focused (or
+  only) target, so a row of targets stays calm; "Disintegrator: ignores
+  fortification"; the Tripod's label reads "pierce N" and, while the target
+  is focused, the unit behind is marked with its damage (magenta, or the
+  friendly-fire hazard with "Yours"), and "Pierce hits your Grunt: 5 damage
+  (Shield absorbs 2)" is a warning.
+- **Cues** (effects canvas; reduced motion holds each midpoint): a heat ray
+  is a magenta beam with a white core from the shooter to the target
+  (wider at full power), with the heat-ray flash, and a thinner beam on to
+  the Pierce victim; a Shield that absorbs flares as a crescent turned to
+  the blow; Beam Down is a column of light coming down on the arrival tile;
+  the Tractor Beam is a cone with hoops, then the target slides one tile;
+  Mind Control spins the spiral over the victim and rings the Brain; a
+  collapsing Thrall's helmet ring shrinks. The beams are code-drawn (as
+  MARTIAN.md recommends); the flash, crescent and spiral are the effect
+  sprites, and without them (Classic look, LEGACY) code shapes stand in.
+- **Log.** "Your Shields recharged", "Your Saucer beamed down a Grunt"
+  (toast), "Player 2's Brain took control of a Fighter" (toast), "2 Thralls
+  collapsed" (toast), "Your Mothership pulled Player 2's Raider".
+- **City panel.** A Martian viewer's city counts slots like a Dinosaur's
+  ("5/7 slots"; the tooltip names the two-slot Mothership and Colossus and
+  that Thralls use no slot), and every train card names its slots.
+- **Help.** A "Martians" section lists the fourteen section-13.3 sentences
+  for every viewer of a match with a Martian seat (numbers and names from
+  the registry); a Martian viewer is not told of the Raider's Escape.
 
 ## Current Ruleset 7 revision 21 achievements overlay
 

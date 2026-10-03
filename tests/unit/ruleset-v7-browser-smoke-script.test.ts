@@ -166,7 +166,7 @@ describe("Ruleset 7 browser smoke script", () => {
 
     expect(source).toContain("await probeGoblinMatch(connection)");
     expect(probe).toContain(
-      'JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur"])',
+      'JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])',
     );
     expect(probe).toContain(
       "document.querySelector('#v7-faction-0')?.value === 'GOBLIN'",
@@ -198,11 +198,13 @@ describe("Ruleset 7 browser smoke script", () => {
     );
 
     expect(source).toContain("await probeDinosaurMatch(connection)");
-    expect(source).toContain("; Dinosaur ${dinosaur}; Showcase ${showcase}.");
+    expect(source).toContain(
+      "; Dinosaur ${dinosaur}; Martian ${martian}; Showcase ${showcase}.",
+    );
     // Setup: Dinosaur is offered, and chosen with three opponents on the
     // Showcase, the one setup with a turn-1 lane and lay-able Eggs.
     expect(probe).toContain(
-      'JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur"])',
+      'JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])',
     );
     expect(probe).toContain(
       'await typeSelectValue(connection, "#v7-ai-count", "3")',
@@ -266,6 +268,62 @@ describe("Ruleset 7 browser smoke script", () => {
       "dinosaur-setup-desktop.png",
       "dinosaur-nest-picking-desktop.png",
       "dinosaur-hatched-desktop.png",
+    ])
+      expect(probe).toContain(`await capture(connection, "${name}")`);
+    // No fixture import: the probe also runs against a deployed bundle.
+    expect(probe).not.toContain("/tests/fixtures/");
+  });
+  it("fires a ray with its preview, beams a Grunt down and resumes as Martians", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = source.slice(
+      source.indexOf("async function probeMartianMatch("),
+      source.indexOf("async function probeShowcaseMatch("),
+    );
+
+    expect(source).toContain("await probeMartianMatch(connection)");
+    // Setup: Martian is offered, and chosen with three opponents on the
+    // Showcase, whose first turn has a ray in reach and a Beam Down.
+    expect(probe).toContain(
+      'JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])',
+    );
+    expect(probe).toContain(
+      "document.querySelector('#v7-faction-0')?.value === 'MARTIAN'",
+    );
+    expect(probe).toContain(
+      'JSON.stringify(["MARTIAN", "ORIGINAL", "ORIGINAL", "ORIGINAL"])',
+    );
+    expect(probe).not.toContain("launchWithFastForward");
+    // The ray: "Full power" in the dock, the preview's power and Cooling
+    // lines on the cursor, the shooter Cooling after the shot.
+    const preview = probe.indexOf(`rayPreview.includes("Full power")`);
+    expect(preview).toBeGreaterThan(-1);
+    expect(probe).toContain(
+      `rayPreview.includes("Leaves it Cooling next turn")`,
+    );
+    expect(probe).toContain("entry.firedThisTurn");
+    // Beam Down through the dock: the button, the passenger, a tile.
+    const beam = probe.indexOf(
+      `await pointerClick(connection, '[data-action="martian-beam-down"]')`,
+    );
+    expect(beam).toBeGreaterThan(preview);
+    expect(probe).toContain(
+      `await pointerClick(connection, '[data-action^="beam-passenger-"]')`,
+    );
+    expect(probe).toContain(
+      `await pointerClick(connection, '[data-action^="beam-tile-"]')`,
+    );
+    expect(probe).toContain("includes('Saucer beamed down a')");
+    // Save and resume on a fresh load with the Martian seat.
+    expect(beam).toBeLessThan(
+      probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
+    );
+    expect(probe).toContain(`'["MARTIAN","ORIGINAL","ORIGINAL","ORIGINAL"]'`);
+    expect(probe).toContain(
+      "JSON.stringify(resumed) !== JSON.stringify(beamed)",
+    );
+    for (const name of [
+      "martian-ray-preview-desktop.png",
+      "martian-beam-down-desktop.png",
     ])
       expect(probe).toContain(`await capture(connection, "${name}")`);
     // No fixture import: the probe also runs against a deployed bundle.
@@ -372,9 +430,9 @@ describe("Ruleset 7 browser smoke script", () => {
     // Two release captures, four Undead setup probe captures, one
     // revision-14 Plague/Bitten fixture capture per art set (in a loop), and
     // three revision-17 Goblin probe captures, four Dinosaur probe captures
-    // (revision 20 adds the Charge! attack preview), and one revision-18
-    // Showcase capture.
-    expect(source.match(/await capture\(/g)).toHaveLength(15);
+    // (revision 20 adds the Charge! attack preview), two Martian probe
+    // captures (pulp_wars-t6s.4), and one revision-18 Showcase capture.
+    expect(source.match(/await capture\(/g)).toHaveLength(17);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");

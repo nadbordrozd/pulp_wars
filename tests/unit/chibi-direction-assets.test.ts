@@ -235,13 +235,15 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
 
   it("records a pennant anchor inside the art of City 1-3, the Port and the Shipyard only", () => {
     // The Human and shared pieces of this batch; a converted faction's
-    // cities (Goblin, Undead, Dinosaur) have anchors and tests of their own.
+    // cities (Goblin, Undead, Dinosaur, and the Martians since bead
+    // pulp_wars-t6s.4) have anchors and tests of their own.
     const anchored = Object.keys(DIRECTION_FLAG_ANCHORS_V7).filter(
       (id) =>
         id.startsWith("chibi-direction-") &&
         !id.startsWith("chibi-direction-goblin-") &&
         !id.startsWith("chibi-direction-undead-") &&
-        !id.startsWith("chibi-direction-dinosaur-"),
+        !id.startsWith("chibi-direction-dinosaur-") &&
+        !id.startsWith("chibi-direction-martian-"),
     );
     expect(anchored.sort()).toEqual([
       "chibi-direction-city-1",

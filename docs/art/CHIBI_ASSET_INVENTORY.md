@@ -572,10 +572,12 @@ WAAAGH! icons (batch `5-goblin`, unchanged) and the shared ships.
 
 ## Martian production art: batch `direction-martian` (bead `pulp_wars-t6s.6`)
 
-A fifth faction's art, made before the faction is in the game and **not
-registered**: the entries are in
-[`chibi-direction-martian-art-manifest.ts`](../../src/assets/chibi-direction-martian-art-manifest.ts),
-which nothing imports until bead `pulp_wars-t6s.4`. Fixed faction colours
+A fifth faction's art, made before the faction was in the game and
+**registered in the direction registry by the Martian UI bead
+`pulp_wars-t6s.4`** (live in the default look; the Classic look and LEGACY
+draw the Human stand-in with a saucer badge): the entries are in
+[`chibi-direction-martian-art-manifest.ts`](../../src/assets/chibi-direction-martian-art-manifest.ts).
+Fixed faction colours
 (chrome, gunmetal, glass, lavender-grey skin, one hot magenta accent), no
 owner mask. See [MARTIAN.md](factions/MARTIAN.md).
 

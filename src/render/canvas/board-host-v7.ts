@@ -26,6 +26,11 @@ import {
 } from "./dinosaur-effects-v7";
 import { DINOSAUR_CUE_COLORS_V7 } from "./dinosaur-canvas-v7";
 import {
+  MARTIAN_EFFECT_SUBJECTS_V7,
+  drawMartianFeedbackV7,
+  type MartianFeedbackV7,
+} from "./martian-effects-v7";
+import {
   MAX_ZOOM,
   MIN_ZOOM,
   boardWorldBounds,
@@ -223,6 +228,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #dinosaurFeedback: DinosaurFeedbackV7 | null = null;
   /** Review tooling only (pinDinosaurFeedback): cues frozen mid-animation. */
   #pinnedDinosaurFeedback: readonly DinosaurFeedbackV7[] = [];
+  /** The Martian cue playing on the effects overlay (bead pulp_wars-t6s.4). */
+  #martianFeedback: MartianFeedbackV7 | null = null;
+  /** Review tooling only (pinMartianFeedback): cues frozen mid-animation. */
+  #pinnedMartianFeedback: readonly MartianFeedbackV7[] = [];
   /** Revision 19: this frame's unit sprite cues (growth, Egg, hatchling). */
   #unitPulses: readonly UnitPulseV7[] = [];
   /**
@@ -427,12 +436,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // Revision 19: the nest tiles of the Egg being laid are framed the same
     // way, once per preview.
     const layEgg = model.interaction.layEgg ?? null;
+    // The Martian revision: an aimed Beam Down, Mind Control or Tractor
+    // Beam frames its unit and targets the same way, once per stage.
+    const martianPick = model.interaction.martianPick ?? null;
     const subject =
       unitId !== null
         ? String(unitId)
         : layEgg !== null
           ? `nest:${layEgg.cityId}:${layEgg.role}`
-          : null;
+          : martianPick !== null
+            ? `martian:${martianPick.kind}:${martianPick.unitId}:${martianPick.kind === "BEAM_DOWN" ? String(martianPick.passengerUnitId) : ""}`
+            : null;
     if (subject === null) {
       this.#kaboomFramedKey = null;
       return;
@@ -442,14 +456,23 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (key === this.#kaboomFramedKey) return;
     this.#kaboomFramedKey = key;
     const framed = this.#planFor(model.view, model.offeredCommands);
+    const pickUnit =
+      martianPick === null
+        ? undefined
+        : model.view.units.find((unit) => unit.id === martianPick.unitId);
     const area = cellWorldBounds(
-      framed.entries
-        .filter(
-          (entry) =>
-            entry.kind === "ABILITY_AREA" &&
-            entry.abilityStyle === (unitId !== null ? "BLAST" : "NEST"),
-        )
-        .map((entry) => entry.at),
+      martianPick !== null && unitId === null && layEgg === null
+        ? [
+            ...(pickUnit === undefined ? [] : [pickUnit.at]),
+            ...framed.targets.map((target) => target.at),
+          ]
+        : framed.entries
+            .filter(
+              (entry) =>
+                entry.kind === "ABILITY_AREA" &&
+                entry.abilityStyle === (unitId !== null ? "BLAST" : "NEST"),
+            )
+            .map((entry) => entry.at),
     );
     if (area === null) return;
     const delta = panToFrameArea(this.#camera, area, this.#viewport, band);
@@ -554,6 +577,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#pinnedExplosionFeedback = [];
     this.#dinosaurFeedback = null;
     this.#pinnedDinosaurFeedback = [];
+    this.#martianFeedback = null;
+    this.#pinnedMartianFeedback = [];
     this.#unitPulses = [];
     this.#heldUnits = new Map();
     this.#drawSupportOverlay();
@@ -603,11 +628,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       );
       const explosionSteps = steps.filter((step) => step.kind === "EXPLOSION");
       const dinosaurSteps = steps.filter((step) => step.kind === "DINOSAUR");
+      const martianSteps = steps.filter((step) => step.kind === "MARTIAN");
       if (
         supportSteps.length > 0 ||
         windmillSteps.length > 0 ||
         explosionSteps.length > 0 ||
-        dinosaurSteps.length > 0
+        dinosaurSteps.length > 0 ||
+        martianSteps.length > 0
       ) {
         this.#presentedView = after;
         this.#draw();
@@ -627,6 +654,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           await this.#animate(260 * durationScale, () => undefined);
           if (token !== this.#presentationToken) return;
           this.#dinosaurFeedback = null;
+          this.#drawSupportOverlay();
+        }
+        // The Martian revision: each Martian cue holds its midpoint.
+        for (const step of martianSteps) {
+          if (step.followCamera === true && step.cells[0] !== undefined)
+            this.#followCamera(step.cells[0]);
+          this.#martianFeedback = martianFeedbackOf(step, 0.5);
+          this.#drawSupportOverlay();
+          await this.#animate(220 * durationScale, () => undefined);
+          if (token !== this.#presentationToken) return;
+          this.#martianFeedback = null;
           this.#drawSupportOverlay();
         }
         // Revision 17: each explosion wave holds its midpoint burst, in
@@ -679,7 +717,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           supportSteps.length +
             windmillSteps.length +
             explosionSteps.length +
-            dinosaurSteps.length ===
+            dinosaurSteps.length +
+            martianSteps.length ===
           steps.length
         ) {
           this.#presentedView = null;
@@ -758,6 +797,29 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#unitPulses = [];
         this.#dinosaurFeedback = null;
         this.#presentedView = after;
+        this.#drawSupportOverlay();
+      } else if (step.kind === "MARTIAN") {
+        const first = step.cells[0];
+        if (first !== undefined && step.followCamera === true)
+          this.#followCamera(first);
+        // A heat ray shows the target before the hit and the result after
+        // it; every other cue shows the result (the arrival, the pull's
+        // start, the Thrall in its victim's place).
+        const ray = step.effect === "HEAT_RAY";
+        this.#presentedView = ray ? before : after;
+        this.#draw();
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          if (ray && progress >= 0.35 && this.#presentedView !== after) {
+            this.#presentedView = after;
+            this.#draw();
+          }
+          this.#martianFeedback = martianFeedbackOf(step, progress);
+          this.#drawSupportOverlay();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#martianFeedback = null;
+        this.#presentedView = after;
+        this.#draw();
         this.#drawSupportOverlay();
       } else if (step.kind === "BUILD") {
         this.#followCamera(step.at);
@@ -1232,6 +1294,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#effectArtRequested = true;
     const art = this.#supportEffectArt();
     for (const subject of SUPPORT_EFFECT_SUBJECTS_V7) art?.image(subject);
+    for (const subject of MARTIAN_EFFECT_SUBJECTS_V7) art?.image(subject);
   }
 
   /**
@@ -1264,6 +1327,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#drawSupportOverlay();
   }
 
+  /**
+   * Review tooling and tests: draws the given Martian cues at their fixed
+   * progress on the effects canvas until cleared with an empty list. The
+   * game never calls it; presentations clear it.
+   */
+  pinMartianFeedback(feedback: readonly MartianFeedbackV7[]): void {
+    this.#pinnedMartianFeedback = feedback;
+    this.#requestEffectArt();
+    this.#drawSupportOverlay();
+  }
+
   #drawSupportOverlay(): void {
     const context = this.#effectsContext;
     const canvas = this.#effectsCanvas;
@@ -1278,6 +1352,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       drawExplosionFeedbackV7(context, this.#camera, pinned, false);
     for (const pinned of this.#pinnedDinosaurFeedback)
       drawDinosaurFeedbackV7(context, this.#camera, pinned);
+    for (const pinned of this.#pinnedMartianFeedback)
+      drawMartianFeedbackV7(context, this.#camera, pinned, effectArt);
+    const martian = this.#martianFeedback;
+    if (martian === null) {
+      delete canvas.dataset.martianEffect;
+      delete canvas.dataset.martianProgress;
+    } else {
+      canvas.dataset.martianEffect = martian.effect;
+      canvas.dataset.martianProgress = martian.progress.toFixed(3);
+      drawMartianFeedbackV7(context, this.#camera, martian, effectArt);
+    }
     const dinosaur = this.#dinosaurFeedback;
     if (dinosaur === null) {
       delete canvas.dataset.dinosaurEffect;
@@ -1969,6 +2054,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #now(): number {
     return this.#document.defaultView?.performance.now() ?? Date.now();
   }
+}
+
+/** The effects-overlay cue of a Martian presentation step at `progress`. */
+function martianFeedbackOf(
+  step: Extract<CorePresentationStepV7, { readonly kind: "MARTIAN" }>,
+  progress: number,
+): MartianFeedbackV7 {
+  return {
+    effect: step.effect,
+    cells: step.cells,
+    ...(step.from === undefined ? {} : { from: step.from }),
+    ...(step.pierce === undefined ? {} : { pierce: step.pierce }),
+    ...(step.fullPower === true ? { fullPower: true } : {}),
+    progress,
+  };
 }
 
 function localPoint(canvas: HTMLCanvasElement, event: MouseEvent): Point {

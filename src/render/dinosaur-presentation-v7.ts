@@ -696,7 +696,9 @@ export function chargePreviewLinesV7(
   const charge = attackIsChargeV7(view, attacker);
   const lines: string[] = [];
   if (preview.runUp > 0) lines.push(`Charge +${preview.runUp}`);
-  if (preview.fortificationIgnored > 0)
+  // A heat ray's ignored fortification is the Martian Disintegrator, which
+  // the Martian preview lines name (bead pulp_wars-t6s.4).
+  if (preview.fortificationIgnored > 0 && preview.rayPower === "NONE")
     lines.push(
       charge ? CHARGE_IGNORES_FORTIFICATION_V7 : WALLBREAKER_PREVIEW_V7,
     );

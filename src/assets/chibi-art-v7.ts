@@ -35,9 +35,8 @@ export type ArtSubjectV7 =
   | `UNIT:DINOSAUR:${DinosaurArtRoleV7 | "EGG"}`
   /**
    * The Martian units and the Thrall, one sprite for a mind-controlled unit
-   * of any faction (bead pulp_wars-t6s.6, MARTIAN.md). The art exists before
-   * the faction is wired in: nothing resolves these subjects until the UI
-   * bead (pulp_wars-t6s.4) registers them.
+   * of any faction (bead pulp_wars-t6s.6, MARTIAN.md), registered in the
+   * direction registry since the UI bead (pulp_wars-t6s.4).
    */
   | `UNIT:MARTIAN:${MartianArtRoleV7 | "THRALL"}`
   | `CITY:${1 | 2 | 3}`
@@ -181,7 +180,7 @@ export type DinosaurArtRoleV7 = UndeadArtRoleV7;
 export type MartianArtRoleV7 = UndeadArtRoleV7;
 
 /** Factions with their own city art; every other faction uses `CITY:<level>`. */
-export type CityArtFactionV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR";
+export type CityArtFactionV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN";
 
 /**
  * The art subject of a city on the map or in the interface: the owner
@@ -196,7 +195,8 @@ export function cityArtSubjectV7(city: {
   if (
     city.faction === "UNDEAD" ||
     city.faction === "GOBLIN" ||
-    city.faction === "DINOSAUR"
+    city.faction === "DINOSAUR" ||
+    city.faction === "MARTIAN"
   )
     return `CITY:${city.faction}:${city.artLevel}`;
   return `CITY:${city.artLevel}`;
@@ -210,12 +210,28 @@ const SHARED_ART_ROLES_V7: readonly UnitRoleIdV7[] = [
 /**
  * The art subject of a unit on the map: the embarked transport, the
  * owner faction's own art for the role, or the shared (Human) art.
+ *
+ * The Martian revision (bead pulp_wars-t6s.4): a Thrall (`thrall`) is drawn
+ * with its own sprite, and a self-launched Martian machine (`machine`: its
+ * role walks or flies) afloat is drawn as itself over the water, never as
+ * the transport (RULESET_7_MARTIANS.md section 13.1).
  */
 export function unitArtSubjectV7(unit: {
   readonly role: UnitRoleIdV7;
   readonly form: UnitFormV7;
   readonly faction: FactionIdV7;
+  readonly thrall?: boolean;
+  readonly machine?: boolean;
 }): ArtSubjectV7 {
+  if (unit.faction === "MARTIAN" && unit.thrall === true)
+    return "UNIT:MARTIAN:THRALL";
+  if (
+    unit.form === "EMBARKED" &&
+    unit.faction === "MARTIAN" &&
+    unit.machine === true &&
+    !SHARED_ART_ROLES_V7.includes(unit.role)
+  )
+    return `UNIT:MARTIAN:${unit.role as MartianArtRoleV7}`;
   if (unit.form === "EMBARKED") return "UNIT:EMBARKED_TRANSPORT";
   // Revision 19: one Egg sprite for every role inside.
   if (unit.form === "EGG") return "UNIT:DINOSAUR:EGG";
@@ -226,6 +242,8 @@ export function unitArtSubjectV7(unit: {
     return `UNIT:GOBLIN:${unit.role as GoblinArtRoleV7}`;
   if (unit.faction === "DINOSAUR")
     return `UNIT:DINOSAUR:${unit.role as DinosaurArtRoleV7}`;
+  if (unit.faction === "MARTIAN")
+    return `UNIT:MARTIAN:${unit.role as MartianArtRoleV7}`;
   return `UNIT:${unit.role}`;
 }
 
@@ -240,14 +258,22 @@ export function unitArtSubjectV7(unit: {
  * falls back to the Human `CITY:<level>`. Revision 19: `UNIT:DINOSAUR:<ROLE>`
  * and `PORTRAIT:DINOSAUR:<ROLE>` fall back to the Human art with the Dinosaur
  * badge, and `ICON:ACTION:DINOSAUR:RALLY` (War Drums) to the Human Rally
- * horn; the Egg (`UNIT:DINOSAUR:EGG`) has no Human counterpart. Every other
- * subject has no fallback.
+ * horn; the Egg (`UNIT:DINOSAUR:EGG`) has no Human counterpart. The Martian
+ * revision (bead pulp_wars-t6s.4): `UNIT:MARTIAN:<ROLE>`,
+ * `PORTRAIT:MARTIAN:<ROLE>`, `CITY:MARTIAN:<level>` and
+ * `ICON:ACTION:MARTIAN:RALLY` (Psychic Command) fall back like the other
+ * factions'; the Thrall (`UNIT:MARTIAN:THRALL`, `PORTRAIT:MARTIAN:THRALL`)
+ * falls back to the Human Fighter, the role it fights as. Every other
+ * subject (the Martian ability, status and effect icons included) has no
+ * fallback.
  */
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
 ): ArtSubjectV7 | null {
   if (subject === "UNIT:DINOSAUR:EGG") return null;
-  for (const faction of [":UNDEAD:", ":GOBLIN:", ":DINOSAUR:"])
+  if (subject === "UNIT:MARTIAN:THRALL") return "UNIT:FIGHTER";
+  if (subject === "PORTRAIT:MARTIAN:THRALL") return "PORTRAIT:FIGHTER";
+  for (const faction of [":UNDEAD:", ":GOBLIN:", ":DINOSAUR:", ":MARTIAN:"])
     if (subject.includes(faction))
       return subject.replace(faction, ":") as ArtSubjectV7;
   return null;

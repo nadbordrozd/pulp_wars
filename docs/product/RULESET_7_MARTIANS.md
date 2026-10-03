@@ -2,12 +2,16 @@
 
 **Status:** contract (`pulp_wars-t6s.1`); **the engine is implemented**
 (`pulp_wars-t6s.2`, identity `pulp-wars-poc-7r22`: every rule, command, event,
-query, and state shape of this document). **The Normal AI
-([section 12](#12-normal-ai-requirements), `pulp_wars-t6s.3`) and the UI and
-placeholder art ([section 13](#13-ui-requirements), `pulp_wars-t6s.4`) are
-pending:** a Martian seat plays with the generic Normal policy and the setup
-screen does not offer the faction. What the implementation changed or made
-precise is in [section 19](#19-implementation-notes-pulp_wars-t6s2). It is an
+query, and state shape of this document). **The UI
+([section 13](#13-ui-requirements), `pulp_wars-t6s.4`) is implemented**, with
+the production art of
+[MARTIAN.md](../art/factions/MARTIAN.md) in place of the placeholder sprites
+of section 13.4 (the setup screen offers the faction; see
+[the Screen Flow Martian overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay)).
+**The Normal AI ([section 12](#12-normal-ai-requirements), `pulp_wars-t6s.3`)
+is pending:** a Martian seat plays with the generic Normal policy. What the
+implementation changed or made precise is in
+[section 19](#19-implementation-notes-pulp_wars-t6s2). It is an
 overlay over the rules in force when `pulp_wars-t6s.2` starts: today that is
 [revision 20](RULESET_7_REVISION_20.md), which amends
 [revision 19](RULESET_7_REVISION_19_DINOSAURS.md), which is an overlay over
@@ -2247,6 +2251,14 @@ One sentence per rule, shown in Help for every viewer:
 
 ### 13.4 Placeholder art
 
+**Superseded** (`pulp_wars-t6s.4`): the user asked for real Martian sprites,
+so the production art of bead `pulp_wars-t6s.6`
+([MARTIAN.md](../art/factions/MARTIAN.md)) is wired in instead and no
+placeholder generator is built. The rules below that do not depend on the
+generator stand: the Classic look and LEGACY draw the Human sprite of the
+role with a Martian badge, and every marker, glyph and beam is code-drawn.
+The text is kept as the record of the original plan.
+
 No PixelLab work belongs to this epic. Martian units use **programmatic
 placeholder sprites made the way the Goblin placeholders were** (bead
 `pulp_wars-0ao.4`, commit `dece90d`): a deterministic generator with no
@@ -2769,7 +2781,7 @@ The scripts and outputs are in the session scratch space under `t6s2/step0/`
     `flyerMayStandOnSiteV7` hold the two Martian additions. A source audit
     in `tests/unit/ruleset-v7-martian-movement.test.ts` pins the call sites.
 12. **Setup screen.** The faction list of the setup screen leaves `MARTIAN`
-    out until `pulp_wars-t6s.4`.
+    out until `pulp_wars-t6s.4`, which adds it.
 
 ### 19.3 Left to the following beads
 
@@ -2778,7 +2790,16 @@ The scripts and outputs are in the session scratch space under `t6s2/step0/`
   Beam. Its simulated views of future positions do not model Cooling or the
   half power of a ray after a planned Move beyond what `estimateCombatV7`
   reports for the attacker's own planned path.
-- **`pulp_wars-t6s.4` (UI).** Nothing Martian is drawn or offered.
+- **`pulp_wars-t6s.4` (UI).** Done: the setup offers the faction, the
+  production art of `pulp_wars-t6s.6` is wired in (the placeholder
+  generator of section 13.4 is not built), and every surface of section
+  13.1 reads the public views, stats, previews, and events listed in the
+  [client architecture](../architecture/CLIENT_ARCHITECTURE.md#martian-presentation-pulp_wars-t6s4).
+  The decisions it made (the Classic and LEGACY stand-in, the always-shown
+  Shield bar, the marker slots) are recorded in
+  [MARTIAN.md](../art/factions/MARTIAN.md#decisions-of-the-ui-bead). The
+  client has no threat display, so the flying and striding reach of
+  `queryThreatenedTilesV7` is read only by the AI.
 - **`pulp_wars-t6s.5` (balance).** The balance matrix has no Martian
   pairing yet; the headless result carries the `martian` telemetry block
   ([headless simulation](../architecture/HEADLESS_SIMULATION.md#martian-seats-pulp_wars-t6s2)).

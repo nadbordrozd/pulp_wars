@@ -584,6 +584,7 @@ try {
   const undead = await probeUndeadSetup(connection);
   const goblin = await probeGoblinMatch(connection);
   const dinosaur = await probeDinosaurMatch(connection);
+  const martian = await probeMartianMatch(connection);
   const showcase = await probeShowcaseMatch(connection);
   await evaluate(
     connection,
@@ -667,7 +668,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Showcase ${showcase}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Showcase ${showcase}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -1121,7 +1122,7 @@ async function probeGoblinMatch(connection: Connection): Promise<string> {
   );
   if (
     JSON.stringify(options) !==
-    JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur"])
+    JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])
   )
     throw new Error(
       `Goblin faction option missing: ${JSON.stringify(options)}`,
@@ -1362,7 +1363,7 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
   );
   if (
     JSON.stringify(options) !==
-    JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur"])
+    JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])
   )
     throw new Error(
       `Dinosaur faction option missing: ${JSON.stringify(options)}`,
@@ -1611,6 +1612,231 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
   );
   await navigateFresh(freshSetup);
   return `Showcase launch as Dinosaur vs three Humans, Charge after a two-tile Move (${chargeLine} Triceratops on ${cursor.x},${cursor.y}), Raptor Egg laid on ${nest.x},${nest.y} (${slots} before), hatched in round ${hatched.round} with ${hatched.hp} HP, and resume`;
+}
+
+/**
+ * Martians in the default route (pulp_wars-t6s.4): setup offers Martian for
+ * every seat; a Showcase with a Martian seat and three Human opponents
+ * launches from the production setup (its first turn has a full-power ray
+ * in reach of the neighbouring strip and a Saucer next to the capital's
+ * Grunt); the ray unit is selected with the keyboard, its dock shows "Full
+ * power", the attack preview names the ray's power and the Cooling it
+ * leaves, and it fires (the shooter is Cooling afterwards); the Saucer
+ * beams the capital's Grunt down through its Beam Down button, the
+ * passenger and tile picked in the dock; and the save resumes with its
+ * Martian seat on a fresh default-route load. It uses no fixture, so it
+ * also runs against a deployed bundle.
+ */
+async function probeMartianMatch(connection: Connection): Promise<string> {
+  const defaultUrl = (): string => {
+    const url = new URL(baseUrl);
+    url.searchParams.delete("art");
+    return url.href;
+  };
+  const navigateFresh = async (readiness: string): Promise<void> => {
+    await evaluate(
+      connection,
+      `globalThis.__V7_MARTIAN_PRIOR_DOCUMENT__ = true`,
+    );
+    await connection.send("Page.navigate", { url: defaultUrl() });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_MARTIAN_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
+    );
+  };
+  const typeahead = async (selector: string, letter: string): Promise<void> => {
+    await evaluate(
+      connection,
+      `document.querySelector(${JSON.stringify(selector)}).focus()`,
+    );
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: letter,
+      code: `Key${letter}`,
+      text: letter,
+      windowsVirtualKeyCode: letter.charCodeAt(0),
+    });
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: letter,
+      code: `Key${letter}`,
+      windowsVirtualKeyCode: letter.charCodeAt(0),
+    });
+  };
+  const focusBoard = async (): Promise<void> => {
+    await evaluate(
+      connection,
+      `document.querySelector('canvas.board-canvas-v7').focus()`,
+    );
+  };
+  const arrows = async (dx: number, dy: number): Promise<void> => {
+    const horizontal = dx < 0 ? "ArrowLeft" : "ArrowRight";
+    const vertical = dy < 0 ? "ArrowUp" : "ArrowDown";
+    for (let step = 0; step < Math.abs(dx); step += 1)
+      await pressKey(connection, horizontal, horizontal);
+    for (let step = 0; step < Math.abs(dy); step += 1)
+      await pressKey(connection, vertical, vertical);
+  };
+  const saveKey = "pulpWars.save.v7r23.current";
+  const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(freshSetup);
+  const options = await evaluate<readonly string[]>(
+    connection,
+    `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
+  );
+  if (
+    JSON.stringify(options) !==
+    JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])
+  )
+    throw new Error(
+      `Martian faction option missing: ${JSON.stringify(options)}`,
+    );
+  // Three opponents, the Showcase map, and a Martian human seat, each
+  // chosen by keyboard on its focused, closed select.
+  await evaluate(connection, `document.querySelector('#v7-ai-count').focus()`);
+  await typeSelectValue(connection, "#v7-ai-count", "3");
+  await typeahead("#v7-map-type", "S");
+  await typeahead("#v7-faction-0", "M");
+  await waitForExpression(
+    connection,
+    `document.querySelector('#v7-map-type')?.value === 'SHOWCASE' && document.querySelector('#v7-faction-0')?.value === 'MARTIAN' && document.querySelectorAll('[data-v7-factions] select').length === 4 && document.querySelector('#v7-faction-3')?.value === 'ORIGINAL'`,
+  );
+  await pointerClick(connection, '[data-action="launch"]');
+  const settled = `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId && v.pendingChoices.length === 0 && document.querySelector('[data-action="end-turn"]:not(:disabled)') !== null; })()`;
+  await waitForExpression(connection, settled, 900);
+  interface MartianStartV7 {
+    readonly factions: readonly string[];
+    readonly viewer: string;
+    readonly shields: number;
+    readonly capital: { readonly x: number; readonly y: number };
+    readonly saucer: { readonly x: number; readonly y: number };
+    readonly ray: {
+      readonly unitId: number;
+      readonly role: string;
+      readonly at: { readonly x: number; readonly y: number };
+      readonly target: { readonly x: number; readonly y: number };
+    } | null;
+  }
+  // A ray is an Attack by an own Ray Gunner, Tripod or Colossus.
+  const started = await evaluate<MartianStartV7>(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__.controller.snapshot(); const view = s.view; const own = view.units.filter((unit) => unit.ownerId === view.viewer.id); const attack = s.offeredCommands.find((command) => command.kind === 'ATTACK' && ['MARKSMAN', 'CATAPULT', 'JUGGERNAUT'].includes(own.find((unit) => unit.id === command.unitId)?.role)); const shooter = attack === undefined ? undefined : own.find((unit) => unit.id === attack.unitId); const target = attack === undefined ? undefined : view.units.find((unit) => unit.id === attack.targetUnitId); return { factions: view.setup.factions, viewer: view.viewer.faction, shields: view.shields.length, capital: view.cities.find((city) => city.ownerId === view.viewer.id && city.isCapital).at, saucer: own.find((unit) => unit.role === 'RAIDER').at, ray: shooter === undefined || target === undefined ? null : { unitId: shooter.id, role: shooter.role, at: shooter.at, target: target.at } }; })()`,
+  );
+  if (
+    JSON.stringify(started.factions) !==
+      JSON.stringify(["MARTIAN", "ORIGINAL", "ORIGINAL", "ORIGINAL"]) ||
+    started.viewer !== "MARTIAN" ||
+    started.shields === 0 ||
+    started.ray === null
+  )
+    throw new Error(`Martian setup launch failed: ${JSON.stringify(started)}`);
+  const ray = started.ray;
+  // The ray: the board cursor starts on the capital; the shooter is
+  // selected with Enter, its dock says "Full power", and the cursor on its
+  // target describes the preview.
+  await focusBoard();
+  await arrows(ray.at.x - started.capital.x, ray.at.y - started.capital.y);
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `Array.from(document.querySelectorAll('.v7-selection-dock [data-unit-status="ray-power"]')).some((chip) => chip.textContent === 'Full power')`,
+  );
+  await focusBoard();
+  await arrows(ray.target.x - ray.at.x, ray.target.y - ray.at.y);
+  const rayPreview = await evaluate<string>(
+    connection,
+    `document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? ''`,
+  );
+  if (
+    !/Attack preview\. .*Primary damage \d+\./.test(rayPreview) ||
+    !rayPreview.includes("Full power") ||
+    !rayPreview.includes("Leaves it Cooling next turn")
+  )
+    throw new Error(`Ray preview missing: ${rayPreview}`);
+  await capture(connection, "martian-ray-preview-desktop.png");
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 1 && ${settled}`,
+    300,
+  );
+  const cooling = await evaluate<boolean>(
+    connection,
+    `globalThis.__PULP_WARS_APP__.controller.snapshot().view.cooling.some((entry) => entry.unitId === ${ray.unitId} && entry.firedThisTurn)`,
+  );
+  if (!cooling) throw new Error("The full-power ray left no Cooling entry");
+  // Beam Down: Escape clears the selection (the cursor stays on the ray's
+  // target); the Saucer is selected, its Beam Down button aims, and the
+  // passenger and the first tile are picked in the dock.
+  await focusBoard();
+  await pressKey(connection, "Escape", "Escape");
+  await arrows(
+    started.saucer.x - ray.target.x,
+    started.saucer.y - ray.target.y,
+  );
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock h2')?.textContent === 'Saucer' && document.querySelector('[data-action="martian-beam-down"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
+  );
+  await pointerClick(connection, '[data-action="martian-beam-down"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-martian-pick="beam_down"] [data-action^="beam-passenger-"]') !== null`,
+  );
+  await pointerClick(connection, '[data-action^="beam-passenger-"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-martian-pick="beam_down"] [data-action^="beam-tile-"]') !== null`,
+  );
+  await capture(connection, "martian-beam-down-desktop.png");
+  await pointerClick(connection, '[data-action^="beam-tile-"]');
+  await waitForExpression(
+    connection,
+    `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 2 && (document.querySelector('#v7-live')?.textContent ?? '').includes('Saucer beamed down a') && ${settled}`,
+    300,
+  );
+  const beamedExpression = `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const grunt = view.units.find((unit) => unit.ownerId === view.viewer.id && unit.role === 'FIGHTER'); return { at: grunt?.at ?? null, exhausted: grunt?.activation.handled === true, commandIndex: view.commandIndex, cooling: view.cooling.length }; })()`;
+  interface MartianBeamedV7 {
+    readonly at: { readonly x: number; readonly y: number } | null;
+    readonly exhausted: boolean;
+    readonly commandIndex: number;
+    readonly cooling: number;
+  }
+  const beamed = await evaluate<MartianBeamedV7>(connection, beamedExpression);
+  if (
+    beamed.at === null ||
+    (beamed.at.x === started.capital.x && beamed.at.y === started.capital.y) ||
+    Math.max(
+      Math.abs(beamed.at.x - started.saucer.x),
+      Math.abs(beamed.at.y - started.saucer.y),
+    ) !== 1 ||
+    !beamed.exhausted
+  )
+    throw new Error(`Beam Down did not resolve: ${JSON.stringify(beamed)}`);
+  // The save resumes on a fresh default-route load with its Martian seat.
+  await navigateFresh(
+    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
+  );
+  await touchClick(connection, '[data-action="resume"]');
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && JSON.stringify(s.view?.setup.factions) === '["MARTIAN","ORIGINAL","ORIGINAL","ORIGINAL"]' && s.view.commandIndex === ${beamed.commandIndex}; })()`,
+    900,
+  );
+  const resumed = await evaluate<MartianBeamedV7>(connection, beamedExpression);
+  if (JSON.stringify(resumed) !== JSON.stringify(beamed))
+    throw new Error(`Martian save did not resume: ${JSON.stringify(resumed)}`);
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(freshSetup);
+  return `Showcase launch as Martian vs three Humans, full-power ${ray.role === "JUGGERNAUT" ? "Colossus" : ray.role === "CATAPULT" ? "Tripod" : "Ray Gunner"} ray from ${ray.at.x},${ray.at.y} (Cooling after), Grunt beamed down to ${beamed.at.x},${beamed.at.y}, and resume`;
 }
 
 /**
@@ -2034,6 +2260,7 @@ function virtualKeyCodeFor(code: string): number {
     ArrowRight: 39,
     ArrowUp: 38,
     Enter: 13,
+    Escape: 27,
     Home: 36,
     KeyA: 65,
     Tab: 9,

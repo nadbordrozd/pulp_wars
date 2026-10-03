@@ -30,6 +30,9 @@ import {
   isEggLaidRoleV7,
   previewHatchV7,
   previewLayEggV7,
+  previewBeamDownV7,
+  previewMindControlV7,
+  previewTractorBeamV7,
   queryLandingPreviewV7,
   unitCapacitySlotsV7,
   UNIT_ROLE_IDS_V7,
@@ -197,6 +200,55 @@ import {
   slotsTextV7,
   turnsTextV7,
 } from "../dinosaur-presentation-v7";
+import {
+  BEAM_DOWN_LABEL_V7,
+  BEAM_DOWN_PICK_PASSENGER_V7,
+  BEAM_DOWN_PICK_TILE_V7,
+  BEAM_DOWN_TOOLTIP_V7,
+  BRAIN_SUPPORT_UNLOCK_TEXT_V7,
+  COOLING_LABEL_V7,
+  COOLING_TOOLTIP_V7,
+  DISINTEGRATOR_UNLOCK_TEXT_V7,
+  FORCE_FIELDS_UNLOCK_TEXT_V7,
+  MARTIAN_FIELD_DEFENSE_EXPLANATION_V7,
+  MARTIAN_HELP_RULES_V7,
+  MIND_CONTROL_LABEL_V7,
+  MIND_CONTROL_PICK_V7,
+  MIND_CONTROL_TOOLTIP_V7,
+  STRAFE_LABEL_V7,
+  THRALL_INFO_V7,
+  THRALL_LABEL_V7,
+  THRALL_NO_SLOT_V7,
+  TRACTOR_BEAM_LABEL_V7,
+  TRACTOR_BEAM_PICK_V7,
+  TRACTOR_BEAM_TOOLTIP_V7,
+  beamDownUnavailableTextV7,
+  brainThrallsTextV7,
+  martianAbilityDescriptionV7,
+  martianAbilityNameV7,
+  martianBoundaryNoticeV7,
+  martianCommandLabelV7,
+  martianFieldDefenseBlockedV7,
+  martianRecruitNotesV7,
+  martianRewardLabelV7,
+  martianRoleUnlockTextV7,
+  martianSlotCapacityTooltipV7,
+  martianStatsV7,
+  martianUnitInfoLinesV7,
+  martianUnitNameV7,
+  matchHasMartianV7,
+  mindControlPreviewLinesV7,
+  mindControlUnavailableTextV7,
+  rayPowerTextV7,
+  shieldTextV7,
+  tractorBeamPreviewLinesV7,
+  unitIsThrallV7,
+} from "../martian-presentation-v7";
+import {
+  martianMachineV7,
+  martianMoveLabelV7,
+  type MartianPickV7,
+} from "../canvas/martian-board-plan-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -234,15 +286,15 @@ const COLOR_LABELS: Readonly<Record<string, string>> = {
   VIOLET: "Violet",
 };
 /**
- * The factions the setup screen offers. The Martian faction is registered in
- * the engine (`pulp_wars-t6s.2`) but is not offered until its UI bead
- * (`pulp_wars-t6s.4`) adds it here.
+ * The factions the setup screen offers: every registered faction. The
+ * Martians joined with their UI bead (`pulp_wars-t6s.4`).
  */
 const FACTIONS: readonly FactionIdV7[] = [
   "ORIGINAL",
   "UNDEAD",
   "GOBLIN",
   "DINOSAUR",
+  "MARTIAN",
 ];
 const FACTION_LABELS: Readonly<Record<string, string>> = {
   ORIGINAL: "Human",
@@ -252,13 +304,17 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
   MARTIAN: "Martian",
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
-type FactionBadgeV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR" | null;
+type FactionBadgeV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | null;
 /**
  * The placeholder badge of a faction. Revision 19 (bead `pulp_wars-c87.7`):
- * Dinosaur units shown with Human art wear the footprint badge.
+ * Dinosaur units shown with Human art wear the footprint badge; Martian
+ * units (bead `pulp_wars-t6s.4`) the saucer badge.
  */
 function factionBadgeV7(faction: FactionIdV7): FactionBadgeV7 {
-  return faction === "UNDEAD" || faction === "GOBLIN" || faction === "DINOSAUR"
+  return faction === "UNDEAD" ||
+    faction === "GOBLIN" ||
+    faction === "DINOSAUR" ||
+    faction === "MARTIAN"
     ? faction
     : null;
 }
@@ -271,6 +327,12 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // Revision 19: an Egg is laid from its city's Lay Egg cards, by picking a
   // nest tile on the board (up to 40 commands per city are never buttons).
   "LAY_EGG",
+  // The Martian revision: one button per unit aims the ability; its targets
+  // (one command per passenger and tile, or per target) are picked on the
+  // board.
+  "BEAM_DOWN",
+  "MIND_CONTROL",
+  "TRACTOR_BEAM",
 ]);
 /** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
 export const OWN_UNIT_PASS_THROUGH_TEXT_V7 =
@@ -390,6 +452,13 @@ export class Ruleset7DomAppView {
     readonly cityId: CityId;
     readonly role: UnitRoleIdV7;
   } | null = null;
+  /**
+   * The Martian revision: the Beam Down, Mind Control or Tractor Beam the
+   * selected unit is aiming on the board (Escape, Cancel or another
+   * selection leaves; Escape first steps back from a Beam Down tile to its
+   * passenger).
+   */
+  #martianPick: MartianPickV7 | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
@@ -602,6 +671,10 @@ export class Ruleset7DomAppView {
       } else if (this.#layEggPick !== null) {
         // Revision 19: Escape first leaves the nest-tile picking.
         this.#cancelLayEggPick();
+        return;
+      } else if (this.#martianPick !== null) {
+        // The Martian revision: Escape first steps back out of the aiming.
+        this.#cancelMartianPick(true);
         return;
       } else this.#selection = null;
       this.#render();
@@ -1071,6 +1144,7 @@ export class Ruleset7DomAppView {
           this.#kaboomArmedUnitId = null;
           this.#kaboomHoverUnitId = null;
           this.#layEggPick = null;
+          this.#martianPick = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
           this.#selectedModifier = null;
@@ -1387,6 +1461,11 @@ export class Ruleset7DomAppView {
         this.#selection.cityId === this.#layEggPick.cityId
           ? { layEgg: this.#layEggPick }
           : {}),
+        // The Martian revision: the ability the selected unit is aiming.
+        ...(this.#martianPick !== null &&
+        this.#martianPick.unitId === selectedUnitId
+          ? { martianPick: this.#martianPick }
+          : {}),
       },
     };
   }
@@ -1402,6 +1481,7 @@ export class Ruleset7DomAppView {
     close.onclick = () => {
       this.#selection = null;
       this.#layEggPick = null;
+      this.#martianPick = null;
       this.#render();
       this.#queueBoardFocus();
     };
@@ -1414,12 +1494,26 @@ export class Ruleset7DomAppView {
       // Revision 19: an Egg is named after the unit inside ("Raptor Egg").
       const egg = unit.form === "EGG";
       const eggTurns = egg ? eggTurnsRemainingV7(view, unit.id) : null;
-      const roleLabel = egg ? `${roleRule.label} Egg` : roleRule.label;
+      // The Martian revision: a Thrall is "Thrall", with its own sprite, and
+      // a machine afloat is drawn as itself.
+      const thrall = unitIsThrallV7(view, unit.id);
+      const machine = martianMachineV7(view, unit);
+      const roleLabel = egg
+        ? `${roleRule.label} Egg`
+        : thrall
+          ? THRALL_LABEL_V7
+          : roleRule.label;
       const undeadUnit = unitIsUndeadV7(view, unit);
       // Revision 17: every unit resolves through its owner's faction.
       const unitFaction = playerFactionV7(view, unit.ownerId);
       const unitBadge: FactionBadgeV7 = factionBadgeV7(unitFaction);
-      const unitSubject = unitArtSubjectV7({ ...unit, faction: unitFaction });
+      const unitSubject = unitArtSubjectV7({
+        ...unit,
+        faction: unitFaction,
+        thrall,
+        machine,
+      });
+      const transportArt = unit.form === "EMBARKED" && !machine;
       const unitColour = this.#playerColour(view, unit.ownerId);
       const dockArt = this.#chibiArt(
         unitSubject,
@@ -1435,10 +1529,12 @@ export class Ruleset7DomAppView {
       dock.append(
         identity(
           this.#document,
-          unit.form === "EMBARKED"
+          transportArt
             ? "unit-shared-embarked-transport"
             : RULESET7_UNIT_ART_IDS[unit.role],
-          unit.form === "EMBARKED" ? `${roleLabel} (at sea)` : roleLabel,
+          unit.form === "EMBARKED"
+            ? `${roleLabel} (${machine ? "afloat" : "at sea"})`
+            : roleLabel,
           true,
           dockArt?.factionArt === true || egg ? null : unitBadge,
           dockArt?.element ?? eggFigure,
@@ -1499,7 +1595,17 @@ export class Ruleset7DomAppView {
             "v7-egg-info",
           ),
         );
-      if (unit.form === "EMBARKED")
+      if (unit.form === "EMBARKED" && machine)
+        unitDetails.append(
+          text(
+            this.#document,
+            "p",
+            "Afloat: crossing water as a transport. It cannot attack or use abilities until it lands on a highlighted shore tile.",
+            "v7-transport-passenger",
+          ),
+          text(this.#document, "p", AT_SEA_MOVE_TEXT_V7, "v7-transport-move"),
+        );
+      else if (unit.form === "EMBARKED")
         unitDetails.append(
           text(
             this.#document,
@@ -1620,6 +1726,72 @@ export class Ruleset7DomAppView {
           identityColumn?.append(growth);
         }
       }
+      // The Martian revision (section 13.1): the Shield, Cooling, a Thrall
+      // and a Brain's Thralls and cooldown, from `stats.martian`.
+      const martian = stats?.martian;
+      if (martian !== undefined) {
+        const chip = (
+          label: string,
+          status: string,
+          title: string,
+        ): HTMLElement => {
+          const cue = text(
+            this.#document,
+            "span",
+            label,
+            "v7-chip v7-martian-chip",
+          );
+          cue.dataset.unitStatus = status;
+          cue.title = title;
+          cue.setAttribute("aria-label", title);
+          identityColumn?.append(cue);
+          return cue;
+        };
+        if (martian.shieldMaximum > 0) {
+          const shield = chip(
+            shieldTextV7(martian),
+            "shield",
+            `${shieldTextV7(martian)}. Takes damage before HP.`,
+          );
+          if (martian.shield > martian.shieldMaximum)
+            shield.dataset.forceField = "true";
+        }
+        // The ray's power now (section 13.1): Cooling, or "Full power" /
+        // "Half power: moved".
+        const ray = rayPowerTextV7(martian);
+        if (martian.cooling)
+          chip(COOLING_LABEL_V7, "cooling", COOLING_TOOLTIP_V7);
+        else if (ray !== null)
+          chip(
+            ray,
+            "ray-power",
+            martian.rayPower === "FULL"
+              ? "Full power: its next shot fires at full Attack and leaves it Cooling"
+              : "Half power: it moved this turn",
+          );
+        if (martian.thrall !== null)
+          chip(
+            THRALL_LABEL_V7,
+            "thrall",
+            `${THRALL_INFO_V7} ${THRALL_NO_SLOT_V7}.`,
+          );
+        if (martian.mindControl !== null) {
+          const blocked = mindControlUnavailableTextV7(martian.mindControl);
+          chip(
+            brainThrallsTextV7(martian.mindControl),
+            "thralls",
+            blocked ?? `${MIND_CONTROL_LABEL_V7} is ready`,
+          );
+          if (martian.mindControl.cooldown !== null && blocked !== null)
+            chip(blocked, "mind-control-cooldown", blocked);
+        }
+        if (martian.capacitySlots > 1)
+          chip(
+            slotsTextV7(martian.capacitySlots),
+            "slots",
+            `Takes ${slotsTextV7(martian.capacitySlots)} in its city`,
+          );
+      }
       if (stats !== undefined) {
         if (stats.statuses.length > 0) {
           const cues = el(this.#document, "div", "v7-unit-status-cues");
@@ -1652,15 +1824,19 @@ export class Ruleset7DomAppView {
               "span",
               stat.id === "HP"
                 ? `${unit.hp}/${unit.maxHp}`
-                : stat.id === "RANGE" &&
-                    stats.minimumRange !== stats.maximumRange
-                  ? `${stats.minimumRange}–${stats.maximumRange}`
+                : // The Martian revision: "Shield 2 / 4" (current / maximum,
+                  // the Force Field's raise included).
+                  stat.id === "SHIELD"
+                  ? `${stat.current ?? 0}/${formatValue(stat.total)}`
                   : stat.id === "RANGE" &&
-                      undeadUnit &&
-                      unit.form === "LAND" &&
-                      stats.maximumRange === 0
-                    ? "—"
-                    : formatValue(stat.base.value),
+                      stats.minimumRange !== stats.maximumRange
+                    ? `${stats.minimumRange}–${stats.maximumRange}`
+                    : stat.id === "RANGE" &&
+                        undeadUnit &&
+                        unit.form === "LAND" &&
+                        stats.maximumRange === 0
+                      ? "—"
+                      : formatValue(stat.base.value),
             ),
           );
           for (const [index, modifier] of (exact
@@ -1772,6 +1948,18 @@ export class Ruleset7DomAppView {
             );
             abilities.append(entry);
           }
+        // The Martian revision: the Shield, the ray's power now, a Thrall,
+        // a Brain's Thralls, a two-slot body and a machine afloat.
+        if (stats.martian !== undefined)
+          for (const line of martianUnitInfoLinesV7(unit, stats.martian)) {
+            const entry = el(this.#document, "p", "v7-unit-ability");
+            entry.dataset.martianInfo = line.id;
+            entry.append(
+              text(this.#document, "strong", line.name),
+              text(this.#document, "span", line.description),
+            );
+            abilities.append(entry);
+          }
         if (
           undeadUnit &&
           unit.role === "CATAPULT" &&
@@ -1795,6 +1983,8 @@ export class Ruleset7DomAppView {
         dock.dataset.handled = "true";
       const legend = this.#landingLegend(view, unit.id);
       if (legend !== null) dock.append(legend);
+      const launchLegend = this.#launchLegend(view, unit.id);
+      if (launchLegend !== null) dock.append(launchLegend);
       // Revision 19: what an Egg is, in one sentence, right in its dock.
       if (egg && eggTurns !== null) {
         const info = text(
@@ -1838,6 +2028,15 @@ export class Ruleset7DomAppView {
           explanation: DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7,
           icon: null,
         });
+      // The Martian revision (section 13.2): the Field Defense restriction.
+      if (martianFieldDefenseBlockedV7(view, unit.id))
+        dinosaurBlocked.push({
+          action: "martian-field-defense",
+          label: "Fortify",
+          reason: "martian-field-defense",
+          explanation: MARTIAN_FIELD_DEFENSE_EXPLANATION_V7,
+          icon: null,
+        });
       for (const entry of dinosaurBlocked) {
         const blocked = button(
           this.#document,
@@ -1877,6 +2076,13 @@ export class Ruleset7DomAppView {
         };
         actions.append(blocked);
       }
+      // The Martian revision: Beam Down, Mind Control and Tractor Beam
+      // aim on the board; each has one button, or a disabled one with the
+      // reason, ahead of the other actions.
+      for (const button of [
+        ...this.#martianActionButtons(view, unit.id),
+      ].reverse())
+        actions.prepend(button);
       if (goblinFieldDefenseBlockedV7(view, unit.id)) {
         // Revision 17 (section 5.3): the Goblin never builds Field Defense;
         // aria-disabled keeps the explanation reachable by keyboard.
@@ -1949,7 +2155,13 @@ export class Ruleset7DomAppView {
         );
         actions.append(disband);
       }
-      if (actions.querySelector("button") !== null) {
+      // The Martian revision: while an ability is aimed, the dock shows its
+      // compact prompt instead of the actions, so the board stays in view.
+      const martianPanel = this.#martianPickPanel(view, unit.id);
+      if (martianPanel !== null) {
+        dock.dataset.hasActions = "true";
+        dock.append(martianPanel);
+      } else if (actions.querySelector("button") !== null) {
         dock.dataset.hasActions = "true";
         dock.append(actions);
       }
@@ -1983,7 +2195,7 @@ export class Ruleset7DomAppView {
                 ? eggFigureV7(this.#document, unitColour)
                 : art(
                     this.#document,
-                    unit.form === "EMBARKED"
+                    transportArt
                       ? "unit-shared-embarked-transport"
                       : RULESET7_UNIT_ART_IDS[unit.role],
                     "",
@@ -2081,12 +2293,17 @@ export class Ruleset7DomAppView {
           view.viewer.researchedTechs,
           view.viewer.faction,
         );
-        const slotCapacity = view.viewer.faction === "DINOSAUR";
+        // The Martian revision: a Martian viewer also counts slots (the
+        // Mothership and the Colossus take two; a Thrall none).
+        const eggLaying = view.viewer.faction === "DINOSAUR";
+        const slotCapacity = eggLaying || view.viewer.faction === "MARTIAN";
         const units = el(this.#document, "div", "v7-city-stat");
         units.dataset.stat = "units";
-        units.title = slotCapacity
+        units.title = eggLaying
           ? slotCapacityTooltipV7()
-          : "Units supported by this city";
+          : slotCapacity
+            ? martianSlotCapacityTooltipV7()
+            : "Units supported by this city";
         const unitsValue = el(this.#document, "dd", "v7-city-units");
         unitsValue.append(
           uiIconV7(this.#document, "units"),
@@ -2132,7 +2349,7 @@ export class Ruleset7DomAppView {
         income.append(text(this.#document, "dt", "Income"), incomeValue);
         const cityAction = el(this.#document, "div", "v7-city-stat");
         cityAction.dataset.stat = "city-action";
-        cityAction.title = slotCapacity
+        cityAction.title = eggLaying
           ? "One shared city action covers land training, laying an Egg, naval training, or Land Grant and resets at Start Turn"
           : "One shared city action covers land training, naval training, or Land Grant and resets at Start Turn";
         cityAction.append(
@@ -2173,11 +2390,11 @@ export class Ruleset7DomAppView {
           const discount = text(
             this.#document,
             "p",
-            slotCapacity ? "Land units and Eggs −1" : "Land units −1",
+            eggLaying ? "Land units and Eggs −1" : "Land units −1",
             "v7-chip",
           );
           discount.dataset.discount = "forge";
-          discount.title = slotCapacity
+          discount.title = eggLaying
             ? "Active Forge discounts land-unit training and Eggs by 1 Coin"
             : "Active Forge discounts land-unit training by 1 Coin";
           details.append(discount);
@@ -2481,8 +2698,14 @@ export class Ruleset7DomAppView {
         );
         action.append(economyChips(this.#document, { cost }));
         // Revision 19: a Dinosaur viewer counts capacity in slots, so every
-        // production row names its slots (trained units always use one).
-        if (view !== null && this.#viewerFaction() === "DINOSAUR") {
+        // production row names its slots (trained units always use one);
+        // the Martian revision: so does a Martian viewer (a Mothership
+        // takes two).
+        if (
+          view !== null &&
+          (this.#viewerFaction() === "DINOSAUR" ||
+            this.#viewerFaction() === "MARTIAN")
+        ) {
           const slots = unitCapacitySlotsV7(view, {
             ownerId: view.viewer.id,
             role: command.role,
@@ -2664,6 +2887,22 @@ export class Ruleset7DomAppView {
     const view = this.#snapshot.view;
     if (view === null) return;
     const command = target.command;
+    // The Martian revision: choosing a Beam Down passenger moves on to its
+    // tiles; nothing is dispatched yet.
+    if (
+      target.family === "BEAM_DOWN_PASSENGER" &&
+      command.kind === "BEAM_DOWN"
+    ) {
+      this.#martianPick = {
+        kind: "BEAM_DOWN",
+        unitId: command.unitId,
+        passengerUnitId: command.passengerUnitId,
+      };
+      this.#notice = `${BEAM_DOWN_PICK_TILE_V7}.`;
+      this.#render();
+      this.#queueBoardFocus();
+      return;
+    }
     const moved = await this.#dispatch(command);
     // Revision 16 two-step landing: land only when the one-cell Move reached
     // its water cell and the landing is still offered there.
@@ -2716,6 +2955,30 @@ export class Ruleset7DomAppView {
       item.append(swatch, text(this.#document, "span", label));
       legend.append(item);
     }
+    return legend;
+  }
+
+  /**
+   * The Martian revision: the legend of a machine's Launch tiles (a Move
+   * that ends on water self-launches it), shown while it has any.
+   */
+  #launchLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    const launch = this.#snapshot.offeredCommands
+      .map((command) =>
+        command.kind === "MOVE" && command.unitId === unitId
+          ? martianMoveLabelV7(view, command)
+          : null,
+      )
+      .find((label): label is string => label !== null);
+    if (launch === undefined) return null;
+    const legend = el(this.#document, "ul", "v7-landing-legend");
+    legend.setAttribute("aria-label", "Launch markers");
+    const item = el(this.#document, "li", "v7-landing-legend-item");
+    item.dataset.landingMarker = "launch";
+    const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
+    swatch.setAttribute("aria-hidden", "true");
+    item.append(swatch, text(this.#document, "span", launch));
+    legend.append(item);
     return legend;
   }
 
@@ -2794,9 +3057,10 @@ export class Ruleset7DomAppView {
         ? undeadHelpTipsV7(view)
         : [
             // Revision 17: Goblin Wolf Riders have no Escape; revision 19:
-            // neither have Dinosaur Raptors.
+            // neither have Dinosaur Raptors, nor Martian Saucers.
             ...(view?.viewer.faction === "GOBLIN" ||
-            view?.viewer.faction === "DINOSAUR"
+            view?.viewer.faction === "DINOSAUR" ||
+            view?.viewer.faction === "MARTIAN"
               ? []
               : ["A Raider that survives an attack may move again (Escape)."]),
             ...(view !== null && matchHasUndeadV7(view)
@@ -2872,6 +3136,18 @@ export class Ruleset7DomAppView {
         rules.append(item);
       }
       section.append(text(this.#document, "h3", "Dinosaurs"), rules);
+    }
+    // The Martian revision (section 13.3): one sentence per Martian rule,
+    // for every viewer of a match with a Martian seat.
+    if (view !== null && matchHasMartianV7(view)) {
+      const rules = this.#document.createElement("ul");
+      rules.className = "v7-help-tips v7-help-goblin v7-help-martian";
+      for (const [name, sentence] of MARTIAN_HELP_RULES_V7) {
+        const item = el(this.#document, "li", "v7-help-rule");
+        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
+        rules.append(item);
+      }
+      section.append(text(this.#document, "h3", "Martians"), rules);
     }
     section.append(text(this.#document, "h3", "Keyboard"), keys);
     return section;
@@ -3765,7 +4041,8 @@ export class Ruleset7DomAppView {
         if (field === null) return prior;
         return field.value === "UNDEAD" ||
           field.value === "GOBLIN" ||
-          field.value === "DINOSAUR"
+          field.value === "DINOSAUR" ||
+          field.value === "MARTIAN"
           ? field.value
           : "ORIGINAL";
       }),
@@ -3834,6 +4111,7 @@ export class Ruleset7DomAppView {
     this.#kaboomArmedUnitId = null;
     this.#kaboomHoverUnitId = null;
     this.#layEggPick = null;
+    this.#martianPick = null;
     const restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
@@ -4554,6 +4832,357 @@ export class Ruleset7DomAppView {
   }
 
   /** Redraws the board (for example a Kaboom! preview) without the DOM. */
+  /**
+   * The Martian revision (section 13.1): one button per Martian ability
+   * of an own unit (Beam Down, Mind Control, Tractor Beam). With a legal
+   * target it aims the ability on the board (pressed while aiming); without
+   * one it is disabled and names the reason (moved, no passenger, no free
+   * tile; recovering, Thrall limit; nothing in reach).
+   */
+  #martianActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      playerFactionV7(view, unit.ownerId) !== "MARTIAN" ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    const abilities = unitRoleRuleV7(view, unit).abilities as readonly string[];
+    const acted =
+      unit.activation.attacked ||
+      unit.activation.specialActed ||
+      unit.activation.recovered ||
+      unit.activation.captured ||
+      unit.activation.handled;
+    const buttons: HTMLButtonElement[] = [];
+    const entries: readonly {
+      readonly kind: "BEAM_DOWN" | "MIND_CONTROL" | "TRACTOR_BEAM";
+      readonly label: string;
+      readonly tooltip: string;
+      readonly icon: "beam-down" | "mind-control" | "tractor-beam";
+      readonly blocked: () => string | null;
+    }[] = [
+      {
+        kind: "BEAM_DOWN",
+        label: BEAM_DOWN_LABEL_V7,
+        tooltip: BEAM_DOWN_TOOLTIP_V7,
+        icon: "beam-down",
+        blocked: () => beamDownUnavailableTextV7(view, unit.id, false),
+      },
+      {
+        kind: "MIND_CONTROL",
+        label: MIND_CONTROL_LABEL_V7,
+        tooltip: MIND_CONTROL_TOOLTIP_V7,
+        icon: "mind-control",
+        blocked: () =>
+          acted
+            ? null
+            : (mindControlUnavailableTextV7(
+                martianStatsV7(view, unit.id)?.mindControl ?? null,
+              ) ?? "No weakened enemy within reach"),
+      },
+      {
+        kind: "TRACTOR_BEAM",
+        label: TRACTOR_BEAM_LABEL_V7,
+        tooltip: TRACTOR_BEAM_TOOLTIP_V7,
+        icon: "tractor-beam",
+        blocked: () => (acted ? null : "No unit two tiles away can be pulled"),
+      },
+    ];
+    for (const entry of entries) {
+      if (!abilities.includes(entry.kind)) continue;
+      const offered = this.#snapshot.offeredCommands.some(
+        (command) => command.kind === entry.kind && command.unitId === unit.id,
+      );
+      const reason = offered ? null : entry.blocked();
+      if (!offered && reason === null) continue;
+      const action = button(
+        this.#document,
+        "",
+        `martian-${entry.kind.toLowerCase().replaceAll("_", "-")}`,
+        "v7-context-action",
+      );
+      action.append(
+        this.#chibiArt(`ICON:ACTION:${entry.kind}`, CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
+          uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", entry.label, "v7-action-label"),
+      );
+      action.dataset.martianAbility = entry.kind.toLowerCase();
+      if (reason === null) {
+        const aiming = this.#martianPick?.kind === entry.kind;
+        action.title = entry.tooltip;
+        action.setAttribute("aria-label", `${entry.label}. ${entry.tooltip}`);
+        action.setAttribute("aria-pressed", String(aiming));
+        action.disabled = this.#localBusy();
+        action.onclick = () =>
+          aiming
+            ? this.#cancelMartianPick(false)
+            : this.#startMartianPick(entry.kind, unit.id);
+      } else {
+        // aria-disabled keeps the reason reachable by keyboard and touch.
+        action.setAttribute("aria-disabled", "true");
+        action.dataset.disabledReason = reason;
+        action.title = reason;
+        action.setAttribute(
+          "aria-label",
+          `${entry.label} unavailable. ${reason}`,
+        );
+        action.onclick = () => {
+          this.#notice = `${reason}.`;
+          this.#showToast(`${reason}.`);
+          // A Mind Control without a legal target still shows on the board
+          // why the enemies in reach cannot be taken.
+          if (
+            entry.kind === "MIND_CONTROL" &&
+            mindControlUnavailableTextV7(
+              martianStatsV7(view, unit.id)?.mindControl ?? null,
+            ) === null
+          )
+            this.#martianPick = { kind: "MIND_CONTROL", unitId: unit.id };
+          this.#pendingFocusAction = action.dataset.action ?? null;
+          this.#render();
+        };
+      }
+      buttons.push(action);
+    }
+    return buttons;
+  }
+
+  /** Starts aiming a Martian ability of the selected unit on the board. */
+  #startMartianPick(
+    kind: "BEAM_DOWN" | "MIND_CONTROL" | "TRACTOR_BEAM",
+    unitId: UnitId,
+  ): void {
+    if (this.#localBusy()) return;
+    this.#martianPick =
+      kind === "BEAM_DOWN"
+        ? { kind, unitId, passengerUnitId: null }
+        : { kind, unitId };
+    this.#notice = `${
+      kind === "BEAM_DOWN"
+        ? BEAM_DOWN_PICK_PASSENGER_V7
+        : kind === "MIND_CONTROL"
+          ? MIND_CONTROL_PICK_V7
+          : TRACTOR_BEAM_PICK_V7
+    }.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so the arrow keys and Enter pick.
+    this.#queueBoardFocus();
+  }
+
+  /**
+   * Leaves the aiming (a Beam Down tile steps back to its passenger first
+   * when `stepBack`), and returns focus to the ability's button.
+   */
+  #cancelMartianPick(stepBack: boolean): void {
+    const pick = this.#martianPick;
+    if (
+      stepBack &&
+      pick?.kind === "BEAM_DOWN" &&
+      pick.passengerUnitId !== null
+    ) {
+      this.#martianPick = { ...pick, passengerUnitId: null };
+      this.#notice = `${BEAM_DOWN_PICK_PASSENGER_V7}.`;
+      this.#render();
+      return;
+    }
+    this.#martianPick = null;
+    this.#pendingFocusAction =
+      pick === null
+        ? null
+        : `martian-${pick.kind.toLowerCase().replaceAll("_", "-")}`;
+    this.#render();
+  }
+
+  /**
+   * The Martian aiming panel in the dock: the prompt, every legal choice as
+   * a button with its preview (a keyboard path beside the board targets),
+   * the reasons of Mind Control targets that cannot be taken, and Cancel.
+   * Null (and the aiming ends) when nothing is offered any more.
+   */
+  #martianPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    const pick = this.#martianPick;
+    if (pick === null || pick.unitId !== unitId) return null;
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command) => command.kind === pick.kind && command.unitId === unitId,
+    );
+    const unitById = (id: number) =>
+      view.units.find((candidate) => candidate.id === id);
+    const nameOf = (id: number): string => {
+      const target = unitById(id);
+      return target === undefined ? "unit" : martianUnitNameV7(view, target);
+    };
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick",
+    );
+    panel.dataset.v7MartianPick = pick.kind.toLowerCase();
+    // The choices are compact chips (the board shows each preview on its
+    // target); each chip carries its whole preview in its accessible name,
+    // and a lone choice spells it out under the prompt.
+    const lines = el(this.#document, "div", "v7-martian-choices");
+    const summaries: string[] = [];
+    const choice = (
+      action: string,
+      label: string,
+      details: readonly string[],
+      onclick: () => void,
+    ): void => {
+      const control = button(
+        this.#document,
+        label,
+        action,
+        "v7-martian-choice-button",
+      );
+      control.setAttribute(
+        "aria-label",
+        details.length === 0 ? label : `${label}. ${details.join(". ")}.`,
+      );
+      control.title = details.join(" · ");
+      control.disabled = this.#localBusy();
+      control.onclick = onclick;
+      lines.append(control);
+      summaries.push(details.join(" · "));
+    };
+    let prompt: string;
+    if (pick.kind === "BEAM_DOWN") {
+      const beams = commands.filter(
+        (command): command is Extract<CommandV7, { kind: "BEAM_DOWN" }> =>
+          command.kind === "BEAM_DOWN",
+      );
+      if (pick.passengerUnitId === null) {
+        prompt = BEAM_DOWN_PICK_PASSENGER_V7;
+        const seen = new Set<number>();
+        for (const command of beams) {
+          if (seen.has(command.passengerUnitId)) continue;
+          seen.add(command.passengerUnitId);
+          const passenger = unitById(command.passengerUnitId);
+          choice(
+            `beam-passenger-${command.passengerUnitId}`,
+            `Beam ${nameOf(command.passengerUnitId)}`,
+            passenger === undefined
+              ? []
+              : [`now at ${passenger.at.x}, ${passenger.at.y}`],
+            () => {
+              this.#martianPick = {
+                kind: "BEAM_DOWN",
+                unitId,
+                passengerUnitId: command.passengerUnitId,
+              };
+              this.#notice = `${BEAM_DOWN_PICK_TILE_V7}.`;
+              this.#pendingFocusAction = null;
+              this.#render();
+              this.#queueBoardFocus();
+            },
+          );
+        }
+      } else {
+        const passengerUnitId = pick.passengerUnitId;
+        const preview = previewBeamDownV7(view, unitId, passengerUnitId);
+        prompt = `${BEAM_DOWN_PICK_TILE_V7} for the ${nameOf(passengerUnitId)}`;
+        for (const command of beams) {
+          if (command.passengerUnitId !== passengerUnitId) continue;
+          const destroys =
+            preview?.fieldDefenseDestroyed.some(
+              (at) => at.x === command.to.x && at.y === command.to.y,
+            ) === true;
+          choice(
+            `beam-tile-${command.to.x}-${command.to.y}`,
+            `${command.to.x}, ${command.to.y}`,
+            [
+              `Tile ${command.to.x}, ${command.to.y}`,
+              ...(destroys ? ["destroys Field Defense"] : []),
+            ],
+            () => void this.#dispatch(command),
+          );
+        }
+      }
+    } else if (pick.kind === "MIND_CONTROL") {
+      prompt = MIND_CONTROL_PICK_V7;
+      for (const command of commands) {
+        if (command.kind !== "MIND_CONTROL") continue;
+        const preview = previewMindControlV7(
+          view,
+          command.unitId,
+          command.targetUnitId,
+        );
+        if (preview === null) continue;
+        const target = unitById(command.targetUnitId);
+        choice(
+          `mind-control-${command.targetUnitId}`,
+          `Take ${target === undefined ? "unit" : `${possessiveName(view, target.ownerId)} ${nameOf(target.id)}`} (${target?.hp ?? preview.thrallHp} HP)`,
+          mindControlPreviewLinesV7(view, preview),
+          () => void this.#dispatch(command),
+        );
+      }
+    } else {
+      prompt = TRACTOR_BEAM_PICK_V7;
+      for (const command of commands) {
+        if (command.kind !== "TRACTOR_BEAM") continue;
+        const preview = previewTractorBeamV7(
+          view,
+          command.unitId,
+          command.targetUnitId,
+        );
+        if (preview === null) continue;
+        const target = unitById(command.targetUnitId);
+        choice(
+          `tractor-beam-${command.targetUnitId}`,
+          `Pull ${target === undefined ? "unit" : `${possessiveName(view, target.ownerId)} ${nameOf(target.id)}`}`,
+          [
+            `to ${preview.to.x}, ${preview.to.y}`,
+            ...tractorBeamPreviewLinesV7(view, preview),
+          ],
+          () => void this.#dispatch(command),
+        );
+      }
+    }
+    if (commands.length === 0 && pick.kind !== "MIND_CONTROL") {
+      this.#martianPick = null;
+      return null;
+    }
+    panel.setAttribute("aria-label", prompt);
+    panel.append(text(this.#document, "p", prompt, "v7-kaboom-summary"));
+    if (lines.childElementCount > 0) panel.append(lines);
+    const detail =
+      pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null
+        ? "The unit cannot act this turn."
+        : summaries.length === 1 && summaries[0] !== ""
+          ? summaries[0]
+          : null;
+    if (detail !== undefined && detail !== null)
+      panel.append(text(this.#document, "p", detail, "v7-martian-detail"));
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    if (pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null) {
+      const back = button(
+        this.#document,
+        "Back",
+        "martian-pick-back",
+        "v7-kaboom-cancel",
+      );
+      back.onclick = () => this.#cancelMartianPick(true);
+      buttons.append(back);
+    }
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "martian-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelMartianPick(false);
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
   #syncBoard(): void {
     const view = this.#snapshot.view;
     if (view === null || this.#matchRoot === null || this.#destroyed) return;
@@ -5118,14 +5747,13 @@ function effectDescription(
       return nestingUnlockTextV7();
     case "WALLBREAKER":
       return WALLBREAKER_UNLOCK_TEXT_V7;
-    // The Martian revision (section 4): the engine bead's unlock texts; the
-    // Martian UI (`pulp_wars-t6s.4`) owns the full presentation.
+    // The Martian revision (section 4).
     case "BRAIN_SUPPORT":
-      return "Brains give Psychic Command or take Mind Control of weakened enemies";
+      return BRAIN_SUPPORT_UNLOCK_TEXT_V7;
     case "FORCE_FIELDS":
-      return "Shields also recharge at the end of your turn";
+      return FORCE_FIELDS_UNLOCK_TEXT_V7;
     case "DISINTEGRATOR":
-      return "Heat rays ignore Walls and Field Defense";
+      return DISINTEGRATOR_UNLOCK_TEXT_V7;
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -5135,7 +5763,7 @@ function effectDescription(
           ? "Rampage: T-Rexes advance after a kill and may attack again"
           : "Knights advance after a kill and may attack again";
     case "CHARGE_BONUS":
-      return `${faction === "DINOSAUR" ? "Pounce: " : ""}${label("RAIDER")}s gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
+      return `${faction === "DINOSAUR" ? "Pounce: " : faction === "MARTIAN" ? `${STRAFE_LABEL_V7}: ` : ""}${label("RAIDER")}s gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
     case "MELEE_FIELD_DEMOLITION":
       return "Surviving melee attacks destroy Field Defense";
     case "NAVAL_TRAINING_DISCOUNT":
@@ -5220,6 +5848,8 @@ function technologyRoleDescriptionsV7(
   faction: FactionIdV7,
 ): readonly string[] {
   const label = effectiveRoleRuleV7(roleId, faction).label;
+  // The Martian revision (section 4): "Tripod (heat ray, Pierce)".
+  if (faction === "MARTIAN") return [martianRoleUnlockTextV7(roleId)];
   // Revision 19 (section 4): a Dinosaur egg-laid role is laid, not trained:
   // "Raptor Egg", "Triceratops Egg (Charge!)" (revision 20).
   if (isEggLaidRoleV7(roleId, faction))
@@ -5318,6 +5948,9 @@ export function recruitmentRolePresentationV7(
   // Revision 19: hatch time, slots and the Field Defense restriction from
   // the Dinosaur registration.
   restrictions.push(...dinosaurRecruitNotesV7(roleId, faction));
+  // The Martian revision: the Shield, flying or striding, slots and the
+  // Field Defense restriction from the Martian registration.
+  restrictions.push(...martianRecruitNotesV7(roleId, faction));
   return {
     label: role.label,
     stats: [
@@ -5369,6 +6002,8 @@ function abilityDescription(
   if (goblin !== null) return goblin;
   const dinosaur = dinosaurAbilityDescriptionV7(ability, faction);
   if (dinosaur !== null) return dinosaur;
+  const martian = martianAbilityDescriptionV7(ability, faction);
+  if (martian !== null) return martian;
   switch (ability) {
     case "ATTACK":
       return minimum > 1
@@ -5476,13 +6111,22 @@ function boundaryNoticeV7(
   const goblin = goblinBoundaryNoticeV7(events, before, after);
   // Revision 19: Eggs laid, hatched and lost, and growth.
   const dinosaur = dinosaurBoundaryNoticeV7(events, before, after);
+  // The Martian revision: recharges, Beam Down, Mind Control, collapses,
+  // pulls.
+  const martian = martianBoundaryNoticeV7(events, before, after);
   const parts = [
     undead?.text ?? null,
     goblin?.text ?? null,
     dinosaur?.text ?? null,
+    martian?.text ?? null,
     special,
   ].filter((part): part is string => part !== null);
-  if (undead === null && goblin === null && dinosaur === null)
+  if (
+    undead === null &&
+    goblin === null &&
+    dinosaur === null &&
+    martian === null
+  )
     return { text: special, toast: special !== null };
   return {
     text: parts.join(" · "),
@@ -5490,7 +6134,8 @@ function boundaryNoticeV7(
       special !== null ||
       undead?.toast === true ||
       goblin?.toast === true ||
-      dinosaur?.toast === true,
+      dinosaur?.toast === true ||
+      martian?.toast === true,
   };
 }
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
@@ -5517,6 +6162,9 @@ function rewardLabel(
   const dinosaur =
     faction === "DINOSAUR" ? dinosaurRewardLabelV7(reward) : null;
   if (dinosaur !== null) return dinosaur;
+  // The Martian revision: Militia is a Grunt; the giant is a Colossus.
+  const martian = faction === "MARTIAN" ? martianRewardLabelV7(reward) : null;
+  if (martian !== null) return martian;
   if (reward === "SURVEY") return ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];
@@ -5568,6 +6216,8 @@ function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (goblin !== null) return goblin;
   const dinosaur = dinosaurCommandLabelV7(command.kind, faction);
   if (dinosaur !== null) return dinosaur;
+  const martian = martianCommandLabelV7(command.kind, faction);
+  if (martian !== null) return martian;
   if (command.kind === "BUILD_MONUMENT") return "Monument";
   return COMMAND_LABELS[command.kind] ?? title(command.kind);
 }
@@ -5815,12 +6465,20 @@ function iconButton(
   return node;
 }
 
+/** "Your" for the viewer, otherwise "Player N's". */
+function possessiveName(view: PlayerViewV7, playerId: number): string {
+  if (playerId === view.viewer.id) return "your";
+  const player = view.players.find((candidate) => candidate.id === playerId);
+  return player === undefined ? "an enemy" : `${playerName(player.seat)}'s`;
+}
+
 function playerName(seat: number): string {
   return `Player ${seat + 1}`;
 }
 
 const STAT_ICONS: Readonly<Record<string, UiIconIdV7>> = {
   HP: "hp",
+  SHIELD: "shield",
   ATTACK: "attack",
   DEFENSE: "defense",
   MOVE: "move",
@@ -5887,6 +6545,8 @@ function abilityName(ability: string, faction: FactionIdV7): string {
   if (goblin !== null) return goblin;
   const dinosaur = dinosaurAbilityNameV7(ability, faction);
   if (dinosaur !== null) return dinosaur;
+  const martian = martianAbilityNameV7(ability, faction);
+  if (martian !== null) return martian;
   if (ability === "TEND_WOUNDED") return "Tend";
   return title(ability);
 }
@@ -5897,7 +6557,10 @@ function abilityName(ability: string, faction: FactionIdV7): string {
  */
 function matchHasFactionsV7(view: PlayerViewV7): boolean {
   return (
-    matchHasUndeadV7(view) || matchHasGoblinV7(view) || matchHasDinosaurV7(view)
+    matchHasUndeadV7(view) ||
+    matchHasGoblinV7(view) ||
+    matchHasDinosaurV7(view) ||
+    matchHasMartianV7(view)
   );
 }
 
@@ -5950,6 +6613,10 @@ const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   KABOOM: "bomb",
   // Revision 19: LEGACY glyphs (CHIBI draws the PixelLab action icons).
   HATCH: "hatch",
+  // The Martian revision: LEGACY glyphs of the three Martian abilities.
+  BEAM_DOWN: "beam-down",
+  MIND_CONTROL: "mind-control",
+  TRACTOR_BEAM: "tractor-beam",
 };
 
 function undeadCommandPreview(
@@ -6000,13 +6667,19 @@ function factionBadgeArt<Image extends HTMLElement | SVGElement>(
   return frame;
 }
 
-/** The Undead skull, Goblin head or Dinosaur footprint badge. */
+/** The Undead skull, Goblin head, Dinosaur footprint or Martian saucer badge. */
 function factionBadgeIcon(
   documentRoot: Document,
-  badge: "UNDEAD" | "GOBLIN" | "DINOSAUR",
+  badge: "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN",
 ): SVGSVGElement {
   if (badge === "UNDEAD")
     return uiIconV7(documentRoot, "skull", "v7-undead-badge");
+  if (badge === "MARTIAN")
+    return uiIconV7(
+      documentRoot,
+      "martian",
+      "v7-undead-badge v7-martian-badge",
+    );
   if (badge === "DINOSAUR")
     return uiIconV7(
       documentRoot,

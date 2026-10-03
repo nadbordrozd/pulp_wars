@@ -30,7 +30,14 @@ export type UiIconIdV7 =
   | "bomb"
   | "egg"
   | "hatch"
-  | "stampede";
+  | "stampede"
+  // The Martian revision (bead pulp_wars-t6s.4).
+  | "martian"
+  | "shield"
+  | "cooling"
+  | "beam-down"
+  | "mind-control"
+  | "tractor-beam";
 
 const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   hp: "M12 20.5 4.2 12.8a4.6 4.6 0 0 1 6.5-6.5L12 7.6l1.3-1.3a4.6 4.6 0 0 1 6.5 6.5Z",
@@ -79,6 +86,20 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   hatch:
     "M12 2c-4.4 0-8 6-8 11.5a8 8 0 0 0 16 0C20 8 16.4 2 12 2ZM4.3 12.5l3.4 2.3 3-3 3 3 5.9-2.8",
   stampede: "M3.5 6.5 9 12l-5.5 5.5M10.5 6.5 16 12l-5.5 5.5M20 5v14",
+  // The Martian revision: a flying saucer (the Martian badge, filled), a
+  // hexagon Shield, three rising heat lines (Cooling), a saucer shining a
+  // beam down (Beam Down), a spiral (Mind Control) and a cone with hoops
+  // (Tractor Beam): LEGACY glyphs; CHIBI draws the PixelLab icons.
+  martian:
+    "M7.6 10.2a4.4 4.4 0 0 1 8.8 0ZM2.5 12.6c0-1.6 4.3-2.9 9.5-2.9s9.5 1.3 9.5 2.9-4.3 2.9-9.5 2.9-9.5-1.3-9.5-2.9Z",
+  shield: "M12 2.5 20 7v10l-8 4.5L4 17V7Z",
+  cooling:
+    "M7 20c-2-3 2-5 0-8s2-5 0-8M12 20c-2-3 2-5 0-8s2-5 0-8M17 20c-2-3 2-5 0-8s2-5 0-8",
+  "beam-down":
+    "M7.5 6.5a4.5 4.5 0 0 1 9 0M3.5 8.5h17M8.5 11 6 20M15.5 11 18 20M12 12.5v5M10 15.5l2 2 2-2",
+  "mind-control":
+    "M12 12a1.5 1.5 0 0 1 3 0 3 3 0 0 1-6 0 4.5 4.5 0 0 1 9 0 6 6 0 0 1-12 0 7.5 7.5 0 0 1 15 0",
+  "tractor-beam": "M12 3 5 20h14ZM8.3 15h7.4M9.8 10h4.4",
 };
 
 /** One shape of a multi-part icon; `fill` may be a fixed colour. */
@@ -152,6 +173,7 @@ const FILLED: ReadonlySet<UiIconIdV7> = new Set([
   "skip",
   "units",
   "egg",
+  "martian",
 ]);
 
 export function uiIconV7(
