@@ -523,12 +523,19 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // counts land-form attackers, the Disintegrator research a land-form
     // fortified unit, and the Martian Move rules a land-form mover (an Egg
     // never moves; an embarked unit keeps the naval rules).
+    // `pulp_wars-7g3.4`: the Ice Folk facts (Witches, Sleds, melee units),
+    // the Chill and Shatter tests, the Cold Snap targets, the Witch's escort
+    // and the hostile units within 2 of her, and the Witch and Sled target
+    // values count land-form units only (an Egg is never Chilled and never
+    // a Witch, and an embarked unit has no Blizzard); the Ice Folk Move rules
+    // take a land-form mover.
     "src/ai/v7-campaign.ts": 1,
     "src/ai/v7-dinosaur.ts": 2,
     "src/ai/v7-goblin.ts": 1,
+    "src/ai/v7-ice-folk.ts": 7,
     "src/ai/v7-martian.ts": 2,
     "src/ai/v7-undead.ts": 1,
-    "src/ai/v7.ts": 14,
+    "src/ai/v7.ts": 15,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

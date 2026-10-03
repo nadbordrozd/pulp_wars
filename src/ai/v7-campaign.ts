@@ -165,6 +165,14 @@ export interface CampaignFactsV7 {
    * job on land.
    */
   readonly seaTarget: CoordV7 | null;
+  /**
+   * The Ice Folk revision (`pulp_wars-7g3.4`): whether a unit is
+   * Mountain-born. A wave made only of Mountain-born units routes over
+   * Mountains; a Mountain-born unit marching with any other unit keeps the
+   * shared route (the Yetis do not go over the ridge while the Witch goes
+   * round). Absent for every other seat.
+   */
+  readonly mountainBorn?: (unit: PublicUnitV7) => boolean;
 }
 
 const chebyshev = (left: CoordV7, right: CoordV7): number =>
@@ -232,6 +240,27 @@ export function campaignPlanForPolicyV7(
   };
   const field = (sources: readonly number[]): RouteFieldV7 =>
     new RouteFieldV7(width, height, search(sources));
+  /** The Ice Folk revision: a route with every explored Mountain enterable. */
+  const mountainField = (sources: readonly number[]): RouteFieldV7 => {
+    const saved = enterable.slice();
+    for (let index = 0; index < size; index += 1) {
+      const tile = tiles[index];
+      if (
+        tile !== undefined &&
+        tile.explored &&
+        tile.terrain === "MOUNTAIN" &&
+        !(
+          tile.territoryOwnerId !== null &&
+          tile.territoryOwnerId !== view.viewer.id &&
+          facts.isAllied(tile.territoryOwnerId)
+        )
+      )
+        enterable[index] = 1;
+    }
+    const result = field(sources);
+    enterable.set(saved);
+    return result;
+  };
 
   const assignmentByUnitId = new Map<UnitId, CampaignAssignmentV7>();
   const free: PublicUnitV7[] = [];
@@ -631,6 +660,27 @@ export function campaignPlanForPolicyV7(
         targetCityId: city.id,
       });
     }
+    // The Ice Folk revision: a wave of Mountain-born units only takes the
+    // route over the Mountains.
+    const mountainBorn = facts.mountainBorn;
+    if (mountainBorn !== undefined)
+      marching.forEach((units, order) => {
+        const city = targets[order];
+        if (
+          city === undefined ||
+          units.length === 0 ||
+          !units.every((unit) => mountainBorn(unit))
+        )
+          return;
+        const route = mountainField([indexOf(city.at)]);
+        for (const unit of units)
+          assignmentByUnitId.set(unit.id, {
+            job: "ATTACK",
+            at: city.at,
+            field: route,
+            targetCityId: city.id,
+          });
+      });
     // New units join the main effort, so only its wave waits for them.
     let main = -1;
     marching.forEach((units, order) => {

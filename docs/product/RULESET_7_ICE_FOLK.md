@@ -7,10 +7,10 @@ query, and state shape of this document). **The UI is implemented**
 faction, and the production art, Snow, the Blizzard, the Chill markers, the
 abilities, previews, cues and Help are wired in
 ([section 20](#20-ui-implementation-notes-pulp_wars-7g36)). **The Normal AI
-([section 12](#12-normal-ai-requirements), `pulp_wars-7g3.4`) and coarse
-balance (`pulp_wars-7g3.7`) are pending:** an Ice Folk seat plays with the
-generic Normal policy. What the engine implementation changed or made
-precise is in [section 19](#19-implementation-notes-pulp_wars-7g33). It is an
+is implemented** (`pulp_wars-7g3.4`,
+[section 12.1](#121-implementation-status-pulp_wars-7g34)). **Coarse balance
+(`pulp_wars-7g3.7`) is pending.** What the engine implementation changed or
+made precise is in [section 19](#19-implementation-notes-pulp_wars-7g33). It is an
 overlay over the rules in force when `pulp_wars-7g3.3` starts: the
 [Martian faction](RULESET_7_MARTIANS.md) (epic `pulp_wars-t6s`, whose engine
 landed on `main` in commit `d88503c`, `pulp-wars-poc-7r22`, after this
@@ -2292,6 +2292,45 @@ Witch under threat; an opponent's sluggish unit that holds its tile instead
 of walking into reach; an opponent pulling a Chilled unit at 7 HP out of a
 Yeti's reach; an opponent killing the Witch first.
 
+### 12.1 Implementation status (`pulp_wars-7g3.4`)
+
+The Ice Folk policy is in `src/ai/v7-ice-folk.ts` and its calls in
+`src/ai/v7.ts`; the rules, values, and measurements are in the
+[Normal AI document](../architecture/NORMAL_AI.md#ice-folk-play-pulp_wars-7g34).
+Every rule above is implemented as written, with these readings and
+measured deviations:
+
+- **Threat estimates.** Glide, deep snow, and Prowl are in the reach of a
+  visible unit. Two parts were dropped because they lost the head-to-head
+  (the user's rule): Glide in the test of whether an own city is threatened
+  (every city near hostile Snow became threatened, and the policy held its
+  units at home), and Rockfall from a Mountain a Yeti could walk to (a Yeti
+  on a Mountain keeps its published range 2). Glide stays in each unit's
+  danger.
+- **The Witch's Move key** has one more key after "not adjacent to a
+  visible hostile unit": the most hostile units within Cold Snap range, so
+  that she does not step back out of range for a tie on route and danger.
+- **The Bolas set-ups** are computed from the offered attacks' previews with
+  `assumeTargetChilled`, which is what `previewBolasV7.shatterSetups`
+  computes, without querying the commands again for each throw.
+- **The order of the turn** is by priority: the Witch's Move, Cold Snap,
+  the Bolas that sets up a Shatter, then the attacks (a hit that leaves a
+  Chilled unit in the window goes before every chip; the chips go Snow
+  Hunters, Mammoths, other units, Sleds).
+- **Route tie-breaks** are integers: an Ice Folk Move's route progress is
+  scaled by 8 and the tie-breaks add 4, 2, or 1.
+- **Not implemented:** the Goblin Kaboom rule; the Martian note needs no
+  code (Chill is not damage, so the Shield-aware danger never counted on a
+  Shield against it). The tactical benchmark is unchanged; its Ice Folk
+  scenarios are unit tests in `tests/unit/ruleset-v7-ice-folk-ai.test.ts`.
+- **Measured.** Against the generic policy on the Ice Folk registration
+  (mirrored seats, the same seeds, Dry Land) the Ice Folk policy won 107 of
+  180 decided games. The counterplay rules gave the other factions 73 of
+  247 decided games against 67 of 249 without them. Against each faction
+  the Ice Folk win 64% (Undead) to 76% (Goblins): Goblins and Dinosaurs,
+  and Martians on 11 x 11, are beyond 70/30, as under the generic policy
+  (`pulp_wars-7g3.7`).
+
 ## 13. UI requirements
 
 ### 13.1 Surfaces
@@ -3122,7 +3161,8 @@ remaining reads.
   Its threat and route estimates know Mountain-born (through the shared
   terrain rules) but not Glide, deep snow, or Prowl, and it infers another
   seat's Engineering from units standing on Mountains, which a
-  Mountain-born Yeti makes wrong.
+  Mountain-born Yeti makes wrong. **Done** in `pulp_wars-7g3.4`
+  ([section 12.1](#121-implementation-status-pulp_wars-7g34)).
 - **`pulp_wars-7g3.6` (UI).** Nothing Ice Folk is drawn or offered; the art
   of `pulp_wars-7g3.5` is checked in but not wired. (Done since:
   [section 20](#20-ui-implementation-notes-pulp_wars-7g36).)

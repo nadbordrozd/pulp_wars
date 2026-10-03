@@ -21,6 +21,12 @@ heals). The Martian play (`pulp_wars-t6s.3`, `src/ai/v7-martian.ts`) is
 Cooling, Pierce, Beam Down, Mind Control and Thralls, the Tractor Beam,
 production and research, and play against each of them; it is gated on a
 match with a Martian seat, and matches without one are byte-identical.
+The Ice Folk play (`pulp_wars-7g3.4`, `src/ai/v7-ice-folk.ts`) is
+[summarized below](#ice-folk-play-pulp_wars-7g34): the Witch, Cold Snap,
+the Bolas, the order of the attacks around Shatter, Sweep, the Boulder
+Yeti, the Sabretooth, production and research, and play against each of
+them; it is gated on a match with an Ice Folk seat, and matches without one
+are byte-identical.
 The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
 [summarized below](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01):
 every land unit has one job (a village, an invader, the frontier, or a known
@@ -1185,6 +1191,249 @@ matches was 10.4 ms and the longest decision 48 ms; no turn reached the
 it through the generic economy: a `REDEVELOP` and `BUILD_LUMBER_CAMP` pair
 repeated on one tile by a rich seat, a generic-policy issue this bead
 does not change.)
+
+## Ice Folk play (`pulp_wars-7g3.4`)
+
+Every Ice Folk heuristic lives behind one gate: the match has an Ice Folk
+seat (`src/ai/v7-ice-folk.ts`, `iceFolkMatchForPolicyV7`), or reads a fact
+that only such a match has (a Chill entry, a Snow or Blizzard tile flag, an
+Ice Folk unit's ability). A match without an Ice Folk seat never evaluates
+any of it: the [parity run](#ice-folk-measurements) is byte-identical. The
+rules and their values are in `src/ai/v7-ice-folk.ts`; the policy
+(`src/ai/v7.ts`) calls them from its existing scoring steps. They read only
+the public view (`chilled`, the `snow` and `blizzard` tile flags, the
+`iceFolk.shatterThreshold` of a visible unit's stats), the offered commands,
+and the public previews (`queryCombatPreviewV7` with `shatters`, `sweep`,
+`plantedApplied`, `fortificationIgnored`, `hiddenBlizzardPossible`, and the
+option `assumeTargetChilled`), cached per decision. They add no PRNG use, no
+elapsed-time input, and no work units. Values are in the policy's usual
+units (a unit is worth its cost x 4 plus its HP).
+
+Shared estimates (every match; all neutral without an Ice Folk seat):
+
+- **Glide and deep snow.** A visible Ice Folk unit's reach (its threatened
+  tiles) leaves known Snow at half cost (the Road rule; never the
+  Sabretooth), and another faction's ground unit is stopped by known Snow
+  (a Road edge waives it; Fieldcraft is assumed absent, as Forest freedom
+  is). A Sabretooth's reach ignores zones of control and never ends on a
+  settlement center it does not own.
+- **Cities are threatened by the reach without Glide.** A unit's danger
+  counts an Ice Folk unit's Glide, but the test of whether an own city is
+  threatened uses the reach without it: with Glide every city near hostile
+  Snow was threatened, and the policy trained and held its units at home
+  instead of attacking ([measurements](#ice-folk-measurements)).
+- **Rockfall** is in the reach only as the published range of a Yeti that
+  stands on a Mountain. The reach from a Mountain a Yeti could walk to is
+  left out: counting it made the policy too cautious and lost the
+  head-to-head.
+- **Engineering.** A hostile unit standing on a Mountain shows that its
+  owner has Engineering, unless it needs none: a Martian walker or flyer, or
+  a Mountain-born unit (a Yeti used to make every Ice Folk unit's reach
+  cross Mountains).
+- **Snow cover and the Blizzard.** The projected damage to an Ice Folk land
+  unit on Snow with no fortification of its own has the x 1.5 cover (not
+  added to Forest or Mountain cover); a shot from two or more tiles on one
+  in the Blizzard of a visible Witch of its own seat is halved.
+- **Shatter in every lethal-reach estimate.** A unit that the projected
+  damage leaves at a visible Ice Folk melee unit's public Shatter threshold
+  or below is in lethal reach when that unit can strike it from an adjacent
+  tile next turn and it can be shattered then: it stays Chilled through its
+  own End Turn (two turns left), or a visible hostile Witch is within four
+  tiles of it (her Glide inside her own Blizzard, then Cold Snap range 2),
+  or a visible hostile Sled within four (its Move, then Bolas range 2); a
+  sluggish Witch or Sled reaches only its range. Never a `JUGGERNAUT`-role
+  unit.
+- **Values.** A visible hostile Witch is worth 12 more plus 4 for every own
+  unit within two tiles of her (at most four), a Sled 6 more plus 4 when an
+  own unit is within two tiles of it, a Mammoth 6 more (the Necromancer
+  precedent).
+- **Labels.** The Mammoth (`SWEEP`, labelled `DEFENDER`) and the Boulder
+  Yeti (`BOULDERS`, labelled `SIEGE`) are line units
+  (`policyTacticalRoleV7`, the Triceratops precedent): the Mammoth is not
+  kept as a garrison, the Boulder Yeti needs no screen and no siege ring,
+  and the volley bonus is not its. The Witch is never counted as a healer
+  next to her target (she has no Tend Wounded).
+- A ranged kill whose preview is flagged `hiddenBlizzardPossible` and that
+  the halved hit would not make is scored as a chip, not a kill.
+
+As the Ice Folk:
+
+- **Production.** The Sled, the Mammoth, the Witch, the Snow Hunter, the
+  Boulder Yeti, and the Sabretooth gain 10 as the first of their role. In a
+  threatened city the Yeti gains 12 and the Sled and the Witch are worth -30
+  (bodies first); in the preferred role the Yeti's repetition costs 5 a unit
+  instead of 8. A Sled gains 6 while there is fewer than one per three front
+  units (Yetis, Snow Hunters, Mammoths, Boulder Yetis, Sabretooths, the
+  Frost Giant) and at least two, otherwise it costs 20; a Mammoth gains 6
+  while there is fewer than one per two other front units, otherwise it
+  costs 20; the Witch gains 20 at war with three front units and no Witch
+  (a second one with eight front units per Witch), otherwise she costs 20; a
+  Boulder Yeti (one per three front units) and a Sabretooth (one per six)
+  gain 30, so they are bought when offered.
+- **Research.** Drill and Scouting (the Mammoth and the Sled) at 1062, just
+  above the role plan; with two cities Administration and Marksmanship at
+  1170 (the Dinosaur signature priority); Deep Winter (1150) once the seat
+  owns two cities or has a wounded unit within two tiles of an own center;
+  Brittle (1150) once it has Deep Winter and owns a Chill source; then
+  Sawmilling and Chivalry (the shorter chain first; 1150 with five front
+  units, 1062 before). The free opening technology keeps the existing
+  scorer.
+- **The Witch.** She takes the Pressure job like any unit (the campaign
+  plan already gives her one and counts her in the wave at home). Her Move
+  (1296, first in the turn) goes to her best destination by this key: not
+  into visible lethal reach; the most own land units other than Witches
+  within 1; not adjacent to a visible hostile unit; the most hostile land
+  units within Cold Snap range; the route progress toward the wave's target;
+  the least danger. She moves only when a destination is strictly better
+  than her tile, never out of a wave that has not formed, and makes no other
+  routine Move. Cold Snap (1295) is cast whenever it is offered, before
+  every attack, worth 6 per target that becomes sluggish and 3 per refresh.
+- **The Bolas** (the spec's target rule): on a hostile unit that some own
+  unit's offered attack would shatter once Chilled (the offered attacks'
+  previews with `assumeTargetChilled`, the shatter set-ups of
+  `previewBolasV7`), the most valuable first, at 1293 (after Cold Snap,
+  before every attack); else on a hostile unit that is not Chilled and can
+  reach and attack an own unit next turn, the highest projected damage
+  first, at 1186 (above ordinary kills), unless the Sled has a kill of its
+  own; else none. Never on a unit that is already Chilled or that an own
+  Witch's offered Cold Snap covers this turn.
+- **Chill, then Shatter.** A Shatter kill gains 4 (no Grave, no blast). A
+  hit that does not kill a Chilled unit but leaves it at the threshold or
+  below, when another offered attack then kills it (the lethal follow-up
+  test, which previews the Shatter) and no own attack kills it outright now,
+  goes at 1179 (above every chip) and gains half the target's value. Chips
+  (900) go in the spec's order: Snow Hunters (903, Cold Blood), Mammoths
+  (902, Sweep), the other units (901), Sleds (900).
+- **Sweep, Boulders, the Sabretooth.** A Mammoth's attack gains 8 when it
+  tramples Field Defense and 6 per flank victim it leaves Chilled in the
+  window for another offered attack (the flank damage and kills are the
+  generic splash values). An unmoved Boulder Yeti with an offered attack
+  makes no routine Move (the planted throw); its hit gains 3 per
+  fortification level ignored. A Sabretooth's kill gains 8 on a ranged,
+  siege, or support unit and 4 on a unit with no friend next to it; it
+  never moves into visible lethal reach unless it can strike from there (a
+  kill or a survivable hit) or it is no worse, and its attack that neither
+  kills nor leaves it alive is not a candidate (the Vampire rule).
+- **Moves.** The objective (route progress) of an Ice Folk unit's Move is
+  scaled by 8 and gains 4 within 1 of an own Witch, 2 on Snow, and 1 for a
+  Yeti on a Mountain within Rockfall range of a visible hostile unit: these
+  decide only at equal progress. A wave made only of Mountain-born units
+  routes over the Mountains; a Mountain-born unit marching with any other
+  unit keeps the shared route.
+
+Against the Ice Folk (every seat in such a match):
+
+- **The Witch first.** A kill on a hostile Witch goes at 1182 (above every
+  other kill). When this turn's offered attacks on her (each attacker's best
+  hit, at least two attackers) reach her HP, each hit on her that does not
+  kill goes at 1179 (ranged, no retaliation) or 1178, gains 10, and is never
+  rejected as harmful.
+- **Sluggish units.** A sluggish own unit with an offered attack makes no
+  routine Move (it attacks from where it stands); without one it moves only
+  when the Move ends outside the melee reach of the visible Ice Folk units,
+  makes route progress with no visible hostile land unit within three
+  tiles, or leaves a visible Witch's two tiles.
+- **Cold Snap reach.** A unit of another faction makes no routine Move
+  without route progress from outside into four tiles of a visible hostile
+  Witch.
+- **The Shatter window.** A unit that only a Shatter kills where it stands
+  (lethal reach with the Shatter rule, not without it) steps to a tile out
+  of lethal reach (935, above the half-HP Recover). An attack whose
+  retaliation leaves a Chilled or chillable attacker where a visible Ice
+  Folk melee unit's next hit would shatter it costs half the attacker's
+  value.
+- **Hostile Snow.** A fragile unit (ranged, siege, support, or below half
+  HP) pays 3 for ending a routine Move on hostile Snow (a hostile Ice Folk
+  territory or a Blizzard).
+
+Not covered: the Goblin rule (a goblin-crewed unit that will be sluggish
+takes its Kaboom now) and the Martian note (no Shield against Chill: the
+Shield-aware danger already ignores Chill, which is not damage). The Frost
+Giant uses the generic Juggernaut play.
+
+### Ice Folk measurements
+
+All on Dry Land, Normal against Normal, Rival mode, the balance-testing
+policy's coarse samples, at `pulp-wars-poc-7r25` (the leave-one-out runs at
+7r24, before the Martian coarse balance; the Ice Folk numbers are the same
+in both). "Generic" is the policy of `9519700` (the ordinary policy on the
+Ice Folk registration); "Ice Folk" is this policy. The runs used a scratch
+harness that loads both policies over the same engine and gives each seat
+its own policy; nothing in the shipped policy switches.
+
+**Head-to-head, Ice Folk mirror** (the Ice Folk policy on one seat, the
+generic one on the other, every seed in both seat orders):
+
+| Board   | Seeds | Round cap | Decided | Ice Folk policy | Generic |
+| ------- | ----: | --------: | ------: | --------------: | ------: |
+| 11 x 11 |  0-59 |       120 |     120 |              75 |      45 |
+| 14 x 14 |  0-29 |       150 |      60 |              32 |      28 |
+| Total   |       |           |     180 |       107 (59%) |      73 |
+
+On fresh seeds (11 x 11, 60-119, at 7r24) it won 67 of 120. The edge is
+mostly on 11 x 11, where most games are decided by round 15.
+
+**Leave-one-out** (11 x 11, seeds 0-59, 120 games each, at 7r24, with
+every rule of the final policy but one; the full policy won 64 there before
+the Rockfall reach was dropped): without the Rockfall reach 75 (so it was
+dropped), without the Bolas 59, without the Glide in unit danger 58,
+without the Mountain-born wave route 58, without the production rules 61;
+without the research, attack, Witch and Cold Snap, Move, estimate,
+Engineering, line-unit, or counterplay rules 64 to 67, within the noise of
+the sample (about 5 games). On 14 x 14 (seeds 0-29, 60 games each, full
+policy 32) the Bolas and the Move rules (28 without each) were the clearest
+contributors and the Witch's rules neutral (33 to 35 without). An earlier
+40-game run with Glide in the threatened-city test won 12 of 40 against 28
+(21 of 40 without it), which is why cities ignore Glide.
+
+**Usage** (the Ice Folk policy's seats in the 180-game head-to-head; in
+brackets the generic policy's): units trained: Yeti 1,095 (861), Sled 428
+(515), Mammoth 388 (546), Witch 112 (41), Snow Hunter 97 (24), Boulder Yeti
+68 (71), Sabretooth 32 (0); seats that trained a Witch 68 of 180 (30), a
+Snow Hunter 51 (16), a Mammoth 131 (119). Chills applied: Bolas 794 (0),
+Cold Snap 450 in 335 casts (0), Cold Aura 397 (276). Shatter kills 294
+(40), by what brought the victim into the window: earlier damage 146, a Yeti
+hit 92, another hit 34, a Snow Hunter shot 11, a Boulder 6, a Sweep flank
+4, a charging Sled at full HP 1; 201 Bolas were followed by a Shatter
+within the thrower's next turn. Sweep: 523 Mammoth attacks with 114 flank
+hits. Rockfall shots 513 (333), 40 kills. Witches: 112 trained, 21 killed,
+91 alive at the end (generic: 41, 22, 19). Kills and losses 1,326 and 1,182
+(1,086 and 1,405).
+
+**Against each faction** (this policy on both sides, seeds 0-14 in both
+orders on 11 x 11 and 0-9 on 14 x 14, Ice Folk wins first; in brackets the
+generic policy on both sides, 11 x 11):
+
+| Opponent  | 11 x 11 | 14 x 14 | Total       | Generic 11 x 11 |
+| --------- | ------: | ------: | ----------- | --------------: |
+| Humans    |    21-9 |    13-7 | 34-16 (68%) |           17-13 |
+| Undead    |   20-10 |    12-8 | 32-18 (64%) |           16-14 |
+| Goblins   |    23-6 |    14-6 | 37-12 (76%) |            23-7 |
+| Dinosaurs |    24-6 |    12-7 | 36-13 (73%) |            23-7 |
+| Martians  |    24-6 |    11-9 | 35-15 (70%) |            20-9 |
+
+Goblins and Dinosaurs (and Martians on 11 x 11) are beyond 70/30, as they
+already were under the generic policy; the numbers are the balance bead's
+(`pulp_wars-7g3.7`). The counterplay rules ("against the Ice Folk") were
+measured by the same matchups with and without them for the other seat:
+the other factions won 73 of 247 decided games with them and 67 of 249
+without, a slight tendency.
+
+**Parity.** 45 matches without an Ice Folk seat (Human-Undead,
+Goblin-Dinosaur, Dinosaur-Human, Undead-Goblin, Martian-Human,
+Martian-Dinosaur, and the Martian mirror on 11 x 11, seeds 0-5;
+Human-Goblin-Dinosaur on 14 x 14, seeds 0-2) end in the same state hash
+after the same number of accepted commands under both policies. The
+Engineering fix can change a match with a Martian walker or flyer on a
+Mountain (it no longer implies Engineering); none of the 18 Martian matches
+changed.
+
+**Cost.** The checked late public view decides in about 5 ms under either
+policy, and an Ice Folk view at round 18 of a 14 x 14 match in about 15 ms
+under either. The longest synchronous decision in the head-to-head runs was
+374 ms on a loaded machine (four matches in parallel); the most accepted
+commands in one turn was 87 (an Ice Folk-Dinosaur match on 14 x 14), below
+the 128-command cap.
 
 ## Revision-8 merged industry and processor adjacency
 

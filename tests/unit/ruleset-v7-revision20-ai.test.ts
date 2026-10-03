@@ -104,11 +104,23 @@ describe("ruleset-7 revision-20 Normal AI: no lane heuristics", () => {
     expect(triceratops.tacticalRole).toBe("SIEGE");
     expect(policyTacticalRoleV7(triceratops)).toBe("LINE");
     expect(policySiegeRuleV7(triceratops)).toBe(false);
+    // `pulp_wars-7g3.4`: the Mammoth (Sweep) and the Boulder Yeti
+    // (Boulders) are line units too.
+    for (const role of ["GUARD", "CATAPULT"] as const) {
+      expect(policyTacticalRoleV7(effectiveRoleRuleV7(role, "ICE_FOLK"))).toBe(
+        "LINE",
+      );
+      expect(policySiegeRuleV7(effectiveRoleRuleV7(role, "ICE_FOLK"))).toBe(
+        false,
+      );
+    }
     // Every other rule keeps its label; the other Catapult roles stay siege.
     for (const faction of FACTION_IDS_V7)
       for (const role of ["FIGHTER", "CATAPULT", "KNIGHT", "GUARD"] as const) {
         const rule = effectiveRoleRuleV7(role, faction);
         if (faction === "DINOSAUR" && role === "CATAPULT") continue;
+        if (faction === "ICE_FOLK" && (role === "CATAPULT" || role === "GUARD"))
+          continue;
         expect(policyTacticalRoleV7(rule)).toBe(rule.tacticalRole);
         expect(policySiegeRuleV7(rule)).toBe(role === "CATAPULT");
       }

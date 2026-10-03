@@ -6,6 +6,7 @@ import {
   EMBARKED_MOVE_V7,
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
+  COLD_SNAP_RANGE_V7,
   MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_THRALL_LIMIT_V7,
   armouredDamageV7,
@@ -21,6 +22,7 @@ import {
   terrainStopsMoveV7,
   unitCapacitySlotsV7,
   unitIsMountainBornV7,
+  unitIsSluggishV7,
   unitMayActAfterMoveV7,
   unitMayEnterMountainV7,
   unitRoleMechanicsV7,
@@ -29,6 +31,14 @@ import {
 import type { CommandV7 } from "../engine/v7/commands";
 import { marketCoinsV7 } from "../engine/v7/economy";
 import type { CombatPreviewV7 } from "../engine/v7/events";
+import {
+  blizzardHalvedDamageV7,
+  blizzardProtectsV7,
+  deepSnowStopsUnitV7,
+  unitAvoidsForeignSitesV7,
+  unitGlidesV7,
+  unitIgnoresZocStopsV7,
+} from "../engine/v7/ice-folk";
 import { validatePlayerMovementPassagePathV7 } from "../engine/v7/movement";
 import {
   createPublicCommandWorkV7,
@@ -200,6 +210,50 @@ import {
   type MartianPolicyToolsV7,
 } from "./v7-martian";
 import {
+  BOULDER_FORTIFICATION_VALUE_V7,
+  FLANK_SETUP_VALUE_V7,
+  FRAGILE_SNOW_COST_V7,
+  ICE_OBJECTIVE_SCALE_V7,
+  ICE_ROUTINE_MOVE_PRIORITY_V7,
+  MAMMOTH_CHIP_OFFSET_V7,
+  MELEE_CHIP_OFFSET_V7,
+  ROCKFALL_PEAK_OBJECTIVE_V7,
+  SABRETOOTH_BACKLINE_VALUE_V7,
+  SABRETOOTH_ISOLATED_VALUE_V7,
+  SHATTER_ESCAPE_PRIORITY_V7,
+  SHATTER_KILL_VALUE_V7,
+  SHATTER_SETUP_PRIORITY_V7,
+  SNOW_HUNTER_CHIP_OFFSET_V7,
+  SNOW_OBJECTIVE_V7,
+  TRAMPLE_VALUE_V7,
+  WITCH_CHILL_REACH_V7,
+  WITCH_ESCORT_OBJECTIVE_V7,
+  WITCH_FOCUS_PRIORITY_V7,
+  WITCH_FOCUS_RANGED_PRIORITY_V7,
+  WITCH_KILL_PRIORITY_V7,
+  WITCH_MOVE_PRIORITY_V7,
+  bolasScoreV7,
+  chilledForPolicyV7,
+  coldSnapScoreV7,
+  compareKeysV7,
+  fragileOnSnowV7,
+  hasAbilityForIceV7,
+  iceFolkArmyCountsV7,
+  iceFolkFactsV7,
+  iceFolkMatchForPolicyV7,
+  iceFolkProductionAdjustmentV7,
+  iceFolkResearchV7,
+  iceFolkTargetBonusV7,
+  isIceFolkUnitForPolicyV7,
+  shatterLethalV7,
+  shatterableNextTurnV7,
+  shatterThresholdForPolicyV7,
+  witchMoveKeyV7,
+  type IceFolkArmyCountsV7,
+  type IceFolkFactsV7,
+  type IceFolkPolicyToolsV7,
+} from "./v7-ice-folk";
+import {
   normalOpeningResearchPendingV7,
   normalOpeningTechnologyV7,
 } from "./v7-opening";
@@ -341,6 +395,13 @@ interface PolicyContextV7 {
   readonly martian: boolean;
   /** Martian matches: per-decision public Martian facts and caches. */
   martianCache: MartianContextCacheV7 | null;
+  /**
+   * The Ice Folk revision (`pulp_wars-7g3.4`): a seat is Ice Folk; all Ice
+   * Folk heuristics are gated on it.
+   */
+  readonly iceFolk: boolean;
+  /** Ice Folk matches: per-decision public Ice Folk facts and caches. */
+  iceFolkCache: IceFolkContextCacheV7 | null;
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
   readonly commands: readonly CommandV7[];
@@ -1263,6 +1324,8 @@ function bareContext(
     dinosaurFacts: null,
     martian: martianMatchForPolicyV7(view),
     martianCache: null,
+    iceFolk: iceFolkMatchForPolicyV7(view),
+    iceFolkCache: null,
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
     commands,
     openingGrowthHarvest: commands.some((command) =>
@@ -1387,7 +1450,9 @@ function* tacticalPlanWorkV7(
           threatenedCity(context, city.id) &&
           same(city.at, objective),
       );
-      const role = unitRoleRuleV7(view, unit).tacticalRole;
+      // The policy's reading of the label (the Triceratops, the Mammoth, and
+      // the Boulder Yeti are line units; every other rule keeps its label).
+      const role = policyTacticalRoleV7(unitRoleRuleV7(view, unit));
       const moveDestinationKeys =
         context.lookup.moveDestinationKeysByUnit.get(unit.id) ?? new Set();
       const approachCells = neighbors8V7(view, objective).filter((at) =>
@@ -1505,9 +1570,17 @@ function* tacticalPlanWorkV7(
         return false;
       return (
         same(unit.at, objective) ||
-        unitRoleRuleV7(view, unit).tacticalRole === "DEFENDER"
+        policyTacticalRoleV7(unitRoleRuleV7(view, unit)) === "DEFENDER"
       );
     },
+    // The Ice Folk revision: a wave of Mountain-born units routes over the
+    // Mountains (no other seat has one).
+    ...(view.viewer.faction === "ICE_FOLK"
+      ? {
+          mountainBorn: (unit: PublicUnitV7) =>
+            unitIsMountainBornV7(view, unit),
+        }
+      : {}),
   });
   for (const [unitId, assignment] of campaign.assignmentByUnitId)
     objectiveByUnitId.set(unitId, assignment.at);
@@ -1620,7 +1693,17 @@ function* publicThreatLookupWorkV7(
     const occupants = lookup.occupantsByKey.get(coordKey(unit.at)) ?? [];
     occupants.push(unit);
     lookup.occupantsByKey.set(coordKey(unit.at), occupants);
-    if (unit.ownerId !== view.viewer.id) {
+    // A unit standing on a Mountain shows that its owner has Engineering,
+    // unless it needs none: a Martian walker or flyer, or (the Ice Folk
+    // revision, `pulp_wars-7g3.4`) a Mountain-born unit.
+    if (
+      unit.ownerId !== view.viewer.id &&
+      !(
+        unit.form === "LAND" &&
+        (unitMovementModeV7(view, unit) !== "GROUND" ||
+          unitIsMountainBornV7(view, unit))
+      )
+    ) {
       const tile = findPublicTileV7(view, unit.at);
       if (tile?.explored === true && tile.terrain === "MOUNTAIN")
         lookup.engineeringOwnerIds.add(unit.ownerId);
@@ -2323,7 +2406,7 @@ function* addHostileThreatsWorkV7(
   pathWork?: MutablePolicyPathDiagnosticsV7,
 ): Generator<void, void> {
   const view = context.view;
-  const tiles = new Set(
+  const reach = new Set(
     (yield* publicThreatenedTilesWorkV7(
       view,
       unit,
@@ -2334,8 +2417,27 @@ function* addHostileThreatsWorkV7(
   );
   (context.threatenedTiles as Map<UnitId, ReadonlySet<string>>).set(
     unit.id,
-    tiles,
+    reach,
   );
+  // The Ice Folk revision (`pulp_wars-7g3.4`): a unit's danger counts an
+  // Ice Folk unit's Glide, but a city is threatened only by the reach it
+  // has without Glide. Counting Glide here made every city near hostile
+  // Snow threatened, and the policy then trained and held its units at home
+  // instead of attacking (12 of 40 head-to-head games against 28; without
+  // Glide in the city test, 21 of 40).
+  const tiles =
+    unit.form === "LAND" && unitGlidesV7(view, unit)
+      ? new Set(
+          (yield* publicThreatenedTilesWorkV7(
+            view,
+            unit,
+            context.threatLookup,
+            undefined,
+            context.lookup,
+            false,
+          )).map(coordKey),
+        )
+      : reach;
   for (const city of view.cities.filter(
     (candidate) => candidate.ownerId === view.viewer.id,
   )) {
@@ -2492,6 +2594,7 @@ function* publicThreatenedTilesWorkV7(
   lookup: PublicThreatLookupV7,
   pathWork?: MutablePolicyPathDiagnosticsV7,
   policyLookup?: PolicyLookupV7,
+  withGlide = true,
 ): Generator<void, readonly CoordV7[]> {
   const rule = unitRoleRuleV7(view, unit);
   const facts = publicCombatFacts(view, unit, policyLookup);
@@ -2515,6 +2618,22 @@ function* publicThreatenedTilesWorkV7(
   // unit, so other matches are unchanged.
   const mode: "GROUND" | "STRIDE" | "FLY" =
     unit.form === "LAND" ? unitMovementModeV7(view, unit) : "GROUND";
+  // The Ice Folk revision (`pulp_wars-7g3.4`): an Ice Folk unit Glides off
+  // known Snow (half cost); another faction's ground unit is stopped by
+  // known Snow (deep snow; Fieldcraft is assumed absent, as Forest freedom
+  // is); a Sabretooth's Prowl ignores zones of control and it never ends on
+  // a settlement center it does not own. Snow flags exist only in a match
+  // with an Ice Folk seat, and the other facts only for Ice Folk units, so
+  // other matches are unchanged. Rockfall from a Mountain a Yeti could
+  // reach is left out: counting it lost the head-to-head (64 of 120 games
+  // with it, 75 without); a Yeti on a Mountain keeps its published range.
+  const glides = withGlide && unit.form === "LAND" && unitGlidesV7(view, unit);
+  const deepSnow = deepSnowStopsUnitV7(view, unit, false);
+  const prowls = unitIgnoresZocStopsV7(view, unit);
+  const avoidsSites =
+    mode === "GROUND" &&
+    unit.form === "LAND" &&
+    unitAvoidsForeignSitesV7(view, unit);
   const origins = new Map([[coordKey(unit.at), unit.at]]);
   if (
     unit.form !== "EMBARKED" &&
@@ -2559,13 +2678,21 @@ function* publicThreatenedTilesWorkV7(
         const passedOnly =
           occupants.length > 0 ||
           (mode !== "GROUND" &&
-            !machineMayEndForThreatV7(view, unit, tile, mode));
+            !machineMayEndForThreatV7(view, unit, tile, mode)) ||
+          (avoidsSites &&
+            tile.explored &&
+            tile.site !== null &&
+            !view.cities.some(
+              (city) => same(city.at, tile.at) && city.ownerId === unit.ownerId,
+            ));
         // Revision 18: leaving a usable Road node costs half; the Forest and
         // Mountain stop is still waived only when both ends are Road nodes.
         const roadCost = unit.form === "LAND" && priorRoadNode;
         const roadEdge =
           roadCost && publicRoadNodeForOwner(tile, unit.ownerId, lookup);
-        const spent2 = current.spent2 + (roadCost ? 1 : 2);
+        const glideCost =
+          glides && priorTile?.explored === true && priorTile.snow === true;
+        const spent2 = current.spent2 + (roadCost || glideCost ? 1 : 2);
         if (spent2 > facts.move * 2) continue;
         const key = coordKey(tile.at);
         if ((best.get(key) ?? Number.POSITIVE_INFINITY) <= spent2) continue;
@@ -2583,8 +2710,11 @@ function* publicThreatenedTilesWorkV7(
             ignoresForest: false,
             roadEdge,
           });
+        const snowStop =
+          deepSnow && !roadEdge && tile.explored && tile.snow === true;
         const hostileZoc =
           mode !== "FLY" &&
+          !prowls &&
           neighbors8V7(view, tile.at).some((adjacent) =>
             (lookup.occupantsByKey.get(coordKey(adjacent)) ?? []).some(
               (occupant) =>
@@ -2598,7 +2728,7 @@ function* publicThreatenedTilesWorkV7(
                 publicProjectsZocForThreatV7(view, occupant, unit, tile),
             ),
           );
-        const stops = terrainStop || hostileZoc;
+        const stops = terrainStop || hostileZoc || snowStop;
         if (passedOnly && stops) continue;
         best.set(key, spent2);
         if (!passedOnly) origins.set(key, tile.at);
@@ -2936,6 +3066,11 @@ function isLowValueAttackV7(
     martianAttackRejectedV7(context, command, actor, preview)
   )
     return true;
+  if (
+    context.iceFolk &&
+    iceFolkAttackRejectedV7(context, command, actor, preview)
+  )
+    return true;
   const immediate =
     combatImmediateValue(preview, context.view) +
     (context.undead ? biteHarmAdjustmentV7(context, actor, preview) : 0);
@@ -2954,6 +3089,17 @@ function isLowValueAttackV7(
       context,
       context.lookup.unitsById.get(command.targetUnitId),
       preview,
+    )
+  )
+    return false;
+  // The Ice Folk revision: a hit on a hostile Witch that this turn's attacks
+  // complete into her death.
+  if (
+    context.iceFolk &&
+    !preview.attackerDies &&
+    iceFolkWitchFocusV7(
+      context,
+      context.lookup.unitsById.get(command.targetUnitId),
     )
   )
     return false;
@@ -3473,6 +3619,24 @@ function* sharedCityContextWorkV7(
           atWar,
           repetition,
         );
+  // The Ice Folk revision (`pulp_wars-7g3.4`): the Ice Folk role values.
+  const iceCounts =
+    view.viewer.faction === "ICE_FOLK" ? iceFolkArmyCountsV7(view) : null;
+  const iceAdjustment = (
+    role: UnitRoleIdV7,
+    threatened: boolean,
+    repetition: boolean,
+  ) =>
+    iceCounts === null
+      ? 0
+      : iceFolkProductionAdjustmentV7(
+          view,
+          role,
+          iceCounts,
+          threatened,
+          atWar,
+          repetition,
+        );
   const endgameCaptureShortfall =
     context.endgame !== null &&
     endgameRoutedUnitsV7(context, (unit) => canCaptureV7(view, unit)) <
@@ -3613,7 +3777,8 @@ function* sharedCityContextWorkV7(
         cityAdjustment(command.role) +
         layEggAdjustmentV7(view, command, threatened) +
         dinosaurProductionAdjustmentV7(view, command, productionCity) +
-        martianAdjustment(command.role, threatened, true);
+        martianAdjustment(command.role, threatened, true) +
+        iceAdjustment(command.role, threatened, true);
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
         preferredLand === null ||
@@ -3709,7 +3874,8 @@ function* sharedCityContextWorkV7(
                     command,
                     productionCity,
                   ) +
-                  martianAdjustment(command.role, threatened, false)) *
+                  martianAdjustment(command.role, threatened, false) +
+                  iceAdjustment(command.role, threatened, false)) *
                   3 -
                 cost * 4 +
                 Number(preferredLand?.role === command.role) * 18
@@ -4178,6 +4344,23 @@ function scoreCommandWithContext(
         strategicValue = plan.strategic;
       }
     }
+    if (view.viewer.faction === "ICE_FOLK") {
+      // The Ice Folk revision (`pulp_wars-7g3.4`): research toward the roles.
+      const plan = iceFolkResearchV7(
+        view,
+        view.cities.filter((city) => city.ownerId === view.viewer.id).length,
+        iceFolkCacheV7(context).army.front,
+        iceFolkWoundedAtHomeV7(context),
+      );
+      if (
+        plan !== null &&
+        plan.tech === command.tech &&
+        plan.priority > priority
+      ) {
+        priority = plan.priority;
+        strategicValue = plan.strategic;
+      }
+    }
     if (
       view.viewer.faction === "DINOSAUR" &&
       priority < SIGNATURE_RESEARCH_PRIORITY_V7
@@ -4446,7 +4629,41 @@ function scoreCommandWithContext(
         priority = martian.priority;
         strategicValue += martian.strategic;
       }
+      // The Ice Folk revision (`pulp_wars-7g3.4`): Shatter, Sweep, Boulders,
+      // the Sabretooth, the order of the chips, and against the Ice Folk the
+      // Witch and the Shatter window.
+      if (context.iceFolk && actor !== undefined && targetUnit !== undefined) {
+        const ice = iceFolkAttackAdjustmentV7(
+          context,
+          command,
+          actor,
+          targetUnit,
+          preview,
+          priority,
+          threatening,
+        );
+        priority = ice.priority;
+        strategicValue += ice.strategic;
+      }
     }
+  }
+
+  if (command.kind === "COLD_SNAP" && context.iceFolk) {
+    const snap = coldSnapScoreV7(iceFolkCacheV7(context).tools, command);
+    priority = snap.priority;
+    strategicValue = snap.strategic;
+    immediateValue = snap.immediate;
+  }
+
+  if (command.kind === "THROW_BOLAS" && context.iceFolk) {
+    const bolas = bolasScoreV7(
+      iceFolkCacheV7(context).tools,
+      command,
+      iceFolkSledKillsV7(context, command.unitId),
+    );
+    priority = bolas.priority;
+    strategicValue = bolas.strategic;
+    immediateValue = bolas.immediate;
   }
 
   if (command.kind === "BEAM_DOWN" && context.martian) {
@@ -4816,6 +5033,19 @@ function scoreCommandWithContext(
       const martian = martianMoveValueV7(context, actor, resultAt, priority);
       priority = martian.priority;
       strategicValue += martian.strategic;
+    }
+    if (context.iceFolk && resultAt !== null) {
+      // The Ice Folk revision (`pulp_wars-7g3.4`).
+      const ice = iceFolkMoveValueV7(
+        context,
+        command,
+        actor,
+        resultAt,
+        priority,
+      );
+      priority = ice.priority;
+      strategicValue += ice.strategic;
+      objectiveValue = objectiveValue * ice.objectiveScale + ice.objective;
     }
   }
 
@@ -8397,6 +8627,619 @@ function martianMoveValueV7(
   return { priority: next, strategic };
 }
 
+// The Ice Folk revision (`pulp_wars-7g3.4`, docs/product/RULESET_7_ICE_FOLK.md
+// section 12). Every helper below runs only in a match with an Ice Folk seat
+// (`context.iceFolk`) or through facts only such a match has; each is a
+// bounded scan of the public view and public previews inside an existing
+// scoring step, cached per decision, with no PRNG use, elapsed-time input, or
+// work units. The rules and values live in `src/ai/v7-ice-folk.ts`.
+
+interface IceFolkContextCacheV7 {
+  readonly facts: IceFolkFactsV7;
+  readonly army: IceFolkArmyCountsV7;
+  readonly tools: IceFolkPolicyToolsV7;
+  /** Own units with an offered `ATTACK`. */
+  readonly attackers: ReadonlySet<UnitId>;
+  /** The own offered attack previews on each target (best per attacker). */
+  readonly attacksOnTarget: Map<UnitId, readonly CombatPreviewV7[]>;
+  /** Own units whose offered attack shatters each target once Chilled. */
+  readonly shatterSetups: Map<UnitId, readonly UnitId[]>;
+  /** Each own Witch's best Move destination (rule 2), or null to stay. */
+  readonly witchDestination: Map<UnitId, CoordV7 | null>;
+  /** Own Sleds with an offered killing attack. */
+  readonly sledKills: Map<UnitId, boolean>;
+}
+
+const iceFolkFactsByViewV7 = new WeakMap<PlayerViewV7, IceFolkFactsV7>();
+
+function iceFolkFactsForViewV7(view: PlayerViewV7): IceFolkFactsV7 {
+  const cached = iceFolkFactsByViewV7.get(view);
+  if (cached !== undefined) return cached;
+  const facts = iceFolkFactsV7(view, (owner) => isHostile(view, owner));
+  iceFolkFactsByViewV7.set(view, facts);
+  return facts;
+}
+
+function iceFolkCacheV7(context: PolicyContextV7): IceFolkContextCacheV7 {
+  if (context.iceFolkCache !== null) return context.iceFolkCache;
+  const view = context.view;
+  const facts = iceFolkFactsForViewV7(view);
+  const attackers = new Set<UnitId>();
+  for (const command of context.commands)
+    if (command.kind === "ATTACK") attackers.add(command.unitId);
+  const shatterSetups = new Map<UnitId, readonly UnitId[]>();
+  const cache: IceFolkContextCacheV7 = {
+    facts,
+    army: iceFolkArmyCountsV7(view),
+    attackers,
+    attacksOnTarget: new Map(),
+    shatterSetups,
+    witchDestination: new Map(),
+    sledKills: new Map(),
+    tools: {
+      view,
+      facts,
+      commands: context.commands,
+      isHostile: (owner) => isHostile(view, owner),
+      unit: (unitId) => context.lookup.unitsById.get(unitId),
+      targetValue: (unit) =>
+        targetStrategicValue(view, unit.id, context.lookup),
+      projectedDamage: (attacker, defender) =>
+        publicProjectedDamageWithLookupV7(
+          view,
+          attacker,
+          defender,
+          defender.at,
+          { maximumCharge: true },
+          context.lookup,
+        ),
+      threatens: (hostile, at) =>
+        (context.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false) ||
+        distance(hostile.at, at) <=
+          publicCombatFacts(view, hostile, context.lookup).maximumRange,
+      shatterSetups: (targetId, throwerId) => {
+        let setups = shatterSetups.get(targetId);
+        if (setups === undefined) {
+          const found = new Set<UnitId>();
+          for (const command of context.commands)
+            if (
+              command.kind === "ATTACK" &&
+              command.targetUnitId === targetId &&
+              !found.has(command.unitId) &&
+              queryCombatPreviewV7(view, command.unitId, targetId, {
+                assumeTargetChilled: true,
+              })?.shatters === true
+            )
+              found.add(command.unitId);
+          setups = [...found].sort((left, right) => left - right);
+          shatterSetups.set(targetId, setups);
+        }
+        return setups.filter((unitId) => unitId !== throwerId);
+      },
+    },
+  };
+  context.iceFolkCache = cache;
+  return cache;
+}
+
+/** The own offered attack previews on `targetId` (best per attacker). */
+function iceFolkAttacksOnTargetV7(
+  context: PolicyContextV7,
+  targetId: UnitId,
+): readonly CombatPreviewV7[] {
+  const cache = iceFolkCacheV7(context);
+  const cached = cache.attacksOnTarget.get(targetId);
+  if (cached !== undefined) return cached;
+  const best = new Map<UnitId, CombatPreviewV7>();
+  for (const command of context.commands) {
+    if (command.kind !== "ATTACK" || command.targetUnitId !== targetId)
+      continue;
+    const preview = queryCombatPreviewV7(
+      context.view,
+      command.unitId,
+      command.targetUnitId,
+    );
+    if (preview === null) continue;
+    const prior = best.get(command.unitId);
+    if (
+      prior === undefined ||
+      preview.damageToDefender > prior.damageToDefender
+    )
+      best.set(command.unitId, preview);
+  }
+  const previews = [...best.values()];
+  cache.attacksOnTarget.set(targetId, previews);
+  return previews;
+}
+
+/**
+ * Against the Ice Folk: a hostile Witch that this turn's offered attacks
+ * (each attacker's best hit, at least two attackers) kill.
+ */
+function iceFolkWitchFocusV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7 | undefined,
+): boolean {
+  if (
+    target === undefined ||
+    !isHostile(context.view, target.ownerId) ||
+    !iceFolkFactsForViewV7(context.view).hostileWitches.some(
+      (witch) => witch.id === target.id,
+    )
+  )
+    return false;
+  const previews = iceFolkAttacksOnTargetV7(context, target.id);
+  return (
+    previews.length >= 2 &&
+    sum(previews.map((preview) => preview.damageToDefender)) >= target.hp
+  );
+}
+
+/** Whether an own Sled has an offered attack that kills. */
+function iceFolkSledKillsV7(context: PolicyContextV7, sledId: UnitId): boolean {
+  const cache = iceFolkCacheV7(context);
+  const cached = cache.sledKills.get(sledId);
+  if (cached !== undefined) return cached;
+  let kills = false;
+  for (const command of context.commands)
+    if (
+      command.kind === "ATTACK" &&
+      command.unitId === sledId &&
+      queryCombatPreviewV7(context.view, sledId, command.targetUnitId)
+        ?.defenderDies === true
+    ) {
+      kills = true;
+      break;
+    }
+  cache.sledKills.set(sledId, kills);
+  return kills;
+}
+
+/** An own wounded land unit within two tiles of an own city center. */
+function iceFolkWoundedAtHomeV7(context: PolicyContextV7): boolean {
+  const view = context.view;
+  const centers = view.cities
+    .filter((city) => city.ownerId === view.viewer.id)
+    .map((city) => city.at);
+  return view.units.some(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND" &&
+      unit.hp < unit.maxHp &&
+      centers.some((center) => distance(center, unit.at) <= 2),
+  );
+}
+
+/**
+ * Ice Folk attack rejection: an own Sabretooth's attack that neither kills
+ * nor leaves it alive through the visible enemies' next turn (the Vampire
+ * rule; a city save excuses it).
+ */
+function iceFolkAttackRejectedV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  actor: PublicUnitV7,
+  preview: CombatPreviewV7,
+): boolean {
+  const view = context.view;
+  if (
+    preview.defenderDies ||
+    actor.ownerId !== view.viewer.id ||
+    view.viewer.faction !== "ICE_FOLK" ||
+    !hasAbilityForIceV7(view, actor, "PROWL") ||
+    vampireAttackAcceptableV7(context, view, command)
+  )
+    return false;
+  return !attackPurposeFactsV7(context, command, preview).savesCity;
+}
+
+/**
+ * Ice Folk attack scoring (both sides of a match with an Ice Folk seat).
+ *
+ * Every seat: a ranged kill that a hidden Witch's Blizzard could halve
+ * (`hiddenBlizzardPossible`) is not counted as a kill.
+ *
+ * As the Ice Folk: a Shatter kill gains 4; a non-lethal hit that leaves a
+ * Chilled unit at the threshold or below for another offered attack, when
+ * no own attack kills it outright now, goes at 1179 (above every chip) and
+ * gains half the target's value; chips go Snow Hunters, Mammoths, other
+ * melee units, Sleds; a Mammoth's Sweep gains 8 for trampled Field Defense
+ * and 6 per flank victim left Chilled in the window; a Boulder Yeti gains 3
+ * per fortification level ignored; a Sabretooth's kill gains 8 on a backline
+ * unit and 4 on an isolated one.
+ *
+ * Against the Ice Folk: a kill on the Witch goes at 1182 (above every other
+ * kill); a hit on her that this turn's attacks complete goes at 1179
+ * (ranged) or 1178; an attack whose retaliation leaves a Chilled (or
+ * chillable) attacker where a visible Ice Folk melee unit's next hit
+ * shatters it costs half the attacker's value.
+ */
+function iceFolkAttackAdjustmentV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+  priority: number,
+  threatening: boolean,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  const cache = iceFolkCacheV7(context);
+  const facts = cache.facts;
+  let next = priority;
+  let strategic = 0;
+  const range = distance(actor.at, target.at);
+  if (
+    preview.hiddenBlizzardPossible &&
+    preview.defenderDies &&
+    range >= 2 &&
+    blizzardHalvedDamageV7(preview.damageToDefender) < target.hp
+  ) {
+    if (next === 1180) next = 900;
+    else if (next === 1280) next = threatening ? 1240 : 900;
+  }
+  const own = actor.ownerId === view.viewer.id;
+  if (own && facts.viewerIceFolk && actor.form === "LAND") {
+    const abilities = unitRoleRuleV7(view, actor).abilities;
+    if (preview.shatters) strategic += SHATTER_KILL_VALUE_V7;
+    if (next === 900)
+      next += abilities.includes("COLD_BLOOD")
+        ? SNOW_HUNTER_CHIP_OFFSET_V7
+        : abilities.includes("SWEEP")
+          ? MAMMOTH_CHIP_OFFSET_V7
+          : abilities.includes("BOLAS")
+            ? 0
+            : MELEE_CHIP_OFFSET_V7;
+    const threshold = shatterThresholdForPolicyV7(facts, view.viewer.id);
+    if (
+      !preview.defenderDies &&
+      !preview.attackerDies &&
+      next < SHATTER_SETUP_PRIORITY_V7 &&
+      isHostile(view, target.ownerId) &&
+      chilledForPolicyV7(facts, target.id) &&
+      target.hp - preview.damageToDefender <= threshold &&
+      !iceFolkAttacksOnTargetV7(context, target.id).some(
+        (other) => other.attackerId !== actor.id && other.defenderDies,
+      ) &&
+      hasLethalAttackFollowUpV7(context, command, preview)
+    ) {
+      next = SHATTER_SETUP_PRIORITY_V7;
+      strategic += Math.floor(
+        targetStrategicValue(view, target.id, context.lookup) / 2,
+      );
+    }
+    if (preview.sweep) {
+      const tile = findPublicTileV7(view, target.at);
+      if (tile?.explored === true && tile.fieldDefense)
+        strategic += TRAMPLE_VALUE_V7;
+      for (const entry of preview.splash) {
+        const victim = context.lookup.unitsById.get(entry.unitId);
+        if (
+          victim === undefined ||
+          entry.dies ||
+          !chilledForPolicyV7(facts, victim.id) ||
+          victim.hp - entry.damage > threshold
+        )
+          continue;
+        if (
+          context.commands.some(
+            (other) =>
+              other.kind === "ATTACK" &&
+              other.unitId !== actor.id &&
+              other.targetUnitId === victim.id,
+          )
+        )
+          strategic += FLANK_SETUP_VALUE_V7;
+      }
+    }
+    if (abilities.includes("BOULDERS"))
+      strategic +=
+        BOULDER_FORTIFICATION_VALUE_V7 * preview.fortificationIgnored;
+    if (abilities.includes("PROWL") && preview.defenderDies) {
+      const role = unitRoleRuleV7(view, target).tacticalRole;
+      if (role === "RANGED" || role === "SIEGE" || role === "SUPPORT")
+        strategic += SABRETOOTH_BACKLINE_VALUE_V7;
+      if (
+        !view.units.some(
+          (unit) =>
+            unit.id !== target.id &&
+            unit.ownerId === target.ownerId &&
+            unit.form === "LAND" &&
+            distance(unit.at, target.at) === 1,
+        )
+      )
+        strategic += SABRETOOTH_ISOLATED_VALUE_V7;
+    }
+  }
+  if (isHostile(view, target.ownerId)) {
+    const witch = facts.hostileWitches.some((unit) => unit.id === target.id);
+    if (
+      witch &&
+      preview.defenderDies &&
+      next >= 1180 &&
+      next < WITCH_KILL_PRIORITY_V7
+    )
+      next = WITCH_KILL_PRIORITY_V7;
+    else if (
+      witch &&
+      !preview.defenderDies &&
+      preview.damageToDefender > 0 &&
+      next < WITCH_FOCUS_PRIORITY_V7 &&
+      iceFolkWitchFocusV7(context, target)
+    ) {
+      next =
+        preview.damageToAttacker === 0 && !preview.retaliation
+          ? WITCH_FOCUS_RANGED_PRIORITY_V7
+          : WITCH_FOCUS_PRIORITY_V7;
+      strategic += 10;
+    }
+  }
+  if (
+    own &&
+    !preview.attackerDies &&
+    preview.damageToAttacker > 0 &&
+    facts.hostileMelee.length > 0
+  ) {
+    const left = actor.hp - preview.damageToAttacker;
+    const wounded = { ...actor, hp: left };
+    if (
+      shatterableNextTurnV7ForPolicy(view, facts, wounded) &&
+      facts.hostileMelee.some((hostile) => {
+        if (hostile.id === target.id && preview.defenderDies) return false;
+        if (!iceFolkMeleeReachesV7(view, hostile, actor.at, context))
+          return false;
+        const hit = publicProjectedDamageWithLookupV7(
+          view,
+          hostile,
+          wounded,
+          actor.at,
+          {},
+          context.lookup,
+        );
+        return (
+          hit < left &&
+          left - hit <= shatterThresholdForPolicyV7(facts, hostile.ownerId)
+        );
+      })
+    )
+      strategic -= Math.floor(retainedUnitValue(view, actor) / 2);
+  }
+  return { priority: next, strategic };
+}
+
+function shatterableNextTurnV7ForPolicy(
+  view: PlayerViewV7,
+  facts: IceFolkFactsV7,
+  unit: PublicUnitV7,
+): boolean {
+  return shatterableNextTurnV7(view, facts, unit, unit.at);
+}
+
+/** The best destination of an own Witch's Move (rule 2), or null to stay. */
+function iceFolkWitchDestinationV7(
+  context: PolicyContextV7,
+  witch: PublicUnitV7,
+): CoordV7 | null {
+  const cache = iceFolkCacheV7(context);
+  const cached = cache.witchDestination.get(witch.id);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  const campaign = context.tactical.campaign;
+  const keyAt = (at: CoordV7): readonly number[] =>
+    witchMoveKeyV7(
+      view,
+      witch,
+      at,
+      visibleImmediateDamage(view, witch, at, context),
+      same(at, witch.at)
+        ? 0
+        : (campaignRouteProgressV7(campaign, witch, at) ?? 0),
+      (owner) => isHostile(view, owner),
+    );
+  let best: CoordV7 | null = null;
+  let bestKey = keyAt(witch.at);
+  for (const command of context.commands) {
+    if (command.kind !== "MOVE" || command.unitId !== witch.id) continue;
+    const to = command.path.at(-1);
+    if (to === undefined || isAutoembarkMoveV7(context, command)) continue;
+    if (campaignHoldsMoveV7(campaign, witch, to)) continue;
+    const key = keyAt(to);
+    if (
+      compareKeysV7(key, bestKey) > 0 ||
+      (best !== null &&
+        compareKeysV7(key, bestKey) === 0 &&
+        (to.y < best.y || (to.y === best.y && to.x < best.x)))
+    ) {
+      best = to;
+      bestKey = key;
+    }
+  }
+  cache.witchDestination.set(witch.id, best);
+  return best;
+}
+
+/**
+ * Ice Folk Move adjustments.
+ *
+ * Against the Ice Folk (any seat's own units): a sluggish unit with an
+ * offered attack makes no routine Move (it attacks from where it stands);
+ * without one it moves only when the Move ends outside the melee reach of
+ * visible Ice Folk units, makes route progress with no visible hostile unit
+ * within three tiles, or leaves a visible Witch's two tiles. A unit of
+ * another faction makes no routine Move without route progress into a
+ * visible Witch's Cold Snap reach next turn, and a fragile one (ranged,
+ * siege, support, or below half HP) pays 3 for ending on hostile Snow.
+ *
+ * As the Ice Folk: the Witch takes only her best Move (rule 2) at 1296 and
+ * otherwise stays; an unmoved Boulder Yeti with an offered attack makes no
+ * routine Move (the planted throw); a Sabretooth never moves into visible
+ * lethal reach unless it strikes from there or it is no worse; at equal
+ * route progress a unit ends within 1 of an own Witch, then on Snow, and a
+ * Yeti on a Mountain within Rockfall range of a visible hostile unit.
+ */
+function iceFolkMoveValueV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): {
+  readonly priority: number;
+  readonly strategic: number;
+  readonly objective: number;
+  readonly objectiveScale: number;
+} {
+  const view = context.view;
+  const cache = iceFolkCacheV7(context);
+  const facts = cache.facts;
+  let next = priority;
+  let strategic = 0;
+  let objective = 0;
+  let objectiveScale = 1;
+  const unchanged = { priority, strategic: 0, objective: 0, objectiveScale };
+  if (actor.form !== "LAND" || actor.ownerId !== view.viewer.id)
+    return unchanged;
+  const routine = priority >= 0 && priority < ICE_ROUTINE_MOVE_PRIORITY_V7;
+  const reject = { priority: -1, strategic: 0, objective: 0, objectiveScale };
+  const iceUnit = isIceFolkUnitForPolicyV7(facts, actor);
+  const progress = (): number =>
+    campaignRouteProgressV7(context.tactical.campaign, actor, to) ?? 0;
+  // Against the Ice Folk.
+  if (
+    routine &&
+    (facts.hostileWitches.length > 0 || facts.hostileMelee.length > 0)
+  ) {
+    if (unitIsSluggishV7(view, actor)) {
+      if (cache.attackers.has(actor.id)) return reject;
+      const outside = !facts.hostileMelee.some((hostile) =>
+        iceFolkMeleeReachesV7(view, hostile, to, context),
+      );
+      const quiet =
+        progress() > 0 &&
+        !context.lookup.visibleHostiles.some(
+          (hostile) => hostile.form === "LAND" && distance(hostile.at, to) <= 3,
+        );
+      const leavesWitch =
+        facts.hostileWitches.some(
+          (witch) => distance(witch.at, actor.at) <= COLD_SNAP_RANGE_V7,
+        ) &&
+        !facts.hostileWitches.some(
+          (witch) => distance(witch.at, to) <= COLD_SNAP_RANGE_V7,
+        );
+      if (!outside && !quiet && !leavesWitch) return reject;
+    } else if (
+      !iceUnit &&
+      facts.hostileWitches.some(
+        (witch) => distance(witch.at, to) <= WITCH_CHILL_REACH_V7,
+      ) &&
+      !facts.hostileWitches.some(
+        (witch) => distance(witch.at, actor.at) <= WITCH_CHILL_REACH_V7,
+      ) &&
+      progress() <= 0
+    )
+      return reject;
+    if (!iceUnit && fragileOnSnowV7(view, actor)) {
+      const tile = findPublicTileV7(view, to);
+      if (
+        tile?.explored === true &&
+        tile.snow === true &&
+        (tile.blizzard === true ||
+          (tile.territoryOwnerId !== null &&
+            facts.iceOwners.has(tile.territoryOwnerId) &&
+            isHostile(view, tile.territoryOwnerId)))
+      )
+        strategic -= FRAGILE_SNOW_COST_V7;
+    }
+  }
+  // Against the Ice Folk: a unit that only a Shatter kills where it stands
+  // steps out of that reach (above routine Moves and the half-HP Recover).
+  if (
+    priority < ICE_ROUTINE_MOVE_PRIORITY_V7 &&
+    next >= 0 &&
+    facts.hostileMelee.length > 0 &&
+    shatterableNextTurnV7(view, facts, actor, actor.at)
+  ) {
+    const here = visibleImmediateDamage(view, actor, actor.at, context);
+    if (
+      here >= actor.hp &&
+      visibleImmediateDamage(
+        view,
+        actor,
+        actor.at,
+        context,
+        context.lookup,
+        false,
+      ) < actor.hp
+    ) {
+      const there = visibleImmediateDamage(view, actor, to, context);
+      if (there < actor.hp) {
+        next = Math.max(next, SHATTER_ESCAPE_PRIORITY_V7);
+        strategic += actor.hp - there;
+      }
+    }
+  }
+  if (!facts.viewerIceFolk || !iceUnit)
+    return { priority: next, strategic, objective, objectiveScale };
+  const abilities = unitRoleRuleV7(view, actor).abilities;
+  // The Witch (rule 2).
+  if (abilities.includes("COLD_SNAP")) {
+    if (priority >= ICE_ROUTINE_MOVE_PRIORITY_V7)
+      return { priority: next, strategic, objective, objectiveScale };
+    const best = iceFolkWitchDestinationV7(context, actor);
+    return best !== null && same(best, to)
+      ? {
+          priority: WITCH_MOVE_PRIORITY_V7,
+          strategic,
+          objective,
+          objectiveScale,
+        }
+      : reject;
+  }
+  // The planted throw.
+  if (
+    routine &&
+    abilities.includes("BOULDERS") &&
+    !actor.activation.moved &&
+    cache.attackers.has(actor.id)
+  )
+    return reject;
+  // The Sabretooth does not walk into lethal reach for nothing.
+  if (abilities.includes("PROWL") && next >= 0 && next < 1290) {
+    const there = visibleImmediateDamage(view, actor, to, context);
+    if (
+      there >= actor.hp &&
+      there >= visibleImmediateDamage(view, actor, actor.at, context) &&
+      !vampireStrikesFromV7(context, actor, to)
+    )
+      return reject;
+  }
+  // Route tie-breaks: the objective (route progress) is scaled by 8 and
+  // the tie-breaks add less than one step, so they decide only at equal
+  // progress (the objective is an integer).
+  if (next >= 0 && command.path.length > 0) {
+    objectiveScale = ICE_OBJECTIVE_SCALE_V7;
+    if (
+      facts.ownWitches.some(
+        (witch) => witch.id !== actor.id && distance(witch.at, to) <= 1,
+      )
+    )
+      objective += WITCH_ESCORT_OBJECTIVE_V7;
+    const tile = findPublicTileV7(view, to);
+    if (tile?.explored === true && tile.snow === true)
+      objective += SNOW_OBJECTIVE_V7;
+    if (
+      abilities.includes("ROCKFALL") &&
+      tile?.explored === true &&
+      tile.terrain === "MOUNTAIN" &&
+      context.lookup.visibleHostiles.some(
+        (hostile) => hostile.form === "LAND" && distance(hostile.at, to) <= 2,
+      )
+    )
+      objective += ROCKFALL_PEAK_OBJECTIVE_V7;
+  }
+  return { priority: next, strategic, objective, objectiveScale };
+}
+
 function captureEndsMatchV7(
   view: PlayerViewV7,
   targetOwnerId: PlayerId,
@@ -8720,6 +9563,8 @@ function combatStrategicValue(
       (item) =>
         item.ownerId === target.ownerId &&
         item.role === "CAPTAIN" &&
+        // The Ice Folk revision: the Witch has no Tend Wounded.
+        !hasAbilityForIceV7(context.view, item, "COLD_SNAP") &&
         distance(item.at, target.at) === 1,
     )
       ? 4
@@ -9292,8 +10137,11 @@ function screenValue(
   at: CoordV7 | null,
 ): number {
   // Revision 20: a Triceratops (a line unit) screens and needs no screen.
+  // The Ice Folk revision: neither is the Boulder Yeti.
   const screened = (unit: PublicUnitV7): boolean =>
-    (unit.role === "CATAPULT" && !linebreakerV7(view, unit)) ||
+    (unit.role === "CATAPULT" &&
+      !linebreakerV7(view, unit) &&
+      !hasAbilityForIceV7(view, unit, "BOULDERS")) ||
     unit.role === "MARKSMAN";
   if (at === null || screened(actor)) return 0;
   if (
@@ -9318,6 +10166,7 @@ function visibleImmediateDamage(
   at: CoordV7,
   context?: PolicyContextV7,
   lookup: PolicyLookupV7 | undefined = context?.lookup,
+  countShatter = true,
 ): number {
   let total = 0;
   const effectiveLookup =
@@ -9422,7 +10271,42 @@ function visibleImmediateDamage(
   // turn (0 for every unit without one).
   if (martian !== null && total > 0)
     total = Math.max(0, total - enemyTurnShieldV7(view, martian, actor, at));
+  // The Ice Folk revision (`pulp_wars-7g3.4`, section 12, "count Shatter in
+  // every lethal-reach estimate"): a unit left at a visible Ice Folk melee
+  // unit's Shatter threshold or below, which can be Chilled then, is in
+  // lethal reach of that unit.
+  if (
+    total > 0 &&
+    total < actor.hp &&
+    countShatter &&
+    (context?.iceFolk ?? iceFolkMatchForPolicyV7(view))
+  ) {
+    const ice = iceFolkFactsForViewV7(view);
+    if (
+      shatterLethalV7(view, ice, actor, at, total, (hostile) =>
+        iceFolkMeleeReachesV7(view, hostile, at, context),
+      )
+    )
+      total = actor.hp;
+  }
   return total;
+}
+
+/**
+ * The Ice Folk revision: whether a visible hostile unit can strike `at`
+ * from an adjacent tile next turn (where it stands, or by its public
+ * reach for a unit whose range is 1).
+ */
+function iceFolkMeleeReachesV7(
+  view: PlayerViewV7,
+  hostile: PublicUnitV7,
+  at: CoordV7,
+  context?: PolicyContextV7,
+): boolean {
+  const range = distance(hostile.at, at);
+  if (range === 1) return true;
+  if (unitRoleRuleV7(view, hostile).range > 1) return false;
+  return context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false;
 }
 
 function rayAttack2OptionV7(
@@ -9525,10 +10409,25 @@ function publicProjectedDamageWithLookupV7(
   // fortification (only a Dinosaur unit has Acid).
   const acid =
     attacker.form === "LAND" && attackFacts.abilities.includes("ACID");
+  const defenderTile = findPublicTileV7(view, defenderAt);
+  // The Ice Folk revision (`pulp_wars-7g3.4`): Snow cover (x 1.5, not added
+  // to Forest or Mountain cover) for an Ice Folk land unit with no
+  // fortification of its own; only Snow tiles carry the flag.
+  const snowCover =
+    !acid &&
+    defender.form === "LAND" &&
+    defenderTile?.explored === true &&
+    defenderTile.snow === true &&
+    iceFolkFactsForViewV7(view).iceOwners.has(defender.ownerId) &&
+    !(
+      defenderTile.territoryOwnerId === defender.ownerId &&
+      (defenderTile.fortificationLevel ?? 0) > 0
+    );
   const bonus = acid
     ? { numerator: 1, denominator: 1 }
-    : projectedDefenseBonus(view, defender, defenderAt);
-  const defenderTile = findPublicTileV7(view, defenderAt);
+    : snowCover
+      ? { numerator: 3, denominator: 2 }
+      : projectedDefenseBonus(view, defender, defenderAt);
   const tileFortification =
     !acid &&
     defender.form === "LAND" &&
@@ -9572,18 +10471,28 @@ function publicProjectedDamageWithLookupV7(
   const defenseOnCommon = defenseForceNumerator * attackForceDenominator;
   const denominator = (attackOnCommon + defenseOnCommon) * 4n;
   if (denominator <= 0n) return 0;
+  const formula = Number(
+    (2n * attackOnCommon * BigInt(attack2) * 9n + denominator) /
+      (2n * denominator),
+  );
+  // The Ice Folk revision: a shot from two or more tiles on an Ice Folk
+  // land unit in the Blizzard of a visible Witch of its own seat is halved
+  // (only Blizzard tiles carry the flag).
+  const halved =
+    defenderTile?.explored === true &&
+    defenderTile.blizzard === true &&
+    distance(attacker.at, defenderAt) >= 2 &&
+    blizzardProtectsV7(view, iceFolkFactsForViewV7(view).visibleWitches, {
+      ...defender,
+      at: defenderAt,
+    })
+      ? blizzardHalvedDamageV7(formula)
+      : formula;
   // Revision 19 Armoured: one less damage (minimum 1) to an Ankylosaurus,
   // before the cap at its HP; unchanged for every other unit.
   return Math.min(
     options.uncapped === true ? Number.MAX_SAFE_INTEGER : defender.hp,
-    armouredDamageV7(
-      view,
-      defender,
-      Number(
-        (2n * attackOnCommon * BigInt(attack2) * 9n + denominator) /
-          (2n * denominator),
-      ),
-    ),
+    armouredDamageV7(view, defender, halved),
   );
 }
 
@@ -9842,19 +10751,26 @@ function targetStrategicValue(
   const martian = view.players.some((player) => player.faction === "MARTIAN")
     ? martianTargetBonusV7(view, martianFactsForViewV7(view), unit)
     : 0;
+  // The Ice Folk revision: the Witch, the Sled, and the Mammoth (0 without
+  // an Ice Folk seat).
+  const ice = iceFolkMatchForPolicyV7(view)
+    ? iceFolkTargetBonusV7(view, iceFolkFactsForViewV7(view), unit)
+    : 0;
   return unit.role === "JUGGERNAUT"
     ? 40 +
         rule.attack2 +
         rule.defense2 +
         (rule.abilities.includes("PUSH") ? 8 : 0) +
         dinosaur +
-        martian
+        martian +
+        ice
     : (rule.cost ?? 0) * 4 +
         unit.hp +
         necromancer +
         plagueSource +
         dinosaur +
-        martian;
+        martian +
+        ice;
 }
 
 const NECROMANCER_TARGET_BONUS_V7 = 12;

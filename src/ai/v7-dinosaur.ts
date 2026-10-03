@@ -240,12 +240,20 @@ export function linebreakerV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
  * The tactical role the policy plays a role rule as. Revision 20: a unit
  * with Charge! is a front-line attacker (`LINE`) whatever its registered
  * label (the Triceratops keeps `SIEGE`, which only excludes it from War
- * Drums). Every other rule keeps its label.
+ * Drums). The Ice Folk revision (`pulp_wars-7g3.4`, section 12, "judge
+ * units by their abilities"): the Mammoth (`SWEEP`, labelled `DEFENDER`) and
+ * the Boulder Yeti (`BOULDERS`, labelled `SIEGE`) attack after moving and
+ * march with the wave, so they are line units too. Every other rule keeps
+ * its label.
  */
 export function policyTacticalRoleV7(
   rule: EffectiveRoleRuleV7,
 ): EffectiveRoleRuleV7["tacticalRole"] {
-  return rule.abilities.includes("LINEBREAKER") ? "LINE" : rule.tacticalRole;
+  return rule.abilities.includes("LINEBREAKER") ||
+    rule.abilities.includes("SWEEP") ||
+    rule.abilities.includes("BOULDERS")
+    ? "LINE"
+    : rule.tacticalRole;
 }
 
 /** Whether the policy plays `rule` as a siege unit (never a Charge! unit). */
