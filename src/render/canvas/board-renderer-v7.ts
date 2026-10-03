@@ -210,7 +210,7 @@ import {
 } from "./chibi-geometry-v7";
 import { chibiMountainFringeEdgesV7 } from "./chibi-terrain-fringe-v7";
 import { drawLegacyRiftV7, riftPieceV7 } from "./rift-presentation-v7";
-import { RULESET7_PLAYER_COLORS } from "./owner-recolour-v7";
+import { factionColourV7 } from "./faction-colours-v7";
 import {
   CALM_ROAD_STROKES_V7,
   DIRECTED_BASE_HP_BAR_TOP_V7,
@@ -543,8 +543,6 @@ export interface BoardRenderPlanV7 {
   readonly entries: readonly BoardRenderPlanEntryV7[];
   readonly targets: readonly MapCommandTargetV7[];
 }
-
-const PLAYER_COLORS = RULESET7_PLAYER_COLORS;
 
 const TILE_EDGES: readonly TileEdge[] = ["NORTH", "EAST", "SOUTH", "WEST"];
 
@@ -4977,7 +4975,9 @@ function ownerPresentation(
   return player === undefined
     ? {}
     : {
-        ownerColor: PLAYER_COLORS[player.color],
+        // The owner colour is the faction's (bead pulp_wars-b5f.4): one
+        // faction per player, so it names the player in every look.
+        ownerColor: factionColourV7(player.faction),
         ownerSeat: player.seat,
       };
 }

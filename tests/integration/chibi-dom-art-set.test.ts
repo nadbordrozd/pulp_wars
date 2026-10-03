@@ -34,6 +34,16 @@ import {
   dinosaurCityFixtureV7,
   dinosaurShowcaseFixtureV7,
 } from "../fixtures/v7-dinosaur-ui";
+import { FACTION_COLOURS_V7 } from "../../src/render/canvas/faction-colours-v7";
+
+/**
+ * The fake recolour encodes the owner colour; since bead pulp_wars-b5f.4 it
+ * is the owner faction's colour.
+ */
+function recoloured(faction: keyof typeof FACTION_COLOURS_V7): string {
+  const hex = Number.parseInt(FACTION_COLOURS_V7[faction].slice(1), 16);
+  return `data:image/test;${(hex >> 16) & 255},${(hex >> 8) & 255},${hex & 255}`;
+}
 
 /**
  * Rasters settle at once; every master reads back as an opaque 4 x 6 block
@@ -342,7 +352,7 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     );
     failing.select({ x: 7, y: 7 });
     expect(identity()?.dataset.chibiAssetId).toBe("chibi-captain");
-    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    expect(identity()?.getAttribute("src")).toBe(recoloured("ORIGINAL"));
     failing.select({ x: 9, y: 7 });
     expect(identity()?.dataset.chibiAssetId).toBe("chibi-direction-fighter");
     failing.app.destroy();
@@ -381,7 +391,7 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     );
     failingUndead.select(UNDEAD_SHOWCASE_V7.necromancer);
     expect(identity()?.dataset.chibiAssetId).toBe("chibi-undead-necromancer");
-    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    expect(identity()?.getAttribute("src")).toBe(recoloured("UNDEAD"));
     failingUndead.app.destroy();
     // The developer option returns the interface to the previous art.
     const classicStorage = {
@@ -401,7 +411,7 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     );
     classic.select({ x: 7, y: 7 });
     expect(identity()?.dataset.chibiAssetId).toBe("chibi-captain");
-    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    expect(identity()?.getAttribute("src")).toBe(recoloured("ORIGINAL"));
     classic.app.destroy();
     // The classic look keeps the classic Undead art, in the owner's colour.
     const classicUndead = mount(
@@ -413,7 +423,7 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     );
     classicUndead.select(UNDEAD_SHOWCASE_V7.necromancer);
     expect(identity()?.dataset.chibiAssetId).toBe("chibi-undead-necromancer");
-    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    expect(identity()?.getAttribute("src")).toBe(recoloured("UNDEAD"));
     classicUndead.selectCapital();
     const classicArt = assetIds(".v7-action-card img, .v7-selection-dock img");
     expect(classicArt).toContain("chibi-undead-city-1");
@@ -492,7 +502,7 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     );
     failing.select(GOBLIN_SHOWCASE_V7.kaboom);
     expect(identity()?.dataset.chibiAssetId).toBe("chibi-goblin-goblin");
-    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    expect(identity()?.getAttribute("src")).toBe(recoloured("GOBLIN"));
     failing.select(GOBLIN_SHOWCASE_V7.troll);
     expect(identity()?.dataset.chibiAssetId).toBe(
       "chibi-direction-goblin-troll",
@@ -510,7 +520,7 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     });
     classic.select({ x: 7, y: 7 });
     expect(identity()?.dataset.chibiAssetId).toBe("chibi-goblin-orc-warboss");
-    expect(identity()?.getAttribute("src")).toBe("data:image/test;240,103,98");
+    expect(identity()?.getAttribute("src")).toBe(recoloured("GOBLIN"));
     classic.selectCapital();
     const classicArt = assetIds(".v7-action-card img, .v7-selection-dock img");
     expect(
@@ -588,7 +598,7 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
 
   it("draws the Dinosaur direction art by default: units, Eggs, lay cards and the city, the classic art in the Classic look, and falls back per piece (pulp_wars-3tq.13)", () => {
     const KEY = "data:image/test;216,38,44";
-    const RECOLOURED = "data:image/test;240,103,98";
+    const RECOLOURED = recoloured("DINOSAUR");
     const identity = (): HTMLImageElement | null =>
       document.querySelector<HTMLImageElement>(".v7-identity-art img");
     const assetIds = (selector: string): (string | undefined)[] =>

@@ -1536,7 +1536,7 @@ CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
   the rows behind them and are covered by later rows.
 - Owned subjects recolour through a checked-in owner mask with the master's
   dimensions: a mask pixel with alpha >= 128 selects an owner pixel, which
-  becomes the player colour scaled by its brightness relative to the key
+  becomes the owner colour scaled by its brightness relative to the key
   colour `#d8262c`. The result is cached per asset, density and owner. There
   is no runtime hue matching. A mask or pixel readback that fails falls back
   to the legacy asset rather than showing the key colour.
@@ -1558,8 +1558,25 @@ CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
   own (`navalArtSubjectV7`: `UNIT:<FACTION>:<ROLE>`, the Humans' shared
   `UNIT:<ROLE>`). A faction's naval subject without a usable raster stands
   in with the classic shared ship in the owner's colour
-  (`navalSharedSubjectV7`), never the Human direction ship. The player
-  colour stays on territory borders and city pennants.
+  (`navalSharedSubjectV7`), never the Human direction ship.
+- **Owner colour = faction colour** (bead `pulp_wars-b5f.4`,
+  [FACTION_COLOURS.md](../art/FACTION_COLOURS.md)). Every owner colour the
+  client draws, in every look and art set, comes from the owner's faction:
+  `FACTION_COLOURS_V7`, `factionColourV7` and `playerFactionColourV7` in
+  `src/render/canvas/faction-colours-v7.ts`. The board plan's
+  `ownerPresentation` (`ownerColor` on every owned entry, territory borders
+  included, and `counterpartOwnerColor` on shared borders), the DOM
+  view's chibi art in owner areas, and the leaderboard row (`--player`, set
+  inline, with `data-faction`) all read it. The engine's seat `color` and
+  `setup.humanColor` stay in state, saves and replays but are never shown;
+  the setup form offers no colour and sends `CORAL`. `RULESET7_PLAYER_COLORS`
+  (`owner-recolour-v7.ts`) keeps the four retired seat colours for the
+  recolour tests and the study benches only. In the default look the
+  territory border is the only owner colour on the board: `LIVE_DIRECTION_V7`
+  sets `city.banner` and `building.flags` to false, so no pennant is drawn on
+  a city, a Port or a Shipyard (`drawDirectedFlagV7` and the corner pennant
+  remain for the study directions), and a capital gets the stock crown
+  (`drawCapitalCrownV7`).
 
 ## 9. Application and screen state
 

@@ -32,7 +32,11 @@ faction sails its own fixed-colour ships, and the player colour stays on
 the territory border and the city pennant only
 ([section 20](#20-faction-looks-instead-of-base-plates)). Where an earlier
 section says a faction is "not converted", or reads the player from the
-plate or a ship's sail, read it as history.
+plate or a ship's sail, read it as history. **Since bead `pulp_wars-b5f.4`** the
+owner colour is the faction's own, permanent colour
+([FACTION_COLOURS.md](FACTION_COLOURS.md)) and the code-drawn pennants are
+retired: the territory border is the only owner colour left on the board
+([section 21](#21-faction-colours-and-the-pennants-retired)).
 
 The [chibi art direction](CHIBI_ART_DIRECTION.md) governs production art;
 its section 4a holds the rules this direction changed.
@@ -3258,3 +3262,52 @@ art.
 The faction-styled naval units of every faction (bead `pulp_wars-w5j.2`, live since `pulp_wars-w5j.3`) are described in [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md).
 
 The Steampunk Dwarf faction's direction and production art, its naval set included (bead `pulp_wars-78i.5`, live since the Dwarf UI bead `pulp_wars-78i.6`), is described in [factions/DWARF.md](factions/DWARF.md).
+
+## 21. Faction colours and the pennants retired
+
+**Status:** bead `pulp_wars-b5f.4` (epic `pulp_wars-b5f`). The user
+(2026-10-03): the player colour "should be permanently assigned to a
+faction (necromancer will have violet etc)", and "all the crudely drawn
+flags from cities can be removed now that they are not needed to
+differentiate the players." The palette, its reasons and its measurements
+are in [FACTION_COLOURS.md](FACTION_COLOURS.md). Where an earlier section
+says "player colour" or "seat colour", read it as the owner's faction
+colour; where it describes a pennant in the default look, read it as
+history.
+
+### What changed
+
+| Piece                             | Before                                                          | Since `pulp_wars-b5f.4`                                                                 |
+| --------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| The owner colour                  | the seat colour (Coral, Teal, Gold, Violet) chosen at setup     | the owner's faction colour (`FACTION_COLOURS_V7`): seven fixed colours, one per faction |
+| The setup form                    | a Color select for the human                                    | no colour choice                                                                        |
+| Territory border                  | solid line in the seat colour                                   | the same line in the faction colour: the only owner colour left on the board            |
+| City                              | a code-drawn swallow-tailed pennant carrying the seat shape     | no pennant: the faction's city art and the border say whose it is                       |
+| Capital                           | the pennant's seat shape in gold                                | the stock gold crown in the cell's top-right corner (as the classic look)               |
+| Port and Shipyard                 | a smaller pennant in the territory owner's colour               | no pennant                                                                              |
+| Leaderboard                       | swatch and row edge in the seat colour                          | in the faction colour                                                                   |
+| Egg countdown ring, interface art | the seat colour                                                 | the faction colour                                                                      |
+| Classic look and LEGACY           | owner recolour, seat badge and dashed border in the seat colour | the same, in the faction colour                                                         |
+
+`LIVE_DIRECTION_V7` sets `city.banner: false` and `building.flags: false`.
+The pennant code (`drawDirectedFlagV7`, the corner pennant of
+`drawDirectedPieceChromeV7`) and the anchors (`DIRECTION_FLAG_ANCHORS_V7`
+and the per-faction `*_FLAG_ANCHORS_V7`) stay, because the study benches'
+directions (`HUMAN_DEMO_DIRECTION_V7`, `RECOMMENDED_DIRECTION_V7`) and
+their review scripts still draw them; the game never does. The faction
+city art keeps its authored poles and masts, bare.
+
+### Ownership without the pennant
+
+Every player plays a different faction, and every faction's cities are
+its own art in fixed colours (sandstone castles, crypts, scrap camps,
+bone camps, chrome colonies, igloo camps, forge holds), so a city's owner
+reads from the city itself; the faction-coloured border confirms it and
+names the player. The captures were checked for a city on a shared border
+and for the capital: the crown marks the capital, the art and the border
+the owner.
+
+### Evidence
+
+`npm run art:faction-colours-review -- --out DIR` (see
+[FACTION_COLOURS.md](FACTION_COLOURS.md#evidence)).

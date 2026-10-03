@@ -53,7 +53,6 @@ import {
   type EconomicPreviewV7,
   type MatchSetupV7,
   type MapTypeV7,
-  type PlayerColorV7,
   type PlayerViewV7,
   type PublicTechnologyNodeV7,
   type TechnologyIdV7,
@@ -124,7 +123,10 @@ import {
   type ChibiDomBoxV7,
   type ChibiDomEnvironmentV7,
 } from "./chibi-dom-art-v7";
-import { RULESET7_PLAYER_COLORS } from "../canvas/owner-recolour-v7";
+import {
+  factionColourV7,
+  playerFactionColourV7,
+} from "../canvas/faction-colours-v7";
 import { riftPieceV7 } from "../canvas/rift-presentation-v7";
 import {
   DISBAND_BLOCKED_EXPLANATION_V7,
@@ -356,7 +358,6 @@ export const RIFT_TOOLTIP_V7 =
   "A Rift: only flying units can cross or stand on it, and nothing can be built on it.";
 export const RIFT_HELP_TIP_V7 =
   "Rift: a crack in the ground. Only flying units can cross or stand on it, and nothing can be built on it.";
-const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
 const MAP_TYPES: readonly MapTypeV7[] = [
   "DRY_LAND",
   "PANGEA",
@@ -384,12 +385,6 @@ const MAP_TYPE_LABELS: Readonly<Record<string, string>> = {
 const BOARD_SIZE_LABELS: Readonly<Record<string, string>> = Object.fromEntries(
   BOARD_SIZES.map((size) => [String(size), `${size} × ${size}`]),
 );
-const COLOR_LABELS: Readonly<Record<string, string>> = {
-  CORAL: "Coral",
-  TEAL: "Teal",
-  GOLD: "Gold",
-  VIOLET: "Violet",
-};
 /**
  * The factions the setup screen offers: every registered faction. The
  * Martians joined with their UI bead (`pulp_wars-t6s.4`), the Ice Folk with
@@ -544,7 +539,6 @@ interface DraftV7 {
   /** NEW draws a random seed at launch; SEED uses `seedText`. */
   readonly seedMode: "NEW" | "SEED";
   readonly seedText: string;
-  readonly humanColor: PlayerColorV7;
   readonly mapType: MapTypeV7;
   /**
    * Seat factions (seat 0 is the human), always four and always distinct
@@ -580,7 +574,6 @@ export class Ruleset7DomAppView {
     boardSize: 11,
     seedMode: "NEW",
     seedText: "42",
-    humanColor: "CORAL",
     mapType: "CONTINENTS",
     factions: distinctFactionsV7(4),
   };
@@ -947,14 +940,12 @@ export class Ruleset7DomAppView {
     );
   }
 
+  /** The owner colour of a player: its faction's (bead pulp_wars-b5f.4). */
   #playerColour(
     view: PlayerViewV7,
     playerId: number | null | undefined,
   ): string | undefined {
-    const player = view.players.find((entry) => entry.id === playerId);
-    return player === undefined
-      ? undefined
-      : RULESET7_PLAYER_COLORS[player.color];
+    return playerFactionColourV7(view, playerId);
   }
 
   #viewerColour(): string | undefined {
@@ -1043,14 +1034,6 @@ export class Ruleset7DomAppView {
         MAP_TYPES,
         this.#draft.mapType,
         MAP_TYPE_LABELS,
-      ),
-      select(
-        this.#document,
-        "Color",
-        "v7-color",
-        COLORS,
-        this.#draft.humanColor,
-        COLOR_LABELS,
       ),
       text(
         this.#document,
@@ -4042,7 +4025,10 @@ export class Ruleset7DomAppView {
     list.className = "v7-leaderboard";
     for (const entry of view.leaderboard) {
       const row = el(this.#document, "li", "v7-leaderboard-row");
-      row.dataset.color = entry.color.toLowerCase();
+      // The row's edge and swatch are in the faction colour (bead
+      // pulp_wars-b5f.4), the owner colour everywhere else too.
+      row.dataset.faction = entry.faction.toLowerCase();
+      row.style.setProperty("--player", factionColourV7(entry.faction));
       row.dataset.status = entry.status.toLowerCase();
       if (entry.isViewer) row.dataset.viewer = "true";
       const name = el(this.#document, "span", "v7-leaderboard-name");
@@ -4068,7 +4054,7 @@ export class Ruleset7DomAppView {
         this.#chibiArt(
           cityArtSubjectV7({ artLevel: 1, faction: entry.faction }),
           CHIBI_DOM_BOXES_V7.leaderboard,
-          RULESET7_PLAYER_COLORS[entry.color],
+          factionColourV7(entry.faction),
         )?.element ?? art(this.#document, "building-city-1", ""),
         String(entry.cityCount),
         text(this.#document, "span", " cities", "v7-sr-only"),
@@ -4627,9 +4613,6 @@ export class Ruleset7DomAppView {
         ? (requested as DraftV7["boardSize"])
         : (sizes[0] ?? 11),
       seedText: value(form, "v7-seed"),
-      humanColor: COLORS.includes(value(form, "v7-color") as PlayerColorV7)
-        ? (value(form, "v7-color") as PlayerColorV7)
-        : "CORAL",
       mapType: MAP_TYPES.includes(value(form, "v7-map-type") as MapTypeV7)
         ? (value(form, "v7-map-type") as MapTypeV7)
         : "CONTINENTS",
@@ -6924,7 +6907,10 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
     aiCount: draft.aiCount,
     aiDifficulty: "NORMAL",
     aiMode: draft.aiMode,
-    humanColor: draft.humanColor,
+    // The engine's seat colour is not shown anywhere: every owner colour
+    // is the faction's (bead pulp_wars-b5f.4), so the setup offers no
+    // choice and sends the first seat colour.
+    humanColor: "CORAL",
     factions: Array.from(
       { length: draft.aiCount + 1 },
       (_, seat): FactionIdV7 => draft.factions[seat] ?? "ORIGINAL",

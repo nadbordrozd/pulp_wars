@@ -319,7 +319,7 @@ describe("Undead art in the live default look (pulp_wars-3tq.12)", () => {
     expect(fills).toContain(DIRECTED_GROUND_SHADOW_COLOUR_V7);
   });
 
-  it("draws an Undead city's direction art with the pennant on its tower, and the classic city with its crown when it fails", () => {
+  it("draws an Undead city's direction art without a pennant (the study's on its tower), and the classic city with its crown when it fails", () => {
     const base = classicArt();
     const art = createDirectedChibiArtV7({
       base,
@@ -375,22 +375,43 @@ describe("Undead art in the live default look (pulp_wars-3tq.12)", () => {
       expect(DIRECTION_FLAG_ANCHORS_V7[id], id).toBeDefined();
       const { context, log } = recordingContext();
       expect(
-        drawDirectedFlagV7(context, LIVE_DIRECTION_V7, capital, id, rect, 1),
+        drawDirectedFlagV7(
+          context,
+          HUMAN_DEMO_DIRECTION_V7,
+          capital,
+          id,
+          rect,
+          1,
+        ),
         id,
       ).toBe(true);
       const fills = log
         .filter((call) => call[0] === "set" && call[1] === "fillStyle")
         .map((call) => call[2]);
-      // The pennant in the player colour with the capital's gold shape.
+      // The study's pennant in the owner colour with the capital's gold
+      // shape; the live look retired it (bead pulp_wars-b5f.4).
       expect(fills, id).toContain(CORAL);
       expect(fills, id).toContain("#f4c542");
+      const live = recordingContext();
+      expect(
+        drawDirectedFlagV7(
+          live.context,
+          LIVE_DIRECTION_V7,
+          capital,
+          id,
+          rect,
+          1,
+        ),
+        id,
+      ).toBe(false);
+      expect(live.log, id).toEqual([]);
     }
     // The classic necropolis has no anchor, so it gets no pennant.
     const none = recordingContext();
     expect(
       drawDirectedFlagV7(
         none.context,
-        LIVE_DIRECTION_V7,
+        HUMAN_DEMO_DIRECTION_V7,
         capital,
         "chibi-undead-city-1",
         rect,
@@ -411,17 +432,13 @@ describe("Undead art in the live default look (pulp_wars-3tq.12)", () => {
       );
       return { handled, log };
     };
-    // Converted (the pennant is on the art): the pennant replaces the seat
-    // badge and the crown, and no second pennant is drawn in the corner.
-    const converted = chrome(true);
-    expect(converted.handled).toEqual({ badge: true, hp: false, crown: true });
-    expect(converted.log.filter((call) => call[0] === "fill")).toEqual([]);
-    // Fallback (no pennant drawn): the classic city keeps its stock crown.
-    expect(chrome(false).handled).toEqual({
-      badge: true,
-      hp: false,
-      crown: false,
-    });
+    // Converted or not: no seat badge, no pennant, and the stock capital
+    // crown (bead pulp_wars-b5f.4).
+    for (const flagDrawn of [true, false]) {
+      const city = chrome(flagDrawn);
+      expect(city.handled).toEqual({ badge: true, hp: false, crown: false });
+      expect(city.log.filter((call) => call[0] === "fill")).toEqual([]);
+    }
   });
 
   it("draws the violet effect sprites and leaves the Plague, Bitten and cure art alone", () => {

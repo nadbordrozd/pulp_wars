@@ -420,7 +420,7 @@ describe("Dinosaur art in the live default look (pulp_wars-3tq.13)", () => {
     expect(radius(egg)).toBeGreaterThan(24);
   });
 
-  it("draws a Dinosaur city's direction art with the pennant at its anchor, and the classic city with its crown when it fails", () => {
+  it("draws a Dinosaur city's direction art without a pennant (the study's at its anchor), and the classic city with its crown when it fails", () => {
     const base = classicArt();
     const art = createDirectedChibiArtV7({
       base,
@@ -476,10 +476,32 @@ describe("Dinosaur art in the live default look (pulp_wars-3tq.13)", () => {
       const id = `chibi-direction-dinosaur-city-${level}`;
       const { context, log } = recordingContext();
       expect(
-        drawDirectedFlagV7(context, LIVE_DIRECTION_V7, capital, id, rect, 1),
+        drawDirectedFlagV7(
+          context,
+          HUMAN_DEMO_DIRECTION_V7,
+          capital,
+          id,
+          rect,
+          1,
+        ),
         id,
       ).toBe(true);
-      // The pennant in the player colour with the capital's gold shape.
+      // The live look retired the pennant (bead pulp_wars-b5f.4).
+      const live = recordingContext();
+      expect(
+        drawDirectedFlagV7(
+          live.context,
+          LIVE_DIRECTION_V7,
+          capital,
+          id,
+          rect,
+          1,
+        ),
+        id,
+      ).toBe(false);
+      expect(live.log, id).toEqual([]);
+      // The study's pennant in the owner colour with the capital's gold
+      // shape.
       expect(fillsOf(log), id).toContain(CORAL);
       expect(fillsOf(log), id).toContain("#f4c542");
       // It starts at the recorded anchor.
@@ -495,7 +517,7 @@ describe("Dinosaur art in the live default look (pulp_wars-3tq.13)", () => {
     expect(
       drawDirectedFlagV7(
         none.context,
-        LIVE_DIRECTION_V7,
+        HUMAN_DEMO_DIRECTION_V7,
         capital,
         "chibi-dinosaur-city-1",
         rect,
@@ -516,16 +538,12 @@ describe("Dinosaur art in the live default look (pulp_wars-3tq.13)", () => {
       );
       return { handled, log };
     };
-    // Converted (the pennant is on the art): the pennant replaces the seat
-    // badge and the crown, and no second pennant is drawn in the corner.
-    const converted = chrome(true);
-    expect(converted.handled).toEqual({ badge: true, hp: false, crown: true });
-    expect(converted.log.filter((call) => call[0] === "fill")).toEqual([]);
-    // Fallback (no pennant drawn): the classic city keeps its stock crown.
-    expect(chrome(false).handled).toEqual({
-      badge: true,
-      hp: false,
-      crown: false,
-    });
+    // Converted or not: no seat badge, no pennant, and the stock capital
+    // crown (bead pulp_wars-b5f.4).
+    for (const flagDrawn of [true, false]) {
+      const city = chrome(flagDrawn);
+      expect(city.handled).toEqual({ badge: true, hp: false, crown: false });
+      expect(city.log.filter((call) => call[0] === "fill")).toEqual([]);
+    }
   });
 });

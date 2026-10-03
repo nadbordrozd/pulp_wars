@@ -300,12 +300,23 @@ export const HUMAN_DEMO_DIRECTION_V7: BoardVisualDirectionV7 = {
  * the faction's look says whose a unit is: the coloured, seat-shaped base
  * plates are retired (a faint neutral ground shadow instead), every
  * faction's ships are its own fixed-colour art, and a ready unit has a thin
- * cream ring on the ground round its feet (GROUND). Territory borders and
- * city pennants keep the player colour.
+ * cream ring on the ground round its feet (GROUND).
+ *
+ * Since bead pulp_wars-b5f.4 the owner colour is the faction's own
+ * (faction-colours-v7.ts) and the code-drawn pennants are retired: a city,
+ * a Port or a Shipyard says whose it is by its faction art and the
+ * territory border, the only owner colour left on the board. The capital
+ * shows the stock gold crown in its cell's top-right corner. The pennant
+ * code and anchors stay for the study benches' directions above.
  */
 export const LIVE_DIRECTION_V7: BoardVisualDirectionV7 = {
   ...HUMAN_DEMO_DIRECTION_V7,
-  city: { ...HUMAN_DEMO_DIRECTION_V7.city, factionCities: "CLASSIC" },
+  building: { ...HUMAN_DEMO_DIRECTION_V7.building, flags: false },
+  city: {
+    ...HUMAN_DEMO_DIRECTION_V7.city,
+    banner: false,
+    factionCities: "CLASSIC",
+  },
   unit: { ...HUMAN_DEMO_DIRECTION_V7.unit, base: "SHADOW" },
   chrome: { ...HUMAN_DEMO_DIRECTION_V7.chrome, ready: "GROUND" },
   // Undead (bead pulp_wars-3tq.12): the faction's magic is violet.

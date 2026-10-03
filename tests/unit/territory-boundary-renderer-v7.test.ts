@@ -3,11 +3,23 @@ import {
   buildBoardRenderPlanV7,
   drawBoardV7,
 } from "../../src/render/canvas/board-renderer-v7";
+import { factionColourV7 } from "../../src/render/canvas/faction-colours-v7";
 import { territoryReviewFixtureV7 } from "../fixtures/ruleset7-territory-review";
 
 describe("square territory boundary presentation", () => {
   it("uses only public border segments and never reads hidden tile fields", () => {
-    const base = territoryReviewFixtureV7();
+    const fixture = territoryReviewFixtureV7();
+    // The fixture is a mirror match (two Human seats); the browser never
+    // shows one, and the owner colour is the faction's (bead
+    // pulp_wars-b5f.4), so the rival plays the Undead here.
+    const base = {
+      ...fixture,
+      players: fixture.players.map((player) =>
+        player.id === fixture.viewer.id
+          ? player
+          : { ...player, faction: "UNDEAD" as const },
+      ),
+    };
     const view = {
       ...base,
       board: {
@@ -47,10 +59,23 @@ describe("square territory boundary presentation", () => {
     const shared = owned.filter(
       (entry) => entry.counterpartOwnerColor !== undefined,
     );
+    // The owner colours are the two players' faction colours (bead
+    // pulp_wars-b5f.4), not their seat colours.
+    const factionOf = (id: number) =>
+      factionColourV7(
+        base.players.find((player) => player.id === id)?.faction ?? "ORIGINAL",
+      );
+    const viewerColour = factionOf(base.viewer.id);
+    const rivalColour = factionOf(
+      base.players.find((player) => player.id !== base.viewer.id)?.id ?? -1,
+    );
+    expect(viewerColour).not.toBe(rivalColour);
     expect(shared.length).toBeGreaterThan(0);
-    expect(shared.every((entry) => entry.ownerColor === "#f06762")).toBe(true);
+    expect(shared.every((entry) => entry.ownerColor === viewerColour)).toBe(
+      true,
+    );
     expect(
-      shared.every((entry) => entry.counterpartOwnerColor === "#28b7a4"),
+      shared.every((entry) => entry.counterpartOwnerColor === rivalColour),
     ).toBe(true);
 
     const city = base.cities[0];
@@ -66,11 +91,11 @@ describe("square territory boundary presentation", () => {
         entry.counterpartOwnerColor !== undefined,
     );
     expect(selected.length).toBeGreaterThan(0);
-    expect(selected.every((entry) => entry.ownerColor === "#f06762")).toBe(
+    expect(selected.every((entry) => entry.ownerColor === viewerColour)).toBe(
       true,
     );
     expect(
-      selected.every((entry) => entry.counterpartOwnerColor === "#28b7a4"),
+      selected.every((entry) => entry.counterpartOwnerColor === rivalColour),
     ).toBe(true);
   });
 

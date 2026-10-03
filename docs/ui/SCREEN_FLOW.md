@@ -41,8 +41,9 @@ Roads, that text now describes the **Classic look** developer option
   ground shadow; a unit on water and a flyer have none. Ships and the
   embarked transport are the owner faction's own (a Human cog, an Undead
   ghost ship, a Martian hover-boat, ...), with no ring and no
-  player-coloured sail. The player colour stays on the territory border and
-  the city pennant only. (Until w5j.3 units stood on a seat-shaped plate in
+  player-coloured sail. The owner colour, which is the faction's own (bead
+  `pulp_wars-b5f.4`, [FACTION_COLOURS.md](../art/FACTION_COLOURS.md)), stays
+  on the territory border only. (Until w5j.3 units stood on a seat-shaped plate in
   the player colour, and ships kept a player-coloured sail in a thin ring.)
 - **No numbered seat badge** is drawn on units or cities.
 - **HP bar only when damaged:** a short horizontal bar under the feet (dark
@@ -55,18 +56,17 @@ Roads, that text now describes the **Classic look** developer option
   player colour; it is an ellipse, never the square cell outline of the
   selection. The outline glow is not drawn; the dock still says **Needs
   action** or **Handled**.
-- **Cities.** A Human city flies a code-drawn swallow-tailed pennant in the
-  player colour from its tower, carrying the seat's shape in cream, or in
-  gold for the capital (which then has no separate crown). A Goblin city
-  (bead `pulp_wars-3tq.9`) does the same from the bare pole of its scrap
-  camp: the lookout pole, the tower or the big tent. A Martian colony (bead
-  `pulp_wars-t6s.4`) flies it from the tip of its own antenna mast. A
-  faction city without a usable direction raster keeps its classic art in
-  its owner recolour and the capital crown, with no seat badge and no
-  pennant.
+- **Cities** fly no pennant (bead `pulp_wars-b5f.4`, [section 21 of the
+  visual direction](../art/VISUAL_DIRECTION_2026-10.md#21-faction-colours-and-the-pennants-retired)):
+  every faction's city is its own art, so the city and the faction-coloured
+  border say whose it is. The capital has the gold crown in its cell's
+  top-right corner. A faction city without a usable direction raster keeps
+  its classic art in its owner recolour, with no seat badge. (Until b5f.4 a
+  code-drawn swallow-tailed pennant in the player colour flew from each
+  city, carrying the seat's shape, gold for the capital.)
   Population pips and the Field Defense badge are unchanged.
-- **Ports and Shipyards** fly a smaller pennant in the territory owner's
-  colour. Other improvements carry no player colour: the shared set (Farm as
+- **Ports, Shipyards and every other improvement** carry no owner colour
+  (the Port and Shipyard pennants were retired with the city pennants): the shared set (Farm as
   beds of mixed vegetables, Lumber Camp, Windmill, Sawmill, Forge, Workshop,
   Market, Monument) and the neutral Village are drawn as authored.
 - **Human units, portraits and City 1 to 3** use the direction's art in the
@@ -83,9 +83,8 @@ Roads, that text now describes the **Classic look** developer option
   the direction's art in fixed colours (pale bone, near-black cloth, pallid
   ash grey flesh, one violet accent) for every player, on the board and in
   the docks, training cards, technology cards and Help. An Undead city is a
-  dark slate necropolis with bone trim and violet windows and flies the same
-  code-drawn pennant from a tower as a Human city (seat shape in cream, gold
-  for the capital, no separate crown). The Wail, Lich splash, Raise Dead and
+  dark slate necropolis with bone trim and violet windows (no pennant since
+  bead `pulp_wars-b5f.4`; the capital has the crown). The Wail, Lich splash, Raise Dead and
   spirit wisp effects are violet, with violet rings; the Raise Dead target
   preview is violet like the Wail radius. Plague and Bitten markers, the
   cure sparkle and Grave markers are unchanged. A raster that fails to load
@@ -102,15 +101,16 @@ Roads, that text now describes the **Classic look** developer option
   colour: it stood on a plate as wide as a large unit's until bead
   `pulp_wars-w5j.3` (now the neutral ground shadow: an Egg is always the
   Dinosaur player's), and its countdown chip keeps the owner-coloured ring. A
-  Dinosaur city is the bone-and-hide camp with tawny tents and flies the
-  same code-drawn pennant as a Human city (seat shape in cream, gold for the
-  capital, no separate crown). The growth chevrons and scale, the Charge!,
+  Dinosaur city is the bone-and-hide camp with tawny tents (no pennant since
+  bead `pulp_wars-b5f.4`; the capital has the crown). The growth chevrons and scale, the Charge!,
   Acid and Armoured previews, the dust, flash, shell and ring cues and the
   War Drums icon are unchanged. A raster that fails to load falls back to
   the classic Dinosaur asset of that piece. Only the shared ships still
   carry a player-coloured part (the sail). See
   [the Dinosaur production section](../art/VISUAL_DIRECTION_2026-10.md#19-dinosaur-production).
-- **Territory borders** are one thin solid line in the owner colour with a
+- **Territory borders** are one thin solid line in the owner's faction
+  colour (Human crimson, Undead violet, Goblin hazard yellow, Dinosaur
+  red-orange, Martian magenta, Ice Folk ice blue, Dwarf signal green) with a
   soft dark casing; a border shared by two owners alternates their colours.
 - **Roads** have no black casing. Terrain, resources and Treasure keep their
   art, drawn at lower contrast.
@@ -577,7 +577,7 @@ without a Martian seat looks as before apart from the extra faction option.
   Saucer, Ray Gunner, Shield Projector, Brain, Tripod, Mothership, Colossus;
   a Thrall is "Thrall" with its own sprite). The default look paints the
   chrome-and-magenta sprites, portraits, icons and the landed-saucer
-  colonies (whose pennant flies from the mast tip). The Classic look and
+  colonies (their antenna masts bare since bead `pulp_wars-b5f.4`). The Classic look and
   LEGACY have no Martian art: they draw the Human sprite of the role (the
   Fighter for a Thrall) with the **saucer badge** (chrome saucer on a
   gunmetal disc) in the corner of the other factions' badges, and the Human
@@ -704,7 +704,8 @@ from the extra faction option.
 - **Art and labels.** Units are named by their owner's registration (Yeti,
   Sled, Snow Hunter, Mammoth, Ice Witch, Boulder Yeti, Sabretooth, Frost
   Giant). The default look paints the frost-and-fur sprites, portraits,
-  icons and the igloo camps (whose pennant flies from the bone pole). The
+  icons and the igloo camps (their bone poles bare since bead
+  `pulp_wars-b5f.4`). The
   Classic look and LEGACY draw the Human sprite of the role with a
   **snow-capped peak badge** (ice-blue peak, white cap, navy disc) in the
   corner of the other factions' badges, and the Human city; boats wear the
@@ -823,11 +824,11 @@ apart from the extra faction option.
 - **Art and labels.** Units are named by their owner's registration
   (Hammerer, Gyrocopter, Clockwork Gunner, Steam Mole, Engineer, Steam
   Cannon, Steam Tank, Brass Titan). The default look paints the iron,
-  copper and steam sprites, portraits, icons, the forge holds (whose pennant
-  flies from their own iron pole) and the Dwarf fleet (riveted steam launch,
+  copper and steam sprites, portraits, icons, the forge holds (their iron
+  poles bare since bead `pulp_wars-b5f.4`) and the Dwarf fleet (riveted steam launch,
   ironclad, steam barge) through the generic naval wiring. No plate is
   drawn: the ginger beards, the white steam and the green machine lamps say
-  "Dwarf", the pennant and the border say whose. The Classic look and LEGACY
+  "Dwarf", the signal-green border says whose. The Classic look and LEGACY
   draw the Human sprite of the role with a **cog badge** (a copper cog on
   dark leather, iron rim) in the corner of the other factions' badges, the
   Human city, and a code-drawn mound. The dock shows a "Dwarf" faction chip.
@@ -1043,8 +1044,9 @@ both art sets. Where an older section below disagrees, this overlay wins.
   hidden; the launch uses seed 0 and never shows a seed error. Choosing any
   other map re-enables Size with the player's earlier size and shows the seed
   group in its earlier state, typed seed included. The form is updated in
-  place (no control is replaced, focus stays). Opponents, Mode, Color, and
-  the faction selects work as usual. A Showcase match opens on the human's
+  place (no control is replaced, focus stays). Opponents, Mode and
+  the faction selects work as usual (there is no colour choice since bead
+  `pulp_wars-b5f.4`: each faction has its permanent colour). A Showcase match opens on the human's
   turn with the camera on the capital in the middle of the player's strip;
   the resume and results screens label the map "Showcase".
 - **Map seed.** Settings shows `Map seed: N` for the current match (selectable
@@ -1313,7 +1315,8 @@ diagrams and exact formulas.
 
 The match HUD includes one clearly labeled **Leaderboard** control. It opens a
 view-only layer over the live match with every seat exactly once in stored turn
-order. Each row uses player number and color together, and shows faction,
+order. Each row uses player number and its faction's permanent colour (the
+swatch and the row's left edge, bead `pulp_wars-b5f.4`) together, and shows faction,
 Human/You or Normal AI controller identity, active/eliminated status, total
 owned cities, and total living units. Eliminated players remain present with
 zero totals. These two aggregate totals are intentionally global public
@@ -1761,7 +1764,7 @@ badge; City saturation fades city and neutral Village sprites. Units, other
 terrain, resources, Roads, overlays, markers, borders, previews and the DOM
 docks and portraits are never affected. The board redraws while a slider is
 dragged, in both art sets and in both CHIBI looks (the new improvements and
-cities fade like the previous ones; code-drawn pennants keep their colour). The values are presentation only: they are stored
+cities fade like the previous ones). The values are presentation only: they are stored
 in the browser under `pulpWars.ruleset7.boardSaturation.v1` (outside the shared
 settings envelope, like the art set), are restored on load with missing or
 invalid values clamped to 0–100 and defaulting to 100%, and never enter a save,

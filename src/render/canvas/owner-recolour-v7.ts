@@ -1,6 +1,11 @@
 import type { PlayerColorV7 } from "../../engine/index";
 
-/** Existing Ruleset 7 player colours; the single owner palette source. */
+/**
+ * The four seat colours the game drew before bead pulp_wars-b5f.4. The game
+ * no longer shows them: every owner colour is the faction's
+ * (FACTION_COLOURS_V7 in faction-colours-v7.ts). They stay as sample owner
+ * colours for the recolour tests and the historical study benches.
+ */
 export const RULESET7_PLAYER_COLORS = {
   CORAL: "#f06762",
   TEAL: "#28b7a4",

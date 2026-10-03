@@ -12,10 +12,6 @@
   --v7-radius: 14px;
   --v7-gain: #8ee8a8;
   --v7-loss: #ff8f86;
-  --player-coral: #f06762;
-  --player-teal: #28b7a4;
-  --player-gold: #e2b63f;
-  --player-violet: #a277d2;
 
   width: 100%;
   min-height: 100dvh;
@@ -1353,7 +1349,8 @@
 }
 
 .v7-leaderboard-row {
-  --player: var(--player-coral);
+  /* Set per row to the faction colour (faction-colours-v7.ts). */
+  --player: #9c968a;
 
   display: flex;
   align-items: center;
@@ -1372,18 +1369,6 @@
   color: var(--muted);
   font-weight: 900;
   content: counter(v7-rank);
-}
-
-.v7-leaderboard-row[data-color="teal"] {
-  --player: var(--player-teal);
-}
-
-.v7-leaderboard-row[data-color="gold"] {
-  --player: var(--player-gold);
-}
-
-.v7-leaderboard-row[data-color="violet"] {
-  --player: var(--player-violet);
 }
 
 .v7-leaderboard-row[data-viewer="true"] {

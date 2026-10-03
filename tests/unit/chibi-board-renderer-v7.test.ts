@@ -24,6 +24,7 @@ import {
   chibiGarrisonDestinationRect,
 } from "../../src/render/canvas/chibi-geometry-v7";
 import { RULESET7_PLAYER_COLORS } from "../../src/render/canvas/owner-recolour-v7";
+import { FACTION_COLOURS_V7 } from "../../src/render/canvas/faction-colours-v7";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
 
@@ -185,7 +186,8 @@ describe("CHIBI board rendering", () => {
     });
     expect(byKey(`unit:${owned.id}`)).toMatchObject({
       artSubject: `UNIT:${owned.role}`,
-      ownerColor: RULESET7_PLAYER_COLORS.CORAL,
+      // The Human seat's faction colour (bead pulp_wars-b5f.4).
+      ownerColor: FACTION_COLOURS_V7.ORIGINAL,
     });
     const city = view.cities[0];
     if (city === undefined) throw new Error("city missing");

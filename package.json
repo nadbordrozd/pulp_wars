@@ -76,6 +76,7 @@
     "art:chibi-dwarf-direction-review": "tsx scripts/art/chibi-dwarf-direction-review.ts",
     "art:chibi-dinosaur-direction-review": "tsx scripts/art/chibi-dinosaur-direction-review.ts",
     "art:chibi-naval-faction-review": "tsx scripts/art/chibi-naval-faction-review.ts",
+    "art:faction-colours-review": "tsx scripts/art/faction-colours-review.ts",
     "art:faction-looks-review": "tsx scripts/art/faction-looks-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "diagnose:mountain-live": "tsx scripts/browser-smoke-v6.ts --mountain-live",

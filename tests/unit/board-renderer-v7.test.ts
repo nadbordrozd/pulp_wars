@@ -5,6 +5,7 @@ import {
   drawBoardV7,
   type BoardRenderPlanEntryV7,
 } from "../../src/render/canvas/board-renderer-v7";
+import { FACTION_COLOURS_V7 } from "../../src/render/canvas/faction-colours-v7";
 import { type TileEdge } from "../../src/render/canvas/geometry";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 import {
@@ -190,7 +191,11 @@ describe("Ruleset 7 board renderer", () => {
     expect(plan.entries.some((entry) => entry.kind === "UNIT")).toBe(true);
     expect(
       plan.entries.find((entry) => entry.key === `unit:${owned?.id}`),
-    ).toMatchObject({ ownerColor: "#f06762", ownerSeat: 0 });
+    ).toMatchObject({
+      // The Human seat's faction colour (bead pulp_wars-b5f.4).
+      ownerColor: FACTION_COLOURS_V7.ORIGINAL,
+      ownerSeat: 0,
+    });
     const worldEntries = plan.entries.filter((entry) => entry.kind !== "VALUE");
     for (let index = 1; index < worldEntries.length; index += 1) {
       const prior = worldEntries[index - 1];

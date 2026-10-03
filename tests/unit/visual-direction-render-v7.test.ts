@@ -1009,8 +1009,10 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     // the ready cue is a cream ring on the ground.
     expect(LIVE_DIRECTION_V7).toMatchObject({
       unit: { base: "SHADOW", samples: true },
-      building: { samples: true, flags: true },
-      city: { samples: true, banner: true, factionCities: "CLASSIC" },
+      // Since bead pulp_wars-b5f.4 no code-drawn pennant on a city, a Port
+      // or a Shipyard: the faction art and the border say whose it is.
+      building: { samples: true, flags: false },
+      city: { samples: true, banner: false, factionCities: "CLASSIC" },
       chrome: {
         hp: "DAMAGED",
         hpPlacement: "BASE",
@@ -1151,23 +1153,35 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     const studied = chrome(undeadCapital, false, HUMAN_DEMO_DIRECTION_V7);
     expect(studied.handled.crown).toBe(true);
     expect(fills(studied.log)).toContain(CORAL);
-    // A Human city: its pennant is on the art (flagDrawn) and carries the
-    // capital's gold shape, so the crown and the badge are both replaced.
+    // A Human city in the study's direction: its pennant is on the art
+    // (flagDrawn) and carries the capital's gold shape, so the crown and the
+    // badge are both replaced.
     const humanCapital = entry("CITY", 0, 0, "building-city-1", "CITY:1", {
       ownerColor: CORAL,
       ownerSeat: 0,
       capital: true,
     });
-    expect(chrome(humanCapital, true).handled).toEqual({
-      badge: true,
-      hp: false,
-      crown: true,
-    });
-    // A Human city whose direction raster failed has no anchor: it keeps a
-    // player marker, the corner pennant.
-    const fallback = chrome(humanCapital, false);
+    expect(chrome(humanCapital, true, HUMAN_DEMO_DIRECTION_V7).handled).toEqual(
+      {
+        badge: true,
+        hp: false,
+        crown: true,
+      },
+    );
+    // A Human city whose direction raster failed has no anchor: the study
+    // keeps a player marker, the corner pennant.
+    const fallback = chrome(humanCapital, false, HUMAN_DEMO_DIRECTION_V7);
     expect(fallback.handled.crown).toBe(true);
     expect(fills(fallback.log)).toContain(CORAL);
+    // The live look retired the pennants (bead pulp_wars-b5f.4): no seat
+    // badge, nothing drawn, and the stock capital crown, with or without
+    // direction art.
+    for (const flagDrawn of [true, false]) {
+      const live = chrome(humanCapital, flagDrawn);
+      expect(live.handled).toEqual({ badge: true, hp: false, crown: false });
+      expect(live.log.filter((call) => call[0] === "fill")).toEqual([]);
+      expect(live.log.filter((call) => call[0] === "stroke")).toEqual([]);
+    }
   });
 
   it("draws the Goblin direction art in the live look and the classic Goblin art in the Classic look (pulp_wars-3tq.9)", () => {
@@ -1268,7 +1282,7 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     expect(liveBoardLookV7("CHIBI", true).visualDirectionArt).toBeUndefined();
   });
 
-  it("draws a Goblin city from its direction art with the pennant on its own pole, and the classic city when the art is missing (pulp_wars-3tq.9)", () => {
+  it("draws a Goblin city from its direction art without a pennant (the study's on its own pole), and the classic city when the art is missing (pulp_wars-3tq.9, b5f.4)", () => {
     /** Goblin city art under its registered id, so its anchor is found. */
     const goblinCities: ChibiBoardArtV7 = {
       resolve: (request) => {
@@ -1338,7 +1352,8 @@ describe("live default look (pulp_wars-3tq.6)", () => {
       value: 2,
       population: 2,
     });
-    // The pennant is drawn at the recorded anchor of each tier.
+    // The study's direction draws the pennant at the recorded anchor of
+    // each tier; the live look draws none (bead pulp_wars-b5f.4).
     const rect = { x: 100, y: 200, width: 96, height: 100 };
     for (const level of [1, 2, 3] as const) {
       const id = `chibi-direction-goblin-city-${level}`;
@@ -1346,7 +1361,14 @@ describe("live default look (pulp_wars-3tq.6)", () => {
       if (anchor === undefined) throw new Error(`${id}: no anchor`);
       const { context, log } = recordingContext();
       expect(
-        drawDirectedFlagV7(context, LIVE_DIRECTION_V7, capital, id, rect, 1),
+        drawDirectedFlagV7(
+          context,
+          HUMAN_DEMO_DIRECTION_V7,
+          capital,
+          id,
+          rect,
+          1,
+        ),
       ).toBe(true);
       expect(log.find((call) => call[0] === "moveTo")).toEqual([
         "moveTo",
@@ -1355,6 +1377,18 @@ describe("live default look (pulp_wars-3tq.6)", () => {
       ]);
       expect(fills(log)).toContain(CORAL);
       expect(fills(log)).toContain("#f4c542");
+      const live = recordingContext();
+      expect(
+        drawDirectedFlagV7(
+          live.context,
+          LIVE_DIRECTION_V7,
+          capital,
+          id,
+          rect,
+          1,
+        ),
+      ).toBe(false);
+      expect(live.log).toEqual([]);
     }
     // The classic Goblin city has no anchor: no pennant on it.
     {
@@ -1362,7 +1396,7 @@ describe("live default look (pulp_wars-3tq.6)", () => {
       expect(
         drawDirectedFlagV7(
           context,
-          LIVE_DIRECTION_V7,
+          HUMAN_DEMO_DIRECTION_V7,
           capital,
           "chibi-goblin-city-2",
           rect,
@@ -1387,35 +1421,28 @@ describe("live default look (pulp_wars-3tq.6)", () => {
         log,
       };
     };
-    // Converted: the pennant carries the capital's gold shape, so the stock
-    // crown and the seat badge are both replaced, and no corner pennant is
-    // added.
-    const flown = chrome(true);
-    expect(flown.handled).toEqual({ badge: true, hp: false, crown: true });
-    expect(flown.log.filter((call) => call[0] === "fill")).toEqual([]);
-    // Fallback (classic raster, no anchor): the classic crown, no pennant.
-    const classicCity = chrome(false);
-    expect(classicCity.handled).toEqual({
-      badge: true,
-      hp: false,
-      crown: false,
-    });
-    expect(classicCity.log.filter((call) => call[0] === "fill")).toEqual([]);
+    // Converted or not: no seat badge, no pennant, and the stock capital
+    // crown (the chrome leaves it to the board).
+    for (const flagDrawn of [true, false]) {
+      const city = chrome(flagDrawn);
+      expect(city.handled).toEqual({ badge: true, hp: false, crown: false });
+      expect(city.log.filter((call) => call[0] === "fill")).toEqual([]);
+    }
 
-    // On the board: the direction raster, then the pennant in the player's
-    // colour with the gold capital shape; the Classic look draws the
-    // classic city in the owner's colour and no pennant.
+    // On the board: the direction raster with the stock gold crown and no
+    // pennant, and nothing in the owner colour; the Classic look draws the
+    // classic city in the owner's colour.
     const live = drawLive([capital], { samples: goblinCities });
     expect(live.images).toEqual([raster("direction:CITY:GOBLIN:2")]);
-    expect(fills(live.log)).toContain(CORAL);
+    expect(fills(live.log)).not.toContain(CORAL);
     expect(fills(live.log)).toContain("#f4c542");
     const classic = drawLive([capital], {
       samples: goblinCities,
       classic: true,
     });
     expect(classic.images).toEqual([raster(`CITY:GOBLIN:2#${CORAL}`)]);
-    // The pennant is a five-point path closed and stroked in a darker tone
-    // of the player colour; the classic frame has no such stroke.
+    // A pennant is a five-point path closed and stroked in a darker tone of
+    // the owner colour; neither frame has such a stroke.
     const pennantRim = (log: readonly LogEntry[]) =>
       log.filter(
         (call) =>
@@ -1423,7 +1450,7 @@ describe("live default look (pulp_wars-3tq.6)", () => {
           call[1] === "strokeStyle" &&
           call[2] === darkerColourV7(CORAL),
       ).length;
-    expect(pennantRim(live.log)).toBeGreaterThan(0);
+    expect(pennantRim(live.log)).toBe(0);
     expect(pennantRim(classic.log)).toBe(0);
   });
 

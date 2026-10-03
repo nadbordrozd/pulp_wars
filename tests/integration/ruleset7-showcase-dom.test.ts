@@ -62,14 +62,15 @@ describe("Ruleset 7 Showcase setup option", () => {
     expect(size.disabled).toBe(true);
     expect(seedChoice().hidden).toBe(true);
 
-    // Opponents, Mode, Color and the faction selects keep working, and
+    // Opponents, Mode and the faction selects keep working (the colour
+    // choice is gone: a faction's colour is fixed, bead pulp_wars-b5f.4), and
     // changing them does not undo the forced size.
     choose("v7-ai-count", "3");
     expect(document.querySelectorAll("[data-v7-factions] select")).toHaveLength(
       4,
     );
     choose("v7-ai-mode", "COOPERATIVE");
-    choose("v7-color", "TEAL");
+    expect(document.getElementById("v7-color")).toBeNull();
     choose("v7-faction-0", "GOBLIN");
     expect([...size.options].map((option) => option.value)).toEqual(["16"]);
     expect(size.disabled).toBe(true);
