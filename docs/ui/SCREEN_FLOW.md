@@ -155,9 +155,11 @@ an Undead seat looks and behaves exactly as in revision 12.
 
 - Setup always shows a labelled **Factions** group with one faction select
   per seat ("Your faction", "Player N faction"), offering Human and Undead
-  (and, since revision 17, Goblin, and since revision 19, Dinosaur; see the
-  [Goblin overlay](#current-ruleset-7-revision-17-goblin-overlay) and the
-  [Dinosaur overlay](#current-ruleset-7-revision-19-dinosaur-overlay)), all Human
+  (and, since revision 17, Goblin, since revision 19, Dinosaur, and since
+  `pulp_wars-t6s.4`, Martian; see the
+  [Goblin overlay](#current-ruleset-7-revision-17-goblin-overlay), the
+  [Dinosaur overlay](#current-ruleset-7-revision-19-dinosaur-overlay), and the
+  [Martian overlay](#current-ruleset-7-martian-overlay)), all Human
   by default and resized with the opponent count; the launched setup carries
   each seat's choice. There is no URL parameter or development flag for it
   (`pulp_wars-vkq.16` removed the former `?undead=1` flag). Saves with Undead
@@ -279,8 +281,8 @@ This overlay implements
 looks as in revision 16 apart from the extra faction option.
 
 - **Setup.** Every seat's faction select offers Human, Undead and Goblin
-  (and Dinosaur since revision 19; default Human); the launched setup, saves
-  and resume keep Goblin seats.
+  (and Dinosaur since revision 19 and Martian since `pulp_wars-t6s.4`;
+  default Human); the launched setup, saves and resume keep Goblin seats.
 - **Labels.** Units are named by their owner's registration (Goblin, Wolf
   Rider, Bomb Chucker, Orc Brute, Orc Warboss, Rocket Cart, Scrap Buggy,
   Troll). The dock shows a "Goblin" faction chip; CHIBI paints the reviewed
@@ -403,8 +405,8 @@ reads only public views, public previews (`previewLayEggV7`,
 seat looks as in revision 18 apart from the extra faction option.
 
 - **Setup.** Every seat's faction select offers Human, Undead, Goblin and
-  Dinosaur (default Human); the launched setup, saves, resume and the
-  Showcase keep Dinosaur seats.
+  Dinosaur (and Martian since `pulp_wars-t6s.4`; default Human); the
+  launched setup, saves, resume and the Showcase keep Dinosaur seats.
 - **Labels.** Units are named by their owner's registration (Caveman, Raptor,
   Spitter, Ankylosaurus, Shaman, Triceratops, T-Rex, Brontosaurus) on the
   board, in docks, previews, the log and the board's screen-reader text; an
@@ -545,7 +547,10 @@ This overlay implements
 [Martian spec section 13](../product/RULESET_7_MARTIANS.md#13-ui-requirements)
 (`pulp_wars-t6s.4`) with the production art of the
 [Martian art fragment](../art/factions/MARTIAN.md) (bead `pulp_wars-t6s.6`):
-the placeholder generator of spec 13.4 is not built. Every cue reads only
+the placeholder generator of spec 13.4 is not built. The Martian rules are
+part of
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md#20-martian-faction-rules).
+Every cue reads only
 public views (`view.shields`, `view.cooling`, `view.thralls`,
 `view.mindControlCooldowns`), the public unit stats' `martian` block, the
 public previews (`previewBeamDownV7`, `previewMindControlV7`,

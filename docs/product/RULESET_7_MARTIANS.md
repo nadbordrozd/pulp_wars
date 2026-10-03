@@ -1,6 +1,11 @@
 # Ruleset 7: Martian faction
 
-**Status:** contract (`pulp_wars-t6s.1`); **the engine is implemented**
+**Status:** **folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
+(kept as history)** by `pulp_wars-t6s.7` at `pulp-wars-poc-7r25`: the current
+rules describe the running five-faction game, with the Martians in their
+[section 20](RULESET_7_CURRENT.md#20-martian-faction-rules), and win wherever
+this document differs; the fold's corrections of this text are listed in the
+current rules' revision history. Contract (`pulp_wars-t6s.1`); **the engine is implemented**
 (`pulp_wars-t6s.2`, identity `pulp-wars-poc-7r22`: every rule, command, event,
 query, and state shape of this document). **The UI
 ([section 13](#13-ui-requirements), `pulp_wars-t6s.4`) is implemented**, with
@@ -25,7 +30,8 @@ overlay over the rules in force when `pulp_wars-t6s.2` starts: today that is
 factions), plus the revisions queued before the Martian engine (achievements,
 then a map revision with the Pangea coast ring and the Rift). Revision 20 is
 being implemented while this document is written; its rules are treated as in
-force. No bead of the Martian epic folds this overlay into the current rules.
+force. (When this was written no bead of the Martian epic was to fold this
+overlay into the current rules; `pulp_wars-t6s.7` did.)
 
 **Ruleset ID:** the next free `pulp-wars-poc-7rNN` at the time
 `pulp_wars-t6s.2` starts. Other beads take identities first, so this document

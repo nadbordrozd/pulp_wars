@@ -4,10 +4,10 @@ The headless entry point runs replay verification and complete equal-rules
 Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) for the four
-playable factions (Human, Undead, Goblin, and Dinosaur); the Martian seats
-below follow the [Martian overlay](../product/RULESET_7_MARTIANS.md), which
-is not folded into it. The headless CLI
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) for the five
+playable factions (Human, Undead, Goblin, Dinosaur, and Martian;
+`pulp_wars-t6s.7` folded the
+[Martian overlay](../product/RULESET_7_MARTIANS.md) into it). The headless CLI
 accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r25`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). Since
 [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md) the
@@ -109,7 +109,8 @@ credited to no role or faction. Faction-keyed fields (`factionRoles`,
 ## Martian seats (`pulp_wars-t6s.2`)
 
 `--factions` also accepts `martian`
-([Martian overlay](../product/RULESET_7_MARTIANS.md)), on every map type
+([current rules section 20](../product/RULESET_7_CURRENT.md#20-martian-faction-rules);
+[Martian overlay](../product/RULESET_7_MARTIANS.md)), on every map type
 including `showcase`:
 
 ```bash
@@ -144,8 +145,9 @@ seat), computed from the events of the accepted commands:
 four new events like any other kind. Faction-keyed fields include a
 `MARTIAN` entry. The pressure telemetry script below accepts the pairing
 letter `M`; the balance matrix (`scripts/ruleset7-undead-balance-matrix.ts`)
-gets its Martian pairings and summary with the balance bead
-(`pulp_wars-t6s.5`).
+has had its Martian pairings and summary since the balance bead
+(`pulp_wars-t6s.5`; the
+[Martian balance report](../validation/RULESET_7_MARTIAN_BALANCE.md)).
 
 ## Ice Folk seats (`pulp_wars-7g3.3`)
 

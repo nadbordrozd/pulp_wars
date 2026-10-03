@@ -16,14 +16,19 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r25`: Human, Undead, Goblin, and Dinosaur)
+## Current release contract (`pulp-wars-poc-7r25`: Human, Undead, Goblin, Dinosaur, and Martian)
 
 The current runtime is `pulp-wars-poc-7r25` (autosave
 `pulpWars.save.v7r25.current`; saves and replays of `pulp-wars-poc-7r24`
-and earlier are refused, and startup removes their autosave keys). Its four
-playable factions, Human, Undead, Goblin, and Dinosaur, are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md), into which
-`pulp_wars-c87.9` folded the
+and earlier are refused, and startup removes their autosave keys). Its five
+playable factions, Human, Undead, Goblin, Dinosaur, and Martian, are
+described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
+into which `pulp_wars-t6s.7` folded the
+[Martian overlay](../product/RULESET_7_MARTIANS.md) (engine
+`pulp_wars-t6s.2` at `7r22`, Normal AI `pulp_wars-t6s.3`, UI
+`pulp_wars-t6s.4` with the production art of `pulp_wars-t6s.6`, and the
+`pulp_wars-t6s.5` coarse balance number of `7r25`, Colossus Defense 2.5),
+after `pulp_wars-c87.9` folded the
 [revision-19 Dinosaur overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
 as amended by [revision 20](../product/RULESET_7_REVISION_20.md) (the
 Triceratops's Charge! replacing Stampede, the T-Rex cost and hatch time,
@@ -37,20 +42,16 @@ Human Fighter, Raider, and Marksman 12 HP, Guard 17, Caveman 10), after
 [revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md)
 and `pulp_wars-6gd.2` and `6gd.3` the
 [revision-18 overlay](../product/RULESET_7_REVISION_18.md). The engine also
-registers a fifth faction from the
-[Martian overlay](../product/RULESET_7_MARTIANS.md) (`pulp_wars-t6s.2`,
-identity `7r22`; `pulp_wars-t6s.5` set its coarse balance number, Colossus
-Defense 2.5, at `7r25`), which is **not folded** into the current rules: its
-Normal AI and UI are pending, so match setup does not offer it and the
-browser smokes do not probe it. The engine also registers a sixth faction
-from the [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md)
-(`pulp_wars-7g3.3`, identity `7r24`), likewise **not folded**: its Normal
-AI and UI are pending, so match setup does not offer it and the browser
-smokes do not probe it.
-The Undead, the Goblins, and the Dinosaurs are part of the default route:
-match setup always offers a Human/Undead/Goblin/Dinosaur choice for the
-human and each AI seat (all Human by default), and there is no development
-flag (`pulp_wars-vkq.16` removed `?undead=1`; the later factions never had
+registers a sixth faction from the
+[Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md) (`pulp_wars-7g3.3`,
+identity `7r24`), which is **not folded** into the current rules: its
+Normal AI and UI are in progress, so match setup does not offer it and the
+browser smokes do not probe it.
+The Undead, the Goblins, the Dinosaurs, and the Martians are part of the
+default route: match setup always offers a
+Human/Undead/Goblin/Dinosaur/Martian choice for the human and each AI seat
+(all Human by default), and there is no development flag
+(`pulp_wars-vkq.16` removed `?undead=1`; the later factions never had
 one). Balance evidence is the
 [Goblin balance report](RULESET_7_GOBLIN_BALANCE.md), the
 [Dinosaur balance report](RULESET_7_DINOSAUR_BALANCE.md), the coarse
@@ -81,9 +82,10 @@ does not rerun their matrices.
   (against a development server it then resumes a scripted Undead save to
   dispatch Raise Dead and mounts the Plague and Bitten fixture; with
   `--deployed` it stops after launch and resume), a **Goblin probe**, a
-  **Dinosaur probe**, and a **Showcase probe**:
+  **Dinosaur probe**, a **Martian probe**, and a **Showcase probe**:
   - The **Goblin probe** (`pulp_wars-0ao.5`, `0ao.7`) checks that every
-    seat's select offers exactly Human, Undead, Goblin, and Dinosaur, picks
+    seat's select offers exactly Human, Undead, Goblin, Dinosaur, and
+    Martian, picks
     Goblin for seat 0 from the keyboard, launches a Goblin-vs-Human match
     from the production setup, selects the starting Goblin on its capital
     from the keyboard, checks the Kaboom! button's accessible name (its
@@ -94,7 +96,7 @@ does not rerun their matrices.
     count, and resumes the save with its Goblin seat on a fresh
     default-route load.
   - The **Dinosaur probe** (`pulp_wars-c87.4`, `0hi.2`) checks the same
-    four faction options, launches a Showcase with a Dinosaur human seat
+    five faction options, launches a Showcase with a Dinosaur human seat
     against three Human seats from the production setup, selects the
     Triceratops from the keyboard, checks its Charge! unit info (and that
     no Stampede control, lane, or legend exists), moves it two tiles next to
@@ -104,25 +106,41 @@ does not rerun their matrices.
     Egg card on a nest tile picked on the board, ends the turn, checks that
     the Egg hatched into a Raptor, and resumes the save with its Dinosaur
     seat on a fresh default-route load.
+  - The **Martian probe** (`pulp_wars-t6s.4`) checks the same five faction
+    options, launches a Showcase with a Martian human seat against three
+    Human seats from the production setup, selects a ray unit from the
+    keyboard, checks its "Full power" status and an attack preview that
+    names the full-power ray and "Leaves it Cooling next turn", fires (the
+    shooter is then Cooling), selects the Saucer, beams the capital's Grunt
+    down through the Beam Down button with the passenger and tile picked in
+    the dock (checking the "Saucer beamed down a" announcement and the
+    exhausted Grunt next to the Saucer), and resumes the save with its
+    Martian seat on a fresh default-route load.
   - The **Showcase probe** (`pulp_wars-6gd.3`) launches the Showcase map
     (16 x 16 only, no seed control), checks the ten own units, three own
     cities, and every technology, ends one turn, and resumes.
 
-  These three probes use no fixture, so they run unchanged with
+  These four probes use no fixture, so they run unchanged with
   `--deployed`. They do not play their matches to an outcome: complete
-  Goblin and Dinosaur matches (every pairing of the four factions, and
-  four-seat mixes) were played headlessly by the balance matrices, and
-  `npm run check` runs bounded headless Goblin and Dinosaur matches and
-  replays.
+  Goblin, Dinosaur, and Martian matches (every pairing of the five
+  factions, and four-seat mixes; the Martian pairings on Dry Land) were
+  played headlessly by the balance matrices, and `npm run check` runs
+  bounded headless Goblin, Dinosaur, and Martian matches and replays.
+  Mind Control and the Tractor Beam are covered by the engine, AI, and UI
+  tests and the `review:ruleset7-martian-ui` captures, not by the smoke.
 
 - `npm run art:chibi-goblin-review` (`scripts/art/chibi-goblin-review.ts`,
-  `pulp_wars-0ao.8`, `3tq.9`) and `npm run art:chibi-dinosaur-review`
-  (`scripts/art/chibi-dinosaur-review.ts`, `pulp_wars-c87.7`, `3tq.13`)
-  recheck the PixelLab Goblin and Dinosaur unit sprites, portraits, cities,
-  and (for the Dinosaurs) the Egg and command icons, and rewrite the review
-  evidence under `art/pixellab/reviews/chibi-batch-goblin/` and
-  `art/pixellab/reviews/chibi-batch-dinosaur/`; inspect it with the other
-  art reviews.
+  `pulp_wars-0ao.8`, `3tq.9`), `npm run art:chibi-dinosaur-review`
+  (`scripts/art/chibi-dinosaur-review.ts`, `pulp_wars-c87.7`, `3tq.13`), and
+  `npm run art:chibi-martian-direction-review`
+  (`scripts/art/chibi-martian-direction-review.ts`, `pulp_wars-t6s.6`)
+  recheck the PixelLab Goblin, Dinosaur, and Martian unit sprites,
+  portraits, cities, and (for the Dinosaurs) the Egg and command icons (for
+  the Martians the icons, effects, palette, and readability), and rewrite
+  the review evidence under `art/pixellab/reviews/chibi-batch-goblin/`,
+  `art/pixellab/reviews/chibi-batch-dinosaur/`, and
+  `art/pixellab/reviews/chibi-batch-direction-martian/`; inspect it with the
+  other art reviews.
 - **Gate order.** Run `npm run check` **before** the art review commands,
   then restore the checked-in review evidence with `git checkout -- art/`
   after them: on macOS Chrome the reviews rewrite tracked review evidence,
@@ -142,7 +160,7 @@ does not rerun their matrices.
 
 The current release gates, in the order they are run from the reviewed
 release revision (the `cross-cutting/release` profile plus the Ruleset 7,
-Goblin, and Dinosaur additions). `npm run check` runs before the art
+Goblin, Dinosaur, and Martian additions). `npm run check` runs before the art
 reviews, and `git checkout -- art/` restores the evidence they rewrite
 before the browser smokes (see the gate-order note above):
 
@@ -167,6 +185,7 @@ npm run art:ruleset7-tactical-ui-review
 npm run art:ruleset7-farm-review
 npm run art:chibi-goblin-review
 npm run art:chibi-dinosaur-review
+npm run art:chibi-martian-direction-review
 git checkout -- art/
 npm run smoke:browser
 npm run smoke:browser:legacy-v5
@@ -176,15 +195,16 @@ git diff --check
 
 The results of a release run are recorded on its bead
 (`pulp_wars-0ao.9` for revision 17, `pulp_wars-c87.9` for the four-faction
-`7r23` fold), not in this document; the
+`7r23` fold, `pulp_wars-t6s.7` for the five-faction `7r25` fold), not in
+this document; the
 [final release gates](#final-release-gates) and
 [root verification status](#root-verification-status) below are the frozen
 revision-2 record.
 
-The revision-16 contract (`pulp-wars-poc-7r16`, Human and Undead) and the
-revision-17 and revision-18 three-faction contracts are superseded by this
-one; their validator and smoke were extended in place, not kept as separate
-commands.
+The revision-16 contract (`pulp-wars-poc-7r16`, Human and Undead), the
+revision-17 and revision-18 three-faction contracts, and the four-faction
+`7r23` contract are superseded by this one; their validator and smoke were
+extended in place, not kept as separate commands.
 
 For that revision-2 release, Ruleset 7 was the normal browser default and the
 supported Original-faction game. Exact `?ruleset=7` selected the same contract.
