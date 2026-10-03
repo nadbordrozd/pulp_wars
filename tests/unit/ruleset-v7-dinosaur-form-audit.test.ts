@@ -543,13 +543,19 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // `pulp_wars-9s0.8`: a hunted unit, a siege target, a hunter, and the
     // mover of a hunt are land-form units (an Egg is never hunted and never
     // hunts, and an embarked unit keeps the naval rules).
+    // `pulp_wars-78i.4`: the Dwarf facts (hostile Gyrocopters and Engineers),
+    // a melee unit, the eruption ground test (an Egg is on the ground, an
+    // embarked unit is not), the Engineer's target value, the Dwarf attack
+    // and Move rules, and the mound and bomb danger take land-form units (an
+    // Egg's nest tile too, so Eggs are not laid in an eruption ring).
+    "src/ai/v7-dwarf.ts": 4,
     "src/ai/v7-campaign.ts": 1,
     "src/ai/v7-dinosaur.ts": 2,
     "src/ai/v7-goblin.ts": 1,
     "src/ai/v7-ice-folk.ts": 7,
     "src/ai/v7-martian.ts": 2,
     "src/ai/v7-undead.ts": 1,
-    "src/ai/v7.ts": 19,
+    "src/ai/v7.ts": 21,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

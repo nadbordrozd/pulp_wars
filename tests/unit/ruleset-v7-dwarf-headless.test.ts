@@ -14,11 +14,12 @@ import {
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 
-// The Dwarf revision (`pulp_wars-78i.3`): the existing Normal AI stays safe
-// with Dwarf seats. It plays a Dwarf seat with the generic policy (the Dwarf
-// policy is `pulp_wars-78i.4`), and every other faction plays against
-// Dwarf units, mounds, bombs, and Dig In without an illegal command, a
-// crash, or a stall (docs/product/RULESET_7_DWARVES.md sections 15 and 19).
+// The Dwarf revision (`pulp_wars-78i.3`): the Normal AI stays safe with
+// Dwarf seats. It plays a Dwarf seat with the Dwarf policy of
+// `pulp_wars-78i.4` (tunnels, bombs, Assemble), and every other faction
+// plays against Dwarf units, mounds, bombs, and Dig In without an illegal
+// command, a crash, or a stall (docs/product/RULESET_7_DWARVES.md sections
+// 15 and 19).
 
 const MATCHES: readonly (readonly [
   readonly FactionIdV7[],

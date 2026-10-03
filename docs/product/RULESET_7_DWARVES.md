@@ -4,7 +4,9 @@
 (`pulp_wars-78i.3`, identity `pulp-wars-poc-7r30`: every rule, command, event,
 query, and state shape of this document; the browser setup does not offer
 the faction yet). What the engine implementation changed or made precise is
-in [section 22](#22-implementation-notes-pulp_wars-78i3). The
+in [section 22](#22-implementation-notes-pulp_wars-78i3). **The Normal AI is
+implemented** (`pulp_wars-78i.4`,
+[section 15.1](#151-implementation-status-pulp_wars-78i4)). The
 engine (`pulp_wars-78i.3`), the Normal AI (`pulp_wars-78i.4`), the art
 (`pulp_wars-78i.5`), the UI (`pulp_wars-78i.6`), and the coarse balance
 (`pulp_wars-78i.7`) follow it; `pulp_wars-78i.8` folds it into
@@ -2069,6 +2071,55 @@ not land between two Fighters; a Gunner that fires twice instead of moving;
 an Engineer that Assembles at the front and Repairs a construct; a dug-in
 Hammerer that holds; an opponent that moves a 2-HP unit off a mound's ring;
 an opponent that kills the Engineer first.
+
+### 15.1 Implementation status (`pulp_wars-78i.4`)
+
+The Dwarf policy is in `src/ai/v7-dwarf.ts` and its calls in
+`src/ai/v7.ts`; the rules, values, and measurements are in the
+[Normal AI document](../architecture/NORMAL_AI.md#dwarf-play-pulp_wars-78i4).
+Every rule above is implemented, with these readings and measured
+deviations:
+
+- **The switch.** `DwarfPolicyOptionsV7` turns the Dwarf seat's rules, the
+  "against the Dwarves" group, and the optional expansion tunnel on and off
+  for the head-to-head tests; the shipped policy plays the first two. With
+  both off it decides as the `78i.3` baseline did, byte for byte.
+- **The Mole.** One `TUNNEL` per Mole is planned and the other offers are
+  pruned before scoring (each destination is scored once from the visible
+  units, and only the chosen destination's rider tiles are compared). The
+  tunnel preview's eruption is a forecast, so it is used to choose a tile
+  and never counted as damage. Two readings: "garrisons alone" is an own
+  center with no other own land unit next to it; and a Pressure tunnel
+  that erupts on nobody must gain two route steps and land within 3 of
+  another own land unit (the Mole surfaces next to its wave).
+- **The Gyrocopter** subtracts **half** the landing threat in its score
+  (the hard limit of 8 stands): with the whole threat it refused most runs
+  (14 bombs in 64 head-to-head seat-games) and won no more games. It
+  previews exactly only its three best runs by the policy's own danger
+  estimate.
+- **Production and research** were cut back from the first draft, which
+  lost its head-to-head by training Gyrocopters and Engineers early: the
+  first Gyrocopter comes at war with four front units (then one per five),
+  the Engineer once it has work (Marksmanship, or two machines to mend) at
+  war with four front units, and Scouting only with four front units;
+  Raiding waits for a Gyrocopter.
+- **Optional rule 5 (expansion tunnel)** is implemented behind the switch and
+  **dropped**: 31 of 60 decided games against the policy without it, and no
+  city gained by round 15.
+- **Against the Dwarves** is kept although it is neutral on wins (72 of 144
+  coarse-matchup games for the other factions with it and without it): it
+  moves a balance-acceptance number (Engineers killed: 50 against 37). The
+  "punish the surfaced pair" and "dug-in units" items need no code (the exact
+  previews carry both).
+- **Measured.** Against the generic policy on the Dwarf registration
+  (mirrored seats, the same seeds, Dry Land) the Dwarf policy won 50 of 90
+  decided games (35 of 60 on 11 x 11, 15 of 30 on 14 x 14). Against each
+  faction the Dwarves win 10 to 14 of 24 (Humans 13, Undead 14, Goblins 10,
+  Dinosaurs 14, Martians 11, Ice Folk 10): nothing beyond 70/30.
+- **Not implemented:** a Brass Titan or Steam Tank play of their own (the
+  generic Juggernaut and Knight play). The tactical benchmark is unchanged;
+  the section 15 scenarios are unit tests in
+  `tests/unit/ruleset-v7-dwarf-ai.test.ts`.
 
 ## 16. UI requirements
 

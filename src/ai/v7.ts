@@ -30,6 +30,7 @@ import {
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
+import { knockbackDestinationV7 } from "../engine/v7/dwarf";
 import { marketCoinsV7 } from "../engine/v7/economy";
 import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
@@ -46,6 +47,8 @@ import {
   createPublicPlanningWorkV7,
   createPublicRedevelopmentPossibilityWorkV7,
   previewAttackExplosionsV7,
+  previewAssembleV7,
+  previewBombRunV7,
   previewEconomicV7,
   previewKaboomV7,
   previewMonumentV7,
@@ -255,6 +258,41 @@ import {
   type IceFolkPolicyToolsV7,
 } from "./v7-ice-folk";
 import {
+  ASSEMBLE_FAR_HOME_V7,
+  ASSEMBLE_VALUE_V7,
+  DWARF_ROUTINE_MOVE_PRIORITY_V7,
+  ERUPTION_ESCAPE_PRIORITY_V7,
+  GUNNER_CHIP_OFFSET_V7,
+  KNOCKBACK_CENTER_VALUE_V7,
+  KNOCKBACK_FIELD_DEFENSE_VALUE_V7,
+  KNOCKBACK_MELEE_VALUE_V7,
+  MACHINE_REPAIR_MINIMUM_V7,
+  MACHINE_REPAIR_PRIORITY_V7,
+  RANGED_RING_COST_V7,
+  RIDER_STAGING_VALUE_V7,
+  DIG_IN_THREAT_RADIUS_V7,
+  bombThreatAtV7,
+  dwarfArmyCountsV7,
+  dwarfFactsV7,
+  dwarfMatchForPolicyV7,
+  dwarfPolicyOptionsV7,
+  dwarfProductionAdjustmentV7,
+  dwarfResearchV7,
+  dwarfTargetBonusV7,
+  engineerMoveValueV7,
+  eruptionAtV7,
+  meleeUnitV7,
+  onTheGroundV7,
+  planAssemblesV7,
+  planBombRunsV7,
+  planTunnelsV7,
+  repairValueV7,
+  type DwarfArmyCountsV7,
+  type DwarfFactsV7,
+  type DwarfPolicyToolsV7,
+  type PlannedDwarfCommandV7,
+} from "./v7-dwarf";
+import {
   normalOpeningResearchPendingV7,
   normalOpeningTechnologyV7,
 } from "./v7-opening";
@@ -403,6 +441,13 @@ interface PolicyContextV7 {
   readonly iceFolk: boolean;
   /** Ice Folk matches: per-decision public Ice Folk facts and caches. */
   iceFolkCache: IceFolkContextCacheV7 | null;
+  /**
+   * The Dwarf revision (`pulp_wars-78i.4`): a seat is Dwarf; all Dwarf
+   * heuristics are gated on it (and on the switch of `src/ai/v7-dwarf.ts`).
+   */
+  readonly dwarf: boolean;
+  /** Dwarf matches: per-decision public Dwarf facts and plans. */
+  dwarfCache: DwarfContextCacheV7 | null;
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
   readonly commands: readonly CommandV7[];
@@ -1331,6 +1376,8 @@ function bareContext(
     martianCache: null,
     iceFolk: iceFolkMatchForPolicyV7(view),
     iceFolkCache: null,
+    dwarf: dwarfMatchForPolicyV7(view),
+    dwarfCache: null,
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
     commands,
     openingGrowthHarvest: commands.some((command) =>
@@ -3030,6 +3077,16 @@ function isPolicyCandidate(
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
+  // The Dwarf revision (`pulp_wars-78i.4`): the large Tunnel, bombing-run,
+  // and Assemble offer lists are pruned to the one command per unit the
+  // Dwarf plans chose (without the Dwarf rules they score as no candidate).
+  if (
+    (command.kind === "TUNNEL" ||
+      command.kind === "BOMB_RUN" ||
+      command.kind === "ASSEMBLE") &&
+    dwarfPlayV7(context)
+  )
+    return dwarfPlannedCommandV7(context, command) === command;
   if (command.kind === "BUILD_ROAD") {
     const corridor = context.tactical.roadCorridor;
     return (
@@ -3823,6 +3880,23 @@ function* sharedCityContextWorkV7(
           atWar,
           repetition,
         );
+  // The Dwarf revision (`pulp_wars-78i.4`): the Dwarf role values.
+  const dwarfCounts = dwarfPlayV7(context) ? dwarfArmyCountsV7(view) : null;
+  const dwarfAdjustment = (
+    role: UnitRoleIdV7,
+    threatened: boolean,
+    repetition: boolean,
+  ) =>
+    dwarfCounts === null
+      ? 0
+      : dwarfProductionAdjustmentV7(
+          view,
+          role,
+          dwarfCounts,
+          threatened,
+          atWar,
+          repetition,
+        );
   const endgameCaptureShortfall =
     context.endgame !== null &&
     endgameRoutedUnitsV7(context, (unit) => canCaptureV7(view, unit)) <
@@ -3986,6 +4060,7 @@ function* sharedCityContextWorkV7(
         dinosaurProductionAdjustmentV7(view, command, productionCity) +
         martianAdjustment(command.role, threatened, true) +
         iceAdjustment(command.role, threatened, true) +
+        dwarfAdjustment(command.role, threatened, true) +
         savingsValue(command.role);
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
@@ -4096,6 +4171,7 @@ function* sharedCityContextWorkV7(
                   ) +
                   martianAdjustment(command.role, threatened, false) +
                   iceAdjustment(command.role, threatened, false) +
+                  dwarfAdjustment(command.role, threatened, false) +
                   savingsValue(command.role) -
                   (savingsRole === command.role
                     ? 2 *
@@ -4588,6 +4664,18 @@ function scoreCommandWithContext(
         strategicValue = plan.strategic;
       }
     }
+    if (view.viewer.faction === "DWARF" && dwarfPlayV7(context)) {
+      // The Dwarf revision (`pulp_wars-78i.4`): research toward the roles.
+      const plan = dwarfResearchV7(view, dwarfResearchFactsV7(context));
+      if (
+        plan !== null &&
+        plan.tech === command.tech &&
+        plan.priority > priority
+      ) {
+        priority = plan.priority;
+        strategicValue = plan.strategic;
+      }
+    }
     if (
       view.viewer.faction === "DINOSAUR" &&
       priority < SIGNATURE_RESEARCH_PRIORITY_V7
@@ -4885,6 +4973,23 @@ function scoreCommandWithContext(
         priority = ice.priority;
         strategicValue += ice.strategic;
       }
+      // The Dwarf revision (`pulp_wars-78i.4`): the Gunner's chips before
+      // the melee ones, and the Steam Cannon's Knockback.
+      if (
+        dwarfPlayV7(context) &&
+        actor !== undefined &&
+        targetUnit !== undefined
+      ) {
+        const dwarf = dwarfAttackAdjustmentV7(
+          context,
+          actor,
+          targetUnit,
+          preview,
+          priority,
+        );
+        priority = dwarf.priority;
+        strategicValue += dwarf.strategic;
+      }
       // pulp_wars-9s0.8: the hunters' attacks on a hunted high-value unit.
       priority = huntAttackPriorityV7(context, command, preview, priority);
     }
@@ -4906,6 +5011,20 @@ function scoreCommandWithContext(
     priority = bolas.priority;
     strategicValue = bolas.strategic;
     immediateValue = bolas.immediate;
+  }
+
+  if (
+    (command.kind === "TUNNEL" ||
+      command.kind === "BOMB_RUN" ||
+      command.kind === "ASSEMBLE") &&
+    dwarfPlayV7(context)
+  ) {
+    // The Dwarf revision (`pulp_wars-78i.4`): the Mole, the Gyrocopter, and
+    // the Engineer's Assemble.
+    const dwarf = dwarfCommandScoreV7(context, command);
+    priority = dwarf.priority;
+    strategicValue = dwarf.strategic;
+    immediateValue = dwarf.immediate;
   }
 
   if (command.kind === "BEAM_DOWN" && context.martian) {
@@ -4965,6 +5084,18 @@ function scoreCommandWithContext(
       if (tend.plagueTurns >= PLAGUE_TURNS_WORTH_CURING_V7)
         priority = Math.max(priority, tend.plagueTurns >= 5 ? 1272 : 1262);
       else if (tend.bittenCures > 0) priority = Math.max(priority, 1175);
+    }
+    // The Dwarf revision (`pulp_wars-78i.4`): Repair heals machines 4 and
+    // values HP on a construct double; machines are repaired before the
+    // chips, so the mended units fight at their new strength.
+    if (
+      dwarfPlayV7(context) &&
+      unitRoleRuleV7(view, actor).abilities.includes("ASSEMBLE")
+    ) {
+      const repair = repairValueV7(view, dwarfCacheV7(context).facts, actor);
+      immediateValue = repair.value * 8;
+      if (repair.machineHeal >= MACHINE_REPAIR_MINIMUM_V7)
+        priority = Math.max(priority, MACHINE_REPAIR_PRIORITY_V7);
     }
   }
 
@@ -5288,6 +5419,12 @@ function scoreCommandWithContext(
       priority = ice.priority;
       strategicValue += ice.strategic;
       objectiveValue = objectiveValue * ice.objectiveScale + ice.objective;
+    }
+    if (context.dwarf && resultAt !== null) {
+      // The Dwarf revision (`pulp_wars-78i.4`).
+      const dwarf = dwarfMoveValueV7(context, actor, resultAt, priority);
+      priority = dwarf.priority;
+      strategicValue += dwarf.strategic;
     }
     // pulp_wars-9s0.8: move in for a kill on a high-value unit.
     if (resultAt !== null && !autoembark) {
@@ -9800,6 +9937,398 @@ const SWEEP_RING_V7: readonly CoordV7[] = [
   { x: 1, y: -1 },
 ];
 
+// --- The Dwarf revision (`pulp_wars-78i.4`) --------------------------------
+
+interface DwarfContextCacheV7 {
+  readonly facts: DwarfFactsV7;
+  readonly army: DwarfArmyCountsV7;
+  readonly tools: DwarfPolicyToolsV7;
+  /** Each own Mole's planned Tunnel (Mole rules 1 to 5), or null. */
+  tunnels: ReturnType<typeof planTunnelsV7> | null;
+  /** Each own Gyrocopter's planned bombing run, or null. */
+  bombs: ReturnType<typeof planBombRunsV7> | null;
+  /** Each own Engineer's planned Assemble, or null. */
+  assembles: ReturnType<typeof planAssemblesV7> | null;
+}
+
+const dwarfFactsByViewV7 = new WeakMap<PlayerViewV7, DwarfFactsV7>();
+
+function dwarfFactsForViewV7(view: PlayerViewV7): DwarfFactsV7 {
+  const cached = dwarfFactsByViewV7.get(view);
+  if (cached !== undefined) return cached;
+  const facts = dwarfFactsV7(view, (owner) => isHostile(view, owner));
+  dwarfFactsByViewV7.set(view, facts);
+  return facts;
+}
+
+/** The Dwarf seat's own rules (a Dwarf viewer, and the switch). */
+function dwarfPlayV7(context: PolicyContextV7): boolean {
+  return (
+    context.dwarf &&
+    context.view.viewer.faction === "DWARF" &&
+    dwarfPolicyOptionsV7().dwarfPlay
+  );
+}
+
+/** Every seat's counterplay against Dwarf units (and the switch). */
+function againstDwarvesV7(context: PolicyContextV7): boolean {
+  return context.dwarf && dwarfPolicyOptionsV7().againstDwarves;
+}
+
+/**
+ * The shared Dwarf estimates (Plated, Unflinching, Dig In, the mounds, the
+ * bombs): on in a match with a Dwarf seat unless both rule groups are
+ * switched off (the generic policy of `pulp_wars-78i.3`).
+ */
+function dwarfEstimatesV7(view: PlayerViewV7): boolean {
+  const options = dwarfPolicyOptionsV7();
+  return (
+    (options.dwarfPlay || options.againstDwarves) && dwarfMatchForPolicyV7(view)
+  );
+}
+
+/** The public `dwarf` stat block of a visible unit or mound. */
+function publicDwarfStatsV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  lookup?: PolicyLookupV7,
+): PlayerViewV7["unitStats"][number]["dwarf"] {
+  return (
+    lookup?.unitStatsById.get(unit.id) ??
+    view.unitStats.find((stats) => stats.unitId === unit.id)
+  )?.dwarf;
+}
+
+/**
+ * Section 15, "read the mounds" and "read the Gyrocopters": the danger to
+ * `actor` on `at` from Dwarf units: each hostile Mole mound's eruption on a
+ * ground unit next to it, each hostile mound's surfacing reach (its unit
+ * comes up fresh: Move 1 and an attack, the tiles within 2), and one bomb
+ * of a visible hostile Gyrocopter within 2 (once per unit, the largest).
+ */
+function dwarfDangerV7(
+  view: PlayerViewV7,
+  actor: PublicUnitV7,
+  at: CoordV7,
+): number {
+  const facts = dwarfFactsForViewV7(view);
+  let total = onTheGroundV7(view, actor) ? eruptionAtV7(facts, at) : 0;
+  total += bombThreatAtV7(facts, at);
+  for (const mound of facts.hostileMounds)
+    if (distance(mound.unit.at, at) <= 2)
+      total += publicProjectedDamageWithLookupV7(view, mound.unit, actor, at, {
+        maximumCharge: true,
+      });
+  return total;
+}
+
+function dwarfCacheV7(context: PolicyContextV7): DwarfContextCacheV7 {
+  if (context.dwarfCache !== null) return context.dwarfCache;
+  const view = context.view;
+  const facts = dwarfFactsForViewV7(view);
+  const bestHits = new Map<string, number>();
+  const cache: DwarfContextCacheV7 = {
+    facts,
+    army: dwarfArmyCountsV7(view),
+    tunnels: null,
+    bombs: null,
+    assembles: null,
+    tools: {
+      view,
+      facts,
+      commands: context.commands,
+      options: dwarfPolicyOptionsV7(),
+      isHostile: (owner) => isHostile(view, owner),
+      unit: (unitId) => context.lookup.unitsById.get(unitId),
+      targetValue: (unit) =>
+        targetStrategicValue(view, unit.id, context.lookup),
+      danger: (unit, at) => visibleImmediateDamage(view, unit, at, context),
+      assignment: (unitId) =>
+        context.tactical.campaign?.assignmentByUnitId.get(unitId),
+      holdsMove: (unit, to) =>
+        campaignHoldsMoveV7(context.tactical.campaign, unit, to),
+      bestOwnHit: (targetId, exceptUnitId) => {
+        const key = `${targetId}:${exceptUnitId}`;
+        const cached = bestHits.get(key);
+        if (cached !== undefined) return cached;
+        let best = 0;
+        for (const command of context.commands)
+          if (
+            command.kind === "ATTACK" &&
+            command.targetUnitId === targetId &&
+            command.unitId !== exceptUnitId
+          )
+            best = Math.max(
+              best,
+              queryCombatPreviewV7(view, command.unitId, targetId)
+                ?.damageToDefender ?? 0,
+            );
+        bestHits.set(key, best);
+        return best;
+      },
+      previewBomb: (command) => previewBombRunV7(view, command),
+    },
+  };
+  context.dwarfCache = cache;
+  return cache;
+}
+
+/** The one Tunnel, bombing run, or Assemble the Dwarf plans chose. */
+function dwarfPlannedCommandV7(
+  context: PolicyContextV7,
+  command: CommandV7,
+): CommandV7 | null {
+  const cache = dwarfCacheV7(context);
+  if (command.kind === "TUNNEL") {
+    cache.tunnels ??= planTunnelsV7(cache.tools);
+    return cache.tunnels.get(command.unitId)?.command ?? null;
+  }
+  if (command.kind === "BOMB_RUN") {
+    cache.bombs ??= planBombRunsV7(cache.tools);
+    return cache.bombs.get(command.unitId)?.command ?? null;
+  }
+  if (command.kind === "ASSEMBLE") {
+    cache.assembles ??= planAssemblesV7(cache.tools);
+    return cache.assembles.get(command.unitId)?.command ?? null;
+  }
+  return null;
+}
+
+/**
+ * The score of a planned Tunnel, bombing run, or Assemble (section 15).
+ * Assemble is land production: the priority of training at war (or the
+ * ordinary training tier), one above it when the Engineer's home city is
+ * more than 4 tiles from the target; the savings plan holds it.
+ */
+function dwarfCommandScoreV7(
+  context: PolicyContextV7,
+  command: CommandV7,
+): {
+  readonly priority: number;
+  readonly strategic: number;
+  readonly immediate: number;
+} {
+  const none = { priority: -1, strategic: 0, immediate: 0 };
+  if (dwarfPlannedCommandV7(context, command) !== command) return none;
+  const cache = dwarfCacheV7(context);
+  let planned: PlannedDwarfCommandV7<CommandV7> | null | undefined;
+  if (command.kind === "TUNNEL") planned = cache.tunnels?.get(command.unitId);
+  else if (command.kind === "BOMB_RUN")
+    planned = cache.bombs?.get(command.unitId);
+  if (planned !== undefined && planned !== null)
+    return {
+      priority: planned.priority,
+      strategic: planned.strategic,
+      immediate: 0,
+    };
+  if (command.kind !== "ASSEMBLE") return none;
+  const view = context.view;
+  const assemble = cache.assembles?.get(command.unitId);
+  const engineer = context.lookup.unitsById.get(command.unitId);
+  if (assemble === undefined || assemble === null || engineer === undefined)
+    return none;
+  const cost = previewAssembleV7(view, command.unitId)?.cost ?? 0;
+  if (savingsHoldsV7(context, command, cost)) return none;
+  const home =
+    engineer.homeCityId === null
+      ? undefined
+      : context.lookup.citiesById.get(engineer.homeCityId);
+  const far =
+    home !== undefined &&
+    distance(home.at, assemble.target) > ASSEMBLE_FAR_HOME_V7;
+  return {
+    priority:
+      (warTrainingFirstV7(context) ? WAR_TRAINING_PRIORITY_V7 : 1080) +
+      (far ? 1 : 0),
+    strategic: ASSEMBLE_VALUE_V7,
+    immediate: -cost,
+  };
+}
+
+/** The public facts of the Dwarf research plan. */
+function dwarfResearchFactsV7(
+  context: PolicyContextV7,
+): Parameters<typeof dwarfResearchV7>[1] {
+  const view = context.view;
+  const cache = dwarfCacheV7(context);
+  const centers = view.cities
+    .filter((city) => city.ownerId === view.viewer.id)
+    .map((city) => city.at);
+  const near = (at: CoordV7): boolean =>
+    centers.some((center) => distance(center, at) <= DIG_IN_THREAT_RADIUS_V7);
+  return {
+    ownedCities: centers.length,
+    counts: cache.army,
+    cityThreatened:
+      context.lookup.visibleHostiles.some(
+        (unit) => unit.form === "LAND" && near(unit.at),
+      ) || cache.facts.hostileMounds.some((mound) => near(mound.unit.at)),
+    wallsOrShields:
+      view.players.some((player) => player.faction === "MARTIAN") ||
+      view.cities.some(
+        (city) =>
+          isHostile(view, city.ownerId) &&
+          city.rewards.some((record) => record.reward === "WALLS"),
+      ),
+  };
+}
+
+/**
+ * Dwarf attack scoring (section 15): a Gunner's chip goes after the bombs
+ * and before the melee chips; a Steam Cannon prefers a shot whose
+ * Knockback pushes a unit off a hostile center (8) or off Field Defense
+ * (4), or next to own melee units (2 each, at most three).
+ */
+function dwarfAttackAdjustmentV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  if (actor.ownerId !== view.viewer.id || actor.form !== "LAND")
+    return { priority, strategic: 0 };
+  const abilities = unitRoleRuleV7(view, actor).abilities;
+  let next = priority;
+  let strategic = 0;
+  if (abilities.includes("TWIN_SHOT") && next === 900)
+    next += GUNNER_CHIP_OFFSET_V7;
+  if (
+    abilities.includes("KNOCKBACK") &&
+    !preview.defenderDies &&
+    preview.push === "WILL_PUSH"
+  ) {
+    const to = knockbackDestinationV7(actor.at, target.at);
+    if (
+      view.cities.some(
+        (city) => same(city.at, target.at) && isHostile(view, city.ownerId),
+      )
+    )
+      strategic += KNOCKBACK_CENTER_VALUE_V7;
+    const tile = findPublicTileV7(view, target.at);
+    if (tile?.explored === true && tile.fieldDefense)
+      strategic += KNOCKBACK_FIELD_DEFENSE_VALUE_V7;
+    const melee = view.units.filter(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.id !== actor.id &&
+        distance(unit.at, to) === 1 &&
+        meleeUnitV7(view, unit),
+    ).length;
+    strategic += KNOCKBACK_MELEE_VALUE_V7 * Math.min(3, melee);
+  }
+  return { priority: next, strategic };
+}
+
+/**
+ * Dwarf Move scoring (section 15).
+ *
+ * Against the Dwarves (every seat): a ground unit never ends a routine Move
+ * next to a hostile Mole mound whose eruption kills it (HP plus Shield at
+ * most the eruption), a ranged or siege unit pays 3 for ending one in a
+ * ring, and a unit the next eruption kills where it stands steps out of
+ * every ring (935) to a tile outside visible lethal reach.
+ *
+ * As the Dwarves: an unmoved Gunner with an offered attack makes no routine
+ * Move (it fires twice); a dug-in Hammerer or Mole with a visible hostile
+ * land unit within 3 holds its tile; a Gyrocopter never ends a routine Move
+ * on water or into visible lethal reach that is worse than where it is; an
+ * Engineer ends its Moves next to wounded constructs and not next to
+ * hostile melee units; a Hammerer ends a routine Move next to an own Mole
+ * (rule 3's tie-break: a rider for the next tunnel).
+ */
+function dwarfMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  let next = priority;
+  let strategic = 0;
+  if (actor.form !== "LAND" || actor.ownerId !== view.viewer.id)
+    return { priority, strategic };
+  const routine = priority < DWARF_ROUTINE_MOVE_PRIORITY_V7;
+  const facts = dwarfFactsForViewV7(view);
+  if (
+    againstDwarvesV7(context) &&
+    facts.hostileMounds.length > 0 &&
+    onTheGroundV7(view, actor)
+  ) {
+    const shield =
+      view.shields.find((entry) => entry.unitId === actor.id)?.shield ?? 0;
+    const there = eruptionAtV7(facts, to);
+    const here = eruptionAtV7(facts, actor.at);
+    if (there > 0 && routine) {
+      if (actor.hp + shield <= there) return { priority: -1, strategic: 0 };
+      const role = policyTacticalRoleV7(unitRoleRuleV7(view, actor));
+      if (role === "RANGED" || role === "SIEGE")
+        strategic -= RANGED_RING_COST_V7;
+    }
+    if (
+      here > 0 &&
+      there === 0 &&
+      actor.hp + shield <= here &&
+      visibleImmediateDamage(view, actor, to, context) <
+        visibleImmediateDamage(view, actor, actor.at, context)
+    ) {
+      next = Math.max(next, ERUPTION_ESCAPE_PRIORITY_V7);
+      strategic += retainedUnitValue(view, actor);
+    }
+  }
+  if (!dwarfPlayV7(context)) return { priority: next, strategic };
+  const abilities = unitRoleRuleV7(view, actor).abilities;
+  if (routine) {
+    if (
+      abilities.includes("TWIN_SHOT") &&
+      !actor.activation.moved &&
+      context.commands.some(
+        (command) => command.kind === "ATTACK" && command.unitId === actor.id,
+      )
+    )
+      return { priority: -1, strategic: 0 };
+    if (
+      !same(to, actor.at) &&
+      publicDwarfStatsV7(view, actor, context.lookup)?.dugIn === true &&
+      context.lookup.visibleHostiles.some(
+        (hostile) =>
+          hostile.form === "LAND" &&
+          distance(hostile.at, actor.at) <= DIG_IN_THREAT_RADIUS_V7,
+      )
+    )
+      return { priority: -1, strategic: 0 };
+    if (abilities.includes("BOMB_RUN")) {
+      const tile = findPublicTileV7(view, to);
+      if (tile?.explored === true && tile.biome === null)
+        return { priority: -1, strategic: 0 };
+      const there = visibleImmediateDamage(view, actor, to, context);
+      const here = visibleImmediateDamage(view, actor, actor.at, context);
+      if (there >= actor.hp && there > here)
+        return { priority: -1, strategic: 0 };
+    }
+  }
+  if (abilities.includes("ASSEMBLE"))
+    strategic += engineerMoveValueV7(view, facts, actor, to, (owner) =>
+      isHostile(view, owner),
+    );
+  if (
+    routine &&
+    abilities.includes("RIDES_TUNNEL") &&
+    (campaignRouteProgressV7(context.tactical.campaign, actor, to) ?? 0) >= 0 &&
+    view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.id !== actor.id &&
+        unit.form === "LAND" &&
+        distance(unit.at, to) === 1 &&
+        unitRoleRuleV7(view, unit).abilities.includes("TUNNEL"),
+    )
+  )
+    strategic += RIDER_STAGING_VALUE_V7;
+  return { priority: next, strategic };
+}
+
 function bestSweepFlankV7(context: PolicyContextV7, from: CoordV7): number {
   const hostiles = context.lookup.visibleHostiles;
   const hostileAt = (at: CoordV7): boolean =>
@@ -10850,6 +11379,15 @@ function visibleImmediateDamage(
     )
       total += actor.hp;
   }
+  // The Dwarf revision (`pulp_wars-78i.4`, section 15, "read the mounds"
+  // and "read the Gyrocopters"): the eruption of every hostile Mole mound
+  // next to a ground unit, the surfacing reach of every hostile mound (the
+  // Mole and the rider come up fresh: Move 1 and an attack), and one bomb
+  // of a visible hostile Gyrocopter within 2 (once per unit); an Egg's nest
+  // tile too, so Eggs are not laid in an eruption ring. Mounds and the
+  // `dwarf` stats exist only in a match with a Dwarf seat.
+  if ((actor.form === "LAND" || actor.form === "EGG") && dwarfEstimatesV7(view))
+    total += dwarfDangerV7(view, actor, at);
   // The Martian revision: the Shield absorbs the first hits of the enemy
   // turn (0 for every unit without one).
   if (martian !== null && total > 0)
@@ -11011,15 +11549,30 @@ function publicProjectedDamageWithLookupV7(
     : snowCover
       ? { numerator: 3, denominator: 2 }
       : projectedDefenseBonus(view, defender, defenderAt);
-  const tileFortification =
+  const ownTerritoryFortification =
     !acid &&
     defender.form === "LAND" &&
     // The Martian revision: walkers and flyers are never fortified.
     unitTakesCoverV7(view, defender) &&
     defenderTile?.explored === true &&
-    defenderTile.territoryOwnerId === defender.ownerId
-      ? (defenderTile.fortificationLevel ?? 0)
+    defenderTile.territoryOwnerId === defender.ownerId;
+  // The Dwarf revision (`pulp_wars-78i.4`): a dug-in Hammerer or Mole that
+  // stays where it stands keeps its Field Defense level (the public
+  // `dwarf.dugIn`; never with Field Defense on its own territory, and
+  // never after a planned Move). Only units of a Dwarf seat have the stat.
+  const dugIn =
+    !acid &&
+    defender.form === "LAND" &&
+    same(defenderAt, defender.at) &&
+    dwarfEstimatesV7(view) &&
+    publicDwarfStatsV7(view, defender, lookup)?.dugIn === true;
+  const dugInLevel =
+    dugIn && !(ownTerritoryFortification && defenderTile?.fieldDefense === true)
+      ? 1
       : 0;
+  const tileFortification =
+    (ownTerritoryFortification ? (defenderTile?.fortificationLevel ?? 0) : 0) +
+    dugInLevel;
   // Revision 20: a Charge! ignores every fortification level, and a
   // dinosaur with Wallbreaker the City Walls levels (the tile level is
   // Walls plus Field Defense). Only a Dinosaur unit has either.
@@ -11032,7 +11585,8 @@ function publicProjectedDamageWithLookupV7(
         : ignoresWallsForPolicyV7(view, attacker)
           ? Math.min(
               tileFortification,
-              defenderTile?.explored === true && defenderTile.fieldDefense
+              (defenderTile?.explored === true && defenderTile.fieldDefense) ||
+                dugInLevel > 0
                 ? 1
                 : 0,
             )
@@ -11044,7 +11598,14 @@ function publicProjectedDamageWithLookupV7(
       : defender.form === "EGG"
         ? EGG_DEFENSE2_V7
         : defenseRule.defense2 + fortificationLevel * 2;
-  const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
+  // The Dwarf revision (`pulp_wars-78i.4`): a construct attacks with its
+  // maximum HP (Unflinching; on attack only).
+  const unflinching =
+    attacker.form === "LAND" &&
+    dwarfEstimatesV7(view) &&
+    publicDwarfStatsV7(view, attacker, lookup)?.construct === true;
+  const attackForceNumerator =
+    BigInt(attack2) * BigInt(unflinching ? attacker.maxHp : attacker.hp);
   const attackForceDenominator = 2n * BigInt(attacker.maxHp);
   const defenseForceNumerator =
     BigInt(defense2) * BigInt(defender.hp) * BigInt(bonus.numerator);
@@ -11072,10 +11633,16 @@ function publicProjectedDamageWithLookupV7(
       ? blizzardHalvedDamageV7(formula)
       : formula;
   // Revision 19 Armoured: one less damage (minimum 1) to an Ankylosaurus,
-  // before the cap at its HP; unchanged for every other unit.
+  // before the cap at its HP; unchanged for every other unit. The Dwarf
+  // revision: no single hit takes more than the Plated cap from a Tank.
+  const armoured = armouredDamageV7(view, defender, halved);
+  const plated =
+    defender.form === "LAND" && dwarfEstimatesV7(view)
+      ? (publicDwarfStatsV7(view, defender, lookup)?.plated ?? null)
+      : null;
   return Math.min(
     options.uncapped === true ? Number.MAX_SAFE_INTEGER : defender.hp,
-    armouredDamageV7(view, defender, halved),
+    plated === null ? armoured : Math.min(plated, armoured),
   );
 }
 
@@ -11339,6 +11906,12 @@ function targetStrategicValue(
   const ice = iceFolkMatchForPolicyV7(view)
     ? iceFolkTargetBonusV7(view, iceFolkFactsForViewV7(view), unit)
     : 0;
+  // The Dwarf revision: the Engineer and a landed Gyrocopter (0 without a
+  // Dwarf seat).
+  const dwarf =
+    dwarfPolicyOptionsV7().againstDwarves && dwarfMatchForPolicyV7(view)
+      ? dwarfTargetBonusV7(view, dwarfFactsForViewV7(view), unit)
+      : 0;
   return unit.role === "JUGGERNAUT"
     ? 40 +
         rule.attack2 +
@@ -11346,14 +11919,16 @@ function targetStrategicValue(
         (rule.abilities.includes("PUSH") ? 8 : 0) +
         dinosaur +
         martian +
-        ice
+        ice +
+        dwarf
     : (rule.cost ?? 0) * 4 +
         unit.hp +
         necromancer +
         plagueSource +
         dinosaur +
         martian +
-        ice;
+        ice +
+        dwarf;
 }
 
 const NECROMANCER_TARGET_BONUS_V7 = 12;

@@ -18,6 +18,17 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-campaign.ts::campaignPlanForPolicyV7": "BOARD",
     "src/ai/v7-dinosaur.ts::chosenLayEggCommandsV7": "BOARD",
     "src/ai/v7-dinosaur.ts::dinosaurProductionAdjustmentV7": "BOARD",
+    // `pulp_wars-78i.4`: the Dwarf policy reads the board, and mounds only
+    // through the view's `burrowed` list; the army counts include the own
+    // burrowed units (they keep their slots and come back next turn).
+    "src/ai/v7-dwarf.ts::dwarfArmyCountsV7": "ALL",
+    "src/ai/v7-dwarf.ts::dwarfFactsV7": "BOARD",
+    "src/ai/v7-dwarf.ts::dwarfTargetBonusV7": "BOARD",
+    "src/ai/v7-dwarf.ts::engineerMoveValueV7": "BOARD",
+    "src/ai/v7-dwarf.ts::expansionVillagesV7": "BOARD",
+    "src/ai/v7-dwarf.ts::planAssemblesV7": "BOARD",
+    "src/ai/v7-dwarf.ts::planTunnelsV7": "BOARD",
+    "src/ai/v7-dwarf.ts::repairValueV7": "BOARD",
     "src/ai/v7-endgame.ts::endgamePlanForPolicyV7": "BOARD",
     "src/ai/v7-endgame.ts::routeDistances": "BOARD",
     "src/ai/v7-goblin.ts::explosionChainValueV7": "BOARD",
@@ -60,6 +71,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::computeSavingsPlanV7": "BOARD",
     "src/ai/v7.ts::dinosaurBranchResearchV7": "BOARD",
     "src/ai/v7.ts::dinosaurFactsV7": "BOARD",
+    "src/ai/v7.ts::dwarfAttackAdjustmentV7": "BOARD",
+    "src/ai/v7.ts::dwarfMoveValueV7": "BOARD",
     "src/ai/v7.ts::endgameCapturersWaitingV7": "BOARD",
     "src/ai/v7.ts::endgameMoveValueV7": "BOARD",
     "src/ai/v7.ts::endgameRoutedUnitsV7": "BOARD",

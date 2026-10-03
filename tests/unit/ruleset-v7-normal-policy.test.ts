@@ -76,6 +76,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/model/ids",
       "../engine/rules/ruleset-v7",
       "../engine/v7/commands",
+      "../engine/v7/dwarf",
       "../engine/v7/economy",
       "../engine/v7/events",
       "../engine/v7/ice-folk",
@@ -90,6 +91,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "./v7-dinosaur",
       "./v7-martian",
       "./v7-ice-folk",
+      "./v7-dwarf",
       "./v7-opening",
       "./v7-undead",
     ]);

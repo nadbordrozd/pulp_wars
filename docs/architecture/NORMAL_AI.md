@@ -27,6 +27,13 @@ the Bolas, the order of the attacks around Shatter, Sweep, the Boulder
 Yeti, the Sabretooth, production and research, and play against each of
 them; it is gated on a match with an Ice Folk seat, and matches without one
 are byte-identical.
+The Steampunk Dwarf play (`pulp_wars-78i.4`, `src/ai/v7-dwarf.ts`) is
+[summarized below](#dwarf-play-pulp_wars-78i4): the Mole's tunnels and
+riders, the Gyrocopter's bombing runs, the Gunner's two shots, the
+Engineer's Assemble and Repair, Dig In, the Steam Cannon's Knockback,
+production and research, and play against each of them; it is gated on a
+match with a Dwarf seat (and a switch for the head-to-head tests), and
+matches without one are byte-identical.
 The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
 [summarized below](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01):
 every land unit has one job (a village, an invader, the frontier, or a known
@@ -1637,6 +1644,244 @@ under either. The longest synchronous decision in the head-to-head runs was
 374 ms on a loaded machine (four matches in parallel); the most accepted
 commands in one turn was 87 (an Ice Folk-Dinosaur match on 14 x 14), below
 the 128-command cap.
+
+## Dwarf play (`pulp_wars-78i.4`)
+
+Every Dwarf heuristic lives behind one gate: the match has a Dwarf seat
+(`src/ai/v7-dwarf.ts`, `dwarfMatchForPolicyV7`), or reads a fact that only
+such a match has (a mound in `view.burrowed`, the `dwarf` block of the public
+unit stats, a `bombedThisTurn` entry). A match without a Dwarf seat never
+evaluates any of it: the [parity run](#dwarf-measurements) is
+byte-identical. The rules and their values are in `src/ai/v7-dwarf.ts`; the
+policy (`src/ai/v7.ts`) calls them from its existing scoring steps. They read
+only the public view, the offered commands, and the public previews
+(`previewBombRunV7` with its `landingThreat`, `previewAssembleV7`,
+`queryCombatPreviewV7` with `push`), cached per decision. The tunnel preview
+is never used: its eruption is a forecast (`projected`), so the policy
+scores destinations from the visible units and never counts an eruption as
+damage dealt. They add no PRNG use, no elapsed-time input, and no work
+units. Values are in the policy's usual units (a unit is worth its cost x 4
+plus its HP).
+
+**The switch.** `DwarfPolicyOptionsV7` has three groups: `dwarfPlay` (the
+Dwarf seat's own rules), `againstDwarves` (every seat's estimates of Dwarf
+units and the counterplay), and `expansionTunnel` (the optional Mole rule 5
+of the spec). The shipped policy plays the first two; the third is off
+because its head-to-head was neutral. With the first two off, the policy
+decides exactly as the generic policy of `78i.3` did (the
+[measurements](#dwarf-measurements)); the head-to-head harness and the tests
+set the switch with `setDwarfPolicyOptionsV7`, nothing else does.
+
+Shared estimates (every seat in a match with a Dwarf seat):
+
+- **Mounds.** A ground unit (or an Egg's nest tile) next to a hostile Mole
+  mound takes its eruption (2, 3 with Blasting Charges, the public
+  `dwarf.eruptionDamage`) at the Dwarves' next Start Turn, and every tile
+  within 2 of a hostile mound is in its unit's surfacing reach (it comes up
+  fresh: Move 1 and an attack). Both are in a unit's visible danger.
+- **Gyrocopters.** A visible hostile Gyrocopter that is not sluggish
+  threatens one bomb (its owner's public `bombDamage`) on every tile within 2
+  of it, once per unit (the largest, whatever the number of Gyrocopters).
+- **Plated, Unflinching, Dig In.** A projected hit on a Steam Tank is
+  capped at its public `plated`; a construct attacks with its maximum HP; a
+  dug-in Hammerer or Mole (the public `dwarf.dugIn`) that stays where it
+  stands has the Field Defense level (never stacked with Field Defense, and
+  never after a planned Move). Attack decisions use the exact previews,
+  which carry all three.
+
+As the Dwarves:
+
+- **The Mole** (one planned `TUNNEL` per Mole; every other offer is pruned
+  before scoring, so the large offer list costs one cheap score per
+  destination):
+  1. _defence:_ a Mole within 2 of an invader (a visible hostile land unit
+     within 2 of an own center) walks and hits; one 3 or 4 tiles from an
+     invader tunnels (1150) to the offered destination next to it with the
+     best eruption score;
+  2. _offence:_ on a Pressure job whose wave has set out, with a route of 4
+     or more steps (or a route blocked by terrain), it tunnels (875, above
+     the routine Moves and below the chips) to the destination with the
+     best eruption score (2 for each visible hostile ground unit next to
+     it, 3 more for each `CATAPULT`, `MARKSMAN`, or `CAPTAIN`-role one) plus
+     the route progress; a destination next to three or more hostile melee
+     units is skipped unless it is next to the target's center, and one
+     that erupts on nobody must make two steps of progress and stay within
+     3 of another own land unit (the Mole surfaces next to its wave);
+  3. _rider:_ it takes an adjacent fresh Hammerer when a rider tile is
+     offered (never the garrison of an own center with a hostile unit
+     within 3), on the rider tile next to the most hostile land units, the
+     back-liners first; a Hammerer gains 2 for ending a routine Move next to
+     an own Mole;
+  4. _after surfacing_ both use the ordinary attack choice;
+  5. it never tunnels off an own city center with no other own land unit
+     next to that center.
+- **The Gyrocopter** (one planned `BOMB_RUN` per Gyrocopter): each offer is
+  scored by `min(bombDamage, target HP)`, plus 10 when it kills, plus 6 on a
+  `CATAPULT`, `MARKSMAN`, or `CAPTAIN`-role target, minus **half** the
+  landing threat; the best three by the policy's own danger estimate are
+  previewed exactly (`previewBombRunV7`), and the best above zero is taken.
+  It never lands where `landingThreat` is 8 or more unless the bomb kills a
+  `CATAPULT` or `CAPTAIN`-role unit. A bomb that leaves its target within one
+  offered hit of death goes before every kill (1185); one that kills goes
+  after the chips (895); any other at 880. A Gyrocopter never ends a routine
+  Move on water or into visible lethal reach that is worse than where it
+  stands; otherwise it takes the ordinary scout and Pressure jobs.
+- **The Gunner:** an unmoved Gunner with an offered attack makes no routine
+  Move (it fires twice where it stands); its chips go at 902, after the bombs
+  and before the melee chips.
+- **The Engineer:** `ASSEMBLE` on a Pressure job or within 3 of a visible
+  hostile unit, on the offered tile nearest the target (the job's city, or
+  the nearest hostile unit) that is not next to a visible hostile melee
+  unit, at the land-production priority (1205 at war while units are
+  short, otherwise 1080), one higher when the home city is more than 4
+  tiles from the target; the savings plan holds it like training. Repair
+  restores machines 4 and others 2 and values HP on a construct double; with
+  3 or more HP on machines it goes at 905, before the chips. Its Moves gain
+  1 per missing HP of an adjacent own construct and pay 6 next to a visible
+  hostile melee unit.
+- **Dig In:** a dug-in Hammerer or Mole with a visible hostile land unit
+  within 3 makes no routine Move (its attacks are unchanged).
+- **The Steam Cannon** plays like a Catapult; a shot whose Knockback pushes
+  a unit off a hostile center gains 8, off Field Defense 4, and 2 for each
+  own melee unit next to the push tile (at most three).
+- **Production.** The Mole, the Gunner, the Engineer, the Cannon, and the
+  Tank gain 10 as the first of their role. In a threatened city the
+  Hammerer gains 12 and the Mole 6, and the Gyrocopter and the Engineer cost 30. The Hammerer's repetition costs 5 a unit instead of 8. A Mole gains 6
+  while there is fewer than one per three other front units, otherwise it
+  costs 20. The first Gyrocopter gains 4 at war with four front units, and
+  further ones are valued as usual up to one per five front units
+  (otherwise they cost 20). The Engineer gains 16 at war with four front
+  units once it has work (Marksmanship for Assemble, or two machines to
+  mend), a second one with eight front units per Engineer, otherwise it
+  costs 20. A Cannon beyond one per four front units costs 20. The Tank
+  comes through the savings plan.
+- **Research** (the free opener keeps the existing scorer): Drill at 1062
+  (just above the role plan); Dig In at 1150 once a visible hostile unit or
+  mound is within 3 of an own center; with two cities Marksmanship at 1170
+  and Raiding (Dive) once the seat owns a Gyrocopter; Administration at 1150
+  once it owns a Gunner or two Moles; Scouting at 1062 with four front
+  units; Blasting Charges at 1150 against a visible Walled city or a Martian
+  seat; then Sawmilling and Chivalry (1150 with five front units, 1062
+  before).
+
+Against the Dwarves (every seat):
+
+- **Mounds.** A ground unit never ends a routine Move next to a hostile Mole
+  mound whose eruption kills it (HP plus Shield at most the eruption); a
+  ranged or siege unit pays 3 for ending one in a ring; a unit the next
+  eruption kills where it stands steps out of every ring (935, the
+  Shatter-escape tier) to a tile with less visible danger.
+- **Targets.** A visible Engineer is worth 6 more plus 4 for each construct
+  of its owner within 2 of it (at most three); a Gyrocopter that landed next
+  to an own unit 6 more.
+- The surfaced pair and dug-in units need no rule: the exact previews show
+  that a surfaced unit abroad is not dug in, and the harmful-attack test
+  already rejects a hit on a dug-in unit that achieves nothing.
+
+Not covered: the Brass Titan uses the generic Juggernaut play with the
+construct estimates; the Steam Tank the generic Knight play (it has no
+Overrun).
+
+### Dwarf measurements
+
+All on Dry Land, Normal against Normal, Rival mode, the balance-testing
+policy's coarse samples, at `pulp-wars-poc-7r30`. "Generic" is the policy of
+`087edb2` (the ordinary policy on the Dwarf registration, the `78i.3`
+baseline); "Dwarf" is this policy. A scratch harness loads one policy module
+and sets the switch before each seat's decision; with both groups off it
+reproduces the `087edb2` policy byte for byte (6 Dwarf matches, 4 Dwarf
+mirrors and 2 against Humans, against a copy of the `087edb2` policy).
+
+**Head-to-head, Dwarf mirror** (the Dwarf policy on one seat, the generic
+one on the other, every seed in both seat orders, with
+`allowDuplicateFactions`):
+
+| Board   | Seeds | Round cap | Decided | Dwarf policy | Generic |
+| ------- | ----: | --------: | ------: | -----------: | ------: |
+| 11 x 11 |  0-29 |       120 |      60 |           35 |      25 |
+| 14 x 14 |  0-14 |       150 |      30 |           15 |      15 |
+| Total   |       |           |      90 |     50 (56%) |      40 |
+
+The first draft lost (30 of 64 on 11 x 11): it trained 112 Gyrocopters and
+97 Engineers in 64 seat-games (the generic policy trains neither) and pushed
+Scouting with Drill. Leave-one-out on 11 x 11 (64 games each) showed the
+tunnels (25 of 64 without them) and the bombs (27 without) winning and the
+production and research rules losing (40 of 64 without the production rules);
+the production and research above are the second draft (35 of 64, then 37
+with half the landing threat). On 14 x 14 no single group moved the result
+beyond the noise (14 to 16 of 30 without production, Dig In hold, or
+research). Most seeds are won by the same seat in both orders.
+
+**Measured deviations from the spec's rules:**
+
+- The bombing-run score subtracts **half** the landing threat. With the whole
+  threat the Gyrocopters bombed 14 times in 64 seat-games (34 of them had a
+  Gyrocopter: the 4-Coin scout of spec concern 5); with half of it 73 times,
+  winning 37 of 64 against 35. The hard limit of 8 stands.
+- **The optional expansion tunnel** (Mole rule 5) is implemented behind the
+  switch and **dropped**: against the same policy without it, 21 of 40 on
+  11 x 11 (seeds 0-19) and 10 of 20 on 14 x 14 (seeds 0-9), 31 of 60. It
+  added about 11 tunnels in 60 seat-games and no city by round 15 (125
+  cities at round 15 with and without it).
+- **The "against the Dwarves" group is kept although it is neutral on wins**
+  (the second-pass precedent: neutral and it moves the measured problem).
+  In the 144 coarse-matchup games below, the other factions won 72 with it
+  and 72 with the generic policy (70 games differed, 6 outcomes flipped, 3
+  each way), and killed 50 Engineers (in 23 of 55 seat-games with one)
+  against 37 (19 of 52).
+
+**Telemetry** (the Dwarf policy's 90 seat-games of the head-to-head; in
+brackets the generic policy's): units trained: Hammerer 764 (995), Mole 277
+(218), Engineer 79 (0), Gyrocopter 56 (0), Gunner 56 (55), Tank 53 (31),
+Cannon 35 (99); seat-games with a Gyrocopter 45, an Engineer 36, a Gunner 33. Tunnels 184 (89 with a rider; in 58 seat-games, with a rider in 37);
+eruptions 184, 131 hitting someone, 496 HP of damage, 3 kills; surfaced
+Moles and riders lost before their owner's next turn 34. Bombing runs 88
+(in 37 seat-games), 345 HP, 13 kills; Gyrocopters lost after a bomb 11.
+Assembles 154 (in 26 seat-games); Repairs 65 restoring 227 HP; Gunner shots
+615, 235 of them second shots. Dig In: 624 dug-in unit-turns at the end of
+the seat's turns (126); attacks on dug-in Dwarf units 163 by the generic
+seat, 89 by the Dwarf one. Cities at round 15: 189 (191).
+
+**Against each faction** (this policy on both sides, seeds 0-7 in both
+orders on 11 x 11 and 0-3 on 14 x 14, round cap 150, Dwarf wins first):
+
+| Opponent  | 11 x 11 | 14 x 14 | Total | Eruption kills | Bomb kills | Engineers killed |
+| --------- | ------: | ------: | ----- | -------------: | ---------: | ---------------: |
+| Humans    |     8-8 |     5-3 | 13-11 |              0 |          5 |           4 of 9 |
+| Undead    |    10-6 |     4-4 | 14-10 |              1 |          4 |           4 of 9 |
+| Goblins   |     8-8 |     2-6 | 10-14 |              1 |          5 |           6 of 9 |
+| Dinosaurs |     8-8 |     6-2 | 14-10 |              0 |          0 |          4 of 10 |
+| Martians  |     9-7 |     2-6 | 11-13 |              0 |          1 |          2 of 10 |
+| Ice Folk  |     7-9 |     3-5 | 10-14 |              0 |          2 |           3 of 8 |
+
+("Engineers killed": seat-games in which the opponent killed an Engineer,
+of those in which the Dwarves trained one.) No pairing is beyond 70/30
+(the widest are 14-10 and 10-14); no stalls, policy errors, or round caps.
+For the balance bead (`pulp_wars-78i.7`): eruptions almost never kill
+(2 kills in 296 eruptions; none against four factions), bombs never killed a
+Dinosaur unit, the opponents kill Engineers in fewer than half of the
+seat-games with one (Martians 2 of 10), and Gyrocopters scored 17 kills for
+31 losses after a bomb (0.55 per loss, above the 0.3 watch band).
+
+**Parity.** 26 matches without a Dwarf seat (Human-Undead, Goblin-Dinosaur,
+Martian-Ice Folk, Dinosaur-Human, Ice Folk-Goblin, and Undead-Martian on
+11 x 11, seeds 0-3; Human-Goblin-Dinosaur on 14 x 14, seeds 0-1) end in the
+same state hash after the same number of accepted commands under this policy
+and the policy of `087edb2`.
+
+**Cost.** On 60 Dwarf views with 40 or more Tunnel and bombing-run offers
+(Dwarf mirrors on 14 x 14, at most 518 Tunnel offers in one view) a
+synchronous decision takes 2.3 ms at the mean and 5.4 ms at most under the
+Dwarf policy, against 2.9 and 6.3 ms under the generic one (which scores
+every offer). The retained late view
+(`npx tsx scripts/benchmark-ruleset-v7-normal-policy.ts`) decides the same
+command with the same hash in about 3 ms (synchronous) and 20 ms in 8 ms
+slices. In the measurement runs (378 games, four matches in parallel) the
+longest decision was 189 ms. No Dwarf rule brought a turn to the
+128-command cap; one 14 x 14 Dwarf-Human match (seed 3) reached it in rounds
+71 and 72, on both seats, through the generic `REDEVELOP` and
+`BUILD_LUMBER_CAMP` pair repeated on one tile (the issue noted under the
+[Martian measurements](#martian-measurements)).
 
 ## The Rift (`pulp_wars-9s0.5`)
 
