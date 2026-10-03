@@ -4,8 +4,11 @@
 implemented** (`pulp_wars-b5f.3` engine step, identity `pulp-wars-poc-7r33`:
 the kind resolver, every rule, shape, and ruling of sections 2 to 6; folded
 into [current rules sections 20.8 and 20.9](RULESET_7_CURRENT.md#208-mind-control),
-which win where this document differs). The Normal AI (section 8) and UI
-(section 9) steps are not implemented yet. It is an overlay over
+which win where this document differs). **The Normal AI (section 8) is
+implemented** (`pulp_wars-b5f.3` AI step, no identity change: the
+[Mind Control play](../architecture/NORMAL_AI.md#mind-control-play-pulp_wars-b5f3)
+records its rules and its head-to-head). The UI step (section 9) is not
+implemented yet. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r30`
 (and the pending [Dwarf overlay](RULESET_7_DWARVES.md)); it amends the
 Martian Mind Control and **replaces the Thrall**
@@ -385,6 +388,30 @@ unit goes back (`-V` for the Martians, `+V` for the victim).
   the Martian policy with value-blind targeting, 1v1 against Human and
   Undead, seeds 0–9 each side: the new policy's decided win share is not
   below the old's minus 5 points.
+
+**As implemented** (`pulp_wars-b5f.3` AI step; the rules, values, and
+measurements are in the
+[Normal AI record](../architecture/NORMAL_AI.md#mind-control-play-pulp_wars-b5f3)).
+Every rule above, plus four refinements the contract left open:
+
+- the value subtracts 1 for each ability the target loses under control
+  (section 5.1 ruling 3: Raise Dead, Infect, Bite, Hatch, Assemble, Mind
+  Control, tunnel riding), at least 1, so a Zombie (3, less Infect and
+  Bite) is worth 1 and a Necromancer 4;
+- **focus fire:** the first of two own hits that together leave a target
+  worth at least 3 convertible by a ready own Brain goes at 1177 (above the
+  chips, below every kill); the single-hit setup keeps 1182;
+- an own attack on a unit that an offered Mind Control targets waits below
+  it (1185) unless it clears or captures a city (1300 or more): converting
+  removes a threat as surely as killing it;
+- a controlled unit never counts as one of the seat's own roles in
+  production (a controlled Captain is not a Brain), only as a front unit.
+
+The denial test and the setup read the engine's own per-target test
+(`mindControlTargetBlockV7`). All of it is behind
+`MartianPolicyOptionsV7.mindControlPlay` (tests and harnesses only; off, the
+policy decides as the engine step did), and a match without a Martian
+seat decides as before.
 
 ## 9. Presentation
 

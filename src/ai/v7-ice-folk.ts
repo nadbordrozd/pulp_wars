@@ -12,6 +12,7 @@ import {
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
+import { policyUnitFactionV7 } from "./v7-martian";
 
 /**
  * The Ice Folk Normal AI (`pulp_wars-7g3.4`,
@@ -162,6 +163,12 @@ export interface IceFolkFactsV7 {
     { readonly sluggish: boolean; readonly turnsLeft: number }
   >;
   readonly iceOwners: ReadonlySet<PlayerId>;
+  /**
+   * The Mind Control revision (section 8): visible land-form units of the
+   * Ice Folk kind, whoever controls them (a controlled Witch is still a
+   * Witch; `policyUnitFactionV7`).
+   */
+  readonly iceUnitIds: ReadonlySet<UnitId>;
   /** Visible land-form Witches: all, own, and hostile. */
   readonly visibleWitches: readonly PublicUnitV7[];
   readonly ownWitches: readonly PublicUnitV7[];
@@ -193,9 +200,13 @@ export function iceFolkFactsV7(
   const hostileWitches: PublicUnitV7[] = [];
   const hostileSleds: PublicUnitV7[] = [];
   const hostileMelee: PublicUnitV7[] = [];
+  const iceUnitIds = new Set<UnitId>();
   for (const unit of view.units) {
-    if (unit.form !== "LAND" || unit.hp <= 0 || !iceOwners.has(unit.ownerId))
+    // The Mind Control revision (section 8): by the unit's kind.
+    if (unit.form !== "LAND" || policyUnitFactionV7(view, unit) !== "ICE_FOLK")
       continue;
+    iceUnitIds.add(unit.id);
+    if (unit.hp <= 0) continue;
     const rule = unitRoleRuleV7(view, unit);
     const hostile = isHostile(unit.ownerId);
     if (rule.abilities.includes("COLD_SNAP")) {
@@ -235,6 +246,7 @@ export function iceFolkFactsV7(
     viewerIceFolk: view.viewer.faction === "ICE_FOLK",
     chill,
     iceOwners,
+    iceUnitIds,
     visibleWitches,
     ownWitches,
     hostileWitches,
@@ -255,12 +267,15 @@ export function hasAbilityForIceV7(
   );
 }
 
-/** A land-form unit of an Ice Folk seat. */
+/**
+ * A land-form unit of the Ice Folk kind (the Mind Control revision: a
+ * controlled Ice Folk unit too; without one, a unit of an Ice Folk seat).
+ */
 export function isIceFolkUnitForPolicyV7(
   facts: IceFolkFactsV7,
   unit: PublicUnitV7,
 ): boolean {
-  return unit.form === "LAND" && facts.iceOwners.has(unit.ownerId);
+  return unit.form === "LAND" && facts.iceUnitIds.has(unit.id);
 }
 
 /** The public Shatter threshold of an Ice Folk seat (3 when unknown). */
@@ -758,7 +773,7 @@ export function iceFolkTargetBonusV7(
   if (
     unit.form !== "LAND" ||
     unit.ownerId === view.viewer.id ||
-    !facts.iceOwners.has(unit.ownerId)
+    !facts.iceUnitIds.has(unit.id)
   )
     return 0;
   const abilities = unitRoleRuleV7(view, unit).abilities;

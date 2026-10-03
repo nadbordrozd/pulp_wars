@@ -8,9 +8,11 @@ import {
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
   COLD_SNAP_RANGE_V7,
+  MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_LIMIT_V7,
   armouredDamageV7,
+  isMindControlledV7,
   chargeRunUpAttack2V7,
   effectiveRoleRuleV7,
   cityUnitCapacityForV7,
@@ -193,6 +195,11 @@ import {
   STRIPPED_SHIELD_VALUE_V7,
   CONTROLLED_CHIP_PRIORITY_V7,
   MIND_CONTROL_SETUP_PRIORITY_V7,
+  MIND_CONTROL_FIRST_CEILING_V7,
+  MIND_CONTROL_FOCUS_MINIMUM_VALUE_V7,
+  MIND_CONTROL_PRIORITY_V7,
+  MIND_CONTROL_FOCUS_PRIORITY_V7,
+  MIND_CONTROL_VALUE_WEIGHT_V7,
   RAY_SIEGE_PRIORITY_V7,
   MOTHERSHIP_GUARD_PRIORITY_V7,
   MOTHERSHIP_PULL_RADIUS_V7,
@@ -212,7 +219,10 @@ import {
   martianRetainedValueV7,
   martianTargetBonusV7,
   mindControlExposedV7,
+  mindControlPlayV7,
   mindControlScoreV7,
+  mindControlValueV7,
+  policyUnitFactionV7,
   readyHostileBrainsV7,
   shieldMaximumForPolicyV7,
   tractorBeamScoreV7,
@@ -3092,7 +3102,7 @@ function isPolicyCandidate(
     (command.kind === "TUNNEL" ||
       command.kind === "BOMB_RUN" ||
       command.kind === "ASSEMBLE") &&
-    dwarfPlayV7(context)
+    dwarfUnitPlayV7(context, context.lookup.unitsById.get(command.unitId))
   )
     return dwarfPlannedCommandV7(context, command) === command;
   if (command.kind === "BUILD_ROAD") {
@@ -5067,7 +5077,7 @@ function scoreCommandWithContext(
       // The Dwarf revision (`pulp_wars-78i.4`): the Gunner's chips before
       // the melee ones, and the Steam Cannon's Knockback.
       if (
-        dwarfPlayV7(context) &&
+        dwarfUnitPlayV7(context, actor) &&
         actor !== undefined &&
         targetUnit !== undefined
       ) {
@@ -5108,7 +5118,7 @@ function scoreCommandWithContext(
     (command.kind === "TUNNEL" ||
       command.kind === "BOMB_RUN" ||
       command.kind === "ASSEMBLE") &&
-    dwarfPlayV7(context)
+    dwarfUnitPlayV7(context, actor)
   ) {
     // The Dwarf revision (`pulp_wars-78i.4`): the Mole, the Gyrocopter, and
     // the Engineer's Assemble.
@@ -5179,9 +5189,13 @@ function scoreCommandWithContext(
     // The Dwarf revision (`pulp_wars-78i.4`): Repair heals machines 4 and
     // values HP on a construct double; machines are repaired before the
     // chips, so the mended units fight at their new strength.
+    // The Mind Control revision (section 8): by the Engineer's kind (a
+    // controlled Engineer repairs, though it cannot Assemble).
     if (
-      dwarfPlayV7(context) &&
-      unitRoleRuleV7(view, actor).abilities.includes("ASSEMBLE")
+      dwarfUnitPlayV7(context, actor) &&
+      (unitRoleRuleV7(view, actor).abilities.includes("ASSEMBLE") ||
+        (mindControlPlayV7() &&
+          unitRoleMechanicsV7(view, actor).repairMachineHeal !== null))
     ) {
       const repair = repairValueV7(view, dwarfCacheV7(context).facts, actor);
       immediateValue = repair.value * 8;
@@ -5198,15 +5212,18 @@ function scoreCommandWithContext(
     );
     strategicValue = targets.length * 12;
     priority = targets.length >= 2 ? 1235 : 720;
-    if (view.viewer.faction === "UNDEAD") {
+    // The Mind Control revision (section 8): by the commander's kind (a
+    // controlled Necromancer Frenzies, a controlled Warboss calls WAAAGH!).
+    const kind = policyUnitFactionV7(view, actor);
+    if (kind === "UNDEAD") {
       const frenzy = undeadFrenzyValueV7(context, actor);
       strategicValue = frenzy.strategic;
       priority = frenzy.priority;
-    } else if (view.viewer.faction === "GOBLIN") {
+    } else if (kind === "GOBLIN") {
       const waaagh = waaaghValueV7(context, actor);
       strategicValue = waaagh.strategic;
       priority = waaagh.priority;
-    } else if (view.viewer.faction === "MARTIAN" && context.martian) {
+    } else if (kind === "MARTIAN" && context.martian) {
       // The Martian revision: Psychic Command only for adjacent units that
       // can still attack (the Frenzy rule), and Mind Control first.
       const command = undeadFrenzyValueV7(context, actor);
@@ -5543,6 +5560,9 @@ function scoreCommandWithContext(
     strategicValue = freeCapacity(view, actor.homeCityId) <= 0 ? 6 : 0;
     // Revision 19: an abandoned Egg frees the slot a defender needs now.
     priority = actor.form === "EGG" ? EGG_ABANDON_PRIORITY_V7 : 1090;
+    // The Mind Control revision (section 4.1): a controlled unit is never
+    // disbanded (the engine never offers it; the policy never asks).
+    if (isMindControlledV7(view, actor.id)) priority = -1;
   }
 
   if (command.kind === "KABOOM" && actor !== undefined && context.goblin) {
@@ -5700,7 +5720,9 @@ function undeadMoveValueV7(
     hostileNecromancersNearV7(view, to, hostile, 2).length > 0
   )
     strategic += 4;
-  if (view.viewer.faction === "UNDEAD" && isVampireV7(view, actor)) {
+  // The Mind Control revision (section 8): the mover's kind plays it.
+  const undeadKind = policyUnitFactionV7(view, actor) === "UNDEAD";
+  if (undeadKind && isVampireV7(view, actor)) {
     const vampire = vampireMoveValueV7(context, actor, to, priority, embarks);
     priority = vampire.priority;
     strategic += vampire.strategic;
@@ -5709,14 +5731,14 @@ function undeadMoveValueV7(
   // reach one after another on naval maps; afloat, a Lich keeps the same
   // rule as on land (never into visible lethal reach unless strictly safer).
   if (
-    view.viewer.faction === "UNDEAD" &&
+    undeadKind &&
     actor.form === "EMBARKED" &&
     isLichRoleV7(view, actor) &&
     danger() >= actor.hp &&
     danger() >= visibleImmediateDamage(view, actor, actor.at, context)
   )
     priority = -1;
-  if (view.viewer.faction !== "UNDEAD" || actor.form !== "LAND")
+  if (!undeadKind || actor.form !== "LAND")
     return { priority, strategic, objective };
   const primaryReady = isPrimaryUnusedV7(actor);
 
@@ -6119,7 +6141,7 @@ function vampireAttackExposedV7(
   const view = context.view;
   if (
     actor.ownerId !== view.viewer.id ||
-    view.viewer.faction !== "UNDEAD" ||
+    policyUnitFactionV7(view, actor) !== "UNDEAD" ||
     !isVampireV7(view, actor) ||
     preview.defenderDies ||
     vampireAttackAcceptableV7(context, view, command)
@@ -6175,8 +6197,8 @@ function fragileCargoV7(context: PolicyContextV7, unitId: UnitId): boolean {
   const unit = context.lookup.unitsById.get(unitId);
   return (
     unit !== undefined &&
-    view.viewer.faction === "UNDEAD" &&
     unit.ownerId === view.viewer.id &&
+    policyUnitFactionV7(view, unit) === "UNDEAD" &&
     (isLichRoleV7(view, unit) || isVampireV7(view, unit))
   );
 }
@@ -6193,8 +6215,8 @@ function fragileLandingExposedV7(
 ): boolean {
   const view = context.view;
   if (
-    view.viewer.faction !== "UNDEAD" ||
     actor.ownerId !== view.viewer.id ||
+    policyUnitFactionV7(view, actor) !== "UNDEAD" ||
     (!isLichRoleV7(view, actor) && !isVampireV7(view, actor))
   )
     return false;
@@ -7616,11 +7638,10 @@ function goblinMoveValueV7(
   let strategic = 0;
   let setupKill = false;
   let raised = priority;
-  if (
-    view.viewer.faction === "GOBLIN" &&
-    actor.form === "LAND" &&
-    !same(actor.at, to)
-  ) {
+  // The Mind Control revision (section 8): the mover's kind plays it (a
+  // controlled Goblin sets up its Kaboom).
+  const goblinKind = policyUnitFactionV7(view, actor) === "GOBLIN";
+  if (goblinKind && actor.form === "LAND" && !same(actor.at, to)) {
     let projectedView: PlayerViewV7 | null = null;
     const projected = () =>
       (projectedView ??= projectPublicUnitForPolicyV7(view, actor.id, {
@@ -7674,7 +7695,7 @@ function goblinMoveValueV7(
   // pulp_wars-0ao.13: a routine Move does not end next to a target an own
   // Bomb Chucker can bomb now when the splash would kill the mover there
   // (and not where it stands); a smaller splash only costs strategic value.
-  if (view.viewer.faction === "GOBLIN") {
+  if (goblinKind) {
     const bombThere = ownBombExposureV7(context, actor, to);
     if (bombThere.loss > 0) {
       const bombHere = ownBombExposureV7(context, actor, actor.at);
@@ -8477,7 +8498,8 @@ function dinosaurMoveValueV7(
   const rule = unitRoleRuleV7(view, actor);
   const attacker = facts.abilities.includes("ATTACK") && facts.attack2 > 0;
 
-  if (view.viewer.faction === "DINOSAUR") {
+  // The Mind Control revision (section 8): the mover's kind plays it.
+  if (policyUnitFactionV7(view, actor) === "DINOSAUR") {
     const dinosaur = dinosaurFactsV7(context);
     if (
       linebreakerV7(view, actor) &&
@@ -8639,6 +8661,8 @@ interface MartianContextCacheV7 {
   readonly movers: ReadonlySet<UnitId>;
   /** Own Brains with an offered `MIND_CONTROL`. */
   readonly mindControllers: ReadonlySet<UnitId>;
+  /** Hostile units an offered `MIND_CONTROL` targets. */
+  readonly mindControlTargets: ReadonlySet<UnitId>;
   /** Ready hostile Brains (no cooldown, below the control limit). */
   readonly hostileBrains: readonly PublicUnitV7[];
   /** Own Saucers with a `BEAM_DOWN` worth taking now. */
@@ -8664,11 +8688,14 @@ function martianCacheV7(context: PolicyContextV7): MartianContextCacheV7 {
   const attackers = new Set<UnitId>();
   const movers = new Set<UnitId>();
   const mindControllers = new Set<UnitId>();
+  const mindControlTargets = new Set<UnitId>();
   for (const command of context.commands) {
     if (command.kind === "ATTACK") attackers.add(command.unitId);
     else if (command.kind === "MOVE") movers.add(command.unitId);
-    else if (command.kind === "MIND_CONTROL")
+    else if (command.kind === "MIND_CONTROL") {
       mindControllers.add(command.unitId);
+      mindControlTargets.add(command.targetUnitId);
+    }
   }
   const campaign = context.tactical.campaign;
   let waveTarget: CoordV7 | null = null;
@@ -8692,6 +8719,7 @@ function martianCacheV7(context: PolicyContextV7): MartianContextCacheV7 {
     attackers,
     movers,
     mindControllers,
+    mindControlTargets,
     hostileBrains: readyHostileBrainsV7(view, facts, (owner) =>
       isHostile(view, owner),
     ),
@@ -8832,8 +8860,14 @@ function martianAttackAdjustmentV7(
   let strategic = 0;
   let next = priority;
   if (actor.ownerId === view.viewer.id && facts.viewerMartian) {
-    // Controlled units are the front row: their chips go before shielded units'.
-    if (priority === 900 && facts.brainOfControlled.has(actor.id))
+    // The baseline: controlled units are the front row, their chips go
+    // before shielded units' (the Thrall rule; `pulp_wars-b5f.3` drops it:
+    // a controlled unit is worth its kind cost).
+    if (
+      !mindControlPlayV7() &&
+      priority === 900 &&
+      facts.brainOfControlled.has(actor.id)
+    )
       next = CONTROLLED_CHIP_PRIORITY_V7;
     if (preview.attackerShieldDamage > 0 && !facts.forceFields)
       strategic -= RETALIATION_SHIELD_COST_V7 * preview.attackerShieldDamage;
@@ -8871,8 +8905,36 @@ function martianAttackAdjustmentV7(
     )
   ) {
     next = MIND_CONTROL_SETUP_PRIORITY_V7;
-    strategic += targetStrategicValue(view, target.id, context.lookup);
+    // `pulp_wars-b5f.3`: among setups, the most valuable conversion first.
+    strategic += mindControlPlayV7()
+      ? MIND_CONTROL_VALUE_WEIGHT_V7 * mindControlValueV7(view, target)
+      : targetStrategicValue(view, target.id, context.lookup);
+  } else if (
+    mindControlPlayV7() &&
+    facts.viewerMartian &&
+    actor.ownerId === view.viewer.id &&
+    !preview.defenderDies &&
+    next < MIND_CONTROL_FOCUS_PRIORITY_V7
+  ) {
+    // `pulp_wars-b5f.3`: focus fire to wound, then convert.
+    const focus = martianFocusSetupValueV7(context, actor, target, preview);
+    if (focus > 0) {
+      next = MIND_CONTROL_FOCUS_PRIORITY_V7;
+      strategic += focus;
+    }
   }
+  // `pulp_wars-b5f.3`: Mind Control keeps priority over an attack on the
+  // same target (a threat or a kill alike: the conversion removes it too),
+  // unless the attack clears or captures a city.
+  if (
+    mindControlPlayV7() &&
+    facts.viewerMartian &&
+    actor.ownerId === view.viewer.id &&
+    next >= MIND_CONTROL_PRIORITY_V7 &&
+    next < MIND_CONTROL_FIRST_CEILING_V7 &&
+    cache.mindControlTargets.has(target.id)
+  )
+    next = MIND_CONTROL_PRIORITY_V7 - 1;
   if (isHostile(view, target.ownerId)) {
     const shield = facts.shieldByUnit.get(target.id) ?? 0;
     if (
@@ -8974,6 +9036,42 @@ function martianConvertibleAfterV7(
         MIND_CONTROL_RANGE_V7 + (unit.activation.moved ? 0 : 1),
   );
   return mindControlExposedV7(view, target, target.at, hp, brains);
+}
+
+/**
+ * `pulp_wars-b5f.3` (RULESET_7_MIND_CONTROL.md section 8, the setup): the
+ * first of two own hits that leave a hostile unit convertible. This hit
+ * leaves it above `MIND_CONTROL_HP_V7`, another own unit's offered attack
+ * on it (its best whole hit, through the Shield this hit leaves) then
+ * brings it to 1 to 6 HP, a ready own Brain can reach it this turn, and it
+ * is worth at least `MIND_CONTROL_FOCUS_MINIMUM_VALUE_V7`. Returns the
+ * setup's strategic value, 0 when the hit is not one.
+ */
+function martianFocusSetupValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+): number {
+  const view = context.view;
+  if (preview.attackerDies || !isHostile(view, target.ownerId)) return 0;
+  const hp = target.hp - preview.damageToDefender;
+  if (hp <= MIND_CONTROL_HP_V7) return 0;
+  const value = mindControlValueV7(view, target);
+  if (value < MIND_CONTROL_FOCUS_MINIMUM_VALUE_V7) return 0;
+  // A ready Brain in reach of a convertible unit on the target's tile.
+  if (!martianConvertibleAfterV7(context, target, MIND_CONTROL_HP_V7)) return 0;
+  const facts = martianCacheV7(context).facts;
+  const shieldLeft = Math.max(
+    0,
+    (facts.shieldByUnit.get(target.id) ?? 0) - preview.defenderShieldDamage,
+  );
+  const follows = martianAttacksOnTargetV7(context, target.id).some((other) => {
+    if (other.attackerId === actor.id) return false;
+    const damage = Math.max(0, wholeHitV7(other) - shieldLeft);
+    return damage > 0 && hp - damage > 0 && hp - damage <= MIND_CONTROL_HP_V7;
+  });
+  return follows ? MIND_CONTROL_VALUE_WEIGHT_V7 * value : 0;
 }
 
 /** A visible hostile land unit stands fortified (Walls or Field Defense). */
@@ -9340,7 +9438,14 @@ function martianMoveValueV7(
   }
   // `pulp_wars-b5f.2`: the step back of the Grunt's ray pistol and the
   // Tripod's range-2 ray.
-  if (rangedStepBack && routine && rule.range >= 2) {
+  // `pulp_wars-b5f.3`: a Martian shooter's rule (a controlled Archer is
+  // played by its own kind's rules).
+  if (
+    rangedStepBack &&
+    routine &&
+    rule.range >= 2 &&
+    (!mindControlPlayV7() || policyUnitFactionV7(view, actor) === "MARTIAN")
+  ) {
     const ranged = martianRangedStepBackV7(context, actor, to, blockedHere);
     if (ranged !== null) {
       next = Math.max(next, ranged.priority);
@@ -9409,9 +9514,12 @@ function martianMoveValueV7(
       );
       if (convertible.length > 0 && dangerThere() < actor.hp) {
         next = Math.max(next, MIND_CONTROL_APPROACH_PRIORITY_V7);
+        // `pulp_wars-b5f.3`: toward the most valuable conversion.
         strategic += Math.max(
           ...convertible.map((unit) =>
-            targetStrategicValue(view, unit.id, context.lookup),
+            mindControlPlayV7()
+              ? MIND_CONTROL_VALUE_WEIGHT_V7 * mindControlValueV7(view, unit)
+              : targetStrategicValue(view, unit.id, context.lookup),
           ),
         );
       }
@@ -9656,7 +9764,7 @@ function iceFolkAttackRejectedV7(
   if (
     preview.defenderDies ||
     actor.ownerId !== view.viewer.id ||
-    view.viewer.faction !== "ICE_FOLK" ||
+    policyUnitFactionV7(view, actor) !== "ICE_FOLK" ||
     !hasAbilityForIceV7(view, actor, "PROWL") ||
     vampireAttackAcceptableV7(context, view, command)
   )
@@ -9710,7 +9818,8 @@ function iceFolkAttackAdjustmentV7(
     else if (next === 1280) next = threatening ? 1240 : 900;
   }
   const own = actor.ownerId === view.viewer.id;
-  if (own && facts.viewerIceFolk && actor.form === "LAND") {
+  // The Mind Control revision (section 8): an own unit of the Ice Folk kind.
+  if (own && isIceFolkUnitForPolicyV7(facts, actor)) {
     const abilities = unitRoleRuleV7(view, actor).abilities;
     if (preview.shatters) strategic += SHATTER_KILL_VALUE_V7;
     if (next === 900)
@@ -10009,8 +10118,9 @@ function iceFolkMoveValueV7(
       }
     }
   }
-  if (!facts.viewerIceFolk || !iceUnit)
-    return { priority: next, strategic, objective, objectiveScale };
+  // The Mind Control revision (section 8): an own unit of the Ice Folk kind
+  // (a controlled Witch still places her Blizzard and Cold Snaps).
+  if (!iceUnit) return { priority: next, strategic, objective, objectiveScale };
   const abilities = unitRoleRuleV7(view, actor).abilities;
   // The Witch (rule 2).
   if (abilities.includes("COLD_SNAP")) {
@@ -10140,6 +10250,24 @@ function dwarfPlayV7(context: PolicyContextV7): boolean {
   return (
     context.dwarf &&
     context.view.viewer.faction === "DWARF" &&
+    dwarfPolicyOptionsV7().dwarfPlay
+  );
+}
+
+/**
+ * The Mind Control revision (section 8): the Dwarf unit rules for one own
+ * unit, by its kind (a controlled Steam Mole tunnels, a controlled
+ * Gyrocopter bombs, a controlled Engineer repairs). Without a controlled
+ * unit, the same as `dwarfPlayV7` for every own unit.
+ */
+function dwarfUnitPlayV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7 | undefined,
+): boolean {
+  return (
+    unit !== undefined &&
+    context.dwarf &&
+    policyUnitFactionV7(context.view, unit) === "DWARF" &&
     dwarfPolicyOptionsV7().dwarfPlay
   );
 }
@@ -10451,7 +10579,7 @@ function dwarfMoveValueV7(
       strategic += retainedUnitValue(view, actor);
     }
   }
-  if (!dwarfPlayV7(context)) return { priority: next, strategic };
+  if (!dwarfUnitPlayV7(context, actor)) return { priority: next, strategic };
   const abilities = unitRoleRuleV7(view, actor).abilities;
   if (routine) {
     if (
@@ -11713,7 +11841,8 @@ function publicProjectedDamageWithLookupV7(
     defender.form === "LAND" &&
     defenderTile?.explored === true &&
     defenderTile.snow === true &&
-    iceFolkFactsForViewV7(view).iceOwners.has(defender.ownerId) &&
+    // The Mind Control revision: a body rule, by the defender's kind.
+    policyUnitFactionV7(view, defender) === "ICE_FOLK" &&
     !(
       defenderTile.territoryOwnerId === defender.ownerId &&
       (defenderTile.fortificationLevel ?? 0) > 0
@@ -11995,7 +12124,7 @@ function usefulDisband(
 ): boolean {
   const { view } = context;
   const unit = context.lookup.unitsById.get(command.unitId);
-  if (unit === undefined) return false;
+  if (unit === undefined || isMindControlledV7(view, unit.id)) return false;
   const refund = Math.floor((unitRoleRuleV7(view, unit).cost ?? 0) / 2);
   const danger = visibleImmediateDamage(
     view,

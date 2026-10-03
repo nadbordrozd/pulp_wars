@@ -16,11 +16,14 @@
  *   preview's `faction`).
  * - `SEAT`: the seat's own faction is right: production and training,
  *   research, city and economy rules, Plunder, registry and setup, labels
- *   of seat-level things, the viewer's own policies. The Normal AI's
- *   per-unit policies gated on `view.viewer.faction` (Kaboom, Bolas, Cold
- *   Snap, Tunnel, Bomb Run, Repair, Lifesteal targeting, the Undead and
- *   Goblin chip rules) are the viewer's policies today; the AI pass of the
- *   revision (section 8) re-gates them on the unit's kind.
+ *   of seat-level things, the viewer's own plans. The Normal AI's per-unit
+ *   policies (the Kaboom setup and Gang Up Moves, the Ice Folk unit rules,
+ *   Tunnel, Bomb Run and its bomb damage, Repair, the Vampire's and Lich's
+ *   rules, Frenzy, WAAAGH! and Psychic Command, the Dinosaur Moves) read
+ *   the unit's kind through `policyUnitFactionV7` (`src/ai/v7-martian.ts`,
+ *   the AI pass of the revision, section 8) and no longer appear here; the
+ *   AI's remaining `SEAT` reads are its seat plans (research, production,
+ *   economy, capacity) and match gates.
  *
  * `tests/unit/ruleset-v7-mind-control-kind-readers.test.ts` fails when a
  * read appears without a class or a class names no read.
@@ -86,7 +89,6 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7-dwarf.ts::dwarfFactsV7": "SEAT",
   "src/ai/v7-dwarf.ts::dwarfProductionAdjustmentV7": "SEAT",
   "src/ai/v7-dwarf.ts::dwarfResearchV7": "SEAT",
-  "src/ai/v7-dwarf.ts::planBombRunsV7": "SEAT",
   "src/ai/v7-goblin.ts::goblinMatchForPolicyV7": "SEAT",
   "src/ai/v7-ice-folk.ts::iceFolkMatchForPolicyV7": "SEAT",
   "src/ai/v7-ice-folk.ts::iceFolkFactsV7": "SEAT",
@@ -97,6 +99,7 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7-martian.ts::martianProductionAdjustmentV7": "SEAT",
   "src/ai/v7-martian.ts::martianResearchV7": "SEAT",
   "src/ai/v7-martian.ts::technologyWithCapabilityV7": "SEAT",
+  "src/ai/v7-martian.ts::policyUnitFactionV7": "KIND",
   "src/ai/v7-undead.ts::undeadMatchForPolicyV7": "SEAT",
   "src/ai/v7-undead.ts::ownerIsUndeadV7": "SEAT",
   "src/ai/v7-undead.ts::ownerIsRestlessV7": "SEAT",
@@ -110,20 +113,13 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7.ts::sharedCityContextWorkV7": "SEAT",
   "src/ai/v7.ts::sharedTrainingCostV7": "SEAT",
   "src/ai/v7.ts::scoreCommandWithContext": "SEAT",
-  "src/ai/v7.ts::undeadMoveValueV7": "SEAT",
   "src/ai/v7.ts::raisedSkeletonDoomedV7": "SEAT",
   "src/ai/v7.ts::freshUnitInLethalReachV7": "SEAT",
-  "src/ai/v7.ts::vampireAttackExposedV7": "SEAT",
-  "src/ai/v7.ts::fragileCargoV7": "SEAT",
-  "src/ai/v7.ts::fragileLandingExposedV7": "SEAT",
   "src/ai/v7.ts::goblinAttackValueV7": "SEAT",
-  "src/ai/v7.ts::goblinMoveValueV7": "SEAT",
   "src/ai/v7.ts::signatureResearchV7": "SEAT",
   "src/ai/v7.ts::laidEggHpForPolicyV7": "SEAT",
   "src/ai/v7.ts::threatenedEggValueV7": "SEAT",
   "src/ai/v7.ts::eggAbandonEmergencyV7": "SEAT",
-  "src/ai/v7.ts::dinosaurMoveValueV7": "SEAT",
-  "src/ai/v7.ts::iceFolkAttackRejectedV7": "SEAT",
   "src/ai/v7.ts::dwarfPlayV7": "SEAT",
   "src/ai/v7.ts::dwarfResearchFactsV7": "SEAT",
   "src/ai/v7.ts::researchValue": "SEAT",

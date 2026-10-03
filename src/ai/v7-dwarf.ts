@@ -4,6 +4,7 @@ import {
   effectiveRoleRuleV7,
   factionTreeV7,
   technologyCapabilitiesV7,
+  unitCapabilitiesV7,
   unitIsSluggishV7,
   unitMovementModeV7,
   unitRoleRuleV7,
@@ -1041,10 +1042,6 @@ export function planBombRunsV7(
       list.push(command);
       byGyro.set(command.unitId, list);
     }
-  const bombDamage = technologyCapabilitiesV7(
-    view.viewer.researchedTechs,
-    view.viewer.faction,
-  ).bombDamage;
   const shieldOf = (unitId: UnitId): number =>
     view.shields.find((entry) => entry.unitId === unitId)?.shield ?? 0;
   for (const [gyroId, offers] of byGyro) {
@@ -1053,6 +1050,13 @@ export function planBombRunsV7(
       result.set(gyroId, null);
       continue;
     }
+    // A unit-level unlock: the controller's research through the Gyrocopter's
+    // kind (the Mind Control revision section 5.2).
+    const bombDamage = unitCapabilitiesV7(
+      view,
+      gyro,
+      view.viewer.researchedTechs,
+    ).bombDamage;
     const score = (
       command: BombCommandV7,
       damage: number,

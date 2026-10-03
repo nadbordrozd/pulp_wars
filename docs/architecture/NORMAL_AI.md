@@ -20,9 +20,11 @@ matches without one decide as under revision 18, except that a wounded unit
 that can be promoted is promoted first (revision 20: a Promotion fully
 heals). The Martian play (`pulp_wars-t6s.3`, `src/ai/v7-martian.ts`) is
 [summarized below](#martian-play-pulp_wars-t6s3): Shields, heat rays and
-Cooling, Pierce, Beam Down, Mind Control and Thralls, the Tractor Beam,
-production and research, and play against each of them; it is gated on a
-match with a Martian seat, and matches without one are byte-identical.
+Cooling, Pierce, Beam Down, Mind Control and controlled units (the
+[Mind Control play](#mind-control-play-pulp_wars-b5f3) of `pulp_wars-b5f.3`),
+the Tractor Beam, production and research, and play against each of them;
+it is gated on a match with a Martian seat, and matches without one are
+byte-identical.
 The Ice Folk play (`pulp_wars-7g3.4`, `src/ai/v7-ice-folk.ts`) is
 [summarized below](#ice-folk-play-pulp_wars-7g34): the Witch, Cold Snap,
 the Bolas, the order of the attacks around Shatter, Sweep, the Boulder
@@ -1197,8 +1199,8 @@ interim baseline ahead of the revision 20 rework.
 Every Martian heuristic lives behind one gate: the match has a Martian seat
 (`src/ai/v7-martian.ts`, `martianMatchForPolicyV7`), or reads a fact that
 only a Martian unit has (a Shield, a heat ray, a walker's or flyer's
-movement, the Force Field, Beam Down, Mind Control, a Thrall, the Tractor
-Beam). A match without a Martian seat never evaluates any of it: the
+movement, the Force Field, Beam Down, Mind Control, a controlled unit, the
+Tractor Beam). A match without a Martian seat never evaluates any of it: the
 [parity run](#martian-measurements) is byte-identical. The rules and their values
 are in `src/ai/v7-martian.ts`; the policy (`src/ai/v7.ts`) calls them from
 its existing scoring steps. They read only the public view, the offered
@@ -1221,11 +1223,12 @@ Shared estimates (every match; all neutral without a Martian unit):
   land, and a flyer never from a center it does not own. Machines never get
   cover or fortification in the estimate.
 - **Values.** A hostile Projector is worth 4 more per covered unit next to
-  it, a Saucer 8 more while its owner holds a city, a Brain its Thralls'
-  value (they collapse with it), and a ray unit that can fire at full power
-  4 more. An own Thrall is worth its HP (it cost nothing); a Brain carries
-  its Thralls' HP. A lethal follow-up projection also strips the Shield the
-  first hit took.
+  it, a Saucer 8 more while its owner holds a city, a Brain the value of its
+  controlled unit (released with it; doubled when it was the viewer's own,
+  see the [Mind Control play](#mind-control-play-pulp_wars-b5f3)), and a
+  ray unit that can fire at full power 4 more. An own controlled unit is
+  worth its kind cost scaled by its HP; a Brain carries it. A lethal
+  follow-up projection also strips the Shield the first hit took.
 
 As Martians:
 
@@ -1236,7 +1239,8 @@ As Martians:
   Guard's threatened bonus too). In the preferred role the Grunt's repetition
   costs 5 a unit instead of 8; the Ray Gunner gains 10 (the main damage, about
   two for every three Grunts). A Projector gains 4 while the army has more
-  than four front units (Grunts, Thralls, Ray Gunners, Tripods, the Colossus)
+  than four front units (Grunts, controlled units, Ray Gunners, Tripods, the
+  Colossus; a controlled unit never counts as one of the seat's own roles)
   per Projector and at least three, and otherwise costs 20; a second Saucer
   costs 20 below six front units, a third always; a Brain gains 10 at war
   with four or more front units and fewer than one Brain per six, otherwise
@@ -1286,16 +1290,18 @@ As Martians:
   it never makes a routine Move into visible lethal reach unless that is no
   worse.
 - **Brain.** Mind Control (1186, above every kill) on the most valuable
-  convertible target (cost x 10 + HP + target value). A Brain that can
-  still Mind Control moves where a convertible target is in range (1183),
-  outside lethal reach. An attack that leaves a hostile unit convertible by
-  a ready own Brain (in range, or one step away) goes at 1182. Psychic
-  Command uses the Frenzy rule (only adjacent units that can still attack
-  count: 1235 for two, 1190 for one) and waits (1100) while the Brain can
-  Mind Control. A Brain makes no routine Move next to a visible hostile
-  land unit unless it already stands next to one.
-- **Thralls** are the front row: their chips go first (901), and they are
-  worth only their HP when the policy weighs a sacrifice.
+  convertible target (what it becomes; see the
+  [Mind Control play](#mind-control-play-pulp_wars-b5f3)). A Brain that
+  can still Mind Control moves where a convertible target is in range
+  (1183), outside lethal reach. An attack that leaves a hostile unit
+  convertible by a ready own Brain (in range, or one step away) goes at
+  1182, and the first of two hits that do so at 1177. Psychic Command uses
+  the Frenzy rule (only adjacent units that can still attack count: 1235
+  for two, 1190 for one) and waits (1100) while the Brain can Mind Control.
+  A Brain makes no routine Move next to a visible hostile land unit unless
+  it already stands next to one.
+- **Controlled units** are own units of their kind, played by their kind's
+  per-unit rules ([Mind Control play](#mind-control-play-pulp_wars-b5f3)).
 - **Mothership.** The Tractor Beam is scored by the pull's effect: a
   defender off a hostile center next to an own capturer that can still step
   in (1347); a besieger off an own center (1279); a hostile unit pulled
@@ -1323,10 +1329,13 @@ Against Martians (every seat in such a match):
   generic rule, so a hit that a full Shield absorbs and nothing follows up is
   not taken.
 - **Cooling.** A hit on a Cooling ray unit gains 6.
-- **Mind Control denial.** A unit at 6 HP or less (one slot, land form, not
-  on a settlement center) makes no routine Move into three tiles of a ready
-  visible hostile Brain, and steps out of the Brain's range (1150) when it
-  is inside it and a tile outside lethal reach exists.
+- **Mind Control denial.** A wounded unit at 6 HP or less that the engine
+  would let a Brain take (`mindControlTargetBlockV7`: one slot, land form,
+  not a construct, not on a settlement center or a Rift; since
+  `pulp_wars-b5f.3` also wounded, below its maximum HP) makes no routine
+  Move into three tiles of a ready visible hostile Brain, and steps out of
+  the Brain's range (1150, by its retained value, so the most valuable
+  first) when it is inside it and a tile outside lethal reach exists.
 - **Mothership pulls.** While a visible hostile Mothership is within four
   tiles of an own city center whose only adjacent own unit stands on it, a
   Move that puts a second unit next to the center goes at 1245.
@@ -1460,6 +1469,112 @@ and none drew retaliation. Details and the coarse matchups are in the
 
 **Parity.** The rule and the bias are Martian-only (`viewerMartian`), so
 matches without a Martian seat are unchanged.
+
+### Mind Control play (`pulp_wars-b5f.3`)
+
+The AI step of the [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md#8-normal-ai)
+(identity `7r33`, no identity change): a Mind-Controlled unit keeps its kind,
+so the policy values a target by what it becomes and plays a controlled unit
+by its own kind's rules. Everything is behind
+`MartianPolicyOptionsV7.mindControlPlay` (`setMartianPolicyOptionsV7`, tests
+and harnesses only); off, the policy decides as the engine step did.
+
+As Martians:
+
+- **Value.** `mindControlValueV7`: the kind cost of the target's role (2
+  without one) plus its kills, less 1 per ability it loses under control
+  (Raise Dead, Infect, Bite, Hatch, Assemble, Mind Control, tunnel riding),
+  at least 1. Mind Control (1186) takes the highest value, ties by the lower
+  unit ID (a 9-Coin Knight over a 2-Coin Fighter at equal HP; a Zombie is
+  worth 1).
+- **Mind Control first.** An own attack on a unit an offered Mind Control
+  targets waits at 1185 unless it is worth 1300 or more (clearing or
+  capturing a city): a threatening Knight is converted, not hit.
+- **Setup.** The single-hit setup (1182) and the Brain's approach (1183)
+  rank by 10 x value. New: the first of two own hits that together leave a
+  target worth at least 3 at 1 to 6 HP, for a ready own Brain in reach, goes
+  at 1177 (focus fire, then convert; the second hit is then the 1182 setup).
+  A Brain at its limit (one controlled unit) or on cooldown sets nothing up
+  and does not approach. Setup, approach, and denial read the engine's
+  per-target test (`mindControlTargetBlockV7`): a construct, a unit on a
+  Rift, an already controlled unit, and an unwounded unit (a 6-HP Goblin at
+  full HP) are not targets.
+- **Controlled units** are own units of their kind. Every per-unit rule
+  reads the unit's kind through `policyUnitFactionV7` (the
+  [kind-reader audit](../../tests/fixtures/v7-kind-reader-classes.ts) lists
+  what remains seat-level): the Kaboom setup, Gang Up, and bomb-safety
+  Moves (Goblin); the Ice Folk attack order, Sabretooth, Witch, Snow cover,
+  and the Ice Folk facts' unit lists; Tunnel, Bomb Run (bomb damage from the
+  controller's research through the Dwarf tree), the Gunner and Knockback
+  rules, the Dwarf Moves, and Repair (a controlled Engineer repairs, it
+  cannot Assemble); the Vampire's and Lich's rules and the Undead Moves;
+  the Dinosaur Moves; Frenzy, WAAAGH!, and Psychic Command by the
+  commander's kind; the Martian ranged step back only for Martian shooters.
+  Seat plans (research, production, economy) stay the viewer's. A
+  controlled unit's retained value is its kind cost x 4 scaled by its HP
+  plus its HP and twice its kills (was its HP only); a Brain carries it. The
+  Thrall's front-row chip (901) is gone. It is never disbanded (the engine
+  never offers it; a `DISBAND` scores -1). It never counts as one of the
+  seat's own roles in production, only as a front unit.
+
+Against Martians:
+
+- **Brain bonus.** A hostile Brain is worth the value of its controlled
+  unit (kind cost x 4 plus HP plus twice its kills), **doubled when that
+  unit was the viewer's own** (killing the Brain gives it back); was 8 plus
+  its HP.
+- **Denial** adds the wounded test (above) and steps the exposed units out
+  of reach by their retained value, the most valuable first.
+
+**Head-to-head** (a scratch harness that sets `mindControlPlay` per seat
+before each decision; Dry Land, 11 x 11 and 14 x 14, seeds 0-11, both seat
+orders, round cap 150, 48 games per pairing; every game decided, no errors,
+stalls, or caps). "new": both seats on; "old Martian": the Martian seat off;
+"old opponent": the opponent off. Martian decided wins:
+
+| Martian against | New         | Old Martian | Old opponent |
+| --------------- | ----------- | ----------- | ------------ |
+| Human           | 28 (58.3%)  | 28          | 28           |
+| Undead          | 32 (66.7%)  | 32          | 32           |
+| Goblin          | 25 (52.1%)  | 25          | 25           |
+| Dinosaur        | 29 (60.4%)  | 30          | 29           |
+| Ice Folk        | 21 (43.8%)  | 22          | 21           |
+| Dwarf           | 25 (52.1%)  | 24          | 25           |
+| All (288)       | 160 (55.6%) | 161 (55.9%) | 160 (55.6%)  |
+
+The paired games (same seed, size, and order) end with the same winner in
+285 of 288 against the old Martian policy (the new policy wins one game
+the old lost, the old two the new lost) and in all 288 against the old
+opponent policy; only 18 and 5 pairs differ in length. Mind Control happens late and rarely: a Martian
+Brain exists in 123 of 288 seat-games, and most matches are decided before
+one meets a wounded target. **Martian mirror** (the new policy on one seat,
+the old on the other, seeds 0-29, both orders, both sizes): 60 of 120,
+neutral. So the pass is neutral on wins (inside the contract's "not below
+the old minus 5 points") and moves what it was for:
+
+| Martian seats (288 seat-games)       | New               | Old Martian       |
+| ------------------------------------ | ----------------- | ----------------- |
+| Brain seat-games with a Mind Control | 44 of 123 (35.8%) | 35 of 123 (28.5%) |
+| Mind Controls                        | 64                | 50                |
+| Kills by controlled units            | 16                | 3                 |
+| Captures by controlled units         | 13                | 5                 |
+| Controlled units that died           | 43                | 37                |
+| Released (Brain lost)                | 3                 | 1                 |
+
+**Coarse balance** (the "new" column; Dry Land only): every Martian pairing
+is inside 65/35 except Martian over Undead at 66.7% (32 of 48), which is the
+same 32 of 48 with either Martian policy (the Undead pairing was 53% at
+`7r25` in the [Martian balance report](../validation/RULESET_7_MARTIAN_BALANCE.md);
+the move predates this pass, a watch item for the balance work). Mind
+Control in 35.8% of Brain seat-games is above the contract's fallback line
+(30%) and below the `7r25` 39% (limit 2, no wounded test).
+
+**Parity.** 24 matches without a Martian seat (Human-Undead,
+Goblin-Dinosaur, Ice Folk-Dwarf, Dwarf-Goblin, Undead-Ice Folk,
+Dinosaur-Human; 11 x 11 and 14 x 14, seeds 0-1) end in the same state hash
+and command count as under the engine-step policy (`c24e06d`), and so do 12
+Martian matches (Martian-Undead, Goblin-Martian, Martian-Ice Folk) with the
+switch off.
 
 ## Ice Folk play (`pulp_wars-7g3.4`)
 

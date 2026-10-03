@@ -66,6 +66,9 @@ describe("ruleset-7 revision-13 Normal AI: public boundary", () => {
       "../engine/v7/types",
       "../engine/v7/view",
       "../engine/v7/wail",
+      // The Mind Control revision: the policy's kind gate
+      // (`policyUnitFactionV7`).
+      "./v7-martian",
     ]);
     expect(source).not.toMatch(
       /GameStateV7|applyCommandV7|estimateCombatV7|wailTargetsV7\(|random|Date\.now|performance/,

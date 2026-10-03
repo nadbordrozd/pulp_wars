@@ -4,19 +4,32 @@ import {
   MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_LIMIT_V7,
+  MIND_CONTROLLED_LOST_ABILITIES_V7,
   effectiveRoleRuleV7,
   factionTreeV7,
+  isMindControlledV7,
+  playerFactionV7,
   technologyCapabilitiesV7,
   unitCapacitySlotsV7,
+  unitFactionV7,
   unitMovementModeV7,
   seatRoleMechanicsV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
+  type UnitKindRefV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CombatPreviewV7 } from "../engine/v7/events";
-import { tractorBeamDestinationV7 } from "../engine/v7/martian";
-import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
+import {
+  mindControlTargetBlockV7,
+  tractorBeamDestinationV7,
+} from "../engine/v7/martian";
+import type {
+  CoordV7,
+  FactionIdV7,
+  TechnologyIdV7,
+  UnitRoleIdV7,
+} from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
 /**
@@ -54,12 +67,23 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  */
 export interface MartianPolicyOptionsV7 {
   readonly rangedStepBack: boolean;
+  /**
+   * `pulp_wars-b5f.3` (the AI pass of docs/product/RULESET_7_MIND_CONTROL.md
+   * section 8): Mind Control by what the target becomes, the focus-fire
+   * setup, controlled units played by their kind's policies with their
+   * kind cost, and against Martians the value-aware Brain bonus and the
+   * wounded denial test. Off, the policy decides as the engine step of
+   * `pulp_wars-b5f.3` did (`c24e06d`, the head-to-head baseline): it reads a
+   * unit's owner's faction for its per-unit policies, so a match without a
+   * controlled unit decides the same either way.
+   */
+  readonly mindControlPlay: boolean;
 }
 
 export const DEFAULT_MARTIAN_POLICY_OPTIONS_V7: MartianPolicyOptionsV7 =
-  Object.freeze({ rangedStepBack: true });
+  Object.freeze({ rangedStepBack: true, mindControlPlay: true });
 export const LEGACY_MARTIAN_POLICY_OPTIONS_V7: MartianPolicyOptionsV7 =
-  Object.freeze({ rangedStepBack: false });
+  Object.freeze({ rangedStepBack: false, mindControlPlay: false });
 
 let martianPolicyOptions: MartianPolicyOptionsV7 =
   DEFAULT_MARTIAN_POLICY_OPTIONS_V7;
@@ -81,12 +105,55 @@ export function setMartianPolicyOptionsV7(
   return previous;
 }
 
+/**
+ * The Mind Control revision (section 8, "playing controlled units"): the
+ * faction whose per-unit policies play `unit`, its kind (`unitFactionV7`):
+ * a controlled Goblin Kabooms by the Goblin rules, a controlled Witch
+ * Cold Snaps by the Ice Folk rules. Seat plans (research, production,
+ * economy) keep the viewer's faction. With `mindControlPlay` off, the
+ * unit's owner's faction (the baseline). Both are the owner's faction for
+ * every unit that is not mind-controlled, so a match without a controlled
+ * unit decides the same.
+ */
+export function policyUnitFactionV7(
+  view: PlayerViewV7,
+  unit: UnitKindRefV7,
+): FactionIdV7 {
+  return martianPolicyOptions.mindControlPlay
+    ? unitFactionV7(view, unit)
+    : playerFactionV7(view, unit.ownerId);
+}
+
+/** Whether the new Mind Control play is on (`mindControlPlay`). */
+export function mindControlPlayV7(): boolean {
+  return martianPolicyOptions.mindControlPlay;
+}
+
 // --- Priorities -----------------------------------------------------------
 
 /** Mind Control: above every ordinary kill (a conversion beats a kill). */
 export const MIND_CONTROL_PRIORITY_V7 = 1186;
 /** A hit that leaves its target convertible by a ready own Brain. */
 export const MIND_CONTROL_SETUP_PRIORITY_V7 = 1182;
+/**
+ * `pulp_wars-b5f.3` AI pass: the first of two own hits that together leave
+ * a valuable target convertible by a ready own Brain (focus fire to wound,
+ * then convert): above the chips (900) and the Shield-break hits (1178,
+ * 1179 stay above it), below every kill.
+ */
+export const MIND_CONTROL_FOCUS_PRIORITY_V7 = 1177;
+/** The focus-fire setup is only for targets worth at least this much. */
+export const MIND_CONTROL_FOCUS_MINIMUM_VALUE_V7 = 3;
+/** Strategic weight of one point of Mind Control value. */
+export const MIND_CONTROL_VALUE_WEIGHT_V7 = 10;
+/**
+ * `pulp_wars-b5f.3`: an own attack on a unit an offered Mind Control
+ * targets waits below the Mind Control (1185), unless it is worth at least
+ * this (clearing or capturing a city).
+ */
+export const MIND_CONTROL_FIRST_CEILING_V7 = 1300;
+/** A Mind Control value point lost per ability the target loses under control. */
+export const MIND_CONTROL_LOST_ABILITY_VALUE_V7 = 1;
 /** A ray unit steps to range 2 of a hostile center defender (it fires at
  *  full power next turn): above routine Moves. */
 export const RAY_SIEGE_PRIORITY_V7 = 760;
@@ -225,6 +292,8 @@ export interface MartianFactsV7 {
   /** The Mind Control revision: each visible controlled unit's Brain. */
   readonly brainOfControlled: ReadonlyMap<UnitId, UnitId | null>;
   readonly controlledOfBrain: ReadonlyMap<UnitId, readonly UnitId[]>;
+  /** Each visible controlled unit's original owner (it returns there). */
+  readonly originalOwnerOfControlled: ReadonlyMap<UnitId, PlayerId>;
   readonly cooldownBrains: ReadonlySet<UnitId>;
   /** Own land-form Shield Projectors. */
   readonly ownProjectors: readonly PublicUnitV7[];
@@ -240,8 +309,10 @@ export function martianFactsV7(view: PlayerViewV7): MartianFactsV7 {
     (entry.firedThisTurn ? firedThisTurn : coolingNow).add(entry.unitId);
   const brainOfControlled = new Map<UnitId, UnitId | null>();
   const controlledOfBrain = new Map<UnitId, UnitId[]>();
+  const originalOwnerOfControlled = new Map<UnitId, PlayerId>();
   for (const entry of view.mindControlled) {
     brainOfControlled.set(entry.unitId, entry.brainUnitId);
+    originalOwnerOfControlled.set(entry.unitId, entry.originalOwnerId);
     if (entry.brainUnitId !== null) {
       const list = controlledOfBrain.get(entry.brainUnitId) ?? [];
       list.push(entry.unitId);
@@ -259,6 +330,7 @@ export function martianFactsV7(view: PlayerViewV7): MartianFactsV7 {
     firedThisTurn,
     brainOfControlled,
     controlledOfBrain,
+    originalOwnerOfControlled,
     cooldownBrains: new Set(
       view.mindControlCooldowns.map((entry) => entry.unitId),
     ),
@@ -364,7 +436,14 @@ export function readyHostileBrainsV7(
   );
 }
 
-/** Whether a unit on `at` with `hp` could be Mind Controlled by a Brain. */
+/**
+ * Whether a unit on `at` with `hp` could be Mind Controlled by a Brain
+ * within `MIND_CONTROL_THREAT_RADIUS_V7`. With `mindControlPlay` the
+ * engine's own per-target test (`mindControlTargetBlockV7`) decides
+ * immunity and health: a construct, a unit on a Rift, an already
+ * controlled unit, and an unwounded unit (`hp` equal to its maximum) are
+ * not exposed.
+ */
 export function mindControlExposedV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
@@ -372,8 +451,19 @@ export function mindControlExposedV7(
   hp: number,
   brains: readonly PublicUnitV7[],
 ): boolean {
+  if (brains.length === 0) return false;
+  if (martianPolicyOptions.mindControlPlay) {
+    if (hp <= 0) return false;
+    const tile = view.board.tiles[at.y * view.board.width + at.x];
+    if (tile?.explored !== true) return false;
+    // The Brain on the target's own tile: only immunity and health count.
+    if (mindControlTargetBlockV7(view, { at }, { ...unit, at, hp }, tile))
+      return false;
+    return brains.some(
+      (brain) => chebyshev(brain.at, at) <= MIND_CONTROL_THREAT_RADIUS_V7,
+    );
+  }
   if (
-    brains.length === 0 ||
     hp > MIND_CONTROL_HP_V7 ||
     unit.form !== "LAND" ||
     unit.role === "JUGGERNAUT" ||
@@ -392,10 +482,10 @@ export function mindControlExposedV7(
 /**
  * Extra target value of a visible hostile Martian unit (section 12, "kill
  * the enablers"): a Projector by the units it covers, a Saucer while its
- * owner holds a city, a Brain by its controlled units (released with it;
- * the value-aware bonus of the Mind Control revision section 8 is a later
- * AI pass), and a
- * ray unit ready to fire at full power. 0 for every other unit.
+ * owner holds a city, a Brain by its controlled units (released with it:
+ * each one's value, doubled when it was the viewer's own, Mind Control
+ * revision section 8), and a ray unit ready to fire at full power. 0 for
+ * every other unit.
  */
 export function martianTargetBonusV7(
   view: PlayerViewV7,
@@ -423,7 +513,17 @@ export function martianTargetBonusV7(
   if (abilities.includes("MIND_CONTROL"))
     for (const controlledId of facts.controlledOfBrain.get(unit.id) ?? []) {
       const controlled = view.units.find((other) => other.id === controlledId);
-      bonus += CONTROLLED_TARGET_BONUS_V7 + (controlled?.hp ?? 0);
+      if (!martianPolicyOptions.mindControlPlay || controlled === undefined) {
+        bonus += CONTROLLED_TARGET_BONUS_V7 + (controlled?.hp ?? 0);
+        continue;
+      }
+      // `pulp_wars-b5f.3`: the controlled unit's value, doubled when it was
+      // the viewer's own (killing the Brain gives it back).
+      const value = controlledUnitValueV7(view, controlled);
+      bonus +=
+        facts.originalOwnerOfControlled.get(controlledId) === view.viewer.id
+          ? 2 * value
+          : value;
     }
   if (abilities.includes("HEAT_RAY") && !facts.coolingNow.has(unit.id))
     bonus += READY_RAY_TARGET_BONUS_V7;
@@ -431,10 +531,9 @@ export function martianTargetBonusV7(
 }
 
 /**
- * Retained value of an own Martian unit: a controlled unit cost nothing
- * and is the front row (its HP only; the kind-cost value of the Mind
- * Control revision section 8 is a later AI pass); a Brain carries its
- * controlled units.
+ * Retained value of an own Martian unit: a controlled unit is worth its
+ * kind cost scaled by its HP (`pulp_wars-b5f.3`; the baseline: its HP
+ * only, as the Thrall was); a Brain carries its controlled units.
  */
 export function martianRetainedValueV7(
   view: PlayerViewV7,
@@ -442,16 +541,74 @@ export function martianRetainedValueV7(
   unit: PublicUnitV7,
   base: number,
 ): number {
-  if (facts.brainOfControlled.has(unit.id)) return unit.hp + unit.kills * 2;
+  const play = martianPolicyOptions.mindControlPlay;
+  if (facts.brainOfControlled.has(unit.id))
+    return play
+      ? controlledRetainedValueV7(view, unit)
+      : unit.hp + unit.kills * 2;
   if (hasAbilityV7(view, unit, "MIND_CONTROL")) {
     let value = base;
     for (const controlledId of facts.controlledOfBrain.get(unit.id) ?? []) {
       const controlled = view.units.find((other) => other.id === controlledId);
-      value += controlled?.hp ?? 0;
+      value +=
+        controlled === undefined
+          ? 0
+          : play
+            ? controlledRetainedValueV7(view, controlled)
+            : controlled.hp;
     }
     return value;
   }
   return base;
+}
+
+/**
+ * The retained value of a controlled unit (section 8): its kind cost (2
+ * without one) x 4 scaled by HP, plus its HP and twice its kills.
+ */
+export function controlledRetainedValueV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): number {
+  const cost = unitRoleRuleV7(view, unit).cost ?? 2;
+  return (
+    Math.floor((cost * 4 * unit.hp) / Math.max(1, unit.maxHp)) +
+    unit.hp +
+    unit.kills * 2
+  );
+}
+
+/**
+ * Against Martians: the value of a hostile Brain's controlled unit in the
+ * policy's units (its kind cost x 4 plus its HP and twice its kills).
+ */
+export function controlledUnitValueV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): number {
+  return (unitRoleRuleV7(view, unit).cost ?? 2) * 4 + unit.hp + unit.kills * 2;
+}
+
+/**
+ * The Mind Control value of a target (section 8): what it becomes, the
+ * kind cost of its role (2 if it has none) plus its kills, less 1 for each
+ * ability it would lose under control (Raise Dead, Infect, Bite, Hatch,
+ * Assemble, Mind Control, tunnel riding), at least 1.
+ */
+export function mindControlValueV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): number {
+  const rule = unitRoleRuleV7(view, unit);
+  const lost = isMindControlledV7(view, unit.id)
+    ? 0
+    : rule.abilities.filter((ability) =>
+        MIND_CONTROLLED_LOST_ABILITIES_V7.includes(ability),
+      ).length;
+  return Math.max(
+    1,
+    (rule.cost ?? 2) + unit.kills - MIND_CONTROL_LOST_ABILITY_VALUE_V7 * lost,
+  );
 }
 
 // --- Production -----------------------------------------------------------
@@ -467,6 +624,15 @@ export function martianArmyCountsV7(view: PlayerViewV7): MartianArmyCountsV7 {
   let front = 0;
   for (const unit of view.units) {
     if (unit.ownerId !== view.viewer.id) continue;
+    // `pulp_wars-b5f.3`: a controlled unit is the front row, never one of
+    // the seat's own roles (a controlled Captain is not a Brain).
+    if (
+      martianPolicyOptions.mindControlPlay &&
+      isMindControlledV7(view, unit.id)
+    ) {
+      front += 1;
+      continue;
+    }
     byRole.set(unit.role, (byRole.get(unit.role) ?? 0) + 1);
     if (
       unit.role === "FIGHTER" ||
@@ -801,8 +967,12 @@ function beamDownPassengerIsGarrisonV7(
 }
 
 /**
- * `MIND_CONTROL` (section 12, "use the Brain"): whenever offered, on the
- * target with the highest value (unit cost, then HP).
+ * `MIND_CONTROL` (section 12, "use the Brain"): whenever offered (above
+ * every kill, so it keeps priority over an ordinary kill of the same
+ * target), on the target worth most as what it becomes
+ * (`mindControlValueV7`: kind cost plus kills, less what it loses under
+ * control), ties by the lower unit ID. The baseline: unit cost, then HP
+ * and target value.
  */
 export function mindControlScoreV7(
   tools: MartianPolicyToolsV7,
@@ -810,6 +980,13 @@ export function mindControlScoreV7(
 ): MartianScoreV7 {
   const target = tools.unit(command.targetUnitId);
   if (target === undefined) return NOT_A_CANDIDATE_V7;
+  if (martianPolicyOptions.mindControlPlay)
+    return {
+      priority: MIND_CONTROL_PRIORITY_V7,
+      strategic:
+        MIND_CONTROL_VALUE_WEIGHT_V7 * mindControlValueV7(tools.view, target),
+      immediate: -target.id,
+    };
   const cost = unitRoleRuleV7(tools.view, target).cost ?? 0;
   return {
     priority: MIND_CONTROL_PRIORITY_V7,

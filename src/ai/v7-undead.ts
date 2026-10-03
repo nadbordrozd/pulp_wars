@@ -16,6 +16,7 @@ import {
   publicWailLeavesGraveV7,
   publicWailTargetsV7,
 } from "../engine/v7/wail";
+import { policyUnitFactionV7 } from "./v7-martian";
 
 /**
  * Revision 13 Normal AI Undead helpers (`pulp_wars-vkq.9`).
@@ -102,12 +103,14 @@ export function isGhoulV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
 
 /**
  * The Lich: an Undead land unit with the splash mechanic. Battleships (of
- * either faction) keep their revision-12 threat treatment.
+ * either faction) keep their revision-12 threat treatment. The Mind
+ * Control revision (section 8): Undead by its kind, so a controlled Lich
+ * is still a Lich.
  */
 export function isLichV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
   return (
     unit.form === "LAND" &&
-    ownerIsUndeadV7(view, unit.ownerId) &&
+    policyUnitFactionV7(view, unit) === "UNDEAD" &&
     unitRoleMechanicsV7(view, unit).splash
   );
 }
@@ -119,7 +122,7 @@ export function isLichV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
 export function isLichRoleV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
   return (
     unit.form !== "NAVAL" &&
-    ownerIsUndeadV7(view, unit.ownerId) &&
+    policyUnitFactionV7(view, unit) === "UNDEAD" &&
     unitRoleMechanicsV7(view, unit).splash
   );
 }
