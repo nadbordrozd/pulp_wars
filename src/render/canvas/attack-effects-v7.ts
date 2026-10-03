@@ -1,0 +1,1183 @@
+import type { CoordV7, FactionIdV7, UnitRoleIdV7 } from "../../engine/index";
+import { DWARF_PALETTE_V7 } from "../../assets/chibi-direction-dwarf-presentation";
+import { ICE_FOLK_PALETTE_V7 } from "../../assets/chibi-direction-ice-folk-presentation";
+import { GOBLIN_BLAST_PALETTE_V7 } from "./goblin-explosion-v7";
+import { projectGrid, worldToScreen, type CameraState } from "./geometry";
+
+/**
+ * Attack cues on the board's effects overlay (bead pulp_wars-b5f.5,
+ * docs/art/ATTACK_EFFECTS.md): a few ranged attacks whose unit clearly
+ * shoots something of its own get a short code-drawn shot in the style of
+ * the Martian heat ray and the Goblin bang, in place of the generic arrow
+ * or grey catapult stone. Every other attack keeps its lunge or projectile.
+ *
+ * Each cue has a flight (the shot leaves the shooter and reaches the
+ * target), a hit at `ATTACK_EFFECT_HIT_V7` (the board then shows the
+ * result) and a short impact burst. `progress` runs 0 to 1 over
+ * `ATTACK_EFFECT_DURATIONS_V7`; reduced motion holds one frame
+ * (`attackReducedMotionProgressV7`) where the shot and its trail read. The
+ * cues are code only, so they draw the same in the live look, the Classic
+ * look and LEGACY; the Lich's bolt takes the Undead violet of the live look
+ * and the classic pale blue elsewhere, as the other Undead cues do.
+ */
+export type AttackEffectIdV7 =
+  /** The Lich (Undead CATAPULT): a necromantic orb with a wisp tail. */
+  | "NECRO_BOLT"
+  /** The Rocket Cart (Goblin CATAPULT): a paper firework and its burst. */
+  | "FIREWORK_ROCKET"
+  /** The Clockwork Gunner (Dwarf MARKSMAN): a three-round gatling burst. */
+  | "GATLING_BURST"
+  /** The Steam Cannon (Dwarf CATAPULT): muzzle flash, steam, iron ball. */
+  | "CANNON_BLAST"
+  /** The Boulder Yeti and a Yeti's Rockfall: an ice-crusted boulder. */
+  | "ICE_BOULDER"
+  /** The Snow Hunter (Ice Folk MARKSMAN): an ice-tipped harpoon on a line. */
+  | "HARPOON";
+
+export const ATTACK_EFFECT_IDS_V7: readonly AttackEffectIdV7[] = [
+  "NECRO_BOLT",
+  "FIREWORK_ROCKET",
+  "GATLING_BURST",
+  "CANNON_BLAST",
+  "ICE_BOULDER",
+  "HARPOON",
+];
+
+export interface AttackFeedbackV7 {
+  readonly effect: AttackEffectIdV7;
+  /** The shooter's cell. */
+  readonly from: CoordV7;
+  /** The target's cell. */
+  readonly to: CoordV7;
+  readonly progress: number;
+  /** NECRO_BOLT: the live look's violet (else the classic pale blue). */
+  readonly undeadViolet?: boolean;
+  /**
+   * Drawn size per world unit, over the camera zoom: the CHIBI board's
+   * ATTACK_EFFECT_SCALE_V7 when omitted; LEGACY, whose stand-in units are
+   * drawn at a larger zoom, passes 1.
+   */
+  readonly scale?: number;
+}
+
+/** The duration of each cue in ms (the old shot plus impact was 380). */
+export const ATTACK_EFFECT_DURATIONS_V7: Readonly<
+  Record<AttackEffectIdV7, number>
+> = {
+  NECRO_BOLT: 440,
+  FIREWORK_ROCKET: 480,
+  GATLING_BURST: 380,
+  CANNON_BLAST: 460,
+  ICE_BOULDER: 460,
+  HARPOON: 380,
+};
+
+/**
+ * The share of each cue at which the shot lands: the board shows the
+ * attack's result from here, under the impact burst.
+ */
+export const ATTACK_EFFECT_HIT_V7: Readonly<Record<AttackEffectIdV7, number>> =
+  {
+    NECRO_BOLT: 0.55,
+    FIREWORK_ROCKET: 0.58,
+    GATLING_BURST: 0.54,
+    CANNON_BLAST: 0.56,
+    ICE_BOULDER: 0.58,
+    HARPOON: 0.5,
+  };
+
+/** Flight windows (share of the cue): the shot leaves, then lands. */
+const FLIGHT: Readonly<
+  Record<AttackEffectIdV7, { readonly from: number; readonly to: number }>
+> = {
+  NECRO_BOLT: { from: 0.05, to: ATTACK_EFFECT_HIT_V7.NECRO_BOLT },
+  FIREWORK_ROCKET: { from: 0.04, to: ATTACK_EFFECT_HIT_V7.FIREWORK_ROCKET },
+  // Each of the three rounds; the last lands at the hit.
+  GATLING_BURST: { from: 0, to: 0.3 },
+  CANNON_BLAST: { from: 0.06, to: ATTACK_EFFECT_HIT_V7.CANNON_BLAST },
+  ICE_BOULDER: { from: 0, to: ATTACK_EFFECT_HIT_V7.ICE_BOULDER },
+  HARPOON: { from: 0, to: ATTACK_EFFECT_HIT_V7.HARPOON },
+};
+
+/** The gatling's rounds leave this far apart (share of the cue). */
+export const GATLING_ROUND_GAP_V7 = 0.12;
+
+/** Arc heights in world units (the old catapult stone flew 72 high). */
+const ARC: Readonly<Record<AttackEffectIdV7, number>> = {
+  NECRO_BOLT: 34,
+  FIREWORK_ROCKET: 58,
+  GATLING_BURST: 0,
+  CANNON_BLAST: 52,
+  ICE_BOULDER: 72,
+  HARPOON: 14,
+};
+
+/**
+ * The frame reduced motion holds: the shot close to its target with its
+ * whole trail behind it (the gatling with one round landed).
+ */
+export function attackReducedMotionProgressV7(
+  effect: AttackEffectIdV7,
+): number {
+  return effect === "GATLING_BURST" ? 0.45 : effect === "HARPOON" ? 0.42 : 0.48;
+}
+
+/**
+ * Which attacks get a cue: the shooter's faction and role, and whether the
+ * attack is a Yeti's Rockfall. The Martian rays have their own cue
+ * (martian-effects-v7); every other attack keeps its lunge, arrow or stone
+ * (docs/art/ATTACK_EFFECTS.md says why).
+ */
+export function attackEffectForV7(
+  faction: FactionIdV7 | undefined,
+  role: UnitRoleIdV7,
+  options: { readonly rockfall?: boolean } = {},
+): AttackEffectIdV7 | null {
+  if (faction === "UNDEAD" && role === "CATAPULT") return "NECRO_BOLT";
+  if (faction === "GOBLIN" && role === "CATAPULT") return "FIREWORK_ROCKET";
+  if (faction === "DWARF" && role === "MARKSMAN") return "GATLING_BURST";
+  if (faction === "DWARF" && role === "CATAPULT") return "CANNON_BLAST";
+  if (faction === "ICE_FOLK" && role === "CATAPULT") return "ICE_BOULDER";
+  if (faction === "ICE_FOLK" && options.rockfall === true) return "ICE_BOULDER";
+  if (faction === "ICE_FOLK" && role === "MARKSMAN") return "HARPOON";
+  return null;
+}
+
+interface Point {
+  readonly x: number;
+  readonly y: number;
+}
+
+/** One shot in flight: where it is, its heading and the trail behind it. */
+export interface AttackShotPlanV7 {
+  readonly at: Point;
+  /** Heading in radians (screen space), along the flight's tangent. */
+  readonly angle: number;
+  /** Earlier points of the flight, newest first (for trails). */
+  readonly trail: readonly Point[];
+  /** 0 to 1 along the flight. */
+  readonly flight: number;
+}
+
+/** One impact burst: where, and 0 to 1 through its fade. */
+export interface AttackImpactPlanV7 {
+  readonly at: Point;
+  readonly local: number;
+}
+
+/** What one frame of a cue draws, in screen pixels. */
+export interface AttackEffectPlanV7 {
+  readonly effect: AttackEffectIdV7;
+  readonly zoom: number;
+  /** Drawn size per world unit, over the zoom (see AttackFeedbackV7). */
+  readonly scale: number;
+  /** The launch point (the shooter's weapon). */
+  readonly source: Point;
+  /** The aim point on the target. */
+  readonly target: Point;
+  /** Unit vector from the source to the target. */
+  readonly direction: Point;
+  readonly shots: readonly AttackShotPlanV7[];
+  readonly impacts: readonly AttackImpactPlanV7[];
+  /** 0 to 1 through the muzzle or launch flare, or null outside it. */
+  readonly muzzle: number | null;
+  /** HARPOON: 0 to 1 opacity of the line back to the hunter. */
+  readonly line: number;
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
+}
+
+function phase(progress: number, from: number, to: number): number | null {
+  return progress < from || progress > to
+    ? null
+    : (progress - from) / (to - from);
+}
+
+/** Lifts the aim point to the target's chest (world units). */
+const BODY_LIFT = 18;
+
+/**
+ * Drawn sizes are in world units times this: the board's chibi zoom step 1
+ * is about 0.63 CSS px per world unit, at which a shot drawn at world size
+ * is too small to read beside a 70 px unit.
+ */
+export const ATTACK_EFFECT_SCALE_V7 = 1.7;
+
+/**
+ * The geometry of one frame: the shots in flight with their trails, the
+ * impact bursts and the muzzle flare. Pure, so tests can check it.
+ */
+export function attackEffectPlanV7(
+  feedback: AttackFeedbackV7,
+  camera: CameraState,
+): AttackEffectPlanV7 {
+  const zoom = camera.zoom;
+  const progress = clamp01(feedback.progress);
+  const effect = feedback.effect;
+  const cellCentre = (at: CoordV7): Point =>
+    worldToScreen(projectGrid(at), camera);
+  const fromCentre = cellCentre(feedback.from);
+  const toCentre = cellCentre(feedback.to);
+  const dx = toCentre.x - fromCentre.x;
+  const dy = toCentre.y - fromCentre.y;
+  const length = Math.hypot(dx, dy) || 1;
+  const direction = { x: dx / length, y: dy / length };
+  // The weapon: the Lich's raised orb, the cannon's and the gun's muzzle,
+  // the rocket's cone, the boulder over the Yeti's head, the hunter's hand.
+  const reach =
+    effect === "CANNON_BLAST"
+      ? 50
+      : effect === "GATLING_BURST"
+        ? 24
+        : effect === "NECRO_BOLT"
+          ? 4
+          : 14;
+  const lift =
+    effect === "ICE_BOULDER"
+      ? 62
+      : effect === "NECRO_BOLT"
+        ? 62
+        : effect === "FIREWORK_ROCKET"
+          ? 30
+          : effect === "CANNON_BLAST"
+            ? -12
+            : 22;
+  const source = {
+    x: fromCentre.x + direction.x * reach * zoom,
+    y: fromCentre.y + direction.y * reach * zoom - lift * zoom,
+  };
+  const target = { x: toCentre.x, y: toCentre.y - BODY_LIFT * zoom };
+  const arc = ARC[effect] * zoom;
+  const point = (t: number, start: Point, end: Point): Point => {
+    // A fireworks rocket wobbles across its path.
+    const wobble =
+      effect === "FIREWORK_ROCKET"
+        ? Math.sin(t * Math.PI * 3) * (1 - t) * 6 * zoom
+        : 0;
+    return {
+      x: start.x + (end.x - start.x) * t - direction.y * wobble,
+      y:
+        start.y +
+        (end.y - start.y) * t -
+        Math.sin(Math.PI * t) * arc +
+        direction.x * wobble,
+    };
+  };
+  // A rocket picks up speed; everything else flies at an even pace.
+  const eased = (t: number): number =>
+    effect === "FIREWORK_ROCKET" ? 0.4 * t + 0.6 * t * t : t;
+  const shot = (
+    flight: number,
+    start: Point,
+    end: Point,
+    trailStep: number,
+    trailCount: number,
+  ): AttackShotPlanV7 => {
+    const t = eased(flight);
+    const at = point(t, start, end);
+    const ahead = point(Math.min(1, t + 0.02), start, end);
+    const behind = point(Math.max(0, t - 0.02), start, end);
+    const trail: Point[] = [];
+    for (let index = 1; index <= trailCount; index += 1) {
+      const earlier = flight - index * trailStep;
+      if (earlier < 0) break;
+      trail.push(point(eased(earlier), start, end));
+    }
+    return {
+      at,
+      angle: Math.atan2(ahead.y - behind.y, ahead.x - behind.x),
+      trail,
+      flight,
+    };
+  };
+  const shots: AttackShotPlanV7[] = [];
+  const impacts: AttackImpactPlanV7[] = [];
+  const window = FLIGHT[effect];
+  if (effect === "GATLING_BURST") {
+    // Three rounds, a little apart on the target so each hit shows.
+    for (let round = 0; round < 3; round += 1) {
+      const from = window.from + round * GATLING_ROUND_GAP_V7;
+      const to = window.to + round * GATLING_ROUND_GAP_V7;
+      const spread = (round - 1) * 7 * zoom;
+      const end = {
+        x: target.x - direction.y * spread,
+        y: target.y + direction.x * spread + (round === 1 ? -5 : 3) * zoom,
+      };
+      const flight = phase(progress, from, to);
+      if (flight !== null) shots.push(shot(flight, source, end, 0.12, 1));
+      const impact = phase(progress, to, to + 0.26);
+      if (impact !== null && progress > to)
+        impacts.push({ at: end, local: impact });
+    }
+  } else {
+    const flight = phase(progress, window.from, window.to);
+    if (flight !== null)
+      shots.push(
+        shot(
+          flight,
+          source,
+          target,
+          effect === "FIREWORK_ROCKET" ? 0.07 : 0.06,
+          effect === "HARPOON" ? 0 : effect === "FIREWORK_ROCKET" ? 8 : 6,
+        ),
+      );
+    const impact = phase(progress, window.to, 1);
+    if (impact !== null && progress > window.to)
+      impacts.push({ at: target, local: impact });
+  }
+  const muzzle =
+    effect === "GATLING_BURST"
+      ? phase(progress, 0, 0.46)
+      : effect === "CANNON_BLAST"
+        ? phase(progress, 0, 0.5)
+        : effect === "NECRO_BOLT"
+          ? phase(progress, 0, 0.3)
+          : effect === "FIREWORK_ROCKET"
+            ? phase(progress, 0, 0.28)
+            : null;
+  const line =
+    effect !== "HARPOON"
+      ? 0
+      : progress <= window.to
+        ? 1
+        : clamp01(1 - (progress - window.to) / 0.3);
+  return {
+    effect,
+    zoom,
+    scale: feedback.scale ?? ATTACK_EFFECT_SCALE_V7,
+    source,
+    target,
+    direction,
+    shots,
+    impacts,
+    muzzle,
+    line,
+  };
+}
+
+/** The Undead violet of the live look (docs/art/factions/UNDEAD.md). */
+export const NECRO_BOLT_VIOLET_V7 = {
+  dark: "#46247c",
+  mid: "#7b36c9",
+  lit: "#b06bf2",
+  pale: "#dcc4ff",
+  outline: "#1d1233",
+} as const;
+
+/** The classic Undead pale blue (the Classic look and LEGACY). */
+export const NECRO_BOLT_CLASSIC_V7 = {
+  dark: "#3a4558",
+  mid: "#7f8ca0",
+  lit: "#a9bdd8",
+  pale: "#d2e2f6",
+  outline: "#18202c",
+} as const;
+
+/**
+ * The fireworks' star colours: the Rocket Cart's rocket paper
+ * (docs/art/factions/GOBLIN.md), no orange, plus the blast's cream.
+ */
+export const FIREWORK_COLOURS_V7 = [
+  "#ff5a4f",
+  "#ffd84a",
+  "#5ab8ff",
+  "#86e070",
+  "#fee388",
+] as const;
+
+const ROCKET_RED = "#d23a2c";
+const ROCKET_CREAM = "#fee388";
+const GOBLIN = GOBLIN_BLAST_PALETTE_V7;
+const DWARF = DWARF_PALETTE_V7;
+const ICE = ICE_FOLK_PALETTE_V7;
+/** The Snow Hunter's ivory harpoon shaft. */
+const IVORY = "#efe6c8";
+/** The muzzle flash's hot core and the gatling tracer. */
+const MUZZLE_HOT = "#fff3b0";
+
+/** Draws one frame of an attack cue on the effects overlay. */
+export function drawAttackFeedbackV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  feedback: AttackFeedbackV7,
+): void {
+  const plan = attackEffectPlanV7(feedback, camera);
+  context.save();
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  switch (plan.effect) {
+    case "NECRO_BOLT":
+      drawNecroBolt(
+        context,
+        plan,
+        feedback.undeadViolet === true
+          ? NECRO_BOLT_VIOLET_V7
+          : NECRO_BOLT_CLASSIC_V7,
+      );
+      break;
+    case "FIREWORK_ROCKET":
+      drawFireworkRocket(context, plan);
+      break;
+    case "GATLING_BURST":
+      drawGatlingBurst(context, plan, feedback.progress);
+      break;
+    case "CANNON_BLAST":
+      drawCannonBlast(context, plan);
+      break;
+    case "ICE_BOULDER":
+      drawIceBoulder(context, plan);
+      break;
+    case "HARPOON":
+      drawHarpoon(context, plan);
+      break;
+  }
+  context.restore();
+}
+
+type Palette = typeof NECRO_BOLT_VIOLET_V7 | typeof NECRO_BOLT_CLASSIC_V7;
+
+function circle(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+): void {
+  context.beginPath();
+  context.arc(x, y, Math.max(0.5, radius), 0, Math.PI * 2);
+}
+
+function starPath(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  outer: number,
+  inner: number,
+  points: number,
+  twist = 0,
+): void {
+  context.beginPath();
+  for (let index = 0; index < points * 2; index += 1) {
+    const radius = index % 2 === 0 ? outer : inner;
+    const angle = (index / (points * 2)) * Math.PI * 2 - Math.PI / 2 + twist;
+    const px = x + Math.cos(angle) * radius;
+    const py = y + Math.sin(angle) * radius;
+    if (index === 0) context.moveTo(px, py);
+    else context.lineTo(px, py);
+  }
+  context.closePath();
+}
+
+/** A round puff: three overlapping lobes with a light top (Goblin style). */
+function puff(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  fill: string,
+  light: string,
+  outline: string,
+  zoom: number,
+): void {
+  context.beginPath();
+  for (const [dx, dy, scale] of [
+    [-0.55, 0.15, 0.7],
+    [0.55, 0.2, 0.72],
+    [0, -0.1, 1],
+  ] as const) {
+    context.moveTo(x + dx * radius + scale * radius, y + dy * radius);
+    context.arc(
+      x + dx * radius,
+      y + dy * radius,
+      scale * radius,
+      0,
+      Math.PI * 2,
+    );
+  }
+  context.strokeStyle = outline;
+  context.lineWidth = Math.max(1, 2.2 * zoom);
+  context.stroke();
+  context.fillStyle = fill;
+  context.fill();
+  circle(context, x - radius * 0.2, y - radius * 0.35, radius * 0.42);
+  context.fillStyle = light;
+  context.fill();
+}
+
+function easeOut(value: number): number {
+  return 1 - (1 - value) * (1 - value);
+}
+
+function drawNecroBolt(
+  context: CanvasRenderingContext2D,
+  plan: AttackEffectPlanV7,
+  palette: Palette,
+): void {
+  const zoom = plan.zoom * plan.scale;
+  // The Lich's orb flares as it casts.
+  if (plan.muzzle !== null) {
+    const local = plan.muzzle;
+    context.globalAlpha = 1 - local;
+    context.strokeStyle = palette.lit;
+    context.lineWidth = Math.max(1, 3 * zoom * (1 - local) + 1);
+    circle(context, plan.source.x, plan.source.y, (7 + 16 * local) * zoom);
+    context.stroke();
+    context.globalAlpha = 1;
+  }
+  for (const shot of plan.shots) {
+    // A wisp tail: a tapering ribbon of the faction's light behind the orb.
+    const tail = [shot.at, ...shot.trail];
+    for (const [colour, width, alpha] of [
+      [palette.dark, 13, 0.55],
+      [palette.lit, 8, 0.9],
+      [palette.pale, 3, 0.9],
+    ] as const)
+      for (let index = 1; index < tail.length; index += 1) {
+        const head = tail[index - 1];
+        const end = tail[index];
+        if (head === undefined || end === undefined) continue;
+        const fade = 1 - (index - 1) / tail.length;
+        context.globalAlpha = alpha * fade;
+        context.strokeStyle = colour;
+        context.lineWidth = Math.max(1, width * fade * zoom);
+        context.beginPath();
+        context.moveTo(head.x, head.y);
+        context.lineTo(end.x, end.y);
+        context.stroke();
+      }
+    context.globalAlpha = 1;
+    const { x, y } = shot.at;
+    // A halo, the outlined orb, a pale core.
+    context.globalAlpha = 0.45;
+    context.fillStyle = palette.lit;
+    circle(context, x, y, 15 * zoom);
+    context.fill();
+    context.globalAlpha = 1;
+    circle(context, x, y, 9 * zoom);
+    context.fillStyle = palette.mid;
+    context.fill();
+    context.strokeStyle = palette.outline;
+    context.lineWidth = Math.max(1, 2.2 * zoom);
+    context.stroke();
+    circle(context, x - 1.5 * zoom, y - 1.5 * zoom, 5.5 * zoom);
+    context.fillStyle = palette.lit;
+    context.fill();
+    circle(context, x - 2.5 * zoom, y - 2.5 * zoom, 2.6 * zoom);
+    context.fillStyle = palette.pale;
+    context.fill();
+    // Three motes circling the orb.
+    context.fillStyle = palette.pale;
+    for (let mote = 0; mote < 3; mote += 1) {
+      const angle = shot.flight * Math.PI * 6 + (mote * Math.PI * 2) / 3;
+      circle(
+        context,
+        x + Math.cos(angle) * 13 * zoom,
+        y + Math.sin(angle) * 13 * zoom,
+        1.8 * zoom,
+      );
+      context.fill();
+    }
+  }
+  for (const impact of plan.impacts) {
+    const local = impact.local;
+    const { x, y } = impact.at;
+    const alpha = local < 0.4 ? 1 : 1 - (local - 0.4) / 0.6;
+    // A pale flash, then a ring of the faction's light spreading out with
+    // six short wisps (the Lich's splash cue follows on its own cells).
+    if (local < 0.4) {
+      context.globalAlpha = 1 - local / 0.4;
+      context.fillStyle = palette.pale;
+      circle(context, x, y, (14 - 8 * local) * zoom);
+      context.fill();
+    }
+    context.globalAlpha = alpha;
+    const radius = (10 + 26 * easeOut(local)) * zoom;
+    context.strokeStyle = palette.dark;
+    context.lineWidth = Math.max(1, 6 * zoom * (1 - local) + 1);
+    circle(context, x, y, radius);
+    context.stroke();
+    context.strokeStyle = palette.lit;
+    context.lineWidth = Math.max(1, 3 * zoom * (1 - local) + 0.5);
+    context.stroke();
+    context.strokeStyle = palette.pale;
+    context.lineWidth = Math.max(1, 2.4 * zoom);
+    for (let wisp = 0; wisp < 6; wisp += 1) {
+      const angle = (wisp / 6) * Math.PI * 2 + 0.3;
+      const inner = radius * 0.7;
+      const outer = radius * 1.15;
+      context.beginPath();
+      context.moveTo(x + Math.cos(angle) * inner, y + Math.sin(angle) * inner);
+      context.lineTo(
+        x + Math.cos(angle + 0.25) * outer,
+        y + Math.sin(angle + 0.25) * outer - 4 * zoom * local,
+      );
+      context.stroke();
+    }
+    context.globalAlpha = 1;
+  }
+}
+
+function drawFireworkRocket(
+  context: CanvasRenderingContext2D,
+  plan: AttackEffectPlanV7,
+): void {
+  const zoom = plan.zoom * plan.scale;
+  // The fuse catches: a spark and a soot puff at the cart.
+  if (plan.muzzle !== null) {
+    const local = plan.muzzle;
+    context.globalAlpha = 1 - local;
+    puff(
+      context,
+      plan.source.x - plan.direction.x * 10 * zoom,
+      plan.source.y + 6 * zoom - local * 14 * zoom,
+      (8 + 8 * local) * zoom,
+      GOBLIN.lightGrey,
+      GOBLIN.cream,
+      GOBLIN.soot,
+      zoom,
+    );
+    context.globalAlpha = 1;
+  }
+  for (const shot of plan.shots) {
+    // Smoke left behind, oldest largest and palest; sparks between.
+    shot.trail.forEach((point, index) => {
+      const age = (index + 1) / (shot.trail.length + 1);
+      context.globalAlpha = 0.75 * (1 - age);
+      context.fillStyle = index % 2 === 0 ? GOBLIN.lightGrey : GOBLIN.cream;
+      circle(context, point.x, point.y - age * 6 * zoom, (3 + 6 * age) * zoom);
+      context.fill();
+      if (index < 3) {
+        context.globalAlpha = 1 - age;
+        context.fillStyle =
+          FIREWORK_COLOURS_V7[(index * 2) % 5] ?? ROCKET_CREAM;
+        starPath(
+          context,
+          point.x + Math.sin(index * 2.1) * 5 * zoom,
+          point.y + Math.cos(index * 1.7) * 5 * zoom,
+          3.2 * zoom,
+          1.3 * zoom,
+          4,
+          shot.flight * 6,
+        );
+        context.fill();
+      }
+    });
+    context.globalAlpha = 1;
+    context.save();
+    context.translate(shot.at.x, shot.at.y);
+    context.rotate(shot.angle);
+    const length = 24 * zoom;
+    const width = 10 * zoom;
+    // The tail spark, the stick, the red paper tube, the cream cone.
+    starPath(
+      context,
+      -length / 2 - 3 * zoom,
+      0,
+      (6 + 2 * Math.sin(shot.flight * 40)) * zoom,
+      2.5 * zoom,
+      5,
+      shot.flight * 8,
+    );
+    context.fillStyle = GOBLIN.spark;
+    context.fill();
+    context.strokeStyle = GOBLIN.charcoal;
+    context.lineWidth = Math.max(1, 2 * zoom);
+    context.beginPath();
+    context.moveTo(-length / 2, width * 0.35);
+    context.lineTo(-length / 2 - 16 * zoom, width * 0.35);
+    context.stroke();
+    context.beginPath();
+    context.rect(-length / 2, -width / 2, length, width);
+    context.fillStyle = ROCKET_RED;
+    context.fill();
+    context.lineWidth = Math.max(1, 2 * zoom);
+    context.stroke();
+    context.fillStyle = ROCKET_CREAM;
+    starPath(context, -2 * zoom, 0, 3 * zoom, 1.3 * zoom, 5);
+    context.fill();
+    context.beginPath();
+    context.moveTo(length / 2, -width / 2 - 1 * zoom);
+    context.lineTo(length / 2 + 9 * zoom, 0);
+    context.lineTo(length / 2, width / 2 + 1 * zoom);
+    context.closePath();
+    context.fillStyle = ROCKET_CREAM;
+    context.fill();
+    context.stroke();
+    context.restore();
+  }
+  for (const impact of plan.impacts) {
+    const local = impact.local;
+    const { x, y } = impact.at;
+    // A white bang star, then the stars burst out, droop and fade.
+    if (local < 0.45) {
+      const swell = easeOut(local / 0.25 > 1 ? 1 : local / 0.25);
+      context.globalAlpha = local < 0.25 ? 1 : 1 - (local - 0.25) / 0.2;
+      starPath(
+        context,
+        x,
+        y,
+        (10 + 20 * swell) * zoom,
+        (6 + 9 * swell) * zoom,
+        10,
+      );
+      context.fillStyle = GOBLIN.white;
+      context.fill();
+      context.strokeStyle = GOBLIN.charcoal;
+      context.lineWidth = Math.max(1, 2.5 * zoom);
+      context.stroke();
+      circle(context, x, y, (5 + 6 * swell) * zoom);
+      context.fillStyle = GOBLIN.spark;
+      context.fill();
+    }
+    const spread = easeOut(Math.min(1, local / 0.7));
+    const alpha = local < 0.55 ? 1 : 1 - (local - 0.55) / 0.45;
+    for (let star = 0; star < 10; star += 1) {
+      const angle = (star / 10) * Math.PI * 2 + 0.2;
+      const distance = (8 + 48 * spread) * zoom;
+      const droop = local * local * 18 * zoom;
+      const sx = x + Math.cos(angle) * distance;
+      const sy = y + Math.sin(angle) * distance * 0.85 + droop;
+      const colour = FIREWORK_COLOURS_V7[star % 5] ?? ROCKET_CREAM;
+      context.globalAlpha = Math.max(0, alpha) * 0.7;
+      context.strokeStyle = colour;
+      context.lineWidth = Math.max(1, 2 * zoom);
+      context.beginPath();
+      context.moveTo(
+        x + Math.cos(angle) * distance * 0.55,
+        y + Math.sin(angle) * distance * 0.5 + droop * 0.5,
+      );
+      context.lineTo(sx, sy);
+      context.stroke();
+      context.globalAlpha = Math.max(0, alpha);
+      starPath(context, sx, sy, 4.5 * zoom, 1.8 * zoom, 4, local * 3);
+      context.fillStyle = colour;
+      context.fill();
+    }
+    context.globalAlpha = 1;
+  }
+}
+
+function drawGatlingBurst(
+  context: CanvasRenderingContext2D,
+  plan: AttackEffectPlanV7,
+  progress: number,
+): void {
+  const zoom = plan.zoom * plan.scale;
+  // The barrel flashes on each round (flickering), and the boiler belly
+  // vents a little steam.
+  if (plan.muzzle !== null) {
+    const local = plan.muzzle;
+    context.globalAlpha = (1 - local) * 0.85;
+    puff(
+      context,
+      plan.source.x - plan.direction.x * 26 * zoom,
+      plan.source.y - (4 + 18 * local) * zoom,
+      (5 + 6 * local) * zoom,
+      DWARF.steam,
+      "#ffffff",
+      DWARF.ironRim,
+      zoom,
+    );
+    context.globalAlpha = 1;
+    if (Math.floor(clamp01(progress) * 26) % 3 !== 2) {
+      starPath(
+        context,
+        plan.source.x,
+        plan.source.y,
+        9 * zoom,
+        3.5 * zoom,
+        6,
+        progress * 9,
+      );
+      context.fillStyle = MUZZLE_HOT;
+      context.fill();
+      context.strokeStyle = DWARF.copper;
+      context.lineWidth = Math.max(1, 1.8 * zoom);
+      context.stroke();
+    }
+  }
+  for (const shot of plan.shots) {
+    const tail = {
+      x: shot.at.x - Math.cos(shot.angle) * 16 * zoom,
+      y: shot.at.y - Math.sin(shot.angle) * 16 * zoom,
+    };
+    for (const [colour, width] of [
+      [DWARF.outline, 5],
+      [DWARF.copper, 3.4],
+      [MUZZLE_HOT, 1.6],
+    ] as const) {
+      context.strokeStyle = colour;
+      context.lineWidth = Math.max(1, width * zoom);
+      context.beginPath();
+      context.moveTo(tail.x, tail.y);
+      context.lineTo(shot.at.x, shot.at.y);
+      context.stroke();
+    }
+  }
+  for (const impact of plan.impacts) {
+    const local = impact.local;
+    const { x, y } = impact.at;
+    context.globalAlpha = 1 - local;
+    starPath(context, x, y, (12 - 5 * local) * zoom, 4.5 * zoom, 5, local * 2);
+    context.fillStyle = MUZZLE_HOT;
+    context.fill();
+    context.strokeStyle = DWARF.copper;
+    context.lineWidth = Math.max(1, 2 * zoom);
+    context.stroke();
+    context.fillStyle = DWARF.copper;
+    for (let spark = 0; spark < 4; spark += 1) {
+      const angle = (spark / 4) * Math.PI * 2 + 0.6;
+      const distance = (6 + 14 * local) * zoom;
+      context.fillRect(
+        x + Math.cos(angle) * distance - zoom,
+        y + Math.sin(angle) * distance - zoom + local * 6 * zoom,
+        2.5 * zoom,
+        2.5 * zoom,
+      );
+    }
+    context.globalAlpha = 1;
+  }
+}
+
+function drawCannonBlast(
+  context: CanvasRenderingContext2D,
+  plan: AttackEffectPlanV7,
+): void {
+  const zoom = plan.zoom * plan.scale;
+  // The muzzle: a hot flash, then steam rolling out and up.
+  if (plan.muzzle !== null) {
+    const local = plan.muzzle;
+    const { x, y } = plan.source;
+    const steamAlpha = local < 0.4 ? 1 : 1 - (local - 0.4) / 0.6;
+    context.globalAlpha = Math.max(0, steamAlpha);
+    for (let index = 0; index < 4; index += 1) {
+      const angle =
+        Math.atan2(plan.direction.y, plan.direction.x) +
+        (index - 1.5) * 0.7 +
+        Math.PI * (index % 2 === 0 ? 0 : 0.1);
+      const distance = (6 + 20 * easeOut(local)) * zoom;
+      puff(
+        context,
+        x + Math.cos(angle) * distance,
+        y + Math.sin(angle) * distance - local * 16 * zoom,
+        (6 + 9 * easeOut(local)) * zoom,
+        DWARF.steam,
+        "#ffffff",
+        DWARF.ironRim,
+        zoom,
+      );
+    }
+    context.globalAlpha = 1;
+    if (local < 0.32) {
+      const flash = 1 - local / 0.32;
+      context.globalAlpha = flash;
+      starPath(context, x, y, (12 + 8 * flash) * zoom, 6 * zoom, 8, 0.2);
+      context.fillStyle = "#ffffff";
+      context.fill();
+      context.strokeStyle = DWARF.outline;
+      context.lineWidth = Math.max(1, 2.2 * zoom);
+      context.stroke();
+      circle(context, x, y, 6 * zoom);
+      context.fillStyle = MUZZLE_HOT;
+      context.fill();
+      context.globalAlpha = 1;
+    }
+  }
+  for (const shot of plan.shots) {
+    shot.trail.forEach((point, index) => {
+      const age = (index + 1) / (shot.trail.length + 1);
+      context.globalAlpha = 0.6 * (1 - age);
+      context.fillStyle = DWARF.steam;
+      circle(context, point.x, point.y, (2 + 4 * age) * zoom);
+      context.fill();
+    });
+    context.globalAlpha = 1;
+    const { x, y } = shot.at;
+    circle(context, x, y, 8 * zoom);
+    context.fillStyle = DWARF.iron;
+    context.fill();
+    context.strokeStyle = DWARF.outline;
+    context.lineWidth = Math.max(1, 2 * zoom);
+    context.stroke();
+    context.beginPath();
+    context.arc(x, y, 5 * zoom, Math.PI * 1.05, Math.PI * 1.6);
+    context.strokeStyle = DWARF.ironRim;
+    context.lineWidth = Math.max(1, 2 * zoom);
+    context.stroke();
+  }
+  for (const impact of plan.impacts) {
+    const local = impact.local;
+    const { x, y } = impact.at;
+    const ground = y + 14 * zoom;
+    const alpha = local < 0.5 ? 1 : 1 - (local - 0.5) / 0.5;
+    // Earth thrown up round the hit, a short star and flying clods.
+    context.globalAlpha = Math.max(0, alpha);
+    for (let index = 0; index < 5; index += 1) {
+      const angle = Math.PI + (index / 4) * Math.PI;
+      const distance = (8 + 20 * easeOut(local)) * zoom;
+      puff(
+        context,
+        x + Math.cos(angle) * distance,
+        ground + Math.sin(angle) * distance * 0.5 - local * 10 * zoom,
+        (6 + 6 * easeOut(local)) * zoom,
+        DWARF.earthLight,
+        DWARF.sandbag,
+        DWARF.earthDark,
+        zoom,
+      );
+    }
+    if (local < 0.35) {
+      context.globalAlpha = 1 - local / 0.35;
+      starPath(context, x, y, (12 + 10 * local) * zoom, 6 * zoom, 8, 0.4);
+      context.fillStyle = "#ffffff";
+      context.fill();
+      context.strokeStyle = DWARF.outline;
+      context.lineWidth = Math.max(1, 2.2 * zoom);
+      context.stroke();
+    }
+    context.globalAlpha = Math.max(0, alpha);
+    context.fillStyle = DWARF.earthDark;
+    for (let clod = 0; clod < 4; clod += 1) {
+      const angle = -Math.PI / 2 + (clod - 1.5) * 0.6;
+      const distance = (10 + 30 * easeOut(local)) * zoom;
+      const size = 4.5 * zoom;
+      context.fillRect(
+        x + Math.cos(angle) * distance - size / 2,
+        y + Math.sin(angle) * distance + local * local * 30 * zoom - size / 2,
+        size,
+        size,
+      );
+    }
+    context.globalAlpha = 1;
+  }
+}
+
+/** An irregular eight-sided rock outline. */
+const ROCK_SHAPE = [1, 0.82, 0.95, 0.78, 1, 0.86, 0.92, 0.8] as const;
+
+function drawIceBoulder(
+  context: CanvasRenderingContext2D,
+  plan: AttackEffectPlanV7,
+): void {
+  const zoom = plan.zoom * plan.scale;
+  for (const shot of plan.shots) {
+    // Snow shaken off the boulder.
+    shot.trail.forEach((point, index) => {
+      const age = (index + 1) / (shot.trail.length + 1);
+      context.globalAlpha = 0.9 * (1 - age);
+      context.fillStyle = ICE.snow;
+      const size = (3.5 - 1.5 * age) * zoom;
+      context.fillRect(
+        point.x + Math.sin(index * 2.3) * 6 * zoom - size / 2,
+        point.y + age * 10 * zoom - size / 2,
+        size,
+        size,
+      );
+    });
+    context.globalAlpha = 1;
+    context.save();
+    context.translate(shot.at.x, shot.at.y);
+    const radius = 13 * zoom;
+    // A lumpy slate rock, lit from above (the light does not spin).
+    const rock = (scale: number): void => {
+      context.beginPath();
+      ROCK_SHAPE.forEach((lump, index) => {
+        const angle =
+          (index / ROCK_SHAPE.length) * Math.PI * 2 + shot.flight * Math.PI;
+        const px = Math.cos(angle) * radius * lump * scale;
+        const py = Math.sin(angle) * radius * lump * scale;
+        if (index === 0) context.moveTo(px, py);
+        else context.lineTo(px, py);
+      });
+      context.closePath();
+    };
+    rock(1);
+    context.fillStyle = ICE.slate;
+    context.fill();
+    context.strokeStyle = ICE.outline;
+    context.lineWidth = Math.max(1, 2.4 * zoom);
+    context.stroke();
+    context.save();
+    context.translate(-radius * 0.18, -radius * 0.22);
+    rock(0.62);
+    context.fillStyle = "#6f7a8e";
+    context.fill();
+    context.restore();
+    // Ice crystals crusted on it, turning with the rock.
+    context.rotate(shot.flight * Math.PI);
+    for (const [cx, cy, size] of [
+      [-0.45, -0.35, 0.42],
+      [0.4, -0.15, 0.36],
+      [0.05, 0.45, 0.3],
+    ] as const) {
+      const s = radius * size;
+      context.beginPath();
+      context.moveTo(radius * cx, radius * cy - s);
+      context.lineTo(radius * cx + s * 0.7, radius * cy);
+      context.lineTo(radius * cx, radius * cy + s);
+      context.lineTo(radius * cx - s * 0.7, radius * cy);
+      context.closePath();
+      context.fillStyle = ICE.ice;
+      context.fill();
+      context.strokeStyle = ICE.iceDark;
+      context.lineWidth = Math.max(1, 1.4 * zoom);
+      context.stroke();
+      context.fillStyle = ICE.icePale;
+      context.fillRect(
+        radius * cx - s * 0.25,
+        radius * cy - s * 0.5,
+        Math.max(1, s * 0.35),
+        Math.max(1, s * 0.35),
+      );
+    }
+    context.restore();
+  }
+  for (const impact of plan.impacts) {
+    const local = impact.local;
+    const { x, y } = impact.at;
+    const alpha = local < 0.5 ? 1 : 1 - (local - 0.5) / 0.5;
+    // A snow puff, a pale flash, ice shards flung out and falling.
+    context.globalAlpha = Math.max(0, alpha);
+    for (let index = 0; index < 5; index += 1) {
+      const angle = Math.PI * 0.9 + (index / 4) * Math.PI * 1.2;
+      const distance = (8 + 18 * easeOut(local)) * zoom;
+      puff(
+        context,
+        x + Math.cos(angle) * distance,
+        y + 12 * zoom + Math.sin(angle) * distance * 0.5 - local * 8 * zoom,
+        (6 + 6 * easeOut(local)) * zoom,
+        ICE.snow,
+        "#ffffff",
+        ICE.snowRim,
+        zoom,
+      );
+    }
+    if (local < 0.3) {
+      context.globalAlpha = 1 - local / 0.3;
+      starPath(context, x, y, (14 + 8 * local) * zoom, 5 * zoom, 4, 0.785);
+      context.fillStyle = ICE.icePale;
+      context.fill();
+      context.strokeStyle = ICE.iceDark;
+      context.lineWidth = Math.max(1, 2 * zoom);
+      context.stroke();
+    }
+    context.globalAlpha = Math.max(0, alpha);
+    for (let shard = 0; shard < 7; shard += 1) {
+      const angle = -Math.PI / 2 + (shard - 3) * 0.5;
+      const distance = (10 + 34 * easeOut(local)) * zoom;
+      const sx = x + Math.cos(angle) * distance;
+      const sy = y + Math.sin(angle) * distance + local * local * 34 * zoom;
+      context.save();
+      context.translate(sx, sy);
+      context.rotate(angle + local * 8 * (shard % 2 === 0 ? 1 : -1));
+      const size = (shard % 3 === 0 ? 7 : 5) * zoom;
+      context.beginPath();
+      context.moveTo(size, 0);
+      context.lineTo(-size * 0.6, -size * 0.55);
+      context.lineTo(-size * 0.6, size * 0.55);
+      context.closePath();
+      context.fillStyle = shard % 2 === 0 ? ICE.ice : ICE.icePale;
+      context.fill();
+      context.strokeStyle = ICE.iceDark;
+      context.lineWidth = Math.max(1, 1.4 * zoom);
+      context.stroke();
+      context.restore();
+    }
+    context.globalAlpha = 1;
+  }
+}
+
+function drawHarpoon(
+  context: CanvasRenderingContext2D,
+  plan: AttackEffectPlanV7,
+): void {
+  const zoom = plan.zoom * plan.scale;
+  const shot = plan.shots[0];
+  const length = 34 * zoom;
+  // The line back to the hunter, sagging a little.
+  if (plan.line > 0) {
+    const end =
+      shot === undefined
+        ? {
+            x: plan.target.x - plan.direction.x * length,
+            y: plan.target.y - plan.direction.y * length,
+          }
+        : {
+            x: shot.at.x - Math.cos(shot.angle) * length,
+            y: shot.at.y - Math.sin(shot.angle) * length,
+          };
+    context.globalAlpha = plan.line;
+    context.strokeStyle = ICE.furShade;
+    context.lineWidth = Math.max(1, 1.6 * zoom);
+    context.beginPath();
+    context.moveTo(plan.source.x, plan.source.y);
+    context.quadraticCurveTo(
+      (plan.source.x + end.x) / 2,
+      (plan.source.y + end.y) / 2 + 10 * zoom,
+      end.x,
+      end.y,
+    );
+    context.stroke();
+    context.globalAlpha = 1;
+  }
+  if (shot !== undefined) {
+    context.save();
+    context.translate(shot.at.x, shot.at.y);
+    context.rotate(shot.angle);
+    // The ivory shaft, a fur tuft at its butt, the ice-crystal head.
+    context.strokeStyle = ICE.outline;
+    context.lineWidth = Math.max(1, 5 * zoom);
+    context.beginPath();
+    context.moveTo(-length, 0);
+    context.lineTo(-8 * zoom, 0);
+    context.stroke();
+    context.strokeStyle = IVORY;
+    context.lineWidth = Math.max(1, 2.8 * zoom);
+    context.stroke();
+    context.fillStyle = ICE.fur;
+    context.strokeStyle = ICE.outline;
+    context.lineWidth = Math.max(1, 1.4 * zoom);
+    circle(context, -length + 2 * zoom, 0, 3.4 * zoom);
+    context.fill();
+    context.stroke();
+    context.beginPath();
+    context.moveTo(4 * zoom, 0);
+    context.lineTo(-8 * zoom, -5 * zoom);
+    context.lineTo(-12 * zoom, 0);
+    context.lineTo(-8 * zoom, 5 * zoom);
+    context.closePath();
+    context.fillStyle = ICE.ice;
+    context.fill();
+    context.strokeStyle = ICE.iceDark;
+    context.lineWidth = Math.max(1, 1.6 * zoom);
+    context.stroke();
+    context.fillStyle = ICE.icePale;
+    context.fillRect(-7 * zoom, -2.5 * zoom, 3 * zoom, 2 * zoom);
+    context.restore();
+  }
+  for (const impact of plan.impacts) {
+    const local = impact.local;
+    const { x, y } = impact.at;
+    context.globalAlpha = 1 - local;
+    starPath(context, x, y, (15 - 6 * local) * zoom, 4 * zoom, 4, local);
+    context.fillStyle = ICE.icePale;
+    context.fill();
+    context.strokeStyle = ICE.iceDark;
+    context.lineWidth = Math.max(1, 2 * zoom);
+    context.stroke();
+    context.fillStyle = ICE.ice;
+    for (let spark = 0; spark < 5; spark += 1) {
+      const angle = (spark / 5) * Math.PI * 2 + 0.4;
+      const distance = (10 + 16 * easeOut(local)) * zoom;
+      const size = 3 * zoom;
+      context.fillRect(
+        x + Math.cos(angle) * distance - size / 2,
+        y + Math.sin(angle) * distance - size / 2,
+        size,
+        size,
+      );
+    }
+    context.globalAlpha = 1;
+  }
+}

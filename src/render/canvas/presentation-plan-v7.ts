@@ -17,6 +17,7 @@ import {
   DWARF_EFFECT_DURATIONS_V7,
   type DwarfFeedbackEffectV7,
 } from "./dwarf-effects-v7";
+import { attackEffectForV7, type AttackEffectIdV7 } from "./attack-effects-v7";
 
 export type CorePresentationStepV7 =
   | {
@@ -115,6 +116,13 @@ export type CorePresentationStepV7 =
        * Revision 19: a Spitter lobs a pale cream acid blob.
        */
       readonly projectile?: "BOMB" | "ACID";
+      /**
+       * Bead pulp_wars-b5f.5 (attack-effects-v7): a shot drawn as its own
+       * cue on the effects overlay (the Lich's bolt, the Rocket Cart's
+       * firework, the Gunner's burst, the Steam Cannon's blast, the ice
+       * boulder, the harpoon) instead of the arrow or the grey stone.
+       */
+      readonly attackEffect?: AttackEffectIdV7;
       /**
        * The Ice Folk revision: the target shatters, so the hit keeps it on
        * the board (no impact) for the Shatter step that follows.
@@ -683,6 +691,10 @@ export function corePresentationPlanV7(
       // a shattered defender stays on the board until it bursts.
       const rockfall = event.preview.rockfallApplied;
       const shatters = event.preview.shatters && isExplored(defender.at);
+      // Bead pulp_wars-b5f.5: a few shots have a cue of their own.
+      const attackEffect = attackEffectForV7(attackerFaction, attacker.role, {
+        rockfall,
+      });
       // The Martian revision: a heat ray is a beam from the shooter (with a
       // thinner beam on to a Pierce victim), not a projectile or a lunge.
       const ray = event.preview.rayPower !== "NONE";
@@ -728,6 +740,7 @@ export function corePresentationPlanV7(
               ? { projectile: "ACID" as const }
               : {}),
           ...(shatters ? { holdTarget: true as const } : {}),
+          ...(attackEffect === null ? {} : { attackEffect }),
         });
       // The Ice Folk revision: a Mammoth's Sweep arcs over its three tiles
       // (the flank hits follow as damage cues); a Shatter freezes, cracks and

@@ -54,6 +54,14 @@ import {
   type DwarfFeedbackV7,
 } from "./dwarf-effects-v7";
 import { createDwarfBoardArtV7, type DwarfBoardArtV7 } from "./dwarf-canvas-v7";
+import {
+  ATTACK_EFFECT_DURATIONS_V7,
+  ATTACK_EFFECT_HIT_V7,
+  attackReducedMotionProgressV7,
+  drawAttackFeedbackV7,
+  type AttackEffectIdV7,
+  type AttackFeedbackV7,
+} from "./attack-effects-v7";
 import { moundAtV7, moundInfoLinesV7 } from "../dwarf-presentation-v7";
 import {
   MAX_ZOOM,
@@ -303,6 +311,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #explosionFeedback: ExplosionFeedbackV7 | null = null;
   /** Review tooling only (pinExplosionFeedback): bursts frozen mid-animation. */
   #pinnedExplosionFeedback: readonly ExplosionFeedbackV7[] = [];
+  /** Bead pulp_wars-b5f.5: the attack cue on the effects overlay. */
+  #attackFeedback: AttackFeedbackV7 | null = null;
+  /** Review tooling only (pinAttackFeedback): cues frozen mid-animation. */
+  #pinnedAttackFeedback: readonly AttackFeedbackV7[] = [];
   #crossfade: {
     readonly before: PlayerViewV7;
     readonly after: PlayerViewV7;
@@ -638,6 +650,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#windmillHealingFeedback = null;
     this.#explosionFeedback = null;
     this.#pinnedExplosionFeedback = [];
+    this.#attackFeedback = null;
+    this.#pinnedAttackFeedback = [];
     this.#dinosaurFeedback = null;
     this.#pinnedDinosaurFeedback = [];
     this.#martianFeedback = null;
@@ -699,7 +713,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const martianSteps = steps.filter((step) => step.kind === "MARTIAN");
       const iceFolkSteps = steps.filter((step) => step.kind === "ICE_FOLK");
       const dwarfSteps = steps.filter((step) => step.kind === "DWARF");
+      const attackSteps = steps.filter(
+        (step): step is ShotStepV7 => attackEffectOf(step) !== null,
+      );
       if (
+        attackSteps.length > 0 ||
         supportSteps.length > 0 ||
         windmillSteps.length > 0 ||
         explosionSteps.length > 0 ||
@@ -710,6 +728,23 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       ) {
         this.#presentedView = after;
         this.#draw();
+        // Bead pulp_wars-b5f.5: each attack cue holds one frame, the shot
+        // close to its target with its trail, before the cues it causes.
+        for (const step of attackSteps) {
+          const effect = attackEffectOf(step);
+          if (effect === null) continue;
+          this.#attackFeedback = this.#attackFeedbackOf(
+            effect,
+            step.from,
+            step.to,
+            attackReducedMotionProgressV7(effect),
+          );
+          this.#drawSupportOverlay();
+          await this.#animate(220 * durationScale, () => undefined);
+          if (token !== this.#presentationToken) return;
+          this.#attackFeedback = null;
+          this.#drawSupportOverlay();
+        }
         // Revision 19: each Dinosaur cue holds its midpoint; growth and a
         // laid Egg show their new sprite and marker at once.
         for (const step of dinosaurSteps) {
@@ -816,7 +851,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#drawSupportOverlay();
         }
         if (
-          supportSteps.length +
+          attackSteps.length +
+            supportSteps.length +
             windmillSteps.length +
             explosionSteps.length +
             dinosaurSteps.length +
@@ -998,6 +1034,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         step.kind === "CATAPULT"
       ) {
         this.#presentedView = before;
+        const effect = attackEffectOf(step);
+        if (effect !== null) {
+          // Bead pulp_wars-b5f.5: the shot is its own cue on the effects
+          // overlay; the board shows the result (and shakes) when it lands.
+          await this.#animateAttack(
+            effect,
+            step.from,
+            step.to,
+            after,
+            step.holdTarget === true,
+            durationScale,
+          );
+          if (token !== this.#presentationToken) return;
+          continue;
+        }
         if (step.kind === "MELEE")
           await this.#animateLunge(
             step.unitId,
@@ -1570,6 +1621,46 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#drawSupportOverlay();
   }
 
+  /**
+   * Review tooling and tests: draws the given attack cues (bead
+   * pulp_wars-b5f.5) at their fixed progress on the effects canvas until
+   * cleared with an empty list. The Lich's bolt takes the look's Undead
+   * accent. The game never calls it; presentations clear it.
+   */
+  pinAttackFeedback(
+    feedback: readonly Omit<AttackFeedbackV7, "undeadViolet">[],
+  ): void {
+    this.#pinnedAttackFeedback = feedback.map((entry) =>
+      this.#attackFeedbackOf(
+        entry.effect,
+        entry.from,
+        entry.to,
+        entry.progress,
+      ),
+    );
+    this.#drawSupportOverlay();
+  }
+
+  /** An attack cue at `progress`, in the look's Undead accent. */
+  #attackFeedbackOf(
+    effect: AttackEffectIdV7,
+    from: CoordV7,
+    to: CoordV7,
+    progress: number,
+  ): AttackFeedbackV7 {
+    return {
+      effect,
+      from,
+      to,
+      progress,
+      ...(this.#model?.visualDirection?.undeadAccent === "VIOLET"
+        ? { undeadViolet: true }
+        : {}),
+      // LEGACY draws its stand-in units at a larger zoom.
+      ...(this.#artSet() === "CHIBI" ? {} : { scale: 1 }),
+    };
+  }
+
   #drawSupportOverlay(): void {
     const context = this.#effectsContext;
     const canvas = this.#effectsCanvas;
@@ -1578,6 +1669,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, this.#viewport.width, this.#viewport.height);
     const effectArt = this.#supportEffectArt();
+    for (const pinned of this.#pinnedAttackFeedback)
+      drawAttackFeedbackV7(context, this.#camera, pinned);
+    const attack = this.#attackFeedback;
+    if (attack === null) {
+      delete canvas.dataset.attackEffect;
+      delete canvas.dataset.attackProgress;
+    } else {
+      canvas.dataset.attackEffect = attack.effect;
+      canvas.dataset.attackProgress = attack.progress.toFixed(3);
+      drawAttackFeedbackV7(context, this.#camera, attack);
+    }
     for (const pinned of this.#pinnedDwarfFeedback)
       drawDwarfFeedbackV7(context, this.#camera, pinned, effectArt);
     const dwarf = this.#dwarfFeedback;
@@ -2226,6 +2328,58 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#projectile = null;
   }
 
+  /**
+   * Bead pulp_wars-b5f.5: plays an attack cue on the effects overlay. The
+   * board shows the view before the attack until the shot lands at
+   * ATTACK_EFFECT_HIT_V7, then the result with the usual 100 ms impact
+   * shake (a shattered target stays for its Shatter, without the shake).
+   * Only the overlay repaints during the flight.
+   */
+  async #animateAttack(
+    effect: AttackEffectIdV7,
+    from: CoordV7,
+    to: CoordV7,
+    after: PlayerViewV7,
+    holdTarget: boolean,
+    durationScale: number,
+  ): Promise<void> {
+    const duration = ATTACK_EFFECT_DURATIONS_V7[effect] * durationScale;
+    const hit = ATTACK_EFFECT_HIT_V7[effect];
+    const impactShare = duration > 0 ? (100 * durationScale) / duration : 1;
+    let landed = false;
+    this.#draw();
+    await this.#animate(duration, (eased) => {
+      // The cue keeps its own timeline: #animate's cubic ease-out would
+      // spend a quarter of the time on the flight and the rest on the burst.
+      const progress = 1 - Math.cbrt(1 - eased);
+      this.#attackFeedback = this.#attackFeedbackOf(effect, from, to, progress);
+      // The board repaints from the hit until the shake settles; otherwise
+      // only the overlay does.
+      if (
+        progress >= hit &&
+        !holdTarget &&
+        (!landed || this.#impact !== null)
+      ) {
+        const local = (progress - hit) / impactShare;
+        this.#presentedView = after;
+        this.#impact =
+          local >= 1
+            ? null
+            : {
+                at: to,
+                shakeCssPx: Math.sin(local * Math.PI * 6) * (1 - local) * 6,
+                flashAlpha: Math.sin(local * Math.PI) * 0.42,
+              };
+        landed = true;
+        this.#draw();
+      } else this.#drawSupportOverlay();
+    });
+    this.#impact = null;
+    this.#attackFeedback = null;
+    if (!holdTarget) this.#presentedView = after;
+    this.#draw();
+  }
+
   async #animateImpact(at: CoordV7, duration: number): Promise<void> {
     await this.#animate(duration, (progress) => {
       this.#impact = {
@@ -2340,6 +2494,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #now(): number {
     return this.#document.defaultView?.performance.now() ?? Date.now();
   }
+}
+
+type ShotStepV7 = Extract<
+  CorePresentationStepV7,
+  { readonly kind: "MELEE" | "RANGED" | "CATAPULT" }
+>;
+
+/** The attack cue of a shot step (bead pulp_wars-b5f.5), or null. */
+function attackEffectOf(step: CorePresentationStepV7): AttackEffectIdV7 | null {
+  return (step.kind === "RANGED" || step.kind === "CATAPULT") &&
+    step.attackEffect !== undefined
+    ? step.attackEffect
+    : null;
 }
 
 /** The effects-overlay cue of a Dwarf presentation step at `progress`. */

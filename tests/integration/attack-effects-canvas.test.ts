@@ -1,0 +1,190 @@
+// @vitest-environment jsdom
+
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  applyCommandV7,
+  projectEventsV7,
+  viewForV7,
+  type CoordV7,
+  type PlayerViewV7,
+} from "../../src/engine/index";
+import { ATTACK_EFFECT_DURATIONS_V7 } from "../../src/render/canvas/attack-effects-v7";
+import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
+import {
+  UNDEAD_SHOWCASE_V7,
+  undeadShowcaseFixtureV7,
+} from "../fixtures/v7-undead-ui";
+
+/**
+ * Bead pulp_wars-b5f.5: a Lich's attack plays its bolt on the effects
+ * overlay (never the grey catapult stone), the board shows the result once
+ * the bolt lands, and reduced motion holds one frame of the cue.
+ */
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  document.body.innerHTML = "";
+});
+
+function unitAt(
+  view: PlayerViewV7,
+  at: CoordV7,
+): PlayerViewV7["units"][number] {
+  const unit = view.units.find(
+    (candidate) => candidate.at.x === at.x && candidate.at.y === at.y,
+  );
+  if (unit === undefined) throw new Error(`no unit at ${at.x},${at.y}`);
+  return unit;
+}
+
+function lichShot() {
+  const state = undeadShowcaseFixtureV7();
+  const actor = state.humanPlayerId;
+  const before = viewForV7(state, actor);
+  const result = applyCommandV7(state, actor, {
+    kind: "ATTACK",
+    unitId: unitAt(before, UNDEAD_SHOWCASE_V7.lich).id,
+    targetUnitId: unitAt(before, UNDEAD_SHOWCASE_V7.lichTarget).id,
+  });
+  if (!result.accepted) throw new Error(result.error.code);
+  return {
+    before,
+    after: viewForV7(result.state, actor),
+    envelope: projectEventsV7(state, result.state, actor, result.events),
+  };
+}
+
+function setUp(motion: "FULL" | "REDUCED") {
+  let now = 0;
+  vi.spyOn(window.performance, "now").mockImplementation(() => now);
+  let nextFrame = 1;
+  const frames = new Map<number, FrameRequestCallback>();
+  Object.defineProperty(window, "requestAnimationFrame", {
+    configurable: true,
+    value: vi.fn((callback: FrameRequestCallback) => {
+      const id = nextFrame;
+      nextFrame += 1;
+      frames.set(id, callback);
+      return id;
+    }),
+  });
+  Object.defineProperty(window, "cancelAnimationFrame", {
+    configurable: true,
+    value: vi.fn((id: number) => frames.delete(id)),
+  });
+  // The grey catapult stone is the only fill of that colour.
+  const stoneFills: number[] = [];
+  const target: Record<PropertyKey, unknown> = { fillStyle: "" };
+  target.fill = vi.fn(() => {
+    if (target.fillStyle === "#6d665e") stoneFills.push(now);
+  });
+  const context = new Proxy(target, {
+    get: (object, key) => (key in object ? object[key] : vi.fn()),
+    set: (object, key, value) => {
+      object[key] = value;
+      return true;
+    },
+  }) as unknown as CanvasRenderingContext2D;
+  vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context);
+  const container = document.createElement("div");
+  Object.defineProperty(container, "getBoundingClientRect", {
+    value: () => ({
+      width: 800,
+      height: 600,
+      left: 0,
+      top: 0,
+      right: 800,
+      bottom: 600,
+    }),
+  });
+  document.body.append(container);
+  const shot = lichShot();
+  const host = new CanvasBoardHostV7(document);
+  host.mount(container, { onSelection: vi.fn(), onCommand: vi.fn() });
+  host.update({
+    matchInstanceId: 1,
+    view: shot.after,
+    offeredCommands: [],
+    interactive: false,
+    motion,
+    animationSpeed: "NORMAL",
+    presentationPaused: false,
+    highContrast: false,
+    interaction: {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    },
+  });
+  const effects = container.querySelector<HTMLCanvasElement>(
+    "canvas.board-effects-canvas-v7",
+  );
+  if (effects === null) throw new Error("no effects canvas");
+  return {
+    host,
+    shot,
+    effects,
+    stoneFills,
+    frames,
+    /** Runs the next animation frame at `time` ms. */
+    step(time: number) {
+      const entry = frames.entries().next().value as
+        readonly [number, FrameRequestCallback] | undefined;
+      if (entry === undefined) throw new Error("animation frame missing");
+      frames.delete(entry[0]);
+      now = time;
+      entry[1](time);
+    },
+  };
+}
+
+async function waitUntil(predicate: () => boolean): Promise<void> {
+  for (let index = 0; index < 100; index += 1) {
+    if (predicate()) return;
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+  throw new Error("Condition not reached");
+}
+
+describe("Attack cues on the board host", () => {
+  it("plays the Lich's bolt on the overlay instead of the grey stone", async () => {
+    const scene = setUp("FULL");
+    const presentation = scene.host.presentBoundary(
+      scene.shot.before,
+      scene.shot.after,
+      scene.shot.envelope,
+    );
+    const duration = ATTACK_EFFECT_DURATIONS_V7.NECRO_BOLT;
+    // Early in the flight, on the cue's own (linear) timeline.
+    scene.step(duration * 0.25);
+    expect(scene.effects.dataset.attackEffect).toBe("NECRO_BOLT");
+    expect(Number(scene.effects.dataset.attackProgress)).toBeCloseTo(0.25, 2);
+    scene.step(duration * 0.9);
+    expect(Number(scene.effects.dataset.attackProgress)).toBeCloseTo(0.9, 2);
+    scene.step(duration);
+    // The splash burst follows the shot.
+    await waitUntil(() => scene.frames.size === 1);
+    expect(scene.effects.dataset.attackEffect).toBeUndefined();
+    scene.host.finishPresentations();
+    await presentation;
+    expect(scene.stoneFills).toEqual([]);
+    scene.host.destroy();
+  });
+
+  it("holds one frame of the bolt under reduced motion", async () => {
+    const scene = setUp("REDUCED");
+    const presentation = scene.host.presentBoundary(
+      scene.shot.before,
+      scene.shot.after,
+      scene.shot.envelope,
+    );
+    expect(scene.effects.dataset.attackEffect).toBe("NECRO_BOLT");
+    expect(Number(scene.effects.dataset.attackProgress)).toBeLessThan(0.55);
+    scene.step(1_000);
+    await waitUntil(() => scene.effects.dataset.attackEffect === undefined);
+    scene.host.finishPresentations();
+    await presentation;
+    expect(scene.stoneFills).toEqual([]);
+    scene.host.destroy();
+  });
+});
