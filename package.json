@@ -82,6 +82,7 @@
     "art:attack-effects-review": "tsx scripts/art/attack-effects-review.ts",
     "art:unit-shadows-measure": "tsx scripts/art/unit-shadow-measure.ts",
     "art:unit-shadows-review": "tsx scripts/art/unit-shadows-review.ts",
+    "art:faction-buildings-review": "tsx scripts/art/faction-buildings-review.ts",
     "art:validate": "tsx scripts/art/pixellab.ts validate",
     "diagnose:mountain-live": "tsx scripts/browser-smoke-v6.ts --mountain-live",
     "smoke:browser": "tsx scripts/browser-smoke-v7.ts",

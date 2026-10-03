@@ -1,0 +1,1 @@
+Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent.

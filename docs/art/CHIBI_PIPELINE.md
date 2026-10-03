@@ -1208,3 +1208,20 @@ with the Dwarf rasters under Human stand-in subjects and the mounds under a
 Dinosaur stand-in. No sheet draws a plate. Captures start Vite on port
 6534 unless `--port` says otherwise and need `CHROME_PATH` (and `node` on
 the `PATH` for Vite); `--copy-to DIR` copies the key sheets.
+
+## Faction building study (bead `pulp_wars-xdh.1`)
+
+The exploration run `art/explorations/faction-buildings-2026-10/` holds the
+recipes of the [faction building looks](FACTION_BUILDINGS.md) sample. It
+overrides `class-calm-building`, `class-crop-rows` and
+`camera-crop-pattern` so that no Human material or "plant" is named, and its
+grass recipes force the palettes written by
+`npx tsx scripts/art/faction-buildings/undead-grass.ts`, which also writes
+the code-recoloured Undead grass candidates. `npm run
+art:faction-buildings-review` writes
+`art/pixellab/reviews/faction-buildings-study/`: building and grass sheets,
+before and after board scenes from
+[`scene.ts`](../../scripts/art/faction-buildings/scene.ts) (drawn per cell
+through a 721-variant registry, no game code changed) and a contact sheet.
+Its captures start Vite on port 6540 unless `--port` says otherwise and need
+`CHROME_PATH`; `--copy-to DIR` copies the key outputs.

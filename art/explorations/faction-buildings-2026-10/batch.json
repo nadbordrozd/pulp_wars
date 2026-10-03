@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "batch": "faction-buildings",
+  "title": "Faction building looks, sample study: the Undead Graveyard (Farm), the Martian Solar Array (Windmill), the Dwarf Mushroom Farm (Farm), the Dinosaur Grinding Stone (Windmill) and the Undead territory grass (exploration, never registered)",
+  "bead": "pulp_wars-xdh.1",
+  "faction": "TEST-FACTION-BUILDINGS",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-undead-graveyard",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-rows",
+      "canvas": { "width": 80, "height": 80 },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/GRAVEYARD",
+      "cropRows": {
+        "rows": 3,
+        "band": 0,
+        "period": 80,
+        "stamps": [{ "left": 0, "width": 80, "at": 0 }],
+        "phase": 0.5,
+        "saturation": 1,
+        "strawMix": 0
+      }
+    },
+    {
+      "id": "chibi-dwarf-mushroom-farm",
+      "subject": "IMPROVEMENT:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-rows",
+      "canvas": { "width": 80, "height": 80 },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:FARM/MUSHROOMS",
+      "cropRows": {
+        "rows": 3,
+        "band": 0,
+        "period": 80,
+        "stamps": [{ "left": 0, "width": 80, "at": 0 }],
+        "phase": 0.5,
+        "saturation": 1,
+        "strawMix": 0
+      }
+    },
+    {
+      "id": "chibi-martian-solar-array",
+      "subject": "IMPROVEMENT:WINDMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": { "width": 72, "height": 72 },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:WINDMILL/SOLAR"
+    },
+    {
+      "id": "chibi-dinosaur-grinding-stone",
+      "subject": "IMPROVEMENT:WINDMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": { "width": 72, "height": 72 },
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:WINDMILL/GRINDSTONE"
+    },
+    {
+      "id": "chibi-undead-grass-1",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": { "width": 80, "height": 80 },
+      "subjectKey": "TERRAIN:GRASS/UNDEAD"
+    },
+    {
+      "id": "chibi-undead-grass-leaves-1",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": { "width": 80, "height": 80 },
+      "subjectKey": "TERRAIN:GRASS/UNDEAD_LEAVES"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "graveyard-flux-a",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixflux",
+      "seed": 97101,
+      "requestSize": { "width": 80, "height": 80 },
+      "options": { "direction": null, "view": "high top-down" },
+      "negativeAddendum": "skull, skeleton, bones, zombie, coffin, open grave, white headstone, pale headstone, round-topped tombstone, ghost, fog, candles, pumpkin, green plants, vegetables, cabbages",
+      "notes": "Like the accepted veg-flux-a Farm (Pixflux, high top-down, no direction): three beds that the crop-rows derivation tiles. No pale round-topped headstone, which is the shape of the code-drawn Grave marker."
+    },
+    {
+      "id": "graveyard-flux-b",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixflux",
+      "seed": 97102,
+      "requestSize": { "width": 80, "height": 80 },
+      "options": { "direction": null, "view": "high top-down" },
+      "negativeAddendum": "skull, skeleton, bones, zombie, coffin, open grave, white headstone, pale headstone, round-topped tombstone, ghost, fog, candles, pumpkin, green plants, vegetables, cabbages",
+      "notes": "Second seed of graveyard-flux-a."
+    },
+    {
+      "id": "mushroom-flux-a",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "endpoint": "create-image-pixflux",
+      "seed": 97201,
+      "requestSize": { "width": 80, "height": 80 },
+      "options": { "direction": null, "view": "high top-down" },
+      "negativeAddendum": "red cap, white spots, fly agaric, glowing, green plants, cabbages, vegetables, grass",
+      "notes": "Dwarf Farm: big tan and russet mushrooms on peat beds; no red caps (red is the Human colour and the owner key)."
+    },
+    {
+      "id": "mushroom-flux-b",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "endpoint": "create-image-pixflux",
+      "seed": 97202,
+      "requestSize": { "width": 80, "height": 80 },
+      "options": { "direction": null, "view": "high top-down" },
+      "negativeAddendum": "red cap, white spots, fly agaric, glowing, green plants, cabbages, vegetables, grass",
+      "notes": "Second seed of mushroom-flux-a."
+    },
+    {
+      "id": "solar-a",
+      "asset": "chibi-martian-solar-array",
+      "endpoint": "create-image-pixen",
+      "seed": 97301,
+      "requestSize": { "width": 72, "height": 72 },
+      "promptAddendum": "The machine is drawn large and fills most of the image, touching neither edge.",
+      "negativeAddendum": "windmill, sails, blades, propeller, wind turbine, house, roof, wood, brick, plaster, terracotta",
+      "notes": "Martian Windmill: a calm-building creation; a ground-removal edit follows if it stands on a slab."
+    },
+    {
+      "id": "solar-b",
+      "asset": "chibi-martian-solar-array",
+      "endpoint": "create-image-pixen",
+      "seed": 97302,
+      "requestSize": { "width": 72, "height": 72 },
+      "promptAddendum": "The machine is drawn large and fills most of the image, touching neither edge.",
+      "negativeAddendum": "windmill, sails, blades, propeller, wind turbine, house, roof, wood, brick, plaster, terracotta",
+      "notes": "Second seed of solar-a."
+    },
+    {
+      "id": "grindstone-a",
+      "asset": "chibi-dinosaur-grinding-stone",
+      "endpoint": "create-image-pixen",
+      "seed": 97401,
+      "requestSize": { "width": 72, "height": 72 },
+      "promptAddendum": "The millstone is drawn large and fills most of the image, touching neither edge.",
+      "negativeAddendum": "windmill, sails, blades, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, spoked wheel, cart",
+      "notes": "Dinosaur Windmill: a calm-building creation; a ground-removal edit follows if it stands on a slab."
+    },
+    {
+      "id": "grindstone-b",
+      "asset": "chibi-dinosaur-grinding-stone",
+      "endpoint": "create-image-pixen",
+      "seed": 97402,
+      "requestSize": { "width": 72, "height": 72 },
+      "promptAddendum": "The millstone is drawn large and fills most of the image, touching neither edge.",
+      "negativeAddendum": "windmill, sails, blades, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, spoked wheel, cart",
+      "notes": "Second seed of grindstone-a."
+    },
+    {
+      "id": "undead-grass-a",
+      "asset": "chibi-undead-grass-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 97501,
+      "requestSize": { "width": 160, "height": 160 },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/undead-grass.png",
+        "sha256": "439125179999bdd1c1b2af50626f55eb24c63f1e677850044bb5dcd507568ad5"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, people, path, road, skulls, bones, graves, mushrooms, purple",
+      "notes": "The PixelLab alternative to the code recolour: a Pixflux meadow forced to the gloam grass palette (base #749b76 and violet-grey tufts, the colours of the recommended code recolour), cropped to a seamless window as for chibi-grass-1."
+    },
+    {
+      "id": "undead-grass-b",
+      "asset": "chibi-undead-grass-leaves-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 97502,
+      "requestSize": { "width": 160, "height": 160 },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/undead-grass-leaves.png",
+        "sha256": "3f8a57830ee6aa127f92526b6a3162b172ec42cb5a44d36c6bccce9563b08027"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, rocks, animals, people, path, road, skulls, bones, graves, mushrooms",
+      "notes": "As undead-grass-a, with a few dusky purple fallen leaves (a three-colour palette whose leaf entry is far from the base, so the base stays stable)."
+    }
+  ]
+}

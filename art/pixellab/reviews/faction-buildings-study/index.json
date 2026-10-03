@@ -1,0 +1,83 @@
+{
+  "bead": "pulp_wars-xdh.1",
+  "run": "art/explorations/faction-buildings-2026-10",
+  "command": "npm run art:faction-buildings-review",
+  "note": "A study: nothing is wired into the game. The scene-* captures draw the live look with the proposal applied per cell to the studied faction's territory only (scripts/art/faction-buildings/scene.ts). A sample without an accepted master is drawn as today's building in the scenes and as a 'PixelLab pending' plate in the sheets.",
+  "samples": {
+    "chibi-undead-graveyard": "PixelLab pending",
+    "chibi-martian-solar-array": "PixelLab pending",
+    "chibi-dinosaur-grinding-stone": "PixelLab pending",
+    "chibi-dwarf-mushroom-farm": "PixelLab pending"
+  },
+  "undeadGrass": {
+    "cool": {
+      "label": "Cool: hue +22°, saturation x0.62, value x0.93",
+      "colours": {
+        "#8ab85c": "#7dab76",
+        "#a3cc72": "#93be8a",
+        "#6e9c4a": "#659162",
+        "#557f3c": "#50764f",
+        "#52793a": "#4d714c"
+      },
+      "recommended": false
+    },
+    "dusk": {
+      "label": "Dusk: cool, dark tufts 45% toward violet-grey #4a4458",
+      "colours": {
+        "#8ab85c": "#7dab76",
+        "#a3cc72": "#93be8a",
+        "#6e9c4a": "#596e5e",
+        "#557f3c": "#4d6053",
+        "#52793a": "#4c5d51"
+      },
+      "recommended": false
+    },
+    "gloam": {
+      "label": "Gloam: hue +34°, saturation x0.5, value x0.84, dark tufts 55% toward #4a4458",
+      "colours": {
+        "#8ab85c": "#749b76",
+        "#a3cc72": "#86ab86",
+        "#6e9c4a": "#54605e",
+        "#557f3c": "#4c5656",
+        "#52793a": "#4a5354"
+      },
+      "recommended": true
+    },
+    "wilt": {
+      "label": "Wilt: hue -24°, saturation x0.55, value x0.9 (dry olive)",
+      "colours": {
+        "#8ab85c": "#a1a678",
+        "#a3cc72": "#b5b88b",
+        "#6e9c4a": "#868c64",
+        "#557f3c": "#6b7251",
+        "#52793a": "#666d4e"
+      },
+      "recommended": false
+    }
+  },
+  "files": [
+    "before-after-contact.png",
+    "buildings-1x.png",
+    "buildings-x3.png",
+    "grass-x2.png",
+    "scene-martian-after-desktop-zoom-0.75.png",
+    "scene-martian-after-desktop-zoom-1.png",
+    "scene-martian-after-phone-zoom-0.75.png",
+    "scene-martian-after-phone-zoom-1.png",
+    "scene-martian-before-desktop-zoom-0.75.png",
+    "scene-martian-before-desktop-zoom-1.png",
+    "scene-martian-before-phone-zoom-0.75.png",
+    "scene-martian-before-phone-zoom-1.png",
+    "scene-undead-after-desktop-zoom-0.75.png",
+    "scene-undead-after-desktop-zoom-1.png",
+    "scene-undead-after-grass-cool-desktop-zoom-1.png",
+    "scene-undead-after-grass-dusk-desktop-zoom-1.png",
+    "scene-undead-after-grass-wilt-desktop-zoom-1.png",
+    "scene-undead-after-phone-zoom-0.75.png",
+    "scene-undead-after-phone-zoom-1.png",
+    "scene-undead-before-desktop-zoom-0.75.png",
+    "scene-undead-before-desktop-zoom-1.png",
+    "scene-undead-before-phone-zoom-0.75.png",
+    "scene-undead-before-phone-zoom-1.png"
+  ]
+}
