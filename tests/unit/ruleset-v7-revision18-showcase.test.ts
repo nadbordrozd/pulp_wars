@@ -160,11 +160,16 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
     // Revision 20 section 6.3 (`pulp_wars-0hi.3`) gives the starting Human
     // Fighter 12 HP (was 10) and changes nothing else in these states; the
     // hashes return once that is undone as well.
+    // The Pangea coast ring (`pulp_wars-9s0.2`) regenerates every Pangea
+    // board (no land on the edge ring; 59.5-72% land), so PANGEA is re-pinned
+    // to the coast-ring state under the same normalization (it was
+    // d22fa74ce92472cc9f874af7f85852871b8976bbb7a15c68b57d2fc7dac48e65); the
+    // other four map types are unchanged.
     const pinned = {
       DRY_LAND:
         "82f66f98a5ee995551537573fd5644730860105cd5da95ce14774e1abd2659af",
       PANGEA:
-        "d22fa74ce92472cc9f874af7f85852871b8976bbb7a15c68b57d2fc7dac48e65",
+        "25cf84849d9a9821f8e9e5a5dc17894691b877e3c9429ed61369a5637f47d902",
       CONTINENTS:
         "419bfe6c00bd97018329c7d72d1016cf7c2cbcde3b891b139297bcc66cf9e598",
       ARCHIPELAGO:

@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r25`: Human, Undead, Goblin, Dinosaur, and Martian)
+## Current release contract (`pulp-wars-poc-7r26`: Human, Undead, Goblin, Dinosaur, and Martian)
 
-The current runtime is `pulp-wars-poc-7r25` (autosave
-`pulpWars.save.v7r25.current`; saves and replays of `pulp-wars-poc-7r24`
+The current runtime is `pulp-wars-poc-7r26` (autosave
+`pulpWars.save.v7r26.current`; saves and replays of `pulp-wars-poc-7r25`
 and earlier are refused, and startup removes their autosave keys). Its five
 playable factions, Human, Undead, Goblin, Dinosaur, and Martian, are
 described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -41,7 +41,11 @@ Human Fighter, Raider, and Marksman 12 HP, Guard 17, Caveman 10), after
 `pulp_wars-0ao.9` folded the
 [revision-17 Goblin overlay](../product/RULESET_7_REVISION_17_GOBLINS.md)
 and `pulp_wars-6gd.2` and `6gd.3` the
-[revision-18 overlay](../product/RULESET_7_REVISION_18.md). The engine also
+[revision-18 overlay](../product/RULESET_7_REVISION_18.md).
+`pulp_wars-9s0.2` (`7r26`) gives Pangea a coast ring (no land on the
+board's edge ring; the island can be circumnavigated in Shallow Water) and
+changes no other map type; `npm run validate:ruleset7-naval-maps` checks
+the ring on every size. The engine also
 registers a sixth faction from the
 [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md) (`pulp_wars-7g3.3`,
 identity `7r24`), which is **not folded** into the current rules: its
@@ -61,7 +65,7 @@ does not rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r25` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r26` identity (ruleset ID, autosave key, the
   six-entry `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms
   that the archived corpus below still carries the revision-2 identity, and
@@ -154,7 +158,7 @@ does not rerun their matrices.
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
-  (`7r25`) captures. The revision-2 validator described below as
+  (`7r26`) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
 

@@ -358,10 +358,13 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // Human HP (`pulp_wars-0hi.3`) every match with a Human seat changes:
     // seed 16 reaches the 40-round cap without a Lich; seed 8 Pangea trains
     // one and plagues (3 of seeds 0-23 train a Lich within 40 rounds: 8,
-    // 12, and 15).
+    // 12, and 15). The Pangea coast ring (`pulp_wars-9s0.2`) regenerates
+    // every Pangea board: seed 8 now ends in round 24 with no Lich; seed 3
+    // Pangea trains two and plagues (3 of seeds 0-23 train a Lich within 40
+    // rounds: 3, 7, and 11; 3 and 7 also plague).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 8,
+      seed: 3,
       width: 11,
       height: 11,
       aiCount: 1,

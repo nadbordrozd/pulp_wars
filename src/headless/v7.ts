@@ -100,7 +100,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r25";
+  readonly rulesetId: "pulp-wars-poc-7r26";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -837,7 +837,7 @@ export async function runAiBatchV7(
             Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r25",
+              rulesetId: "pulp-wars-poc-7r26",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -944,7 +944,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r25",
+    rulesetId: "pulp-wars-poc-7r26",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,

@@ -62,7 +62,8 @@ export type MapInvariantCodeV7 =
   | "NAVAL_REACHABILITY"
   | "COASTAL_SETTLEMENT"
   | "CAPITAL_SEA_ESCAPE"
-  | "CAPITAL_GROWTH";
+  | "CAPITAL_GROWTH"
+  | "COAST_RING";
 
 export interface MapGenerationAttemptV7 {
   readonly attempt: number;
@@ -194,7 +195,7 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
   return generateMapWithVillageCountV7(
     setup,
     villageCount(setup),
-    "REVISION_16",
+    "PANGEA_COAST_RING",
   );
 }
 
@@ -224,12 +225,31 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
 }
 
 /**
- * Generation rules a parity call reproduces. `REVISION_16` is the current
- * generator. `REVISION_15` is the revision-14/15 generator: eight-neighbour
- * Shallow Water, the 40% Shallow minimum, and no capital growth floor or
+ * Generation rules a parity call reproduces. `PANGEA_COAST_RING` is the
+ * current generator: the `REVISION_16` generator except that a Pangea keeps
+ * its land off the board's edge ring, with {@link pangeaLandCountV7} land
+ * cells, and must pass the `COAST_RING` invariant; every other map type is
+ * byte-identical under the two. `REVISION_16` is the generator before the
+ * coast ring (Pangea land on 72% of the board, edge cells included).
+ * `REVISION_15` is the revision-14/15 generator: eight-neighbour Shallow
+ * Water, the 40% Shallow minimum, and no capital growth floor or
  * `CAPITAL_GROWTH` invariant.
  */
-export type MapGenerationRulesV7 = "REVISION_15" | "REVISION_16";
+export type MapGenerationRulesV7 =
+  "REVISION_15" | "REVISION_16" | "PANGEA_COAST_RING";
+
+/**
+ * Pangea land cells under the coast ring: 72% of the board, capped at 90% of
+ * the interior (the board without its edge ring) so that small boards keep
+ * some water inside the ring: 72 of 121 cells on 11 x 11, 129 of 196 on
+ * 14 x 14, 176 of 256 on 16 x 16, and 72% (288 and 450) on 20 and 25.
+ */
+export function pangeaLandCountV7(width: number, height: number): number {
+  return Math.min(
+    Math.floor(width * height * 0.72),
+    Math.floor((width - 2) * (height - 2) * 0.9),
+  );
+}
 
 /**
  * Parity and fixture support only; no rule path calls it. The generator with
@@ -241,7 +261,7 @@ export type MapGenerationRulesV7 = "REVISION_15" | "REVISION_16";
 export function generateInitialMapWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "REVISION_16",
+  rules: MapGenerationRulesV7 = "PANGEA_COAST_RING",
 ): GenerateMapResultV7 {
   const setup = parseMatchSetupV7(input);
   if (
@@ -250,7 +270,9 @@ export function generateInitialMapWithVillageCountV7(
     setup.mapType === "SHOWCASE" ||
     !Number.isSafeInteger(villages) ||
     villages < 0 ||
-    (rules !== "REVISION_15" && rules !== "REVISION_16")
+    (rules !== "REVISION_15" &&
+      rules !== "REVISION_16" &&
+      rules !== "PANGEA_COAST_RING")
   )
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   return generateMapWithVillageCountV7(setup, villages, rules);
@@ -353,7 +375,9 @@ function generateCandidate(
       topologyDraws.set(key(at), draw.value);
     }
   const navalLand =
-    setup.mapType === "DRY_LAND" ? null : topologyMaskV7(setup, topologyDraws);
+    setup.mapType === "DRY_LAND"
+      ? null
+      : topologyMaskV7(setup, topologyDraws, rules);
   let offset = 0;
   if (setup.width === 16) {
     const draw = nextBounded(random, 3);
@@ -574,7 +598,7 @@ function generateCandidate(
   // Revision 16 (section 3.3): the PRNG-free capital growth floor runs last,
   // after the settlement ring floors and the water resource draws, so every
   // invariant (capital fairness included) sees the floored board.
-  if (!navalPlacementFailed && rules === "REVISION_16")
+  if (!navalPlacementFailed && rules !== "REVISION_15")
     board = applyCapitalGrowthFloorV7(
       board,
       capitals,
@@ -993,7 +1017,7 @@ function validate(
   )
     failures.push("CAPITAL_SCORE");
   if (
-    rules === "REVISION_16" &&
+    rules !== "REVISION_15" &&
     capitals.some((capital) => !capitalGrowthReadyV7(board, capital.at, false))
   )
     failures.push("CAPITAL_GROWTH");
@@ -1200,7 +1224,7 @@ function applyNavalTopologyV7(
       // revision-15 parity rules keep the eight-neighbour test.
       const landAt = (at: CoordV7): boolean => land.has(key(at));
       const shallow =
-        rules === "REVISION_16"
+        rules !== "REVISION_15"
           ? isShallowWaterV7(original.width, original.height, tile.at, landAt)
           : neighbors8(original.width, original.height, tile.at).some(landAt);
       const terrain: TerrainIdV7 = shallow ? "SHALLOW_WATER" : "DEEP_WATER";
@@ -1230,13 +1254,21 @@ function projectedCapitalScore(
 function topologyMaskV7(
   setup: MatchSetupV7,
   draws: ReadonlyMap<string, number>,
+  rules: MapGenerationRulesV7,
 ): Set<string> {
   const { width, height, mapType } = setup;
   const land = new Set<string>();
   const add = (x: number, y: number) => land.add(key({ x, y }));
   if (mapType === "PANGEA") {
-    const wanted = Math.floor(width * height * 0.72);
+    // The coast ring (PANGEA_COAST_RING rules): no land on the board's edge
+    // ring, so water surrounds the island. Filtering the edge cells out keeps
+    // the jittered radial order of every interior cell.
+    const ring = rules === "PANGEA_COAST_RING";
+    const wanted = ring
+      ? pangeaLandCountV7(width, height)
+      : Math.floor(width * height * 0.72);
     for (const at of allCoords(width, height)
+      .filter((at) => !ring || !onBoardEdgeV7(width, height, at))
       .sort((a, b) => {
         const ax = (2 * a.x - width + 1) / width;
         const ay = (2 * a.y - height + 1) / height;
@@ -1387,11 +1419,12 @@ function validateNavalCandidate(
   const failures: MapInvariantCodeV7[] = [];
   if (candidate.navalPlacementFailed) return ["SETTLEMENT_COUNT"];
   const shallowMinimumShare =
-    rules === "REVISION_16"
+    rules !== "REVISION_15"
       ? SHALLOW_WATER_MINIMUM_SHARE_V7
       : REVISION_15_SHALLOW_WATER_MINIMUM_SHARE_V7;
   const land = board.tiles.filter((tile) => tile.biome !== null);
   const water = board.tiles.filter((tile) => tile.biome === null);
+  const coastRing = setup.mapType === "PANGEA" && rules === "PANGEA_COAST_RING";
   const bounds =
     setup.mapType === "PANGEA"
       ? [0.68, 0.76]
@@ -1400,9 +1433,12 @@ function validateNavalCandidate(
         : setup.mapType === "ARCHIPELAGO"
           ? [0.34, 0.46]
           : [0.72, 0.84];
+  // The coast-ring Pangea has exactly its land count (59.5-72% of the board).
   if (
-    land.length < Math.ceil((bounds[0] ?? 0) * board.tiles.length) ||
-    land.length > Math.floor((bounds[1] ?? 1) * board.tiles.length)
+    coastRing
+      ? land.length !== pangeaLandCountV7(board.width, board.height)
+      : land.length < Math.ceil((bounds[0] ?? 0) * board.tiles.length) ||
+        land.length > Math.floor((bounds[1] ?? 1) * board.tiles.length)
   )
     failures.push("TILE_LAYOUT");
   if (
@@ -1567,13 +1603,78 @@ function validateNavalCandidate(
   )
     failures.push("CAPITAL_SEA_ESCAPE");
   if (
-    rules === "REVISION_16" &&
+    rules !== "REVISION_15" &&
     capitalTiles.some(
       (capital) => !capitalGrowthReadyV7(board, capital.at, true),
     )
   )
     failures.push("CAPITAL_GROWTH");
+  if (coastRing && !pangeaCoastRingV7(board)) failures.push("COAST_RING");
   return [...new Set(failures)];
+}
+
+/**
+ * The Pangea coast ring (`COAST_RING`): no land cell is on the board's edge
+ * ring, so Water surrounds the island, and a boat that may enter Shallow
+ * Water only (Shorecraft) can sail all the way around the main landmass (the
+ * largest eight-connected land component). Exactly: the Shallow Water cells
+ * orthogonally adjacent to the main landmass lie in one eight-connected
+ * Shallow Water component, and that component encloses the main landmass, so
+ * no four-connected path from outside the board through cells outside the
+ * component reaches it. Movement is eight-directional, so the enclosing
+ * component contains a closed sailing loop around the island.
+ */
+export function pangeaCoastRingV7(board: BoardStateV7): boolean {
+  const { width, height } = board;
+  const coords = allCoords(width, height);
+  if (
+    coords.some(
+      (at) =>
+        onBoardEdgeV7(width, height, at) && tileAt(board, at)?.biome !== null,
+    )
+  )
+    return false;
+  const landKeys = new Set(
+    board.tiles
+      .filter((tile) => tile.biome !== null)
+      .map((tile) => key(tile.at)),
+  );
+  const main = componentsOfMask(width, height, landKeys, true)[0];
+  if (main === undefined) return false;
+  const mainKeys = new Set(main.map(key));
+  const shallow = (at: CoordV7): boolean =>
+    tileAt(board, at)?.terrain === "SHALLOW_WATER";
+  const coast = new Set<string>();
+  for (const at of main)
+    for (const near of neighbors4(width, height, at))
+      if (shallow(near)) coast.add(key(near));
+  const start = main
+    .flatMap((at) => neighbors4(width, height, at))
+    .find(shallow);
+  if (start === undefined) return false;
+  const loop = new Set([key(start)]);
+  const queue = [start];
+  for (let cursor = 0; cursor < queue.length; cursor += 1)
+    for (const near of neighbors8(width, height, queue[cursor] as CoordV7))
+      if (shallow(near) && !loop.has(key(near))) {
+        loop.add(key(near));
+        queue.push(near);
+      }
+  if ([...coast].some((cell) => !loop.has(cell))) return false;
+  const outside = coords.filter(
+    (at) => onBoardEdgeV7(width, height, at) && !loop.has(key(at)),
+  );
+  const reached = new Set(outside.map(key));
+  for (let cursor = 0; cursor < outside.length; cursor += 1) {
+    const at = outside[cursor] as CoordV7;
+    if (mainKeys.has(key(at))) return false;
+    for (const near of neighbors4(width, height, at))
+      if (!loop.has(key(near)) && !reached.has(key(near))) {
+        reached.add(key(near));
+        outside.push(near);
+      }
+  }
+  return true;
 }
 
 function componentIndex(
@@ -1587,12 +1688,11 @@ function componentIndex(
 }
 
 function isBoardEdge(board: BoardStateV7, at: CoordV7): boolean {
-  return (
-    at.x === 0 ||
-    at.y === 0 ||
-    at.x === board.width - 1 ||
-    at.y === board.height - 1
-  );
+  return onBoardEdgeV7(board.width, board.height, at);
+}
+
+function onBoardEdgeV7(width: number, height: number, at: CoordV7): boolean {
+  return at.x === 0 || at.y === 0 || at.x === width - 1 || at.y === height - 1;
 }
 
 function landingFrontier(
@@ -1896,7 +1996,7 @@ export function createInitialMapStateV7(
 export function createInitialMapStateWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "REVISION_16",
+  rules: MapGenerationRulesV7 = "PANGEA_COAST_RING",
 ): CreateInitialMapStateResultV7 {
   const setup = parseMatchSetupV7(input);
   if (setup === null)

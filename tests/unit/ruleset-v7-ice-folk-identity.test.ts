@@ -24,10 +24,11 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // The Ice Folk revision (`pulp_wars-7g3.3`): identity
 // (docs/product/RULESET_7_ICE_FOLK.md sections 2.1 and 15). It took 7r24;
 // the Martian balance bead (`pulp_wars-t6s.5`, Colossus Defense 2.5) bumped
-// the identity to 7r25, so these pins follow the current identity.
+// the identity to 7r25, and the Pangea coast ring (`pulp_wars-9s0.2`)
+// to 7r26, so these pins follow the current identity.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 25;
+const REVISION = 26;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 

@@ -121,6 +121,29 @@ for (const mapType of mapTypes.slice(1))
       `${mapType}/${width}/${aiCount} coastline is seed invariant`,
     );
 assert.equal(cases, 960);
+// The Pangea coast ring across many more seeds: every size and AI count,
+// seeds 8-63 (seeds 0-7 ran above), with the full naval validation.
+let pangeaRingCases = 0;
+for (const [width, aiCount] of setups)
+  for (let seed = 8; seed < 64; seed += 1) {
+    const generated = generateInitialMapV7({
+      rulesetId: RULESET_7_ID,
+      seed,
+      width,
+      height: width,
+      aiCount,
+      aiDifficulty: "NORMAL" as const,
+      aiMode: "RIVAL" as const,
+      humanColor: "CORAL" as const,
+      factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
+      mapType: "PANGEA" as const,
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+    });
+    assert(generated.ok, `PANGEA/${width}/${aiCount}/${seed} failed`);
+    validate(generated.map.board.tiles, width, "PANGEA", aiCount + 1);
+    pangeaRingCases += 1;
+  }
+assert.equal(pangeaRingCases, setups.length * 56);
 assert.equal(Object.keys(dryParityActual).length, setups.length * 8);
 if (writeDryParity)
   writeFileSync(dryParityPath, `${JSON.stringify(dryParityActual, null, 2)}\n`);
@@ -131,7 +154,13 @@ else
     "DRY_LAND parity file has missing or stale cells",
   );
 console.log(
-  JSON.stringify({ cases, exactRepeats: cases, mapTypes, status: "PASS" }),
+  JSON.stringify({
+    cases,
+    exactRepeats: cases,
+    pangeaCoastRingCases: pangeaRingCases + setups.length * 16,
+    mapTypes,
+    status: "PASS",
+  }),
 );
 
 function dryLandParityHash(
@@ -179,9 +208,19 @@ function validate(
     );
     return;
   }
+  // The Pangea coast ring: 72% of the board as land, capped at 90% of the
+  // interior (the board without its edge ring): 59.5% to 72% of the board.
+  if (mapType === "PANGEA")
+    assert.equal(
+      land.length,
+      Math.min(
+        Math.floor(width * width * 0.72),
+        Math.floor((width - 2) * (width - 2) * 0.9),
+      ),
+    );
   const bounds =
     mapType === "PANGEA"
-      ? [0.68, 0.76]
+      ? [0.59, 0.76]
       : mapType === "CONTINENTS"
         ? [0.5, 0.62]
         : mapType === "ARCHIPELAGO"
@@ -253,6 +292,7 @@ function validate(
     assert(main !== undefined);
     assert(main.length >= Math.ceil(land.length * 0.9));
     assert.equal(settlementsIn(main), settlements.length);
+    assertPangeaCoastRing(tiles, width, main, capitals);
   }
   if (mapType === "CONTINENTS") {
     assert(landComponents.every((component) => settlementsIn(component) > 0));
@@ -331,6 +371,94 @@ function validate(
     if (!usefulLandExpansion(tiles, width, capital.at))
       assert(capitalSeaEscape(tiles, width, capital.at, componentByKey));
   }
+}
+/**
+ * The Pangea coast ring, checked independently of the engine's `COAST_RING`
+ * invariant: (1) every edge cell is water, so the edge ring is a water loop a
+ * Navigation boat can sail; (2) a Shorecraft boat (Shallow Water only, eight
+ * directions) can sail all the way around the main landmass: the Shallow
+ * cells orthogonally adjacent to it lie in one eight-connected Shallow
+ * component, and no four-connected path from the board's outside through
+ * cells outside that component reaches the landmass; (3) no capital is next
+ * to an unreachable area: every water cell within two cells of a capital is
+ * connected by water to the edge ring.
+ */
+function assertPangeaCoastRing(
+  tiles: Parameters<typeof tile>[0],
+  width: number,
+  main: readonly CoordV7[],
+  capitals: Parameters<typeof tile>[0],
+): void {
+  const isWater = (at: CoordV7): boolean => {
+    const terrain = tile(tiles, width, at)?.terrain;
+    return terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER";
+  };
+  const edgeCells = tiles.filter((value) => edge(width, value.at));
+  assert(
+    edgeCells.every((value) => isWater(value.at)),
+    "Pangea land on the edge ring",
+  );
+  const mainKeys = new Set(main.map(key));
+  const shallow = (at: CoordV7): boolean =>
+    tile(tiles, width, at)?.terrain === "SHALLOW_WATER";
+  const coast = main.flatMap((at) =>
+    orthogonalNeighbors(width, at).filter(shallow),
+  );
+  const start = coast[0];
+  assert(start !== undefined, "Pangea without a coast");
+  const loop = flood(width, [start], shallow, neighbors);
+  assert(
+    coast.every((at) => loop.has(key(at))),
+    "Pangea coast split into separate Shallow Water bodies",
+  );
+  const outside = flood(
+    width,
+    edgeCells.map((value) => value.at).filter((at) => !loop.has(key(at))),
+    (at) => !loop.has(key(at)),
+    orthogonalNeighbors,
+  );
+  assert(
+    [...outside].every((cell) => !mainKeys.has(cell)),
+    "Pangea cannot be circumnavigated in Shallow Water",
+  );
+  const ring = flood(
+    width,
+    edgeCells.map((value) => value.at),
+    isWater,
+    neighbors,
+  );
+  for (const capital of capitals)
+    for (const near of tiles)
+      if (
+        Math.max(
+          Math.abs(near.at.x - capital.at.x),
+          Math.abs(near.at.y - capital.at.y),
+        ) <= 2 &&
+        isWater(near.at)
+      )
+        assert(
+          ring.has(key(near.at)),
+          `Pangea capital ${capital.at.x},${capital.at.y} next to a landlocked lake`,
+        );
+}
+function flood(
+  width: number,
+  starts: readonly CoordV7[],
+  passable: (at: CoordV7) => boolean,
+  step: (width: number, at: CoordV7) => CoordV7[],
+): Set<string> {
+  const seen = new Set(starts.map(key));
+  const queue = [...starts];
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const current = queue[cursor];
+    assert(current !== undefined);
+    for (const near of step(width, current))
+      if (passable(near) && !seen.has(key(near))) {
+        seen.add(key(near));
+        queue.push(near);
+      }
+  }
+  return seen;
 }
 function components(width: number, keys: Set<string>): CoordV7[][] {
   const left = new Set(keys);

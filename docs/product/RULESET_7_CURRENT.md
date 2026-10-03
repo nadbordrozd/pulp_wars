@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r25`, for all five playable factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r26`, for all five playable factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), and Martian
 (`MARTIAN`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
@@ -37,9 +37,11 @@ The Undead, the Goblins, the Dinosaurs, and the Martians are part of the
 ordinary game: faction choice is offered in every match setup, with no
 development flag. Every number below was checked against the engine code at
 `pulp-wars-poc-7r25`; `pulp-wars-poc-7r24` (`pulp_wars-7g3.3`) registers the
-Ice Folk overlay and changes no rule of the five factions.
+Ice Folk overlay and changes no rule of the five factions, and
+`pulp-wars-poc-7r26` (`pulp_wars-9s0.2`) changes only Pangea map generation
+(the coast ring, [section 2.3](#23-map-types)).
 
-**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r25` also
+**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r26` also
 registers a sixth faction, `ICE_FOLK`, whose rules are in the
 [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (engine implemented by
 `pulp_wars-7g3.3` at `pulp-wars-poc-7r24`; its Normal AI and UI are in
@@ -95,7 +97,7 @@ placeholder-art plan, and Rift rules for a terrain that is not in the game;
 the values here are current. Where a document and the code
 disagreed, the code's behavior is the rule and is stated below;
 [Known discrepancies](#22-known-discrepancies) lists the open items as of
-`pulp-wars-poc-7r25`.
+`pulp-wars-poc-7r26`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague, and
@@ -147,10 +149,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                      |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Ruleset                                    | `pulp-wars-poc-7r25`                                                                                                                                                                                               |
+| Ruleset                                    | `pulp-wars-poc-7r26`                                                                                                                                                                                               |
 | Game-state schema                          | `7`                                                                                                                                                                                                                |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                |
-| Browser autosave                           | `pulpWars.save.v7r25.current`                                                                                                                                                                                      |
+| Browser autosave                           | `pulpWars.save.v7r26.current`                                                                                                                                                                                      |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                         |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK` (the last is the pending Ice Folk overlay)                                                                                                       |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`                                                                          |
@@ -161,7 +163,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r24`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r25`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -185,9 +187,10 @@ separate [Ruleset 6](RULESET_6.md) route.
   and no shape. The Ice Folk overlay (`7r24`) registered the sixth faction
   with the `chilled` list, the `THROW_BOLAS` and `COLD_SNAP` commands, and
   the `UNITS_CHILLED` event. `pulp_wars-t6s.5` (`7r25`) changed only the
-  Colossus Defense.
+  Colossus Defense. `pulp_wars-9s0.2` (`7r26`) changed only Pangea map
+  generation (the coast ring) and no shape; a stored state keeps its board.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r24.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r25.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -326,14 +329,31 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 
 ### 2.3 Map types
 
-| Map type      | Land share | Structure                                                                                         |
-| ------------- | ---------: | ------------------------------------------------------------------------------------------------- |
-| `DRY_LAND`    |       100% | No water; all capitals share one land component.                                                  |
-| `PANGEA`      |     68–76% | One major landmass holds every settlement and at least 90% of land; at least one deep-water body. |
-| `CONTINENTS`  |     50–62% | Two major landmasses for two players, otherwise three; capitals on at least two of them.          |
-| `ARCHIPELAGO` |     34–46% | Between `playerCount` and `2 * playerCount + 2` major islands; each capital on a different one.   |
-| `LAKES`       |     72–84% | At least two enclosed lakes of four or more cells; at least 75% of water is not edge-connected.   |
+| Map type      | Land share | Structure                                                                                       |
+| ------------- | ---------: | ----------------------------------------------------------------------------------------------- |
+| `DRY_LAND`    |       100% | No water; all capitals share one land component.                                                |
+| `PANGEA`      |   59.5–72% | One major landmass holds every settlement and at least 90% of land; a coast ring surrounds it.  |
+| `CONTINENTS`  |     50–62% | Two major landmasses for two players, otherwise three; capitals on at least two of them.        |
+| `ARCHIPELAGO` |     34–46% | Between `playerCount` and `2 * playerCount + 2` major islands; each capital on a different one. |
+| `LAKES`       |     72–84% | At least two enclosed lakes of four or more cells; at least 75% of water is not edge-connected. |
 
+- **Pangea coast ring** (`pulp_wars-9s0.2`). Pangea land never lies on the
+  board's edge ring (row 0, column 0, the last row, and the last column),
+  so water surrounds the island and the island can be circumnavigated. The
+  land is 72% of the board capped at 90% of the interior (the board without
+  its edge ring), taken as the first interior cells in the same seeded,
+  jittered radial order as before: 72 of 121 cells (59.5%) on 11 x 11, 129
+  of 196 (65.8%) on 14 x 14, 176 of 256 (68.75%) on 16 x 16, and 72% on
+  20 x 20 and 25 x 25 (288 and 450 cells). The ring is one cell wide where
+  the island comes closest to the edge and wider toward the corners. It is
+  navigable with Shorecraft alone: the Shallow Water next to the island
+  (water orthogonally adjacent to land) forms one connected Shallow loop
+  all the way around it, while the ring's corners, away from land, are Deep
+  Water (Navigation). A candidate fails the `COAST_RING`
+  invariant unless (a) no edge cell is land and (b) the Shallow Water cells
+  orthogonally adjacent to the main landmass lie in one eight-connected
+  Shallow Water body that encloses the landmass. Every other map type is
+  byte-identical to the generator before the ring.
 - A water cell is `SHALLOW_WATER` if and only if at least one of its four
   orthogonal neighbours on the board is land; every other water cell,
   including water that touches land only diagonally, is `DEEP_WATER`.
@@ -347,7 +367,9 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 - A capital without useful land expansion receives an affordable sea escape.
 - The exact topology algorithm and acceptance bands are in
   [revision 6 §3](RULESET_7_REVISION_6_WATER_NAVAL.md#3-deterministic-map-generation)
-  and [revision 7 §2](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md#2-map-acceptance).
+  and [revision 7 §2](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md#2-map-acceptance);
+  the Pangea coast ring above replaces their Pangea land mask and its
+  68–76% band.
 
 ### 2.4 Biomes, terrain, and resources
 
@@ -3936,6 +3958,7 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
 | Martian  | `pulp-wars-poc-7r23` | `pulp_wars-t6s.4` Martian UI (setup offers Martians; `t6s.6` production art) and `t6s.3` Martian Normal AI, no identity change                                                                      | [Martian overlay](RULESET_7_MARTIANS.md)                      |
 | —        | `pulp-wars-poc-7r24` | `pulp_wars-7g3.3`: Ice Folk faction engine, not offered in setup (AI and UI pending); **not folded** into this document                                                                             | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                     |
 | Martian  | `pulp-wars-poc-7r25` | `pulp_wars-t6s.5` coarse Dry Land Martian balance: Colossus Defense 2.5                                                                                                                             | [Martian balance](../validation/RULESET_7_MARTIAN_BALANCE.md) |
+| —        | `pulp-wars-poc-7r26` | `pulp_wars-9s0.2`: the Pangea coast ring (no land on the edge ring; Shallow circumnavigation; 59.5–72% land); other map types unchanged                                                             | [section 2.3](#23-map-types)                                  |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -4120,12 +4143,12 @@ the code's behavior is stated:
 
 ## 22. Known discrepancies
 
-No rule discrepancy is open: as of `pulp-wars-poc-7r25` the rules in this
+No rule discrepancy is open: as of `pulp-wars-poc-7r26` the rules in this
 document match the code for the five playable factions, including the
 Dinosaur faction of revisions 19 and 20, the achievements of revision 21,
 and the Martian faction of the Martian overlay.
 
-**Pending overlay in the code.** The engine at `pulp-wars-poc-7r25` also
+**Pending overlay in the code.** The engine at `pulp-wars-poc-7r26` also
 contains the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (`pulp_wars-7g3.3`,
 `7r24`), which this document does not describe: the `ICE_FOLK`
 faction and `ICE_FOLK_BASELINE_V1` tree, the commands `THROW_BOLAS` and
