@@ -73,6 +73,13 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "2571d656f451581da64e24744b76489251536d04b7c06be06120cd79be7a6433",
   "TEST_GROUNDS@1:GOBLIN":
     "b82a6886fe8e938b35f21807277443e5a296d8bdf69284f59f65a5637917577b",
+  // The AI-directive fixtures (`pulp_wars-68k.3`).
+  "TEST_RUSH@1:ORIGINAL":
+    "243228c450a3067a06a06078af18ad3254c40fa43a723577d13b010903dc7f87",
+  "TEST_HOLD@1:ORIGINAL":
+    "ab9625959c3cea281c1a8628bea232302513cc0a5d928e416fad71419e6a4670",
+  "TEST_GUARD@1:ORIGINAL":
+    "493749a981bcc06da8f1346adedfef54c1dd0d6a491e7167376f4a8cceb5432a",
 };
 
 function missionStateHash(state: GameStateV7): string {

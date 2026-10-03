@@ -79,6 +79,8 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/v7/commands",
       "../engine/v7/dwarf",
       "../engine/v7/economy",
+      // pulp_wars-68k.3: the match's forbidden technologies (from the setup).
+      "../engine/v7/forbidden-technologies",
       "../engine/v7/events",
       "../engine/v7/ice-folk",
       "../engine/v7/movement",
@@ -93,6 +95,8 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "./v7-martian",
       "./v7-ice-folk",
       "./v7-dwarf",
+      // pulp_wars-68k.3: mission directives (read from the public setup).
+      "./v7-directives",
       "./v7-opening",
       "./v7-undead",
     ]);

@@ -3,8 +3,10 @@
 **Status:** design (`pulp_wars-68k.1`, epic `pulp_wars-68k`). The engine
 bead `68k.2` is implemented at `pulp-wars-poc-7r34`
 ([current rules section 2.6](RULESET_7_CURRENT.md#26-mission-setup); its
-notes are in [section 8.1](#81-68k2-engine-missions-authored-maps-forbidden-technologies));
-nothing else here is implemented yet. The implementation beads in
+notes are in [section 8.1](#81-68k2-engine-missions-authored-maps-forbidden-technologies)),
+and the AI bead `68k.3` (directives and proxy variation; its notes are in
+[section 8.2](#82-68k3-ai-mission-directives-and-proxy-variation)); nothing
+else here is implemented yet. The implementation beads in
 [section 8](#8-implementation-beads) follow this document; where an
 implementation bead finds that this design and the code disagree, it stops
 and surfaces the conflict.
@@ -845,6 +847,44 @@ Validation profile: ai/map/persistence
 Worker focused checks: npx vitest run tests/unit/ruleset-v7-mission-directives.test.ts tests/unit/ruleset-v7-campaign-ai.test.ts ; npm run typecheck ; npm run lint
 Conditional final gates: npm run check ; npm run validate:ruleset6-release ; npm run validate:ruleset7-release
 ```
+
+**Implementation notes (`68k.3`, no identity change).** The full account is
+in [Greedy Normal AI](../architecture/NORMAL_AI.md#mission-directives-pulp_wars-68k3)
+and [Headless simulation](../architecture/HEADLESS_SIMULATION.md#mission-directives-and-proxy-variation-pulp_wars-68k3).
+Where section 2.5 left a detail open, the AI decided:
+
+- **A leashed unit outside its zone** keeps the relocations that bring it
+  closer (fewer land-route steps, or a smaller distance where no explored
+  route exists); every other relocation ending outside is removed. Without
+  this a unit carried out by an advance, trained in a city outside the zone,
+  or starting outside could never walk its `RETURN` job.
+- **Leashed units:** `HOLD` leashes every own land or embarked unit, `GUARD`
+  its garrison. The relocating commands are a Move's last tile, a Disembark,
+  a Bomb Run landing, a Tunnel (Mole and rider), and a Beam Down passenger.
+- **`RUSH`** also drops the defence job of free units (only the reserve,
+  defenders walking to a threatened city, still defends). A unit with no
+  explored land route to the known city has no job and approaches it
+  directly; the content bead should reveal a route (mission 1's reveal of
+  the human capital is enough on its open board).
+- **`RETURN`** goes to the zone tile nearest by distance, then by the
+  straighter line; the route field covers the whole zone. A `GUARD`
+  garrison unit inside the zone takes `RETURN` to its own tile (it stays). A
+  unit on an own city center with a hostile unit near, or a defender bound
+  for a threatened city, keeps that objective, as in every match.
+- **Priority band** of the proxy variation is the best candidate's exact
+  `priority`; with one qualifying alternative it is taken, with two a second
+  draw picks. `rate` must lie in `[0, 1]`.
+- **Directive checks** (`validateMissionDirectivesV7`, a test over the
+  registry; the engine does not read directives): only AI seats, non-empty
+  on-board zones, a positive garrison, `untilRound` of at least 2.
+- **Fixtures** `TEST_RUSH`, `TEST_HOLD`, `TEST_GUARD` (revision 1,
+  `src/engine/v7/missions/test-directives.ts`) are pinned in the mission
+  hash test like `TEST_GROUNDS`. `TEST_GROUNDS` (water, Naval branch
+  forbidden) plays differently from `68k.2` only through the naval gate.
+- **Section 7.1, mission 4:** a dead garrison unit is replaced by the next
+  unit in the choice order, which has to walk in; in a fixture run where the
+  human army occupied the zone, 5 of 30 End Turns fell short. The content
+  bead should read the "every End Turn" check with that in mind.
 
 ### 8.3 `68k.4` Content: the four teaser missions and their playtest
 

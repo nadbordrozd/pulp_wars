@@ -343,6 +343,45 @@ starting position are fixed). `pulp_wars-68k.2` changes no AI decision:
 non-mission matches replay byte-identically to `7r33` apart from the ruleset
 ID.
 
+### Mission directives and proxy variation (`pulp_wars-68k.3`)
+
+An AI seat of a mission plays its directive (`RUSH`, `HOLD`, `GUARD`;
+[campaign design](../product/CAMPAIGN.md) section 2.5;
+[Greedy Normal AI](NORMAL_AI.md#mission-directives-pulp_wars-68k3)) in
+headless matches exactly as in the browser: the directive is read from the
+public view inside the Normal policy, so `runAiMatchV7`, the CLI, and the
+browser controller need no switch. The hidden fixtures `TEST_RUSH`,
+`TEST_HOLD`, and `TEST_GUARD` are runnable like `TEST_GROUNDS`:
+
+```bash
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type mission --mission TEST_HOLD --max-rounds 20
+```
+
+A mission played Normal against Normal is always one game. **Proxy
+variation** (headless and tests only, never the browser) varies seat 0, the
+human's seat, with an option of `runAiMatchV7`:
+
+```ts
+runAiMatchV7(missionMatchSetupV7(mission), {
+  maxRounds: 80,
+  proxyVariation: { seed: 7, rate: 0.15 },
+});
+```
+
+At each seat-0 decision a Mulberry32 stream of its own, seeded from `seed`
+(never the match's `random`, so the board and every PRNG draw of the match
+are unchanged), draws once; with probability `rate` the second or third best
+candidate within the best candidate's priority band (the same `priority`;
+a second draw picks between the two) is played instead of the best. The best
+is never replaced when it is `END_TURN`, and `END_TURN` is never the
+substitute, so the proxy never ends a turn early; the substitute still obeys
+the turn-command cap. Every substitute is a ready public command, so the
+command log is an ordinary valid replay. The same `(seed, rate)` always plays
+the same game; `rate` must lie in `[0, 1]` (`0` plays exactly the unvaried
+game). `proxyVariedDecisionV7` (`src/headless/v7.ts`) is the pure step. The
+CLI and batches do not expose the option; the campaign playtest script of
+`pulp_wars-68k.4` calls `runAiMatchV7` directly.
+
 ## Normal AI pressure telemetry (`pulp_wars-9s0.1`)
 
 `scripts/ruleset7-ai-pressure-telemetry.ts` measures how expansionist and

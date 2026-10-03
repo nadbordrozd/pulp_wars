@@ -2153,6 +2153,101 @@ Administration. The other is the recorded seed-9 turn
 (`tests/fixtures/ruleset-v7-redevelop-cycle.json`). Both fail with the policy
 before the fix.
 
+## Mission directives (`pulp_wars-68k.3`)
+
+A mission's AI seat may carry one directive
+([campaign design](../product/CAMPAIGN.md) section 2.5): `NORMAL`, `RUSH`,
+`HOLD(zone)`, or `GUARD(zone, garrison)`, each optionally `untilRound`.
+`src/ai/v7-directives.ts` resolves it from the public view
+(`view.setup.mission` names the mission, `view.viewer.seat` the seat) and
+plays it while `view.round < untilRound`; from that round on, and for seat 0,
+a seat without a directive, `NORMAL`, and every non-mission match, the
+directive plan is null. A zone is a union of inclusive rectangles. Nothing
+reads hidden state, the clock, or the PRNG.
+
+The directive enters the policy at exactly two points; scoring, tactics,
+faction modules, research, and production are untouched.
+
+1. **The leash** (`leashReadyCommandsV7`), applied to
+   `queryAiReadyCommandsV7` output in `NormalPolicyWorkV7.prepareContext`
+   (and in `makeContext`, which the inspection helpers use). It removes every
+   command that would end a leashed unit's relocation outside the zone: the
+   end of a Move path, a Disembark, a Bomb Run landing, a Tunnel (the Mole
+   and its rider), a Beam Down passenger. Attacks (an advance after a kill
+   included), `END_TURN`, research, training, construction, and every city
+   command are never filtered, so a directive cannot leave the policy without
+   a legal command. A leashed unit already outside the zone (an advance
+   carried it out, or it was trained or started there) keeps the relocations
+   that bring it closer: fewer land-route steps to the zone where both tiles
+   have an explored route, otherwise a smaller distance. `HOLD` leashes every
+   own land or embarked unit, `GUARD` its garrison, `RUSH` nothing.
+2. **The plan** (`CampaignFactsV7.directive` in `src/ai/v7-campaign.ts`).
+   - `RUSH`, once a hostile city is known: no village, chest, or exploration
+     job, and no defence job for a free unit (only the reserve, the
+     defenders walking to a threatened city, still defends); every free unit
+     with a land route marches on its nearest known hostile city, and every
+     wave sets out at once (`needed` 1, `push`). With no hostile city known
+     the plan is the `NORMAL` plan. A unit with no explored land route to the
+     city has no job and approaches it directly, as before the campaign plan.
+   - `HOLD`: no `VILLAGE`, `CHEST`, `EXPLORE`, or `ATTACK` job whose target
+     lies outside the zone (the frontier, the villages, the chests, and the
+     march targets are filtered; `atWar` still reads every known hostile
+     city, so war training is unchanged).
+   - `HOLD` and `GUARD`: before any other job, a leashed unit outside the
+     zone takes the new `RETURN` job to the nearest zone tile (by distance,
+     then the straighter line), following the land-route field to the whole
+     zone; a `GUARD` garrison unit inside the zone takes `RETURN` to its own
+     tile, so it stays (a Move inside the zone makes no route progress). A
+     unit on an own city center while a hostile unit is near, or a defender
+     with a threatened-city objective, keeps that objective as before.
+   - **Garrison** (`guardGarrisonV7`), recomputed at every decision: own land
+     units inside the zone first, then by land-route steps to the zone
+     (units with no route last), then by unit ID; at most `garrison`, fewer
+     when the seat has fewer land units. Every other unit plays `NORMAL`.
+   - **Routes to the zone are per unit:** whether a unit's route crosses
+     Mountains is the shared terrain rule (`unitMayEnterMountainV7`:
+     Engineering, a walker or flyer, or a Mountain-born unit), so at most two
+     fields are built per decision. All directive readers read the board
+     (`view.units`): a burrowed unit takes no command and stands in no zone,
+     and a Tunnel that would surface a leashed Mole or rider outside the zone
+     is a removed relocation.
+
+The naval plan is now gated on `forbiddenTechnologiesV7(setup)` containing
+Shorecraft, not on `mapType === "DRY_LAND"` (the same set on Dry Land and
+none on the generated map types). A mission with water and a forbidden Naval
+branch therefore plans no crossing: before this change the plan for
+`TEST_GROUNDS` was active from round 1 and held 6 Coins back for a Shorecraft
+the seat could never research. `inspectNormalNavalPlanV7` publishes the plan's
+public facts.
+
+**Identity.** With a null directive plan the leash returns the ready array
+itself and the plan facts carry no `directive`, so every decision is
+byte-identical. Measured with a scratch harness over 24 headless matches at
+`pulp-wars-poc-7r34` (Dry Land, Pangea, Continents, Archipelago, and Lakes at
+11 x 11 with four faction pairings each, a three-seat Cooperative Continents
+match, and a four-seat Showcase match): the command, event, and final-state
+hashes equal those of `main` before this change. `TEST_GROUNDS` (a `NORMAL`
+mission with water and the Naval branch forbidden) changes, and only through
+the naval gate: with the old gate restored it replays the old hashes.
+
+**Fixtures and evidence.** The hidden missions `TEST_RUSH` (Goblin, four
+units), `TEST_HOLD` (Undead, rows 0–4 until round 8, one unit starting
+outside), and `TEST_GUARD` (Undead, the 3 x 3 gate zone, garrison 2)
+(`src/engine/v7/missions/test-directives.ts`) are played headless in
+`tests/unit/ruleset-v7-mission-directives.test.ts`. Measured with a scratch
+harness: each fixture played 11 times, up to 30 rounds (the unvaried game and
+proxy seeds 1–10 at rate 0.15), once with its directive and once with every
+directive disabled (`NORMAL`); no run had a policy error or a stall.
+
+| Fixture      | With the directive                                                                                                                                                | `NORMAL` on the same board                                                                                     |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `TEST_RUSH`  | first Goblin attack in round 4 in all 11; every job `ATTACK` once a route is explored; the Goblins win 10                                                         | first attack in rounds 5–7; the Goblins win 10                                                                 |
+| `TEST_HOLD`  | before round 8 no unit ends an Undead turn outside the zone except the one that starts outside (2 turns, walking back); a unit leaves the zone after round 8 in 7 | units end 7 of 7 turns before round 8 outside the zone (up to 4 tiles); the Undead win all 11, median round 11 |
+| `TEST_GUARD` | at 235 of 240 Undead End Turns at least `min(2, land units)` stand in the zone; the 5 misses are one run in which the human army occupied the zone                | 42 of 116 End Turns short                                                                                      |
+
+A garrison that dies is replaced by the next unit in the choice order, which
+has to walk in; a replacement cannot enter tiles the enemy holds.
+
 ## Revision-8 merged industry and processor adjacency
 
 The current Ruleset 7 policy uses the single

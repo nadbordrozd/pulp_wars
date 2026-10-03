@@ -60,6 +60,10 @@ import type {
  * the PRNG or depends on elapsed time; routes are breadth-first searches
  * over explored, enterable land (units are not walls), at most a few dozen
  * per decision.
+ *
+ * A mission directive (`pulp_wars-68k.3`, `src/ai/v7-directives.ts`)
+ * adjusts the jobs through `CampaignFactsV7.directive` and adds the
+ * `RETURN` job; without one the plan is exactly as described above.
  */
 
 /** A visible hostile land unit this close to an own center is an invader. */
@@ -113,8 +117,12 @@ export class RouteFieldV7 {
   }
 }
 
+/**
+ * `RETURN` (`pulp_wars-68k.3`): a mission directive's leashed unit walks
+ * back to its zone, or (a `GUARD` garrison unit inside it) stays.
+ */
 export type CampaignJobV7 =
-  "DEFEND" | "VILLAGE" | "CHEST" | "EXPLORE" | "ATTACK";
+  "DEFEND" | "VILLAGE" | "CHEST" | "EXPLORE" | "ATTACK" | "RETURN";
 
 export interface CampaignAssignmentV7 {
   readonly job: CampaignJobV7;
@@ -173,7 +181,33 @@ export interface CampaignFactsV7 {
    * round). Absent for every other seat.
    */
   readonly mountainBorn?: (unit: PublicUnitV7) => boolean;
+  /**
+   * `pulp_wars-68k.3`: the seat's active mission directive
+   * (`src/ai/v7-directives.ts`). Absent for `NORMAL` and in every
+   * non-mission match, and then the plan is unchanged.
+   */
+  readonly directive?: CampaignDirectiveV7;
 }
+
+/**
+ * The plan side of a mission directive (docs/product/CAMPAIGN.md section
+ * 2.5). `RUSH`: once a hostile city is known, no village, chest, or
+ * exploration job, no defence job for a free unit, and every wave sets out
+ * at once. `HOLD`: no job whose target lies outside the zone. `HOLD` and
+ * `GUARD`: a leashed unit outside the zone takes the `RETURN` job to it;
+ * a leashed `GUARD` (garrison) unit inside it stays.
+ */
+export type CampaignDirectiveV7 =
+  | { readonly kind: "RUSH" }
+  | {
+      readonly kind: "HOLD" | "GUARD";
+      readonly inZone: (at: CoordV7) => boolean;
+      /** A unit's land-route steps to the nearest zone tile. */
+      readonly zoneField: (unit: PublicUnitV7) => RouteFieldV7;
+      readonly nearestZoneTile: (at: CoordV7) => CoordV7;
+      /** `HOLD`: every own land unit; `GUARD`: the garrison. */
+      readonly leashed: (unit: PublicUnitV7) => boolean;
+    };
 
 const chebyshev = (left: CoordV7, right: CoordV7): number =>
   Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
@@ -294,6 +328,26 @@ export function campaignPlanForPolicyV7(
   }
   free.sort((left, right) => left.id - right.id);
   reserve.sort((left, right) => left.id - right.id);
+  // pulp_wars-68k.3: a leashed unit outside its zone walks back first (the
+  // leash keeps only its relocations toward the zone), and a GUARD garrison
+  // unit inside the zone stays; neither takes another job.
+  const directive = facts.directive;
+  const zoned =
+    directive !== undefined && directive.kind !== "RUSH" ? directive : null;
+  if (zoned !== null)
+    for (const unit of [...free, ...reserve]) {
+      if (!zoned.leashed(unit)) continue;
+      const inside = zoned.inZone(unit.at);
+      if (inside && zoned.kind !== "GUARD") continue;
+      assignmentByUnitId.set(unit.id, {
+        job: "RETURN",
+        at: inside ? unit.at : zoned.nearestZoneTile(unit.at),
+        field: zoned.zoneField(unit),
+        targetCityId: null,
+      });
+    }
+  /** HOLD: every job target lies inside the zone. */
+  const confine = zoned !== null && zoned.kind === "HOLD" ? zoned.inZone : null;
   const atHome = (at: CoordV7): boolean =>
     ownCenters.some(
       (center) => chebyshev(center, at) <= CAMPAIGN_HOME_RADIUS_V7,
@@ -333,8 +387,10 @@ export function campaignPlanForPolicyV7(
         )
           edge = true;
       }
-    if (edge) frontier.push(index);
+    if (edge && (confine === null || confine(tile.at))) frontier.push(index);
   }
+  // pulp_wars-68k.3: a RUSH seat that knows a hostile city only attacks.
+  const rush = directive?.kind === "RUSH" && targets.length > 0;
   // A visible hostile unit is a lead too while no enemy city is known: its
   // city is somewhere behind it.
   if (targets.length === 0) for (const unit of hostileLand) leads.push(unit.at);
@@ -414,7 +470,7 @@ export function campaignPlanForPolicyV7(
     readonly index: number;
     readonly field: RouteFieldV7;
   }[] = [];
-  for (let index = 0; index < size; index += 1) {
+  for (let index = 0; index < size && !rush; index += 1) {
     const tile = tiles[index];
     if (
       tile !== undefined &&
@@ -422,13 +478,14 @@ export function campaignPlanForPolicyV7(
       tile.site === "VILLAGE" &&
       tile.territoryOwnerId === null &&
       !ownAt.has(index) &&
-      index !== seaTargetIndex
+      index !== seaTargetIndex &&
+      (confine === null || confine(tile.at))
     )
       errands.push({ job: "VILLAGE", index, field: field([index]) });
   }
-  for (const chest of view.treasureChests) {
+  for (const chest of rush ? [] : view.treasureChests) {
     const index = indexOf(chest);
-    if (!ownAt.has(index))
+    if (!ownAt.has(index) && (confine === null || confine(chest)))
       errands.push({ job: "CHEST", index, field: field([index]) });
   }
   const pairs: {
@@ -480,10 +537,13 @@ export function campaignPlanForPolicyV7(
     )
     .sort((left, right) => left.id - right.id);
   if (invaders.length > 0) {
-    const attackers = [...free, ...reserve].filter((unit) => {
-      const rule = unitRoleRuleV7(view, unit);
-      return rule.abilities.includes("ATTACK") && rule.attack2 > 0;
-    });
+    // A RUSH seat's free units all march: only the reserve defends.
+    const attackers = (rush ? reserve : [...free, ...reserve]).filter(
+      (unit) => {
+        const rule = unitRoleRuleV7(view, unit);
+        return rule.abilities.includes("ATTACK") && rule.attack2 > 0;
+      },
+    );
     const responses: {
       readonly invader: number;
       readonly unit: PublicUnitV7;
@@ -529,7 +589,10 @@ export function campaignPlanForPolicyV7(
   }
 
   // Exploration: the second scout before contact, the only one after.
-  sendScouts(targets.length === 0 ? CAMPAIGN_SCOUTS_BEFORE_CONTACT_V7 - 1 : 1);
+  if (!rush)
+    sendScouts(
+      targets.length === 0 ? CAMPAIGN_SCOUTS_BEFORE_CONTACT_V7 - 1 : 1,
+    );
   // Before contact the rest of the army follows the first scout, so the
   // enemy it finds meets a group and not one unit.
   if (targets.length === 0 && main !== null) {
@@ -544,13 +607,16 @@ export function campaignPlanForPolicyV7(
   const workFields: RouteFieldV7[] = errands
     .filter((errand) => errand.job === "VILLAGE")
     .map((errand) => errand.field);
-  if (targets.length > 0) {
-    const fields = targets.map((city) => field([indexOf(city.at)]));
+  // A HOLD seat marches on no city outside its zone.
+  const marchTargets =
+    confine === null ? targets : targets.filter((city) => confine(city.at));
+  if (marchTargets.length > 0) {
+    const fields = marchTargets.map((city) => field([indexOf(city.at)]));
     workFields.push(...fields);
     // The nearest city, a walled one counting as farther. Visible
     // defenders do not move the choice: they come and go with every step,
     // and a unit that changes its target every turn never arrives.
-    const penalties = targets.map(
+    const penalties = marchTargets.map(
       (city) =>
         Number(
           city.rewards.some(
@@ -571,14 +637,14 @@ export function campaignPlanForPolicyV7(
     ): number => {
       let best = -1;
       let bestCost = Number.POSITIVE_INFINITY;
-      targets.forEach((city, order) => {
+      marchTargets.forEach((city, order) => {
         if (!allowed(order)) return;
         const cost = costTo(unit, order);
         if (
           cost < bestCost ||
           (cost === bestCost &&
             Number.isFinite(cost) &&
-            city.id < (targets[best]?.id ?? city.id))
+            city.id < (marchTargets[best]?.id ?? city.id))
         ) {
           best = order;
           bestCost = cost;
@@ -599,8 +665,8 @@ export function campaignPlanForPolicyV7(
     // seat with the most, so a neighbour is not left alone because another
     // seat's city is a step nearer.
     const seatOf = (order: number): PlayerId | undefined =>
-      targets[order]?.ownerId;
-    const seats = [...new Set(targets.map((city) => city.ownerId))]
+      marchTargets[order]?.ownerId;
+    const seats = [...new Set(marchTargets.map((city) => city.ownerId))]
       .filter((seat) =>
         army.some(
           (unit) => nearest(unit, (order) => seatOf(order) === seat) >= 0,
@@ -644,10 +710,10 @@ export function campaignPlanForPolicyV7(
         choice.set(moved.id, movedOrder);
       }
     }
-    const marching = targets.map(() => [] as PublicUnitV7[]);
+    const marching = marchTargets.map(() => [] as PublicUnitV7[]);
     for (const unit of army) {
       const order = choice.get(unit.id) ?? -1;
-      const city = targets[order];
+      const city = marchTargets[order];
       const route = fields[order];
       if (city === undefined || route === undefined) continue;
       // The sea is the shortcut to this city: its capturers sail.
@@ -665,7 +731,7 @@ export function campaignPlanForPolicyV7(
     const mountainBorn = facts.mountainBorn;
     if (mountainBorn !== undefined)
       marching.forEach((units, order) => {
-        const city = targets[order];
+        const city = marchTargets[order];
         if (
           city === undefined ||
           units.length === 0 ||
@@ -686,7 +752,7 @@ export function campaignPlanForPolicyV7(
     marching.forEach((units, order) => {
       if (units.length > (marching[main]?.length ?? 0)) main = order;
     });
-    targets.forEach((city, order) => {
+    marchTargets.forEach((city, order) => {
       const units = marching[order] ?? [];
       const home = units.filter((unit) => atHome(unit.at)).length;
       const out = units.length - home;
@@ -698,20 +764,23 @@ export function campaignPlanForPolicyV7(
       );
       // The wave waits only for units that can still be trained: with
       // every slot filled, the units at home are the wave.
-      const needed = Math.max(
-        1,
-        Math.min(
-          home + (order === main ? facts.freeLandSlots : 0),
-          CAMPAIGN_WAVE_SIZE_V7,
-        ),
-      );
+      // A RUSH wave is one unit: it sets out at once.
+      const needed = rush
+        ? 1
+        : Math.max(
+            1,
+            Math.min(
+              home + (order === main ? facts.freeLandSlots : 0),
+              CAMPAIGN_WAVE_SIZE_V7,
+            ),
+          );
       targetByCityId.set(city.id, {
         city,
         assigned: units.length,
         home,
         out,
         needed,
-        push: clash || home >= needed || out >= CAMPAIGN_WAVE_OUT_V7,
+        push: rush || clash || home >= needed || out >= CAMPAIGN_WAVE_OUT_V7,
       });
     });
   }

@@ -61,8 +61,9 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
     expect(V7_MATCH_MAX_ROUNDS_DEFAULT).toBe(750);
     expect(V7_PUBLIC_EQUALITY_COMMAND_LIMIT).toBe(32);
     const source = readFileSync("src/headless/v7.ts", "utf8");
+    // Whole path words (`pulp_wars-68k.3`: `engine/random/random` is no DOM).
     expect(source).not.toMatch(
-      /from ["'].*(?:presentation|browser|canvas|dom)/i,
+      /from ["'][^"']*\b(?:presentation|browser|canvas|dom)\b/i,
     );
   });
 

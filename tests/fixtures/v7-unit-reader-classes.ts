@@ -18,6 +18,14 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-campaign.ts::campaignPlanForPolicyV7": "BOARD",
     "src/ai/v7-dinosaur.ts::chosenLayEggCommandsV7": "BOARD",
     "src/ai/v7-dinosaur.ts::dinosaurProductionAdjustmentV7": "BOARD",
+    // `pulp_wars-68k.3`: the mission directives read the board. A burrowed
+    // unit can take no command and stands in no zone this turn, so it is
+    // neither leashed nor a garrison candidate; a Tunnel that would surface
+    // a leashed Mole or rider outside the zone is removed by the leash (its
+    // `to` and `rider.to` are relocations).
+    "src/ai/v7-directives.ts::directivePlanForViewV7": "BOARD",
+    "src/ai/v7-directives.ts::guardGarrisonV7": "BOARD",
+    "src/ai/v7-directives.ts::leashReadyCommandsV7": "BOARD",
     // `pulp_wars-78i.4`: the Dwarf policy reads the board, and mounds only
     // through the view's `burrowed` list; the army counts include the own
     // burrowed units (they keep their slots and come back next turn).

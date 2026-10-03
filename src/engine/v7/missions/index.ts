@@ -7,6 +7,7 @@ import {
   type PlayerColorV7,
 } from "../types";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
+import { TEST_GUARD_V7, TEST_HOLD_V7, TEST_RUSH_V7 } from "./test-directives";
 import type { MissionDefinitionV7, MissionSeatV7 } from "./types";
 
 export type * from "./types";
@@ -20,6 +21,9 @@ export type * from "./types";
  */
 export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   TEST_GROUNDS_V7,
+  TEST_RUSH_V7,
+  TEST_HOLD_V7,
+  TEST_GUARD_V7,
 ]);
 
 /** The registered mission with this ID (any revision), or null. */

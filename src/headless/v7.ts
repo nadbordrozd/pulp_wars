@@ -5,7 +5,10 @@ import {
   NormalTurnCommandCapErrorV7,
   chooseNormalCommandV7,
   chooseNormalTurnCommandV7,
+  type NormalAiDecisionV7,
+  type ScoredAiCandidateV7,
 } from "../ai/v7";
+import { nextBounded, nextUint32, randomState } from "../engine/random/random";
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import { canonicalHash, canonicalJson } from "../engine/replay/canonical";
 import {
@@ -72,6 +75,7 @@ import {
   type ImprovementIdV7,
   type MatchOutcomeV7,
   type MatchSetupV7,
+  type RandomStateV7,
   type ResourceIdV7,
   type TechnologyIdV7,
   type UnitRoleIdV7,
@@ -412,6 +416,21 @@ export interface AiMatchOptionsV7 {
     readonly state: GameStateV7;
     readonly events: readonly DomainEventV7[];
   };
+  /**
+   * Headless and test only, never the browser (`pulp_wars-68k.3`,
+   * docs/product/CAMPAIGN.md section 7.1): vary seat 0's play so a fixed
+   * mission played Normal against Normal is not always the same game. See
+   * `proxyVariedDecisionV7`.
+   */
+  readonly proxyVariation?: ProxyVariationV7;
+}
+
+/** Seat 0's proxy variation: its own random stream and a rate in [0, 1]. */
+export interface ProxyVariationV7 {
+  /** Seeds a Mulberry32 stream of its own (never the match's `random`). */
+  readonly seed: number;
+  /** The probability of a substitution at each seat-0 decision. */
+  readonly rate: number;
 }
 
 export interface AiPolicyWorkDiagnosticV7 {
@@ -615,6 +634,13 @@ function runAiMatchInternalV7(
     throw new RangeError("policySliceMilliseconds must be positive");
   if (maxCommandsPerTurn > NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7)
     throw new RangeError("maxCommandsPerTurn exceeds the Normal v7 limit");
+  const proxy =
+    options.proxyVariation === undefined
+      ? null
+      : {
+          random: randomState(options.proxyVariation.seed),
+          rate: proxyRateV7(options.proxyVariation.rate),
+        };
   const created =
     options.initialGame === undefined
       ? createPlayableGameV7(setup)
@@ -687,6 +713,15 @@ function runAiMatchInternalV7(
         wallMilliseconds: performance.now() - started,
         maximumSliceMilliseconds,
       });
+      if (proxy !== null && view.viewer.seat === 0) {
+        const varied = proxyVariedDecisionV7(
+          decision,
+          proxy.random,
+          proxy.rate,
+        );
+        proxy.random = varied.random;
+        decision = varied.decision;
+      }
       command = chooseNormalTurnCommandV7(
         view,
         commandsThisTurn,
@@ -804,6 +839,67 @@ function runAiMatchInternalV7(
     errors,
     stalls,
     metrics,
+  };
+}
+
+function proxyRateV7(rate: number): number {
+  if (!Number.isFinite(rate) || rate < 0 || rate > 1)
+    throw new RangeError("proxyVariation.rate must be in [0, 1]");
+  return rate;
+}
+
+/**
+ * Proxy variation (`pulp_wars-68k.3`, docs/product/CAMPAIGN.md section 7.1;
+ * headless and test only, never the browser). At each seat-0 decision the
+ * proxy's own Mulberry32 stream draws once: with probability `rate` the
+ * second or third best candidate (a second draw picks between them) takes
+ * the best one's place. Only candidates in the best candidate's priority
+ * band (the same `priority`) qualify, never `END_TURN`, and the best is
+ * never replaced when it is `END_TURN`; with no qualifying candidate the
+ * decision is unchanged. The substitute moves to the front of the
+ * candidate list, so the turn-command cap still applies to it. Every
+ * candidate is a ready public command: the command log stays an ordinary
+ * valid replay.
+ */
+export function proxyVariedDecisionV7(
+  decision: NormalAiDecisionV7,
+  random: RandomStateV7,
+  rate: number,
+): { readonly decision: NormalAiDecisionV7; readonly random: RandomStateV7 } {
+  const draw = nextUint32(random);
+  let cursor: RandomStateV7 = draw.random;
+  const best = decision.candidates[0];
+  if (
+    best === undefined ||
+    best.command.kind === "END_TURN" ||
+    draw.value >= rate * 0x1_0000_0000
+  )
+    return { decision, random: cursor };
+  const alternatives = decision.candidates
+    .slice(1)
+    .filter(
+      (candidate) =>
+        candidate.score.priority === best.score.priority &&
+        candidate.command.kind !== "END_TURN",
+    )
+    .slice(0, 2);
+  if (alternatives.length === 0) return { decision, random: cursor };
+  let chosen = alternatives[0] as ScoredAiCandidateV7;
+  if (alternatives.length === 2) {
+    const pick = nextBounded(cursor, 2);
+    cursor = pick.random;
+    chosen = alternatives[pick.value] as ScoredAiCandidateV7;
+  }
+  return {
+    decision: {
+      ...decision,
+      candidates: [
+        chosen,
+        ...decision.candidates.filter((candidate) => candidate !== chosen),
+      ],
+      command: chosen.command,
+    },
+    random: cursor,
   };
 }
 

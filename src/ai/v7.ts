@@ -38,6 +38,7 @@ import {
 import type { CommandV7 } from "../engine/v7/commands";
 import { knockbackDestinationV7 } from "../engine/v7/dwarf";
 import { marketCoinsV7 } from "../engine/v7/economy";
+import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
 import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
   blizzardHalvedDamageV7,
@@ -311,6 +312,11 @@ import {
   type PlannedDwarfCommandV7,
 } from "./v7-dwarf";
 import {
+  directivePlanForViewV7,
+  leashReadyCommandsV7,
+  type DirectivePlanV7,
+} from "./v7-directives";
+import {
   normalOpeningResearchPendingV7,
   normalOpeningTechnologyV7,
 } from "./v7-opening";
@@ -469,6 +475,11 @@ interface PolicyContextV7 {
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
   readonly commands: readonly CommandV7[];
+  /**
+   * `pulp_wars-68k.3`: the seat's active mission directive (null for NORMAL
+   * and in every non-mission match). `commands` are already leashed.
+   */
+  readonly directive: DirectivePlanV7 | null;
   /**
    * Revision 16 (section 3.6 rule 2): a ready growth harvest of the level-1
    * original capital, which outranks research, training, and construction.
@@ -1177,7 +1188,14 @@ export class NormalPolicyWorkV7 {
   }
 
   private prepareContext(): void {
-    this.ready = queryAiReadyCommandsV7(this.view);
+    // pulp_wars-68k.3: a mission directive leashes the ready commands (the
+    // identity with NORMAL and in every non-mission match).
+    const directive = directivePlanForViewV7(this.view);
+    this.ready = leashReadyCommandsV7(
+      this.view,
+      directive,
+      queryAiReadyCommandsV7(this.view),
+    );
     if (this.ready.length > this.bounds.candidateCeiling)
       throw new NormalPolicyErrorV7(
         "NO_PUBLIC_COMMAND",
@@ -1186,6 +1204,7 @@ export class NormalPolicyWorkV7 {
     this.context = bareContext(
       this.view,
       this.ready.map((item) => item.command),
+      directive,
     );
     this.policyLookupWork = policyLookupWorkV7(this.context);
     this.phase = "POLICY_LOOKUP_CONTEXT";
@@ -1361,9 +1380,19 @@ function boomLevelsReached(city: PlayerViewV7["cities"][number]): number {
 
 function makeContext(
   view: PlayerViewV7,
-  commands: readonly CommandV7[],
+  readyCommands: readonly CommandV7[],
 ): PolicyContextV7 {
-  const context = bareContext(view, commands);
+  // pulp_wars-68k.3: the directive leash, exactly as in the work loop.
+  const directive = directivePlanForViewV7(view);
+  const commands =
+    directive === null
+      ? readyCommands
+      : leashReadyCommandsV7(
+          view,
+          directive,
+          readyCommands.map((command) => ({ command })),
+        ).map((item) => item.command);
+  const context = bareContext(view, commands, directive);
   drain(policyLookupWorkV7(context));
   context.naval = drain(navalPlanWorkV7(view, commands));
   drain(publicThreatLookupWorkV7(view, context.threatLookup));
@@ -1378,6 +1407,7 @@ function makeContext(
 function bareContext(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
+  directive: DirectivePlanV7 | null,
 ): PolicyContextV7 {
   const threatenedTiles = new Map<UnitId, ReadonlySet<string>>();
   const threats: ThreatV7[] = [];
@@ -1398,6 +1428,7 @@ function bareContext(
     dwarfCache: null,
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
     commands,
+    directive,
     openingGrowthHarvest: commands.some((command) =>
       openingGrowthHarvestV7(view, command),
     ),
@@ -1645,6 +1676,11 @@ function* tacticalPlanWorkV7(
         policyTacticalRoleV7(unitRoleRuleV7(view, unit)) === "DEFENDER"
       );
     },
+    // pulp_wars-68k.3: the plan side of a mission directive (absent for
+    // NORMAL and in every non-mission match).
+    ...(context.directive === null
+      ? {}
+      : { directive: context.directive.campaign }),
     // The Ice Folk revision: a wave of Mountain-born units routes over the
     // Mountains (no other seat has one).
     ...(view.viewer.faction === "ICE_FOLK"
@@ -1907,7 +1943,10 @@ function* navalPlanWorkV7(
   commands: readonly CommandV7[],
   pathWork?: MutablePolicyPathDiagnosticsV7,
 ): Generator<void, NavalPlanV7> {
-  if (view.setup.mapType === "DRY_LAND") return NO_NAVAL_PLAN_V7;
+  // pulp_wars-68k.3: no naval plan while Shorecraft is forbidden (the Dry
+  // Land Naval branch, or a mission that forbids it; CAMPAIGN.md 2.3).
+  if (forbiddenTechnologiesV7(view.setup).has("SHORECRAFT"))
+    return NO_NAVAL_PLAN_V7;
   const tilesByKey = new Map(
     view.board.tiles.map((tile) => [coordKey(tile.at), tile]),
   );
@@ -2553,6 +2592,30 @@ export function publicThreatenedTilesForPolicyV7(
   };
   drain(publicThreatLookupWorkV7(view, lookup));
   return drain(publicThreatenedTilesWorkV7(view, unit, lookup));
+}
+
+/**
+ * `pulp_wars-68k.3`: the public facts of the naval plan at this decision
+ * (inactive whenever Shorecraft is forbidden in the match).
+ */
+export function inspectNormalNavalPlanV7(view: PlayerViewV7): {
+  readonly active: boolean;
+  readonly target: CoordV7 | null;
+  readonly seaShortcut: boolean;
+  readonly reserveCoins: number;
+} {
+  const plan = drain(
+    navalPlanWorkV7(
+      view,
+      queryAiReadyCommandsV7(view).map((item) => item.command),
+    ),
+  );
+  return {
+    active: plan.active,
+    target: plan.target,
+    seaShortcut: plan.seaShortcut,
+    reserveCoins: plan.reserveCoins,
+  };
 }
 
 export function inspectNormalTacticalFactsV7(view: PlayerViewV7): {
