@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r24`: Human, Undead, Goblin, and Dinosaur)
+## Current release contract (`pulp-wars-poc-7r25`: Human, Undead, Goblin, and Dinosaur)
 
-The current runtime is `pulp-wars-poc-7r24` (autosave
-`pulpWars.save.v7r24.current`; saves and replays of `pulp-wars-poc-7r23`
+The current runtime is `pulp-wars-poc-7r25` (autosave
+`pulpWars.save.v7r25.current`; saves and replays of `pulp-wars-poc-7r24`
 and earlier are refused, and startup removes their autosave keys). Its four
 playable factions, Human, Undead, Goblin, and Dinosaur, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md), into which
@@ -39,7 +39,8 @@ and `pulp_wars-6gd.2` and `6gd.3` the
 [revision-18 overlay](../product/RULESET_7_REVISION_18.md). The engine also
 registers a fifth faction from the
 [Martian overlay](../product/RULESET_7_MARTIANS.md) (`pulp_wars-t6s.2`,
-identity `7r22`), which is **not folded** into the current rules: its
+identity `7r22`; `pulp_wars-t6s.5` set its coarse balance number, Colossus
+Defense 2.5, at `7r25`), which is **not folded** into the current rules: its
 Normal AI and UI are pending, so match setup does not offer it and the
 browser smokes do not probe it. The engine also registers a sixth faction
 from the [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md)
@@ -52,13 +53,14 @@ human and each AI seat (all Human by default), and there is no development
 flag (`pulp_wars-vkq.16` removed `?undead=1`; the later factions never had
 one). Balance evidence is the
 [Goblin balance report](RULESET_7_GOBLIN_BALANCE.md), the
-[Dinosaur balance report](RULESET_7_DINOSAUR_BALANCE.md), and the coarse
-[revision-20 balance report](RULESET_7_REVISION_20_BALANCE.md); the release
+[Dinosaur balance report](RULESET_7_DINOSAUR_BALANCE.md), the coarse
+[revision-20 balance report](RULESET_7_REVISION_20_BALANCE.md), and the
+coarse [Martian balance report](RULESET_7_MARTIAN_BALANCE.md); the release
 does not rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r24` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r25` identity (ruleset ID, autosave key, the
   six-entry `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms
   that the archived corpus below still carries the revision-2 identity, and
@@ -134,7 +136,7 @@ does not rerun their matrices.
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
-  (`7r24`) captures. The revision-2 validator described below as
+  (`7r25`) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
 

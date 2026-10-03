@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r24`, for all four playable factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r25`, for all four playable factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), and Dinosaur (`DINOSAUR`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
@@ -28,9 +28,10 @@ Goblins, and the Dinosaurs are part of the ordinary game: faction choice is
 offered in every match setup, with no development flag. Every number below
 was checked against the engine code at `pulp-wars-poc-7r23`;
 `pulp-wars-poc-7r24` (`pulp_wars-7g3.3`) registers the Ice Folk overlay and
-changes no rule of the four factions.
+`pulp-wars-poc-7r25` (`pulp_wars-t6s.5`) sets the Martian Colossus Defense to
+2.5; neither changes a rule of the four factions.
 
-**Pending overlays, not folded.** The engine at `pulp-wars-poc-7r24` also
+**Pending overlays, not folded.** The engine at `pulp-wars-poc-7r25` also
 registers a fifth faction, `MARTIAN`, whose rules are in the
 [Martian overlay](RULESET_7_MARTIANS.md) (engine implemented by
 `pulp_wars-t6s.2` at `pulp-wars-poc-7r22`; its Normal AI and UI are pending,
@@ -126,10 +127,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                              |
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r24`                                                                                                                                                                                                                                       |
+| Ruleset                                    | `pulp-wars-poc-7r25`                                                                                                                                                                                                                                       |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                        |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                        |
-| Browser autosave                           | `pulpWars.save.v7r24.current`                                                                                                                                                                                                                              |
+| Browser autosave                           | `pulpWars.save.v7r25.current`                                                                                                                                                                                                                              |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                                                                 |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK` (the last two are the pending Martian and Ice Folk overlays)                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`                                                                                                                  |
@@ -2987,6 +2988,7 @@ Attack 3, Defense 2):
 | —        | `pulp-wars-poc-7r22` | `pulp_wars-t6s.2`: Martian faction engine, not offered in setup (AI and UI pending); **not folded** into this document                                             | [Martian overlay](RULESET_7_MARTIANS.md)                      |
 | 20 (bal) | `pulp-wars-poc-7r23` | `pulp_wars-0hi.3` coarse Dry Land balance: Human Fighter, Raider, and Marksman 12 HP, Guard 17; Caveman 10                                                         | [revision 20](RULESET_7_REVISION_20.md#63-tuning-record)      |
 | —        | `pulp-wars-poc-7r24` | `pulp_wars-7g3.3`: Ice Folk faction engine, not offered in setup (AI and UI pending); **not folded** into this document                                            | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                     |
+| —        | `pulp-wars-poc-7r25` | `pulp_wars-t6s.5` coarse Dry Land Martian balance: Colossus Defense 2.5; **not folded** into this document                                                         | [Martian balance](../validation/RULESET_7_MARTIAN_BALANCE.md) |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -3108,11 +3110,11 @@ code's behavior is stated:
 
 ## 21. Known discrepancies
 
-No rule discrepancy is open: as of `pulp-wars-poc-7r24` the rules in this
+No rule discrepancy is open: as of `pulp-wars-poc-7r25` the rules in this
 document match the code for the four playable factions, including the
 Dinosaur faction of revisions 19 and 20 and the achievements of revision 21.
 
-**Pending overlays in the code.** The engine at `pulp-wars-poc-7r24` also
+**Pending overlays in the code.** The engine at `pulp-wars-poc-7r25` also
 contains the [Martian overlay](RULESET_7_MARTIANS.md) (`pulp_wars-t6s.2`),
 which this document does not describe: the `MARTIAN` faction and
 `MARTIAN_BASELINE_V1` tree in the frozen orders, the commands `BEAM_DOWN`,

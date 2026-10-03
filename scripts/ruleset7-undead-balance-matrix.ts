@@ -25,11 +25,17 @@
  * every Dinosaur seat, the damage removed by growth heals by role, T-Rex
  * attacks, and Rampage chain lengths.
  *
+ * The Martian balance (`pulp_wars-t6s.5`) adds the Martian pairings `MH`,
+ * `HM`, `MU`, `UM`, `MG`, `GM`, `MD`, `DM`, and `MM`, the four-seat mixes
+ * with a Martian seat (`MHUG`, `DMHU`, `GDMH`, `UGDM`), and the Martian
+ * section 16.2 telemetry (`MatrixEntry.martian`, `summary.martian`).
+ *
  * Usage:
  *   npm run balance:ruleset7-undead -- [--seeds 30] [--multi-seeds 4]
  *     [--sizes 11,14] [--maps dry-land,pangea,continents,archipelago,lakes]
  *     [--pairings HU,UH,UU,HH,GH,HG,GU,UG,GG,DH,HD,DU,UD,DG,GD,DD,
- *       HUHU,UHUH,GHUG,HUGH,UGHU,HUGD,DHUG,GDHU,UGDH]
+ *       MH,HM,MU,UM,MG,GM,MD,DM,MM,HUHU,UHUH,GHUG,HUGH,UGHU,HUGD,DHUG,GDHU,UGDH,
+ *       MHUG,DMHU,GDMH,UGDM]
  *     [--max-rounds 150]
  *     [--multi-max-rounds 120] [--jobs N] [--output file.json]
  *     [--detail-output file.json] [--markdown] [--strict]
@@ -68,7 +74,9 @@ import {
 import {
   attackIsChargeV7,
   factionTreeV7,
+  unitFliesV7,
   unitGrowthStageV7,
+  unitRoleRuleV7,
 } from "../src/engine/rules/ruleset-v7";
 import type { PlayerId } from "../src/engine/model/ids";
 import {
@@ -77,9 +85,15 @@ import {
   cityUnitCapacityV7,
 } from "../src/engine/v7/economy";
 import {
+  attackHasPierceV7,
   defenseBonusForUnitV7,
   fortificationLevelForUnitV7,
 } from "../src/engine/v7/combat";
+import {
+  pierceTileV7,
+  shieldOfV7,
+  unitShieldMaximumV7,
+} from "../src/engine/v7/martian";
 import { nestTilesV7 } from "../src/engine/v7/eggs";
 import { applyCommandV7, createPlayableGameV7 } from "../src/engine/v7/reducer";
 
@@ -113,6 +127,15 @@ const PAIRINGS = {
   DG: ["DINOSAUR", "GOBLIN"],
   GD: ["GOBLIN", "DINOSAUR"],
   DD: ["DINOSAUR", "DINOSAUR"],
+  MH: ["MARTIAN", "ORIGINAL"],
+  HM: ["ORIGINAL", "MARTIAN"],
+  MU: ["MARTIAN", "UNDEAD"],
+  UM: ["UNDEAD", "MARTIAN"],
+  MG: ["MARTIAN", "GOBLIN"],
+  GM: ["GOBLIN", "MARTIAN"],
+  MD: ["MARTIAN", "DINOSAUR"],
+  DM: ["DINOSAUR", "MARTIAN"],
+  MM: ["MARTIAN", "MARTIAN"],
   HUHU: ["ORIGINAL", "UNDEAD", "ORIGINAL", "UNDEAD"],
   UHUH: ["UNDEAD", "ORIGINAL", "UNDEAD", "ORIGINAL"],
   GHUG: ["GOBLIN", "ORIGINAL", "UNDEAD", "GOBLIN"],
@@ -122,6 +145,10 @@ const PAIRINGS = {
   DHUG: ["DINOSAUR", "ORIGINAL", "UNDEAD", "GOBLIN"],
   GDHU: ["GOBLIN", "DINOSAUR", "ORIGINAL", "UNDEAD"],
   UGDH: ["UNDEAD", "GOBLIN", "DINOSAUR", "ORIGINAL"],
+  MHUG: ["MARTIAN", "ORIGINAL", "UNDEAD", "GOBLIN"],
+  DMHU: ["DINOSAUR", "MARTIAN", "ORIGINAL", "UNDEAD"],
+  GDMH: ["GOBLIN", "DINOSAUR", "MARTIAN", "ORIGINAL"],
+  UGDM: ["UNDEAD", "GOBLIN", "DINOSAUR", "MARTIAN"],
 } as const satisfies Record<string, readonly FactionIdV7[]>;
 type PairingId = keyof typeof PAIRINGS;
 const ONE_VS_ONE: readonly PairingId[] = [
@@ -141,6 +168,15 @@ const ONE_VS_ONE: readonly PairingId[] = [
   "DG",
   "GD",
   "DD",
+  "MH",
+  "HM",
+  "MU",
+  "UM",
+  "MG",
+  "GM",
+  "MD",
+  "DM",
+  "MM",
 ];
 const MULTI: readonly PairingId[] = [
   "HUHU",
@@ -152,6 +188,10 @@ const MULTI: readonly PairingId[] = [
   "DHUG",
   "GDHU",
   "UGDH",
+  "MHUG",
+  "DMHU",
+  "GDMH",
+  "UGDM",
 ];
 /** 1v1 pairings without a Goblin seat (the cap-rate reference). */
 const NON_GOBLIN_ONE_VS_ONE: readonly PairingId[] = ["HU", "UH", "UU", "HH"];
@@ -169,6 +209,19 @@ const DINOSAUR_ONE_VS_ONE: readonly PairingId[] = [
   "DD",
 ];
 const DINOSAUR_MULTI: readonly PairingId[] = ["HUGD", "DHUG", "GDHU", "UGDH"];
+/** The Martian 1v1 pairings and mixes (Martian section 16.2). */
+const MARTIAN_ONE_VS_ONE: readonly PairingId[] = [
+  "MH",
+  "HM",
+  "MU",
+  "UM",
+  "MG",
+  "GM",
+  "MD",
+  "DM",
+  "MM",
+];
+const MARTIAN_MULTI: readonly PairingId[] = ["MHUG", "DMHU", "GDMH", "UGDM"];
 
 export interface MatrixCell {
   readonly pairing: PairingId;
@@ -234,6 +287,11 @@ export interface MatrixEntry extends MatrixCell {
   readonly goblin: GoblinMatchStats | null;
   /** `pulp_wars-c87.8` Dinosaur telemetry; null without a Dinosaur seat. */
   readonly dinosaur: DinosaurMatchStats | null;
+  /**
+   * `pulp_wars-t6s.5` Martian telemetry; null without a Martian seat, and
+   * absent in detail files written before it was added.
+   */
+  readonly martian?: MartianMatchStats | null;
   /**
    * `pulp_wars-0hi.3` Promotions per faction (revision 20 section 8.2);
    * absent in detail files written before it was added.
@@ -1221,6 +1279,670 @@ function dinosaurTelemetry(
   return { seats: [...seats.values()] };
 }
 
+type Counts = Record<string, number>;
+
+/** A hit, HP damage, and kill counter. */
+interface MartianTally {
+  hits: number;
+  damage: number;
+  kills: number;
+}
+
+const emptyTally = (): MartianTally => ({ hits: 0, damage: 0, kills: 0 });
+
+/**
+ * Martian section 16.2 telemetry for one Martian seat of one match
+ * (`pulp_wars-t6s.5`). Kills, losses, rays, and Shield absorption are keyed
+ * by role, with a Thrall keyed `THRALL` (it has the `FIGHTER` role).
+ * "Hostile" units belong to another, non-allied player. The `against*`
+ * counters measure the opposing seats' play against this seat's units.
+ */
+interface MartianSeatStats {
+  seat: number;
+  /** Own turns, and those that reached 128 accepted commands. */
+  turns: number;
+  capTurns: number;
+  /** Units owned at each End Turn: the sum and the most. */
+  unitTurns: number;
+  maxUnits: number;
+  /** Units trained by role (`REWARD:<role>` for city reward units). */
+  trained: Counts;
+  firstTrainedRound: Counts;
+  researchRound: Counts;
+  /** Hostile kills by the credited unit (attack, retaliation, splash). */
+  killsByRole: Counts;
+  /** Units lost other than by elimination or a Thrall collapse, by role. */
+  lossesByRole: Counts;
+  lossesByCause: Counts;
+  /**
+   * Those losses by killer: `<faction initial>:<role>` with `:RET`,
+   * `:SPLASH`, or `:BLAST`, `<faction initial>:WAIL`, or `PLAGUE`.
+   */
+  killedBy: Counts;
+  /** Shield damage this seat's units absorbed, by source and by role. */
+  shieldAbsorbed: {
+    attack: number;
+    retaliation: number;
+    splash: number;
+    wail: number;
+    blast: number;
+  };
+  shieldAbsorbedByRole: Counts;
+  /** Absorbed above the unit's own Shield maximum (the Force Field). */
+  forceFieldAbsorbed: number;
+  /** Hits on this seat's units that a Shield absorbed completely. */
+  hitsFullyAbsorbed: number;
+  /** Shield entries this seat's recharges changed, and End Turn recharges. */
+  rechargedShields: number;
+  endTurnRecharges: number;
+  /** Rays by role and power; HP damage and kills by power. */
+  raysFullByRole: Counts;
+  raysHalfByRole: Counts;
+  rayFull: MartianTally;
+  rayHalf: MartianTally;
+  raysHalfMoved: number;
+  raysHalfCooling: number;
+  raysIgnoringFortification: number;
+  /** Field Defense destroyed by this seat's Tripods. */
+  tripodFieldDefense: number;
+  /** Pierce hits on hostile and on own or allied units. */
+  pierceHostile: MartianTally;
+  pierceOwn: MartianTally;
+  beamDowns: number;
+  beamDownPassengers: Counts;
+  /** Beamed passengers killed before their owner's next turn. */
+  beamedKilledBeforeNextTurn: number;
+  /**
+   * Captures by a unit beamed in the last three rounds, and those of
+   * them that took a city from another player (backdoor captures).
+   */
+  beamedCaptures?: number;
+  beamedCityCaptures?: number;
+  psychicCommands: number;
+  psychicUnits: number;
+  mindControls: number;
+  /** Mind Control victims by `<faction initial>:<role>`, and their HP. */
+  mindControlVictims: Counts;
+  mindControlHp: number;
+  /** Thralls at each own End Turn (summed), the most, and their fates. */
+  thrallTurns: number;
+  thrallsMaximum: number;
+  thrallsKilled: number;
+  thrallsCollapsed: number;
+  thrallCaptures: number;
+  tractorBeamsOwn: number;
+  tractorBeamsHostile: number;
+  /** Hostile units pulled off a center this seat does not own. */
+  tractorOffHostileCenter: number;
+  /** Own units pulled off an own center. */
+  tractorOffOwnCenter: number;
+  /** Cities this seat captured within two rounds of pulling a unit off. */
+  tractorCapturesAfterPull: number;
+  selfLaunches: number;
+  flyoverMoves: number;
+  /** This seat's units killed in an enemy turn that began at full HP. */
+  againstKilledAtFullHp: number;
+  /** This seat's units killed in an enemy turn by 1, 2, 3+ hostile units. */
+  againstKilledByAttackers: [number, number, number];
+  /** Hostile attacks on this seat's units, and Plague HP damage taken. */
+  againstAttacks: number;
+  againstPlagueDamage: number;
+  /** Hostile Kabooms that reached this seat's units; those with no HP damage. */
+  againstKabooms: number;
+  againstKaboomsNoHpDamage: number;
+}
+
+function emptyMartianSeat(seat: number): MartianSeatStats {
+  return {
+    seat,
+    turns: 0,
+    capTurns: 0,
+    unitTurns: 0,
+    maxUnits: 0,
+    trained: {},
+    firstTrainedRound: {},
+    researchRound: {},
+    killsByRole: {},
+    lossesByRole: {},
+    lossesByCause: {},
+    killedBy: {},
+    shieldAbsorbed: { attack: 0, retaliation: 0, splash: 0, wail: 0, blast: 0 },
+    shieldAbsorbedByRole: {},
+    forceFieldAbsorbed: 0,
+    hitsFullyAbsorbed: 0,
+    rechargedShields: 0,
+    endTurnRecharges: 0,
+    raysFullByRole: {},
+    raysHalfByRole: {},
+    rayFull: emptyTally(),
+    rayHalf: emptyTally(),
+    raysHalfMoved: 0,
+    raysHalfCooling: 0,
+    raysIgnoringFortification: 0,
+    tripodFieldDefense: 0,
+    pierceHostile: emptyTally(),
+    pierceOwn: emptyTally(),
+    beamDowns: 0,
+    beamDownPassengers: {},
+    beamedKilledBeforeNextTurn: 0,
+    beamedCaptures: 0,
+    beamedCityCaptures: 0,
+    psychicCommands: 0,
+    psychicUnits: 0,
+    mindControls: 0,
+    mindControlVictims: {},
+    mindControlHp: 0,
+    thrallTurns: 0,
+    thrallsMaximum: 0,
+    thrallsKilled: 0,
+    thrallsCollapsed: 0,
+    thrallCaptures: 0,
+    tractorBeamsOwn: 0,
+    tractorBeamsHostile: 0,
+    tractorOffHostileCenter: 0,
+    tractorOffOwnCenter: 0,
+    tractorCapturesAfterPull: 0,
+    selfLaunches: 0,
+    flyoverMoves: 0,
+    againstKilledAtFullHp: 0,
+    againstKilledByAttackers: [0, 0, 0],
+    againstAttacks: 0,
+    againstPlagueDamage: 0,
+    againstKabooms: 0,
+    againstKaboomsNoHpDamage: 0,
+  };
+}
+
+/** Martian telemetry for one match: one entry per Martian seat. */
+interface MartianMatchStats {
+  readonly seats: MartianSeatStats[];
+}
+
+const FACTION_INITIAL: Partial<Record<FactionIdV7, string>> = {
+  ORIGINAL: "H",
+  UNDEAD: "U",
+  GOBLIN: "G",
+  DINOSAUR: "D",
+  MARTIAN: "M",
+};
+
+/**
+ * Replays the accepted command log (as {@link dinosaurTelemetry} does) and
+ * attributes every Martian event to its Martian seat. Only called for
+ * matches with a Martian seat.
+ */
+function martianTelemetry(
+  setup: MatchSetupV7,
+  log: ReturnType<typeof runAiMatchV7>["commandLog"],
+): MartianMatchStats {
+  const created = createPlayableGameV7(setup);
+  if (!created.ok) throw new Error(`CREATE_REJECTED:${created.error.code}`);
+  let state = created.state;
+  const seats = new Map<number, MartianSeatStats>();
+  const factionOf = new Map<number, FactionIdV7>();
+  for (const player of state.players) {
+    factionOf.set(player.id, player.faction);
+    if (player.faction === "MARTIAN")
+      seats.set(player.id, emptyMartianSeat(player.seat));
+  }
+  const initial = (playerId: number) => {
+    const faction = factionOf.get(playerId);
+    return faction === undefined
+      ? "?"
+      : (FACTION_INITIAL[faction] ?? faction.slice(0, 1));
+  };
+  const first = state.turnOrder[0];
+  let round = 1;
+  let turnCommands = 0;
+  // The player whose turn it is; the Martian units of other seats that
+  // began it at full HP; the hostile units that hit each of those in it.
+  let current: number | null = first ?? null;
+  let fullAtStart = new Set<number>();
+  const hitBy = new Map<number, Set<number>>();
+  // Beamed passengers until their owner's next turn: unit -> owner.
+  const beamed = new Map<number, number>();
+  // The round each passenger was last beamed in.
+  const beamedRound = new Map<number, number>();
+  // Centers a Martian seat pulled a hostile unit off: `<player>:<city>`.
+  const pulledOff = new Map<string, number>();
+  const snapshotFull = (at: GameStateV7) => {
+    fullAtStart = new Set(
+      at.units
+        .filter(
+          (unit) =>
+            seats.has(unit.ownerId) &&
+            unit.ownerId !== current &&
+            unit.hp > 0 &&
+            unit.hp >= unit.maxHp,
+        )
+        .map((unit) => unit.id as number),
+    );
+    hitBy.clear();
+  };
+  snapshotFull(state);
+  for (const record of log) {
+    const before = state;
+    const units = new Map(
+      before.units.map((unit) => [unit.id as number, unit]),
+    );
+    const thrallIds = new Set(
+      before.thralls.map((entry) => entry.unitId as number),
+    );
+    const command = record.command;
+    const actor = seats.get(record.playerId);
+    const key = (unit: { readonly id: number; readonly role: string }) =>
+      thrallIds.has(unit.id) ? "THRALL" : unit.role;
+    turnCommands += 1;
+    if (command.kind === "END_TURN") {
+      if (actor !== undefined) {
+        actor.turns += 1;
+        actor.capTurns += Number(turnCommands >= 128);
+        const own = before.units.filter(
+          (unit) => unit.ownerId === record.playerId && unit.hp > 0,
+        );
+        actor.unitTurns += own.length;
+        actor.maxUnits = Math.max(actor.maxUnits, own.length);
+        const thralls = own.filter((unit) => thrallIds.has(unit.id)).length;
+        actor.thrallTurns += thralls;
+        actor.thrallsMaximum = Math.max(actor.thrallsMaximum, thralls);
+      }
+      turnCommands = 0;
+    }
+    const commandUnit =
+      "unitId" in command ? units.get(command.unitId) : undefined;
+    const beamedCapture =
+      actor !== undefined &&
+      commandUnit !== undefined &&
+      command.kind === "CAPTURE" &&
+      round - (beamedRound.get(commandUnit.id) ?? -10) <= 3;
+    if (actor !== undefined && commandUnit !== undefined) {
+      if (command.kind === "RALLY") actor.psychicCommands += 1;
+      if (command.kind === "CAPTURE" && thrallIds.has(commandUnit.id))
+        actor.thrallCaptures += 1;
+      if (beamedCapture) actor.beamedCaptures = (actor.beamedCaptures ?? 0) + 1;
+    }
+    const pierceTarget =
+      command.kind === "ATTACK" ? units.get(command.targetUnitId) : undefined;
+    const pierceAt =
+      commandUnit !== undefined &&
+      pierceTarget !== undefined &&
+      attackHasPierceV7(unitRoleRuleV7(before, commandUnit), commandUnit)
+        ? pierceTileV7(commandUnit.at, pierceTarget.at)
+        : null;
+    const result = applyCommandV7(state, record.playerId, command);
+    if (!result.accepted) throw new Error("Martian telemetry replay rejected");
+    state = result.state;
+    const after = new Map(state.units.map((unit) => [unit.id as number, unit]));
+    const unitOf = (unitId: number) => units.get(unitId) ?? after.get(unitId);
+    const hostile = (left: number, right: number | undefined) =>
+      right !== undefined &&
+      left !== right &&
+      !arePlayersAlliedV7(before, left as PlayerId, right as PlayerId);
+    // Shield left on each unit within this command (the Force Field part).
+    const shieldLeft = new Map<number, number>();
+    const absorb = (
+      source: keyof MartianSeatStats["shieldAbsorbed"],
+      unitId: number,
+      shieldDamage: number,
+      hpDamage: number,
+    ) => {
+      const unit = unitOf(unitId);
+      const seat = unit === undefined ? undefined : seats.get(unit.ownerId);
+      if (unit === undefined || seat === undefined || shieldDamage <= 0) return;
+      if (hpDamage === 0) seat.hitsFullyAbsorbed += 1;
+      seat.shieldAbsorbed[source] += shieldDamage;
+      bump(seat.shieldAbsorbedByRole, key(unit), shieldDamage);
+      const left =
+        shieldLeft.get(unitId) ?? shieldOfV7(before.shields, unit.id);
+      seat.forceFieldAbsorbed += Math.max(
+        0,
+        Math.min(shieldDamage, left - unitShieldMaximumV7(before, unit)),
+      );
+      shieldLeft.set(unitId, left - shieldDamage);
+    };
+    const noteHit = (victimId: number, dealerId: number) => {
+      const victim = unitOf(victimId);
+      const dealer = unitOf(dealerId);
+      if (
+        victim === undefined ||
+        dealer === undefined ||
+        !seats.has(victim.ownerId) ||
+        victim.ownerId === record.playerId ||
+        !hostile(victim.ownerId, dealer.ownerId)
+      )
+        return;
+      const set = hitBy.get(victimId) ?? new Set<number>();
+      set.add(dealerId);
+      hitBy.set(victimId, set);
+    };
+    const killedBy = new Map<number, string>();
+    const credit = (dealerId: number, victimId: number) => {
+      const dealer = unitOf(dealerId);
+      const victim = unitOf(victimId);
+      const seat = dealer === undefined ? undefined : seats.get(dealer.ownerId);
+      if (
+        dealer !== undefined &&
+        seat !== undefined &&
+        hostile(dealer.ownerId, victim?.ownerId)
+      )
+        bump(seat.killsByRole, key(dealer));
+    };
+    let turnStarted = false;
+    let ended = false;
+    for (const event of record.events) {
+      if (event.kind === "TURN_ENDED") ended = true;
+      if (event.kind === "TURN_STARTED") {
+        turnStarted = true;
+        current = event.playerId;
+        if (event.playerId === first) round += 1;
+        for (const [unitId, owner] of beamed)
+          if (owner === event.playerId) beamed.delete(unitId);
+      }
+      if (event.kind === "TECH_RESEARCHED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) seat.researchRound[event.tech] = round;
+      }
+      if (
+        event.kind === "UNIT_TRAINED" ||
+        event.kind === "NAVAL_UNIT_TRAINED"
+      ) {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) {
+          bump(seat.trained, event.role);
+          seat.firstTrainedRound[event.role] ??= round;
+        }
+      }
+      if (event.kind === "UNIT_REWARD_GRANTED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) bump(seat.trained, `REWARD:${event.role}`);
+      }
+      if (event.kind === "SHIELDS_RECHARGED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) {
+          seat.rechargedShields += event.results.length;
+          if (command.kind === "END_TURN" && !ended) seat.endTurnRecharges += 1;
+        }
+      }
+      if (event.kind === "UNITS_RALLIED" && actor !== undefined)
+        actor.psychicUnits += event.unitIds.length;
+      if (event.kind === "UNIT_MOVED" && actor !== undefined) {
+        const mover = units.get(event.unitId);
+        if (
+          mover !== undefined &&
+          unitFliesV7(before, mover) &&
+          event.path
+            .slice(0, -1)
+            .some((at) =>
+              before.units.some(
+                (unit) =>
+                  unit.ownerId !== record.playerId &&
+                  unit.at.x === at.x &&
+                  unit.at.y === at.y,
+              ),
+            )
+        )
+          actor.flyoverMoves += 1;
+      }
+      if (event.kind === "UNIT_EMBARKED" && actor !== undefined) {
+        const mover = units.get(event.unitId);
+        const tile = before.board.tiles.find(
+          (item) => item.at.x === event.to.x && item.at.y === event.to.y,
+        );
+        if (
+          mover !== undefined &&
+          (unitFliesV7(before, mover) ||
+            mover.role === "CATAPULT" ||
+            mover.role === "JUGGERNAUT") &&
+          tile?.improvement !== "PORT" &&
+          tile?.improvement !== "SHIPYARD"
+        )
+          actor.selfLaunches += 1;
+      }
+      if (event.kind === "COMBAT_RESOLVED") {
+        const preview = event.preview;
+        const attacker = unitOf(preview.attackerId);
+        const defender = unitOf(preview.targetUnitId);
+        absorb(
+          "attack",
+          preview.targetUnitId,
+          preview.defenderShieldDamage,
+          preview.damageToDefender,
+        );
+        if (preview.retaliation)
+          absorb(
+            "retaliation",
+            preview.attackerId,
+            preview.attackerShieldDamage,
+            preview.damageToAttacker,
+          );
+        noteHit(preview.targetUnitId, preview.attackerId);
+        const defenderSeat =
+          defender === undefined ? undefined : seats.get(defender.ownerId);
+        if (
+          defenderSeat !== undefined &&
+          defender !== undefined &&
+          attacker !== undefined &&
+          hostile(defender.ownerId, attacker.ownerId)
+        )
+          defenderSeat.againstAttacks += 1;
+        if (preview.defenderDies) {
+          credit(preview.attackerId, preview.targetUnitId);
+          if (attacker !== undefined)
+            killedBy.set(
+              preview.targetUnitId,
+              `${initial(attacker.ownerId)}:${attacker.role}`,
+            );
+        }
+        if (preview.attackerDies) {
+          credit(preview.targetUnitId, preview.attackerId);
+          if (defender !== undefined)
+            killedBy.set(
+              preview.attackerId,
+              `${initial(defender.ownerId)}:${defender.role}:RET`,
+            );
+        }
+        const attackerSeat =
+          attacker === undefined ? undefined : seats.get(attacker.ownerId);
+        for (const entry of preview.splash) {
+          absorb("splash", entry.unitId, entry.shieldDamage, entry.damage);
+          noteHit(entry.unitId, preview.attackerId);
+          if (entry.dies) {
+            credit(preview.attackerId, entry.unitId);
+            if (attacker !== undefined)
+              killedBy.set(
+                entry.unitId,
+                `${initial(attacker.ownerId)}:${attacker.role}:SPLASH`,
+              );
+          }
+          if (
+            attackerSeat !== undefined &&
+            attacker !== undefined &&
+            pierceAt !== null &&
+            entry.at.x === pierceAt.x &&
+            entry.at.y === pierceAt.y
+          ) {
+            const tally = hostile(
+              attacker.ownerId,
+              unitOf(entry.unitId)?.ownerId,
+            )
+              ? attackerSeat.pierceHostile
+              : attackerSeat.pierceOwn;
+            tally.hits += 1;
+            tally.damage += entry.damage;
+            tally.kills += Number(entry.dies);
+          }
+        }
+        if (
+          attackerSeat !== undefined &&
+          attacker !== undefined &&
+          preview.rayPower !== "NONE"
+        ) {
+          const full = preview.rayPower === "FULL";
+          bump(
+            full ? attackerSeat.raysFullByRole : attackerSeat.raysHalfByRole,
+            attacker.role,
+          );
+          const tally = full ? attackerSeat.rayFull : attackerSeat.rayHalf;
+          tally.hits += 1;
+          tally.damage += preview.damageToDefender;
+          tally.kills += Number(preview.defenderDies);
+          if (!full) {
+            if (
+              before.cooling.some(
+                (entry) =>
+                  entry.unitId === preview.attackerId && !entry.firedThisTurn,
+              )
+            )
+              attackerSeat.raysHalfCooling += 1;
+            else attackerSeat.raysHalfMoved += 1;
+          }
+          if (preview.fortificationIgnored > 0)
+            attackerSeat.raysIgnoringFortification += 1;
+        }
+      }
+      if (
+        event.kind === "FIELD_DEFENSE_DESTROYED" &&
+        event.reason === "CATAPULT" &&
+        actor !== undefined &&
+        command.kind === "ATTACK" &&
+        commandUnit?.role === "CATAPULT"
+      )
+        actor.tripodFieldDefense += 1;
+      if (event.kind === "WAIL_RESOLVED")
+        for (const entry of event.results) {
+          absorb("wail", entry.unitId, entry.shieldDamage, entry.damage);
+          noteHit(entry.unitId, event.unitId);
+          if (entry.dies)
+            killedBy.set(entry.unitId, `${initial(event.playerId)}:WAIL`);
+        }
+      if (event.kind === "EXPLOSION_RESOLVED") {
+        const reached = new Map<number, number>();
+        for (const entry of event.results) {
+          absorb("blast", entry.unitId, entry.shieldDamage, entry.damage);
+          noteHit(entry.unitId, event.unitId);
+          if (entry.dies)
+            killedBy.set(
+              entry.unitId,
+              `${initial(event.playerId)}:${event.role}:BLAST`,
+            );
+          const victim = unitOf(entry.unitId);
+          if (
+            event.cause === "KABOOM" &&
+            victim !== undefined &&
+            seats.has(victim.ownerId) &&
+            hostile(event.playerId, victim.ownerId)
+          )
+            reached.set(
+              victim.ownerId,
+              (reached.get(victim.ownerId) ?? 0) + entry.damage,
+            );
+        }
+        for (const [owner, damage] of reached) {
+          const seat = seats.get(owner);
+          if (seat === undefined) continue;
+          seat.againstKabooms += 1;
+          seat.againstKaboomsNoHpDamage += Number(damage === 0);
+        }
+      }
+      if (event.kind === "PLAGUE_DAMAGED")
+        for (const entry of event.results) {
+          const victim = unitOf(entry.unitId);
+          const seat =
+            victim === undefined ? undefined : seats.get(victim.ownerId);
+          if (seat !== undefined) seat.againstPlagueDamage += entry.damage;
+          if (entry.dies) killedBy.set(entry.unitId, "PLAGUE");
+        }
+      if (event.kind === "UNIT_BEAMED") {
+        const seat = seats.get(event.playerId);
+        const passenger = unitOf(event.passengerUnitId);
+        if (seat !== undefined) {
+          seat.beamDowns += 1;
+          if (passenger !== undefined)
+            bump(seat.beamDownPassengers, key(passenger));
+          beamed.set(event.passengerUnitId, event.playerId);
+          beamedRound.set(event.passengerUnitId, round);
+        }
+      }
+      if (event.kind === "UNIT_MIND_CONTROLLED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) {
+          seat.mindControls += 1;
+          bump(
+            seat.mindControlVictims,
+            `${initial(event.targetOwnerId)}:${event.targetRole}`,
+          );
+          seat.mindControlHp += event.hp;
+        }
+      }
+      if (event.kind === "UNIT_PULLED") {
+        const source = unitOf(event.sourceUnitId);
+        const target = unitOf(event.targetUnitId);
+        const seat =
+          source === undefined ? undefined : seats.get(source.ownerId);
+        if (seat !== undefined && source !== undefined) {
+          const city = before.cities.find(
+            (item) => item.at.x === event.from.x && item.at.y === event.from.y,
+          );
+          if (target?.ownerId === source.ownerId) {
+            seat.tractorBeamsOwn += 1;
+            if (city?.ownerId === source.ownerId) seat.tractorOffOwnCenter += 1;
+          } else {
+            seat.tractorBeamsHostile += 1;
+            if (city !== undefined && city.ownerId !== source.ownerId) {
+              seat.tractorOffHostileCenter += 1;
+              pulledOff.set(`${source.ownerId}:${city.id}`, round);
+            }
+          }
+        }
+      }
+      if (event.kind === "CITY_CAPTURED") {
+        const seat = seats.get(event.to);
+        if (
+          beamedCapture &&
+          actor !== undefined &&
+          event.to === record.playerId &&
+          event.from !== null &&
+          event.from !== record.playerId
+        )
+          actor.beamedCityCaptures = (actor.beamedCityCaptures ?? 0) + 1;
+        const pulled = pulledOff.get(`${event.to}:${event.cityId}`);
+        if (seat !== undefined && pulled !== undefined) {
+          if (round - pulled <= 2) seat.tractorCapturesAfterPull += 1;
+          pulledOff.delete(`${event.to}:${event.cityId}`);
+        }
+      }
+      if (event.kind === "UNIT_DIED" && event.cause !== "ELIMINATION") {
+        const unit = unitOf(event.unitId);
+        const seat = unit === undefined ? undefined : seats.get(unit.ownerId);
+        if (unit !== undefined && seat !== undefined) {
+          seat.lossesByCause[event.cause] =
+            (seat.lossesByCause[event.cause] ?? 0) + 1;
+          if (event.cause === "BRAIN_LOST") seat.thrallsCollapsed += 1;
+          else {
+            bump(seat.lossesByRole, key(unit));
+            if (thrallIds.has(unit.id)) seat.thrallsKilled += 1;
+            const by = killedBy.get(event.unitId) ?? event.cause;
+            seat.killedBy[by] = (seat.killedBy[by] ?? 0) + 1;
+            if (beamed.delete(event.unitId))
+              seat.beamedKilledBeforeNextTurn += 1;
+            if (unit.ownerId !== record.playerId) {
+              if (fullAtStart.has(event.unitId))
+                seat.againstKilledAtFullHp += 1;
+              const dealers = hitBy.get(event.unitId)?.size ?? 0;
+              const index = Math.min(3, dealers) - 1;
+              if (dealers > 0)
+                seat.againstKilledByAttackers[index] =
+                  (seat.againstKilledByAttackers[index] ?? 0) + 1;
+            }
+          }
+        }
+      }
+    }
+    if (turnStarted) snapshotFull(state);
+  }
+  return { seats: [...seats.values()] };
+}
+
 /**
  * Lich lifecycle statistics for one match (`pulp_wars-vkq.21`), summed over
  * every Undead seat.
@@ -1406,7 +2128,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r24",
+    rulesetId: "pulp-wars-poc-7r25",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: cell.seed,
     width: cell.size,
@@ -1483,6 +2205,9 @@ export function runCell(cell: MatrixCell): MatrixEntry {
       : null,
     dinosaur: (factions as readonly FactionIdV7[]).includes("DINOSAUR")
       ? dinosaurTelemetry(setup, result.commandLog)
+      : null,
+    martian: (factions as readonly FactionIdV7[]).includes("MARTIAN")
+      ? martianTelemetry(setup, result.commandLog)
       : null,
     promotions: promotionTelemetry(setup, result.commandLog),
   };
@@ -2064,7 +2789,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r24",
+          rulesetId: "pulp-wars-poc-7r25",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -2533,6 +3258,7 @@ export function summarize(entries: readonly MatrixEntry[]) {
     stalls: sum(entries.map((entry) => entry.stalls)),
     goblin: goblinSummary(entries),
     dinosaur: dinosaurSummary(entries),
+    martian: martianSummary(entries),
     duel: {
       perPairing,
       undeadWinMixed: rateFor(mixed, undeadWon),
@@ -3237,9 +3963,14 @@ function dinosaurSummary(entries: readonly MatrixEntry[]) {
       byMapSize: byKey(group, (entry) => `${entry.mapType}/${entry.size}`),
     };
   };
-  // The reference: every 1v1 pairing of the same run without a Dinosaur seat.
+  // The reference: every 1v1 pairing of the same run without a Dinosaur or
+  // a Martian seat (the pre-Martian reference).
   const reference = capRateOf(
-    duel.filter((entry) => !DINOSAUR_ONE_VS_ONE.includes(entry.pairing)),
+    duel.filter(
+      (entry) =>
+        !DINOSAUR_ONE_VS_ONE.includes(entry.pairing) &&
+        !MARTIAN_ONE_VS_ONE.includes(entry.pairing),
+    ),
   );
   const pairingCaps: Record<string, number | null> = Object.fromEntries(
     DINOSAUR_ONE_VS_ONE.flatMap((pairing) => {
@@ -3321,6 +4052,396 @@ function dinosaurSummary(entries: readonly MatrixEntry[]) {
   };
 }
 
+const martianWon = (entry: MatrixEntry) => entry.winnerFaction === "MARTIAN";
+
+/** The sum of a counter over records, keys sorted by descending count. */
+function sumCounts(records: readonly Counts[]): Counts {
+  const total: Counts = {};
+  for (const record of records)
+    for (const [name, value] of Object.entries(record))
+      total[name] = (total[name] ?? 0) + value;
+  return Object.fromEntries(
+    Object.entries(total).sort(
+      ([leftName, left], [rightName, right]) =>
+        right - left || leftName.localeCompare(rightName),
+    ),
+  );
+}
+
+/** Kills per loss of each key of either counter (null without a loss). */
+function killsPerLoss(kills: Counts, losses: Counts) {
+  return Object.fromEntries(
+    [...new Set([...Object.keys(kills), ...Object.keys(losses)])]
+      .sort()
+      .map((name) => [
+        name,
+        (losses[name] ?? 0) === 0
+          ? null
+          : Math.round((100 * (kills[name] ?? 0)) / (losses[name] ?? 1)) / 100,
+      ]),
+  );
+}
+
+const tallyTotal = (tallies: readonly MartianTally[]): MartianTally => ({
+  hits: sum(tallies.map((item) => item.hits)),
+  damage: sum(tallies.map((item) => item.damage)),
+  kills: sum(tallies.map((item) => item.kills)),
+});
+
+/**
+ * Martian section 16.2 telemetry summed over every Martian seat of `group`,
+ * with the section 16.4 usefulness thresholds and watch bands. Win rates
+ * count decided games of 1v1 pairings with one Martian seat.
+ */
+function martianAggregate(group: readonly MatrixEntry[]) {
+  const seats = group.flatMap((entry) =>
+    (entry.martian?.seats ?? []).map((seat) => ({ entry, seat })),
+  );
+  const all = seats.map((item) => item.seat);
+  const count = (predicate: (seat: MartianSeatStats) => boolean) =>
+    all.filter(predicate).length;
+  const trainedRole = (seat: MartianSeatStats, role: UnitRoleIdV7) =>
+    (seat.trained[role] ?? 0) > 0;
+  const researched = (seat: MartianSeatStats, tech: string) =>
+    seat.researchRound[tech] !== undefined;
+  /** `part` seats among the `whole` seats, as counts and a share. */
+  const threshold = (
+    whole: (seat: MartianSeatStats) => boolean,
+    part: (seat: MartianSeatStats) => boolean,
+  ) => {
+    const base = all.filter(whole);
+    const hits = base.filter(part).length;
+    return { seats: base.length, met: hits, share: share(hits, base.length) };
+  };
+  const kills = sumCounts(all.map((seat) => seat.killsByRole));
+  const losses = sumCounts(all.map((seat) => seat.lossesByRole));
+  const totalKills = sum(Object.values(kills));
+  const raysFull = sumCounts(all.map((seat) => seat.raysFullByRole));
+  const raysHalf = sumCounts(all.map((seat) => seat.raysHalfByRole));
+  // Win rates with and without a role, over decided mixed 1v1 seat-games.
+  const mixed = seats.filter(
+    ({ entry }) =>
+      entry.aiCount === 1 &&
+      entry.factions.filter((faction) => faction === "MARTIAN").length === 1 &&
+      entry.winnerSeat !== null,
+  );
+  const winWith = (role: UnitRoleIdV7, present: boolean) => {
+    const items = mixed.filter(
+      ({ seat }) => trainedRole(seat, role) === present,
+    );
+    return wilson(
+      items.filter(({ entry, seat }) => entry.winnerSeat === seat.seat).length,
+      items.length,
+      0,
+    );
+  };
+  const tractorOffCenter = sum(all.map((seat) => seat.tractorOffHostileCenter));
+  const tractorCaptures = sum(all.map((seat) => seat.tractorCapturesAfterPull));
+  return {
+    seatGames: all.length,
+    turns: sum(all.map((seat) => seat.turns)),
+    capTurns: sum(all.map((seat) => seat.capTurns)),
+    trained: sumCounts(all.map((seat) => seat.trained)),
+    seatGamesTrained: sumCounts(
+      all.map((seat) =>
+        Object.fromEntries(Object.keys(seat.trained).map((role) => [role, 1])),
+      ),
+    ),
+    killsByRole: kills,
+    lossesByRole: losses,
+    killsPerLoss: killsPerLoss(kills, losses),
+    killShare: Object.fromEntries(
+      Object.entries(kills).map(([role, value]) => [
+        role,
+        share(value, totalKills),
+      ]),
+    ),
+    lossesByCause: sumCounts(all.map((seat) => seat.lossesByCause)),
+    killedBy: sumCounts(all.map((seat) => seat.killedBy)),
+    shields: {
+      absorbed: {
+        attack: sum(all.map((seat) => seat.shieldAbsorbed.attack)),
+        retaliation: sum(all.map((seat) => seat.shieldAbsorbed.retaliation)),
+        splash: sum(all.map((seat) => seat.shieldAbsorbed.splash)),
+        wail: sum(all.map((seat) => seat.shieldAbsorbed.wail)),
+        blast: sum(all.map((seat) => seat.shieldAbsorbed.blast)),
+      },
+      absorbedByRole: sumCounts(all.map((seat) => seat.shieldAbsorbedByRole)),
+      forceField: sum(all.map((seat) => seat.forceFieldAbsorbed)),
+      hitsFullyAbsorbed: sum(all.map((seat) => seat.hitsFullyAbsorbed)),
+      rechargedShields: sum(all.map((seat) => seat.rechargedShields)),
+      endTurnRecharges: sum(all.map((seat) => seat.endTurnRecharges)),
+    },
+    rays: {
+      fullByRole: raysFull,
+      halfByRole: raysHalf,
+      full: tallyTotal(all.map((seat) => seat.rayFull)),
+      half: tallyTotal(all.map((seat) => seat.rayHalf)),
+      halfMoved: sum(all.map((seat) => seat.raysHalfMoved)),
+      halfCooling: sum(all.map((seat) => seat.raysHalfCooling)),
+      ignoringFortification: sum(
+        all.map((seat) => seat.raysIgnoringFortification),
+      ),
+      tripodFieldDefense: sum(all.map((seat) => seat.tripodFieldDefense)),
+    },
+    pierce: {
+      hostile: tallyTotal(all.map((seat) => seat.pierceHostile)),
+      own: tallyTotal(all.map((seat) => seat.pierceOwn)),
+    },
+    beamDown: {
+      uses: sum(all.map((seat) => seat.beamDowns)),
+      seatGames: count((seat) => seat.beamDowns > 0),
+      passengers: sumCounts(all.map((seat) => seat.beamDownPassengers)),
+      killedBeforeNextTurn: sum(
+        all.map((seat) => seat.beamedKilledBeforeNextTurn),
+      ),
+      captures: sum(all.map((seat) => seat.beamedCaptures ?? 0)),
+      cityCaptures: sum(all.map((seat) => seat.beamedCityCaptures ?? 0)),
+    },
+    psychicCommand: {
+      uses: sum(all.map((seat) => seat.psychicCommands)),
+      units: sum(all.map((seat) => seat.psychicUnits)),
+    },
+    mindControl: {
+      uses: sum(all.map((seat) => seat.mindControls)),
+      seatGames: count((seat) => seat.mindControls > 0),
+      victims: sumCounts(all.map((seat) => seat.mindControlVictims)),
+      meanHp: share(
+        sum(all.map((seat) => seat.mindControlHp)),
+        sum(all.map((seat) => seat.mindControls)),
+      ),
+    },
+    thralls: {
+      thrallTurns: sum(all.map((seat) => seat.thrallTurns)),
+      maximum: Math.max(0, ...all.map((seat) => seat.thrallsMaximum)),
+      killed: sum(all.map((seat) => seat.thrallsKilled)),
+      collapsed: sum(all.map((seat) => seat.thrallsCollapsed)),
+      captures: sum(all.map((seat) => seat.thrallCaptures)),
+      kills: kills.THRALL ?? 0,
+    },
+    tractorBeam: {
+      own: sum(all.map((seat) => seat.tractorBeamsOwn)),
+      hostile: sum(all.map((seat) => seat.tractorBeamsHostile)),
+      offHostileCenter: tractorOffCenter,
+      offOwnCenter: sum(all.map((seat) => seat.tractorOffOwnCenter)),
+      capturesAfterPull: tractorCaptures,
+    },
+    selfLaunches: sum(all.map((seat) => seat.selfLaunches)),
+    flyoverMoves: sum(all.map((seat) => seat.flyoverMoves)),
+    against: {
+      attacks: sum(all.map((seat) => seat.againstAttacks)),
+      killedAtFullHp: sum(all.map((seat) => seat.againstKilledAtFullHp)),
+      killedByAttackers: [0, 1, 2].map((index) =>
+        sum(all.map((seat) => seat.againstKilledByAttackers[index] ?? 0)),
+      ),
+      plagueDamage: sum(all.map((seat) => seat.againstPlagueDamage)),
+      kabooms: sum(all.map((seat) => seat.againstKabooms)),
+      kaboomsNoHpDamage: sum(all.map((seat) => seat.againstKaboomsNoHpDamage)),
+    },
+    /** Section 16.4 usefulness thresholds. */
+    thresholds: {
+      saucer: threshold(
+        () => true,
+        (seat) => trainedRole(seat, "RAIDER"),
+      ),
+      beamDown: threshold(
+        (seat) => trainedRole(seat, "RAIDER"),
+        (seat) => seat.beamDowns > 0,
+      ),
+      shieldProjector: threshold(
+        () => true,
+        (seat) => trainedRole(seat, "GUARD"),
+      ),
+      forceField: threshold(
+        (seat) => trainedRole(seat, "GUARD"),
+        (seat) => seat.forceFieldAbsorbed > 0,
+      ),
+      rayGunner: threshold(
+        (seat) => researched(seat, "MARKSMANSHIP"),
+        (seat) => trainedRole(seat, "MARKSMAN"),
+      ),
+      rayGunnerFullShare: share(
+        raysFull.MARKSMAN ?? 0,
+        (raysFull.MARKSMAN ?? 0) + (raysHalf.MARKSMAN ?? 0),
+      ),
+      brain: threshold(
+        (seat) => researched(seat, "ADMINISTRATION"),
+        (seat) => trainedRole(seat, "CAPTAIN"),
+      ),
+      mindControl: threshold(
+        (seat) => trainedRole(seat, "CAPTAIN"),
+        (seat) => seat.mindControls > 0,
+      ),
+      tripod: threshold(
+        (seat) => researched(seat, "SAWMILLING"),
+        (seat) => trainedRole(seat, "CATAPULT"),
+      ),
+      pierce: threshold(
+        (seat) => trainedRole(seat, "CATAPULT"),
+        (seat) => seat.pierceHostile.hits > 0,
+      ),
+      mothershipLongGames: (() => {
+        const long = seats.filter(({ entry }) => entry.rounds >= 35);
+        const met = long.filter(({ seat }) => trainedRole(seat, "KNIGHT"));
+        return {
+          seats: long.length,
+          met: met.length,
+          share: share(met.length, long.length),
+        };
+      })(),
+      mothershipChivalry: threshold(
+        (seat) => researched(seat, "CHIVALRY"),
+        (seat) => trainedRole(seat, "KNIGHT"),
+      ),
+      tractorBeam: threshold(
+        (seat) => trainedRole(seat, "KNIGHT"),
+        (seat) => seat.tractorBeamsOwn + seat.tractorBeamsHostile > 0,
+      ),
+      colossi: sum(all.map((seat) => seat.trained["REWARD:JUGGERNAUT"] ?? 0)),
+    },
+    /** Section 16.4 watch bands. */
+    watch: {
+      winWithTripod: winWith("CATAPULT", true),
+      winWithoutTripod: winWith("CATAPULT", false),
+      winWithMothership: winWith("KNIGHT", true),
+      winWithoutMothership: winWith("KNIGHT", false),
+      tractorCaptureShare: share(tractorCaptures, tractorOffCenter),
+      focusFireSeatGames: threshold(
+        () => true,
+        (seat) => seat.againstKilledAtFullHp > 0,
+      ),
+    },
+  };
+}
+
+/** One opposing faction's units and commands in `group` (blind spots). */
+function opponentAggregate(
+  group: readonly MatrixEntry[],
+  faction: FactionIdV7,
+) {
+  const present = group.filter(
+    (entry) => entry.byFaction[faction] !== undefined,
+  );
+  const kills = sumCounts(
+    present.map((entry) => entry.byFaction[faction]?.killsByRole ?? {}),
+  );
+  const losses = sumCounts(
+    present.map((entry) => entry.promotions?.[faction]?.lossesByRole ?? {}),
+  );
+  return {
+    games: present.length,
+    trained: sumCounts(
+      present.map((entry) => entry.byFaction[faction]?.trained ?? {}),
+    ),
+    killsByRole: kills,
+    lossesByRole: losses,
+    killsPerLoss: killsPerLoss(kills, losses),
+    commands: sumCounts(
+      present.map((entry) => entry.promotions?.[faction]?.commands ?? {}),
+    ),
+  };
+}
+
+/** Martian section 16.4 acceptance measures and section 16.2 telemetry. */
+function martianSummary(entries: readonly MatrixEntry[]) {
+  const duel = entries.filter((entry) => entry.aiCount === 1);
+  const martianDuel = duel.filter((entry) =>
+    MARTIAN_ONE_VS_ONE.includes(entry.pairing),
+  );
+  const versus = (opponent: FactionIdV7) =>
+    martianDuel.filter(
+      (entry) => entry.pairing !== "MM" && entry.factions.includes(opponent),
+    );
+  const byKey = (
+    group: readonly MatrixEntry[],
+    key: (entry: MatrixEntry) => string,
+  ) =>
+    Object.fromEntries(
+      Object.entries(groupBy(group, key)).map(([name, items]) => [
+        name,
+        rateFor(items, martianWon),
+      ]),
+    );
+  const against = (opponent: FactionIdV7) => {
+    const group = versus(opponent);
+    return {
+      win: rateFor(group, martianWon),
+      bySeat: byKey(group, (entry) => entry.pairing),
+      bySize: byKey(group, (entry) => String(entry.size)),
+      martianMovesFirst: rateFor(
+        group.filter((entry) => entry.factions[entry.firstSeat] === "MARTIAN"),
+        martianWon,
+      ),
+      rounds: stats(group.map((entry) => entry.rounds)),
+      telemetry: martianAggregate(group),
+      opponent: opponentAggregate(group, opponent),
+    };
+  };
+  // The reference: every 1v1 pairing of the same run without a Martian seat.
+  const reference = capRateOf(
+    duel.filter((entry) => !MARTIAN_ONE_VS_ONE.includes(entry.pairing)),
+  );
+  const pairingCaps: Record<string, number | null> = Object.fromEntries(
+    MARTIAN_ONE_VS_ONE.flatMap((pairing) => {
+      const group = duel.filter((entry) => entry.pairing === pairing);
+      return group.length === 0 ? [] : [[pairing, capRateOf(group)]];
+    }),
+  );
+  const excesses = Object.values(pairingCaps).map(
+    (rate) => (rate ?? 0) - (reference ?? 0),
+  );
+  const multi = entries.filter(
+    (entry) => entry.aiCount === 3 && MARTIAN_MULTI.includes(entry.pairing),
+  );
+  const mixed = martianDuel.filter((entry) => entry.pairing !== "MM");
+  return {
+    versusHuman: against("ORIGINAL"),
+    versusUndead: against("UNDEAD"),
+    versusGoblin: against("GOBLIN"),
+    versusDinosaur: against("DINOSAUR"),
+    allMixed: rateFor(mixed, martianWon),
+    mirrorSeatZeroWin: rateFor(
+      duel.filter((entry) => entry.pairing === "MM"),
+      seatZeroWon,
+    ),
+    capRates: {
+      nonMartianReference: reference,
+      byPairing: pairingCaps,
+      /** Percentage points above the reference (worst Martian pairing). */
+      worstExcessPoints:
+        reference === null || excesses.length === 0
+          ? null
+          : Math.round(1000 * Math.max(...excesses)) / 10,
+    },
+    telemetry: {
+      allMixed: martianAggregate(mixed),
+      mirror: martianAggregate(duel.filter((entry) => entry.pairing === "MM")),
+      multi: martianAggregate(multi),
+    },
+    multi: Object.fromEntries(
+      Object.entries(groupBy(multi, (entry) => entry.pairing)).map(
+        ([pairing, group]) => [
+          pairing,
+          {
+            games: group.length,
+            capRate: capRateOf(group),
+            winnerFaction: groupCount(
+              group,
+              (entry) => entry.winnerFaction ?? entry.termination,
+            ),
+            aliveSeatsByFaction: groupCount(
+              group.flatMap((entry) =>
+                entry.seats.filter((seat) => seat.alive),
+              ),
+              (seat) => seat.faction,
+            ),
+          },
+        ],
+      ),
+    ),
+  };
+}
+
 function groupCount<T>(
   items: readonly T[],
   key: (item: T) => string,
@@ -3348,6 +4469,7 @@ function markdown(summary: ReturnType<typeof summarize>): string {
     "",
     ...goblinMarkdown(summary.goblin, pct),
     ...dinosaurMarkdown(summary.dinosaur, pct),
+    ...martianMarkdown(summary.martian, pct),
     "| Pairing | Games | Undead win | Seat-0 win | First mover win | Rounds mean/median/p90 | Cap rate |",
     "| --- | ---: | --- | --- | --- | --- | ---: |",
     ...Object.entries(summary.duel.perPairing).map(
@@ -3427,6 +4549,38 @@ function dinosaurMarkdown(
     `Growth (1v1): Big ${all.growth.bigPerSeatGame} and Alpha ${all.growth.alphaPerSeatGame} per seat-game; Big in ${all.growth.seatGamesWithBig}/${all.seatGames} seat-games (${all.growth.seatGamesWithBigShare}); grown lost ${all.growth.grownLostShare}`,
     `T-Rex (1v1): Chivalry ${all.tRex.seatGamesWithChivalry}, Egg ${all.tRex.seatGamesWithEgg} of ${all.seatGames} seat-games; in 35+ round games ${all.tRex.longSeatGamesWithEgg}/${all.tRex.longSeatGames} (${all.tRex.longSeatGamesWithEggShare})`,
     `Slots (1v1): used ${all.slots.meanUsed} of ${all.slots.meanCapacity} per city-turn; full ${all.slots.fullCityTurns}, under two free ${all.slots.noTwoSlotCityTurns}, no nest ${all.slots.noNestCityTurns} of ${all.slots.cityTurns}; cap turns ${all.capTurns}/${all.turns}`,
+    "",
+  ];
+}
+
+/** Martian section 16.4 acceptance lines (empty without Martian games). */
+function martianMarkdown(
+  martian: ReturnType<typeof martianSummary>,
+  pct: (rate: Rate) => string,
+): string[] {
+  const all = martian.telemetry.allMixed;
+  if (all.seatGames === 0 && martian.telemetry.mirror.seatGames === 0)
+    return [];
+  const caps = martian.capRates;
+  const t = all.thresholds;
+  const part = (item: { seats: number; met: number; share: number | null }) =>
+    `${item.met}/${item.seats} (${item.share})`;
+  const flat = (record: Record<string, number | null>) =>
+    Object.entries(record)
+      .map(([key, value]) => `${key} ${value}`)
+      .join(", ");
+  return [
+    `Martian win vs Human (MH+HM): ${pct(martian.versusHuman.win)}`,
+    `Martian win vs Undead (MU+UM): ${pct(martian.versusUndead.win)}`,
+    `Martian win vs Goblin (MG+GM): ${pct(martian.versusGoblin.win)}`,
+    `Martian win vs Dinosaur (MD+DM): ${pct(martian.versusDinosaur.win)}`,
+    `Martian mirror seat 0: ${pct(martian.mirrorSeatZeroWin)}`,
+    `Cap rates: non-Martian reference ${caps.nonMartianReference}; ${flat(caps.byPairing)}; worst excess ${caps.worstExcessPoints} points`,
+    `Martian (mixed 1v1) trained: ${flat(all.trained)}; seat-games ${all.seatGames}`,
+    `Martian kills per loss: ${flat(all.killsPerLoss)}; kill share ${flat(all.killShare)}`,
+    `Thresholds: Saucer ${part(t.saucer)}, Beam Down ${part(t.beamDown)}, Projector ${part(t.shieldProjector)}, Force Field ${part(t.forceField)}, Ray Gunner ${part(t.rayGunner)} full ${t.rayGunnerFullShare}, Brain ${part(t.brain)}, Mind Control ${part(t.mindControl)}, Tripod ${part(t.tripod)}, Pierce ${part(t.pierce)}, Mothership (35+ rounds) ${part(t.mothershipLongGames)}, Tractor Beam ${part(t.tractorBeam)}, Colossi ${t.colossi}`,
+    `Watch: win with/without Tripod ${pct(all.watch.winWithTripod)} / ${pct(all.watch.winWithoutTripod)}; with/without Mothership ${pct(all.watch.winWithMothership)} / ${pct(all.watch.winWithoutMothership)}; pull-then-capture ${all.watch.tractorCaptureShare}; focus fire ${part(all.watch.focusFireSeatGames)}`,
+    `Pierce hostile ${all.pierce.hostile.hits} (${all.pierce.hostile.kills} kills), own ${all.pierce.own.hits} (${all.pierce.own.kills} kills); Mind Control ${all.mindControl.uses} (${flat(all.mindControl.victims)}); Beam Down ${all.beamDown.uses}; Tractor Beam own ${all.tractorBeam.own}, hostile ${all.tractorBeam.hostile}, off a center ${all.tractorBeam.offHostileCenter}`,
     "",
   ];
 }

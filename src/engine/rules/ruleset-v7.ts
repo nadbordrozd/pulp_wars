@@ -1742,7 +1742,8 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     cost: null,
     maxHp: 32,
     attack2: 8,
-    defense2: 6,
+    // `pulp_wars-t6s.5`: Defense 2.5 (was 3), section 16.5.
+    defense2: 5,
     move: 1,
     range: 2,
     minimumRange: 1,

@@ -11,13 +11,13 @@
     "round": 38,
     "actor": 3,
     "rejectedCommand": { "kind": "LAND_GRANT", "cityId": 39 },
-    "refreshed": "pulp_wars-vkq.20: state re-identified as pulp-wars-poc-7r15; Undead Zombies at the revision-15 maximum HP (maxHp - 2, hp clamped). pulp_wars-wwc: state re-identified as pulp-wars-poc-7r16 (stored board kept; revision 16 changes only map generation). pulp_wars-0ao.2: state re-identified as pulp-wars-poc-7r17 (an all-Human/Undead state is unchanged by revision 17). pulp_wars-6gd.2: state re-identified as pulp-wars-poc-7r18 (revision 18 changes only movement legality and cost, not the stored state). pulp_wars-c87.2: state re-identified as pulp-wars-poc-7r20 and given the empty revision-19 `eggs` list (a state without a Dinosaur seat is otherwise unchanged by revision 19). pulp_wars-9s0.4: state re-identified as pulp-wars-poc-7r21 and each player given the four locked revision-21 entitlements (Conqueror, Land Baron, Sea Dog, Slayer); nothing else changes. pulp_wars-t6s.2: state re-identified as pulp-wars-poc-7r22 and given the four empty Martian lists (`shields`, `cooling`, `thralls`, `mindControlCooldowns`); a state without a Martian seat is otherwise unchanged. pulp_wars-0hi.3: state re-identified as pulp-wars-poc-7r23; the Human Guard and Marksman at the revision-20 section 6.3 maximum HP (maxHp + 2; a unit at full HP stays at full HP). pulp_wars-7g3.3: state re-identified as pulp-wars-poc-7r24 and given the empty Ice Folk `chilled` list; a state without an Ice Folk seat is otherwise unchanged"
+    "refreshed": "pulp_wars-vkq.20: state re-identified as pulp-wars-poc-7r15; Undead Zombies at the revision-15 maximum HP (maxHp - 2, hp clamped). pulp_wars-wwc: state re-identified as pulp-wars-poc-7r16 (stored board kept; revision 16 changes only map generation). pulp_wars-0ao.2: state re-identified as pulp-wars-poc-7r17 (an all-Human/Undead state is unchanged by revision 17). pulp_wars-6gd.2: state re-identified as pulp-wars-poc-7r18 (revision 18 changes only movement legality and cost, not the stored state). pulp_wars-c87.2: state re-identified as pulp-wars-poc-7r20 and given the empty revision-19 `eggs` list (a state without a Dinosaur seat is otherwise unchanged by revision 19). pulp_wars-9s0.4: state re-identified as pulp-wars-poc-7r21 and each player given the four locked revision-21 entitlements (Conqueror, Land Baron, Sea Dog, Slayer); nothing else changes. pulp_wars-t6s.2: state re-identified as pulp-wars-poc-7r22 and given the four empty Martian lists (`shields`, `cooling`, `thralls`, `mindControlCooldowns`); a state without a Martian seat is otherwise unchanged. pulp_wars-0hi.3: state re-identified as pulp-wars-poc-7r23; the Human Guard and Marksman at the revision-20 section 6.3 maximum HP (maxHp + 2; a unit at full HP stays at full HP). pulp_wars-7g3.3: state re-identified as pulp-wars-poc-7r25 and given the empty Ice Folk `chilled` list; a state without an Ice Folk seat is otherwise unchanged"
   },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r24",
+    "rulesetId": "pulp-wars-poc-7r25",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r24",
+      "rulesetId": "pulp-wars-poc-7r25",
       "seed": 1,
       "width": 16,
       "height": 16,

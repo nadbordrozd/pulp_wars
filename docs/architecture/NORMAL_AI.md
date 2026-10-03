@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r24`. Role facts resolve through the owner's
+previews under `pulp-wars-poc-7r25`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
 duration valuation, the endgame siege mode (`pulp_wars-1mc`), the
@@ -1169,7 +1169,10 @@ Mothership's own maximum) 852 and 1,044 times.
 seeds 0-7 in both orders on 11 x 11 and 14 x 14, 32 decided games each,
 Martian wins first): Humans 18-14, Undead 16-16, Goblins 17-15, Dinosaurs
 15-17. No pairing is beyond 70/30; the numbers are the balance bead's
-(`pulp_wars-t6s.5`) to tune.
+(`pulp_wars-t6s.5`) to tune. Its 60-game pairings, the AI-side findings
+(Mind Control and the Tractor Beam below their usefulness thresholds), and
+its proposals are in the
+[Martian balance report](../validation/RULESET_7_MARTIAN_BALANCE.md).
 
 **Parity.** 27 matches without a Martian seat (Human-Undead,
 Goblin-Dinosaur, Dinosaur-Human, and Undead-Goblin on 11 x 11, seeds 0-5;

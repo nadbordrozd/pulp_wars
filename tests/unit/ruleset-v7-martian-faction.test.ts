@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 24;
+const REVISION = 25;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -660,7 +660,8 @@ const ROSTER = [
     32,
     3,
     8,
-    6,
+    // `pulp_wars-t6s.5`: Defense 2.5 (contract 3; section 16.5).
+    5,
     1,
     1,
     2,

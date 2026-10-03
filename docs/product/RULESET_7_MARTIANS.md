@@ -12,6 +12,10 @@ of section 13.4 (the setup screen offers the faction; see
 ([section 12](#12-normal-ai-requirements), `pulp_wars-t6s.3`,
 `src/ai/v7-martian.ts`; summary and measurements in the
 [Normal AI notes](../architecture/NORMAL_AI.md#martian-play-pulp_wars-t6s3)).
+**The coarse balance pass is done** (`pulp_wars-t6s.5`, identity
+`pulp-wars-poc-7r25`: Colossus Defense 2.5; the
+[tuning record](#165-tuning-record) and the
+[Martian balance report](../validation/RULESET_7_MARTIAN_BALANCE.md)).
 What the implementation changed or made precise is in
 [section 19](#19-implementation-notes-pulp_wars-t6s2). It is an
 overlay over the rules in force when `pulp_wars-t6s.2` starts: today that is
@@ -229,12 +233,15 @@ unit tiles, forms, homes, and entity IDs as any other faction.
 | Brain            | `CAPTAIN`     | Administration    |    5 |     1 |   8 |      2 |              1 (2) |                1 (2) |    1 |     1 |     1 | yes               | no      | Psychic Command; Mind Control; no Tend Wounded               |
 | Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |              4 (8) |                1 (2) |    2 |   1–2 |     1 | yes               | no      | strides; heat ray; Pierce; destroys Field Defense            |
 | Mothership       | `KNIGHT`      | Chivalry          |   10 |     2 |  16 |      4 |            2.5 (5) |                2 (4) |    2 |     1 |     1 | yes               | no      | flies; Tractor Beam; no Overrun                              |
-| Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |              4 (8) |                3 (6) |    1 |   1–2 |     1 | yes               | yes     | strides; heat ray; Push                                      |
+| Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |              4 (8) |             2.5 (5)² |    1 |   1–2 |     1 | yes               | yes     | strides; heat ray; Push                                      |
 | Thrall           | `FIGHTER`     | Mind Control only |    — |     0 | ≤10 |      0 |              2 (4) |              1.5 (3) |    1 |     1 |     1 | yes               | yes     | no Shield; no Promotion; no Disband; collapses without Brain |
 | Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 |      0 |              2 (4) |                2 (4) |    2 |     1 |     2 | yes               | no      | naval                                                        |
 | Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 |      0 |             6 (12) |                4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                                |
 
 ¹ Ray Gunner Sight becomes 2 with Fieldcraft.
+
+² Colossus Defense 2.5 since `pulp_wars-t6s.5` (contract value 3; see the
+[tuning record](#165-tuning-record)).
 
 These are starting values for `pulp_wars-t6s.5`, computed against the
 registry of commit `f1c17bd` with the revision-20 Triceratops and T-Rex.
@@ -1576,6 +1583,10 @@ Defense 4, melee, Push).
   (5 on a Fighter) is worth firing.
 - **Verdict: reward-tier parity.** It is sturdier than it looks against small
   hits and weaker than a Juggernaut against big ones.
+- **Measured (`pulp_wars-t6s.5`).** In Normal matches it was not: it traded
+  17.8 kills per loss (peers 2.9–6.5) and almost never died. Defense is now
+  2.5 ([tuning record](#165-tuning-record)); the analysis above uses the
+  contract's Defense 3.
 
 ### 9.11 Skirmishes
 
@@ -2491,7 +2502,24 @@ the root before going outside the bounds.
 
 ### 16.5 Tuning record
 
-Empty until `pulp_wars-t6s.5` records the chosen numbers here.
+`pulp_wars-t6s.5` (identity `pulp-wars-poc-7r25`; a coarse Dry Land pass by
+the user's balance-testing policy, evidence in the
+[Martian balance report](../validation/RULESET_7_MARTIAN_BALANCE.md)):
+
+| Parameter        | Contract |    Chosen | Reason                                                                                                              |
+| ---------------- | -------: | --------: | ------------------------------------------------------------------------------------------------------------------- |
+| Colossus Defense |  3 (`6`) | 2.5 (`5`) | it traded 17.8 kills per loss (the other factions' Juggernaut-role units 2.9–6.5) and almost never died; 8.6 at 2.5 |
+
+Every other number keeps its contract value. Martians win 53–57% of decided
+Dry Land games against each faction after the change (55–57% before), no
+pairing reaches the round cap, and no match without a Martian seat changes.
+The pre-approved tier-2 fallback was not applied: the Tripod and Mothership
+training thresholds pass. Two ability thresholds of
+[section 16.4](#164-balance-acceptance) are missed on the AI side (Mind
+Control 39%, the Tractor Beam 37%; proposals in the report), and the win-rate
+gaps with and without a Tripod or Mothership exceed the watch band through
+the length of the games that reach tier 3, not dominance. Fine tuning is
+deferred by the user.
 
 ## 17. Decisions made in this spec
 
@@ -2816,8 +2844,9 @@ The scripts and outputs are in the session scratch space under `t6s2/step0/`
   [MARTIAN.md](../art/factions/MARTIAN.md#decisions-of-the-ui-bead). The
   client has no threat display, so the flying and striding reach of
   `queryThreatenedTilesV7` is read only by the AI.
-- **`pulp_wars-t6s.5` (balance).** The balance matrix has no Martian
-  pairing yet; the headless result carries the `martian` telemetry block
-  ([headless simulation](../architecture/HEADLESS_SIMULATION.md#martian-seats-pulp_wars-t6s2)).
+- **`pulp_wars-t6s.5` (balance).** Done: the balance matrix has the Martian
+  pairings and the per-seat `martian` telemetry
+  ([Martian balance report](../validation/RULESET_7_MARTIAN_BALANCE.md));
+  one number changed ([tuning record](#165-tuning-record)).
 - **Release corpus.** The identity change invalidates the checked release
   corpus; its reviewed refresh is the root's gate.
