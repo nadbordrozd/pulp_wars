@@ -20,6 +20,10 @@ import {
   type TileEdge,
 } from "./geometry";
 import { parseHexColourV7 } from "./owner-recolour-v7";
+import {
+  unitShadowAnchorV7,
+  type UnitShadowEllipseV7,
+} from "./unit-shadows-v7";
 
 /**
  * The visual direction of the CHIBI art set (beads pulp_wars-3tq.1 to .6,
@@ -1040,28 +1044,95 @@ export function directedUnitGroundV7(
   };
 }
 
+export interface DirectedEllipseV7 {
+  readonly centreX: number;
+  readonly centreY: number;
+  readonly radiusX: number;
+  readonly radiusY: number;
+}
+
+/**
+ * The shadow and the GROUND ready ring of a unit in CSS px (bead
+ * pulp_wars-jg1): from the unit's measured anchor (unit-shadows-v7.ts) when
+ * `assetId` is the raster it was measured on, scaled by the drawn size of
+ * the sprite; otherwise (afloat, a stand-in raster, no anchor) the generic
+ * ellipses of directedUnitGroundV7, exactly as before the anchors existed.
+ */
+export function directedUnitShadowGeometryV7(
+  entry: BoardRenderPlanEntryV7,
+  sprite: DirectedRectV7,
+  assetId?: string,
+): {
+  readonly shadow: DirectedEllipseV7;
+  readonly ring: DirectedEllipseV7;
+  readonly afloat: boolean;
+  /** Whether the unit's measured anchor placed them. */
+  readonly anchored: boolean;
+} {
+  const ground = directedUnitGroundV7(entry, sprite, 1);
+  const anchor = ground.afloat
+    ? null
+    : unitShadowAnchorV7(entry.artSubject, assetId);
+  if (
+    anchor !== null &&
+    anchor.shadow !== null &&
+    anchor.ring !== null &&
+    anchor.width > 0
+  ) {
+    const scale = sprite.width / anchor.width;
+    const place = (ellipse: UnitShadowEllipseV7): DirectedEllipseV7 => ({
+      centreX: sprite.x + ellipse.x * scale,
+      centreY: sprite.y + ellipse.y * scale,
+      radiusX: ellipse.radiusX * scale,
+      radiusY: ellipse.radiusY * scale,
+    });
+    return {
+      shadow: place(anchor.shadow),
+      ring: place(anchor.ring),
+      afloat: false,
+      anchored: true,
+    };
+  }
+  const shadow = directedUnitGroundV7(entry, sprite, 0.78);
+  return {
+    shadow: {
+      centreX: shadow.centreX,
+      centreY: ground.centreY,
+      radiusX: shadow.radiusX,
+      radiusY: shadow.radiusY,
+    },
+    ring: ground,
+    afloat: ground.afloat,
+    anchored: false,
+  };
+}
+
 function drawDirectedGroundV7(
   context: CanvasRenderingContext2D,
   direction: BoardVisualDirectionV7,
   entry: BoardRenderPlanEntryV7,
   sprite: DirectedRectV7,
   zoom: number,
+  assetId: string | undefined,
 ): void {
-  const ground = directedUnitGroundV7(entry, sprite, 1);
+  const {
+    shadow,
+    ring: ground,
+    afloat,
+  } = directedUnitShadowGeometryV7(entry, sprite, assetId);
   // The Dwarf revision: the Gyrocopter casts its own shadow too.
   const flyer = entry.martian?.flyer === true || entry.dwarf?.flyer === true;
-  const shadowed = direction.unit.base === "SHADOW" && !ground.afloat && !flyer;
+  const shadowed = direction.unit.base === "SHADOW" && !afloat && !flyer;
   const ring = entry.ready === true && direction.chrome.ready !== "GLOW";
   // Nothing to draw: leave the context untouched (the baseline direction
   // draws exactly the stock frame).
   if (!shadowed && !ring) return;
   context.save();
   if (shadowed) {
-    const shadow = directedUnitGroundV7(entry, sprite, 0.78);
     context.beginPath();
     context.ellipse(
       shadow.centreX,
-      ground.centreY,
+      shadow.centreY,
       shadow.radiusX,
       shadow.radiusY,
       0,
@@ -1101,7 +1172,9 @@ function drawDirectedGroundV7(
  * SHADOW and NONE draw no base (the live look, bead pulp_wars-w5j.3): the
  * faint neutral shadow and the GROUND ready ring. A unit afloat gets no
  * plate and no ring in any direction since bead pulp_wars-w5j.3; a ready
- * one has the ready ring round its hull.
+ * one has the ready ring round its hull. `assetId` is the raster drawn:
+ * when it is the one a unit's shadow anchor was measured on, the shadow
+ * and the ring sit under that unit's own feet (bead pulp_wars-jg1).
  */
 export function drawDirectedUnitBaseV7(
   context: CanvasRenderingContext2D,
@@ -1109,12 +1182,13 @@ export function drawDirectedUnitBaseV7(
   entry: BoardRenderPlanEntryV7,
   sprite: DirectedRectV7,
   zoom: number,
+  assetId?: string,
 ): void {
   const style = direction.unit.base;
   const afloat =
     directionUnitAfloatV7(entry.artSubject) || entry.martian?.afloat === true;
   if (style === "NONE" || style === "SHADOW" || afloat) {
-    drawDirectedGroundV7(context, direction, entry, sprite, zoom);
+    drawDirectedGroundV7(context, direction, entry, sprite, zoom, assetId);
     return;
   }
   if (entry.ownerColor === undefined) return;

@@ -1997,14 +1997,30 @@ export function drawBoardV7(input: {
             direction !== undefined &&
             entry.kind === "UNIT" &&
             chibiReady !== null
-          )
+          ) {
+            // Bead pulp_wars-jg1: the shadow and the ready ring sit under
+            // the unit's own measured feet, grown with a Big or Alpha
+            // sprite (which grows about its canvas bottom, below).
+            const growth = growthSpriteScaleV7(
+              entry.growthStage,
+              chibiReady.asset.width,
+            );
             drawDirectedUnitBaseV7(
               context,
               direction,
               entry,
-              rect,
+              growth === 1
+                ? rect
+                : {
+                    x: rect.x - (rect.width * (growth - 1)) / 2,
+                    y: rect.y - rect.height * (growth - 1),
+                    width: rect.width * growth,
+                    height: rect.height * growth,
+                  },
               camera.zoom,
+              chibiReady.asset.id,
             );
+          }
           // The Martian revision: a flyer casts a ground shadow (over land
           // or water) and is drawn lifted above it; the ground cue stays put.
           // The Dwarf revision: the Gyrocopter flies the same way.
