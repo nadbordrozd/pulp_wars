@@ -531,13 +531,16 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // values count land-form units only (an Egg is never Chilled and never
     // a Witch, and an embarked unit has no Blizzard); the Ice Folk Move rules
     // take a land-form mover.
+    // `pulp_wars-9s0.8`: a hunted unit, a siege target, a hunter, and the
+    // mover of a hunt are land-form units (an Egg is never hunted and never
+    // hunts, and an embarked unit keeps the naval rules).
     "src/ai/v7-campaign.ts": 1,
     "src/ai/v7-dinosaur.ts": 2,
     "src/ai/v7-goblin.ts": 1,
     "src/ai/v7-ice-folk.ts": 7,
     "src/ai/v7-martian.ts": 2,
     "src/ai/v7-undead.ts": 1,
-    "src/ai/v7.ts": 15,
+    "src/ai/v7.ts": 19,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

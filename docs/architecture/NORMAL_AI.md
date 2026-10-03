@@ -30,7 +30,12 @@ are byte-identical.
 The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
 [summarized below](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01):
 every land unit has one job (a village, an invader, the frontier, or a known
-enemy city) and walks the land route to it, in every match.
+enemy city) and walks the land route to it, in every match. The second pass
+(`pulp_wars-9s0.8`) is
+[summarized below](#second-pass-savings-hunts-and-sieges-pulp_wars-9s08):
+savings for the Chivalry-tier unit and Chivalry, Spitters, hunts of
+high-value units, sieges of a defended center, the Tractor Beam, and the
+Mammoth.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
@@ -344,6 +349,202 @@ Limits measured after the change:
   (p90 5, before 7), but in a third of the AI-v-AI cases it never comes back
   before the match ends (341 of 1,584; before 326 of 1,544). Most of those
   seats are losing the match.
+
+## Second pass: savings, hunts, and sieges (`pulp_wars-9s0.8`)
+
+The [campaign](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01)
+left the limits listed above, and the Martian and Ice Folk balance passes
+added three more. This pass adds the rules below. Like the campaign they read
+only the public view and public previews, add no PRNG use, no elapsed-time
+input, and no work units. The savings plan and the siege apply in every
+match; the other rules need the unit or faction they name.
+
+Every candidate rule was measured head to head against the policy before
+this pass (main `edf0d1d`): the same seeds in both seat orders, on Dry Land
+unless stated, with every other new rule switched off. A rule was kept only
+when it won, or was neutral and moved the measured problem; four were
+dropped (below).
+
+**Savings** (every faction). The policy spent every Coin the moment it had
+it, and its production value (HP minus twice the cost) rated the
+Chivalry-tier unit at or below zero, so Knights, Scrap Buggies, and T-Rex
+Eggs were never produced. While the seat is at war, no own city is
+threatened, and it fields at least three attack-capable land units, it now
+has one savings goal: the Chivalry-tier unit (the `KNIGHT` role) once
+researched, while it has fewer than two of them and an own city has the
+slots; otherwise Chivalry itself once its prerequisites are researched. The
+goal must be affordable now or within two turns of the public city income.
+An affordable goal is bought first (priority 1206, above the economy and the
+at-war training at 1205; level-ups at 1210 stay first), and the goal unit
+wins its city's production choice without the per-Coin penalty (it is
+valued at its HP plus 30). An unaffordable goal holds: other land and naval
+training waits (except in a threatened city, or a Patrol Boat against
+visible naval danger), and research or construction that would leave fewer
+Coins than the goal costs waits (never a city level-up or the opening growth
+harvest). A Dinosaur seat at war also gains a Spitter bias (+16) while it
+has fewer than two Spitters (Acid ignores cover and fortification).
+
+**Hunt** (against a Witch, Brain, Necromancer, or Projector). The kill and
+focus rules ranked only attacks already on offer. A visible hostile land unit
+with Blizzard, Cold Snap, Mind Control, Raise Dead, or Force Field is now
+hunted when up to five own units that can hit it this turn (an offered
+attack, or a Move into its attack band by a ready unit that may attack after
+moving, one unit per tile) project at least its HP between them, each hit
+projected from the tile it is made from (Snow cover and the Blizzard halving
+of a shot included) on the HP the earlier hits leave. A hunter's Move into
+the band goes at 1177 (above the routine Moves, exempt from the Cold Snap
+reach and sluggish rules, the safest tile first), its attack at 1178 (a kill
+at 1182), and it is never filtered as a low-value attack.
+
+**Siege** (every faction). Many losing seats never captured a city: the
+combined attack on a center's defender counted only the attacks already in
+reach. The defender on the center of a city the campaign marches on (or an
+endgame target) is now hunted the same way, while a capturer can take the
+cleared center: a capture-capable unit within two tiles that has not moved
+and is not a hunter, or a melee hunter that can capture (a melee kill
+advances onto the center).
+
+**Tractor Beam and Mammoth.** The Tractor Beam gains two pulls at 1150: a
+hostile unit pulled where the army's other attacks (not the Mothership's
+own) take at least half of its HP and Shield, and a hostile land unit
+pulled away from an own city center it stands next to. A ready Mammoth gains 4 per flank victim for a Move to a
+tile where its Sweep hits a flank, and with no flank hit on offer where it
+stands such a Move goes at 905, above the chips, outside visible lethal
+reach.
+
+### Second-pass measurements
+
+Head to head, new rules against the policy before (decided games):
+
+| Rule                                       | Set                                                          | Games | New wins   | What moved                                                                                                                                                                                                                                                                                         |
+| ------------------------------------------ | ------------------------------------------------------------ | ----: | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Savings (unit, Chivalry, Spitter)          | six mirrors, 14 and 16, 8 seeds                              |   189 | 95 (50.3%) | Chivalry-tier units trained in 54 of 192 new seat-games (base 10 of 192): Knights 53 (0), Vampires 77 (33), T-Rex Eggs 38 (0), Scrap Buggies 12 (0), Motherships 30 (14); Spitter Eggs 39 in 14 seat-games (7 in 6); military share of spending 16.4% (13.4%) for Humans, 22.2% (20.1%) for Undead |
+| Hunt                                       | Ice, Martian, Undead mirrors and four mixed pairs, 11 and 14 |   144 | 71 (49.3%) | High-value kills 61 (base 56): Projectors 23 (20), Brains 4 (3), Witches 14 (13)                                                                                                                                                                                                                   |
+| Siege                                      | six mirrors, 11 and 14, 5 seeds                              |   120 | 68 (56.7%) | city captures 199 (165); seat-games with a capture 79 (69)                                                                                                                                                                                                                                         |
+| Brain stalk, Tractor Beam, Mammoth         | Ice and Martian mirrors and mixed pairs, 14 and 16           |   127 | 64 (50.4%) | Mind Control in 11 of 26 Brain seat-games (10 of 26), Tractor Beam in 7 of 11 Mothership seat-games (5 of 11), a flank hit in 13 of 21 Mammoth seat-games (12 of 21)                                                                                                                               |
+| All kept rules                             | six mirrors, 11 and 14, seeds 0-4                            |   119 | 66 (55.5%) |                                                                                                                                                                                                                                                                                                    |
+| All kept rules                             | six mirrors, 14 and 16, seeds 5-9                            |   117 | 59 (50.4%) |                                                                                                                                                                                                                                                                                                    |
+| All kept rules                             | six mirrors, Pangea 14                                       |    48 | 25 (52.1%) |                                                                                                                                                                                                                                                                                                    |
+| All kept rules, after the Rift (`d8ed16d`) | six mirrors, 11 and 14, seeds 0-4                            |   119 | 66 (55.5%) |                                                                                                                                                                                                                                                                                                    |
+| All kept rules, after the Rift (`d8ed16d`) | six mirrors, 14 and 16, seeds 5-9                            |   118 | 61 (51.7%) |                                                                                                                                                                                                                                                                                                    |
+
+Together the kept rules won 125 of 236 decided Dry Land games (53.0%)
+before the Rift landed (the six mirrors at 14 and 16 and on Pangea were
+measured with the Brain stalk, which only changes Martian games; the Martian
+mirrors were re-run without it), and 127 of 237 (53.6%) after it (the
+Martian mirrors and the Martian balance pairings re-run with the final
+Tractor Beam rule gave the same results).
+Seat-games with a city capture rose to 143 of 240 (129), and the
+Chivalry-tier unit was trained in 51 of 240 new seat-games (11 of 240). In
+the post-Rift games a decision took 13.0 ms at the mean (12.0 ms before) on
+the development machine with four matches running.
+
+Dropped, measured and not kept:
+
+- **A Brain stalk.** A ready Brain with no Mind Control target closed on
+  the nearest weak hostile unit within six tiles (1101). Head to head it was
+  neutral (in the table above with the Tractor Beam and Mammoth), but Mind
+  Control was used in 17 of 50 Brain seat-games of the coarse balance run
+  (34%) against 18 of 46 (39%) before: the weak units it stalked kept out of
+  reach. Without it the rate is 18 of 50 (36%).
+- **A close-in Move toward a high-value unit** (1096, within four tiles of a
+  firing position): 64 of 143 (44.8%); the units walked into the enemy army
+  (a Goblin seat lost all eight 14 x 14 games to Martians).
+- **A contested-border push.** At a gap of four or five tiles the units are
+  not held back: at the end of the turn most of the seat's units off the
+  front have an attack job and moved that turn, two to four tiles from the
+  target (a diagnostic of 12 Pangea 14 x 14 games). Two pushes were tried:
+  a city that outnumbers the invaders near it by two sends its spare
+  defenders out after the invaders have their responders, and no wave waits
+  for a target within five tiles (Chebyshev) of an own city. Head to head
+  57 of 120 (47.5%) on Dry Land and 24 of 48 on Pangea; at the 4-5 gap the
+  turtle set's front share went from 57.1% to 55.6%. Neither moved the
+  problem.
+- **An overseas front.** Starting the naval plan when a known hostile city
+  is overseas and no hostile city can be walked to (it waited for the last
+  village), and a second front of two capturers by sea once the seat fields
+  six: the 1v1 Continents and Archipelago games did not change at all (the
+  plan was already active there), and on Continents with four seats the
+  turtle was pressed on 44.0% of its turns against 50.8% before (its longest
+  calm median 22 turns against 9): the capturers that sailed were missed at
+  the land front.
+
+Pressure telemetry, before (`edf0d1d`) and after the kept rules, with the
+script of each tree:
+
+```bash
+npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --turtle --pairings HH,HU,HG,HD --sizes 14 --seeds 3 --max-rounds 80
+npx tsx scripts/ruleset7-ai-pressure-telemetry.ts --pairings HU,UH,HG,GH,HD,DH,HM,MH,HI,IH,UG,GU,DM,MD,IM,MI --maps dry-land --sizes 11,14 --seeds 2
+```
+
+| Set                             | Policy | Matches | Turtle pressed 1+ | Longest calm, median / p90 | Turtle defeated | Round cap |  Front at gap 4-5 | at gap 6-8 | Seats with a quiet run of 4+ |
+| ------------------------------- | ------ | ------: | ----------------: | -------------------------- | --------------: | --------: | ----------------: | ---------: | ---------------------------: |
+| Turtle 1v1, 14 x 14, five maps  | before |      60 |             61.8% | 1 / 15                     |              47 |     13.3% | 57.1% (604 turns) |      92.7% |                        31.7% |
+| Turtle 1v1, 14 x 14, five maps  | after  |      60 |             69.6% | 1 / 15                     |              51 |      5.0% |       68.3% (417) |      91.5% |                        30.0% |
+| AI v AI 1v1, Dry Land 11 and 14 | before |      64 |                 - | -                          |               - |        0% |                 - |      82.4% |                        39.1% |
+| AI v AI 1v1, Dry Land 11 and 14 | after  |      64 |                 - | -                          |               - |        0% |                 - |      72.8% |                        36.7% |
+
+The contested 4-5 tile gap, which neither push rule moved, improved with the
+siege: the seat there is at the turtle's border on 68.3% of its turns
+(57.1%), and the turtle falls in 51 of 60 games (47). Pangea 14 x 14 (the
+close starts): the turtle is pressed on 68.4% of its turns (44.7%), its
+longest calm run p90 is 8 turns (14), and it falls in 8 of 12 games both
+times, in 20.5 rounds at the median (24); head to head on Pangea the kept
+rules won 25 of 48.
+
+The military share of spending (AI v AI, Dry Land) is 20.7%, 22.5%, 16.7%,
+and 22.9% in rounds 1-10, 11-20, 21-30, and 31+ (before 20.7%, 21.7%,
+15.3%, 17.1%); the mean bank at the end of a turn is 2.0 Coins (5.2). The
+armies are smaller (median 5 units at round 20 and 6 at round 30, against 6
+and 9): a Knight takes the Coins of three or four Fighters. On Dry Land the
+share of turns with a unit at the front fell (66.1% against 70.7%; 72.8%
+against 82.4% at a gap of six to eight), while the seats' longest quiet runs
+did not change (median 2, p90 10 against 9).
+
+Coarse balance (Dry Land, 11 and 14, six seeds per seat order: 24 games
+per pair of factions; `scripts/ruleset7-undead-balance-matrix.ts --maps
+dry-land --seeds 6` over the 30 mixed pairings), before and after, on the
+`7r27` rules:
+
+| Pair                | Before | After |
+| ------------------- | ------ | ----- |
+| Dinosaur v Martian  | 12-12  | 16-8  |
+| Dinosaur v Goblin   | 11-13  | 14-10 |
+| Dinosaur v Human    | 11-13  | 12-12 |
+| Dinosaur v Undead   | 9-15   | 9-14  |
+| Dinosaur v Ice Folk | 9-15   | 8-16  |
+| Human v Ice Folk    | 10-14  | 8-16  |
+| Human v Undead      | 9-15   | 10-14 |
+| Human v Martian     | 12-12  | 12-12 |
+| Goblin v Human      | 12-12  | 12-12 |
+| Goblin v Ice Folk   | 10-14  | 9-15  |
+| Goblin v Martian    | 10-14  | 11-13 |
+| Goblin v Undead     | 9-15   | 11-13 |
+| Ice Folk v Martian  | 12-12  | 15-9  |
+| Ice Folk v Undead   | 15-9   | 15-9  |
+| Martian v Undead    | 12-12  | 13-11 |
+
+No pair moved past 70/30; Dinosaur over Martian (16-8) and Ice Folk over
+Humans and Dinosaurs (16-8) are the widest. Ice Folk win 64.2% of their
+mixed games (58.3% before), Dinosaurs 49.6% (43.3%), Martians 45.8%
+(51.7%), Undead 51.3% (55.0%), Humans 45.0% (46.7%), Goblins 44.2% (45.0%).
+
+The formerly missing units now appear (seat-games with one, of 120 per
+faction): Knights in 14 (0), Vampires in 15 (3), Scrap Buggies in 14 (0),
+T-Rex Eggs in 19 (0; against Humans, Undead, and Goblins an Egg in 13 of
+72 seat-games and in 11 of the 13 that reached 35 rounds, before 0 of 18),
+Motherships in 25 (22), Ice Folk Knights in 12 (10); Spitter Eggs were laid
+41 times in 19 seat-games (13 in 9). The Tractor Beam was used in 13 of 23
+Mothership seat-games of 35 or more rounds (6 of 18), Mind Control in 18 of
+50 Brain seat-games (18 of 46), a Mammoth landed a flank hit in 55 of 96
+Mammoth seat-games (50 of 97), and the Ice Witch was killed in 9 of 57 Witch
+seat-games (9 of 56).
+
+Cost: on the retained late view
+(`npx tsx scripts/benchmark-ruleset-v7-normal-policy.ts`, three runs each)
+the sliced decision takes 29.6 to 30.0 ms (main 29.4 to 30.9 ms) and the
+synchronous one 4.7 to 5.9 ms (4.6 to 5.0 ms); the largest 8 ms slice is
+9.4 ms (9.3 ms) and none exceeds 16 ms. The view's decision is unchanged.
 
 ## Revision-13 Undead play (`pulp_wars-vkq.9`)
 

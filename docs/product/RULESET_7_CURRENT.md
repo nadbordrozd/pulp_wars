@@ -2202,6 +2202,18 @@ applied.
   of the unit slots are filled, land production comes before the economy.
   Details and measurements:
   [Normal AI campaign](../architecture/NORMAL_AI.md#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01).
+- **Second pass** (`pulp_wars-9s0.8`): at war, with no own city threatened
+  and at least three attack-capable land units, Normal saves for its
+  Chivalry-tier unit (fewer than two of them) or for Chivalry itself when the
+  goal is at most two turns of income away, buys it before the economy, and
+  meanwhile holds other training and any spending that would cut into the
+  goal; a Dinosaur seat at war lays Spitters until it has two. Units move in
+  for a kill this turn on a visible Witch, Brain, Necromancer, or Projector,
+  and on the defender of a city center under attack while a capturer can
+  take the city; the Tractor Beam also pulls a unit into the army's reach
+  or away from an own city, and a Mammoth steps where its Sweep hits a
+  flank. Details and measurements:
+  [Normal AI second pass](../architecture/NORMAL_AI.md#second-pass-savings-hunts-and-sieges-pulp_wars-9s08).
 - **Opening research:** on its first turn Normal researches its free tier-1
   technology before other work, chosen deterministically from its own public
   view of explored tiles within Chebyshev 2 of its original capital: Gathering

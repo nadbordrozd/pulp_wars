@@ -661,8 +661,15 @@ export interface MartianPolicyToolsV7 {
   /** The city the seat's main wave marches on, or null. */
   readonly waveTarget: CoordV7 | null;
   readonly threatenedCityIds: ReadonlySet<CityId>;
-  /** Projected `ATTACK` previews of own units on `target` standing on `at`. */
-  projectedKillers(target: PublicUnitV7, at: CoordV7): number;
+  /**
+   * Projected `ATTACK` previews of own units on `target` standing on `at`
+   * (without `excludeUnitId` when given).
+   */
+  projectedKillers(
+    target: PublicUnitV7,
+    at: CoordV7,
+    excludeUnitId?: UnitId,
+  ): number;
 }
 
 /** The whole hit of an attack (Shield and HP damage). */
@@ -754,8 +761,11 @@ export function mindControlScoreV7(
  * still step in (1347); a besieger pulled off an own center (1279); a
  * hostile unit pulled where this turn's own attacks kill it (1181); a
  * fortified unit pulled off its fortification into the reach of two own
- * attackers, or an own unit pulled out of lethal reach (1150). Any other
- * pull is not a candidate: it never helps the enemy.
+ * attackers, or an own unit pulled out of lethal reach (1150);
+ * `pulp_wars-9s0.8` adds, also at 1150, a hostile unit pulled where the
+ * other own attacks take at least half of its HP and Shield, and a hostile land unit
+ * pulled away from an own city center it stands next to. Any other pull is
+ * not a candidate: it never helps the enemy.
  */
 export function tractorBeamScoreV7(
   tools: MartianPolicyToolsV7,
@@ -814,6 +824,30 @@ export function tractorBeamScoreV7(
     return {
       priority: TRACTOR_UTILITY_PRIORITY_V7,
       strategic: Math.floor(value / 2),
+      immediate: 0,
+    };
+  // pulp_wars-9s0.8: two more pulls. A hostile unit pulled where the
+  // army's other attacks take at least half of its HP and Shield (the army
+  // finishes what it starts) ...
+  const army = tools.projectedKillers(target, to, mothership.id);
+  if (army > 0 && army * 2 >= target.hp + shield)
+    return {
+      priority: TRACTOR_UTILITY_PRIORITY_V7,
+      strategic: Math.floor(value / 2),
+      immediate: 0,
+    };
+  // ... and a hostile land unit next to an own city center pulled away
+  // from it (the besieger rule covers only the center itself).
+  const besieged = view.cities.find(
+    (candidate) =>
+      candidate.ownerId === view.viewer.id &&
+      chebyshev(candidate.at, target.at) === 1 &&
+      chebyshev(candidate.at, to) > 1,
+  );
+  if (target.form === "LAND" && besieged !== undefined)
+    return {
+      priority: TRACTOR_UTILITY_PRIORITY_V7,
+      strategic: 20 + Math.floor(value / 4),
       immediate: 0,
     };
   return NOT_A_CANDIDATE_V7;

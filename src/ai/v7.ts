@@ -15,6 +15,7 @@ import {
   cityUnitCapacityForV7,
   factionTreeV7,
   isRallyTargetV7,
+  roleMechanicsV7,
   technologyCapabilitiesV7,
   unitMovementModeV7,
   unitTakesCoverV7,
@@ -416,6 +417,10 @@ interface PolicyContextV7 {
   tactical: TacticalPlanV7;
   /** `pulp_wars-9s0.1`: land production before the economy (cached). */
   warTraining: boolean | null;
+  /** `pulp_wars-9s0.8`: the savings plan (undefined until computed). */
+  savings: SavingsPlanV7 | null | undefined;
+  /** `pulp_wars-9s0.8`: the hunt plans (undefined until computed). */
+  hunts: readonly HuntPlanV7[] | undefined;
   /** `pulp_wars-9s0.1`: embarked units with no way forward (cached). */
   readonly strandedTransports: Map<UnitId, boolean>;
   redevelopmentMayChangeImprovement: Map<string, boolean>;
@@ -1336,6 +1341,8 @@ function bareContext(
     naval: NO_NAVAL_PLAN_V7,
     tactical: NO_TACTICAL_PLAN_V7,
     warTraining: null,
+    savings: undefined,
+    hunts: undefined,
     strandedTransports: new Map(),
     redevelopmentMayChangeImprovement: new Map(),
     sharedCityContextPrepared: false,
@@ -2510,6 +2517,18 @@ export function inspectNormalTacticalFactsV7(view: PlayerViewV7): {
       readonly push: boolean;
     }[];
   };
+  /** `pulp_wars-9s0.8`: the savings goal, or null. */
+  readonly savings: {
+    readonly role: UnitRoleIdV7 | null;
+    readonly tech: TechnologyIdV7 | null;
+    readonly cost: number;
+    readonly affordable: boolean;
+  } | null;
+  /** `pulp_wars-9s0.8`: the hunted units and their hunters. */
+  readonly hunts: readonly {
+    readonly targetUnitId: UnitId;
+    readonly hunterUnitIds: readonly UnitId[];
+  }[];
 } {
   const context = makeContext(
     view,
@@ -2546,6 +2565,11 @@ export function inspectNormalTacticalFactsV7(view: PlayerViewV7): {
         }),
       ),
     },
+    savings: savingsPlanV7(context),
+    hunts: huntPlansV7(context).map((plan) => ({
+      targetUnitId: plan.target.id,
+      hunterUnitIds: [...plan.hunters.keys()],
+    })),
   };
 }
 
@@ -2590,6 +2614,129 @@ function warTrainingFirstV7(context: PolicyContextV7): boolean {
   }
   context.warTraining = result;
   return result;
+}
+
+/**
+ * `pulp_wars-9s0.8` savings plan. The policy spent every Coin as soon as it
+ * had it: a freed slot took the cheapest unit, and the production value
+ * (HP minus twice the cost) rated the Chivalry-tier unit at or below zero,
+ * so Knights, Scrap Buggies, and T-Rex Eggs were never produced.
+ *
+ * While the seat is at war, no own city is threatened, and it fields at
+ * least `SAVINGS_ARMY_MINIMUM_V7` attack-capable land units (the army is not
+ * starved), it saves for one goal:
+ *
+ * - **the Chivalry-tier unit** (`KNIGHT` role) once researched, while it has
+ *   fewer than `SAVINGS_GOAL_MAXIMUM_V7` of them and an own city has the
+ *   slots for one; or
+ * - **Chivalry itself**, once its prerequisites are researched.
+ *
+ * The goal is affordable now, or within `SAVINGS_TURNS_V7` turns of the
+ * public city income; otherwise there is no plan. An affordable goal is
+ * bought first (priority `SAVINGS_BUY_PRIORITY_V7`, and the goal unit wins its
+ * city's production choice without the per-Coin penalty: the Coins were
+ * set aside for it). An unaffordable one holds: other training waits, and
+ * research and construction that would leave fewer Coins than the goal
+ * costs wait, except a city level-up and the opening growth harvest.
+ */
+const SAVINGS_GOAL_ROLE_V7: UnitRoleIdV7 = "KNIGHT";
+const SAVINGS_GOAL_MAXIMUM_V7 = 2;
+const SAVINGS_ARMY_MINIMUM_V7 = 3;
+const SAVINGS_TURNS_V7 = 2;
+const SAVINGS_BUY_PRIORITY_V7 = 1206;
+/** The goal unit's production value bonus once it is offered. */
+const SAVINGS_GOAL_VALUE_V7 = 30;
+/** Spitters a Dinosaur seat at war lays before the bias stops. */
+const SPITTER_TARGET_V7 = 2;
+const SPITTER_BIAS_V7 = 16;
+
+interface SavingsPlanV7 {
+  readonly role: UnitRoleIdV7 | null;
+  readonly tech: TechnologyIdV7 | null;
+  readonly cost: number;
+  /** The Coins cover the goal now: it is bought before other spending. */
+  readonly affordable: boolean;
+}
+
+function savingsPlanV7(context: PolicyContextV7): SavingsPlanV7 | null {
+  if (context.savings !== undefined) return context.savings;
+  context.savings = computeSavingsPlanV7(context);
+  return context.savings;
+}
+
+function computeSavingsPlanV7(context: PolicyContextV7): SavingsPlanV7 | null {
+  const view = context.view;
+  if (
+    context.tactical.campaign?.atWar !== true ||
+    context.threats.length > 0 ||
+    context.openingGrowthHarvest
+  )
+    return null;
+  const faction = view.viewer.faction;
+  const rule = effectiveRoleRuleV7(SAVINGS_GOAL_ROLE_V7, faction);
+  if (rule.cost === null) return null;
+  let army = 0;
+  let goals = 0;
+  for (const unit of view.units) {
+    if (unit.ownerId !== view.viewer.id) continue;
+    if (unit.role === SAVINGS_GOAL_ROLE_V7) goals += 1;
+    else if (unit.form === "LAND") {
+      const own = unitRoleRuleV7(view, unit);
+      if (own.abilities.includes("ATTACK") && own.attack2 > 0) army += 1;
+    }
+  }
+  if (army < SAVINGS_ARMY_MINIMUM_V7) return null;
+  const ownCities = view.cities.filter(
+    (city) => city.ownerId === view.viewer.id,
+  );
+  let role: UnitRoleIdV7 | null = null;
+  let tech: TechnologyIdV7 | null = null;
+  let cost: number;
+  if (
+    rule.technology === null ||
+    view.viewer.researchedTechs.includes(rule.technology)
+  ) {
+    const slots = roleMechanicsV7(SAVINGS_GOAL_ROLE_V7, faction).capacitySlots;
+    if (
+      goals >= SAVINGS_GOAL_MAXIMUM_V7 ||
+      !ownCities.some((city) => freeCapacity(view, city.id) >= slots)
+    )
+      return null;
+    role = SAVINGS_GOAL_ROLE_V7;
+    cost = rule.cost;
+  } else {
+    if (researchChain(view, rule.technology).length !== 1) return null;
+    const node = queryTechnologyTreeV7(view).nodes.find(
+      (item) => item.id === rule.technology,
+    );
+    if (node === undefined) return null;
+    tech = rule.technology;
+    cost = node.cost;
+  }
+  const coins = view.viewer.coins;
+  if (coins >= cost) return { role, tech, cost, affordable: true };
+  const income = ownCities.reduce(
+    (total, city) => total + attributableCityIncome(view, city),
+    0,
+  );
+  return coins + SAVINGS_TURNS_V7 * income >= cost
+    ? { role, tech, cost, affordable: false }
+    : null;
+}
+
+/**
+ * Spending the savings plan holds back: a command that is not the goal and
+ * would leave fewer Coins than the goal costs (`cost` is what it spends).
+ */
+function savingsHoldsV7(
+  context: PolicyContextV7,
+  command: CommandV7,
+  cost: number,
+): boolean {
+  const plan = savingsPlanV7(context);
+  if (plan === null || plan.affordable || cost <= 0) return false;
+  if (command.kind === "RESEARCH" && command.tech === plan.tech) return false;
+  return context.view.viewer.coins - cost < plan.cost;
 }
 
 function* publicThreatenedTilesWorkV7(
@@ -2912,7 +3059,12 @@ function isPolicyCandidate(
     )
       return false;
   }
-  if (command.kind === "ATTACK" && isLowValueAttackV7(context, command))
+  if (
+    command.kind === "ATTACK" &&
+    isLowValueAttackV7(context, command) &&
+    // pulp_wars-9s0.8: a hunter's share of a planned kill is not low value.
+    huntOfV7(context, command.unitId)?.target.id !== command.targetUnitId
+  )
     return false;
   const autoembark = isAutoembarkMoveV7(context, command);
   if (autoembark && !context.naval.active) return false;
@@ -2962,6 +3114,19 @@ function isPolicyCandidate(
     )
       return false;
   }
+  // pulp_wars-9s0.8: the savings plan holds research it cannot spare.
+  if (
+    command.kind === "RESEARCH" &&
+    !normalOpeningResearchPendingV7(context.view) &&
+    savingsHoldsV7(
+      context,
+      command,
+      queryTechnologyTreeV7(context.view).nodes.find(
+        (node) => node.id === command.tech,
+      )?.cost ?? 0,
+    )
+  )
+    return false;
   if (
     command.kind === "TRAIN" ||
     command.kind === "TRAIN_NAVAL" ||
@@ -3001,6 +3166,15 @@ function isPolicyCandidate(
     return usefulDisband(context, command as DisbandCommandV7);
   }
   const economic = previewEconomicV7(context.view, command);
+  // pulp_wars-9s0.8: the savings plan holds construction it cannot spare
+  // (never a city level-up or the opening growth harvest).
+  if (
+    economic.ok &&
+    economic.preview.levelsReached.length === 0 &&
+    !openingGrowthHarvestV7(context.view, command) &&
+    savingsHoldsV7(context, command, economic.preview.cost)
+  )
+    return false;
   if (
     context.naval.active &&
     economic.ok &&
@@ -3666,6 +3840,27 @@ function* sharedCityContextWorkV7(
     threatenedCityIds.add(threat.cityId);
     yield;
   }
+  // pulp_wars-9s0.8: the savings goal is valued for what it does (the Coins
+  // were set aside for it), and while it is unaffordable other units wait.
+  const savings = savingsPlanV7(context);
+  const savingsRole = savings?.role ?? null;
+  // pulp_wars-9s0.8: a Dinosaur seat at war lays Spitters (Acid ignores
+  // cover and fortification) until it has two.
+  const spitters = view.units.filter(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      unitRoleRuleV7(view, unit).abilities.includes("ACID"),
+  ).length;
+  const savingsValue = (role: UnitRoleIdV7): number =>
+    (savingsRole === role
+      ? 2 * (effectiveRoleRuleV7(role, view.viewer.faction).cost ?? 0) +
+        SAVINGS_GOAL_VALUE_V7
+      : 0) +
+    (atWar &&
+    spitters < SPITTER_TARGET_V7 &&
+    effectiveRoleRuleV7(role, view.viewer.faction).abilities.includes("ACID")
+      ? SPITTER_BIAS_V7
+      : 0);
 
   for (const [cityId, shared] of sharedByCity) {
     const city = citiesById.get(cityId);
@@ -3790,7 +3985,8 @@ function* sharedCityContextWorkV7(
         layEggAdjustmentV7(view, command, threatened) +
         dinosaurProductionAdjustmentV7(view, command, productionCity) +
         martianAdjustment(command.role, threatened, true) +
-        iceAdjustment(command.role, threatened, true);
+        iceAdjustment(command.role, threatened, true) +
+        savingsValue(command.role);
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
         preferredLand === null ||
@@ -3846,30 +4042,42 @@ function* sharedCityContextWorkV7(
         command.kind !== "LAND_GRANT" &&
         context.naval.active &&
         view.viewer.coins - cost < context.naval.reserveCoins;
+      const saving =
+        savings !== null &&
+        !savings.affordable &&
+        !threatened &&
+        command.kind !== "LAND_GRANT" &&
+        !(
+          command.kind === "TRAIN_NAVAL" &&
+          context.naval.visibleNavalDanger &&
+          command.role === "PATROL_BOAT"
+        );
       const eligible =
-        command.kind === "LAND_GRANT" ||
-        (command.kind === "TRAIN" || command.kind === "LAY_EGG"
-          ? !(
-              context.naval.active &&
-              !threatened &&
-              free <= 1 &&
-              hasLandCaptureUnit
-            ) &&
-            (!spendsReserve || threatened) &&
-            !worsens &&
-            !eggBlocked(command)
-          : (!spendsReserve ||
-              (context.naval.visibleNavalDanger &&
-                command.role === "PATROL_BOAT")) &&
-            // Revision 14 AI fix: a garrisoned center only offers naval
-            // training, which filled every spare slot with Patrol Boats
-            // (~15 per game); beyond two naval units, train only the naval
-            // role the plan asks for. pulp_wars-9s0.1: in every match (it
-            // was limited to Undead matches to keep all-Human pins): idle
-            // boats held the unit slots the land war needed.
-            !(
-              preferredNaval !== command.role && patrolBoats + battleships >= 2
-            ));
+        !saving &&
+        (command.kind === "LAND_GRANT" ||
+          (command.kind === "TRAIN" || command.kind === "LAY_EGG"
+            ? !(
+                context.naval.active &&
+                !threatened &&
+                free <= 1 &&
+                hasLandCaptureUnit
+              ) &&
+              (!spendsReserve || threatened) &&
+              !worsens &&
+              !eggBlocked(command)
+            : (!spendsReserve ||
+                (context.naval.visibleNavalDanger &&
+                  command.role === "PATROL_BOAT")) &&
+              // Revision 14 AI fix: a garrisoned center only offers naval
+              // training, which filled every spare slot with Patrol Boats
+              // (~15 per game); beyond two naval units, train only the naval
+              // role the plan asks for. pulp_wars-9s0.1: in every match (it
+              // was limited to Undead matches to keep all-Human pins): idle
+              // boats held the unit slots the land war needed.
+              !(
+                preferredNaval !== command.role &&
+                patrolBoats + battleships >= 2
+              )));
       if (eligible) {
         const utility =
           command.kind === "LAND_GRANT"
@@ -3887,9 +4095,16 @@ function* sharedCityContextWorkV7(
                     productionCity,
                   ) +
                   martianAdjustment(command.role, threatened, false) +
-                  iceAdjustment(command.role, threatened, false)) *
+                  iceAdjustment(command.role, threatened, false) +
+                  savingsValue(command.role) -
+                  (savingsRole === command.role
+                    ? 2 *
+                      (effectiveRoleRuleV7(command.role, view.viewer.faction)
+                        .cost ?? 0)
+                    : 0)) *
                   3 -
                 cost * 4 +
+                (savingsRole === command.role ? cost * 4 : 0) +
                 Number(preferredLand?.role === command.role) * 18
               : (command.role === "PATROL_BOAT" ? 32 : 38) -
                 cost * 4 +
@@ -4418,12 +4633,25 @@ function scoreCommandWithContext(
       priority = Math.max(priority, 1070);
   }
 
+  // pulp_wars-9s0.8: the saved-for technology is researched first.
+  if (
+    command.kind === "RESEARCH" &&
+    priority >= 0 &&
+    savingsPlanV7(context)?.affordable === true &&
+    savingsPlanV7(context)?.tech === command.tech
+  )
+    priority = Math.max(priority, SAVINGS_BUY_PRIORITY_V7);
+
   if (command.kind === "TRAIN" || command.kind === "LAY_EGG") {
     priority = threatenedCity(context, command.cityId)
       ? 1260
       : warTrainingFirstV7(context)
         ? WAR_TRAINING_PRIORITY_V7
         : 1080;
+    // pulp_wars-9s0.8: the savings goal is bought before other spending.
+    const savings = savingsPlanV7(context);
+    if (savings?.affordable === true && savings.role === command.role)
+      priority = Math.max(priority, SAVINGS_BUY_PRIORITY_V7);
     immediateValue = -trainingCostV7(view, command);
     strategicValue = trainingStrategicValue(context, command);
   }
@@ -4657,6 +4885,8 @@ function scoreCommandWithContext(
         priority = ice.priority;
         strategicValue += ice.strategic;
       }
+      // pulp_wars-9s0.8: the hunters' attacks on a hunted high-value unit.
+      priority = huntAttackPriorityV7(context, command, preview, priority);
     }
   }
 
@@ -5058,6 +5288,14 @@ function scoreCommandWithContext(
       priority = ice.priority;
       strategicValue += ice.strategic;
       objectiveValue = objectiveValue * ice.objectiveScale + ice.objective;
+    }
+    // pulp_wars-9s0.8: move in for a kill on a high-value unit.
+    if (resultAt !== null && !autoembark) {
+      const hunt = huntMoveValueV7(context, actor, resultAt, priority);
+      if (hunt !== null) {
+        priority = hunt.priority;
+        strategicValue += hunt.strategic;
+      }
     }
   }
 
@@ -5831,6 +6069,273 @@ function plagueHuntMoveValueV7(
 }
 
 const PLAGUE_HUNT_PRIORITY_V7 = 1095;
+
+/**
+ * `pulp_wars-9s0.8` hunt: move in for a kill on a high-value unit. The kill
+ * and focus rules only ranked attacks already on offer, so a visible Ice
+ * Witch (or a Brain, a Necromancer, a Projector) two steps away survived
+ * while the units that could kill it this turn stood still.
+ *
+ * A visible hostile land unit with Blizzard, Cold Snap, Mind Control, Raise
+ * Dead, or Force Field is hunted when the own units that can hit it this
+ * turn (an offered attack, or a Move into its attack band by a ready unit
+ * that may attack after moving, one unit per tile) project at least its HP
+ * between them, at most `HUNT_MAXIMUM_HUNTERS_V7` of them, strongest first,
+ * each hit projected on the HP the earlier ones leave. The projection is the
+ * public one from the tile the hunter attacks from (cover, Snow cover, and
+ * the Blizzard halving of a shot included). A hunter's Move into the band
+ * goes at `HUNT_MOVE_PRIORITY_V7` (above routine Moves, exempt from the Cold
+ * Snap reach and sluggish rules), the safest tile first; its attack on the
+ * target goes at `HUNT_ATTACK_PRIORITY_V7`, a kill at `HUNT_KILL_PRIORITY_V7`,
+ * and it is never filtered as a low-value attack.
+ */
+const HUNT_MAXIMUM_HUNTERS_V7 = 5;
+const HUNT_MOVE_PRIORITY_V7 = 1177;
+const HUNT_ATTACK_PRIORITY_V7 = 1178;
+const HUNT_KILL_PRIORITY_V7 = 1182;
+const HUNT_TARGET_ABILITIES_V7 = [
+  "BLIZZARD",
+  "COLD_SNAP",
+  "MIND_CONTROL",
+  "RAISE_DEAD",
+  "FORCE_FIELD",
+] as const;
+
+interface HuntPlanV7 {
+  readonly target: PublicUnitV7;
+  /** The hunters; `true` for one that strikes from where it stands. */
+  readonly hunters: ReadonlyMap<UnitId, boolean>;
+}
+
+function huntTargetV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
+  if (unit.form !== "LAND" || unit.hp <= 0) return false;
+  const abilities = unitRoleRuleV7(view, unit).abilities;
+  return HUNT_TARGET_ABILITIES_V7.some((ability) =>
+    abilities.includes(ability),
+  );
+}
+
+function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
+  if (context.hunts !== undefined) return context.hunts;
+  const view = context.view;
+  const plans: HuntPlanV7[] = [];
+  const targets = context.lookup.visibleHostiles.filter(
+    (unit) => huntTargetV7(view, unit) || siegeTargetV7(context, unit),
+  );
+  // Indexed once per decision: the offered attacks and each unit's Moves
+  // that a hunter may make (not boarding, not leaving a sole defender).
+  const offeredAttacks = new Set<string>();
+  const movesByUnit = new Map<UnitId, CoordV7[]>();
+  if (targets.length > 0)
+    for (const command of context.commands) {
+      if (command.kind === "ATTACK")
+        offeredAttacks.add(`${command.unitId}:${command.targetUnitId}`);
+      else if (command.kind === "MOVE") {
+        const to = command.path.at(-1);
+        const boards = isAutoembarkMoveV7(context, command as CommandV7);
+        if (
+          to === undefined ||
+          boards ||
+          leavesSoleThreatenedDefender(context, command)
+        )
+          continue;
+        const list = movesByUnit.get(command.unitId) ?? [];
+        list.push(to);
+        movesByUnit.set(command.unitId, list);
+      }
+    }
+  for (const target of targets) {
+    const siege = siegeTargetV7(context, target);
+    const candidates: {
+      readonly unit: PublicUnitV7;
+      readonly damage: number;
+      readonly stays: boolean;
+      readonly tiles: readonly string[];
+      /** The tile it strikes from. */
+      readonly from: CoordV7;
+    }[] = [];
+    for (const unit of view.units) {
+      if (
+        unit.ownerId !== view.viewer.id ||
+        unit.form !== "LAND" ||
+        unit.hp <= 0 ||
+        !primaryReadyForPolicyV7(unit)
+      )
+        continue;
+      const facts = publicCombatFacts(view, unit, context.lookup);
+      if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) continue;
+      if (offeredAttacks.has(`${unit.id}:${target.id}`)) {
+        const preview = queryCombatPreviewV7(view, unit.id, target.id);
+        if (preview !== null && preview.damageToDefender > 0)
+          candidates.push({
+            unit,
+            damage: preview.damageToDefender,
+            stays: true,
+            tiles: [],
+            from: unit.at,
+          });
+        continue;
+      }
+      if (unit.activation.moved || !unitMayActAfterMoveV7(view, unit)) continue;
+      const tiles: string[] = [];
+      let firstTile: CoordV7 | null = null;
+      for (const to of movesByUnit.get(unit.id) ?? []) {
+        const range = distance(to, target.at);
+        if (range < facts.minimumRange || range > facts.maximumRange) continue;
+        tiles.push(coordKey(to));
+        firstTile ??= to;
+      }
+      if (firstTile === null) continue;
+      // Projected from the tile it attacks from (a shot from two or more
+      // tiles into a Witch's Blizzard is halved).
+      const damage = publicProjectedDamageWithLookupV7(
+        view,
+        { ...unit, at: firstTile },
+        target,
+        target.at,
+        {},
+        context.lookup,
+      );
+      if (damage > 0)
+        candidates.push({ unit, damage, stays: false, tiles, from: firstTile });
+    }
+    candidates.sort(
+      (left, right) =>
+        right.damage - left.damage ||
+        Number(right.stays) - Number(left.stays) ||
+        left.unit.id - right.unit.id,
+    );
+    // The hits in that order, each on what the earlier ones leave (a
+    // wounded unit defends with less).
+    const hunters = new Map<UnitId, boolean>();
+    const usedTiles = new Set<string>();
+    let left = target.hp;
+    for (const candidate of candidates) {
+      if (left <= 0 || hunters.size >= HUNT_MAXIMUM_HUNTERS_V7) break;
+      if (!candidate.stays) {
+        const tile = candidate.tiles.find((key) => !usedTiles.has(key));
+        if (tile === undefined) continue;
+        usedTiles.add(tile);
+      }
+      hunters.set(candidate.unit.id, candidate.stays);
+      left -=
+        left === target.hp
+          ? candidate.damage
+          : publicProjectedDamageWithLookupV7(
+              view,
+              { ...candidate.unit, at: candidate.from },
+              { ...target, hp: left },
+              target.at,
+              {},
+              context.lookup,
+            );
+    }
+    if (
+      left <= 0 &&
+      (!siege ||
+        view.units.some((unit) =>
+          capturerNearV7(context, unit, target.at, hunters),
+        ))
+    )
+      plans.push({ target, hunters });
+  }
+  context.hunts = plans;
+  return plans;
+}
+
+/**
+ * `pulp_wars-9s0.8` siege: the defender on the center of a hostile city the
+ * campaign marches on (or an endgame target) is hunted like a high-value
+ * unit while a capturer can take the cleared center (see
+ * `capturerNearV7`). The combined attack ranked only attacks already on
+ * offer; the hunt moves the rest of the assault into reach first.
+ */
+function siegeTargetV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
+  if (unit.form !== "LAND" || !isHostile(context.view, unit.ownerId))
+    return false;
+  return (
+    endgameTargetAtV7(context.endgame, unit.at) !== undefined ||
+    campaignAssaultCityV7(context, unit.at) !== undefined
+  );
+}
+
+/**
+ * A capturer to take the cleared center: an own capture-capable land unit
+ * within two tiles of it that has not moved and is not one of the hunters,
+ * or a melee hunter that can capture (a melee kill advances onto the
+ * center).
+ */
+function capturerNearV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+  center: CoordV7,
+  hunters: ReadonlyMap<UnitId, boolean>,
+): boolean {
+  if (
+    unit.ownerId !== context.view.viewer.id ||
+    !canCaptureV7(context.view, unit)
+  )
+    return false;
+  if (hunters.has(unit.id))
+    return (
+      publicCombatFacts(context.view, unit, context.lookup).maximumRange <= 1
+    );
+  return (
+    distance(unit.at, center) <= 2 &&
+    !unit.activation.moved &&
+    primaryReadyForPolicyV7(unit)
+  );
+}
+
+/** The hunt a unit takes part in, the first by target ID. */
+function huntOfV7(
+  context: PolicyContextV7,
+  unitId: UnitId,
+): HuntPlanV7 | undefined {
+  let found: HuntPlanV7 | undefined;
+  for (const plan of huntPlansV7(context))
+    if (
+      plan.hunters.has(unitId) &&
+      (found === undefined || plan.target.id < found.target.id)
+    )
+      found = plan;
+  return found;
+}
+
+function huntMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } | null {
+  if (actor.ownerId !== context.view.viewer.id || actor.form !== "LAND")
+    return null;
+  const view = context.view;
+  const facts = publicCombatFacts(view, actor, context.lookup);
+  const plan = huntOfV7(context, actor.id);
+  if (plan === undefined || plan.hunters.get(actor.id) !== false) return null;
+  const range = distance(to, plan.target.at);
+  if (range < facts.minimumRange || range > facts.maximumRange) return null;
+  return {
+    priority: Math.max(priority, HUNT_MOVE_PRIORITY_V7),
+    strategic: -visibleImmediateDamage(view, actor, to, context),
+  };
+}
+
+function huntAttackPriorityV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  preview: CombatPreviewV7,
+  priority: number,
+): number {
+  const plan = huntOfV7(context, command.unitId);
+  if (plan === undefined || plan.target.id !== command.targetUnitId)
+    return priority;
+  return Math.max(
+    priority,
+    preview.defenderDies ? HUNT_KILL_PRIORITY_V7 : HUNT_ATTACK_PRIORITY_V7,
+  );
+}
 
 /**
  * `pulp_wars-1mc` endgame siege. Every helper returns the ordinary behavior
@@ -7977,8 +8482,8 @@ function martianCacheV7(context: PolicyContextV7): MartianContextCacheV7 {
       routeProgress: (unit, to) => campaignRouteProgressV7(campaign, unit, to),
       waveTarget,
       threatenedCityIds,
-      projectedKillers: (target, at) =>
-        martianProjectedKillersV7(context, target, at),
+      projectedKillers: (target, at, excludeUnitId) =>
+        martianProjectedKillersV7(context, target, at, excludeUnitId),
     },
   };
   context.martianCache = cache;
@@ -8037,6 +8542,7 @@ function martianProjectedKillersV7(
   context: PolicyContextV7,
   target: PublicUnitV7,
   at: CoordV7,
+  excludeUnitId?: UnitId,
 ): number {
   const view = context.view;
   const facts = martianCacheV7(context).facts;
@@ -8045,6 +8551,7 @@ function martianProjectedKillersV7(
   for (const unit of view.units) {
     if (
       unit.ownerId !== view.viewer.id ||
+      unit.id === excludeUnitId ||
       unit.form !== "LAND" ||
       unit.activation.attacksUsed > 0 ||
       unit.activation.handled
@@ -9208,6 +9715,23 @@ function iceFolkMoveValueV7(
         }
       : reject;
   }
+  // pulp_wars-9s0.8: a Mammoth steps where its Sweep hits a flank.
+  if (
+    abilities.includes("SWEEP") &&
+    !actor.activation.moved &&
+    primaryReadyForPolicyV7(actor) &&
+    unitMayActAfterMoveV7(view, actor)
+  ) {
+    const there = bestSweepFlankV7(context, to);
+    if (
+      there > 0 &&
+      visibleImmediateDamage(view, actor, to, context) < actor.hp
+    ) {
+      strategic += MAMMOTH_FLANK_POSITION_VALUE_V7 * there;
+      if (bestSweepFlankV7(context, actor.at) === 0)
+        next = Math.max(next, MAMMOTH_FLANK_MOVE_PRIORITY_V7);
+    }
+  }
   // The planted throw.
   if (
     routine &&
@@ -9251,6 +9775,52 @@ function iceFolkMoveValueV7(
       objective += ROCKFALL_PEAK_OBJECTIVE_V7;
   }
   return { priority: next, strategic, objective, objectiveScale };
+}
+
+/**
+ * `pulp_wars-9s0.8` Mammoth positioning. A Sweep hits the two tiles next to
+ * the target on the ring around the Mammoth; the most hostile units a
+ * Mammoth standing on `from` hits on the flanks of one adjacent hostile
+ * land unit (0 without one). A Move to a tile with a flank hit gains
+ * `MAMMOTH_FLANK_POSITION_VALUE_V7` per victim, and while no flank hit is on
+ * offer from where it stands it goes at `MAMMOTH_FLANK_MOVE_PRIORITY_V7`
+ * (above the chips, so it repositions before it attacks), never into
+ * visible lethal reach.
+ */
+const MAMMOTH_FLANK_POSITION_VALUE_V7 = 4;
+const MAMMOTH_FLANK_MOVE_PRIORITY_V7 = 905;
+const SWEEP_RING_V7: readonly CoordV7[] = [
+  { x: 1, y: 0 },
+  { x: 1, y: 1 },
+  { x: 0, y: 1 },
+  { x: -1, y: 1 },
+  { x: -1, y: 0 },
+  { x: -1, y: -1 },
+  { x: 0, y: -1 },
+  { x: 1, y: -1 },
+];
+
+function bestSweepFlankV7(context: PolicyContextV7, from: CoordV7): number {
+  const hostiles = context.lookup.visibleHostiles;
+  const hostileAt = (at: CoordV7): boolean =>
+    hostiles.some((unit) => same(unit.at, at));
+  let best = 0;
+  SWEEP_RING_V7.forEach((offset, index) => {
+    const target = { x: from.x + offset.x, y: from.y + offset.y };
+    if (!hostiles.some((unit) => unit.form === "LAND" && same(unit.at, target)))
+      return;
+    let hits = 0;
+    for (const side of [index + 1, index + 7]) {
+      const flank = SWEEP_RING_V7[side % 8];
+      if (
+        flank !== undefined &&
+        hostileAt({ x: from.x + flank.x, y: from.y + flank.y })
+      )
+        hits += 1;
+    }
+    best = Math.max(best, hits);
+  });
+  return best;
 }
 
 function captureEndsMatchV7(

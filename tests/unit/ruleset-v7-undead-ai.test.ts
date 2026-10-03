@@ -552,6 +552,10 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
       // changes after its first new unlock and none of the cases above
       // reaches a Devour; this one Devours twice.
       { factions: ["UNDEAD", "ORIGINAL"], seed: 8, mapType: "PANGEA" },
+      // pulp_wars-9s0.8: the AI second pass (savings, sieges) changes these
+      // matches and none of the cases above Wails any more; this Dry Land
+      // match Wails twelve times.
+      { factions: ["ORIGINAL", "UNDEAD"], seed: 9, mapType: "DRY_LAND" },
     ];
     const used: Record<string, number> = {
       RAISE_DEAD: 0,
